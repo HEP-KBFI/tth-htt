@@ -15,6 +15,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorLoose.h" // RecoMuonCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorFakeable.h" // RecoMuonCollectionSelectorFakeable
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorTight.h" // RecoMuonCollectionSelectorTight
+#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorLoose.h" // RecoHadTauCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorFakeable.h" // RecoHadTauCollectionSelectorFakeable
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorTight.h" // RecoHadTauCollectionSelectorTight
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelector.h" // RecoJetCollectionSelector
@@ -58,9 +59,6 @@
 #include <numeric> // std::accumulate()
 
 typedef std::vector<std::string> vstring;
-
-const int hadTauSelection_antiElectron = -1; // not applied
-const int hadTauSelection_antiMuon = -1; // not applied
 
 /**
  * @brief Run sync Ntuple in inclusive mode
@@ -313,16 +311,14 @@ main(int argc,
   inputTree->registerReader(hadTauReader);
   const RecoHadTauCollectionGenMatcher hadTauGenMatcher;
   const RecoHadTauCollectionCleaner hadTauCleaner(0.3, isDEBUG);
+  RecoHadTauCollectionSelectorLoose looseHadTauSelector(era, -1, isDEBUG);
+  looseHadTauSelector.set_if_looser(hadTauSelection_tauIdWP);
   RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector(era, -1, isDEBUG);
   fakeableHadTauSelector.set_if_looser(hadTauSelection_tauIdWP);
-  fakeableHadTauSelector.set_min_antiElectron(-1);
-  fakeableHadTauSelector.set_min_antiMuon(-1);
 
   // X: it is used just for cleaning of AK8 jets, that is used only in channels using Medium WP tau as the tight tau
   RecoHadTauCollectionSelectorTight tightHadTauSelector(era, -1, isDEBUG);
   tightHadTauSelector.set(hadTauAk8Clean_tauIdWP);
-  tightHadTauSelector.set_min_antiElectron(hadTauSelection_antiElectron);
-  tightHadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);
 
   RecoJetReader * const jetReader = new RecoJetReader(era, isMC, branchName_jets, readGenObjects);
   jetReader->setPtMass_central_or_shift(jetPt_option);
@@ -503,16 +499,17 @@ main(int argc,
     const std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     const std::vector<const RecoHadTau *> hadTau_ptrs = convert_to_ptrs(hadTaus);
     const std::vector<const RecoHadTau *> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, preselLeptons);
-    const std::vector<const RecoHadTau *> fakeableHadTaus = fakeableHadTauSelector(cleanedHadTaus, isHigherPt);
-    const std::vector<const RecoHadTau *> tightHadTaus = tightHadTauSelector(cleanedHadTaus, isHigherPt);
-    const std::vector<const RecoHadTau *> selHadTaus = fakeableHadTaus;
+    const std::vector<const RecoHadTau *> looseHadTaus = looseHadTauSelector(cleanedHadTaus, isHigherPt);
+    const std::vector<const RecoHadTau *> fakeableHadTaus = fakeableHadTauSelector(looseHadTaus, isHigherPt);
+    const std::vector<const RecoHadTau *> tightHadTaus = tightHadTauSelector(fakeableHadTaus, isHigherPt);
+    const std::vector<const RecoHadTau *> selHadTaus = looseHadTaus;
 
 //--- build collections of jets and select subset of jets passing b-tagging criteria
     const std::vector<RecoJet> jets = jetReader->read();
     const std::vector<const RecoJet *> jet_ptrs = convert_to_ptrs(jets);
     const std::vector<const RecoJet *> cleanedJets = jetCleaningByIndex ?
-      jetCleanerByIndex(jet_ptrs, fakeableLeptons, fakeableHadTaus)       :
-      jetCleaner       (jet_ptrs, fakeableLeptons, fakeableHadTaus)
+      jetCleanerByIndex(jet_ptrs, fakeableLeptons, looseHadTaus)        :
+      jetCleaner       (jet_ptrs, fakeableLeptons, looseHadTaus)
     ;
     const std::vector<const RecoJet *> selJets         = jetSelector          (cleanedJets, isHigherPt);
     const std::vector<const RecoJet *> selBJets_loose  = jetSelectorBtagLoose (cleanedJets, isHigherPt);
@@ -608,7 +605,7 @@ main(int argc,
 
 //--- compute MHT and linear MET discriminant (met_LD)
     const RecoMEt met = metReader->read();
-    const Particle::LorentzVector mht_p4 = compMHT(fakeableLeptons, fakeableHadTaus, selJets);
+    const Particle::LorentzVector mht_p4 = compMHT(fakeableLeptons, looseHadTaus, selJets);
     const double met_LD = compMEt_LD(met.p4(), mht_p4);
 
     snm->read(met.pt(),    FloatVariableType::PFMET);

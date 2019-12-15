@@ -207,6 +207,7 @@ protected:
   Int_t n_fakeablesel_ele;
   Int_t n_mvasel_ele;
   Int_t n_presel_tau;
+  Int_t n_fakeablesel_tau;
   Int_t n_presel_jet;
   Int_t n_presel_fwdJet;
   Int_t n_presel_jetAK8;
@@ -338,6 +339,7 @@ protected:
   Int_t * tau_againstElectronTightMVA6;
   Int_t * tau_againstElectronVTightMVA6;
   Int_t * tau_isGenMatched;
+  Int_t * tau_isfakeablesel;
 
   Float_t * jet_pt;
   Float_t * jet_eta;

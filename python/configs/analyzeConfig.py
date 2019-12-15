@@ -601,7 +601,6 @@ class analyzeConfig(object):
           jobOptions['central_or_shift'] = 'central'
         if 'apply_topPtReweighting' not in jobOptions:
           jobOptions['apply_topPtReweighting'] = sample_info['apply_toppt_rwgt'] if 'apply_toppt_rwgt' in sample_info else False
-          jobOptions['read_topPtReweighting'] = jobOptions['apply_topPtReweighting'] and self.era != "2016" #TODO: until there are samples with the branch available
         if 'lumiScale' not in jobOptions:
 
           nof_reweighting = sample_info['nof_reweighting']
@@ -650,7 +649,7 @@ class analyzeConfig(object):
                 nof_events_label = 'CountWeighted{}'.format(count_suffix)
                 nof_events_idx = 0 # central
 
-              if jobOptions['apply_topPtReweighting'] and jobOptions['read_topPtReweighting']:
+              if jobOptions['apply_topPtReweighting']:
                 assert(is_mc)
                 if central_or_shift not in systematics.topPtReweighting:
                   nof_events_label += "TopPtRwgtSF"
@@ -786,7 +785,6 @@ class analyzeConfig(object):
             'minNumJets',
             'skipEvery',
             'apply_topPtReweighting',
-            'read_topPtReweighting',
         ]
         jobOptions_typeMapping = {
           'central_or_shifts_local' : 'cms.vstring(%s)',
@@ -882,7 +880,7 @@ class analyzeConfig(object):
               lines.append(sync_opts)
             elif 'syncTree' in jobOptions:
               lines.append(
-                "{}.{:<{len}} = cms.string('{}')".format(process_string, 'syncNtuple.tree', os.path.basename(jobOptions['syncTree']), len = max_option_len)
+                "{}.{:<{len}} = cms.string('{}')".format(process_string, 'syncNtuple.tree', jobOptions['syncTree'], len = max_option_len)
               )
               if 'syncGenMatch' in jobOptions:
                 lines.append(

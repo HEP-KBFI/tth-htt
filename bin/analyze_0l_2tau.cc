@@ -51,6 +51,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorLoose.h" // RecoMuonCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorFakeable.h" // RecoMuonCollectionSelectorFakeable
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorTight.h" // RecoMuonCollectionSelectorTight
+#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorLoose.h" // RecoHadTauCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorFakeable.h" // RecoHadTauCollectionSelectorFakeable
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorTight.h" // RecoHadTauCollectionSelectorTight
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelector.h" // RecoJetCollectionSelector
@@ -131,9 +132,6 @@ typedef std::vector<std::string> vstring;
 typedef std::vector<double> vdouble;
 
 enum { kFR_disabled, kFR_2tau };
-
-const int hadTauSelection_antiElectron = -1; // not applied
-const int hadTauSelection_antiMuon = -1; // not applied
 
 struct HadTauHistManagerWrapper_eta
 {
@@ -232,7 +230,6 @@ int main(int argc, char* argv[])
   bool apply_DYMCReweighting = cfg_analyze.getParameter<bool>("apply_DYMCReweighting");
   bool apply_DYMCNormScaleFactors = cfg_analyze.getParameter<bool>("apply_DYMCNormScaleFactors");
   bool apply_topPtReweighting = cfg_analyze.getParameter<bool>("apply_topPtReweighting");
-  bool read_topPtReweighting = cfg_analyze.getParameter<bool>("read_topPtReweighting");
   bool apply_l1PreFireWeight = cfg_analyze.getParameter<bool>("apply_l1PreFireWeight");
   bool apply_hlt_filter = cfg_analyze.getParameter<bool>("apply_hlt_filter");
   bool apply_met_filters = cfg_analyze.getParameter<bool>("apply_met_filters");
@@ -296,8 +293,6 @@ int main(int argc, char* argv[])
   edm::ParameterSet cfg_dataToMCcorrectionInterface;
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("era", era_string);
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("hadTauSelection", hadTauSelection_part2);
-  cfg_dataToMCcorrectionInterface.addParameter<int>("hadTauSelection_antiElectron", hadTauSelection_antiElectron);
-  cfg_dataToMCcorrectionInterface.addParameter<int>("hadTauSelection_antiMuon", hadTauSelection_antiMuon);
   Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface = nullptr;
   switch(era)
   {
@@ -396,7 +391,7 @@ int main(int argc, char* argv[])
   }
 
 //--- declare event-level variables
-  EventInfo eventInfo(isMC, isSignal, isMC_HH, read_topPtReweighting);
+  EventInfo eventInfo(isMC, isSignal, isMC_HH, apply_topPtReweighting);
   const std::string default_cat_str = "default";
   std::vector<std::string> evt_cat_strs = { default_cat_str };
 
@@ -470,14 +465,12 @@ int main(int argc, char* argv[])
   inputTree -> registerReader(hadTauReader);
   RecoHadTauCollectionGenMatcher hadTauGenMatcher;
   RecoHadTauCollectionCleaner hadTauCleaner(0.3);
+  RecoHadTauCollectionSelectorLoose looseHadTauSelector(era, -1, isDEBUG);
+  looseHadTauSelector.set_if_looser(hadTauSelection_part2);
   RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector(era, -1, isDEBUG);
   fakeableHadTauSelector.set_if_looser(hadTauSelection_part2);
-  fakeableHadTauSelector.set_min_antiElectron(hadTauSelection_antiElectron);
-  fakeableHadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);
   RecoHadTauCollectionSelectorTight tightHadTauSelector(era, -1, isDEBUG);
   tightHadTauSelector.set(hadTauSelection_part2);
-  tightHadTauSelector.set_min_antiElectron(hadTauSelection_antiElectron);
-  tightHadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);
   switch(hadTauSelection)
   {
     case kFakeable: tauLevel = std::min(tauLevel, get_tau_id_wp_int(fakeableHadTauSelector.getSelector().get())); break;
@@ -1013,11 +1006,6 @@ int main(int argc, char* argv[])
     {
       genTauLeptons = genTauLeptonReader->read();
     }
-    std::vector<GenParticle> genTopQuarks;
-    if(isMC)
-    {
-      genTopQuarks = genTopQuarkReader->read();
-    }
 
     if(isMC)
     {
@@ -1025,17 +1013,7 @@ int main(int argc, char* argv[])
       if(apply_DYMCReweighting)   evtWeightRecorder.record_dy_rwgt(dyReweighting, genTauLeptons);
       if(eventWeightManager)      evtWeightRecorder.record_auxWeight(eventWeightManager);
       if(l1PreFiringWeightReader) evtWeightRecorder.record_l1PrefireWeight(l1PreFiringWeightReader);
-      if(apply_topPtReweighting)
-      {
-        if(read_topPtReweighting)
-        {
-          evtWeightRecorder.record_toppt_rwgt(eventInfo.topPtRwgtSF);
-        }
-        else
-        {
-          evtWeightRecorder.record_toppt_rwgt(genTopQuarks);
-        }
-      }
+      if(apply_topPtReweighting)  evtWeightRecorder.record_toppt_rwgt(eventInfo.topPtRwgtSF);
       lheInfoReader->read();
       evtWeightRecorder.record_lheScaleWeight(lheInfoReader);
       evtWeightRecorder.record_puWeight(&eventInfo);
@@ -1059,11 +1037,13 @@ int main(int argc, char* argv[])
       }
     }
 
+    std::vector<GenParticle> genTopQuarks;
     std::vector<GenParticle> genBJets;
     std::vector<GenParticle> genWBosons;
     std::vector<GenParticle> genWJets;
     std::vector<GenParticle> genQuarkFromTop;
     if ( isMC ) {
+      genTopQuarks = genTopQuarkReader->read();
       genBJets = genBJetReader->read();
       genWBosons = genWBosonReader->read();
       genWJets = genWJetReader->read();
@@ -1120,7 +1100,8 @@ int main(int argc, char* argv[])
     const std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     const std::vector<const RecoHadTau*> hadTau_ptrs = convert_to_ptrs(hadTaus);
     const std::vector<const RecoHadTau*> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, preselMuons, preselElectrons);
-    const std::vector<const RecoHadTau*> fakeableHadTausFull = fakeableHadTauSelector(cleanedHadTaus, isHigherPt);
+    const std::vector<const RecoHadTau*> looseHadTaus = looseHadTauSelector(cleanedHadTaus, isHigherPt);
+    const std::vector<const RecoHadTau*> fakeableHadTausFull = fakeableHadTauSelector(looseHadTaus, isHigherPt);
     const std::vector<const RecoHadTau*> tightHadTausFull = tightHadTauSelector(fakeableHadTausFull, isHigherPt);
 
     const std::vector<const RecoHadTau*> fakeableHadTaus = pickFirstNobjects(fakeableHadTausFull, 2);
@@ -1128,6 +1109,7 @@ int main(int argc, char* argv[])
     const std::vector<const RecoHadTau*> selHadTaus = selectObjects(hadTauSelection, fakeableHadTaus, tightHadTaus);
     if(isDEBUG || run_lumi_eventSelector)
     {
+      printCollection("looseHadTaus",    looseHadTaus);
       printCollection("fakeableHadTaus", fakeableHadTaus);
       printCollection("tightHadTaus",    tightHadTaus);
       printCollection("selHadTaus",      selHadTaus);
@@ -1137,8 +1119,8 @@ int main(int argc, char* argv[])
     const std::vector<RecoJet> jets = jetReader->read();
     const std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
     const std::vector<const RecoJet*> cleanedJets = jetCleaningByIndex ?
-      jetCleanerByIndex(jet_ptrs, fakeableLeptons, fakeableHadTausFull) :
-      jetCleaner       (jet_ptrs, fakeableLeptons, fakeableHadTausFull)
+      jetCleanerByIndex(jet_ptrs, fakeableLeptons, looseHadTaus) :
+      jetCleaner       (jet_ptrs, fakeableLeptons, looseHadTaus)
     ;
     const std::vector<const RecoJet*> selJets = jetSelector(cleanedJets, isHigherPt);
     const std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets, isHigherPt);
@@ -1251,7 +1233,7 @@ int main(int argc, char* argv[])
 
 //--- compute MHT and linear MET discriminant (met_LD)
     const RecoMEt met = metReader->read();
-    const Particle::LorentzVector mht_p4 = compMHT(fakeableLeptons, fakeableHadTausFull, selJets);
+    const Particle::LorentzVector mht_p4 = compMHT(fakeableLeptons, looseHadTaus, selJets);
     const double met_LD = compMEt_LD(met.p4(), mht_p4);
 
 //--- apply final event selection
@@ -2060,7 +2042,7 @@ int main(int argc, char* argv[])
       snm->read(eventInfo);
       snm->read(preselMuons,     fakeableMuons,     tightMuons);
       snm->read(preselElectrons, fakeableElectrons, tightElectrons);
-      snm->read(fakeableHadTausFull);
+      snm->read(looseHadTaus);
       snm->read(selJets);
 
       snm->read({ triggers_2tau });

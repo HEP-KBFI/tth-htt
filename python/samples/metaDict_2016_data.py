@@ -1,12 +1,12 @@
 from collections import OrderedDict as OD
 
-# file generated at 2019-09-16 20:58:48 with the following command:
+# file generated at 2019-10-17 23:15:07 with the following command:
 # find_samples.py -V -m python/samples/metaDict_2016_data.py -d ../NanoAOD/test/datasets/txt/datasets_data_2016_17Jul18.txt -p SingleElectron SingleMuon DoubleEG DoubleMuon MuonEG Tau -g ../NanoAOD/data/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt -v 9_4_9 -r 2016 -C +17Jul2018 xDoubleEG/Run2016B-17Jul2018_ver1-v1 -c python/samples/sampleLocations_2016_nanoAOD.txt
 
 meta_dictionary = OD()
 
 meta_dictionary["/SingleElectron/Run2016B-17Jul2018_ver2-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2016v3_2019Jun23_SingleElectron__Run2016B-17Jul2018_ver2-v1"),
+  ("crab_string",           "2016v3_2019Aug29_SingleElectron__Run2016B-17Jul2018_ver2-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleElectron_Run2016B_17Jul2018_ver2_v1"),
   ("nof_db_events",         246440440),
@@ -21,7 +21,7 @@ meta_dictionary["/SingleElectron/Run2016B-17Jul2018_ver2-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/SingleElectron/Run2016C-17Jul2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2016v3_2019Jun23_SingleElectron__Run2016C-17Jul2018-v1"),
+  ("crab_string",           "2016v3_2019Aug29_SingleElectron__Run2016C-17Jul2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleElectron_Run2016C_17Jul2018_v1"),
   ("nof_db_events",         97259854),
@@ -36,7 +36,7 @@ meta_dictionary["/SingleElectron/Run2016C-17Jul2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/SingleElectron/Run2016D-17Jul2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2016v3_2019Aug06_SingleElectron__Run2016D-17Jul2018-v1"),
+  ("crab_string",           "2016v3_2019Aug29_SingleElectron__Run2016D-17Jul2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleElectron_Run2016D_17Jul2018_v1"),
   ("nof_db_events",         148167727),
@@ -51,7 +51,7 @@ meta_dictionary["/SingleElectron/Run2016D-17Jul2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/SingleElectron/Run2016E-17Jul2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2016v3_2019Aug07_SingleElectron__Run2016E-17Jul2018-v1"),
+  ("crab_string",           "2016v3_2019Aug29_SingleElectron__Run2016E-17Jul2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleElectron_Run2016E_17Jul2018_v1"),
   ("nof_db_events",         117321545),
@@ -66,7 +66,7 @@ meta_dictionary["/SingleElectron/Run2016E-17Jul2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/SingleElectron/Run2016F-17Jul2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2016v3_2019Jun23_SingleElectron__Run2016F-17Jul2018-v1"),
+  ("crab_string",           "2016v3_2019Aug29_SingleElectron__Run2016F-17Jul2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleElectron_Run2016F_17Jul2018_v1"),
   ("nof_db_events",         70593532),
@@ -81,7 +81,7 @@ meta_dictionary["/SingleElectron/Run2016F-17Jul2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/SingleElectron/Run2016G-17Jul2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2016v3_2019Jul24_SingleElectron__Run2016G-17Jul2018-v1"),
+  ("crab_string",           "2016v3_2019Aug29_SingleElectron__Run2016G-17Jul2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleElectron_Run2016G_17Jul2018_v1"),
   ("nof_db_events",         153363109),
@@ -96,7 +96,7 @@ meta_dictionary["/SingleElectron/Run2016G-17Jul2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/SingleElectron/Run2016H-17Jul2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2016v3_2019Jun23_SingleElectron__Run2016H-17Jul2018-v1"),
+  ("crab_string",           "2016v3_2019Aug29_SingleElectron__Run2016H-17Jul2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleElectron_Run2016H_17Jul2018_v1"),
   ("nof_db_events",         128854598),
@@ -111,7 +111,7 @@ meta_dictionary["/SingleElectron/Run2016H-17Jul2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/SingleMuon/Run2016B-17Jul2018_ver2-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2016v3_2019Jun23_SingleMuon__Run2016B-17Jul2018_ver2-v1"),
+  ("crab_string",           "2016v3_2019Aug29_SingleMuon__Run2016B-17Jul2018_ver2-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleMuon_Run2016B_17Jul2018_ver2_v1"),
   ("nof_db_events",         158145722),
@@ -126,7 +126,7 @@ meta_dictionary["/SingleMuon/Run2016B-17Jul2018_ver2-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/SingleMuon/Run2016C-17Jul2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2016v3_2019Jun23_SingleMuon__Run2016C-17Jul2018-v1"),
+  ("crab_string",           "2016v3_2019Aug29_SingleMuon__Run2016C-17Jul2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleMuon_Run2016C_17Jul2018_v1"),
   ("nof_db_events",         67441308),
@@ -141,7 +141,7 @@ meta_dictionary["/SingleMuon/Run2016C-17Jul2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/SingleMuon/Run2016D-17Jul2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2016v3_2019Jun23_SingleMuon__Run2016D-17Jul2018-v1"),
+  ("crab_string",           "2016v3_2019Aug29_SingleMuon__Run2016D-17Jul2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleMuon_Run2016D_17Jul2018_v1"),
   ("nof_db_events",         98017996),
@@ -156,7 +156,7 @@ meta_dictionary["/SingleMuon/Run2016D-17Jul2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/SingleMuon/Run2016E-17Jul2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2016v3_2019Jul24_SingleMuon__Run2016E-17Jul2018-v1"),
+  ("crab_string",           "2016v3_2019Aug29_SingleMuon__Run2016E-17Jul2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleMuon_Run2016E_17Jul2018_v1"),
   ("nof_db_events",         90984718),
@@ -171,7 +171,7 @@ meta_dictionary["/SingleMuon/Run2016E-17Jul2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/SingleMuon/Run2016F-17Jul2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2016v3_2019Aug08_SingleMuon__Run2016F-17Jul2018-v1"),
+  ("crab_string",           "2016v3_2019Aug29_SingleMuon__Run2016F-17Jul2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleMuon_Run2016F_17Jul2018_v1"),
   ("nof_db_events",         65489554),
@@ -186,7 +186,7 @@ meta_dictionary["/SingleMuon/Run2016F-17Jul2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/SingleMuon/Run2016G-17Jul2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2016v3_2019Jun23_SingleMuon__Run2016G-17Jul2018-v1"),
+  ("crab_string",           "2016v3_2019Aug29_SingleMuon__Run2016G-17Jul2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleMuon_Run2016G_17Jul2018_v1"),
   ("nof_db_events",         149912248),
@@ -201,7 +201,7 @@ meta_dictionary["/SingleMuon/Run2016G-17Jul2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/SingleMuon/Run2016H-17Jul2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2016v3_2019Sep12_SingleMuon__Run2016H-17Jul2018-v1"),
+  ("crab_string",           "2016v3_2019Aug29_SingleMuon__Run2016H-17Jul2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleMuon_Run2016H_17Jul2018_v1"),
   ("nof_db_events",         174035164),
@@ -216,7 +216,7 @@ meta_dictionary["/SingleMuon/Run2016H-17Jul2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/DoubleEG/Run2016B-17Jul2018_ver2-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2016v3_2019Jul22_DoubleEG__Run2016B-17Jul2018_ver2-v1"),
+  ("crab_string",           "2016v3_2019Aug29_DoubleEG__Run2016B-17Jul2018_ver2-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "DoubleEG_Run2016B_17Jul2018_ver2_v1"),
   ("nof_db_events",         143073268),
@@ -231,7 +231,7 @@ meta_dictionary["/DoubleEG/Run2016B-17Jul2018_ver2-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/DoubleEG/Run2016C-17Jul2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2016v3_2019Sep12_DoubleEG__Run2016C-17Jul2018-v1"),
+  ("crab_string",           "2016v3_2019Aug29_DoubleEG__Run2016C-17Jul2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "DoubleEG_Run2016C_17Jul2018_v1"),
   ("nof_db_events",         47677856),
@@ -246,7 +246,7 @@ meta_dictionary["/DoubleEG/Run2016C-17Jul2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/DoubleEG/Run2016D-17Jul2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2016v3_2019Jun23_DoubleEG__Run2016D-17Jul2018-v1"),
+  ("crab_string",           "2016v3_2019Aug29_DoubleEG__Run2016D-17Jul2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "DoubleEG_Run2016D_17Jul2018_v1"),
   ("nof_db_events",         53324960),
@@ -261,7 +261,7 @@ meta_dictionary["/DoubleEG/Run2016D-17Jul2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/DoubleEG/Run2016E-17Jul2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2016v3_2019Jul24_DoubleEG__Run2016E-17Jul2018-v1"),
+  ("crab_string",           "2016v3_2019Aug29_DoubleEG__Run2016E-17Jul2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "DoubleEG_Run2016E_17Jul2018_v1"),
   ("nof_db_events",         49877710),
@@ -276,7 +276,7 @@ meta_dictionary["/DoubleEG/Run2016E-17Jul2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/DoubleEG/Run2016F-17Jul2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2016v3_2019Jun23_DoubleEG__Run2016F-17Jul2018-v1"),
+  ("crab_string",           "2016v3_2019Aug29_DoubleEG__Run2016F-17Jul2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "DoubleEG_Run2016F_17Jul2018_v1"),
   ("nof_db_events",         34577629),
@@ -291,7 +291,7 @@ meta_dictionary["/DoubleEG/Run2016F-17Jul2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/DoubleEG/Run2016G-17Jul2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2016v3_2019Sep12_DoubleEG__Run2016G-17Jul2018-v1"),
+  ("crab_string",           "2016v3_2019Aug29_DoubleEG__Run2016G-17Jul2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "DoubleEG_Run2016G_17Jul2018_v1"),
   ("nof_db_events",         78797031),
@@ -306,7 +306,7 @@ meta_dictionary["/DoubleEG/Run2016G-17Jul2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/DoubleEG/Run2016H-17Jul2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2016v3_2019Sep12_DoubleEG__Run2016H-17Jul2018-v1"),
+  ("crab_string",           "2016v3_2019Aug29_DoubleEG__Run2016H-17Jul2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "DoubleEG_Run2016H_17Jul2018_v1"),
   ("nof_db_events",         85388734),
@@ -321,7 +321,7 @@ meta_dictionary["/DoubleEG/Run2016H-17Jul2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/DoubleMuon/Run2016B-17Jul2018_ver2-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2016v3_2019Aug03_DoubleMuon__Run2016B-17Jul2018_ver2-v1"),
+  ("crab_string",           "2016v3_2019Aug29_DoubleMuon__Run2016B-17Jul2018_ver2-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "DoubleMuon_Run2016B_17Jul2018_ver2_v1"),
   ("nof_db_events",         82535526),
@@ -336,7 +336,7 @@ meta_dictionary["/DoubleMuon/Run2016B-17Jul2018_ver2-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/DoubleMuon/Run2016C-17Jul2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2016v3_2019Jun23_DoubleMuon__Run2016C-17Jul2018-v1"),
+  ("crab_string",           "2016v3_2019Aug29_DoubleMuon__Run2016C-17Jul2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "DoubleMuon_Run2016C_17Jul2018_v1"),
   ("nof_db_events",         27934629),
@@ -351,7 +351,7 @@ meta_dictionary["/DoubleMuon/Run2016C-17Jul2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/DoubleMuon/Run2016D-17Jul2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2016v3_2019Sep13_DoubleMuon__Run2016D-17Jul2018-v1"),
+  ("crab_string",           "2016v3_2019Aug29_DoubleMuon__Run2016D-17Jul2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "DoubleMuon_Run2016D_17Jul2018_v1"),
   ("nof_db_events",         33861745),
@@ -366,7 +366,7 @@ meta_dictionary["/DoubleMuon/Run2016D-17Jul2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/DoubleMuon/Run2016E-17Jul2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2016v3_2019Jun23_DoubleMuon__Run2016E-17Jul2018-v1"),
+  ("crab_string",           "2016v3_2019Aug29_DoubleMuon__Run2016E-17Jul2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "DoubleMuon_Run2016E_17Jul2018_v1"),
   ("nof_db_events",         28246946),
@@ -381,7 +381,7 @@ meta_dictionary["/DoubleMuon/Run2016E-17Jul2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/DoubleMuon/Run2016F-17Jul2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2016v3_2019Jul24_DoubleMuon__Run2016F-17Jul2018-v1"),
+  ("crab_string",           "2016v3_2019Aug29_DoubleMuon__Run2016F-17Jul2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "DoubleMuon_Run2016F_17Jul2018_v1"),
   ("nof_db_events",         20329921),
@@ -396,7 +396,7 @@ meta_dictionary["/DoubleMuon/Run2016F-17Jul2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/DoubleMuon/Run2016G-17Jul2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2016v3_2019Jun23_DoubleMuon__Run2016G-17Jul2018-v1"),
+  ("crab_string",           "2016v3_2019Aug29_DoubleMuon__Run2016G-17Jul2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "DoubleMuon_Run2016G_17Jul2018_v1"),
   ("nof_db_events",         45235604),
@@ -411,7 +411,7 @@ meta_dictionary["/DoubleMuon/Run2016G-17Jul2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/DoubleMuon/Run2016H-17Jul2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2016v3_2019Jun23_DoubleMuon__Run2016H-17Jul2018-v1"),
+  ("crab_string",           "2016v3_2019Aug29_DoubleMuon__Run2016H-17Jul2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "DoubleMuon_Run2016H_17Jul2018_v1"),
   ("nof_db_events",         48912812),
@@ -426,7 +426,7 @@ meta_dictionary["/DoubleMuon/Run2016H-17Jul2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/MuonEG/Run2016B-17Jul2018_ver2-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2016v3_2019Jun23_MuonEG__Run2016B-17Jul2018_ver2-v1"),
+  ("crab_string",           "2016v3_2019Aug29_MuonEG__Run2016B-17Jul2018_ver2-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "MuonEG_Run2016B_17Jul2018_ver2_v1"),
   ("nof_db_events",         32727796),
@@ -441,7 +441,7 @@ meta_dictionary["/MuonEG/Run2016B-17Jul2018_ver2-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/MuonEG/Run2016C-17Jul2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2016v3_2019Jun23_MuonEG__Run2016C-17Jul2018-v1"),
+  ("crab_string",           "2016v3_2019Aug29_MuonEG__Run2016C-17Jul2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "MuonEG_Run2016C_17Jul2018_v1"),
   ("nof_db_events",         15405678),
@@ -456,7 +456,7 @@ meta_dictionary["/MuonEG/Run2016C-17Jul2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/MuonEG/Run2016D-17Jul2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2016v3_2019Jul24_MuonEG__Run2016D-17Jul2018-v1"),
+  ("crab_string",           "2016v3_2019Aug29_MuonEG__Run2016D-17Jul2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "MuonEG_Run2016D_17Jul2018_v1"),
   ("nof_db_events",         23482352),
@@ -471,7 +471,7 @@ meta_dictionary["/MuonEG/Run2016D-17Jul2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/MuonEG/Run2016E-17Jul2018-v2/MINIAOD"] =  OD([
-  ("crab_string",           "2016v3_2019Jul22_MuonEG__Run2016E-17Jul2018-v2"),
+  ("crab_string",           "2016v3_2019Aug29_MuonEG__Run2016E-17Jul2018-v2"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "MuonEG_Run2016E_17Jul2018_v2"),
   ("nof_db_events",         22519303),
@@ -486,7 +486,7 @@ meta_dictionary["/MuonEG/Run2016E-17Jul2018-v2/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/MuonEG/Run2016F-17Jul2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2016v3_2019Jul22_MuonEG__Run2016F-17Jul2018-v1"),
+  ("crab_string",           "2016v3_2019Aug29_MuonEG__Run2016F-17Jul2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "MuonEG_Run2016F_17Jul2018_v1"),
   ("nof_db_events",         16002165),
@@ -501,7 +501,7 @@ meta_dictionary["/MuonEG/Run2016F-17Jul2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/MuonEG/Run2016G-17Jul2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2016v3_2019Jun23_MuonEG__Run2016G-17Jul2018-v1"),
+  ("crab_string",           "2016v3_2019Aug29_MuonEG__Run2016G-17Jul2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "MuonEG_Run2016G_17Jul2018_v1"),
   ("nof_db_events",         33854612),
@@ -516,7 +516,7 @@ meta_dictionary["/MuonEG/Run2016G-17Jul2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/MuonEG/Run2016H-17Jul2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2016v3_2019Sep12_MuonEG__Run2016H-17Jul2018-v1"),
+  ("crab_string",           "2016v3_2019Aug29_MuonEG__Run2016H-17Jul2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "MuonEG_Run2016H_17Jul2018_v1"),
   ("nof_db_events",         29236516),
@@ -531,7 +531,7 @@ meta_dictionary["/MuonEG/Run2016H-17Jul2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/Tau/Run2016B-17Jul2018_ver2-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2016v3_2019Sep12_Tau__Run2016B-17Jul2018_ver2-v1"),
+  ("crab_string",           "2016v3_2019Aug29_Tau__Run2016B-17Jul2018_ver2-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "Tau_Run2016B_17Jul2018_ver2_v1"),
   ("nof_db_events",         68727458),
@@ -546,7 +546,7 @@ meta_dictionary["/Tau/Run2016B-17Jul2018_ver2-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/Tau/Run2016C-17Jul2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2016v3_2019Sep12_Tau__Run2016C-17Jul2018-v1"),
+  ("crab_string",           "2016v3_2019Aug29_Tau__Run2016C-17Jul2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "Tau_Run2016C_17Jul2018_v1"),
   ("nof_db_events",         36931473),
@@ -561,7 +561,7 @@ meta_dictionary["/Tau/Run2016C-17Jul2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/Tau/Run2016D-17Jul2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2016v3_2019Aug03_Tau__Run2016D-17Jul2018-v1"),
+  ("crab_string",           "2016v3_2019Aug29_Tau__Run2016D-17Jul2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "Tau_Run2016D_17Jul2018_v1"),
   ("nof_db_events",         56827771),
@@ -576,7 +576,7 @@ meta_dictionary["/Tau/Run2016D-17Jul2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/Tau/Run2016E-17Jul2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2016v3_2019Sep05_Tau__Run2016E-17Jul2018-v1"),
+  ("crab_string",           "2016v3_2019Aug29_Tau__Run2016E-17Jul2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "Tau_Run2016E_17Jul2018_v1"),
   ("nof_db_events",         58348773),
@@ -591,7 +591,7 @@ meta_dictionary["/Tau/Run2016E-17Jul2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/Tau/Run2016F-17Jul2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2016v3_2019Jul22_Tau__Run2016F-17Jul2018-v1"),
+  ("crab_string",           "2016v3_2019Aug29_Tau__Run2016F-17Jul2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "Tau_Run2016F_17Jul2018_v1"),
   ("nof_db_events",         40549716),
@@ -606,7 +606,7 @@ meta_dictionary["/Tau/Run2016F-17Jul2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/Tau/Run2016G-17Jul2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2016v3_2019Sep13_Tau__Run2016G-17Jul2018-v1"),
+  ("crab_string",           "2016v3_2019Aug29_Tau__Run2016G-17Jul2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "Tau_Run2016G_17Jul2018_v1"),
   ("nof_db_events",         79578661),
@@ -621,7 +621,7 @@ meta_dictionary["/Tau/Run2016G-17Jul2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/Tau/Run2016H-17Jul2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2016v3_2019Jul24_Tau__Run2016H-17Jul2018-v1"),
+  ("crab_string",           "2016v3_2019Aug29_Tau__Run2016H-17Jul2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "Tau_Run2016H_17Jul2018_v1"),
   ("nof_db_events",         76758754),
