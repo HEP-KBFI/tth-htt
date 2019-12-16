@@ -87,9 +87,9 @@ namespace aux
     else if(boost::ends_with(hadTauSelection, "VLoose" )) hadTauSelection_param = "vloose";
     else if(boost::ends_with(hadTauSelection, "Loose"  )) hadTauSelection_param = "loose";
     else if(boost::ends_with(hadTauSelection, "Medium" )) hadTauSelection_param = "medium";
-    else if(boost::ends_with(hadTauSelection, "Tight"  )) hadTauSelection_param = "tight";
-    else if(boost::ends_with(hadTauSelection, "VTight" )) hadTauSelection_param = "vtight";
     else if(boost::ends_with(hadTauSelection, "VVTight")) hadTauSelection_param = "vvtight";
+    else if(boost::ends_with(hadTauSelection, "VTight" )) hadTauSelection_param = "vtight";
+    else if(boost::ends_with(hadTauSelection, "Tight"  )) hadTauSelection_param = "tight";
     else throw cmsException(__func__, __LINE__)
            << "Invalid Configuration parameter 'hadTauSelection' = " << hadTauSelection
          ;
