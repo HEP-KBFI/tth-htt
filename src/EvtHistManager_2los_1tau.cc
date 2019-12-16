@@ -45,10 +45,7 @@ EvtHistManager_2los_1tau::bookHistograms(TFileDirectory & dir)
   histogram_numBJets_medium_ = book1D(dir, "numBJets_medium", "numBJets_medium", 10, -0.5,  +9.5);
 
 
-  histogram_mvaOutput_legacy_  = book1D(dir, "mvaOutput_legacy",  "mvaOutput_legacy",  100, 0., +1.);
-  histogram_mvaOutput_legacy_2_  = book1D(dir, "mvaOutput_legacy_2",  "mvaOutput_legacy_2",  100, 0., +1.);
-  histogram_mvaOutput_legacy_3_  = book1D(dir, "mvaOutput_legacy_3",  "mvaOutput_legacy_3",  100, 0., +1.);
-  histogram_mvaOutput_legacy_4_  = book1D(dir, "mvaOutput_legacy_4",  "mvaOutput_legacy_4",  100, 0., +1.);
+  histogram_mvaOutput_legacy_  = book1D(dir, "mvaOutput_legacy",  "mvaOutput_legacy",  10, 0., +1.);
 
   histogram_mTauTauVis_   = book1D(dir, "mTauTauVis",   "mTauTauVis",  40,  0., 200.);
   histogram_EventCounter_ = book1D(dir, "EventCounter", "EventCounter", 1, -0.5, +0.5);
@@ -63,9 +60,6 @@ EvtHistManager_2los_1tau::fillHistograms(int numElectrons,
                                          int numBJets_medium,
                                          double mTauTauVis,
                                          double mvaOutput_legacy,
-                                         double mvaOutput_legacy_2,
-                                         double mvaOutput_legacy_3,
-                                         double mvaOutput_legacy_4,
                                          double evtWeight)
 {
   const double evtWeightErr = 0.;
@@ -78,9 +72,6 @@ EvtHistManager_2los_1tau::fillHistograms(int numElectrons,
   fillWithOverFlow(histogram_numBJets_medium_, numBJets_medium, evtWeight, evtWeightErr);
 
   fillWithOverFlow(histogram_mvaOutput_legacy_,  mvaOutput_legacy,  evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaOutput_legacy_2_,  mvaOutput_legacy_2,  evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaOutput_legacy_3_,  mvaOutput_legacy_3,  evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaOutput_legacy_4_,  mvaOutput_legacy_4,  evtWeight, evtWeightErr);
 
   fillWithOverFlow(histogram_mTauTauVis_,   mTauTauVis, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_EventCounter_, 0.,         evtWeight, evtWeightErr);

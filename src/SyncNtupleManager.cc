@@ -72,6 +72,7 @@ SyncNtupleManager::initializeBranches()
   const std::string n_fakeablesel_ele_str = Form("n_fakeablesel_%s", estr);
   const std::string n_mvasel_ele_str      = Form("n_mvasel_%s",      estr);
   const std::string n_presel_tau_str      = Form("n_presel_%s",      tstr);
+  const std::string n_fakeablesel_tau_str = Form("n_fakeablesel_%s", tstr);
   const std::string n_presel_jet_str      = Form("n_presel_%s",      jstr);
   const std::string n_presel_fwdJet_str   = Form("n_presel_%s",      jfstr);
   const std::string n_presel_jetAK8_str   = Form("n_presel_%s",      jak8str);
@@ -88,6 +89,7 @@ SyncNtupleManager::initializeBranches()
     n_fakeablesel_ele, n_fakeablesel_ele_str,
     n_mvasel_ele,      n_mvasel_ele_str,
     n_presel_tau,      n_presel_tau_str,
+    n_fakeablesel_tau, n_fakeablesel_tau_str,
     n_presel_jet,      n_presel_jet_str,
     n_presel_fwdJet,   n_presel_fwdJet_str,
     n_presel_jetAK8,   n_presel_jetAK8_str,
@@ -174,7 +176,7 @@ SyncNtupleManager::initializeBranches()
     floatMap[FloatVariableType::mvaOutput_plainKin_1B_VT],  "mvaOutput_2l_2tau_plainKin_1B_VT",
     floatMap[FloatVariableType::mvaOutput_plainKin_SUM_VT], "mvaOutput_2l_2tau_plainKin_SUM_VT",
 
-    floatMap[FloatVariableType::mvaOutput_legacy_2],                 "mvaOutput_legacy_2",
+    floatMap[FloatVariableType::mvaOutput_legacy],                 "mvaOutput_legacy",
     floatMap[FloatVariableType::mvaOutput_2lss_tt],                  "mvaOutput_2lss_ttbar",
     floatMap[FloatVariableType::mvaOutput_2lss_1tau_plainKin_tt],    "mvaOutput_2lss_1tau_plainKin_ttbar",
     floatMap[FloatVariableType::mvaOutput_2lss_1tau_plainKin_ttV],   "mvaOutput_2lss_1tau_plainKin_ttV",
@@ -351,7 +353,8 @@ SyncNtupleManager::initializeBranches()
     tau_againstElectronMediumMVA6,                 "againstElectronMediumMVA6",
     tau_againstElectronTightMVA6,                  "againstElectronTightMVA6",
     tau_againstElectronVTightMVA6,                 "againstElectronVTightMVA6",
-    tau_isGenMatched,                              "isGenMatched"
+    tau_isGenMatched,                              "isGenMatched",
+    tau_isfakeablesel,                             "isfakeablesel"
   );
 
   setBranches(
@@ -568,6 +571,9 @@ void
 SyncNtupleManager::read(const std::vector<const RecoHadTau *> & hadtaus)
 {
   n_presel_tau = hadtaus.size();
+  n_fakeablesel_tau = std::count_if(
+    hadtaus.cbegin(), hadtaus.cend(), [](const RecoHadTau * const hadtau) -> bool { return hadtau -> isFakeable(); }
+  );
   const Int_t nof_iterations = std::min(n_presel_tau, nof_taus);
   for(Int_t i = 0; i < nof_iterations; ++i)
   {
@@ -633,6 +639,7 @@ SyncNtupleManager::read(const std::vector<const RecoHadTau *> & hadtaus)
     tau_againstElectronTightMVA6[i] = idAntiErun2 >= 4 ? 1 : 0;
     tau_againstElectronVTightMVA6[i] = idAntiErun2 >= 5 ? 1 : 0;
     tau_isGenMatched[i] = hadtau -> isGenMatched(genMatchCharge_taus);
+    tau_isfakeablesel[i] = hadtau -> isFakeable();
   }
 }
 
@@ -754,6 +761,7 @@ SyncNtupleManager::resetBranches()
     n_fakeablesel_ele,
     n_mvasel_ele,
     n_presel_tau,
+    n_fakeablesel_tau,
     n_presel_jet,
     n_presel_fwdJet,
     isGenMatched,
