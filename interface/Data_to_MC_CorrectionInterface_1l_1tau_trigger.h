@@ -2,10 +2,7 @@
 #define tthAnalysis_HiggsToTauTau_Data_to_MC_CorrectionInterface_1l_1tau_trigger_h
 
 #include "tthAnalysis/HiggsToTauTau/interface/lutAuxFunctions.h" // lutWrapperBase, vLutWrapperBase
-
-// forward declarations
-class TauTriggerSFs2017;
-enum class TriggerSFsys;
+#include "tthAnalysis/HiggsToTauTau/interface/TauTriggerSFInterface.h" // TauTriggerSFInterface, TriggerSFsys
 
 class Data_to_MC_CorrectionInterface_1l_1tau_trigger
 {
@@ -48,24 +45,6 @@ public:
   //-----------------------------------------------------------------------------
 
 protected:
-
-  //-----------------------------------------------------------------------------
-  // data/MC corrections for trigger efficiencies in 2017 ReReco data and Summer17 MC
-
-  vLutWrapperBase effTrigger_1e_data_;
-  vLutWrapperBase effTrigger_1e_mc_;
-  vLutWrapperBase effTrigger_1e1tau_lepLeg_data_;
-  vLutWrapperBase effTrigger_1e1tau_lepLeg_mc_;
-
-  vLutWrapperBase effTrigger_1m_data_;
-  vLutWrapperBase effTrigger_1m_mc_;
-  vLutWrapperBase effTrigger_1m1tau_lepLeg_data_;
-  vLutWrapperBase effTrigger_1m1tau_lepLeg_mc_;
-
-  TauTriggerSFs2017 * effTrigger_1e1tau_tauLeg_;
-  TauTriggerSFs2017 * effTrigger_1m1tau_tauLeg_;
-  //-----------------------------------------------------------------------------
-
   std::map<std::string, TFile *> inputFiles_;
 
   std::string era_str_;
@@ -88,6 +67,23 @@ protected:
   double hadTau_eta_;
   double hadTau_phi_;
   int hadTau_decayMode_;
+
+  //-----------------------------------------------------------------------------
+  // data/MC corrections for trigger efficiencies in 2017 ReReco data and Summer17 MC
+
+  vLutWrapperBase effTrigger_1e_data_;
+  vLutWrapperBase effTrigger_1e_mc_;
+  vLutWrapperBase effTrigger_1e1tau_lepLeg_data_;
+  vLutWrapperBase effTrigger_1e1tau_lepLeg_mc_;
+
+  vLutWrapperBase effTrigger_1m_data_;
+  vLutWrapperBase effTrigger_1m_mc_;
+  vLutWrapperBase effTrigger_1m1tau_lepLeg_data_;
+  vLutWrapperBase effTrigger_1m1tau_lepLeg_mc_;
+
+  TauTriggerSFInterface effTrigger_1e1tau_tauLeg_;
+  TauTriggerSFInterface effTrigger_1m1tau_tauLeg_;
+  //-----------------------------------------------------------------------------
 };
 
 #endif // tthAnalysis_HiggsToTauTau_data_to_MC_corrections_1l_1tau_trigger_h

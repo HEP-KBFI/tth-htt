@@ -2,10 +2,7 @@
 #define tthAnalysis_HiggsToTauTau_Data_to_MC_CorrectionInterface_0l_2tau_trigger_h
 
 #include "tthAnalysis/HiggsToTauTau/interface/lutAuxFunctions.h" // lutWrapperBase, vLutWrapperBase
-
-// forward declarations
-class TauTriggerSFs2017;
-enum class TriggerSFsys;
+#include "tthAnalysis/HiggsToTauTau/interface/TauTriggerSFInterface.h" // TauTriggerSFInterface, TriggerSFsys
 
 class Data_to_MC_CorrectionInterface_0l_2tau_trigger
 {
@@ -41,12 +38,6 @@ public:
   //-----------------------------------------------------------------------------
 
 protected:
-  //-----------------------------------------------------------------------------
-  // data/MC corrections for trigger efficiencies
-
-  TauTriggerSFs2017 * effTrigger_tauLeg_;
-  //-----------------------------------------------------------------------------
-
   std::string era_str_;
   int era_;
   std::string hadTauSelection_;
@@ -66,6 +57,12 @@ protected:
   double hadTau2_eta_;
   double hadTau2_phi_;
   int hadTau2_decayMode_;
+
+  //-----------------------------------------------------------------------------
+  // data/MC corrections for trigger efficiencies
+
+  TauTriggerSFInterface effTrigger_tauLeg_;
+  //-----------------------------------------------------------------------------
 };
 
 #endif // tthAnalysis_HiggsToTauTau_data_to_MC_corrections_0l_2tau_trigger_h
