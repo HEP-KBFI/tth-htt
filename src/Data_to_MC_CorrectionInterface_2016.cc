@@ -20,9 +20,25 @@ Data_to_MC_CorrectionInterface_2016::Data_to_MC_CorrectionInterface_2016(const e
   sfElectronID_and_Iso_loose_.push_back(new lutWrapperTH2(
     inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/el_scaleFactors_Moriond17.root", "MVAVLooseElectronToConvVetoIHit1",
      lut::kXptYabsEta));
+  //sfElectronID_and_Iso_loose_.push_back(new lutWrapperTH2(
+  //  inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/egammaEffi.txt_EGM2D.root", "EGamma_SF2D",
+  //   lut::kXetaYpt));
+  // Reconstruction efficiencies of electrons with pT < 20 GeV, measured by EGamma POG
+  // https://twiki.cern.ch/twiki/pub/CMS/EgammaIDRecipesRun2/EGM2D_BtoH_low_RecoSF_Legacy2016.root
   sfElectronID_and_Iso_loose_.push_back(new lutWrapperTH2(
-    inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/egammaEffi.txt_EGM2D.root", "EGamma_SF2D",
-     lut::kXetaYpt));
+    inputFiles_,
+    "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/el_scaleFactors_gsf_ptLt20.root",
+    "EGamma_SF2D",
+    lut::kXetaYpt, -2.5, +2.5, lut::kLimit, -1., 20., lut::kLimit_and_Cut
+  ));
+  // Reconstruction efficiencies of electrons with pT > 20 GeV, measured by EGamma POG
+  // https://twiki.cern.ch/twiki/pub/CMS/EgammaIDRecipesRun2/EGM2D_BtoH_GT20GeV_RecoSF_Legacy2016.root
+  sfElectronID_and_Iso_loose_.push_back(new lutWrapperTH2(
+    inputFiles_,
+    "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/el_scaleFactors_gsf_ptGt20.root",
+    "EGamma_SF2D",
+    lut::kXetaYpt, -2.5, +2.5, lut::kLimit, 20., -1., lut::kLimit_and_Cut
+  ));
   sfElectronID_and_Iso_tight_to_loose_woTightCharge_.push_back(new lutWrapperTH2(
     inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/lepMVAEffSF_e_3l.root", "sf",
     lut::kXptYabsEta));
