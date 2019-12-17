@@ -1895,7 +1895,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
 
     // resolved HTT
     double max_mvaOutput_HTT_CSVsort4rd = 0.;
-    bool max_truth_HTT_CSVsort4rd = false;
+    //bool max_truth_HTT_CSVsort4rd = false;
     double HadTop_pt_CSVsort4rd = 0.;
     //double genTopPt_CSVsort4rd = 0.;
     bool hadtruth = false;
@@ -1915,7 +1915,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     double HadTop_pt = ((*selBJet)->p4() + (*selWJet1)->p4() + (*selWJet2)->p4()).pt();
 
     if ( bdtResult.at(kXGB_CSVsort4rd) > max_mvaOutput_HTT_CSVsort4rd ) {
-      max_truth_HTT_CSVsort4rd = isGenMatched;
+      //max_truth_HTT_CSVsort4rd = isGenMatched;
       max_mvaOutput_HTT_CSVsort4rd = bdtResult.at(kXGB_CSVsort4rd);
       HadTop_pt_CSVsort4rd = HadTop_pt;
       //genTopPt_CSVsort4rd = genTopPt_teste;
@@ -1995,7 +1995,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     mvaInputs_3l_ttH_tH_3cat_v8_TF["mT_lep3"] = mT_lep3;
     mvaInputs_3l_ttH_tH_3cat_v8_TF["lep3_conePt"] = lep3_conePt;
     mvaInputs_3l_ttH_tH_3cat_v8_TF["leadFwdJet_pt"] = selJetsForward.size() > 0 ? selJetsForward[0]->pt() : 0;
-    mvaInputs_3l_ttH_tH_3cat_v8_TF["res_HTT"] = max_truth_HTT_CSVsort4rd;
+    mvaInputs_3l_ttH_tH_3cat_v8_TF["res_HTT"] = max_mvaOutput_HTT_CSVsort4rd;
     mvaInputs_3l_ttH_tH_3cat_v8_TF["HadTop_pt"] = HadTop_pt_CSVsort4rd;
     mvaInputs_3l_ttH_tH_3cat_v8_TF["nJet"] = selJets.size();
     mvaInputs_3l_ttH_tH_3cat_v8_TF["nJetForward"] = selJetsForward.size();
@@ -2524,7 +2524,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
           ("jet4_E",    selJets.size() > 3 ? selJets[3]->p4().energy() : -1000)
           ("sum_Lep_charge", sumLeptonCharge)
           ("HadTop_pt",      HadTop_pt_CSVsort4rd)
-          ("res_HTT",        max_truth_HTT_CSVsort4rd)
+          ("res_HTT",        max_mvaOutput_HTT_CSVsort4rd)
           ("max_Lep_eta",    max_lep_eta)
           ("massLT",          selLeptons.size() > 1 ? comp_MT_met_lep1(selLeptons[0]->p4() + selLeptons[1]->p4(), met.pt(), met.phi())  : 0.)
           ("massL3",          selLeptons.size() > 2 ? comp_MT_met_lep1(selLeptons[0]->p4() + selLeptons[1]->p4() + selLeptons[2]->p4(), met.pt(), met.phi())  : 0.)
@@ -2535,7 +2535,6 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
           ("min_Deta_leadfwdJet_jet", min_Deta_leadfwdJet_jet)
           ("nElectron",                      selElectrons.size())
           ("nJetForward",          selJetsForward.size())
-
         .fill()
       ;
     }
