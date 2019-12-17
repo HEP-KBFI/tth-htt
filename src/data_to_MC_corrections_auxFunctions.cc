@@ -523,31 +523,4 @@ namespace aux
       ));
     }
   }
-
-  getTriggerEfficiencyFunc
-  getTriggerFuncMC(TriggerSFsys triggerSF_option,
-                   bool flip)
-  {
-    switch(triggerSF_option)
-    {
-      case TriggerSFsys::central:   return        &TauTriggerSFs2017::getTriggerEfficiencyMC;
-      case TriggerSFsys::shiftUp:   return flip ? &TauTriggerSFs2017::getTriggerEfficiencyMCUncertDown :
-                                                  &TauTriggerSFs2017::getTriggerEfficiencyMCUncertUp;
-      case TriggerSFsys::shiftDown: return flip ? &TauTriggerSFs2017::getTriggerEfficiencyMCUncertUp :
-                                                  &TauTriggerSFs2017::getTriggerEfficiencyMCUncertDown;
-    }
-    return nullptr;
-  }
-
-  getTriggerEfficiencyFunc
-  getTriggerFuncData(TriggerSFsys triggerSF_option)
-  {
-    switch(triggerSF_option)
-    {
-      case TriggerSFsys::central:   return &TauTriggerSFs2017::getTriggerEfficiencyData;           break;
-      case TriggerSFsys::shiftUp:   return &TauTriggerSFs2017::getTriggerEfficiencyDataUncertUp;   break;
-      case TriggerSFsys::shiftDown: return &TauTriggerSFs2017::getTriggerEfficiencyDataUncertDown; break;
-    }
-    return nullptr;
-  }
 }

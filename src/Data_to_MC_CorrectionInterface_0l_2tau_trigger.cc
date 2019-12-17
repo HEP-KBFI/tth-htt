@@ -17,8 +17,7 @@
 #include <cassert> // assert()
 
 Data_to_MC_CorrectionInterface_0l_2tau_trigger::Data_to_MC_CorrectionInterface_0l_2tau_trigger(const edm::ParameterSet & cfg)
-  : effTrigger_tauLeg_(nullptr)
-  , era_str_(cfg.getParameter<std::string>("era"))
+  : era_str_(cfg.getParameter<std::string>("era"))
   , era_(get_era(era_str_))
   , hadTauSelection_(cfg.getParameter<std::string>("hadTauSelection"))
   , isDEBUG_(cfg.exists("isDEBUG") ? cfg.getParameter<bool>("isDEBUG") : false)
@@ -33,19 +32,11 @@ Data_to_MC_CorrectionInterface_0l_2tau_trigger::Data_to_MC_CorrectionInterface_0
   , hadTau2_eta_(0.)
   , hadTau2_phi_(0.)
   , hadTau2_decayMode_(0)
-{
-  const LocalFileInPath inputFileName_tauLeg(
-    Form("TauAnalysisTools/TauTriggerSFs/data/tauTriggerEfficiencies%s.root", era_str_.data()
-  ));
-  effTrigger_tauLeg_ = new TauTriggerSFs2017(
-    inputFileName_tauLeg.fullPath(), "ditau", era_str_, aux::getHadTauSelectionLabel(hadTauSelection_), "MVAv2"
-  );
-}
+  , effTrigger_tauLeg_(era_str_, hadTauSelection_, TauTriggerType::DiTau)
+{}
 
 Data_to_MC_CorrectionInterface_0l_2tau_trigger::~Data_to_MC_CorrectionInterface_0l_2tau_trigger()
-{
-  delete effTrigger_tauLeg_;
-}
+{}
 
 void
 Data_to_MC_CorrectionInterface_0l_2tau_trigger::setTriggerBits(bool isTriggered_2tau)
@@ -60,12 +51,12 @@ Data_to_MC_CorrectionInterface_0l_2tau_trigger::setHadTaus(double hadTau1_pt, do
   hadTau1_pt_        = hadTau1_pt;
   hadTau1_eta_       = hadTau1_eta;
   hadTau1_phi_       = hadTau1_phi;
-  hadTau1_decayMode_ = aux::dmCheck(hadTau1_decayMode);
+  hadTau1_decayMode_ = hadTau1_decayMode;
 
   hadTau2_pt_        = hadTau2_pt;
   hadTau2_eta_       = hadTau2_eta;
   hadTau2_phi_       = hadTau2_phi;
-  hadTau2_decayMode_ = aux::dmCheck(hadTau2_decayMode);
+  hadTau2_decayMode_ = hadTau2_decayMode;
 }
 
 double
@@ -87,21 +78,16 @@ Data_to_MC_CorrectionInterface_0l_2tau_trigger::getSF_triggerEff(TriggerSFsys ce
   double eff_2tau_tauLeg2_data = 0.;
   double eff_2tau_tauLeg2_mc   = 0.;
 
-  const auto getTriggerEfficiencyDataFunc = aux::getTriggerFuncData(central_or_shift);
-  const auto getTriggerEfficiencyMCFunc   = aux::getTriggerFuncMC(central_or_shift);
-  assert(getTriggerEfficiencyDataFunc);
-  assert(getTriggerEfficiencyMCFunc);
-
   if(std::fabs(hadTau1_eta_) <= 2.1 && aux::hasDecayMode(allowedDecayModes_, hadTau1_decayMode_))
   {
-    eff_2tau_tauLeg1_data = (effTrigger_tauLeg_->*getTriggerEfficiencyDataFunc)(hadTau1_pt_, hadTau1_eta_, hadTau1_phi_, hadTau1_decayMode_);
-    eff_2tau_tauLeg1_mc   = (effTrigger_tauLeg_->*getTriggerEfficiencyMCFunc)  (hadTau1_pt_, hadTau1_eta_, hadTau1_phi_, hadTau1_decayMode_);
+    eff_2tau_tauLeg1_data = effTrigger_tauLeg_.getTauTriggerEvalData(central_or_shift, hadTau1_pt_, hadTau1_eta_, hadTau1_phi_, hadTau1_decayMode_);
+    eff_2tau_tauLeg1_mc   = effTrigger_tauLeg_.getTauTriggerEvalMC  (central_or_shift, hadTau1_pt_, hadTau1_eta_, hadTau1_phi_, hadTau1_decayMode_);
   }
 
   if(std::fabs(hadTau2_eta_) <= 2.1 && aux::hasDecayMode(allowedDecayModes_, hadTau2_decayMode_))
   {
-    eff_2tau_tauLeg2_data = (effTrigger_tauLeg_->*getTriggerEfficiencyDataFunc)(hadTau2_pt_, hadTau2_eta_, hadTau2_phi_, hadTau2_decayMode_);
-    eff_2tau_tauLeg2_mc   = (effTrigger_tauLeg_->*getTriggerEfficiencyMCFunc)  (hadTau2_pt_, hadTau2_eta_, hadTau2_phi_, hadTau2_decayMode_);
+    eff_2tau_tauLeg2_data = effTrigger_tauLeg_.getTauTriggerEvalData(central_or_shift, hadTau2_pt_, hadTau2_eta_, hadTau2_phi_, hadTau2_decayMode_);
+    eff_2tau_tauLeg2_mc   = effTrigger_tauLeg_.getTauTriggerEvalMC  (central_or_shift, hadTau2_pt_, hadTau2_eta_, hadTau2_phi_, hadTau2_decayMode_);
   }
 
   if(isDEBUG_)
