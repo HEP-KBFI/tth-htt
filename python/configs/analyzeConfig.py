@@ -487,10 +487,10 @@ class analyzeConfig(object):
 
         self.hadTau_selection_relaxed = None
         if self.era in [ '2016', '2017', '2018' ]:
-            self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_{}.root".format(self.era)
-            self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_deeptau_2017.root"
+            self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_deeptau_{}.root".format(era)
         else:
             raise ValueError('Invalid era: %s' % self.era)
+        assert(os.path.isfile(self.hadTauFakeRateWeight_inputFile))
         self.isBDTtraining = False
         self.mcClosure_dir = {}
         self.cfgFile_make_plots_mcClosure = ''
@@ -521,6 +521,7 @@ class analyzeConfig(object):
             pass
         elif self.hadTau_selection_relaxed == "dR03mvaVVLoose":
             self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2017_v2.root"
+        assert(os.path.isfile(self.hadTauFakeRateWeight_inputFile))
         self.isBDTtraining = True
 
     def get_addMEM_systematics(self, central_or_shift):
