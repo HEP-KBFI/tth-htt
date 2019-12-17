@@ -767,7 +767,7 @@ int main(int argc, char* argv[])
   CutFlowTableHistManager * cutFlowHistManager = new CutFlowTableHistManager(cutFlowTableCfg, cuts);
   cutFlowHistManager->bookHistograms(fs);
 
-  bool isDebugTF = true;
+  bool isDebugTF = false;
   while(inputTree -> hasNextEvent() && (! run_lumi_eventSelector || (run_lumi_eventSelector && ! run_lumi_eventSelector -> areWeDone())))
   {
     if(inputTree -> canReport(reportEvery))
@@ -1702,14 +1702,14 @@ int main(int argc, char* argv[])
           ("lep2_isTight",        int(selLepton_sublead -> isTight()))
           ("lep3_isTight",        int(selLepton_third -> isTight()))
           ("lep4_isTight",        int(selLepton_fourth -> isTight()))
-          ("jet1_pt",             selJets[0]->pt())
-          ("jet1_eta",            selJets[0]->eta())
-          ("jet1_phi",            selJets[0]->phi())
-          ("jet1_E",              selJets[0]->p4().energy())
-          ("jet2_pt",             selJets[1]->pt())
-          ("jet2_eta",            selJets[1]->eta())
-          ("jet2_phi",            selJets[1]->phi())
-          ("jet2_E",              selJets[1]->p4().energy())
+          ("jet1_pt",             selJets.size() > 0 ? selJets[0]->pt() : -1000)
+          ("jet1_eta",            selJets.size() > 0 ? selJets[0]->eta() : -1000)
+          ("jet1_phi",            selJets.size() > 0 ? selJets[0]->phi() : -1000)
+          ("jet1_E",              selJets.size() > 0 ? selJets[0]->p4().energy() : -1000)
+          ("jet2_pt",             selJets.size() > 1 ? selJets[1]->pt() : -1000)
+          ("jet2_eta",            selJets.size() > 1 ? selJets[1]->eta() : -1000)
+          ("jet2_phi",            selJets.size() > 1 ? selJets[1]->phi() : -1000)
+          ("jet2_E",              selJets.size() > 1 ? selJets[1]->p4().energy() : -1000)
           ("met_LD",              met_LD)
           ("massLT2",              comp_MT_met_lep1(selLeptons[0]->p4() + selLeptons[1]->p4(), met.pt(), met.phi()))
           ("massLT",              comp_MT_met_lep1(selLeptons[0]->p4() + selLeptons[1]->p4() + selLeptons[2]->p4() + selLeptons[3]->p4(), met.pt(), met.phi()))
