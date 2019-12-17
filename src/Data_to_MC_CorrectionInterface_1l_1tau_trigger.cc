@@ -20,7 +20,7 @@ Data_to_MC_CorrectionInterface_1l_1tau_trigger::Data_to_MC_CorrectionInterface_1
   , era_(get_era(era_str_))
   , hadTauSelection_(cfg.getParameter<std::string>("hadTauSelection"))
   , isDEBUG_(cfg.exists("isDEBUG") ? cfg.getParameter<bool>("isDEBUG") : false)
-  , allowedDecayModes_({ 0, 1, 2, 10 })
+  , allowedDecayModes_({ 0, 1, 2, 10, 11 })
   , lepton_type_(-1)
   , lepton_pt_(0.)
   , lepton_eta_(0.)
