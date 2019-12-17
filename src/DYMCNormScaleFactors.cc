@@ -146,7 +146,7 @@ DYMCNormScaleFactors::getWeight(const std::vector<GenParticle> & genTauLeptons,
   switch(central_or_shift)
     {
     case kDYMCNormScaleFactors_central:   retVal = weight;           break;
-    case kDYMCNormScaleFactors_shiftUp:   retVal = weight + error; break; //error on SF only
+    case kDYMCNormScaleFactors_shiftUp:   retVal = weight + std::sqrt(error*error + emdiff*emdiff); break; // cover difference of SFs from Z->ee and Z->mumu
     case kDYMCNormScaleFactors_shiftDown: retVal = weight - std::sqrt(error*error + emdiff*emdiff); break; // cover difference of SFs from Z->ee and Z->mumu 
     default: assert(0);
   }
