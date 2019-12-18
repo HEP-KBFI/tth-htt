@@ -17,7 +17,7 @@
 
 Data_to_MC_CorrectionInterface_Base::Data_to_MC_CorrectionInterface_Base(const edm::ParameterSet & cfg)
   : hadTauSelection_(-1)
-  , hadTauId_(TauID::MVAoldDMdR032017v2)
+  , hadTauId_(TauID::DeepTau2017v2VSjet)
   , tauIdSFs_(nullptr)
   , applyHadTauSF_(true)
   , isDEBUG_(cfg.exists("isDEBUG") ? cfg.getParameter<bool>("isDEBUG") : false)
