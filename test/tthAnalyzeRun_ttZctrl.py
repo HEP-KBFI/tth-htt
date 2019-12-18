@@ -13,8 +13,9 @@ import getpass
 # E.g.: ./test/tthAnalyzeRun_ttZctrl.py -v 2017Dec13 -e 2017
 
 mode_choices     = [ 'default', 'sync', 'sync_wMEM' ]
-sys_choices      = [ 'full' ] + systematics.an_common_opts
+sys_choices      = [ 'full', 'internal' ] + systematics.an_common_opts
 systematics.full = systematics.an_extended
+systematics.internal = systematics.an_internal_no_mem
 
 parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
