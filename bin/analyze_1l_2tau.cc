@@ -1990,8 +1990,8 @@ int main(int argc, char* argv[])
           ("selHadTau_lead_genPartFlav", selHadTau_lead->genPartFlav())
           ("selHadTau_sublead_genPartFlav", selHadTau_sublead->genPartFlav())
 
-          ("tau1_mva_id",                     selHadTau_lead->id_mva(TauID::DeepTau2017v2VSjet))
-          ("tau2_mva_id",                     selHadTau_sublead->id_mva(TauID::DeepTau2017v2VSjet))*/
+          ("tau1_mva_id",                     selHadTau_lead->id_mva(TauID::MVAoldDMdR032017v2))
+          ("tau2_mva_id",                     selHadTau_sublead->id_mva(TauID::MVAoldDMdR032017v2))*/
         .fill();
     }
 
