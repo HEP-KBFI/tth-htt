@@ -306,5 +306,8 @@ class systematics(object):
   an_extended_hh      = an_extended
   an_extended_opts_hh = an_extended_opts
 
-  an_internal      =    central +  tauIDSF +  btag +  FR_t +  lhe +  triggerSF +  PU +  L1PreFiring +  FRe_shape +  FRm_shape +  DYMCReweighting  + DYMCNormScaleFactors  + topPtReweighting +  MEM
-  an_internal_opts = [ "central", "tauIDSF", "btag", "FR_t", "lhe", "triggerSF", "PU", "L1PreFiring", "FRe_shape", "FRm_shape", "DYMCReweighting", "DYMCNormScaleFactors", "topPtReweighting", "MEM" ]
+  an_internal_no_mem      =    central +  tauIDSF +  btag +  FR_t +  lhe +  triggerSF +  PU +  L1PreFiring +  FRe_shape +  FRm_shape +  DYMCReweighting  + DYMCNormScaleFactors  + topPtReweighting
+  an_internal_opts_no_mem = [ "central", "tauIDSF", "btag", "FR_t", "lhe", "triggerSF", "PU", "L1PreFiring", "FRe_shape", "FRm_shape", "DYMCReweighting", "DYMCNormScaleFactors", "topPtReweighting" ]
+
+  an_internal      = an_internal_no_mem      +    MEM
+  an_internal_opts = an_internal_opts_no_mem + [ "MEM" ]

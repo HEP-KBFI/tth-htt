@@ -2192,7 +2192,7 @@ int main(int argc, char* argv[])
     ("selHadTau_lead_genLepton", selHadTau->genLepton() ? 1 : 0)
     ("selHadTau_lead_decayMode", selHadTau ->  decayMode())
     ("selHadTau_lead_idDecayMode", selHadTau ->  idDecayMode())
-    ("tau1_mva_id",                     selHadTau->id_mva(TauID::DeepTau2017v2VSjet))
+    ("tau1_mva_id",                     selHadTau->id_mva(TauID::MVAoldDMdR032017v2))
     .fill();
     }
 

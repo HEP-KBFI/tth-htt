@@ -2024,8 +2024,8 @@ int main(int argc, char* argv[])
           ("selHadTau_sublead_decayMode", selHadTau_sublead ->  decayMode())
           ("selHadTau_sublead_idDecayMode", selHadTau_sublead ->  idDecayMode())
 
-          ("tau1_mva_id",    selHadTau_lead -> id_mva(TauID::DeepTau2017v2VSjet))
-          ("tau2_mva_id",    selHadTau_sublead -> id_mva(TauID::DeepTau2017v2VSjet))
+          ("tau1_mva_id",    selHadTau_lead -> id_mva(TauID::MVAoldDMdR032017v2))
+          ("tau2_mva_id",    selHadTau_sublead -> id_mva(TauID::MVAoldDMdR032017v2))
           (tH_weight_map)
         .fill()
       ;
