@@ -37,17 +37,19 @@ Data_to_MC_CorrectionInterface_2017::Data_to_MC_CorrectionInterface_2017(const e
   ));
 
   // Loose-to-tight electron ID SFs, measured by the CERN group
+  // /afs/cern.ch/user/b/balvarez/work/public/ttHAnalysis/TnP_ttH_ele_2017_3l/passttH/egammaEffi.txt_EGM2D.root
   sfElectronID_and_Iso_tight_to_loose_woTightCharge_.push_back(new lutWrapperTH2(
     inputFiles_,
     "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/lepMVAEffSF_e_3l.root",
-    "sf",
-    lut::kXptYabsEta
+    "EGamma_SF2D",
+    lut::kXabsEtaYpt
   ));
+  // /afs/cern.ch/user/b/balvarez/work/public/ttHAnalysis/TnP_ttH_ele_2017_2lss/passttH/egammaEffi.txt_EGM2D.root
   sfElectronID_and_Iso_tight_to_loose_wTightCharge_.push_back(new lutWrapperTH2(
     inputFiles_,
     "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/lepMVAEffSF_e_2lss.root",
-    "sf",
-    lut::kXptYabsEta
+    "EGamma_SF2D",
+    lut::kXabsEtaYpt
   ));
 
   // Tracking efficiency for muons with pT < 10 GeV, measured by Muon POG (?)
@@ -91,17 +93,19 @@ Data_to_MC_CorrectionInterface_2017::Data_to_MC_CorrectionInterface_2017(const e
   ));
 
   // Loose-to-tight muon ID SFs, measured by the CERN group
+  // /afs/cern.ch/user/b/balvarez/work/public/ttHAnalysis/TnP_ttH_muon_2017_3l/passttH/egammaEffi.txt_EGM2D.root
   sfMuonID_and_Iso_tight_to_loose_woTightCharge_.push_back(new lutWrapperTH2(
     inputFiles_,
     "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/lepMVAEffSF_m_3l.root",
-    "sf",
-    lut::kXptYabsEta
+    "EGamma_SF2D",
+    lut::kXabsEtaYpt
   ));
+  // /afs/cern.ch/user/b/balvarez/work/public/ttHAnalysis/TnP_ttH_muon_2017_2lss/passttH/egammaEffi.txt_EGM2D.root
   sfMuonID_and_Iso_tight_to_loose_wTightCharge_.push_back(new lutWrapperTH2(
     inputFiles_,
     "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/lepMVAEffSF_m_2lss.root",
-    "sf",
-    lut::kXptYabsEta
+    "EGamma_SF2D",
+    lut::kXabsEtaYpt
   ));
 
   if(applyHadTauSF_)

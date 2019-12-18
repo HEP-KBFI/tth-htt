@@ -11,13 +11,6 @@
 Data_to_MC_CorrectionInterface_2018::Data_to_MC_CorrectionInterface_2018(const edm::ParameterSet & cfg)
   : Data_to_MC_CorrectionInterface_Base(cfg)
 {
-#if 0
-  throw cmsException(this, __func__, __LINE__)
-    << "Not available in 2018 era"
-  ;
-#endif
-#pragma message "Setting data-to-MC corrections to 1 in 2018"
-
   // Reconstruction efficiencies of electrons, measured by EGamma POG
   // https://twiki.cern.ch/twiki/pub/CMS/EgammaIDRecipesRun2/egammaEffi.txt_EGM2D_updatedAll.root
   sfElectronID_and_Iso_loose_.push_back(new lutWrapperTH2(
@@ -25,6 +18,28 @@ Data_to_MC_CorrectionInterface_2018::Data_to_MC_CorrectionInterface_2018(const e
     "tthAnalysis/HiggsToTauTau/data/leptonSF/2018/el_scaleFactors_gsf.root",
     "EGamma_SF2D",
     lut::kXetaYpt, -2.5, +2.5, lut::kLimit, 10., -1., lut::kLimit_and_Cut
+  ));
+
+  // /afs/cern.ch/user/b/balvarez/work/public/ttHAnalysis/TnP_ttH_ele_2018_3l/passttH/egammaEffi.txt_EGM2D.root
+  sfElectronID_and_Iso_tight_to_loose_woTightCharge_.push_back(new lutWrapperTH2(
+    inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/lepMVAEffSF_e_3l.root", "EGamma_SF2D",
+    lut::kXabsEtaYpt
+  ));
+  // /afs/cern.ch/user/b/balvarez/work/public/ttHAnalysis/TnP_ttH_ele_2018_2lss/passttH/egammaEffi.txt_EGM2D.root
+  sfElectronID_and_Iso_tight_to_loose_wTightCharge_.push_back(new lutWrapperTH2(
+    inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/lepMVAEffSF_e_2lss.root", "EGamma_SF2D",
+    lut::kXabsEtaYpt
+  ));
+
+  // /afs/cern.ch/user/b/balvarez/work/public/ttHAnalysis/TnP_ttH_muon_2018_3l/passttH/egammaEffi.txt_EGM2D.root
+  sfMuonID_and_Iso_tight_to_loose_woTightCharge_.push_back(new lutWrapperTH2(
+    inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/lepMVAEffSF_m_3l.root", "EGamma_SF2D",
+    lut::kXabsEtaYpt
+  ));
+  // /afs/cern.ch/user/b/balvarez/work/public/ttHAnalysis/TnP_ttH_muon_2018_2lss/passttH/egammaEffi.txt_EGM2D.root
+  sfMuonID_and_Iso_tight_to_loose_wTightCharge_.push_back(new lutWrapperTH2(
+    inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/lepMVAEffSF_m_2lss.root", "EGamma_SF2D",
+    lut::kXabsEtaYpt
   ));
 
   if(applyHadTauSF_)
@@ -42,23 +57,14 @@ Data_to_MC_CorrectionInterface_2018::~Data_to_MC_CorrectionInterface_2018()
 double
 Data_to_MC_CorrectionInterface_2018::getWeight_leptonTriggerEff() const
 {
-#if 0
   throw cmsException(this, __func__, __LINE__)
     << "Not available in 2018 era"
   ;
-#endif
-#pragma message "Setting data-to-MC corrections to 1 in 2018"
-  return 1.;
 }
 
 double
 Data_to_MC_CorrectionInterface_2018::getSF_leptonTriggerEff(TriggerSFsys central_or_shift) const
 {
-#if 0
-  throw cmsException(this, __func__, __LINE__)
-    << "Not available in 2018 era"
-  ;
-#endif
-#pragma message "Setting data-to-MC corrections to 1 in 2018"
+#pragma message "Setting lepton trigger SFs to 1 in 2018"
   return 1.;
 }
