@@ -2472,7 +2472,7 @@ int main(int argc, char* argv[])
           ("selHadTau_lead_genLepton", selHadTau->genLepton() ? 1 : 0)
           ("selHadTau_lead_decayMode", selHadTau ->  decayMode())
           ("selHadTau_lead_idDecayMode", selHadTau ->  idDecayMode())
-          ("tau1_mva_id",                     selHadTau->id_mva(TauID::MVAoldDMdR032017v2))
+          ("tau1_mva_id",                     selHadTau->id_mva(TauID::DeepTau2017v2VSjet))
           ("massLT",          selLeptons.size() > 1 ? comp_MT_met_lep1(selLeptons[0]->p4() + selLeptons[1]->p4(), met.pt(), met.phi())  : 0.)
           ("massL3",          selLeptons.size() > 1 ? comp_MT_met_lep1(selLeptons[0]->p4() + selLeptons[1]->p4() + selHadTau->p4(), met.pt(), met.phi())  : 0.)
 
