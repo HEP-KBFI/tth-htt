@@ -132,6 +132,7 @@ protected:
   std::map<int, TauIDSFTool *> tauIDSFs_antiEle_;
   std::map<int, TauIDSFTool *> tauIDSFs_antiMu_;
   bool applyHadTauSF_;
+  bool isDEBUG_;
 
   std::size_t numLeptons_;
   std::vector<int> lepton_type_;

@@ -20,6 +20,7 @@ Data_to_MC_CorrectionInterface_Base::Data_to_MC_CorrectionInterface_Base(const e
   , hadTauId_(TauID::MVAoldDMdR032017v2)
   , tauIdSFs_(nullptr)
   , applyHadTauSF_(true)
+  , isDEBUG_(cfg.exists("isDEBUG") ? cfg.getParameter<bool>("isDEBUG") : false)
   , numLeptons_(0)
   , lepton_type_(4)
   , lepton_pt_(4)
@@ -265,7 +266,7 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso(std::size_t numLepto
   {
     const double pt = lepton_pt[idxLepton];
     const double eta = lepton_eta[idxLepton];
-    sf *= get_from_lut(corrections, pt, eta);
+    sf *= get_from_lut(corrections, pt, eta, isDEBUG_);
   }
   return sf;
 }
@@ -298,10 +299,27 @@ Data_to_MC_CorrectionInterface_Base::init_tauIDSFs(const std::string & era_str,
 double
 Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_loose() const
 {
-  const double sf =
-    getSF_leptonID_and_Iso(numElectrons_, electron_pt_, electron_eta_, sfElectronID_and_Iso_loose_) *
-    getSF_leptonID_and_Iso(numMuons_,     muon_pt_,     muon_eta_,     sfMuonID_and_Iso_loose_)
-  ;
+  if(isDEBUG_)
+  {
+    std::cout << get_human_line(this, __func__, __LINE__) << "Computing SF for electrons\n";
+  }
+  const double sf_el = getSF_leptonID_and_Iso(numElectrons_, electron_pt_, electron_eta_, sfElectronID_and_Iso_loose_);
+  if(isDEBUG_)
+  {
+    std::cout
+      << "Final SF for electrons: " << sf_el << '\n'
+      << get_human_line(this, __func__, __LINE__) << "Computing SF for muons\n"
+    ;
+  }
+  const double sf_mu = getSF_leptonID_and_Iso(numMuons_,     muon_pt_,     muon_eta_,     sfMuonID_and_Iso_loose_);
+  const double sf = sf_el * sf_mu;
+  if(isDEBUG_)
+  {
+    std::cout
+      << "Final SF for muons: " << sf_mu << "\n"
+         "Final SF: " << sf << '\n'
+    ;
+  }
   return sf;
 }
 
@@ -314,20 +332,54 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_fakeable_to_loose() 
 double
 Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_tight_to_loose_woTightCharge() const
 {
-  const double sf =
-    getSF_leptonID_and_Iso(numElectrons_, electron_pt_, electron_eta_, sfElectronID_and_Iso_tight_to_loose_woTightCharge_) *
-    getSF_leptonID_and_Iso(numMuons_,     muon_pt_,     muon_eta_,     sfElectronID_and_Iso_tight_to_loose_woTightCharge_)
-  ;
+  if(isDEBUG_)
+  {
+    std::cout << get_human_line(this, __func__, __LINE__) << "Computing SF for electrons\n";
+  }
+  const double sf_el = getSF_leptonID_and_Iso(numElectrons_, electron_pt_, electron_eta_, sfElectronID_and_Iso_tight_to_loose_woTightCharge_);
+  if(isDEBUG_)
+  {
+    std::cout
+      << "Final SF for electrons: " << sf_el << '\n'
+      << get_human_line(this, __func__, __LINE__) << "Computing SF for muons\n"
+    ;
+  }
+  const double sf_mu = getSF_leptonID_and_Iso(numMuons_,     muon_pt_,     muon_eta_,     sfElectronID_and_Iso_tight_to_loose_woTightCharge_);
+  const double sf = sf_el * sf_mu;
+  if(isDEBUG_)
+  {
+    std::cout
+      << "Final SF for muons: " << sf_mu << "\n"
+         "Final SF: " << sf << '\n'
+    ;
+  }
   return sf;
 }
 
 double
 Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_tight_to_loose_wTightCharge() const
 {
-  const double sf =
-    getSF_leptonID_and_Iso(numElectrons_, electron_pt_, electron_eta_, sfElectronID_and_Iso_tight_to_loose_wTightCharge_) *
-    getSF_leptonID_and_Iso(numMuons_,     muon_pt_,     muon_eta_,     sfElectronID_and_Iso_tight_to_loose_wTightCharge_)
-  ;
+  if(isDEBUG_)
+  {
+    std::cout << get_human_line(this, __func__, __LINE__) << "Computing SF for electrons\n";
+  }
+  const double sf_el = getSF_leptonID_and_Iso(numElectrons_, electron_pt_, electron_eta_, sfElectronID_and_Iso_tight_to_loose_wTightCharge_);
+  if(isDEBUG_)
+  {
+    std::cout
+      << "Final SF for electrons: " << sf_el << '\n'
+      << get_human_line(this, __func__, __LINE__) << "Computing SF for muons\n"
+    ;
+  }
+  const double sf_mu = getSF_leptonID_and_Iso(numMuons_,     muon_pt_,     muon_eta_,     sfElectronID_and_Iso_tight_to_loose_wTightCharge_);
+  const double sf = sf_el * sf_mu;
+  if(isDEBUG_)
+  {
+    std::cout
+      << "Final SF for muons: " << sf_mu << "\n"
+         "Final SF: " << sf << '\n'
+    ;
+  }
   return sf;
 }
 
