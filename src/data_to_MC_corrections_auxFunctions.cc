@@ -153,7 +153,7 @@ namespace aux
   {
     if(eff_data == 0. && eff_mc == 0.)
     {
-      std::cout << "WARNING: efficiency in data and in MC are both zero -> returning SF = 1 instead";
+      std::cout << "WARNING: efficiency in data and in MC are both zero -> returning SF = 1 instead\n";
       return 1.;
     }
     return std::min(eff_data / std::max(1.e-6, eff_mc), 1.e+1);
