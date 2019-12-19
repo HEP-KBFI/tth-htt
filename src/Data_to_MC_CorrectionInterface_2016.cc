@@ -13,16 +13,16 @@ Data_to_MC_CorrectionInterface_2016::Data_to_MC_CorrectionInterface_2016(const e
 {
   sfElectronID_and_Iso_loose_.push_back(new lutWrapperTH2(
     inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/el_scaleFactors_Moriond17.root", "GsfElectronToMVAVLooseFOIDEmuTightIP2D",
-     lut::kXptYabsEta));
+     lut::kXptYabsEta
+  ));
   sfElectronID_and_Iso_loose_.push_back(new lutWrapperTH2(
     inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/el_scaleFactors_Moriond17.root", "MVAVLooseElectronToMini4",
-     lut::kXptYabsEta));
+     lut::kXptYabsEta
+  ));
   sfElectronID_and_Iso_loose_.push_back(new lutWrapperTH2(
     inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/el_scaleFactors_Moriond17.root", "MVAVLooseElectronToConvVetoIHit1",
-     lut::kXptYabsEta));
-  //sfElectronID_and_Iso_loose_.push_back(new lutWrapperTH2(
-  //  inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/egammaEffi.txt_EGM2D.root", "EGamma_SF2D",
-  //   lut::kXetaYpt));
+     lut::kXptYabsEta
+  ));
   // Reconstruction efficiencies of electrons with pT < 20 GeV, measured by EGamma POG
   // https://twiki.cern.ch/twiki/pub/CMS/EgammaIDRecipesRun2/EGM2D_BtoH_low_RecoSF_Legacy2016.root
   sfElectronID_and_Iso_loose_.push_back(new lutWrapperTH2(
@@ -39,44 +39,82 @@ Data_to_MC_CorrectionInterface_2016::Data_to_MC_CorrectionInterface_2016(const e
     "EGamma_SF2D",
     lut::kXetaYpt, -2.5, +2.5, lut::kLimit, 20., -1., lut::kLimit_and_Cut
   ));
+  // /afs/cern.ch/user/b/balvarez/work/public/ttHAnalysis/TnP_ttH_ele_2016_3l/passttH/egammaEffi.txt_EGM2D.root
   sfElectronID_and_Iso_tight_to_loose_woTightCharge_.push_back(new lutWrapperTH2(
-    inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/lepMVAEffSF_e_3l.root", "sf",
-    lut::kXptYabsEta));
+    inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/lepMVAEffSF_e_3l.root", "EGamma_SF2D",
+    lut::kXabsEtaYpt
+  ));
+  // /afs/cern.ch/user/b/balvarez/work/public/ttHAnalysis/TnP_ttH_ele_2016_2lss/passttH/egammaEffi.txt_EGM2D.root
   sfElectronID_and_Iso_tight_to_loose_wTightCharge_.push_back(new lutWrapperTH2(
-    inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/lepMVAEffSF_e_2lss.root", "sf",
-    lut::kXptYabsEta));
+    inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/lepMVAEffSF_e_2lss.root", "EGamma_SF2D",
+    lut::kXabsEtaYpt
+  ));
+  // combined
+  // /afs/cern.ch/user/b/balvarez/work/public/ttHAnalysis/error/SFttbar_2016_ele_pt.root
+  // /afs/cern.ch/user/b/balvarez/work/public/ttHAnalysis/error/SFttbar_2016_ele_eta.root
+  sfElectronID_and_Iso_tight_to_loose_errors_up_.push_back(new lutWrapperTH2(
+    inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/lepMVAEffSF_e_error.root", "histo_eff_data_max",
+    lut::kXabsEtaYpt
+  ));
+  sfElectronID_and_Iso_tight_to_loose_errors_down_.push_back(new lutWrapperTH2(
+    inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/lepMVAEffSF_e_error.root", "histo_eff_data_min",
+    lut::kXabsEtaYpt
+  ));
 
   sfMuonID_and_Iso_loose_.push_back(new lutWrapperTH2(
     inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/TnP_NUM_LooseID_DENOM_generalTracks_VAR_map_pt_eta.root", "SF",
-    lut::kXptYabsEta));
+    lut::kXptYabsEta
+  ));
   sfMuonID_and_Iso_loose_.push_back(new lutWrapperTH2(
     inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/TnP_NUM_MiniIsoLoose_DENOM_LooseID_VAR_map_pt_eta.root", "SF",
-    lut::kXptYabsEta));
+    lut::kXptYabsEta
+  ));
   sfMuonID_and_Iso_loose_.push_back(new lutWrapperTH2(
     inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/TnP_NUM_TightIP2D_DENOM_MediumID_VAR_map_pt_eta.root", "SF",
-    lut::kXptYabsEta));
+    lut::kXptYabsEta
+  ));
   sfMuonID_and_Iso_loose_.push_back(new lutWrapperTGraph(
     inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/ratios_HIP_trkEff.root", "ratio_eta",
-    lut::kXeta));
+    lut::kXeta
+  ));
+  // /afs/cern.ch/user/b/balvarez/work/public/ttHAnalysis/TnP_ttH_muon_2016_3l/passttH/egammaEffi.txt_EGM2D.root
   sfMuonID_and_Iso_tight_to_loose_woTightCharge_.push_back(new lutWrapperTH2(
-    inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/lepMVAEffSF_m_3l.root", "sf",
-    lut::kXptYabsEta));
+    inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/lepMVAEffSF_m_3l.root", "EGamma_SF2D",
+    lut::kXabsEtaYpt
+  ));
+  // /afs/cern.ch/user/b/balvarez/work/public/ttHAnalysis/TnP_ttH_muon_2016_2lss/passttH/egammaEffi.txt_EGM2D.root
   sfMuonID_and_Iso_tight_to_loose_wTightCharge_.push_back(new lutWrapperTH2(
-    inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/lepMVAEffSF_m_2lss.root", "sf",
-    lut::kXptYabsEta));
+    inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/lepMVAEffSF_m_2lss.root", "EGamma_SF2D",
+    lut::kXabsEtaYpt
+  ));
+  // combined
+  // /afs/cern.ch/user/b/balvarez/work/public/ttHAnalysis/error/SFttbar_2016_muon_pt.root
+  // /afs/cern.ch/user/b/balvarez/work/public/ttHAnalysis/error/SFttbar_2016_muon_eta.root
+  sfMuonID_and_Iso_tight_to_loose_errors_up_.push_back(new lutWrapperTH2(
+    inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/lepMVAEffSF_m_error.root", "histo_eff_data_max",
+    lut::kXabsEtaYpt
+  ));
+  sfMuonID_and_Iso_tight_to_loose_errors_down_.push_back(new lutWrapperTH2(
+    inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/lepMVAEffSF_m_error.root", "histo_eff_data_min",
+    lut::kXabsEtaYpt
+  ));
 
   effTrigger_ee_ = new lutWrapperTH2Poly(
     inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2016RunBCD/trig_eff_map_v4.root", "SSee2DPt__effic",
-    lut::kXptYpt); // X=pt1, Y=pt2
+    lut::kXptYpt // X=pt1, Y=pt2
+  );
   effTrigger_em_ = new lutWrapperTH2Poly(
     inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2016RunBCD/trig_eff_map_v4.root", "SSeu2DPt_effic",
-    lut::kXptYpt); // X=pt1, Y=pt2
+    lut::kXptYpt // X=pt1, Y=pt2
+  );
   effTrigger_mm_ = new lutWrapperTH2Poly(
     inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2016RunBCD/trig_eff_map_v4.root", "SSuu2DPt_effic",
-    lut::kXptYpt); // X=pt1, Y=pt2
+    lut::kXptYpt // X=pt1, Y=pt2
+  );
   effTrigger_3l_ = new lutWrapperTH2Poly(
     inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2016RunBCD/trig_eff_map_v4.root", "__3l2DPt_effic",
-    lut::kXptYpt); // X=pt1, Y=pt2
+    lut::kXptYpt // X=pt1, Y=pt2
+  );
 
   const std::vector<double> etaBinEdges_1e = { -1., 1.48, 2.1 };
   assert(etaBinEdges_1e.size() > 0);

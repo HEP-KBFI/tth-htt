@@ -61,10 +61,10 @@ public:
   getSF_leptonID_and_Iso_fakeable_to_loose() const;
 
   double
-  getSF_leptonID_and_Iso_tight_to_loose_woTightCharge() const;
+  getSF_leptonID_and_Iso_tight_to_loose_woTightCharge(LeptonIDSFsys central_or_shift) const;
 
   double
-  getSF_leptonID_and_Iso_tight_to_loose_wTightCharge() const;
+  getSF_leptonID_and_Iso_tight_to_loose_wTightCharge(LeptonIDSFsys central_or_shift) const;
   //-----------------------------------------------------------------------------
 
   //-----------------------------------------------------------------------------
@@ -103,12 +103,15 @@ protected:
   // data/MC corrections for electron and muon identification and isolation efficiency,
   // including the cut on the ttH multilepton MVA
 
-  // loose muon selection (RecoMuonSelectorLoose)
+  // loose electron selection (RecoElectronSelectorLoose)
   std::vector<lutWrapperBase *> sfElectronID_and_Iso_loose_;
-  // tight muon selection used in all channels except 2lss_1tau (RecoMuonSelectorTight with tightCharge_cut disabled)
+  // tight electron selection used in all channels except 2lss_1tau (RecoElectronSelectorTight with tightCharge_cut disabled)
   std::vector<lutWrapperBase *> sfElectronID_and_Iso_tight_to_loose_woTightCharge_;
-  // tight muon selection specific to 2lss_1tau channel (RecoMuonSelectorTight with tightCharge_cut enabled)
+  // tight electron selection specific to 2lss_1tau channel (RecoElectronSelectorTight with tightCharge_cut enabled)
   std::vector<lutWrapperBase *> sfElectronID_and_Iso_tight_to_loose_wTightCharge_;
+  // errors for the above
+  std::vector<lutWrapperBase *> sfElectronID_and_Iso_tight_to_loose_errors_up_;
+  std::vector<lutWrapperBase *> sfElectronID_and_Iso_tight_to_loose_errors_down_;
 
   // loose muon selection (RecoMuonSelectorLoose)
   std::vector<lutWrapperBase *> sfMuonID_and_Iso_loose_;
@@ -116,6 +119,9 @@ protected:
   std::vector<lutWrapperBase *> sfMuonID_and_Iso_tight_to_loose_woTightCharge_;
   // tight muon selection specific to 2lss_1tau channel (RecoMuonSelectorTight with tightCharge_cut enabled)
   std::vector<lutWrapperBase *> sfMuonID_and_Iso_tight_to_loose_wTightCharge_;
+  // errors for the above
+  std::vector<lutWrapperBase *> sfMuonID_and_Iso_tight_to_loose_errors_up_;
+  std::vector<lutWrapperBase *> sfMuonID_and_Iso_tight_to_loose_errors_down_;
   //-----------------------------------------------------------------------------
 
   std::map<std::string, TFile *> inputFiles_;

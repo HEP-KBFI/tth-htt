@@ -972,7 +972,7 @@ int main(int argc, char* argv[])
 
 //--- apply data/MC corrections for efficiencies of leptons passing the loose identification and isolation criteria
 //    to also pass the tight identification and isolation criteria
-      evtWeightRecorder.record_leptonSF(dataToMCcorrectionInterface->getSF_leptonID_and_Iso_tight_to_loose_woTightCharge());
+      evtWeightRecorder.record_leptonIDSF(dataToMCcorrectionInterface);
     }
 
 //--- apply final event selection 
