@@ -344,7 +344,7 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_tight_to_loose_woTig
       << get_human_line(this, __func__, __LINE__) << "Computing SF for muons\n"
     ;
   }
-  const double sf_mu = getSF_leptonID_and_Iso(numMuons_,     muon_pt_,     muon_eta_,     sfElectronID_and_Iso_tight_to_loose_woTightCharge_);
+  const double sf_mu = getSF_leptonID_and_Iso(numMuons_,     muon_pt_,     muon_eta_,     sfMuonID_and_Iso_tight_to_loose_woTightCharge_);
   const double sf = sf_el * sf_mu;
   if(isDEBUG_)
   {
@@ -371,7 +371,7 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_tight_to_loose_wTigh
       << get_human_line(this, __func__, __LINE__) << "Computing SF for muons\n"
     ;
   }
-  const double sf_mu = getSF_leptonID_and_Iso(numMuons_,     muon_pt_,     muon_eta_,     sfElectronID_and_Iso_tight_to_loose_wTightCharge_);
+  const double sf_mu = getSF_leptonID_and_Iso(numMuons_,     muon_pt_,     muon_eta_,     sfMuonID_and_Iso_tight_to_loose_wTightCharge_);
   const double sf = sf_el * sf_mu;
   if(isDEBUG_)
   {
