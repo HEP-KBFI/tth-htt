@@ -51,6 +51,17 @@ Data_to_MC_CorrectionInterface_2017::Data_to_MC_CorrectionInterface_2017(const e
     "EGamma_SF2D",
     lut::kXabsEtaYpt
   ));
+  // combined
+  // /afs/cern.ch/user/b/balvarez/work/public/ttHAnalysis/error/SFttbar_2017_ele_pt.root
+  // /afs/cern.ch/user/b/balvarez/work/public/ttHAnalysis/error/SFttbar_2017_ele_eta.root
+  sfElectronID_and_Iso_tight_to_loose_errors_up_.push_back(new lutWrapperTH2(
+    inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/lepMVAEffSF_e_error.root", "histo_eff_data_max",
+    lut::kXabsEtaYpt
+  ));
+  sfElectronID_and_Iso_tight_to_loose_errors_down_.push_back(new lutWrapperTH2(
+    inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/lepMVAEffSF_e_error.root", "histo_eff_data_min",
+    lut::kXabsEtaYpt
+  ));
 
   // Tracking efficiency for muons with pT < 10 GeV, measured by Muon POG (?)
   sfMuonID_and_Iso_loose_.push_back(new lutWrapperTGraph(
@@ -105,6 +116,17 @@ Data_to_MC_CorrectionInterface_2017::Data_to_MC_CorrectionInterface_2017(const e
     inputFiles_,
     "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/lepMVAEffSF_m_2lss.root",
     "EGamma_SF2D",
+    lut::kXabsEtaYpt
+  ));
+  // combined
+  // /afs/cern.ch/user/b/balvarez/work/public/ttHAnalysis/error/SFttbar_2017_muon_pt.root
+  // /afs/cern.ch/user/b/balvarez/work/public/ttHAnalysis/error/SFttbar_2017_muon_eta.root
+  sfMuonID_and_Iso_tight_to_loose_errors_up_.push_back(new lutWrapperTH2(
+    inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/lepMVAEffSF_m_error.root", "histo_eff_data_max",
+    lut::kXabsEtaYpt
+  ));
+  sfMuonID_and_Iso_tight_to_loose_errors_down_.push_back(new lutWrapperTH2(
+    inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/lepMVAEffSF_m_error.root", "histo_eff_data_min",
     lut::kXabsEtaYpt
   ));
 

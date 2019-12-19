@@ -547,6 +547,7 @@ class analyzeConfig(object):
       if central_or_shift in systematics.DYMCReweighting      and not is_dymc_reweighting(sample_name):     return False
       if central_or_shift in systematics.DYMCNormScaleFactors and not is_dymc_normalization(sample_name):   return False
       if central_or_shift in systematics.tauIDSF              and 'tau' not in self.channel.lower():        return False
+      if central_or_shift in systematics.leptonIDSF           and '0l' in self.channel.lower():             return False
       if central_or_shift in systematics.topPtReweighting     and not enable_toppt_rwgt:                    return False
       if central_or_shift in systematics.LHE().hh             and not is_HHmc:                              return False
       return True

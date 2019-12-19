@@ -49,6 +49,17 @@ Data_to_MC_CorrectionInterface_2016::Data_to_MC_CorrectionInterface_2016(const e
     inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/lepMVAEffSF_e_2lss.root", "EGamma_SF2D",
     lut::kXabsEtaYpt
   ));
+  // combined
+  // /afs/cern.ch/user/b/balvarez/work/public/ttHAnalysis/error/SFttbar_2016_ele_pt.root
+  // /afs/cern.ch/user/b/balvarez/work/public/ttHAnalysis/error/SFttbar_2016_ele_eta.root
+  sfElectronID_and_Iso_tight_to_loose_errors_up_.push_back(new lutWrapperTH2(
+    inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/lepMVAEffSF_e_error.root", "histo_eff_data_max",
+    lut::kXabsEtaYpt
+  ));
+  sfElectronID_and_Iso_tight_to_loose_errors_down_.push_back(new lutWrapperTH2(
+    inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/lepMVAEffSF_e_error.root", "histo_eff_data_min",
+    lut::kXabsEtaYpt
+  ));
 
   sfMuonID_and_Iso_loose_.push_back(new lutWrapperTH2(
     inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/TnP_NUM_LooseID_DENOM_generalTracks_VAR_map_pt_eta.root", "SF",
@@ -74,6 +85,17 @@ Data_to_MC_CorrectionInterface_2016::Data_to_MC_CorrectionInterface_2016(const e
   // /afs/cern.ch/user/b/balvarez/work/public/ttHAnalysis/TnP_ttH_muon_2016_2lss/passttH/egammaEffi.txt_EGM2D.root
   sfMuonID_and_Iso_tight_to_loose_wTightCharge_.push_back(new lutWrapperTH2(
     inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/lepMVAEffSF_m_2lss.root", "EGamma_SF2D",
+    lut::kXabsEtaYpt
+  ));
+  // combined
+  // /afs/cern.ch/user/b/balvarez/work/public/ttHAnalysis/error/SFttbar_2016_muon_pt.root
+  // /afs/cern.ch/user/b/balvarez/work/public/ttHAnalysis/error/SFttbar_2016_muon_eta.root
+  sfMuonID_and_Iso_tight_to_loose_errors_up_.push_back(new lutWrapperTH2(
+    inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/lepMVAEffSF_m_error.root", "histo_eff_data_max",
+    lut::kXabsEtaYpt
+  ));
+  sfMuonID_and_Iso_tight_to_loose_errors_down_.push_back(new lutWrapperTH2(
+    inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/lepMVAEffSF_m_error.root", "histo_eff_data_min",
     lut::kXabsEtaYpt
   ));
 

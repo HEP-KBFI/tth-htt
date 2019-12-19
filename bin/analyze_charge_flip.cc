@@ -1002,7 +1002,7 @@ int main(int argc, char* argv[])
       }
       else if(leptonSelection == kTight)
       {
-        evtWeightRecorder.record_leptonSF(dataToMCcorrectionInterface->getSF_leptonID_and_Iso_tight_to_loose_wTightCharge());
+        evtWeightRecorder.record_leptonIDSF(dataToMCcorrectionInterface, false);
       }
 
       if(applyFakeRateWeights == kFR_2lepton)
