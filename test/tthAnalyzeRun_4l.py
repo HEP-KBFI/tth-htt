@@ -144,6 +144,7 @@ if __name__ == '__main__':
       "numJets"      : {},
       "massL"        : {},
       "mva_4l"       : {},
+      "control"      : {},
     },
     select_rle_output                     = True,
     select_root_output                    = False,

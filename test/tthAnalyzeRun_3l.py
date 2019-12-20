@@ -171,6 +171,7 @@ if __name__ == '__main__':
       "EventCounter" : {},
       "numJets"      : {},
       "mvaDiscr_3l"  : {},
+      "control"      : {},
       "output_NN_3l_ttH_tH_3cat_v8_ttH_bl"  : {},
       "output_NN_3l_ttH_tH_3cat_v8_ttH_bt"  : {},
       "output_NN_3l_ttH_tH_3cat_v8_tH_bl"  : {},
