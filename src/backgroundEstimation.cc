@@ -24,19 +24,34 @@ prob_chargeMisId(int era,
   if(lepton_type == kElectron)
   {
     const double abs_lepton_eta = std::fabs(lepton_eta);
-    if(era == kEra_2016 || era == kEra_2017) // TODO: update charge flips for 2016 era
+    if(era == kEra_2016)
     {
       if(abs_lepton_eta >= 0. && abs_lepton_eta < 1.479)
       {
-        if     (lepton_pt >= 10. && lepton_pt < 25) prob = 1.33671e-4;
-        else if(lepton_pt >= 25. && lepton_pt < 50) prob = 2.24453e-4;
-        else if(lepton_pt >= 50.                  ) prob = 2.27798e-4;
+        if     (lepton_pt >= 10. && lepton_pt < 25) prob = 3.90251e-5;
+        else if(lepton_pt >= 25. && lepton_pt < 50) prob = 9.41449e-5;
+        else if(lepton_pt >= 50.                  ) prob = 1.76520e-4;
       }
       else if(abs_lepton_eta >= 1.479 && abs_lepton_eta < 2.5)
       {
-        if     (lepton_pt >= 10. && lepton_pt < 25) prob = 1.98669e-4;
-        else if(lepton_pt >= 25. && lepton_pt < 50) prob = 5.60447e-4;
-        else if(lepton_pt >= 50.                  ) prob = 1.38682e-3;
+        if     (lepton_pt >= 10. && lepton_pt < 25) prob = 7.01861e-4;
+        else if(lepton_pt >= 25. && lepton_pt < 50) prob = 1.02632e-3;
+        else if(lepton_pt >= 50.                  ) prob = 1.46509e-3;
+      }
+    }
+    else if(era == kEra_2017)
+    {
+      if(abs_lepton_eta >= 0. && abs_lepton_eta < 1.479)
+      {
+        if     (lepton_pt >= 10. && lepton_pt < 25) prob = 1.50000e-5;
+        else if(lepton_pt >= 25. && lepton_pt < 50) prob = 5.24244e-5;
+        else if(lepton_pt >= 50.                  ) prob = 1.28031e-4;
+      }
+      else if(abs_lepton_eta >= 1.479 && abs_lepton_eta < 2.5)
+      {
+        if     (lepton_pt >= 10. && lepton_pt < 25) prob = 3.49806e-4;
+        else if(lepton_pt >= 25. && lepton_pt < 50) prob = 4.93725e-4;
+        else if(lepton_pt >= 50.                  ) prob = 6.97318e-4;
       }
     }
     else if(era == kEra_2018)
