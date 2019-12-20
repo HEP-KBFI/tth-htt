@@ -130,7 +130,9 @@ class syncNtupleConfig:
     mem_channels = [ '2lss_1tau', '3l', 'hh_bb2l' ]
     cr_channels = [ '3l', '4l' ]
 
-    inclusive_args = '-v %s -e %s -s %s' % (version, era, systematic_labels)
+    inclusive_args = '-v %s -e %s' % (version, era)
+    if systematic_labels != 'internal':
+      inclusive_args += ' -s %s' % systematic_labels
 
     inclusive_args += additional_args
     common_args    += additional_args

@@ -71,8 +71,10 @@ struct fitResultType
   fitResultType(const std::string& line)
     : norm_prefit_(-1.)
     , normErr_prefit_(-1.)
-    , Conv_corr_e_(1.)     // NEWLY ADDED FOR ELECTRONS
-    , Err_Conv_corr_e_(0.) // NEWLY ADDED FOR ELECTRONS
+    , Conv_corr_e_(1.)     
+    , Err_Conv_corr_e_(0.) 
+    , norm_prefit_TT_fakes_(-1.)
+    , normErr_prefit_TT_fakes_(-1.)
   {
     TString line_tstring(line.data());
     bool parseError = false;
@@ -118,10 +120,12 @@ struct fitResultType
   double normErr_prefit_;
   double norm_postfit_;
   double normErr_postfit_;
-  double Conv_corr_e_;        // NEWLY ADDED FOR ELECTRONS
-  double Err_Conv_corr_e_;    // NEWLY ADDED FOR ELECTRONS
+  double Conv_corr_e_;     
+  double Err_Conv_corr_e_; 
+  double norm_prefit_TT_fakes_;
+  double normErr_prefit_TT_fakes_;
 
-  void SetConv_corr(double corr, double corr_err){ // NEWLY ADDED FOR ELECTRONS
+  void SetConv_corr(double corr, double corr_err){ 
     double default_Conv_corr_e_ = Conv_corr_e_; // set to 1.
     double default_Err_Conv_corr_e_ = Err_Conv_corr_e_; // set to 0.
     if(lepton_type_ == kElectron){
@@ -133,7 +137,7 @@ struct fitResultType
     }
   }
 
-  void ApplyConv_corr(){  // NEWLY ADDED FOR ELECTRONS
+  void ApplyConv_corr(){  
     double uncorr_norm_prefit = norm_prefit_;
     double uncorr_norm_postfit = norm_postfit_;
     double uncorr_err_prefit = normErr_prefit_;
@@ -178,7 +182,49 @@ void compFakeRateFromHistos(const TH1* histogram_QCD_Pass, const TH1* histogram_
 
 }
 
+void compFakeRate_MCProc(TFile* inputFile, std::map<std::string, fitResultType*>& fitResults, const std::string& process, const std::string& variable){
 
+  std::string histogramName_num = "";
+  std::string histogramName_den = "";
+  std::string lepton_type = "";
+
+  for ( std::map<std::string, fitResultType*>::iterator fitResult = fitResults.begin();
+        fitResult != fitResults.end(); ++fitResult ) {
+        std::cout << "pT: min = " << fitResult->second->minPt_ << ", max = " << fitResult->second->maxPt_ << std::endl;
+        std::cout << "abs(eta): min = " << fitResult->second->minAbsEta_ << ", max = " << fitResult->second->maxAbsEta_ << std::endl;
+
+	if( fitResult->second->lepton_type_ == fitResultType::kMuon){ // MUONS
+	  lepton_type = "muon";
+	}else{ // ELECTRONS
+	  lepton_type = "electron";
+	}
+
+        if((fitResult->second->minPt_ == -1.) && (fitResult->second->maxPt_ == -1.) && (fitResult->second->minAbsEta_ == -1.) && (fitResult->second->maxAbsEta_ == -1.)){ // INCLUSIVE
+	  histogramName_num = Form("LeptonFakeRate/numerator/%ss_tight/incl/%s/%s", lepton_type.data(), process.data(), variable.data()); // tight
+	  histogramName_den = Form("LeptonFakeRate/denominator/%ss_fakeable/incl/%s/%s", lepton_type.data(), process.data(), variable.data()); // (fakeable - tight)
+	}else{
+ 	  histogramName_num = Form("LeptonFakeRate/numerator/%ss_tight/%s/%s/%s/%s", lepton_type.data(), (getEtaBin(fitResult->second->minAbsEta_, fitResult->second->maxAbsEta_)).data(),
+						   (getPtBin(fitResult->second->minPt_, fitResult->second->maxPt_)).data(), process.data(), variable.data()); // tight
+	  histogramName_den = Form("LeptonFakeRate/denominator/%ss_fakeable/%s/%s/%s/%s", lepton_type.data(), (getEtaBin(fitResult->second->minAbsEta_, fitResult->second->maxAbsEta_)).data(),
+						   (getPtBin(fitResult->second->minPt_, fitResult->second->maxPt_)).data(), process.data(), variable.data()); // (fakeable - tight)
+	}
+
+	TH1* histogram_num = dynamic_cast<TH1*>(inputFile->Get(histogramName_num.data())); //  num [= Pass]
+	TH1* histogram_den = dynamic_cast<TH1*>(inputFile->Get(histogramName_den.data())); //  den [= (Fail - Pass)]
+
+	TH1* histogram_Pass = histogram_num; // Pass 
+        TH1* histogram_Pass_twice = addHistograms("histogram_Pass_twice", histogram_Pass, histogram_Pass, 1); // 2 x (Pass)
+	TH1* histogram_Pass_plus_Fail = addHistograms("histogram_Fail", histogram_den, histogram_Pass_twice, 1); // Fail
+
+        // Fake Rate computation
+	double avFakeRate = 0.;
+        double avFakeRateErrUp = 0.;
+        double avFakeRateErrDown = 0.;
+        double avFakeRateErr = 0.;
+        compFakeRateFromHistos(histogram_Pass, histogram_Pass_plus_Fail, fitResult, avFakeRate, avFakeRateErrUp, avFakeRateErrDown, avFakeRateErr);
+
+  }
+}
 
 void readConversionCorr(TFile* inputFile, std::map<std::string, fitResultType*>& fitResults, const std::string& process, const std::string& variable, const double& conv_unc ){
 
@@ -343,16 +389,26 @@ void readPrefit(TFile* inputFile, std::map<std::string, fitResultType*>& fitResu
     histogramName.append("/");
     histogramName.append(getPtBin(fitResult->second->minPt_, fitResult->second->maxPt_));
     histogramName.append("/");
-    histogramName.append("fakes_mc"); // old line in def code
-    // histogramName.append("data_fakes");
+    std::string histogramName_TT_fakes = histogramName;
+    //histogramName.append("fakes_mc"); // fakes_mc = 'TTj', 'EWKj', 'Raresj', 'QCDj', 'ttHj'
+    //histogramName_TT_fakes.append("TTl");
+    histogramName.append("QCDj"); // fakes_mc = 'TTj', 'EWKj', 'Raresj', 'QCDj', 'ttHj'
+    histogramName_TT_fakes.append("TTj");
+
     histogramName.append("/");
+    histogramName_TT_fakes.append("/");
     // histogramName.append("EventCounter"); // DEF LINE
     // histogramName.append("mT_fix_L_den");
     histogramName.append(variable_den);
+    histogramName_TT_fakes.append(variable_den);
     std::cout << "loading histogram = '" << histogramName << "'" << std::endl;
+    std::cout << "loading histogram_TT_fakes = '" << histogramName_TT_fakes << "'" << std::endl;
     TH1* histogram = dynamic_cast<TH1*>(inputFile->Get(histogramName.data()));
+    TH1* histogram_TT_fakes = dynamic_cast<TH1*>(inputFile->Get(histogramName_TT_fakes.data()));
     if ( !histogram ) throw cms::Exception("fillHistogram") 
       << "Failed to load histogram = '" << histogramName << "' from file = '" << inputFile->GetName() << "' !!\n";
+    if ( !histogram_TT_fakes ) throw cms::Exception("fillHistogram") 
+      << "Failed to load histogram = '" << histogramName_TT_fakes << "' from file = '" << inputFile->GetName() << "' !!\n";
     double integral = 0.;
     double integralErr2 = 0.;
     int numBins = histogram->GetNbinsX();
@@ -365,6 +421,18 @@ void readPrefit(TFile* inputFile, std::map<std::string, fitResultType*>& fitResu
     double integralErr = TMath::Sqrt(integralErr2);
     fitResult->second->norm_prefit_ = integral;
     fitResult->second->normErr_prefit_ = integralErr;
+    double integral_TT_fakes = 0.;
+    double integralErr2_TT_fakes = 0.;
+    int numBins_TT_fakes = histogram_TT_fakes->GetNbinsX();
+    for ( int idxBin = 0; idxBin <= (numBins_TT_fakes + 1); ++idxBin ) { // CV: include underflow and overflow bins
+      double binContent = histogram_TT_fakes->GetBinContent(idxBin);
+      double binError = histogram_TT_fakes->GetBinError(idxBin);
+      integral_TT_fakes += binContent;
+      integralErr2_TT_fakes += (binError*binError);
+    }
+    double integralErr_TT_fakes = TMath::Sqrt(integralErr2_TT_fakes);
+    fitResult->second->norm_prefit_TT_fakes_ = integral_TT_fakes;
+    fitResult->second->normErr_prefit_TT_fakes_ = integralErr_TT_fakes;
   }
 }
 
@@ -376,7 +444,7 @@ TH2* bookHistogram(fwlite::TFileService& fs, const std::string& histogramName, c
   return histogram;
 }   
 
-void fillHistogram(TH2* histogram, const std::map<std::string, fitResultType*>& fitResults_pass, const std::map<std::string, fitResultType*>& fitResults_fail, int prefit_or_postfit)
+void fillHistogram(TH2* histogram, const std::map<std::string, fitResultType*>& fitResults_pass, const std::map<std::string, fitResultType*>& fitResults_fail, int prefit_or_postfit, bool isTTl = false)
 {
   const TAxis* xAxis = histogram->GetXaxis();
   const TAxis* yAxis = histogram->GetYaxis();
@@ -393,10 +461,17 @@ void fillHistogram(TH2* histogram, const std::map<std::string, fitResultType*>& 
       if ( fitResult_pass != fitResults_pass.end() && fitResult_fail != fitResults_fail.end() ) {
 	double nPass, nPassErr, nFail, nFailErr;
 	if ( prefit_or_postfit == kPrefit ) { // APPLY CONV.CORR FOR ELECTRONS CASE TO BOTH PRE AND POSTFIT
-	  nPass = fitResult_pass->second->norm_prefit_;
-	  nPassErr = fitResult_pass->second->normErr_prefit_;
-	  nFail = fitResult_fail->second->norm_prefit_;
-	  nFailErr = fitResult_fail->second->normErr_prefit_;
+	  if(isTTl){
+	    nPass = fitResult_pass->second->norm_prefit_TT_fakes_;
+	    nPassErr = fitResult_pass->second->normErr_prefit_TT_fakes_;
+	    nFail = fitResult_fail->second->norm_prefit_TT_fakes_;
+	    nFailErr = fitResult_fail->second->normErr_prefit_TT_fakes_;
+	  }else{
+	    nPass = fitResult_pass->second->norm_prefit_;
+	    nPassErr = fitResult_pass->second->normErr_prefit_;
+	    nFail = fitResult_fail->second->norm_prefit_;
+	    nFailErr = fitResult_fail->second->normErr_prefit_;
+	  }
 	} else if ( prefit_or_postfit == kPostfit ) {
 	  nPass = fitResult_pass->second->norm_postfit_;
 	  nPassErr = fitResult_pass->second->normErr_postfit_;
@@ -407,7 +482,7 @@ void fillHistogram(TH2* histogram, const std::map<std::string, fitResultType*>& 
 	bool errorFlag;
 	compFakeRate(nPass, nPassErr, nFail, nFailErr, avFakeRate, avFakeRateErrUp, avFakeRateErrDown, errorFlag);
 
-        if(fitResult_pass->second->lepton_type_ == fitResultType::kElectron ){
+        if((fitResult_pass->second->lepton_type_ == fitResultType::kElectron) && !isTTl){ // Not applying Conv corrections to electrons in case of TTbar fakes 
           avFakeRate *= fitResult_pass->second->Conv_corr_e_ ; // apply the correction 
           double def_avFakeRateErrUp = avFakeRateErrUp;  
 	  double def_avFakeRateErrDown = avFakeRateErrDown;   
@@ -467,7 +542,7 @@ void fillGraph(TGraphAsymmErrors* graph, TH2* histogram, double absEta)
   }
 }
 
-void makeControlPlot(TGraphAsymmErrors* graph_data, TGraphAsymmErrors* graph_mc, const TArrayD& ptBins, double minAbsEta, double maxAbsEta, bool useLogScale, const std::string& outputFileName)
+void makeControlPlot(TGraphAsymmErrors* graph_data, TGraphAsymmErrors* graph_mc, TGraphAsymmErrors* graph_mc_TT_fakes, const TArrayD& ptBins, double minAbsEta, double maxAbsEta, bool useLogScale, const std::string& outputFileName)
 {
   TCanvas* canvas = new TCanvas("canvas", "canvas", 1200, 900);
   canvas->SetFillColor(10);
@@ -533,8 +608,18 @@ void makeControlPlot(TGraphAsymmErrors* graph_data, TGraphAsymmErrors* graph_mc,
     graph_mc->Draw("psame");
   }
 
+  if ( graph_mc_TT_fakes ) {
+    graph_mc_TT_fakes->SetMarkerStyle(25);
+    graph_mc_TT_fakes->SetMarkerSize(2);
+    graph_mc_TT_fakes->SetMarkerColor(1);
+    graph_mc_TT_fakes->SetLineStyle(1);
+    graph_mc_TT_fakes->SetLineWidth(1);
+    graph_mc_TT_fakes->SetLineColor(1);  
+    graph_mc_TT_fakes->Draw("psame");
+  }
+
   TLegend* legend = 0;
-  if ( graph_mc ) {
+  if ( graph_mc && graph_mc_TT_fakes ) {
     legend = new TLegend(0.73, 0.76, 0.88, 0.91, NULL, "brNDC");
     legend->SetFillStyle(0);
     legend->SetBorderSize(0);
@@ -543,7 +628,8 @@ void makeControlPlot(TGraphAsymmErrors* graph_data, TGraphAsymmErrors* graph_mc,
     legend->SetTextSize(0.050);
     legend->SetMargin(0.24);
     if ( graph_data ) legend->AddEntry(graph_data, "Data",       "p");
-    if ( graph_mc   ) legend->AddEntry(graph_mc,   "Simulation", "p");
+    if ( graph_mc   ) legend->AddEntry(graph_mc,   "Fakes (QCD)", "p");
+    if ( graph_mc_TT_fakes ) legend->AddEntry(graph_mc_TT_fakes,   "Fakes (t#bar{t})", "p");
     legend->Draw();
   }
 
@@ -636,17 +722,6 @@ int main(int argc, char* argv[])
   double conv_unc = cfg_comp.getParameter<double>("Conversion_uncert");    // ADDED FOR CONV. CORR.S
 
 
-  // process, variable, conv_unc
-
-  /*
-  bool use_fakes_from_MC = cfg_comp.getParameter<bool>("use_fakes_from_MC"); // handle for switching to MC based QCD computation
-  if(use_fakes_from_MC){
-    std::cout<< "Using Fakes from MC expectation " << std::endl;
-  }else{
-    std::cout<< "Using Fakes from data driven methods " << std::endl;
-  } 
-  */
-
   fwlite::InputSource inputFiles(cfg); 
   if ( !(inputFiles.files().size() == 2) )
     throw cms::Exception("comp_LeptonFakeRate") 
@@ -703,7 +778,7 @@ int main(int argc, char* argv[])
   readPrefit(inputFile_mc, fitResults_mu_fail, variable_den);
 
 
-  readConversionCorr(inputFile_mc, fitResults_e_pass, process, variable, conv_unc); // ADDED FOR ELECTRON CONV. CORRECTIONS
+  //readConversionCorr(inputFile_mc, fitResults_e_pass, process, variable, conv_unc); // ADDED FOR ELECTRON CONV. CORRECTIONS [COMMENTED BY ME]
 
   std::cout << "closing inputFile = '" << inputFileName_mc << "'" << std::endl;
   delete inputFile_mc;
@@ -715,6 +790,8 @@ int main(int argc, char* argv[])
   fillHistogram(histogram_e_data, fitResults_e_pass, fitResults_e_fail, kPostfit);
   TH2* histogram_e_mc = bookHistogram(fs, Form("%s_prefit", histogramName_e.data()), ptBins_e_array, absEtaBins_e_array);
   fillHistogram(histogram_e_mc, fitResults_e_pass, fitResults_e_fail, kPrefit);
+  TH2* histogram_e_mc_TT_fakes = bookHistogram(fs, Form("%s_TT_fakes_prefit", histogramName_e.data()), ptBins_e_array, absEtaBins_e_array);
+  fillHistogram(histogram_e_mc_TT_fakes, fitResults_e_pass, fitResults_e_fail, kPrefit, true);
   TAxis* yAxis_e = histogram_e_data->GetYaxis();
   for ( int idxBinY = 1; idxBinY <= yAxis_e->GetNbins(); ++idxBinY ) {
     double minAbsEta = yAxis_e->GetBinLowEdge(idxBinY);
@@ -726,16 +803,21 @@ int main(int argc, char* argv[])
     std::string graphName_mc = TString(Form("graph_e_absEta%1.2fto%1.2f_mc", minAbsEta, maxAbsEta)).ReplaceAll(".", "_").Data();
     TGraphAsymmErrors* graph_mc = bookGraph(fs, graphName_mc, ptBins_e_array);
     fillGraph(graph_mc, histogram_e_mc, absEta);
+    std::string graphName_mc_TT_fakes = TString(Form("graph_e_absEta%1.2fto%1.2f_mc_TT_fakes", minAbsEta, maxAbsEta)).ReplaceAll(".", "_").Data();
+    TGraphAsymmErrors* graph_mc_TT_fakes = bookGraph(fs, graphName_mc_TT_fakes, ptBins_e_array);
+    fillGraph(graph_mc_TT_fakes, histogram_e_mc_TT_fakes, absEta);
     std::string outputFileName_plot = std::string(outputFileName, 0, outputFileName.find_last_of('.'));
     outputFileName_plot.append(Form("_e_%s.png", getEtaBin(minAbsEta, maxAbsEta).data()));
-    makeControlPlot(graph_data, graph_mc, ptBins_e_array, minAbsEta, maxAbsEta, true, outputFileName_plot);
-    makeControlPlot(graph_data, graph_mc, ptBins_e_array, minAbsEta, maxAbsEta, false, outputFileName_plot);
+    makeControlPlot(graph_data, graph_mc, graph_mc_TT_fakes, ptBins_e_array, minAbsEta, maxAbsEta, true, outputFileName_plot);
+    makeControlPlot(graph_data, graph_mc, graph_mc_TT_fakes, ptBins_e_array, minAbsEta, maxAbsEta, false, outputFileName_plot);
   }
 
   TH2* histogram_mu_data = bookHistogram(fs, histogramName_mu, ptBins_mu_array, absEtaBins_mu_array);
   fillHistogram(histogram_mu_data, fitResults_mu_pass, fitResults_mu_fail, kPostfit);
   TH2* histogram_mu_mc = bookHistogram(fs, Form("%s_prefit", histogramName_mu.data()), ptBins_mu_array, absEtaBins_mu_array);
   fillHistogram(histogram_mu_mc, fitResults_mu_pass, fitResults_mu_fail, kPrefit);
+  TH2* histogram_mu_mc_TT_fakes = bookHistogram(fs, Form("%s_TT_fakes_prefit", histogramName_mu.data()), ptBins_mu_array, absEtaBins_mu_array);
+  fillHistogram(histogram_mu_mc_TT_fakes, fitResults_mu_pass, fitResults_mu_fail, kPrefit, true);
   TAxis* yAxis_mu = histogram_mu_data->GetYaxis();
   for ( int idxBinY = 1; idxBinY <= yAxis_mu->GetNbins(); ++idxBinY ) {
     double minAbsEta = yAxis_mu->GetBinLowEdge(idxBinY);
@@ -747,10 +829,13 @@ int main(int argc, char* argv[])
     std::string graphName_mc = TString(Form("graph_mu_absEta%1.2fto%1.2f_mc", minAbsEta, maxAbsEta)).ReplaceAll(".", "_").Data();
     TGraphAsymmErrors* graph_mc = bookGraph(fs, graphName_mc, ptBins_mu_array);
     fillGraph(graph_mc, histogram_mu_mc, absEta);
+    std::string graphName_mc_TT_fakes = TString(Form("graph_mu_absEta%1.2fto%1.2f_mc_TT_fakes", minAbsEta, maxAbsEta)).ReplaceAll(".", "_").Data();
+    TGraphAsymmErrors* graph_mc_TT_fakes = bookGraph(fs, graphName_mc_TT_fakes, ptBins_mu_array);
+    fillGraph(graph_mc_TT_fakes, histogram_mu_mc_TT_fakes, absEta);
     std::string outputFileName_plot = std::string(outputFileName, 0, outputFileName.find_last_of('.'));
     outputFileName_plot.append(Form("_mu_%s.png", getEtaBin(minAbsEta, maxAbsEta).data()));
-    makeControlPlot(graph_data, graph_mc, ptBins_mu_array, minAbsEta, maxAbsEta, true, outputFileName_plot);
-    makeControlPlot(graph_data, graph_mc, ptBins_mu_array, minAbsEta, maxAbsEta, false, outputFileName_plot);
+    makeControlPlot(graph_data, graph_mc, graph_mc_TT_fakes, ptBins_mu_array, minAbsEta, maxAbsEta, true, outputFileName_plot);
+    makeControlPlot(graph_data, graph_mc, graph_mc_TT_fakes, ptBins_mu_array, minAbsEta, maxAbsEta, false, outputFileName_plot);
   }
 
   clock.Show("comp_LeptonFakeRate");

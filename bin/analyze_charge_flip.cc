@@ -211,6 +211,7 @@ int main(int argc, char* argv[])
   edm::ParameterSet cfg_dataToMCcorrectionInterface;
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("era", era_string);
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("hadTauSelection", "disabled");
+  cfg_dataToMCcorrectionInterface.addParameter<bool>("isDEBUG", isDEBUG);
   Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface = nullptr;
   switch(era)
   {
@@ -1001,7 +1002,7 @@ int main(int argc, char* argv[])
       }
       else if(leptonSelection == kTight)
       {
-        evtWeightRecorder.record_leptonSF(dataToMCcorrectionInterface->getSF_leptonID_and_Iso_tight_to_loose_wTightCharge());
+        evtWeightRecorder.record_leptonIDSF(dataToMCcorrectionInterface, false);
       }
 
       if(applyFakeRateWeights == kFR_2lepton)
@@ -1097,6 +1098,10 @@ int main(int argc, char* argv[])
     selectedEntries_weighted += evtWeight;
     if ( isCentral ) {
       histogram_selectedEntries->Fill(0.);
+    }
+    if(isDEBUG)
+    {
+      std::cout << evtWeightRecorder << '\n';
     }
   }
 

@@ -127,6 +127,15 @@ getMuToTauFR_option(const std::string & central_or_shift)
   return central_or_shift_int;
 }
 
+LeptonIDSFsys
+getLeptonIDSFsys_option(const std::string & central_or_shift)
+{
+  LeptonIDSFsys central_or_shift_int = LeptonIDSFsys::central;
+  if     (central_or_shift == "CMS_ttHl_leptonIDSFUp"  ) central_or_shift_int = LeptonIDSFsys::shiftUp;
+  else if(central_or_shift == "CMS_ttHl_leptonIDSFDown") central_or_shift_int = LeptonIDSFsys::shiftDown;
+  return central_or_shift_int;
+}
+
 TauIDSFsys
 getTauIDSFsys_option(const std::string & central_or_shift)
 {
