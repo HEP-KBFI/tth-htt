@@ -88,7 +88,7 @@ enum class FloatVariableType
   mvaOutput_plainKin_1B_VT,  ///< 2l+2tau (BDT4)
   mvaOutput_plainKin_SUM_VT, ///< 2l+2tau (BDT3)
 
-  mvaOutput_legacy_2,                 ///< 2lss+1tau
+  mvaOutput_legacy,                 ///< 2lss+1tau
   mvaOutput_2lss_tt,                  ///< 2lss+1tau
   mvaOutput_2lss_1tau_plainKin_tt,    ///< 2lss+1tau (BDT2)
   mvaOutput_2lss_1tau_plainKin_ttV,   ///< 2lss+1tau (BDT1)
@@ -207,6 +207,7 @@ protected:
   Int_t n_fakeablesel_ele;
   Int_t n_mvasel_ele;
   Int_t n_presel_tau;
+  Int_t n_fakeablesel_tau;
   Int_t n_presel_jet;
   Int_t n_presel_fwdJet;
   Int_t n_presel_jetAK8;
@@ -338,6 +339,7 @@ protected:
   Int_t * tau_againstElectronTightMVA6;
   Int_t * tau_againstElectronVTightMVA6;
   Int_t * tau_isGenMatched;
+  Int_t * tau_isfakeablesel;
 
   Float_t * jet_pt;
   Float_t * jet_eta;

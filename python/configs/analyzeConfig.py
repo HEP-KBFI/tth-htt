@@ -487,10 +487,10 @@ class analyzeConfig(object):
 
         self.hadTau_selection_relaxed = None
         if self.era in [ '2016', '2017', '2018' ]:
-            self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_{}.root".format(self.era)
-            self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_deeptau_2017.root"
+            self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_deeptau_{}.root".format(era)
         else:
             raise ValueError('Invalid era: %s' % self.era)
+        assert(os.path.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', self.hadTauFakeRateWeight_inputFile)))
         self.isBDTtraining = False
         self.mcClosure_dir = {}
         self.cfgFile_make_plots_mcClosure = ''
@@ -521,6 +521,7 @@ class analyzeConfig(object):
             pass
         elif self.hadTau_selection_relaxed == "dR03mvaVVLoose":
             self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2017_v2.root"
+        assert(os.path.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', self.hadTauFakeRateWeight_inputFile)))
         self.isBDTtraining = True
 
     def get_addMEM_systematics(self, central_or_shift):
@@ -546,6 +547,7 @@ class analyzeConfig(object):
       if central_or_shift in systematics.DYMCReweighting      and not is_dymc_reweighting(sample_name):     return False
       if central_or_shift in systematics.DYMCNormScaleFactors and not is_dymc_normalization(sample_name):   return False
       if central_or_shift in systematics.tauIDSF              and 'tau' not in self.channel.lower():        return False
+      if central_or_shift in systematics.leptonIDSF           and '0l' in self.channel.lower():             return False
       if central_or_shift in systematics.topPtReweighting     and not enable_toppt_rwgt:                    return False
       if central_or_shift in systematics.LHE().hh             and not is_HHmc:                              return False
       return True
@@ -880,7 +882,7 @@ class analyzeConfig(object):
               lines.append(sync_opts)
             elif 'syncTree' in jobOptions:
               lines.append(
-                "{}.{:<{len}} = cms.string('{}')".format(process_string, 'syncNtuple.tree', os.path.basename(jobOptions['syncTree']), len = max_option_len)
+                "{}.{:<{len}} = cms.string('{}')".format(process_string, 'syncNtuple.tree', jobOptions['syncTree'], len = max_option_len)
               )
               if 'syncGenMatch' in jobOptions:
                 lines.append(

@@ -51,8 +51,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorLoose.h" // RecoMuonCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorFakeable.h" // RecoMuonCollectionSelectorFakeable
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorTight.h" // RecoMuonCollectionSelectorTight
-#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorFakeable.h" // RecoHadTauCollectionSelectorFakeable
-#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorTight.h" // RecoHadTauCollectionSelectorTight
+#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorLoose.h" // RecoHadTauCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelector.h" // RecoJetCollectionSelector
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelectorBtag.h" // RecoJetCollectionSelectorBtagLoose, RecoJetCollectionSelectorBtagMedium
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelectorForward.h" // RecoJetSelectorForward
@@ -115,11 +114,6 @@ typedef math::PtEtaPhiMLorentzVector LV;
 typedef std::vector<std::string> vstring;
 
 enum { kFR_disabled, kFR_3lepton };
-
-//const int hadTauSelection_antiElectron = 1; // vLoose
-//const int hadTauSelection_antiMuon = 1; // Loose
-const int hadTauSelection_antiElectron = -1; // not applied
-const int hadTauSelection_antiMuon = -1; // not applied
 
 /**
  * @brief Produce datacard and control plots for 3l categories.
@@ -307,8 +301,7 @@ int main(int argc, char* argv[])
   edm::ParameterSet cfg_dataToMCcorrectionInterface;
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("era", era_string);
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("hadTauSelection", hadTauSelection_part2);
-  cfg_dataToMCcorrectionInterface.addParameter<int>("hadTauSelection_antiElectron", hadTauSelection_antiElectron);
-  cfg_dataToMCcorrectionInterface.addParameter<int>("hadTauSelection_antiMuon", hadTauSelection_antiMuon);
+  cfg_dataToMCcorrectionInterface.addParameter<bool>("isDEBUG", isDEBUG);
   Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface = nullptr;
   switch(era)
   {
@@ -466,14 +459,10 @@ int main(int argc, char* argv[])
   inputTree -> registerReader(hadTauReader);
   RecoHadTauCollectionGenMatcher hadTauGenMatcher;
   RecoHadTauCollectionCleaner hadTauCleaner(0.3, isDEBUG);
-  RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector(era, -1, isDEBUG);
-  fakeableHadTauSelector.set_if_looser(hadTauSelection_part2);
-  fakeableHadTauSelector.set_min_antiElectron(hadTauSelection_antiElectron);
-  fakeableHadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);
-  RecoHadTauCollectionSelectorTight tightHadTauSelector(era, -1, isDEBUG);
+  RecoHadTauCollectionSelectorLoose looseHadTauSelector(era, -1, isDEBUG);
+  looseHadTauSelector.set_if_looser(hadTauSelection_part2);
+  RecoHadTauCollectionSelectorLoose tightHadTauSelector(era, -1, isDEBUG);
   tightHadTauSelector.set(hadTauSelection_part2);
-  tightHadTauSelector.set_min_antiElectron(hadTauSelection_antiElectron);
-  tightHadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);
 
   RecoJetReader* jetReader = new RecoJetReader(era, isMC, branchName_jets, readGenObjects);
   jetReader->setPtMass_central_or_shift(jetPt_option);
@@ -735,11 +724,11 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
   };
 
   vstring ctrl_categories = { "other" };
-  for(int nbjets_ctrl = 0; nbjets_ctrl < 3; ++nbjets_ctrl)
+  for(int nele_ctrl = 0; nele_ctrl < 4; ++nele_ctrl)
   {
-    for(int njets_ctrl = std::min(2, nbjets_ctrl + 1); njets_ctrl < std::min(nbjets_ctrl + 5, 6); ++njets_ctrl)
+    for(int nbjets_ctrl = 0; nbjets_ctrl < 3; ++nbjets_ctrl)
     {
-      for(int nele_ctrl = 0; nele_ctrl < 4; ++nele_ctrl)
+      for(int njets_ctrl = std::min(2, nbjets_ctrl + 1); njets_ctrl < std::min(nbjets_ctrl + 5, 6); ++njets_ctrl)
       {
         int nmu_ctrl = 3 - nele_ctrl;
         const std::string ele_ctrl_str(nele_ctrl, 'e');
@@ -1337,8 +1326,8 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     const std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     const std::vector<const RecoHadTau*> hadTau_ptrs = convert_to_ptrs(hadTaus);
     const std::vector<const RecoHadTau*> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, preselMuons, preselElectrons);
-    const std::vector<const RecoHadTau*> fakeableHadTaus = fakeableHadTauSelector(cleanedHadTaus, isHigherPt);
-    const std::vector<const RecoHadTau*> selHadTaus = tightHadTauSelector(cleanedHadTaus, isHigherPt);
+    const std::vector<const RecoHadTau*> looseHadTaus = looseHadTauSelector(cleanedHadTaus, isHigherPt);
+    const std::vector<const RecoHadTau*> selHadTaus = tightHadTauSelector(looseHadTaus, isHigherPt);
 
     if(isDEBUG || run_lumi_eventSelector)
     {
@@ -1352,8 +1341,8 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     const std::vector<RecoJet> jets = jetReader->read();
     const std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
     const std::vector<const RecoJet*> cleanedJets = jetCleaningByIndex ?
-      jetCleanerByIndex(jet_ptrs, selectBDT ? selLeptons_full : fakeableLeptonsFull, fakeableHadTaus) :
-      jetCleaner       (jet_ptrs, selectBDT ? selLeptons_full : fakeableLeptonsFull, fakeableHadTaus)
+      jetCleanerByIndex(jet_ptrs, selectBDT ? selLeptons_full : fakeableLeptonsFull, looseHadTaus) :
+      jetCleaner       (jet_ptrs, selectBDT ? selLeptons_full : fakeableLeptonsFull, looseHadTaus)
     ;
     const std::vector<const RecoJet*> selJets = jetSelector(cleanedJets, isHigherPt);
     const std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets, isHigherPt);
@@ -1468,7 +1457,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
 
 //--- compute MHT and linear MET discriminant (met_LD)
     const RecoMEt met = metReader->read();
-    const Particle::LorentzVector mht_p4 = compMHT(fakeableLeptonsFull, fakeableHadTaus, selJets);
+    const Particle::LorentzVector mht_p4 = compMHT(fakeableLeptonsFull, looseHadTaus, selJets);
     const double met_LD = compMEt_LD(met.p4(), mht_p4);
 
 //--- apply final event selection
@@ -1523,7 +1512,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
         // 2) electron selection is relaxed to fakeable and muon selection is kept as tight -> corresponds to MC closure w/ relaxed e selection
         // 3) muon selection is relaxed to fakeable and electron selection is kept as tight -> corresponds to MC closure w/ relaxed mu selection
         // we allow (2) and (3) so that the MC closure regions would more compatible w/ the SR (1) in comparison
-        evtWeightRecorder.record_leptonSF(dataToMCcorrectionInterface->getSF_leptonID_and_Iso_tight_to_loose_woTightCharge());
+        evtWeightRecorder.record_leptonIDSF(dataToMCcorrectionInterface);
       }
     }
 
@@ -1907,7 +1896,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
 
     // resolved HTT
     double max_mvaOutput_HTT_CSVsort4rd = 0.;
-    bool max_truth_HTT_CSVsort4rd = false;
+    //bool max_truth_HTT_CSVsort4rd = false;
     double HadTop_pt_CSVsort4rd = 0.;
     //double genTopPt_CSVsort4rd = 0.;
     bool hadtruth = false;
@@ -1927,7 +1916,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     double HadTop_pt = ((*selBJet)->p4() + (*selWJet1)->p4() + (*selWJet2)->p4()).pt();
 
     if ( bdtResult.at(kXGB_CSVsort4rd) > max_mvaOutput_HTT_CSVsort4rd ) {
-      max_truth_HTT_CSVsort4rd = isGenMatched;
+      //max_truth_HTT_CSVsort4rd = isGenMatched;
       max_mvaOutput_HTT_CSVsort4rd = bdtResult.at(kXGB_CSVsort4rd);
       HadTop_pt_CSVsort4rd = HadTop_pt;
       //genTopPt_CSVsort4rd = genTopPt_teste;
@@ -2007,7 +1996,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     mvaInputs_3l_ttH_tH_3cat_v8_TF["mT_lep3"] = mT_lep3;
     mvaInputs_3l_ttH_tH_3cat_v8_TF["lep3_conePt"] = lep3_conePt;
     mvaInputs_3l_ttH_tH_3cat_v8_TF["leadFwdJet_pt"] = selJetsForward.size() > 0 ? selJetsForward[0]->pt() : 0;
-    mvaInputs_3l_ttH_tH_3cat_v8_TF["res_HTT"] = max_truth_HTT_CSVsort4rd;
+    mvaInputs_3l_ttH_tH_3cat_v8_TF["res_HTT"] = max_mvaOutput_HTT_CSVsort4rd;
     mvaInputs_3l_ttH_tH_3cat_v8_TF["HadTop_pt"] = HadTop_pt_CSVsort4rd;
     mvaInputs_3l_ttH_tH_3cat_v8_TF["nJet"] = selJets.size();
     mvaInputs_3l_ttH_tH_3cat_v8_TF["nJetForward"] = selJetsForward.size();
@@ -2536,7 +2525,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
           ("jet4_E",    selJets.size() > 3 ? selJets[3]->p4().energy() : -1000)
           ("sum_Lep_charge", sumLeptonCharge)
           ("HadTop_pt",      HadTop_pt_CSVsort4rd)
-          ("res_HTT",        max_truth_HTT_CSVsort4rd)
+          ("res_HTT",        max_mvaOutput_HTT_CSVsort4rd)
           ("max_Lep_eta",    max_lep_eta)
           ("massLT",          selLeptons.size() > 1 ? comp_MT_met_lep1(selLeptons[0]->p4() + selLeptons[1]->p4(), met.pt(), met.phi())  : 0.)
           ("massL3",          selLeptons.size() > 2 ? comp_MT_met_lep1(selLeptons[0]->p4() + selLeptons[1]->p4() + selLeptons[2]->p4(), met.pt(), met.phi())  : 0.)
@@ -2547,7 +2536,6 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
           ("min_Deta_leadfwdJet_jet", min_Deta_leadfwdJet_jet)
           ("nElectron",                      selElectrons.size())
           ("nJetForward",          selJetsForward.size())
-
         .fill()
       ;
     }
@@ -2560,6 +2548,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
       snm->read(selLeptons);
       snm->read(preselMuons,     fakeableMuons,     tightMuons);
       snm->read(preselElectrons, fakeableElectrons, tightElectrons);
+      snm->read(looseHadTaus);
       snm->read(selJets, false);
       snm->read(selJetsForward, true);
 
@@ -2700,6 +2689,10 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     ++selectedEntries_byGenMatchType[process_and_genMatch];
     selectedEntries_weighted_byGenMatchType[process_and_genMatch] += evtWeightRecorder.get(central_or_shift_main);
     histogram_selectedEntries->Fill(0.);
+    if(isDEBUG)
+    {
+      std::cout << evtWeightRecorder << '\n';
+    }
   }
 
   if(snm)

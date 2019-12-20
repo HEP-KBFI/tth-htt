@@ -1,7 +1,7 @@
 from collections import OrderedDict as OD
 
-# file generated at 2019-12-08 17:39:28 with the following command:
-# create_dictionary.py -m python/samples/metaDict_2018_sync.py -p /hdfs/local/karl/addMEM/2018/2019Dec06_sync_nonNom/final_ntuples/3l -N samples_2018 -E 2018 -o python/samples -g tthAnalyzeSamples_2018_addMEM_3l_deepVSjVLoose_sync.py -M
+# file generated at 2019-12-15 14:03:11 with the following command:
+# create_dictionary.py -m python/samples/metaDict_2018_sync.py -p /hdfs/local/karl/addMEM/2018/2019Dec15_sync_nonNom/final_ntuples/3l -N samples_2018 -E 2018 -o python/samples -g tthAnalyzeSamples_2018_addMEM_3l_deepVSjVLoose_sync.py -M
 
 samples_2018 = OD()
 samples_2018["/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/MINIAODSIM"] = OD([
@@ -17,7 +17,7 @@ samples_2018["/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD
   }),
   ("nof_tree_events",                 13715),
   ("nof_db_events",                   7525991),
-  ("fsize_local",                     73526633), # 73.53MB, avg file size 73.53MB
+  ("fsize_local",                     73522875), # 73.52MB, avg file size 73.52MB
   ("fsize_db",                        469867184231), # 469.87GB, avg file size 2.10GB
   ("use_it",                          True),
   ("xsection",                        0.2118),
@@ -29,7 +29,7 @@ samples_2018["/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/addMEM/2018/2019Dec06_sync_nonNom/final_ntuples/3l/ttHToNonbb_M125_powheg"),
+        ("path",      "/hdfs/local/karl/addMEM/2018/2019Dec15_sync_nonNom/final_ntuples/3l/ttHToNonbb_M125_powheg"),
         ("selection", "*"),
         ("blacklist", []),
       ]),

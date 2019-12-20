@@ -27,6 +27,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorLoose.h" // RecoMuonCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorFakeable.h" // RecoMuonCollectionSelectorFakeable
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorTight.h" // RecoMuonCollectionSelectorTight
+#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorLoose.h" // RecoHadTauCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorFakeable.h" // RecoHadTauCollectionSelectorFakeable
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorTight.h" // RecoHadTauCollectionSelectorTight
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelector.h" // RecoJetCollectionSelector
@@ -216,18 +217,17 @@ int main(int argc,
   hadTauReader->setHadTauPt_central_or_shift(useNonNominal_jetmet ? kHadTauPt_uncorrected : kHadTauPt_central);
   hadTauReader->setBranchAddresses(inputTree);
   const RecoHadTauCollectionCleaner hadTauCleaner(0.3);
+  RecoHadTauCollectionSelectorLoose    looseHadTauSelector(era);
   RecoHadTauCollectionSelectorFakeable fakeableHadTauSelector(era);
   RecoHadTauCollectionSelectorTight    tightHadTauSelector   (era);
+  looseHadTauSelector.set_if_looser(hadTauSelection_part2);
   fakeableHadTauSelector.disable_deeptau_lepton();
   fakeableHadTauSelector.set_if_looser(hadTauSelection_part2);
-  fakeableHadTauSelector.set_min_antiElectron(-1);
-  fakeableHadTauSelector.set_min_antiMuon(-1);
   tightHadTauSelector.disable_deeptau_lepton();
   tightHadTauSelector.set(hadTauSelection_part2);
-  tightHadTauSelector.set_min_antiElectron(-1);
-  tightHadTauSelector.set_min_antiMuon(-1);
   // CV: lower thresholds on hadronic taus by 2 GeV 
   //     with respect to thresholds applied on analysis level (in analyze_2lss_1tau.cc)
+  looseHadTauSelector.set_min_pt(18.);
   fakeableHadTauSelector.set_min_pt(18.);
   tightHadTauSelector.set_min_pt(18.);
   
@@ -416,7 +416,8 @@ int main(int argc,
     const std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     const std::vector<const RecoHadTau *> hadTau_ptrs     = convert_to_ptrs(hadTaus);
     const std::vector<const RecoHadTau *> cleanedHadTaus  = hadTauCleaner(hadTau_ptrs, preselMuons, preselElectrons);
-    const std::vector<const RecoHadTau *> fakeableHadTaus = fakeableHadTauSelector(cleanedHadTaus, isHigherPt);
+    const std::vector<const RecoHadTau *> looseHadTaus    = looseHadTauSelector(cleanedHadTaus, isHigherPt);
+    const std::vector<const RecoHadTau *> fakeableHadTaus = fakeableHadTauSelector(looseHadTaus, isHigherPt);
     const std::vector<const RecoHadTau *> tightHadTaus    = tightHadTauSelector(fakeableHadTaus, isHigherPt);
     const std::vector<const RecoHadTau *> selHadTaus      = selectObjects(
       hadTauSelection, fakeableHadTaus, tightHadTaus
@@ -447,7 +448,7 @@ int main(int argc,
       eventInfoWriter->write(eventInfo);
       muonWriter->write(preselMuons);
       electronWriter->write(preselElectronsUncleaned);
-      hadTauWriter->write(fakeableHadTaus); // save central
+      hadTauWriter->write(looseHadTaus); // save central
       jetWriter->write(jet_ptrs); // save central
       metWriter->write(met); // save central
 
@@ -520,7 +521,8 @@ int main(int argc,
               const std::vector<RecoHadTau> hadTaus_mem = hadTauReader->read();
               const std::vector<const RecoHadTau *> hadTau_ptrs_mem     = convert_to_ptrs(hadTaus_mem);
               const std::vector<const RecoHadTau *> cleanedHadTaus_mem  = hadTauCleaner(hadTau_ptrs_mem, preselMuons, preselElectrons);
-              const std::vector<const RecoHadTau *> fakeableHadTaus_mem = fakeableHadTauSelector(cleanedHadTaus_mem, isHigherPt);
+              const std::vector<const RecoHadTau *> looseHadTaus_mem    = looseHadTauSelector(cleanedHadTaus_mem, isHigherPt);
+              const std::vector<const RecoHadTau *> fakeableHadTaus_mem = fakeableHadTauSelector(looseHadTaus_mem, isHigherPt);
               const std::vector<const RecoHadTau *> tightHadTaus_mem    = tightHadTauSelector(fakeableHadTaus_mem, isHigherPt);
               const std::vector<const RecoHadTau *> selHadTaus_mem      = selectObjects(
                 hadTauSelection, fakeableHadTaus_mem, tightHadTaus_mem

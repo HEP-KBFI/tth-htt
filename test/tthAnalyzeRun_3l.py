@@ -16,8 +16,9 @@ import re
 mode_choices     = [
   'default', 'addMEM', 'forBDTtraining_beforeAddMEM', 'forBDTtraining_afterAddMEM', 'sync', 'sync_wMEM'
 ]
-sys_choices      = [ 'full' ] + systematics.an_extended_opts + [ 'MEM_3l' ]
-systematics.full = systematics.an_extended + systematics.MEM_3l
+sys_choices      = [ 'full', 'internal' ] + systematics.an_extended_opts + [ 'MEM_3l' ]
+systematics.full = systematics.an_extended
+systematics.internal = systematics.an_internal_no_mem
 
 parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
@@ -70,6 +71,9 @@ if regroup_jec:
   systematics.full.extend(systematics.JEC_regrouped)
 
 # Use the arguments
+if "MEM" in mode:
+  systematics.full += systematics.MEM_3l
+  systematics.internal += systematics.MEM_3l
 central_or_shifts = []
 for systematic_label in systematics_label:
   for central_or_shift in getattr(systematics, systematic_label):

@@ -43,19 +43,19 @@ DYMCNormScaleFactors::getWeight(const std::vector<GenParticle> & genTauLeptons,
     const Particle::LorentzVector dileptonP4 = genTauLeptonPlus->p4() + genTauLeptonMinus->p4();
     const double dileptonMass = dileptonP4.mass();
 
-    if(era_ == kEra_2016){ //kept same as 2017 till it is evaluated separately for 2016
-      if     (nBMedium >= 2 && nJets >= 4)                 weight = 1.353;
-      else if(nBMedium >= 2 && nJets == 3)                 weight = 0.949;
-      else if(nBMedium >= 2 && nJets == 2)                 weight = 0.828;
-      else if(nBMedium == 1 && nBLoose >= 2 && nJets >= 4) weight = 1.55;
-      else if(nBMedium == 1 && nBLoose >= 2 && nJets == 3) weight = 1.198;
-      else if(nBMedium == 1 && nBLoose >= 2 && nJets == 2) weight = 0.971;
-      else if(nBMedium == 1 && nBLoose == 1 && nJets >= 4) weight = 1.554;
-      else if(nBMedium == 1 && nBLoose == 1 && nJets == 3) weight = 1.20;
-      else if(nBMedium == 1 && nBLoose == 1 && nJets == 2) weight = 1.0;
-      else if(nBMedium == 0 && nBLoose >= 2 && nJets >= 4) weight = 1.431;
-      else if(nBMedium == 0 && nBLoose >= 2 && nJets == 3) weight = 1.138;
-      else if(nBMedium == 0 && nBLoose >= 2 && nJets == 2) weight = 1.01;
+    if(era_ == kEra_2016){ 
+      if     (nBMedium >= 2 && nJets >= 4)                 weight = 0.801;
+      else if(nBMedium >= 2 && nJets == 3)                 weight = 0.685;
+      else if(nBMedium >= 2 && nJets == 2)                 weight = 0.672;
+      else if(nBMedium == 1 && nBLoose >= 2 && nJets >= 4) weight = 1.121;
+      else if(nBMedium == 1 && nBLoose >= 2 && nJets == 3) weight = 0.872;
+      else if(nBMedium == 1 && nBLoose >= 2 && nJets == 2) weight = 0.801;
+      else if(nBMedium == 1 && nBLoose == 1 && nJets >= 4) weight = 1.145;
+      else if(nBMedium == 1 && nBLoose == 1 && nJets == 3) weight = 0.968;
+      else if(nBMedium == 1 && nBLoose == 1 && nJets == 2) weight = 0.891;
+      else if(nBMedium == 0 && nBLoose >= 2 && nJets >= 4) weight = 1.065;
+      else if(nBMedium == 0 && nBLoose >= 2 && nJets == 3) weight = 0.845;
+      else if(nBMedium == 0 && nBLoose >= 2 && nJets == 2) weight = 0.798;
     }
     else if(era_ == kEra_2017){
       if     (nBMedium >= 2 && nJets >= 4)                 weight = 1.353;
@@ -101,18 +101,18 @@ DYMCNormScaleFactors::getWeight(const std::vector<GenParticle> & genTauLeptons,
   
   double error=0, emdiff = 0;
   if(era_ == kEra_2016){ //kept same as 2017 till it is evaluated separately for 2016
-    if     (nBMedium >= 2 && nJets >= 4)                 {error = 0.055; emdiff = weight - 0.431;}
-    else if(nBMedium >= 2 && nJets == 3)                 {error = 0.026; emdiff = weight - 0.464;}
-    else if(nBMedium >= 2 && nJets == 2)                 {error = 0.016; emdiff = weight - 0.494;}
-    else if(nBMedium == 1 && nBLoose >= 2 && nJets >= 4) {error = 0.040; emdiff = weight - 1.410;}
-    else if(nBMedium == 1 && nBLoose >= 2 && nJets == 3) {error = 0.020; emdiff = weight - 1.063;}
-    else if(nBMedium == 1 && nBLoose >= 2 && nJets == 2) {error = 0.010; emdiff = weight - 0.925;}
-    else if(nBMedium == 1 && nBLoose == 1 && nJets >= 4) {error = 0.030; emdiff = weight - 1.449;}
-    else if(nBMedium == 1 && nBLoose == 1 && nJets == 3) {error = 0.013; emdiff = weight - 1.128;}
-    else if(nBMedium == 1 && nBLoose == 1 && nJets == 2) {error = 0.006; emdiff = weight - 0.968;}
-    else if(nBMedium == 0 && nBLoose >= 2 && nJets >= 4) {error = 0.020; emdiff = weight - 1.267;}
-    else if(nBMedium == 0 && nBLoose >= 2 && nJets == 3) {error = 0.010; emdiff = weight - 1.019;}
-    else if(nBMedium == 0 && nBLoose >= 2 && nJets == 2) {error = 0.006; emdiff = weight - 0.933;}
+    if     (nBMedium >= 2 && nJets >= 4)                 {error = 0.040; emdiff = weight - 0.197;}
+    else if(nBMedium >= 2 && nJets == 3)                 {error = 0.024; emdiff = weight - 0.274;}
+    else if(nBMedium >= 2 && nJets == 2)                 {error = 0.017; emdiff = weight - 0.380;}
+    else if(nBMedium == 1 && nBLoose >= 2 && nJets >= 4) {error = 0.035; emdiff = weight - 0.904;}
+    else if(nBMedium == 1 && nBLoose >= 2 && nJets == 3) {error = 0.018; emdiff = weight - 0.884;}
+    else if(nBMedium == 1 && nBLoose >= 2 && nJets == 2) {error = 0.011; emdiff = weight - 0.700;}
+    else if(nBMedium == 1 && nBLoose == 1 && nJets >= 4) {error = 0.025; emdiff = weight - 1.074;}
+    else if(nBMedium == 1 && nBLoose == 1 && nJets == 3) {error = 0.012; emdiff = weight - 0.935;}
+    else if(nBMedium == 1 && nBLoose == 1 && nJets == 2) {error = 0.006; emdiff = weight - 0.848;}
+    else if(nBMedium == 0 && nBLoose >= 2 && nJets >= 4) {error = 0.019; emdiff = weight - 0.874;}
+    else if(nBMedium == 0 && nBLoose >= 2 && nJets == 3) {error = 0.010; emdiff = weight - 0.794;}
+    else if(nBMedium == 0 && nBLoose >= 2 && nJets == 2) {error = 0.006; emdiff = weight - 0.706;}
   }							   	      
   else if(era_ == kEra_2017){				   	      
     if     (nBMedium >= 2 && nJets >= 4)                 {error = 0.055; emdiff = weight - 0.431;}
@@ -146,7 +146,7 @@ DYMCNormScaleFactors::getWeight(const std::vector<GenParticle> & genTauLeptons,
   switch(central_or_shift)
     {
     case kDYMCNormScaleFactors_central:   retVal = weight;           break;
-    case kDYMCNormScaleFactors_shiftUp:   retVal = weight + error; break; //error on SF only
+    case kDYMCNormScaleFactors_shiftUp:   retVal = weight + std::sqrt(error*error + emdiff*emdiff); break; // cover difference of SFs from Z->ee and Z->mumu
     case kDYMCNormScaleFactors_shiftDown: retVal = weight - std::sqrt(error*error + emdiff*emdiff); break; // cover difference of SFs from Z->ee and Z->mumu 
     default: assert(0);
   }

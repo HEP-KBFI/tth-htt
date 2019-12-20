@@ -15717,7 +15717,7 @@ samples_2018["/THW_ctcvcp_5f_Hincl_13TeV_madgraph_pythia8/RunIIAutumn18MiniAOD-1
       OD([
         ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/THW_ctcvcp_5f_Hincl_13TeV_madgraph_pythia8/2018_2019Sep29_THW_ctcvcp_5f_Hincl_13TeV_madgraph_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_122218"),
         ("selection", "*"),
-        ("blacklist", [11, 32, 39, 42, 51, 52, 62]),
+        ("blacklist", [11, 32, 39, 42, 51, 52, 62, 81]),
       ]),
     ]
   ),

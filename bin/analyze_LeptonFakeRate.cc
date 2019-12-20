@@ -1403,6 +1403,10 @@ main(int argc,
     ++selectedEntries;
     selectedEntries_weighted += evtWeightRecorder.get(central_or_shift);
     histogram_selectedEntries->Fill(0.);
+    if(isDEBUG)
+    {
+      std::cout << evtWeightRecorder << '\n';
+    }
   }
 
   std::cout << "max num. Entries = " << inputTree -> getCumulativeMaxEventCount()

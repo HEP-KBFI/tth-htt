@@ -99,7 +99,8 @@ class syncNtupleConfig:
     final_output_dir = os.path.join(self.output_dir, DKEY_SYNC)
     self.final_output_file = os.path.join(final_output_dir, output_filename)
 
-    common_args = "-v %s -e %s -s %s -y %s " % (version, era, ' '.join(systematics_label), use_home)
+    systematic_labels = ' '.join(systematics_label)
+    common_args = "-v %s -e %s -s %s -y %s " % (version, era, systematic_labels, use_home)
     if jet_cleaning:
       common_args += " -q %s " % jet_cleaning
     if gen_matching:
@@ -130,6 +131,8 @@ class syncNtupleConfig:
     cr_channels = [ '3l', '4l' ]
 
     inclusive_args = '-v %s -e %s' % (version, era)
+    if systematic_labels != 'internal':
+      inclusive_args += ' -s %s' % systematic_labels
 
     inclusive_args += additional_args
     common_args    += additional_args
