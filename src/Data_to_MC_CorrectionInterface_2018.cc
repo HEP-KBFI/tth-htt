@@ -42,6 +42,17 @@ Data_to_MC_CorrectionInterface_2018::Data_to_MC_CorrectionInterface_2018(const e
     lut::kXabsEtaYpt
   ));
 
+  // https://gitlab.cern.ch/cms-muonPOG/MuonReferenceEfficiencies/raw/513f1017b1b216a4d3e9f5f0cf858ea7569a134b/EfficienciesStudies/2018/rootfiles/RunABCD_SF_ID.root
+  sfMuonID_and_Iso_loose_.push_back(new lutWrapperTH2(
+    inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2018/RunABCD_SF_ID_ptGt20.root", "NUM_LooseID_DEN_TrackerMuons_pt_abseta",
+    lut::kXptYabsEta, 20., -1., lut::kLimit_and_Cut, 0., 2.4, lut::kLimit
+  ));
+  // https://gitlab.cern.ch/cms-muonPOG/MuonReferenceEfficiencies/raw/513f1017b1b216a4d3e9f5f0cf858ea7569a134b/EfficienciesStudies/2018/Jpsi/rootfiles/RunABCD_SF_ID.root
+  sfMuonID_and_Iso_loose_.push_back(new lutWrapperTH2(
+    inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2018/RunABCD_SF_ID_ptLt20.root", "NUM_LooseID_DEN_genTracks_pt_abseta",
+    lut::kXptYabsEta, -1., 20., lut::kLimit_and_Cut, 0., 2.4, lut::kLimit
+  ));
+
   // /afs/cern.ch/user/b/balvarez/work/public/ttHAnalysis/TnP_ttH_muon_2018_3l/passttH/egammaEffi.txt_EGM2D.root
   sfMuonID_and_Iso_tight_to_loose_woTightCharge_.push_back(new lutWrapperTH2(
     inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2018/lepMVAEffSF_m_3l.root", "EGamma_SF2D",
