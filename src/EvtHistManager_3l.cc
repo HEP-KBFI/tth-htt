@@ -64,6 +64,7 @@ EvtHistManager_3l::EvtHistManager_3l(const edm::ParameterSet & cfg)
   const std::vector<std::string> sysOpts_all = {
     "mvaDiscr_3l",
     "EventCounter",
+    "control"
   };
   for(const std::string & sysOpt: sysOpts_central)
   {
