@@ -468,7 +468,6 @@ class analyzeConfig(object):
         self.num_jobs['addBackgrounds'] = 0
         self.num_jobs['addFakes'] = 0
 
-        self.leptonFakeRateWeight_inputFile = None
         self.leptonFakeRateWeight_histogramName_e = None
         self.leptonFakeRateWeight_histogramName_mu = None
 
@@ -478,10 +477,7 @@ class analyzeConfig(object):
         self.lep_mva_cut_mu = self.lep_mva_cut_map['mu']
         self.lep_mva_cut_e = self.lep_mva_cut_map['e']
 
-        # e.g. FR_lep_ttH_mva_default_2016.root, FR_lep_ttH_mva_ttZctrl_2017.root
-        self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva_{}_{}.root".format(self.lep_mva_wp, self.era)
-        self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva090_2017_CERN_2018May29.root"
-
+        self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva_{}_CERN_2019Jul08.root".format(self.era)
         if not os.path.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', self.leptonFakeRateWeight_inputFile)):
             raise ValueError("No such file: 'leptonFakeRateWeight_inputFile' = %s" % self.leptonFakeRateWeight_inputFile)
 
@@ -508,9 +504,6 @@ class analyzeConfig(object):
         # e.g. FR_mva080_el_QCD_NC, FR_mva085_mu_data_comb
         self.leptonFakeRateWeight_histogramName_e = "FR_mva%s_el_%s_NC" % (convert_lep_wp(self.lep_mva_cut_e), suffix)
         self.leptonFakeRateWeight_histogramName_mu = "FR_mva%s_mu_%s" % (convert_lep_wp(self.lep_mva_cut_mu), suffix)
-
-        self.leptonFakeRateWeight_histogramName_e = "FR_mva090_el_%s_NC" % suffix
-        self.leptonFakeRateWeight_histogramName_mu = "FR_mva090_mu_%s" % suffix
 
     def set_BDT_training(self, hadTau_selection_relaxed):
         """Run analysis with loose selection criteria for leptons and hadronic taus,
