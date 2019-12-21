@@ -783,11 +783,12 @@ class analyzeConfig_1l_1tau(analyzeConfig):
       self.createScript_sbatch(self.executable_addFlips, self.sbatchFile_addFlips, self.jobOptions_addFlips)
 
     logging.info("Creating Makefile")
+    max_input_files_per_job = 3 if len(self.central_or_shifts) > 1 and len(self.categories) > 1 else 10
     lines_makefile = []
     self.addToMakefile_analyze(lines_makefile)
     self.addToMakefile_hadd_stage1(lines_makefile)
-    self.addToMakefile_backgrounds_from_data_withFlips(lines_makefile)
-    self.addToMakefile_hadd_stage2(lines_makefile)
+    self.addToMakefile_backgrounds_from_data_withFlips(lines_makefile, max_input_files_per_job = max_input_files_per_job)
+    self.addToMakefile_hadd_stage2(lines_makefile, max_input_files_per_job = max_input_files_per_job)
     self.addToMakefile_prep_dcard(lines_makefile)
     self.addToMakefile_add_syst_fakerate(lines_makefile)
     self.addToMakefile_make_plots(lines_makefile)
