@@ -1520,9 +1520,6 @@ int main(int argc, char* argv[])
       // mvaOutput_2lss_1tau_plainKin_SUM_M not filled
       // mvaOutput_2lss_1tau_HTT_SUM_M not filled
       // mvaOutput_2lss_1tau_HTTMEM_SUM_M not filled
-
-      snm->read(mvaOutput_3l_ttV,                       FloatVariableType::mvaOutput_3l_ttV);
-      snm->read(mvaOutput_3l_ttbar,                     FloatVariableType::mvaOutput_3l_ttbar);
       // mvaOutput_plainKin_SUM_M not filled
       // mvaOutput_plainKin_1B_M not filled
 

@@ -414,7 +414,7 @@ int main(int argc, char* argv[])
   const std::string default_cat_str = "default";
   std::vector<std::string> evt_cat_strs = { default_cat_str };
 
-  //--- HH scan 
+  //--- HH scan
 
   const edm::ParameterSet hhWeight_cfg = cfg_analyze.getParameterSet("hhWeight_cfg");
   const bool apply_HH_rwgt = isMC_HH && hhWeight_cfg.getParameter<bool>("apply_rwgt");
@@ -1582,7 +1582,7 @@ int main(int argc, char* argv[])
     cutFlowTable.update("signal region veto", evtWeightRecorder.get(central_or_shift_main));
     cutFlowHistManager->fillHistograms("signal region veto", evtWeightRecorder.get(central_or_shift_main));
 
-    std::vector<double> WeightBM; // weights to do histograms for BMs 
+    std::vector<double> WeightBM; // weights to do histograms for BMs
     std::map<std::string, double> Weight_ktScan; // weights to do histograms for BMs
     double HHWeight = 1.0; // X: for the SM point -- the point explicited on this code
 
@@ -2055,8 +2055,7 @@ int main(int argc, char* argv[])
       // HadTop_pt not filled
       // Hj_tagger not filled
 
-      snm->read(mvaOutput_legacy,                       FloatVariableType::mvaOutput_plainKin_ttV);
-      //snm->read(mvaOutput_plainKin_tt,                  FloatVariableType::mvaOutput_plainKin_tt);
+      snm->read(mvaOutput_legacy,                       FloatVariableType::mvaOutput_3l_1tau);
       // mvaOutput_plainKin_1B_VT not filled
       // mvaOutput_HTT_SUM_VT not filled
 
@@ -2070,11 +2069,6 @@ int main(int argc, char* argv[])
       // mvaOutput_2lss_1tau_plainKin_SUM_M not filled
       // mvaOutput_2lss_1tau_HTT_SUM_M not filled
       // mvaOutput_2lss_1tau_HTTMEM_SUM_M not filled
-
-      //snm->read(mvaOutput_3l_ttV,                       FloatVariableType::mvaOutput_3l_ttV);
-      //snm->read(mvaOutput_3l_ttbar,                     FloatVariableType::mvaOutput_3l_ttbar);
-      //snm->read(mvaOutput_plainKin_SUM_M,               FloatVariableType::mvaOutput_plainKin_SUM_M);
-      //snm->read(mvaOutput_plainKin_1B_M,                FloatVariableType::mvaOutput_plainKin_1B_M);
 
       snm->read(evtWeightRecorder.get_FR(central_or_shift_main),             FloatVariableType::FR_weight);
       snm->read(evtWeightRecorder.get_sf_triggerEff(central_or_shift_main),  FloatVariableType::triggerSF_weight);

@@ -80,36 +80,28 @@ enum class FloatVariableType
                                   /// that is tagged as part of "HTT_semi_boosted_fromAK8"
 
 //--- Additional event-level MVA output variables
-  mvaOutput_plainKin_ttV,   ///< 2l+2tau (BDT1), 3l+1tau (BDT1)
-  mvaOutput_plainKin_tt,    ///< 1l+2tau (BDT1), 2l+2tau (BDT2), 3l+1tau (BDT2)
 
-  mvaOutput_HTT_SUM_VT,     ///< 1l+2tau (BDT2)
+  mvaOutput_4l_0tau, ///< 2lss+1tau (BDT3)
+  mvaOutput_3l_1tau,      ///< 2lss+1tau (BDT4)
+  mvaOutput_2los_1tau,   ///< 2lss+1tau (BDT5)
 
-  mvaOutput_plainKin_1B_VT,  ///< 2l+2tau (BDT4)
-  mvaOutput_plainKin_SUM_VT, ///< 2l+2tau (BDT3)
+  mvaOutput_2l_2tau,         ///< 3l+1tau
+  mvaOutput_1l_2tau,       ///< 3l+1tau
+  mvaOutput_1l_1tau, ///< 3l+1tau (BDT3)
+  mvaOutput_0l_2tau,  ///< 3l+1tau (BDT4)
 
-  mvaOutput_legacy,                 ///< 2lss+1tau
-  mvaOutput_2lss_tt,                  ///< 2lss+1tau
-  mvaOutput_2lss_1tau_plainKin_tt,    ///< 2lss+1tau (BDT2)
-  mvaOutput_2lss_1tau_plainKin_ttV,   ///< 2lss+1tau (BDT1)
-  mvaOutput_2lss_1tau_plainKin_1B_M,  ///< 2lss+1tau (BDT6)
-  mvaOutput_2lss_1tau_plainKin_SUM_M, ///< 2lss+1tau (BDT3)
-  mvaOutput_2lss_1tau_HTT_SUM_M,      ///< 2lss+1tau (BDT4)
-  mvaOutput_2lss_1tau_HTTMEM_SUM_M,   ///< 2lss+1tau (BDT5)
+  mvaOutput_2lss_0tau_ttH,
+  mvaOutput_2lss_0tau_tH,
+  mvaOutput_2lss_0tau_ttW,
+  mvaOutput_2lss_0tau_rest,
 
-  mvaOutput_3l_ttV,         ///< 3l+1tau
-  mvaOutput_3l_ttbar,       ///< 3l+1tau
-  mvaOutput_plainKin_SUM_M, ///< 3l+1tau (BDT3)
-  mvaOutput_plainKin_1B_M,  ///< 3l+1tau (BDT4)
+  mvaOutput_3l_0tau_ttH,
+  mvaOutput_3l_0tau_tH,
+  mvaOutput_3l_0tau_rest,
 
-  mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4_ttH,
-  mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4_tH,
-  mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4_ttW,
-  mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4_rest,
-
-  mvaOutput_3l_ttH_tH_3cat_v8_ttH,
-  mvaOutput_3l_ttH_tH_3cat_v8_tH,
-  mvaOutput_3l_ttH_tH_3cat_v8_rest,
+  mvaOutput_2lss_1tau_ttH,
+  mvaOutput_2lss_1tau_tH,
+  mvaOutput_2lss_1tau_rest,
 
 //--- Event weights
   FR_weight,                ///< weight used for fake rate reweighting

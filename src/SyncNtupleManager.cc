@@ -168,36 +168,27 @@ SyncNtupleManager::initializeBranches()
     njets_cleanedFromAK8,                                  "cleanedJets_fromAK8",
 
 //--- Additional event-level MVA output variables
-    floatMap[FloatVariableType::mvaOutput_plainKin_ttV],   "mvaOutput_plainKin_ttV",
-    floatMap[FloatVariableType::mvaOutput_plainKin_tt],    "mvaOutput_plainKin_ttbar",
+    floatMap[FloatVariableType::mvaOutput_4l_0tau],   "mvaOutput_4l_0tau",
+    floatMap[FloatVariableType::mvaOutput_3l_1tau],   "mvaOutput_3l_1tau",
+    floatMap[FloatVariableType::mvaOutput_2los_1tau], "mvaOutput_2los_1tau",
 
-    floatMap[FloatVariableType::mvaOutput_HTT_SUM_VT],     "mvaOutput_1l_2tau_HTT_SUM_VT",
+    floatMap[FloatVariableType::mvaOutput_2l_2tau],  "mvaOutput_2l_2tau",
+    floatMap[FloatVariableType::mvaOutput_1l_2tau],  "mvaOutput_1l_2tau",
+    floatMap[FloatVariableType::mvaOutput_1l_1tau],  "mvaOutput_1l_1tau",
+    floatMap[FloatVariableType::mvaOutput_0l_2tau],  "mvaOutput_0l_2tau",
 
-    floatMap[FloatVariableType::mvaOutput_plainKin_1B_VT],  "mvaOutput_2l_2tau_plainKin_1B_VT",
-    floatMap[FloatVariableType::mvaOutput_plainKin_SUM_VT], "mvaOutput_2l_2tau_plainKin_SUM_VT",
+    floatMap[FloatVariableType::mvaOutput_2lss_0tau_ttH],  "mvaOutput_2lss_0tau_ttH",
+    floatMap[FloatVariableType::mvaOutput_2lss_0tau_tH],   "mvaOutput_2lss_0tau_tH",
+    floatMap[FloatVariableType::mvaOutput_2lss_0tau_ttW],  "mvaOutput_2lss_0tau_ttW",
+    floatMap[FloatVariableType::mvaOutput_2lss_0tau_rest], "mvaOutput_2lss_0tau_rest",
 
-    floatMap[FloatVariableType::mvaOutput_legacy],                 "mvaOutput_legacy",
-    floatMap[FloatVariableType::mvaOutput_2lss_tt],                  "mvaOutput_2lss_ttbar",
-    floatMap[FloatVariableType::mvaOutput_2lss_1tau_plainKin_tt],    "mvaOutput_2lss_1tau_plainKin_ttbar",
-    floatMap[FloatVariableType::mvaOutput_2lss_1tau_plainKin_ttV],   "mvaOutput_2lss_1tau_plainKin_ttV",
-    floatMap[FloatVariableType::mvaOutput_2lss_1tau_plainKin_1B_M],  "mvaOutput_2lss_1tau_plainKin_1B_M",
-    floatMap[FloatVariableType::mvaOutput_2lss_1tau_plainKin_SUM_M], "mvaOutput_2lss_1tau_plainKin_SUM_M",
-    floatMap[FloatVariableType::mvaOutput_2lss_1tau_HTT_SUM_M],      "mvaOutput_2lss_1tau_HTT_SUM_M",
-    floatMap[FloatVariableType::mvaOutput_2lss_1tau_HTTMEM_SUM_M],   "mvaOutput_2lss_1tau_HTTMEM_SUM_M",
+    floatMap[FloatVariableType::mvaOutput_3l_0tau_ttH],  "mvaOutput_3l_0tau_ttH",
+    floatMap[FloatVariableType::mvaOutput_3l_0tau_tH],   "mvaOutput_3l_0tau_tH",
+    floatMap[FloatVariableType::mvaOutput_3l_0tau_rest], "mvaOutput_3l_0tau_rest",
 
-    floatMap[FloatVariableType::mvaOutput_3l_ttV],         "mvaOutput_3l_ttV",
-    floatMap[FloatVariableType::mvaOutput_3l_ttbar],       "mvaOutput_3l_ttbar",
-    floatMap[FloatVariableType::mvaOutput_plainKin_SUM_M], "mvaOutput_3l_1tau_plainKin_SUM_M",
-    floatMap[FloatVariableType::mvaOutput_plainKin_1B_M],  "mvaOutput_3l_1tau_plainKin_1B_M",
-
-    floatMap[FloatVariableType::mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4_ttH], "mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4_ttH",
-    floatMap[FloatVariableType::mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4_tH], "mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4_tH",
-    floatMap[FloatVariableType::mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4_ttW], "mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4_ttW",
-    floatMap[FloatVariableType::mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4_rest], "mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4_rest",
-
-    floatMap[FloatVariableType::mvaOutput_3l_ttH_tH_3cat_v8_ttH], "mvaOutput_3l_ttH_tH_3cat_v8_ttH",
-    floatMap[FloatVariableType::mvaOutput_3l_ttH_tH_3cat_v8_tH], "mvaOutput_3l_ttH_tH_3cat_v8_tH",
-    floatMap[FloatVariableType::mvaOutput_3l_ttH_tH_3cat_v8_rest], "mvaOutput_3l_ttH_tH_3cat_v8_rest",
+    floatMap[FloatVariableType::mvaOutput_2lss_1tau_ttH],  "mvaOutput_2lss_1tau_ttH",
+    floatMap[FloatVariableType::mvaOutput_2lss_1tau_tH],   "mvaOutput_2lss_1tau_tH",
+    floatMap[FloatVariableType::mvaOutput_2lss_1tau_rest], "mvaOutput_2lss_1tau_rest",
 
 //--- Event weights
     floatMap[FloatVariableType::FR_weight],                "FR_weight",

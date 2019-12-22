@@ -1797,6 +1797,7 @@ int main(int argc, char* argv[])
       snm->read(mT_lep2,                                FloatVariableType::mT_met_lep2);
       snm->read(mT_lep3,                                FloatVariableType::mT_met_lep3);
       snm->read(mT_lep4,                                FloatVariableType::mT_met_lep4);
+      snm->read(mva_4l,                                 FloatVariableType::mvaOutput_4l_0tau);
 
       // mTauTauVis not filled
       // mvis_l1tau not filled

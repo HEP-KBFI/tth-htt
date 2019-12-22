@@ -2053,6 +2053,7 @@ int main(int argc, char* argv[])
       snm->read(met.phi(),                              FloatVariableType::PFMETphi);
       snm->read(mht_p4.pt(),                            FloatVariableType::MHT);
       snm->read(met_LD,                                 FloatVariableType::metLD);
+      snm->read(mva_0l_2tau_deeptauLoose_2,             FloatVariableType::mvaOutput_0l_2tau);
 
       // mindr_lep_jet not filled
       // mindr_lep2_jet not filled

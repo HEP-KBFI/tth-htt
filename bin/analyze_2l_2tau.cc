@@ -1545,7 +1545,7 @@ int main(int argc, char* argv[])
     cutFlowTable.update("signal region veto", evtWeightRecorder.get(central_or_shift_main));
     cutFlowHistManager->fillHistograms("signal region veto", evtWeightRecorder.get(central_or_shift_main));
 
-    std::vector<double> WeightBM; // weights to do histograms for BMs 
+    std::vector<double> WeightBM; // weights to do histograms for BMs
     std::map<std::string, double> Weight_ktScan; // weights to do histograms for BMs
     double HHWeight = 1.0; // X: for the SM point -- the point explicited on this code
 
@@ -1945,16 +1945,10 @@ int main(int argc, char* argv[])
       snm->read(mbb_loose,                              FloatVariableType::mbb_loose);
 
       snm->read(cosThetaS_hadTau,                       FloatVariableType::cosThetaS_hadTau);
+      snm->read(mva_2l_2tau,                            FloatVariableType::mvaOutput_2l_2tau);
       // HTT not filled
       // HadTop_pt not filled
       // Hj_tagger not filled
-
-      //snm->read(mvaOutput_plainKin_ttV,                 FloatVariableType::mvaOutput_plainKin_ttV);
-      //snm->read(mvaOutput_plainKin_tt,                  FloatVariableType::mvaOutput_plainKin_tt);
-      //snm->read(mvaOutput_plainKin_1B_VT,               FloatVariableType::mvaOutput_plainKin_1B_VT);
-      // mvaOutput_HTT_SUM_VT not filled
-
-      //snm->read(mvaOutput_plainKin_SUM_VT,              FloatVariableType::mvaOutput_plainKin_SUM_VT);
 
       // mvaOutput_2lss_ttV not filled
       // mvaOutput_2lss_tt not filled

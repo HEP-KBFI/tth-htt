@@ -2067,8 +2067,6 @@ int main(int argc, char* argv[])
       snm->read(HadTop_pt,                              FloatVariableType::HadTop_pt);
       // Hj_tagger not filled
 
-      snm->read(mvaOutput_legacy,                   FloatVariableType::mvaOutput_HTT_SUM_VT);
-
       // mvaOutput_2lss_ttV not filled
       // mvaOutput_2lss_tt not filled
       // mvaOutput_2lss_1tau_plainKin_tt not filled
@@ -2082,6 +2080,7 @@ int main(int argc, char* argv[])
       // mvaOutput_3l_ttbar not filled
       // mvaOutput_plainKin_SUM_M not filled
       // mvaOutput_plainKin_1B_M not filled
+      snm->read(mvaOutput_legacy,             FloatVariableType::mvaOutput_1l_2tau);
 
       snm->read(evtWeightRecorder.get_FR(central_or_shift_main),             FloatVariableType::FR_weight);
       snm->read(evtWeightRecorder.get_sf_triggerEff(central_or_shift_main),  FloatVariableType::triggerSF_weight);

@@ -2277,12 +2277,6 @@ int main(int argc, char* argv[])
         snm->read(HadTop_pt_CSVsort4rd,                   FloatVariableType::HadTop_pt);
         // Hj_tagger not filled
 
-        //snm->read(mvaOutput_plainKin_ttV,                 FloatVariableType::mvaOutput_plainKin_ttV);
-        //snm->read(mvaOutput_plainKin_tt,                  FloatVariableType::mvaOutput_plainKin_tt);
-        //snm->read(mvaOutput_plainKin_1B_VT,               FloatVariableType::mvaOutput_plainKin_1B_VT);
-        //snm->read(mvaOutput_HTT_SUM_VT,                   FloatVariableType::mvaOutput_HTT_SUM_VT);
-        //snm->read(mvaOutput_plainKin_SUM_VT,              FloatVariableType::mvaOutput_plainKin_SUM_VT);
-
         // mvaOutput_plainKin_SUM_VT not filled
 
         // mvaOutput_2lss_ttV not filled
@@ -2306,6 +2300,8 @@ int main(int argc, char* argv[])
         snm->read(evtWeightRecorder.get_btag(central_or_shift_main),           FloatVariableType::bTagSF_weight);
         snm->read(evtWeightRecorder.get_puWeight(central_or_shift_main),       FloatVariableType::PU_weight);
         snm->read(evtWeightRecorder.get_genWeight(),                           FloatVariableType::MC_weight);
+
+        snm->read(mvaOutput_1l_1tau_DeepTauMedium_6,                           FloatVariableType::mvaOutput_1l_1tau);
 
         // Integral_ttH not filled
         // Integral_ttZ not filled
