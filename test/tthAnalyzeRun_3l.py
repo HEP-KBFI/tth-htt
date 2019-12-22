@@ -180,14 +180,10 @@ if __name__ == '__main__':
       "output_NN_ttH_bt" : {},
       "output_NN_tH_bl" : {},
       "output_NN_tH_bt" : {},
-      "output_NN_rest_eee_bl" : {},
-      "output_NN_rest_eee_bt" : {},
-      "output_NN_rest_eem_bl" : {},
-      "output_NN_rest_eem_bt" : {},
-      "output_NN_rest_emm_bl" : {},
-      "output_NN_rest_emm_bt" : {},
-      "output_NN_rest_mmm_bl" : {},
-      "output_NN_rest_mmm_bt" : {}
+      "output_NN_rest_eee" : {},
+      "output_NN_rest_eem" : {},
+      "output_NN_rest_emm" : {},
+      "output_NN_rest_mmm" : {}
     },
     select_rle_output                     = True,
     select_root_output                    = False,
