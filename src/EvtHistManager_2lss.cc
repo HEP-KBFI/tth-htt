@@ -24,6 +24,18 @@ EvtHistManager_2lss::EvtHistManager_2lss(const edm::ParameterSet & cfg)
   const std::vector<std::string> sysOpts_all = {
     "mvaDiscr_2lss",
     "EventCounter",
+    "output_NN_ttH_ee",
+    "output_NN_ttH_em",
+    "output_NN_ttH_mm",
+    "output_NN_ttW_ee",
+    "output_NN_ttW_em",
+    "output_NN_ttW_mm",
+    "output_NN_rest_ee",
+    "output_NN_rest_em",
+    "output_NN_rest_mm",
+    "output_NN_tH_ee",
+    "output_NN_tH_em",
+    "output_NN_tH_mm"
   };
   for(const std::string & sysOpt: sysOpts_central)
   {
@@ -43,12 +55,20 @@ EvtHistManager_2lss::getHistogram_EventCounter() const
 
 void
 EvtHistManager_2lss::bookCategories(TFileDirectory & dir,
-                                    const std::vector<std::string> & categories)
+                                    const std::map<std::string, std::vector<double>> & categories)
 {
-  for(const std::string & category: categories)
+  for(auto category: categories)
   {
-    histograms_by_category_[category] = book1D(dir, category, category, 100,  0., +1.);
-    central_or_shiftOptions_[category] = { "*" };
+    if ( category.second.size() > 0 )
+    {
+      int npoints = category.second.size();
+      Float_t binsx[npoints];
+      std::copy(category.second.begin(), category.second.end(), binsx);
+      histograms_by_category_[category.first] = book1D(dir, category.first, category.first, npoints - 1, binsx);
+    } else {
+      histograms_by_category_[category.first] = book1D(dir, category.first, category.first, 100,  0., +1.);
+    }
+    central_or_shiftOptions_[category.first] = { "*" };
   }
 }
 

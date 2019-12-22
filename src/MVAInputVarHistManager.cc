@@ -11,6 +11,7 @@ MVAInputVarHistManager::MVAInputVarHistManager(const edm::ParameterSet & cfg)
   binningOptions_["avg_dr_jet"]                 = new binningOptionType("avg_dr_jet",                 10,  0.,    5.);
   binningOptions_["Lep_min_dr_jet"]             = new binningOptionType("Lep_min_dr_jet",             10,  0.,    5.);
   binningOptions_["max_Lep_eta"]                = new binningOptionType("max_Lep_eta",                10,  0.,    2.5);
+  binningOptions_["maxeta"]                      = new binningOptionType("maxeta",                10,  0.,    2.5);
   binningOptions_["min_dr_Lep"]                 = new binningOptionType("min_dr_Lep",                 10,  0.,    5.);
   binningOptions_["res-HTT_2016"]               = new binningOptionType("res-HTT_2016",               10,  0.,    1.);
   binningOptions_["avr_dr_lep_tau"]             = new binningOptionType("avr_dr_lep_tau",             10,  0.,    5.);
@@ -71,6 +72,9 @@ MVAInputVarHistManager::MVAInputVarHistManager(const edm::ParameterSet & cfg)
   binningOptions_["jet2_eta"]                   = new binningOptionType("jet2_eta",                   10, 0.,   +5.);
   binningOptions_["jet3_eta"]                   = new binningOptionType("jet3_eta",                   10, 0.,   +5.);
   binningOptions_["jet4_eta"]                   = new binningOptionType("jet4_eta",                   10, 0.,   +5.);
+  binningOptions_["lep1_eta"]                   = new binningOptionType("lep1_eta",                   10, 0.,  +2.5);
+  binningOptions_["jetFwd1_eta"]                = new binningOptionType("jetFwd1_eta",                10, 0.,   +2.5);
+  binningOptions_["jetFwd1_pt"]                 = new binningOptionType("jetFwd1_pt",                 40,  0.,  400.);
   binningOptions_["jet1_phi"]                   = new binningOptionType("jet1_phi",                   10, -TMath::Pi(),   +TMath::Pi());
   binningOptions_["jet2_phi"]                   = new binningOptionType("jet2_phi",                   10, -TMath::Pi(),   +TMath::Pi());
   binningOptions_["jet3_phi"]                   = new binningOptionType("jet3_phi",                   10, -TMath::Pi(),   +TMath::Pi());
@@ -89,6 +93,7 @@ MVAInputVarHistManager::MVAInputVarHistManager(const edm::ParameterSet & cfg)
   binningOptions_["mhtJet25_Recl"]              = new binningOptionType("mhtJet25_Recl",              40,  0.,  400.);
   binningOptions_["min(met_pt,400)"]            = new binningOptionType("min(met_pt,400)",            40,  0.,  200.);
   binningOptions_["met_LD"]                     = new binningOptionType("met_LD",                     50,  0.,  500.);
+  binningOptions_["metLD"]                     = new binningOptionType("metLD",                     50,  0.,  500.);
   binningOptions_["mindr_lep_jet"]              = new binningOptionType("mindr_lep_jet",              10,  0.,    5.);
   binningOptions_["mindr_lep1_jet"]             = new binningOptionType("mindr_lep1_jet",             10,  0.,    5.);
   binningOptions_["mindr_lep2_jet"]             = new binningOptionType("mindr_lep2_jet",             10,  0.,    5.);
@@ -115,20 +120,28 @@ MVAInputVarHistManager::MVAInputVarHistManager(const edm::ParameterSet & cfg)
   binningOptions_["mTauTauVis2"]                = new binningOptionType("mTauTauVis2",                20,  0.,  200.);
   binningOptions_["nJet"]                       = new binningOptionType("nJet",                       20, -0.5, +19.5);
   binningOptions_["nJet25_Recl"]                = new binningOptionType("nJet25_Recl",                20, -0.5, +19.5);
+  binningOptions_["n_presel_jet"]                = new binningOptionType("n_presel_jet",                20, -0.5, +19.5);
   binningOptions_["njets_inclusive"]            = new binningOptionType("njets_inclusive",            20, -0.5, +19.5);
   binningOptions_["nBJetLoose"]                 = new binningOptionType("nBJetLoose",                 10, -0.5,  +9.5);
   binningOptions_["nBJetMedium"]                = new binningOptionType("nBJetMedium",                6, -0.5,  +5.5);
   binningOptions_["nJetForward"]                = new binningOptionType("nJetForward",                6, -0.5,  +5.5);
+  binningOptions_["n_presel_jetFwd"]            = new binningOptionType("n_presel_jetFwd",                6, -0.5,  +5.5);
   binningOptions_["nElectron"]                  = new binningOptionType("nElectron",                  10, -0.5,  +5.5);
-  binningOptions_["has_SFOS"]                   = new binningOptionType("has_SFOS",                  1, -0.5,  +0.5);
+  binningOptions_["has_SFOS"]                   = new binningOptionType("has_SFOS",                  2, -0.5,  +0.5);
+  binningOptions_["lep1_charge"]                = new binningOptionType("lep1_charge",               3, -1.5,  +1.5);
+  binningOptions_["Dilep_pdgId"]                = new binningOptionType("Dilep_pdgId",               3, 0.5,  +3.5);
+
   binningOptions_["ntags_loose"]                = new binningOptionType("ntags_loose",                10, -0.5,  +9.5);
   binningOptions_["ptmiss"]                     = new binningOptionType("ptmiss",                     40,  0.,  200.);
   binningOptions_["lep_conePt"]                 = new binningOptionType("lep_conePt",                 40,  0.,  200.);
   binningOptions_["dr_lep_tau_lead"]            = new binningOptionType("dr_lep_tau_lead",            10,  0.,    5.);
   binningOptions_["costS_tau"]                  = new binningOptionType("costS_tau",                  10, 0.,   +1.);
   binningOptions_["cosThetaS_hadTau"]           = new binningOptionType("cosThetaS_hadTau",           10, 0.,   +1.);
+  binningOptions_["hadTop_BDT"]                 = new binningOptionType("hadTop_BDT",                        10, 0.,   +1.);
   binningOptions_["HTT"]                        = new binningOptionType("HTT",                        10, 0.,   +1.);
   binningOptions_["res_HTT"]                    = new binningOptionType("res_HTT",                    10, 0.,   +1.);
+  binningOptions_["Hj_tagger_hadTop"]           = new binningOptionType("Hj_tagger_hadTop",                    10, 0.,   +1.);
+
   binningOptions_["HadTop_pt"]                  = new binningOptionType("HadTop_pt",                  10,  0.,  500.);
   binningOptions_["res_HTT_2"]                    = new binningOptionType("res_HTT_2",                    10, 0.,   +1.);
   binningOptions_["HadTop_pt_2"]                  = new binningOptionType("HadTop_pt_2",                  10,  0.,  500.);

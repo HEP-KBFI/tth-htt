@@ -24,7 +24,7 @@ class EvtHistManager_2lss
 
   void
   bookCategories(TFileDirectory & dir,
-                 const std::vector<std::string> & categories);
+                 const std::map<std::string, std::vector<double>> &  categories);
 
   void
   fillHistograms(int numElectrons,
