@@ -468,7 +468,6 @@ class analyzeConfig(object):
         self.num_jobs['addBackgrounds'] = 0
         self.num_jobs['addFakes'] = 0
 
-        self.leptonFakeRateWeight_inputFile = None
         self.leptonFakeRateWeight_histogramName_e = None
         self.leptonFakeRateWeight_histogramName_mu = None
 
@@ -478,10 +477,7 @@ class analyzeConfig(object):
         self.lep_mva_cut_mu = self.lep_mva_cut_map['mu']
         self.lep_mva_cut_e = self.lep_mva_cut_map['e']
 
-        # e.g. FR_lep_ttH_mva_default_2016.root, FR_lep_ttH_mva_ttZctrl_2017.root
-        self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva_{}_{}.root".format(self.lep_mva_wp, self.era)
-        self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva090_2017_CERN_2018May29.root"
-
+        self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva_{}_CERN_2019Jul08.root".format(self.era)
         if not os.path.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', self.leptonFakeRateWeight_inputFile)):
             raise ValueError("No such file: 'leptonFakeRateWeight_inputFile' = %s" % self.leptonFakeRateWeight_inputFile)
 
@@ -508,9 +504,6 @@ class analyzeConfig(object):
         # e.g. FR_mva080_el_QCD_NC, FR_mva085_mu_data_comb
         self.leptonFakeRateWeight_histogramName_e = "FR_mva%s_el_%s_NC" % (convert_lep_wp(self.lep_mva_cut_e), suffix)
         self.leptonFakeRateWeight_histogramName_mu = "FR_mva%s_mu_%s" % (convert_lep_wp(self.lep_mva_cut_mu), suffix)
-
-        self.leptonFakeRateWeight_histogramName_e = "FR_mva090_el_%s_NC" % suffix
-        self.leptonFakeRateWeight_histogramName_mu = "FR_mva090_mu_%s" % suffix
 
     def set_BDT_training(self, hadTau_selection_relaxed):
         """Run analysis with loose selection criteria for leptons and hadronic taus,
@@ -1202,6 +1195,29 @@ class analyzeConfig(object):
         lines.append("process.addSystFakeRates.outputFileName = cms.string('%s')" % jobOptions['plots_outputFileName'])
         create_cfg(self.cfgFile_add_syst_fakerate, jobOptions['cfgFile_modified'], lines)
 
+    def createCfg_makePlots_addShapes(self, lines):
+        central_or_shifts_prefix = []
+        for central_or_shift in self.central_or_shifts:
+            if central_or_shift in systematics.JEC_regrouped:
+                continue
+            if central_or_shift.startswith('CMS_ttHl_FR'):
+                continue
+            central_or_shift_prefix = ''
+            if central_or_shift.endswith('Up'):
+                central_or_shift_prefix = central_or_shift[:-2]
+            elif central_or_shift.endswith('Down'):
+                central_or_shift_prefix = central_or_shift[:-4]
+            else:
+                continue
+            if central_or_shift_prefix not in central_or_shifts_prefix:
+                central_or_shifts_prefix.append(central_or_shift_prefix)
+        if central_or_shifts_prefix:
+            lines.append("process.makePlots.showUncertainty = cms.bool(True)")
+            lines.append("process.makePlots.shape = cms.PSet(")
+            for central_or_shift_prefix in central_or_shifts_prefix:
+                lines.append("  {} = cms.string('0.00 +/- 1.00'),".format(central_or_shift_prefix))
+            lines.append(")")
+
     def createCfg_makePlots(self, jobOptions):
         """Fills the template of python configuration file for making control plots
 
@@ -1224,6 +1240,7 @@ class analyzeConfig(object):
         lines.append("  )")
         lines.append(")")
         lines.append("process.makePlots.intLumiData = cms.double(%.1f)" % (self.lumi / 1000))
+        self.createCfg_makePlots_addShapes(lines)
         create_cfg(self.cfgFile_make_plots, jobOptions['cfgFile_modified'], lines)
 
     def createCfg_makePlots_mcClosure(self, jobOptions): #TODO
@@ -1246,6 +1263,7 @@ class analyzeConfig(object):
       lines.append("  )")
       lines.append(")")
       lines.append("process.makePlots.intLumiData = cms.double(%.1f)" % self.lumi)
+      self.createCfg_makePlots_addShapes(lines)
       create_cfg(self.cfgFile_make_plots_mcClosure, jobOptions['cfgFile_modified'], lines)
 
     def createScript_sbatch(self, executable, sbatchFile, jobOptions,
@@ -1304,7 +1322,7 @@ class analyzeConfig(object):
         """
         self.num_jobs['addFakes'] += self.createScript_sbatch(executable, sbatchFile, jobOptions)
 
-    def create_hadd_python_file(self, inputFiles, outputFile, hadd_stage_name):
+    def create_hadd_python_file(self, inputFiles, outputFile, hadd_stage_name, max_input_files_per_job = 10):
         sbatch_hadd_file = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_hadd_%s_%s.py" % (self.channel, hadd_stage_name))
         sbatch_hadd_file = sbatch_hadd_file.replace(".root", "")
         scriptFile = os.path.join(self.dirs[DKEY_SCRIPTS], os.path.basename(sbatch_hadd_file).replace(".py", ".sh"))
@@ -1321,6 +1339,7 @@ class analyzeConfig(object):
             pool_id                 = uuid.uuid4(),
             verbose                 = self.verbose,
             dry_run                 = self.dry_run,
+            max_input_files_per_job = max_input_files_per_job,
             use_home                = self.use_home,
         )
         return sbatch_hadd_file
@@ -1359,7 +1378,7 @@ class analyzeConfig(object):
         for job in self.jobOptions_analyze.values():
             self.filesToClean.append(job['syncOutput'])
 
-    def addToMakefile_hadd(self, lines_makefile, make_target, make_dependency, inputFiles, outputFiles, max_input_files_per_job = 2):
+    def addToMakefile_hadd(self, lines_makefile, make_target, make_dependency, inputFiles, outputFiles, max_input_files_per_job = 10):
         if make_target not in self.phoniesToAdd:
             self.phoniesToAdd.append(make_target)
         if self.is_sbatch and self.run_hadd_master_on_batch:
@@ -1371,7 +1390,7 @@ class analyzeConfig(object):
             sbatchFile = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_hadd_%s.py" % self.channel)
             jobOptions = {}
             for key in outputFiles.keys():
-                scriptFile = self.create_hadd_python_file(inputFiles[key], outputFiles[key], "_".join([ make_target, key, "ClusterHistogramAggregator" ]))
+                scriptFile = self.create_hadd_python_file(inputFiles[key], outputFiles[key], "_".join([ make_target, key, "ClusterHistogramAggregator" ]), max_input_files_per_job)
                 jobOptions[key] = {
                     'inputFile' : inputFiles[key],
                     'cfgFile_modified' : scriptFile,
@@ -1399,7 +1418,7 @@ class analyzeConfig(object):
                     # do not remove the output file -> maybe it's valid
                     # the sbatch job checks the existance of the file anyways
                     #lines_makefile.append("\t%s %s" % ("rm -f", outputFiles[key]))
-                    scriptFile = self.create_hadd_python_file(inputFiles[key], outputFiles[key], "_".join([ make_target, key, "ClusterHistogramAggregator" ]))
+                    scriptFile = self.create_hadd_python_file(inputFiles[key], outputFiles[key], "_".join([ make_target, key, "ClusterHistogramAggregator" ]), max_input_files_per_job)
                     lines_makefile.append("\t%s %s" % ("python", scriptFile))
                 else:
                     outputFile_base = os.path.basename(outputFiles[key])
@@ -1444,13 +1463,13 @@ class analyzeConfig(object):
         for job in jobOptions.values():
             self.filesToClean.append(job['outputFile'])
 
-    def addToMakefile_hadd_stage1_5(self, lines_makefile, make_target, make_dependency, max_input_files_per_job = 2):
+    def addToMakefile_hadd_stage1_5(self, lines_makefile, make_target, make_dependency, max_input_files_per_job = 10):
         """Adds the commands to Makefile that are necessary for building the intermediate histogram file
            that is used as input for data-driven background estimation.
         """
         self.addToMakefile_hadd(lines_makefile, make_target, make_dependency, self.inputFiles_hadd_stage1_5, self.outputFile_hadd_stage1_5, max_input_files_per_job)
 
-    def addToMakefile_hadd_stage1_6(self, lines_makefile, make_target, make_dependency, max_input_files_per_job = 2):
+    def addToMakefile_hadd_stage1_6(self, lines_makefile, make_target, make_dependency, max_input_files_per_job = 10):
         """Adds the commands to Makefile that are necessary for building the intermediate histogram file
            that is used as input for data-driven background estimation.
         """
@@ -1482,9 +1501,9 @@ class analyzeConfig(object):
         for job in self.jobOptions_addFlips.values():
             self.filesToClean.append(job['outputFile'])
 
-    def addToMakefile_backgrounds_from_data(self, lines_makefile, make_target = "phony_addFakes", make_dependency = "phony_hadd_stage1"):
+    def addToMakefile_backgrounds_from_data(self, lines_makefile, make_target = "phony_addFakes", make_dependency = "phony_hadd_stage1", max_input_files_per_job = 10):
         self.addToMakefile_addBackgrounds(lines_makefile, "phony_addBackgrounds", make_dependency, self.sbatchFile_addBackgrounds, self.jobOptions_addBackgrounds)
-        self.addToMakefile_hadd_stage1_5(lines_makefile, "phony_hadd_stage1_5", "phony_addBackgrounds")
+        self.addToMakefile_hadd_stage1_5(lines_makefile, "phony_hadd_stage1_5", "phony_addBackgrounds", max_input_files_per_job)
         self.addToMakefile_addBackgrounds(lines_makefile, "phony_addBackgrounds_sum", "phony_hadd_stage1_5", self.sbatchFile_addBackgrounds_sum, self.jobOptions_addBackgrounds_sum)
         self.addToMakefile_addFakes(lines_makefile, "phony_addFakes", "phony_hadd_stage1_5")
         if make_target != "phony_addFakes":
@@ -1492,19 +1511,19 @@ class analyzeConfig(object):
             lines_makefile.append("")
         self.make_dependency_hadd_stage2 = " ".join([ "phony_addBackgrounds_sum", make_target ])
 
-    def addToMakefile_backgrounds_from_data_withFlips(self, lines_makefile, make_target = "phony_addFlips", make_dependency = "phony_hadd_stage1"):
+    def addToMakefile_backgrounds_from_data_withFlips(self, lines_makefile, make_target = "phony_addFlips", max_input_files_per_job = 10):
         self.addToMakefile_addBackgrounds(lines_makefile, "phony_addBackgrounds", "phony_hadd_stage1", self.sbatchFile_addBackgrounds, self.jobOptions_addBackgrounds)
-        self.addToMakefile_hadd_stage1_5(lines_makefile, "phony_hadd_stage1_5", "phony_addBackgrounds")
+        self.addToMakefile_hadd_stage1_5(lines_makefile, "phony_hadd_stage1_5", "phony_addBackgrounds", max_input_files_per_job)
         self.addToMakefile_addBackgrounds(lines_makefile, "phony_addBackgrounds_sum", "phony_hadd_stage1_5", self.sbatchFile_addBackgrounds_sum, self.jobOptions_addBackgrounds_sum)
         self.addToMakefile_addFakes(lines_makefile, "phony_addFakes", "phony_hadd_stage1_5")
-        self.addToMakefile_hadd_stage1_6(lines_makefile, "phony_hadd_stage1_6", "phony_addFakes")
+        self.addToMakefile_hadd_stage1_6(lines_makefile, "phony_hadd_stage1_6", "phony_addFakes", max_input_files_per_job)
         self.addToMakefile_addFlips(lines_makefile, "phony_addFlips", "phony_hadd_stage1_6")
         if make_target != "phony_addFlips":
             lines_makefile.append("%s: %s" % (make_target, "phony_addFlips"))
             lines_makefile.append("")
         self.make_dependency_hadd_stage2 = " ".join([ "phony_addBackgrounds_sum", make_target ])
 
-    def addToMakefile_hadd_stage2(self, lines_makefile, make_target = "phony_hadd_stage2", make_dependency = None, max_input_files_per_job = 2):
+    def addToMakefile_hadd_stage2(self, lines_makefile, make_target = "phony_hadd_stage2", make_dependency = None, max_input_files_per_job = 10):
         """Adds the commands to Makefile that are necessary for building the final histogram file.
         """
         if make_dependency is None:

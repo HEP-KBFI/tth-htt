@@ -28,11 +28,6 @@ process.makePlots.distributions.extend([
         yAxisTitle = cms.string('dN/d#eta')
     ),
     cms.PSet(
-        histogramName = cms.string('sel/evt/$PROCESS/mvaOutput_0l_2tau_ttbar'),
-        xAxisTitle = cms.string('MVA'),
-        yAxisTitle = cms.string('dN/dMVA')
-    ),
-    cms.PSet(
         histogramName = cms.string('sel/evt/$PROCESS/mTauTauVis'),
         xAxisTitle = cms.string('m_{#tau#tau}^{vis} [GeV]'),
         yAxisTitle = cms.string('dN/dm_{#tau#tau}^{vis} [1/GeV]')
@@ -43,8 +38,8 @@ process.makePlots.distributions.extend([
         yAxisTitle = cms.string('dN/dm_{#tau#tau} [1/GeV]')
     ),
     cms.PSet(
-        histogramName = cms.string('sel/met/$PROCESS/met_pt'),
-        xAxisTitle = cms.string('E_{T}^{miss} [GeV]'),
-        yAxisTitle = cms.string('dN/dE_{T}^{miss} [1/GeV]')
-    )
+        histogramName = cms.string('sel/evt/$PROCESS/mvaOutput_Legacy'),
+        xAxisTitle = cms.string('MVA'),
+        yAxisTitle = cms.string('dN/dMVA')
+    ),
 ])

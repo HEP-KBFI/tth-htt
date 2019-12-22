@@ -123,7 +123,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
     self.nonfake_backgrounds = [ "TTW", "TTWW", "TTZ", "WZ", "ZZ", "Rares", "DY", "TT", "tHq", "tHW", "VH", "WH", "ZH", "HH", "ggH", "qqH", "TTWH", "TTZH" ]
     samples_categories_MC = self.get_samples_categories_MC(self.nonfake_backgrounds)
     self.prep_dcard_processesToCopy = [ "data_obs" ] + samples_categories_MC + [ "data_fakes", "fakes_mc" ]
-    self.make_plots_backgrounds = self.nonfake_backgrounds + [ "data_fakes" ]
+    self.make_plots_backgrounds = [ process for process in self.nonfake_backgrounds if process not in [ "WH", "ZH" ] ] + [ "data_fakes" ]
 
     self.cfgFile_analyze = os.path.join(self.template_dir, cfgFile_analyze)
     self.histogramDir_prep_dcard = "0l_2tau_OS_Tight"
@@ -662,11 +662,12 @@ class analyzeConfig_0l_2tau(analyzeConfig):
       self.createScript_sbatch(self.executable_addFakes, self.sbatchFile_addFakes, self.jobOptions_addFakes)
 
     logging.info("Creating Makefile")
+    max_input_files_per_job = 3 if len(self.central_or_shifts) > 1 and len(self.categories) > 1 else 10
     lines_makefile = []
     self.addToMakefile_analyze(lines_makefile)
     self.addToMakefile_hadd_stage1(lines_makefile)
-    self.addToMakefile_backgrounds_from_data(lines_makefile)
-    self.addToMakefile_hadd_stage2(lines_makefile)
+    self.addToMakefile_backgrounds_from_data(lines_makefile, max_input_files_per_job = max_input_files_per_job)
+    self.addToMakefile_hadd_stage2(lines_makefile, max_input_files_per_job = max_input_files_per_job)
     self.addToMakefile_prep_dcard(lines_makefile)
     self.addToMakefile_add_syst_fakerate(lines_makefile)
     self.addToMakefile_make_plots(lines_makefile)

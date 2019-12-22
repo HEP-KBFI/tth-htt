@@ -111,15 +111,9 @@ elif mode == "sync":
 else:
   raise ValueError("Invalid mode: %s" % mode)
 
-evtCategories = None
-if mode == "default" and len(central_or_shifts) <= 1:
-  evtCategories = [
-    "1l_1tau" , "1l_1tau_OS", "1l_1tau_SS", "1l_1tau_OS_wChargeFlipWeights"
-  ]
-else:
-  evtCategories = [
-    "1l_1tau" , "1l_1tau_OS", "1l_1tau_SS", "1l_1tau_OS_wChargeFlipWeights"
-  ]
+evtCategories = [
+  "1l_1tau" , "1l_1tau_OS", "1l_1tau_SS", "1l_1tau_OS_wChargeFlipWeights"
+]
 
 for sample_name, sample_info in samples.items():
   if sample_name == 'sum_events':

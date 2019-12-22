@@ -22,7 +22,8 @@ EvtHistManager_4l::EvtHistManager_4l(const edm::ParameterSet & cfg)
   const std::vector<std::string> sysOpts_all = {
     "EventCounter",
     "control",
-    "mva_4l"
+    "mva_4l",
+    "massL",
   };
   for(const std::string & sysOpt: sysOpts_central)
   {

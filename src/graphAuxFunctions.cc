@@ -53,7 +53,7 @@ compRatioGraph(const std::string & ratioGraphName,
 
     double x_denominator, y_denominator;
     denominator->GetPoint(idxPoint, x_denominator, y_denominator);
-    assert(x_denominator == x_numerator);
+    assert(std::fabs(x_denominator - x_numerator) < 1.e-5);
 
     double xErrUp_denominator = 0.;
     double xErrDown_denominator = 0.;

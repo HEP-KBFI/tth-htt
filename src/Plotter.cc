@@ -247,6 +247,54 @@ Plotter::makePlots()
         histogramUncertainty = histogramManager_->getHistogramUncertainty();
       }
 
+      vstring extraLabels;
+      if(! category->label_.empty())
+      {
+        extraLabels.push_back(category->label_);
+      }
+      const double extraLabelsSizeX = 0.12;
+
+      const std::size_t idx = outputFileName_.find(".");
+      std::string outputFileName_plot(outputFileName_, 0, idx);
+      outputFileName_plot.append(
+        TString(Form("_%s_%s", category->name_.data(), distribution->outputFileName_.data())).ReplaceAll("/", "_")
+      );
+      if(idx != std::string::npos)
+      {
+        outputFileName_plot.append(std::string(outputFileName_, idx));
+      }
+
+      makePlot(
+        800, 900,
+        histogramData, histogramData_blinded,
+        histogramsBackground,
+        histogramSignal,
+        histogramUncertainty,
+        legendTextSize_, legendPosX_, legendPosY_, legendSizeX_, legendSizeY_,
+        labelOnTop_,
+        extraLabels, 0.055, 0.185, 0.915 - 0.055 * extraLabels.size(), extraLabelsSizeX, 0.055 * extraLabels.size(),
+        distribution->xMin_, distribution->xMax_, distribution->xAxisTitle_, distribution->xAxisOffset_,
+        true, distribution->yMin_, distribution->yMax_, distribution->yAxisTitle_, distribution->yAxisOffset_,
+        outputFileName_plot,
+        false,
+        divideByBinWidth_
+      );
+      makePlot(
+        800, 900,
+        histogramData, histogramData_blinded,
+        histogramsBackground,
+        histogramSignal,
+        histogramUncertainty,
+        legendTextSize_, legendPosX_, legendPosY_, legendSizeX_, legendSizeY_,
+        labelOnTop_,
+        extraLabels, 0.055, 0.185, 0.915 - 0.055 * extraLabels.size(), extraLabelsSizeX, 0.055 * extraLabels.size(),
+        distribution->xMin_, distribution->xMax_, distribution->xAxisTitle_, distribution->xAxisOffset_,
+        false, distribution->yMin_, distribution->yMax_, distribution->yAxisTitle_, distribution->yAxisOffset_,
+        outputFileName_plot,
+        false,
+        divideByBinWidth_
+      );
+
       const std::string histogramNameData_rebinned = Form("%s_rebinned", histogramData->GetName());
       TH1 * histogramData_rebinned = (TH1*)histogramData->Clone(histogramNameData_rebinned.data());
 
@@ -265,6 +313,11 @@ Plotter::makePlots()
       int apply_fixed_rebinning = 1;
       if(applyRebinning_)
       {
+        if(showUncertainty_)
+        {
+          histogramUncertainty_rebinned = static_cast<TH1 *>(histogramUncertainty->Clone(Form("%s_rebinned", histogramUncertainty->GetName())));
+        }
+
         if(apply_fixed_rebinning_)
         {
           const TArrayD histogramBinning_output = getBinning(histogramData_rebinned);
@@ -297,6 +350,10 @@ Plotter::makePlots()
           }
           getHistogramsBackground_rebin(histogramsBackground_rebinned, apply_fixed_rebinning);
           histogramBackgroundSum_rebinned->Rebin(apply_fixed_rebinning);
+          if(showUncertainty_)
+          {
+            histogramUncertainty_rebinned->Rebin(apply_fixed_rebinning);
+          }
         }
 
         TH1 * histogramData_tmp = nullptr;
@@ -330,6 +387,11 @@ Plotter::makePlots()
           histogramData_rebinned = histogramData_tmp;
           histogramsBackground_rebinned = histogramsBackground_tmp;
           histogramSignal_rebinned = histogramSignal_tmp;
+          if(showUncertainty_)
+          {
+            TH1 * histogramUncertainty_rebinned_tmp = getRebinnedHistogram1d(histogramUncertainty_rebinned, 4, histogramBinning, true);
+            histogramUncertainty_rebinned = histogramUncertainty_rebinned_tmp;
+          }
         }
 
         const std::vector<pdouble> keepBlinded_rebinned = getBlindedRanges(
@@ -347,62 +409,6 @@ Plotter::makePlots()
           }
         }
 
-        if(showUncertainty_)
-        {
-          histogramUncertainty_rebinned = histogramManager_->getHistogramUncertainty();
-        }
-      }
-
-      vstring extraLabels;
-      if(! category->label_.empty())
-      {
-        extraLabels.push_back(category->label_);
-      }
-      const double extraLabelsSizeX = 0.12;
-
-      const std::size_t idx = outputFileName_.find(".");
-      std::string outputFileName_plot(outputFileName_, 0, idx);
-      outputFileName_plot.append(
-        TString(Form("_%s_%s", category->name_.data(), distribution->outputFileName_.data())).ReplaceAll("/", "_")
-      );
-      if(idx != std::string::npos)
-      {
-        outputFileName_plot.append(std::string(outputFileName_, idx));
-      }
-
-      makePlot(
-        800, 900, 
-        histogramData, histogramData_blinded,
-        histogramsBackground,
-        histogramSignal,
-        histogramUncertainty,
-        legendTextSize_, legendPosX_, legendPosY_, legendSizeX_, legendSizeY_,
-        labelOnTop_,
-        extraLabels, 0.055, 0.185, 0.915 - 0.055 * extraLabels.size(), extraLabelsSizeX, 0.055 * extraLabels.size(),
-        distribution->xMin_, distribution->xMax_, distribution->xAxisTitle_, distribution->xAxisOffset_,
-        true, distribution->yMin_, distribution->yMax_, distribution->yAxisTitle_, distribution->yAxisOffset_,
-        outputFileName_plot,
-        false,
-        divideByBinWidth_
-      );
-      makePlot(
-        800, 900, 
-        histogramData, histogramData_blinded,
-        histogramsBackground,
-        histogramSignal,
-        histogramUncertainty,
-        legendTextSize_, legendPosX_, legendPosY_, legendSizeX_, legendSizeY_,
-        labelOnTop_,
-        extraLabels, 0.055, 0.185, 0.915 - 0.055 * extraLabels.size(), extraLabelsSizeX, 0.055 * extraLabels.size(),
-        distribution->xMin_, distribution->xMax_, distribution->xAxisTitle_, distribution->xAxisOffset_,
-        false, distribution->yMin_, distribution->yMax_, distribution->yAxisTitle_, distribution->yAxisOffset_,
-        outputFileName_plot,
-        false,
-        divideByBinWidth_
-      );
-
-      if(applyRebinning_)
-      {
         makePlot(
           800, 900, 
           histogramData_rebinned, histogramData_blinded_rebinned,

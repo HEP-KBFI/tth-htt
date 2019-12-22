@@ -17,5 +17,5 @@ process.makePlots.distributions.extend([
         histogramName = cms.string("sel/evt/$PROCESS/mTauTauVis"),
         xAxisTitle = cms.string("m_{#tau#tau}^{vis} [GeV]"),
         yAxisTitle = cms.string("dN/dm_{#tau#tau}^{vis} [1/GeV]")
-    )
+    ),
 ])

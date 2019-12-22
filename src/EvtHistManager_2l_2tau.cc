@@ -52,9 +52,8 @@ EvtHistManager_2l_2tau::bookHistograms(TFileDirectory & dir)
   // 2018: [0.0, 0.7238368653359275, 1.0]
   // 2017: [0.0, 0.7085418998688564, 1.0]
   // 2016: [0.0, 0.6971249546108068, 1.0]
-  Float_t binsx[3]  = { 0.0, 0.71, 1.0 };
+  Float_t binsx[3] = { 0.0, 0.71, 1.0 };
   histogram_final_ = book1D(dir, "mvaOutput_final",  "mvaOutput_final", 2, binsx);
-
 }
 
 void
