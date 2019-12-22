@@ -265,6 +265,11 @@ Plotter::makePlots()
       int apply_fixed_rebinning = 1;
       if(applyRebinning_)
       {
+        if(showUncertainty_)
+        {
+          histogramUncertainty_rebinned = static_cast<TH1 *>(histogramUncertainty->Clone(Form("%s_rebinned", histogramUncertainty->GetName())));
+        }
+
         if(apply_fixed_rebinning_)
         {
           const TArrayD histogramBinning_output = getBinning(histogramData_rebinned);
@@ -297,6 +302,10 @@ Plotter::makePlots()
           }
           getHistogramsBackground_rebin(histogramsBackground_rebinned, apply_fixed_rebinning);
           histogramBackgroundSum_rebinned->Rebin(apply_fixed_rebinning);
+          if(showUncertainty_)
+          {
+            histogramUncertainty_rebinned->Rebin(apply_fixed_rebinning);
+          }
         }
 
         TH1 * histogramData_tmp = nullptr;
@@ -330,6 +339,11 @@ Plotter::makePlots()
           histogramData_rebinned = histogramData_tmp;
           histogramsBackground_rebinned = histogramsBackground_tmp;
           histogramSignal_rebinned = histogramSignal_tmp;
+          if(apply_automatic_rebinning_)
+          {
+            TH1 * histogramUncertainty_rebinned_tmp = getRebinnedHistogram1d(histogramUncertainty_rebinned, 4, histogramBinning, true);
+            histogramUncertainty_rebinned = histogramUncertainty_rebinned_tmp;
+          }
         }
 
         const std::vector<pdouble> keepBlinded_rebinned = getBlindedRanges(
@@ -345,11 +359,6 @@ Plotter::makePlots()
           {
             histogramData_blinded_rebinned = (TH1*)histogramData_rebinned->Clone("rebinned_data");
           }
-        }
-
-        if(showUncertainty_)
-        {
-          histogramUncertainty_rebinned = histogramManager_->getHistogramUncertainty();
         }
       }
 
