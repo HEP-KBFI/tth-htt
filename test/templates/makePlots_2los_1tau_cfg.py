@@ -4,12 +4,7 @@ from tthAnalysis.HiggsToTauTau.configs.makePlots_cfi import process
 
 process.makePlots.distributions.extend([
     cms.PSet(
-        histogramName = cms.string("sel/evt/$PROCESS/mvaDiscr_2lss"),
-        xAxisTitle = cms.string("MVA Discriminant"),
-        yAxisTitle = cms.string("N")
-    ),
-    cms.PSet(
-        histogramName = cms.string('sel/evt/$PROCESS/mvaOutput_2los_1tau_ttbar'),
+        histogramName = cms.string('sel/evt/$PROCESS/mvaOutput_legacy'),
         xAxisTitle = cms.string('MVA'),
         yAxisTitle = cms.string('dN/dMVA')
     ),
