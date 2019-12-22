@@ -128,7 +128,7 @@ class analyzeConfig_4l(analyzeConfig):
     self.prep_dcard_processesToCopy = ["data_obs"] + samples_categories_MC + [ "Convs", "data_fakes", "fakes_mc", "data_obs" ]
     self.histogramDir_prep_dcard = "{}_OS_Tight".format(self.channel)
     self.histogramDir_prep_dcard_SS = "{}_SS_Tight".format(self.channel)
-    self.make_plots_backgrounds = [ process for process in self.prep_dcard_processesToCopy if process not in [ "data_obs", "fakes_mc", "WH", "ZH" ] ]
+    self.make_plots_backgrounds = [ process for process in self.nonfake_backgrounds if process not in [ "WH", "ZH" ] ] + [ "Convs", "data_fakes" ]
     self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_4l_cfg.py")
     self.cfgFile_make_plots_mcClosure = os.path.join(self.template_dir, "makePlots_mcClosure_4l_cfg.py") #TODO
 
