@@ -247,6 +247,54 @@ Plotter::makePlots()
         histogramUncertainty = histogramManager_->getHistogramUncertainty();
       }
 
+      vstring extraLabels;
+      if(! category->label_.empty())
+      {
+        extraLabels.push_back(category->label_);
+      }
+      const double extraLabelsSizeX = 0.12;
+
+      const std::size_t idx = outputFileName_.find(".");
+      std::string outputFileName_plot(outputFileName_, 0, idx);
+      outputFileName_plot.append(
+        TString(Form("_%s_%s", category->name_.data(), distribution->outputFileName_.data())).ReplaceAll("/", "_")
+      );
+      if(idx != std::string::npos)
+      {
+        outputFileName_plot.append(std::string(outputFileName_, idx));
+      }
+
+      makePlot(
+        800, 900,
+        histogramData, histogramData_blinded,
+        histogramsBackground,
+        histogramSignal,
+        histogramUncertainty,
+        legendTextSize_, legendPosX_, legendPosY_, legendSizeX_, legendSizeY_,
+        labelOnTop_,
+        extraLabels, 0.055, 0.185, 0.915 - 0.055 * extraLabels.size(), extraLabelsSizeX, 0.055 * extraLabels.size(),
+        distribution->xMin_, distribution->xMax_, distribution->xAxisTitle_, distribution->xAxisOffset_,
+        true, distribution->yMin_, distribution->yMax_, distribution->yAxisTitle_, distribution->yAxisOffset_,
+        outputFileName_plot,
+        false,
+        divideByBinWidth_
+      );
+      makePlot(
+        800, 900,
+        histogramData, histogramData_blinded,
+        histogramsBackground,
+        histogramSignal,
+        histogramUncertainty,
+        legendTextSize_, legendPosX_, legendPosY_, legendSizeX_, legendSizeY_,
+        labelOnTop_,
+        extraLabels, 0.055, 0.185, 0.915 - 0.055 * extraLabels.size(), extraLabelsSizeX, 0.055 * extraLabels.size(),
+        distribution->xMin_, distribution->xMax_, distribution->xAxisTitle_, distribution->xAxisOffset_,
+        false, distribution->yMin_, distribution->yMax_, distribution->yAxisTitle_, distribution->yAxisOffset_,
+        outputFileName_plot,
+        false,
+        divideByBinWidth_
+      );
+
       const std::string histogramNameData_rebinned = Form("%s_rebinned", histogramData->GetName());
       TH1 * histogramData_rebinned = (TH1*)histogramData->Clone(histogramNameData_rebinned.data());
 
@@ -360,58 +408,7 @@ Plotter::makePlots()
             histogramData_blinded_rebinned = (TH1*)histogramData_rebinned->Clone("rebinned_data");
           }
         }
-      }
 
-      vstring extraLabels;
-      if(! category->label_.empty())
-      {
-        extraLabels.push_back(category->label_);
-      }
-      const double extraLabelsSizeX = 0.12;
-
-      const std::size_t idx = outputFileName_.find(".");
-      std::string outputFileName_plot(outputFileName_, 0, idx);
-      outputFileName_plot.append(
-        TString(Form("_%s_%s", category->name_.data(), distribution->outputFileName_.data())).ReplaceAll("/", "_")
-      );
-      if(idx != std::string::npos)
-      {
-        outputFileName_plot.append(std::string(outputFileName_, idx));
-      }
-
-      makePlot(
-        800, 900, 
-        histogramData, histogramData_blinded,
-        histogramsBackground,
-        histogramSignal,
-        histogramUncertainty,
-        legendTextSize_, legendPosX_, legendPosY_, legendSizeX_, legendSizeY_,
-        labelOnTop_,
-        extraLabels, 0.055, 0.185, 0.915 - 0.055 * extraLabels.size(), extraLabelsSizeX, 0.055 * extraLabels.size(),
-        distribution->xMin_, distribution->xMax_, distribution->xAxisTitle_, distribution->xAxisOffset_,
-        true, distribution->yMin_, distribution->yMax_, distribution->yAxisTitle_, distribution->yAxisOffset_,
-        outputFileName_plot,
-        false,
-        divideByBinWidth_
-      );
-      makePlot(
-        800, 900, 
-        histogramData, histogramData_blinded,
-        histogramsBackground,
-        histogramSignal,
-        histogramUncertainty,
-        legendTextSize_, legendPosX_, legendPosY_, legendSizeX_, legendSizeY_,
-        labelOnTop_,
-        extraLabels, 0.055, 0.185, 0.915 - 0.055 * extraLabels.size(), extraLabelsSizeX, 0.055 * extraLabels.size(),
-        distribution->xMin_, distribution->xMax_, distribution->xAxisTitle_, distribution->xAxisOffset_,
-        false, distribution->yMin_, distribution->yMax_, distribution->yAxisTitle_, distribution->yAxisOffset_,
-        outputFileName_plot,
-        false,
-        divideByBinWidth_
-      );
-
-      if(applyRebinning_)
-      {
         makePlot(
           800, 900, 
           histogramData_rebinned, histogramData_blinded_rebinned,
