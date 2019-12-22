@@ -91,17 +91,7 @@ process.makePlots = cms.PSet(
             TTZH = cms.string("1.0 +/- 0.20"),
             HH = cms.string("1.0 +/- 0.20"),
         ),
-        shape = cms.PSet(
-            CMS_ttHl_btag_HF = cms.string("0.00 +/- 1.00"),
-            CMS_ttHl_btag_HFStats1 = cms.string("0.00 +/- 1.00"),
-            CMS_ttHl_btag_HFStats2 = cms.string("0.00 +/- 1.00"),
-            CMS_ttHl_btag_LF = cms.string("0.00 +/- 1.00"),
-            CMS_ttHl_btag_LFStats1 = cms.string("0.00 +/- 1.00"),
-            CMS_ttHl_btag_LFStats2 = cms.string("0.00 +/- 1.00"),
-            CMS_ttHl_btag_cErr1 = cms.string("0.00 +/- 1.00"),
-            CMS_ttHl_btag_cErr2 = cms.string("0.00 +/- 1.00"),
-            CMS_ttHl_JES = cms.string("0.00 +/- 1.00"),
-        )
+        shape = cms.PSet()
     ),
     showUncertainty = cms.bool(False),
 

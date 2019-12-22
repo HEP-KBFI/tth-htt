@@ -1195,6 +1195,29 @@ class analyzeConfig(object):
         lines.append("process.addSystFakeRates.outputFileName = cms.string('%s')" % jobOptions['plots_outputFileName'])
         create_cfg(self.cfgFile_add_syst_fakerate, jobOptions['cfgFile_modified'], lines)
 
+    def createCfg_makePlots_addShapes(self, lines):
+        central_or_shifts_prefix = []
+        for central_or_shift in self.central_or_shifts:
+            if central_or_shift in systematics.JEC_regrouped:
+                continue
+            if central_or_shift.startswith('CMS_ttHl_FR'):
+                continue
+            central_or_shift_prefix = ''
+            if central_or_shift.endswith('Up'):
+                central_or_shift_prefix = central_or_shift[:-2]
+            elif central_or_shift.endswith('Down'):
+                central_or_shift_prefix = central_or_shift[:-4]
+            else:
+                continue
+            if central_or_shift_prefix not in central_or_shifts_prefix:
+                central_or_shifts_prefix.append(central_or_shift_prefix)
+        if central_or_shifts_prefix:
+            lines.append("process.makePlots.showUncertainty = cms.bool(True)")
+            lines.append("process.makePlots.shape = cms.PSet(")
+            for central_or_shift_prefix in central_or_shifts_prefix:
+                lines.append("  {} = cms.string('0.00 +/- 1.00'),".format(central_or_shift_prefix))
+            lines.append(")")
+
     def createCfg_makePlots(self, jobOptions):
         """Fills the template of python configuration file for making control plots
 
@@ -1217,7 +1240,7 @@ class analyzeConfig(object):
         lines.append("  )")
         lines.append(")")
         lines.append("process.makePlots.intLumiData = cms.double(%.1f)" % (self.lumi / 1000))
-        lines.append("process.makePlots.showUncertainty = cms.bool(%s)" % (len(self.central_or_shifts) > 1))
+        self.createCfg_makePlots_addShapes(lines)
         create_cfg(self.cfgFile_make_plots, jobOptions['cfgFile_modified'], lines)
 
     def createCfg_makePlots_mcClosure(self, jobOptions): #TODO
@@ -1240,7 +1263,7 @@ class analyzeConfig(object):
       lines.append("  )")
       lines.append(")")
       lines.append("process.makePlots.intLumiData = cms.double(%.1f)" % self.lumi)
-      lines.append("process.makePlots.showUncertainty = cms.bool(%s)" % (len(self.central_or_shifts) > 1))
+      self.createCfg_makePlots_addShapes(lines)
       create_cfg(self.cfgFile_make_plots_mcClosure, jobOptions['cfgFile_modified'], lines)
 
     def createScript_sbatch(self, executable, sbatchFile, jobOptions,
