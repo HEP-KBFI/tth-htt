@@ -339,7 +339,7 @@ Plotter::makePlots()
           histogramData_rebinned = histogramData_tmp;
           histogramsBackground_rebinned = histogramsBackground_tmp;
           histogramSignal_rebinned = histogramSignal_tmp;
-          if(apply_automatic_rebinning_)
+          if(showUncertainty_)
           {
             TH1 * histogramUncertainty_rebinned_tmp = getRebinnedHistogram1d(histogramUncertainty_rebinned, 4, histogramBinning, true);
             histogramUncertainty_rebinned = histogramUncertainty_rebinned_tmp;
