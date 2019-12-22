@@ -173,7 +173,6 @@ if __name__ == '__main__':
       "EventCounter"                      : {},
       "numJets"                           : {},
       "mTauTauVis"                        : {},
-      "mvaOutput_final"                   : {},
       "mvaOutput_legacy"                  : {},
     },
     select_rle_output                     = True,

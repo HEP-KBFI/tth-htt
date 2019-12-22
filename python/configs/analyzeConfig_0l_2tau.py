@@ -123,7 +123,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
     self.nonfake_backgrounds = [ "TTW", "TTWW", "TTZ", "WZ", "ZZ", "Rares", "DY", "TT", "tHq", "tHW", "VH", "WH", "ZH", "HH", "ggH", "qqH", "TTWH", "TTZH" ]
     samples_categories_MC = self.get_samples_categories_MC(self.nonfake_backgrounds)
     self.prep_dcard_processesToCopy = [ "data_obs" ] + samples_categories_MC + [ "data_fakes", "fakes_mc" ]
-    self.make_plots_backgrounds = self.nonfake_backgrounds + [ "data_fakes" ]
+    self.make_plots_backgrounds = [ process for process in self.prep_dcard_processesToCopy if process not in [ "data_obs", "fakes_mc", "WH", "ZH" ] ]
 
     self.cfgFile_analyze = os.path.join(self.template_dir, cfgFile_analyze)
     self.histogramDir_prep_dcard = "0l_2tau_OS_Tight"

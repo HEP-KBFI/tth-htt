@@ -123,7 +123,7 @@ class analyzeConfig_2lss(analyzeConfig):
     self.nonfake_backgrounds = [ "TTW", "TTWW", "TTZ", "WZ", "ZZ", "Rares", "tHq", "tHW", "VH", "WH", "ZH", "ggH", "qqH", "HH", "TTWH", "TTZH" ]
     samples_categories_MC = self.get_samples_categories_MC(self.nonfake_backgrounds)
     self.prep_dcard_processesToCopy = ["data_obs"] + samples_categories_MC + [ "Convs", "data_fakes", "fakes_mc", "data_flips", "flips_mc"  ]
-    self.make_plots_backgrounds = [ "TTW", "TTZ", "TTWW", "Rares", "tHq", "tHW", "TTZH", "TTWH" ] + [ "Convs", "data_fakes", "data_flips" ]
+    self.make_plots_backgrounds = [ process for process in self.prep_dcard_processesToCopy if process not in [ "data_obs", "fakes_mc", "flips_mc", "WH", "ZH" ] ]
 
     self.cfgFile_analyze = os.path.join(self.template_dir, cfgFile_analyze)
     self.inputFiles_hadd_stage1_6 = {}
