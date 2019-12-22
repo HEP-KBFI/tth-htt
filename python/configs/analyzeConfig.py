@@ -1501,7 +1501,17 @@ class analyzeConfig(object):
         for job in self.jobOptions_addFlips.values():
             self.filesToClean.append(job['outputFile'])
 
-    def addToMakefile_backgrounds_from_data(self, lines_makefile, make_target = "phony_addFakes", make_dependency = "phony_hadd_stage1", max_input_files_per_job = 10):
+    def get_max_input_files_per_job(self):
+        if len(self.central_or_shifts) > 1:
+            if self.channel in [ '0l_2tau', '1l_1tau' ]:
+                return 2
+            else:
+                return 3
+        else:
+            return 10
+
+    def addToMakefile_backgrounds_from_data(self, lines_makefile, make_target = "phony_addFakes", make_dependency = "phony_hadd_stage1"):
+        max_input_files_per_job = self.get_max_input_files_per_job()
         self.addToMakefile_addBackgrounds(lines_makefile, "phony_addBackgrounds", make_dependency, self.sbatchFile_addBackgrounds, self.jobOptions_addBackgrounds)
         self.addToMakefile_hadd_stage1_5(lines_makefile, "phony_hadd_stage1_5", "phony_addBackgrounds", max_input_files_per_job)
         self.addToMakefile_addBackgrounds(lines_makefile, "phony_addBackgrounds_sum", "phony_hadd_stage1_5", self.sbatchFile_addBackgrounds_sum, self.jobOptions_addBackgrounds_sum)
@@ -1511,7 +1521,8 @@ class analyzeConfig(object):
             lines_makefile.append("")
         self.make_dependency_hadd_stage2 = " ".join([ "phony_addBackgrounds_sum", make_target ])
 
-    def addToMakefile_backgrounds_from_data_withFlips(self, lines_makefile, make_target = "phony_addFlips", max_input_files_per_job = 10):
+    def addToMakefile_backgrounds_from_data_withFlips(self, lines_makefile, make_target = "phony_addFlips"):
+        max_input_files_per_job = self.get_max_input_files_per_job()
         self.addToMakefile_addBackgrounds(lines_makefile, "phony_addBackgrounds", "phony_hadd_stage1", self.sbatchFile_addBackgrounds, self.jobOptions_addBackgrounds)
         self.addToMakefile_hadd_stage1_5(lines_makefile, "phony_hadd_stage1_5", "phony_addBackgrounds", max_input_files_per_job)
         self.addToMakefile_addBackgrounds(lines_makefile, "phony_addBackgrounds_sum", "phony_hadd_stage1_5", self.sbatchFile_addBackgrounds_sum, self.jobOptions_addBackgrounds_sum)
@@ -1523,9 +1534,10 @@ class analyzeConfig(object):
             lines_makefile.append("")
         self.make_dependency_hadd_stage2 = " ".join([ "phony_addBackgrounds_sum", make_target ])
 
-    def addToMakefile_hadd_stage2(self, lines_makefile, make_target = "phony_hadd_stage2", make_dependency = None, max_input_files_per_job = 10):
+    def addToMakefile_hadd_stage2(self, lines_makefile, make_target = "phony_hadd_stage2", make_dependency = None):
         """Adds the commands to Makefile that are necessary for building the final histogram file.
         """
+        max_input_files_per_job = self.get_max_input_files_per_job()
         if make_dependency is None:
             make_dependency = self.make_dependency_hadd_stage2
         self.addToMakefile_hadd(lines_makefile, make_target, make_dependency, self.inputFiles_hadd_stage2, self.outputFile_hadd_stage2, max_input_files_per_job)

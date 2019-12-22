@@ -191,22 +191,24 @@ def validate_regions(rles):
         if sample_name not in validation_set:
           validation_set[sample_name] = collections.OrderedDict()
         for central_or_shift in rles[channel][region][sample_name]:
+          if central_or_shift not in validation_set[sample_name]:
+            validation_set[sample_name][central_or_shift] = collections.OrderedDict()
           for rle in rles[channel][region][sample_name][central_or_shift]:
-            if rle not in validation_set[sample_name]:
-              validation_set[sample_name][rle] = collections.OrderedDict()
-            if region not in validation_set[sample_name][rle]:
-              validation_set[sample_name][rle][region] = []
-            validation_set[sample_name][rle][region].append(central_or_shift)
+            if rle not in validation_set[sample_name][central_or_shift]:
+              validation_set[sample_name][central_or_shift][rle] = []
+            if region not in validation_set[sample_name][central_or_shift][rle]:
+              validation_set[sample_name][central_or_shift][rle].append(region)
     for sample_name in validation_set:
       has_errors_sample = False
-      for rle in validation_set[sample_name]:
-        if len(validation_set[sample_name][rle]) > 1:
-          logging.error(
-            "Found duplicates in channel {} and sample {} for event {}: regions {}".format(
-              channel, sample_name, rle, ', '.join(validation_set[sample_name][rle].keys())
+      for central_or_shift in validation_set[sample_name]:
+        for rle in validation_set[sample_name][central_or_shift]:
+          if len(validation_set[sample_name][central_or_shift][rle]) > 1:
+            logging.error(
+              "Found duplicates in channel {} and sample {} for event {}: regions {}".format(
+                channel, sample_name, rle, ', '.join(validation_set[sample_name][central_or_shift][rle])
+              )
             )
-          )
-          has_errors_sample = True
+            has_errors_sample = True
       if not has_errors_sample:
         logging.info('No overlapping events found between regions for sample {} in channel {}'.format(sample_name, channel))
       has_errors = has_errors or has_errors_sample
