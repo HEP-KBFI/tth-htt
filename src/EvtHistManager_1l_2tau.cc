@@ -18,7 +18,7 @@ EvtHistManager_1l_2tau::EvtHistManager_1l_2tau(const edm::ParameterSet & cfg)
     "mvaOutput_legacy"
   };
   const std::vector<std::string> sysOpts_all = {
-    "mvaOutput_final",
+    "mvaOutput_legacy",
     "EventCounter",
   };
   for(const std::string & sysOpt: sysOpts_central)
