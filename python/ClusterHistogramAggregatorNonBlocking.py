@@ -61,7 +61,7 @@ class ClusterHistogramAggregatorNonBlocking(object):
                     )
                 output_files.append(output_file)
 
-                task_name = 'ClusterHistogramAggregatorNonBlocking_{}'.format(os.path.basename(output_file)).replace(".root", "")
+                task_name = 'ClusterHistogramAggregator_{}'.format(os.path.basename(output_file)).replace(".root", "")
                 script_file = os.path.join(self.cfg_dir, '{}.sh'.format(task_name))
                 log_file = os.path.join(self.log_dir, '{}.log'.format(task_name))
 
