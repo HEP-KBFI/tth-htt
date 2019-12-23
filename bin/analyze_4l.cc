@@ -622,10 +622,6 @@ int main(int argc, char* argv[])
         selHistManager->evt_[evt_cat_str] = new EvtHistManager_4l(makeHistManager_cfg(
           process_and_genMatchName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift
         ));
-        if(isControlRegion)
-        {
-          selHistManager->evt_[evt_cat_str]->setCRcategories(fs, ctrl_categories);
-        }
         selHistManager->evt_[evt_cat_str]->bookHistograms(fs);
       }
 
@@ -656,10 +652,6 @@ int main(int argc, char* argv[])
             selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] = new EvtHistManager_4l(makeHistManager_cfg(
               decayMode_and_genMatchName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift
             ));
-            if(isControlRegion)
-            {
-              selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] -> setCRcategories(fs, ctrl_categories);
-            }
             selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] -> bookHistograms(fs);
           }
         }
@@ -1485,32 +1477,33 @@ int main(int argc, char* argv[])
           std::cout << std::endl;
           std::cout << std::endl;
         }
+        const double mass_4L           = (selLepton_lead->p4() + selLepton_sublead->p4() + selLepton_third->p4()  + selLepton_fourth->p4()).mass();
 
 //--- retrieve gen-matching flags
     std::vector<const GenMatchEntry*> genMatches = genMatchInterface.getGenMatch(selLeptons);
 
 //--- fill histograms with events passing final selection
-    std::string ctrl_category = "other";
+    int ctrl_category = -1;
     if(isControlRegion)
     {
       const int nofSFOSZbosonPairs = countZbosonSFOSpairs(preselLeptons);
       if(nofSFOSZbosonPairs == 2)
       {
-        ctrl_category = "sfos_2";
+        ctrl_category = 0;
       }
       else if(nofSFOSZbosonPairs == 1)
       {
         if(selJets.size() == 0)
         {
-          ctrl_category = "sfos_1_0j";
+          ctrl_category = 1;
         }
         else if(selBJets_medium.size() == 1)
         {
-          ctrl_category = "sfos_1_1Mb";
+          ctrl_category = 2;
         }
         else if(selBJets_medium.size() >= 2)
         {
-          ctrl_category = "sfos_1_2Mb";
+          ctrl_category = 3;
         }
       }
     }
@@ -1569,7 +1562,7 @@ int main(int argc, char* argv[])
             selHistManager_evt->fillHistograms(
             selElectrons.size(), selMuons.size(),
             selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-            massL(selLeptons), mva_4l,
+            mass_4L, mva_4l,
             ctrl_category,
             kv.second
           );
@@ -1592,7 +1585,7 @@ int main(int argc, char* argv[])
                 selJets.size(),
                 selBJets_loose.size(),
                 selBJets_medium.size(),
-                massL(selLeptons), mva_4l,
+                mass_4L, mva_4l,
                 ctrl_category,
                 kv.second
               );
