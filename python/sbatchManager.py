@@ -494,7 +494,7 @@ class sbatchManager:
         )
         return job_dir
 
-    def waitForJobs(self):
+    def poll(self, nonBlocking):
         """Waits for all sbatch jobs submitted by this instance of sbatchManager to finish processing
         """
         text_line = '-' * 120
@@ -702,7 +702,10 @@ class sbatchManager:
                 job_id for job_id in self.submittedJobs if self.submittedJobs[job_id]['status'] == Status.submitted
             ])
             nofJobs_left = len(jobIds_set) + len(self.queuedJobs)
+            logging.info("Waiting for sbatch to finish (%d job(s) still left) ..." % nofJobs_left)
             if nofJobs_left > 0:
+                if nonBlocking:
+                    return False
                 two_pow_sixteen = 65536
                 random.seed((abs(hash(uuid.uuid4()))) % two_pow_sixteen)
                 max_delay = 300
@@ -711,4 +714,11 @@ class sbatchManager:
                 time.sleep(self.poll_interval + random_delay)
             else:
                 break
-            logging.info("Waiting for sbatch to finish (%d job(s) still left) ..." % nofJobs_left)
+
+        return True
+
+    def waitForJobs(self):
+        return self.poll(nonBlocking = False)
+
+    def isDone(self):
+        return self.poll(nonBlocking = True)
