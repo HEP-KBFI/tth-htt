@@ -13,9 +13,4 @@ process.makePlots.distributions.extend([
         xAxisTitle = cms.string("MVA Discriminant (3l tt)"),
         yAxisTitle = cms.string("dN/dMVA")
     ),
-    cms.PSet(
-        histogramName = cms.string("sel/evt/$PROCESS/mvaDiscr_3l"),
-        xAxisTitle = cms.string("MVA Discriminant (3l)"),
-        yAxisTitle = cms.string("dN/dMVA")
-    ),
 ])
