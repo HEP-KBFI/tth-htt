@@ -225,7 +225,6 @@ class analyzeConfig(object):
             self.is_makefile = True
         self.makefile = os.path.join(
             self.configDir, "Makefile_%s" % self.channel)
-        self.run_hadd_master_on_batch = False
         self.num_parallel_jobs = num_parallel_jobs
         self.histograms_to_fit = histograms_to_fit
         self.executable_prep_dcard = executable_prep_dcard
@@ -1381,52 +1380,33 @@ class analyzeConfig(object):
     def addToMakefile_hadd(self, lines_makefile, make_target, make_dependency, inputFiles, outputFiles, max_input_files_per_job = 10):
         if make_target not in self.phoniesToAdd:
             self.phoniesToAdd.append(make_target)
-        if self.is_sbatch and self.run_hadd_master_on_batch:
-            lines_makefile.append("%s: %s" % (make_target, make_dependency))
-            # do not remove the output file -> maybe it's valid
-            # the sbatch job checks the existance of the file anyways
-            #for outputFile in outputFiles.values():
-            #    lines_makefile.append("\t%s %s" % ("rm -f", outputFile))
-            sbatchFile = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_hadd_%s.py" % self.channel)
-            jobOptions = {}
-            for key in outputFiles.keys():
+        numOutputFiles = len(outputFiles.keys())
+        numBatches = min(100, numOutputFiles)
+        make_target_batches = []
+        idxBatch = 0
+        for idxKey, key in enumerate(outputFiles.keys()):
+            if idxKey*numBatches >= idxBatch*numOutputFiles:
+                if idxKey > 0:
+                    lines_makefile.append("")
+                make_target_batch = "%s_part%i" % (make_target, idxBatch)
+                lines_makefile.append("%s: %s" % (make_target_batch, make_dependency))
+                make_target_batches.append(make_target_batch)
+                idxBatch = idxBatch + 1
+                if make_target_batch not in self.phoniesToAdd:
+                    self.phoniesToAdd.append(make_target_batch)
+            if self.is_sbatch:
+                # do not remove the output file -> maybe it's valid
+                # the sbatch job checks the existance of the file anyways
+                #lines_makefile.append("\t%s %s" % ("rm -f", outputFiles[key]))
                 scriptFile = self.create_hadd_python_file(inputFiles[key], outputFiles[key], "_".join([ make_target, key, "ClusterHistogramAggregator" ]), max_input_files_per_job)
-                jobOptions[key] = {
-                    'inputFile' : inputFiles[key],
-                    'cfgFile_modified' : scriptFile,
-                    'outputFile' : None, # CV: output file written to /hdfs by ClusterHistogramAggregator directly and does not need to be copied
-                    'logFile' : os.path.join(self.dirs[DKEY_LOGS], os.path.basename(outputFiles[key]).replace(".root", ".log"))
-                }
-            self.createScript_sbatch('python', sbatchFile, jobOptions)
-            lines_makefile.append("\t%s %s" % ("python", sbatchFile))
-        else:
-            numOutputFiles = len(outputFiles.keys())
-            numBatches = min(100, numOutputFiles)
-            make_target_batches = []
-            idxBatch = 0
-            for idxKey, key in enumerate(outputFiles.keys()):
-                if idxKey*numBatches >= idxBatch*numOutputFiles:
-                    if idxKey > 0:
-                        lines_makefile.append("")
-                    make_target_batch = "%s_part%i" % (make_target, idxBatch)
-                    lines_makefile.append("%s: %s" % (make_target_batch, make_dependency))
-                    make_target_batches.append(make_target_batch)
-                    idxBatch = idxBatch + 1
-                    if make_target_batch not in self.phoniesToAdd:
-                        self.phoniesToAdd.append(make_target_batch)
-                if self.is_sbatch:
-                    # do not remove the output file -> maybe it's valid
-                    # the sbatch job checks the existance of the file anyways
-                    #lines_makefile.append("\t%s %s" % ("rm -f", outputFiles[key]))
-                    scriptFile = self.create_hadd_python_file(inputFiles[key], outputFiles[key], "_".join([ make_target, key, "ClusterHistogramAggregator" ]), max_input_files_per_job)
-                    lines_makefile.append("\t%s %s" % ("python", scriptFile))
-                else:
-                    outputFile_base = os.path.basename(outputFiles[key])
-                    lines_makefile.append("\thadd -f %s %s" % (outputFile_base, ' '.join(inputFiles[key])))
-                    if outputFile_base != outputFiles[key]:
-                        lines_makefile.append("\tmv %s %s" % (outputFile_base, outputFiles[key]))
-            lines_makefile.append("")
-            lines_makefile.append("%s: %s" % (make_target, " ".join(make_target_batches)))
+                lines_makefile.append("\t%s %s" % ("python", scriptFile))
+            else:
+                outputFile_base = os.path.basename(outputFiles[key])
+                lines_makefile.append("\thadd -f %s %s" % (outputFile_base, ' '.join(inputFiles[key])))
+                if outputFile_base != outputFiles[key]:
+                    lines_makefile.append("\tmv %s %s" % (outputFile_base, outputFiles[key]))
+        lines_makefile.append("")
+        lines_makefile.append("%s: %s" % (make_target, " ".join(make_target_batches)))
         lines_makefile.append("")
         for outputFile in outputFiles.values():
             self.filesToClean.append(outputFile)
