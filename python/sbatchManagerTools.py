@@ -263,7 +263,7 @@ def get_num_jobs(nof_input_files, max_input_files_per_job):
     return sum(nof_jobs)
 
 def createScript_sbatch_hadd_nonBlocking(
-    sbatch_script_file_name,
+        sbatch_script_file_name,
         inputFiles,
         outputFiles,
         script_file_name,
@@ -330,6 +330,7 @@ while True:
   else:
     time.sleep(60)
 """
+    script_str = "ClusterHistogramAggregator"
     
     content = []
     nof_jobs = 0
@@ -340,6 +341,10 @@ while True:
             "Found duplicate input files to produce output file %s: %s" % \
             (outputFiles[key], ", ".join(input_file_names_duplicates))
           )
+        assert(script_file_name.find(script_str) != -1)
+        script_file_name_key = script_file_name.replace(script_str, "{}_{}".format(key, script_str))
+        assert (log_file_name.find(script_str) != -1)
+        log_file_name_key = log_file_name.replace(script_str, "{}_{}".format(key, script_str))
         template_vars = {
             'working_dir'             : working_dir,
             'input_file_names'        : inputFiles[key],
@@ -347,8 +352,8 @@ while True:
             'auxDirName'              : auxDirName,
             'pool_id'                 : uuid.uuid4(),
             'max_input_files_per_job' : max_input_files_per_job,
-            'script_file_name'        : script_file_name,
-            'log_file_name'           : log_file_name,
+            'script_file_name'        : script_file_name_key,
+            'log_file_name'           : log_file_name_key,
             'verbose'                 : verbose,
             'dry_run'                 : dry_run,
             'use_home'                : use_home,
