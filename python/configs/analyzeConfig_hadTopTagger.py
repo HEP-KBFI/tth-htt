@@ -168,9 +168,9 @@ class analyzeConfig_hadTopTagger(analyzeConfig):
                                                                         "hadd_stage1_%s.root" % process_name)
         self.targets.append(self.outputFile_hadd_stage1[key_hadd_stage1_job])
 
+    self.sbatchFile_analyze = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_analyze_%s.py" % self.channel)
     if self.is_sbatch:
       logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)
-      self.sbatchFile_analyze = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_analyze_%s.py" % self.channel)
       self.createScript_sbatch_analyze(self.executable_analyze, self.sbatchFile_analyze, self.jobOptions_analyze)
 
     logging.info("Creating Makefile")

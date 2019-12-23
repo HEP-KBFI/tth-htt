@@ -280,9 +280,9 @@ class analyzeConfig_charge_flip(analyzeConfig):
       }
       self.createCfg_prep_dcard(self.jobOptions_prep_dcard[key_prep_dcard_job])
 
+    self.sbatchFile_analyze = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_analyze_%s.py" % self.channel)
     if self.is_sbatch:
       logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)
-      self.sbatchFile_analyze = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_analyze_%s.py" % self.channel)
       self.createScript_sbatch_analyze(self.executable_analyze, self.sbatchFile_analyze, self.jobOptions_analyze)
 
     logging.info("Creating Makefile")
