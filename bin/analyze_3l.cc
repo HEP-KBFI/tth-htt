@@ -2019,16 +2019,17 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     category_NN = "control_";
     if (
       selLepton_lead_type == kElectron && selLepton_sublead_type == kElectron && selLepton_third_type == kElectron
-    ) category_NN += "_eee"; // to not break in FO region
+    ) category_NN += "eee"; // to not break in FO region
     else if (
       (selLepton_sublead_type == kElectron && selLepton_third_type == kElectron) ||
       (selLepton_lead_type == kElectron &&  selLepton_third_type == kElectron) ||
       (selLepton_lead_type == kElectron && selLepton_sublead_type == kElectron)
-    ) category_NN += "_eem";
+    ) category_NN += "eem";
     else if (
       selLepton_lead_type == kElectron || selLepton_sublead_type == kElectron || selLepton_third_type == kElectron
-    ) category_NN += "_emm";
-    else if ( selElectrons.size() == 0) category_NN += "_mmm";
+    ) category_NN += "emm";
+    else if ( selElectrons.size() == 0) category_NN += "mmm";
+    
     output_NN = -10.0;
     if ( selBJets_medium.size() == 0 )
     {
