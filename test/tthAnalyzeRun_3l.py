@@ -148,6 +148,29 @@ if __name__ == '__main__':
   if sample_filter:
     samples = filter_samples(samples, sample_filter)
 
+  original_histos = {
+    "EventCounter" : {}
+  }
+  if control_region :
+      sig_extraction_histos = {
+      "control_eee" : {},
+      "control_eem" : {},
+      "control_emm" : {},
+      "control_mmm" : {}
+      }
+  else :
+      sig_extraction_histos = {
+      "output_NN_ttH_bl" : {},
+      "output_NN_ttH_bt" : {},
+      "output_NN_tH_bl" : {},
+      "output_NN_tH_bt" : {},
+      "output_NN_rest_eee" : {},
+      "output_NN_rest_eem" : {},
+      "output_NN_rest_emm" : {},
+      "output_NN_rest_mmm" : {},
+      "mass_3L"  : {}
+      }
+  original_histos.update(sig_extraction_histos)
   analysis = analyzeConfig_3l(
     configDir = os.path.join("/home",       getpass.getuser(), "ttHAnalysis", era, version),
     outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis", era, version),
@@ -171,20 +194,7 @@ if __name__ == '__main__':
     num_parallel_jobs                     = num_parallel_jobs,
     executable_addBackgrounds             = "addBackgrounds",
     executable_addBackgroundJetToTauFakes = "addBackgroundLeptonFakes",
-    histograms_to_fit                     = {
-      "EventCounter" : {},
-      "numJets"      : {},
-      "mvaDiscr_3l"  : {},
-      #"control"      : {},
-      "output_NN_ttH_bl" : {},
-      "output_NN_ttH_bt" : {},
-      "output_NN_tH_bl" : {},
-      "output_NN_tH_bt" : {},
-      "output_NN_rest_eee" : {},
-      "output_NN_rest_eem" : {},
-      "output_NN_rest_emm" : {},
-      "output_NN_rest_mmm" : {}
-    },
+    histograms_to_fit                     = original_histos,
     select_rle_output                     = True,
     select_root_output                    = False,
     dry_run                               = dry_run,
