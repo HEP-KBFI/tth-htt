@@ -16,7 +16,7 @@ class EvtHistManager_4l
   : public HistManagerBase
 {
  public:
-  EvtHistManager_4l(const edm::ParameterSet & cfg);
+  EvtHistManager_4l(const edm::ParameterSet & cfg, bool isControlRegion);
   ~EvtHistManager_4l() {}
 
   /// book and fill histograms

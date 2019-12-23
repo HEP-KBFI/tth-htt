@@ -621,7 +621,7 @@ int main(int argc, char* argv[])
 
         selHistManager->evt_[evt_cat_str] = new EvtHistManager_4l(makeHistManager_cfg(
           process_and_genMatchName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift
-        ));
+        ), isControlRegion);
         selHistManager->evt_[evt_cat_str]->bookHistograms(fs);
       }
 
@@ -651,7 +651,7 @@ int main(int argc, char* argv[])
 
             selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] = new EvtHistManager_4l(makeHistManager_cfg(
               decayMode_and_genMatchName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift
-            ));
+            ), isControlRegion);
             selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] -> bookHistograms(fs);
           }
         }
