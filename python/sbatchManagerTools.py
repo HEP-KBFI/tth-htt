@@ -334,22 +334,28 @@ while True:
     content = []
     nof_jobs = 0
     for idxKey, key in enumerate(outputFiles.keys()):
+        input_file_names_duplicates = find_duplicates(inputFiles[key])
+        if input_file_names_duplicates:
+          raise RuntimeError(
+            "Found duplicate input files to produce output file %s: %s" % \
+            (outputFiles[key], ", ".join(input_file_names_duplicates))
+          )
         template_vars = {
-        'working_dir'             : working_dir,
-        'input_file_names'        : inputFiles[key],
-        'output_file_name'        : outputFiles[key],
-        'auxDirName'              : auxDirName,
-        'pool_id'                 : uuid.uuid4(),
-        'max_input_files_per_job' : max_input_files_per_job,
-        'script_file_name'        : script_file_name,
-        'log_file_name'           : log_file_name,
-        'verbose'                 : verbose,
-        'dry_run'                 : dry_run,
-        'use_home'                : use_home,
-        'min_file_size'           : min_file_size,
-        'max_num_submittedJobs'   : max_num_submittedJobs,
-        'idx'                     : idxKey,
-    }
+            'working_dir'             : working_dir,
+            'input_file_names'        : inputFiles[key],
+            'output_file_name'        : outputFiles[key],
+            'auxDirName'              : auxDirName,
+            'pool_id'                 : uuid.uuid4(),
+            'max_input_files_per_job' : max_input_files_per_job,
+            'script_file_name'        : script_file_name,
+            'log_file_name'           : log_file_name,
+            'verbose'                 : verbose,
+            'dry_run'                 : dry_run,
+            'use_home'                : use_home,
+            'min_file_size'           : min_file_size,
+            'max_num_submittedJobs'   : max_num_submittedJobs,
+            'idx'                     : idxKey,
+        }
         job_code = jinja2.Template(job_template).render(**template_vars)
         content.append(job_code)
         nof_jobs += get_num_jobs(len(inputFiles[key]), max_input_files_per_job)
