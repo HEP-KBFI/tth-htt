@@ -141,7 +141,7 @@ class analyzeConfig_1l_1tau(analyzeConfig):
     self.executable_addFakes = executable_addFakes
     self.executable_addFlips = executable_addFlips
 
-    self.nonfake_backgrounds = [ "TTW", "TTZ", "TTWW", "WZ", "ZZ", "Rares", "DY", "TT", "tHq", "tHW", "VH", "WH", "ZH", "HH", "ggH", "qqH", "TTWH", "TTZH" ]
+    self.nonfake_backgrounds = [ "TTW", "TTZ", "TTWW", "WW", "WZ", "ZZ", "Rares", "DY", "TT", "tHq", "tHW", "VH", "WH", "ZH", "HH", "ggH", "qqH", "TTWH", "TTZH" ]
     samples_categories_MC = self.get_samples_categories_MC(self.nonfake_backgrounds)
     self.prep_dcard_processesToCopy = [ "data_obs" ] + samples_categories_MC + [ "data_fakes", "fakes_mc", "data_obs", "data_flips", "flips_mc" ]
     self.make_plots_backgrounds_SS = [ process for process in self.nonfake_backgrounds if process not in [ "WH", "ZH" ] ] + [ "data_fakes", "data_flips" ]
@@ -508,12 +508,10 @@ class analyzeConfig_1l_1tau(analyzeConfig):
           key_addBackgrounds_dir = getKey("addBackgrounds")
           addBackgrounds_job_fakes_tuple = ("fakes_mc", lepton_and_hadTau_selection_and_frWeight, chargeSumSelection)
           key_addBackgrounds_job_fakes = getKey(*addBackgrounds_job_fakes_tuple)
-          sample_categories = []
-          sample_categories.extend(self.nonfake_backgrounds)
-          sample_categories.extend(self.ttHProcs)
           processes_input = []
           for process_input_base in processes_input_base :
-            if "HH" in process_input_base : continue
+            if "HH" in process_input_base:
+              continue
             processes_input.append("%s_fake" % process_input_base)
           self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_fakes] = {
             'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job],
@@ -531,12 +529,10 @@ class analyzeConfig_1l_1tau(analyzeConfig):
           # output process: flips_mc
           addBackgrounds_job_flips_tuple = ("flips", lepton_and_hadTau_selection_and_frWeight, chargeSumSelection)
           key_addBackgrounds_job_flips = getKey(*addBackgrounds_job_flips_tuple)
-          sample_categories = []
-          sample_categories.extend(self.nonfake_backgrounds)
-          sample_categories.extend(self.ttHProcs)
           processes_input = []
           for process_input_base in processes_input_base :
-            if "HH" in process_input_base : continue
+            if "HH" in process_input_base:
+              continue
             processes_input.append("%s_flip" % process_input_base)
           self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_flips] = {
             'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job],
@@ -554,12 +550,10 @@ class analyzeConfig_1l_1tau(analyzeConfig):
           # output process: Convs
           addBackgrounds_job_Convs_tuple = ("Convs", lepton_and_hadTau_selection_and_frWeight, chargeSumSelection)
           key_addBackgrounds_job_Convs = getKey(*addBackgrounds_job_Convs_tuple)
-          sample_categories = []
-          sample_categories.extend(self.nonfake_backgrounds)
-          sample_categories.extend(self.ttHProcs)
           processes_input = []
-          for process_input_base in processes_input_base :
-            if "HH" in process_input_base : continue
+          for process_input_base in processes_input_base:
+            if "HH" in process_input_base:
+              continue
             processes_input.append("%s_Convs" % process_input_base)
           self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_Convs] = {
             'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job],

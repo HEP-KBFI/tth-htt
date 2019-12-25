@@ -144,7 +144,7 @@ class analyzeConfig_2l_2tau(analyzeConfig):
     self.executable_addBackgrounds = executable_addBackgrounds
     self.executable_addFakes = executable_addBackgroundJetToTauFakes
 
-    self.nonfake_backgrounds = [ "TTW", "TTZ", "TTWW", "WZ", "ZZ", "Rares", "tHq", "tHW", "VH", "WH", "ZH", "HH", "ggH", "qqH", "TTWH", "TTZH" ]
+    self.nonfake_backgrounds = [ "TTW", "TTZ", "TTWW", "WW", "WZ", "ZZ", "Rares", "tHq", "tHW", "VH", "WH", "ZH", "HH", "ggH", "qqH", "TTWH", "TTZH" ]
 
     self.cfgFile_analyze = os.path.join(self.template_dir, cfgFile_analyze)
     samples_categories_MC = self.get_samples_categories_MC(self.nonfake_backgrounds)
@@ -531,12 +531,10 @@ class analyzeConfig_2l_2tau(analyzeConfig):
               key_addBackgrounds_dir = getKey("addBackgrounds")
               addBackgrounds_job_fakes_tuple = ("fakes_mc", lepton_charge_selection, hadTau_charge_selection, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection)
               key_addBackgrounds_job_fakes = getKey(*addBackgrounds_job_fakes_tuple)
-              sample_categories = []
-              sample_categories.extend(self.nonfake_backgrounds)
-              sample_categories.extend(self.ttHProcs)
               processes_input = []
               for process_input_base in processes_input_base:
-                if "HH" in process_input_base : continue
+                if "HH" in process_input_base:
+                  continue
                 processes_input.append("%s_fake" % process_input_base)
               self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_fakes] = {
                 'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job],
@@ -555,12 +553,10 @@ class analyzeConfig_2l_2tau(analyzeConfig):
               # output process: Convs
               addBackgrounds_job_Convs_tuple = ("Convs", lepton_charge_selection, hadTau_charge_selection, lepton_and_hadTau_selection_and_frWeight, chargeSumSelection)
               key_addBackgrounds_job_Convs = getKey(*addBackgrounds_job_Convs_tuple)
-              sample_categories = []
-              sample_categories.extend(self.nonfake_backgrounds)
-              sample_categories.extend(self.ttHProcs)
               processes_input = []
               for process_input_base in processes_input_base:
-                if "HH" in process_input_base : continue
+                if "HH" in process_input_base:
+                  continue
                 processes_input.append("%s_Convs" % process_input_base)
               self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_Convs] = {
                 'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job],

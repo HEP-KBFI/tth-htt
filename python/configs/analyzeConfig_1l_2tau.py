@@ -128,7 +128,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
     self.executable_addBackgrounds = executable_addBackgrounds
     self.executable_addFakes = executable_addBackgroundJetToTauFakes
 
-    self.nonfake_backgrounds = [ "TTW", "TTZ", "TTWW", "WZ", "ZZ", "Rares", "HH", "tHq", "tHW", "VH", "WH", "ZH", "ggH", "qqH", "TTWH", "TTZH" ]
+    self.nonfake_backgrounds = [ "TTW", "TTZ", "TTWW", "WW", "WZ", "ZZ", "Rares", "HH", "tHq", "tHW", "VH", "WH", "ZH", "ggH", "qqH", "TTWH", "TTZH" ]
     samples_categories_MC = self.get_samples_categories_MC(self.nonfake_backgrounds)
     self.prep_dcard_processesToCopy = [ "data_obs" ] + samples_categories_MC + [ "Convs", "data_fakes", "fakes_mc", "data_obs" ]
     self.make_plots_backgrounds = [ process for process in self.nonfake_backgrounds if process not in [ "WH", "ZH" ] ] + [ "Convs", "data_fakes" ]
@@ -495,7 +495,8 @@ class analyzeConfig_1l_2tau(analyzeConfig):
           key_addBackgrounds_job_fakes = getKey(*addBackgrounds_job_fakes_tuple)
           processes_input = []
           for process_input_base in processes_input_base:
-            if "HH" in process_input_base : continue
+            if "HH" in process_input_base:
+              continue
             processes_input.append("%s_fake" % process_input_base)
           self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_fakes] = {
             'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job],
@@ -515,7 +516,8 @@ class analyzeConfig_1l_2tau(analyzeConfig):
           key_addBackgrounds_job_Convs = getKey(*addBackgrounds_job_Convs_tuple)
           processes_input = []
           for process_input_base in processes_input_base:
-            if "HH" in process_input_base : continue
+            if "HH" in process_input_base:
+              continue
             processes_input.append("%s_Convs" % process_input_base)
           self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_Convs] = {
             'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job],
