@@ -39,8 +39,8 @@ for dilept in [ 'ee', 'em', 'mm' ]:
             process.makePlots.distributions.append(
                 cms.PSet(
                     histogramName = cms.string("sel/evt/$PROCESS/mass_2L_{}_{}_{}".format(dilept, jetCount, chargeType)),
-                    xAxisTitle = cms.string("m_{#ell} (%s, %s, %s) [GeV]" % (dilept, jetCount, chargeType)),
-                    yAxisTitle = cms.string("dN/dm_{#ell} [1/GeV]")
+                    xAxisTitle = cms.string("m_{#ell#ell} (%s, %s, %s) [GeV]" % (dilept, jetCount, chargeType)),
+                    yAxisTitle = cms.string("dN/dm_{#ell#ell} [1/GeV]")
                 )
             )
 

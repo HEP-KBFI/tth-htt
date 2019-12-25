@@ -1240,6 +1240,8 @@ class analyzeConfig(object):
         lines.append(")")
         lines.append("process.makePlots.intLumiData = cms.double(%.1f)" % (self.lumi / 1000))
         self.createCfg_makePlots_addShapes(lines)
+        if hasattr(self, 'isControlRegion'):
+          lines.append("extend({})".format(self.isControlRegion))
         create_cfg(self.cfgFile_make_plots, jobOptions['cfgFile_modified'], lines)
 
     def createCfg_makePlots_mcClosure(self, jobOptions): #TODO
@@ -1263,6 +1265,8 @@ class analyzeConfig(object):
       lines.append(")")
       lines.append("process.makePlots.intLumiData = cms.double(%.1f)" % self.lumi)
       self.createCfg_makePlots_addShapes(lines)
+      if hasattr(self, 'isControlRegion'):
+        lines.append("extend({})".format(self.isControlRegion))
       create_cfg(self.cfgFile_make_plots_mcClosure, jobOptions['cfgFile_modified'], lines)
 
     def createScript_sbatch(self, executable, sbatchFile, jobOptions,
