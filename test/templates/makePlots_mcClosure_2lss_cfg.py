@@ -24,3 +24,22 @@ process.makePlots.distributions.extend([
         yAxisTitle = cms.string("dN/dMVA")
     ),
 ])
+
+for dilept in [ 'ee', 'em', 'mm' ]:
+    for category in [ 'ttH', 'ttW', 'rest', 'tH' ]:
+        process.makePlots.distributions.append(
+            cms.PSet(
+                histogramName = cms.string("sel/evt/$PROCESS/output_NN_{}_{}".format(category, dilept)),
+                xAxisTitle = cms.string("MVA Discriminant ({}, {})".format(category, dilept)),
+                yAxisTitle = cms.string("dN/dMVA")
+            )
+        )
+    for jetCount in [ 'lj', 'hj' ]:
+        for chargeType in [ 'pos', 'neg' ]:
+            process.makePlots.distributions.append(
+                cms.PSet(
+                    histogramName = cms.string("sel/evt/$PROCESS/mass_2L_{}_{}_{}".format(dilept, jetCount, chargeType)),
+                    xAxisTitle = cms.string("m_{#ell#ell} (%s, %s, %s) [GeV]" % (dilept, jetCount, chargeType)),
+                    yAxisTitle = cms.string("dN/dm_{#ell#ell} [1/GeV]")
+                )
+            )
