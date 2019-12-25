@@ -85,6 +85,7 @@ process.makePlots = cms.PSet(
             data_fakes = cms.string("1.0 +/- 0.20"),
             data_flips = cms.string("1.0 +/- 0.20"),
             VH = cms.string("1.0 +/- 0.20"),
+            WW = cms.string("1.0 +/- 0.20"),
             WZ = cms.string("1.0 +/- 0.20"),
             ZZ = cms.string("1.0 +/- 0.20"),
             TTWH = cms.string("1.0 +/- 0.20"),
@@ -95,7 +96,7 @@ process.makePlots = cms.PSet(
     ),
     showUncertainty = cms.bool(False),
 
-    legendTextSize = cms.double(0.050),
+    legendTextSize = cms.double(0.040),
     legendPosX = cms.double(0.700),
     legendPosY = cms.double(0.510),
     legendSizeX = cms.double(0.230),
