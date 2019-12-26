@@ -276,6 +276,7 @@ def createScript_sbatch_hadd_nonBlocking(
         use_home                = False,
         min_file_size           = 20000,
         max_num_submittedJobs   = 5000,
+        max_mem                 = '',
       ):
 
     header = """
@@ -299,6 +300,7 @@ m_{{idx}} = sbatchManager(
 )
 m_{{idx}}.setWorkingDir('{{working_dir}}')
 m_{{idx}}.log_completion = {{verbose}}
+{% if max_mem|length %}m_{{idx}}.max_mem = '{{max_mem}}'{% endif %}
 sbatch_managers.append(m_{{idx}})
 
 cluster_histogram_aggregator_{{ idx }} = ClusterHistogramAggregatorNonBlocking(
@@ -360,6 +362,7 @@ while True:
             'min_file_size'           : min_file_size,
             'max_num_submittedJobs'   : max_num_submittedJobs,
             'idx'                     : idxKey,
+            'max_mem'                 : max_mem,
         }
         job_code = jinja2.Template(job_template).render(**template_vars)
         content.append(job_code)
