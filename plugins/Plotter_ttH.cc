@@ -308,8 +308,8 @@ void Plotter_ttH::makePlot(double canvasSizeX, double canvasSizeY,
   const int color_ttjets      =  16; // gray
   const int color_TH          = 600; // blue
   const int color_OtherH      = 622; // pink
-  const int color_EWK         = 634; // dark red
-  const int color_DY          = 634; // dark red
+  const int color_EWK         = 627; // grayish red
+  const int color_DY          = 395; // dark yellow
   const int color_ZZ          = 634; // dark red
   const int color_WZ          = 874; // purple
   const int color_WW          = 436; // dark cyan
