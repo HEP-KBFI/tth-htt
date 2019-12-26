@@ -1649,25 +1649,25 @@ int main(int argc, char* argv[])
           ("lep1_eta",            selLepton_lead -> eta())
           ("lep1_tth_mva",        selLepton_lead -> mvaRawTTH())
           ("mindr_lep1_jet",      TMath::Min(10., comp_mindr_lep1_jet(*selLepton_lead, selJets)))
-          ("mT_lep1",             comp_MT_met_lep1(*selLepton_lead, met.pt(), met.phi()))
+          ("mT_lep1",             comp_MT_met_lep1(selLepton_lead->cone_p4(), met.pt(), met.phi()))
           ("lep2_pt",             selLepton_sublead -> pt())
           ("lep2_conePt",         comp_lep1_conePt(*selLepton_sublead))
           ("lep2_eta",            selLepton_sublead -> eta())
           ("lep2_tth_mva",        selLepton_sublead -> mvaRawTTH())
           ("mindr_lep2_jet",      TMath::Min(10., comp_mindr_lep1_jet(*selLepton_sublead, selJets)))
-          ("mT_lep2",             comp_MT_met_lep1(*selLepton_sublead, met.pt(), met.phi()))
+          ("mT_lep2",             comp_MT_met_lep1(selLepton_sublead->cone_p4(), met.pt(), met.phi()))
           ("lep3_pt",             selLepton_third -> pt())
           ("lep3_conePt",         comp_lep1_conePt(*selLepton_third))
           ("lep3_eta",            selLepton_third -> eta())
           ("lep3_tth_mva",        selLepton_third -> mvaRawTTH())
           ("mindr_lep3_jet",      TMath::Min(10., comp_mindr_lep1_jet(*selLepton_third, selJets)))
-          ("mT_lep3",             comp_MT_met_lep1(*selLepton_third, met.pt(), met.phi()))
+          ("mT_lep3",             comp_MT_met_lep1(selLepton_third->cone_p4(), met.pt(), met.phi()))
           ("lep4_pt",             selLepton_fourth -> pt())
           ("lep4_conePt",         comp_lep1_conePt(*selLepton_fourth))
           ("lep4_eta",            selLepton_fourth -> eta())
           ("lep4_tth_mva",        selLepton_fourth -> mvaRawTTH())
           ("mindr_lep4_jet",      TMath::Min(10., comp_mindr_lep1_jet(*selLepton_fourth, selJets)))
-          ("mT_lep4",             comp_MT_met_lep1(*selLepton_fourth, met.pt(), met.phi()))
+          ("mT_lep4",             comp_MT_met_lep1(selLepton_fourth->cone_p4(), met.pt(), met.phi()))
           ("avg_dr_jet",          comp_avg_dr_jet(selJets))
           ("ptmiss",              met.pt())
           ("htmiss",              mht_p4.pt())
@@ -1705,8 +1705,8 @@ int main(int argc, char* argv[])
           ("jet2_phi",            selJets.size() > 1 ? selJets[1]->phi() : -1000)
           ("jet2_E",              selJets.size() > 1 ? selJets[1]->p4().energy() : -1000)
           ("met_LD",              met_LD)
-          ("massLT2",              comp_MT_met_lep1(selLeptons[0]->p4() + selLeptons[1]->p4(), met.pt(), met.phi()))
-          ("massLT",              comp_MT_met_lep1(selLeptons[0]->p4() + selLeptons[1]->p4() + selLeptons[2]->p4() + selLeptons[3]->p4(), met.pt(), met.phi()))
+          ("massLT2",              comp_MT_met_lep1(selLeptons[0]->cone_p4() + selLeptons[1]->cone_p4(), met.pt(), met.phi()))
+          ("massLT",              comp_MT_met_lep1(selLeptons[0]->cone_p4() + selLeptons[1]->cone_p4() + selLeptons[2]->cone_p4() + selLeptons[3]->cone_p4(), met.pt(), met.phi()))
           ("massL_FO",           massL(fakeableLeptons))
           ("massL4",           massL(selLeptons))
           ("mindr_lep_jet",   std::min(comp_mindr_lep1_jet(*selLepton_lead, selJets), std::min(comp_mindr_lep2_jet(*selLepton_sublead, selJets), std::min(comp_mindr_lep3_jet(*selLepton_third, selJets), std::min(comp_mindr_lep3_jet(*selLepton_fourth, selJets), 400.)))))
@@ -1721,10 +1721,10 @@ int main(int argc, char* argv[])
 
     if(snm)
     {
-      const double mT_lep1        = comp_MT_met_lep1(selLepton_lead->p4(), met.pt(), met.phi());
-      const double mT_lep2        = comp_MT_met_lep2(selLepton_sublead->p4(), met.pt(), met.phi());
-      const double mT_lep3        = comp_MT_met_lep3(selLepton_third->p4(), met.pt(), met.phi());
-      const double mT_lep4        = comp_MT_met_lep4(selLepton_fourth->p4(), met.pt(), met.phi());
+      const double mT_lep1        = comp_MT_met_lep1(selLepton_lead->cone_p4(), met.pt(), met.phi());
+      const double mT_lep2        = comp_MT_met_lep2(selLepton_sublead->cone_p4(), met.pt(), met.phi());
+      const double mT_lep3        = comp_MT_met_lep3(selLepton_third->cone_p4(), met.pt(), met.phi());
+      const double mT_lep4        = comp_MT_met_lep4(selLepton_fourth->cone_p4(), met.pt(), met.phi());
       const double max_dr_jet     = comp_max_dr_jet(selJets);
       const double mbb            = selBJets_medium.size() > 1 ? (selBJets_medium[0]->p4() + selBJets_medium[1]->p4()).mass() : -1.;
       const double mbb_loose      = selBJets_loose.size() > 1 ? (selBJets_loose[0]->p4() + selBJets_loose[1]->p4()).mass() : -1.;
