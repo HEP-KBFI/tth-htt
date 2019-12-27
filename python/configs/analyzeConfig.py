@@ -571,7 +571,8 @@ class analyzeConfig(object):
           else:
             raise ValueError("Uncrecongizable sample category: %s" % sample_info[sample_category_to_check])
           jobOptions['hhWeight_cfg.denominator_file'] = 'hhAnalysis/{}/data/denom_{}.root'.format(hhWeight_base, self.era)
-          jobOptions['hhWeight_cfg.histtitle'] = sample_info["sample_category_hh"]
+          #jobOptions['hhWeight_cfg.histtitle'] = sample_info["sample_category_hh"]
+          jobOptions['hhWeight_cfg.histtitle'] = sample_info[sample_category_to_check]
           jobOptions['hhWeight_cfg.ktScan_file'] = self.kt_scan_file
           jobOptions['hhWeight_cfg.do_ktscan'] = True
           jobOptions['hhWeight_cfg.apply_rwgt'] = True
