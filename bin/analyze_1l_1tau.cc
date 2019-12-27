@@ -1824,12 +1824,12 @@ int main(int argc, char* argv[])
     const double lep_conePt    = selLepton->cone_pt();
     const double lep_eta       = selLepton->absEta();
     const double lep_tth_mva   = selLepton->mvaRawTTH();
-    const double mindr_lep_jet = std::min(10., comp_mindr_lep1_jet(*selLepton, selJets));
-    const double mindr_tau_jet = std::min(10., comp_mindr_hadTau1_jet(*selHadTau, selJets));
+    const double mindr_lep_jet = std::min(10., comp_mindr_jet(*selLepton, selJets));
+    const double mindr_tau_jet = std::min(10., comp_mindr_jet(*selHadTau, selJets));
     const double avg_dr_jet    = comp_avg_dr_jet(selJets);;
     const double ptmiss        = met.pt();
-    const double mT_lep        = comp_MT_met_lep1(selLepton->cone_p4(), met.pt(), met.phi());
-    const double mT_tau        = comp_MT_met_hadTau1(*selHadTau, met.pt(), met.phi());
+    const double mT_lep        = comp_MT_met(selLepton, met.pt(), met.phi());
+    const double mT_tau        = comp_MT_met(selHadTau, met.pt(), met.phi());
     const double htmiss        = mht_p4.pt();
     const double tau_mva       = selHadTau->raw_mva();
     const double tau_pt        = selHadTau->pt();
@@ -1872,7 +1872,7 @@ int main(int argc, char* argv[])
        {"res_HTT_2",  max_mvaOutput_HTT_CSVsort4rd_2},
        {"met_LD",     met_LD},
        {"max_Lep_eta", std::max(selHadTau->absEta(), selLepton->absEta())},
-       {"Lep_min_dr_jet", std::min(comp_mindr_lep1_jet(*selLepton, selJets), comp_mindr_hadTau1_jet(*selHadTau, selJets))},
+       {"Lep_min_dr_jet", std::min(comp_mindr_jet(*selLepton, selJets), comp_mindr_jet(*selHadTau, selJets))},
     };
     const double mvaOutput_1l_1tau_DeepTauMedium_6 = mva_1l_1tau_Legacy_6(mvaInputVariables_mva_XGB_1l_1tau_16_variables);
 

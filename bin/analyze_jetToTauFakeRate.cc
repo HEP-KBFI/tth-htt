@@ -1005,8 +1005,8 @@ int main(int argc, char* argv[])
       assert(selJets_sortedByBtag.size() >= 2);
       m_bb = (selJets_sortedByBtag[0]->p4() + selJets_sortedByBtag[1]->p4()).mass();
     }
-    double mT_e = ( selLepton_e ) ? comp_MT_met_lep1(*selLepton_e, met.pt(), met.phi()) : -1.;
-    double mT_mu = ( selLepton_e ) ? comp_MT_met_lep1(*selLepton_mu, met.pt(), met.phi()) : -1.;
+    double mT_e = ( selLepton_e ) ? comp_MT_met(selLepton_e, met.pt(), met.phi()) : -1.;
+    double mT_mu = ( selLepton_e ) ? comp_MT_met(selLepton_mu, met.pt(), met.phi()) : -1.;
 
     // require that trigger paths match event category (with event category based on selLeptons)
     if ( !((fakeableElectrons.size() >= 2 &&                               selTrigger_1e                                       ) ||
