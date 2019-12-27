@@ -15,9 +15,9 @@ namespace
 }
 
 double
-comp_MT_met_lep1(const Particle::LorentzVector & leptonP4,
-                 double met_pt,
-                 double met_phi)
+comp_MT_met(const Particle::LorentzVector & leptonP4,
+            double met_pt,
+            double met_phi)
 {
   const double met_px = met_pt*std::cos(met_phi);
   const double met_py = met_pt*std::sin(met_phi);
@@ -30,83 +30,11 @@ comp_MT_met_lep1(const Particle::LorentzVector & leptonP4,
 }
 
 double
-comp_MT_met_lep1(const Particle & lepton,
-                 double met_pt,
-                 double met_phi)
+comp_MT_met(const Particle & lepton,
+            double met_pt,
+            double met_phi)
 {
-  return comp_MT_met_lep1(lepton.p4(), met_pt, met_phi);
-}
-
-double
-comp_MT_met_lep2(const Particle::LorentzVector & leptonP4,
-                 double met_pt,
-                 double met_phi)
-{
-  return comp_MT_met_lep1(leptonP4, met_pt, met_phi);
-}
-
-double
-comp_MT_met_lep2(const Particle & lepton,
-                 double met_pt,
-                 double met_phi)
-{
-  return comp_MT_met_lep2(lepton.p4(), met_pt, met_phi);
-}
-
-double
-comp_MT_met_lep3(const Particle::LorentzVector & leptonP4,
-                 double met_pt,
-                 double met_phi)
-{
-  return comp_MT_met_lep1(leptonP4, met_pt, met_phi);
-}
-
-double
-comp_MT_met_lep3(const Particle & lepton,
-                 double met_pt,
-                 double met_phi)
-{
-  return comp_MT_met_lep3(lepton.p4(), met_pt, met_phi);
-}
-
-double
-comp_MT_met_lep4(const Particle::LorentzVector & leptonP4,
-                 double met_pt,
-                 double met_phi)
-{
-  return comp_MT_met_lep1(leptonP4, met_pt, met_phi);
-}
-
-double
-comp_MT_met_lep4(const Particle & lepton,
-                 double met_pt,
-                 double met_phi)
-{
-  return comp_MT_met_lep4(lepton.p4(), met_pt, met_phi);
-}
-
-double
-comp_MT_met_hadTau1(const Particle & hadTau,
-                    double met_pt,
-                    double met_phi)
-{
-  return comp_MT_met_lep1(hadTau, met_pt, met_phi);
-}
-
-double
-comp_MT_met_hadTau2(const Particle & hadTau,
-                    double met_pt,
-                    double met_phi)
-{
-  return comp_MT_met_lep1(hadTau, met_pt, met_phi);
-}
-
-double
-comp_MT_met_hadTau3(const Particle & hadTau,
-                    double met_pt,
-                    double met_phi)
-{
-  return comp_MT_met_lep1(hadTau, met_pt, met_phi);
+  return comp_MT_met(lepton.p4(), met_pt, met_phi);
 }
 
 namespace
@@ -196,82 +124,22 @@ comp_n_jet25_recl(const std::vector<const RecoJet *> & jets_cleaned)
 }
 
 double
-comp_mindr_lep1_jet(const Particle & lepton,
-                    const std::vector<const RecoJet *> & jets_cleaned)
+comp_mindr_jet(const Particle & particle,
+               const std::vector<const RecoJet *> & jets_cleaned)
 {
   double dRmin = 1.e+3;
   for(const RecoJet * jet: jets_cleaned)
   {
-    const double dR = deltaR(lepton.eta(), lepton.phi(), jet->eta(), jet->phi());
+    const double dR = deltaR(particle.eta(), particle.phi(), jet->eta(), jet->phi());
     dRmin = std::min(dR, dRmin);
   }
   return dRmin;
 }
 
 double
-comp_mindr_lep2_jet(const Particle & lepton,
-                    const std::vector<const RecoJet *> & jets_cleaned)
-{
-  return comp_mindr_lep1_jet(lepton, jets_cleaned);
-}
-
-double
-comp_mindr_lep3_jet(const Particle & lepton,
-                    const std::vector<const RecoJet *> & jets_cleaned)
-{
-  return comp_mindr_lep1_jet(lepton, jets_cleaned);
-}
-
-double
-comp_mindr_lep4_jet(const Particle & lepton,
-                    const std::vector<const RecoJet *> & jets_cleaned)
-{
-  return comp_mindr_lep1_jet(lepton, jets_cleaned);
-}
-
-double
-comp_mindr_hadTau1_jet(const Particle & hadTau,
-                       const std::vector<const RecoJet *> & jets_cleaned)
-{
-  return comp_mindr_lep1_jet(hadTau, jets_cleaned);
-}
-
-double
-comp_mindr_hadTau2_jet(const Particle & hadTau,
-                       const std::vector<const RecoJet *> & jets_cleaned)
-{
-  return comp_mindr_lep1_jet(hadTau, jets_cleaned);
-}
-
-double
-comp_mindr_hadTau3_jet(const Particle & hadTau,
-                       const std::vector<const RecoJet *> & jets_cleaned)
-{
-  return comp_mindr_lep1_jet(hadTau, jets_cleaned);
-}
-
-double
-comp_lep1_conePt(const RecoLepton & lepton)
+comp_lep_conePt(const RecoLepton & lepton)
 {
   return lepton.cone_pt();
-}
-
-double
-comp_lep2_conePt(const RecoLepton & lepton)
-{
-  return comp_lep1_conePt(lepton);
-}
-
-double
-comp_lep3_conePt(const RecoLepton & lepton)
-{
-  return comp_lep1_conePt(lepton);
-}
-
-double
-comp_lep4_conePt(const RecoLepton & lepton)
-{
-  return comp_lep1_conePt(lepton);
 }
 
 double
@@ -323,7 +191,8 @@ comp_max_dr_jet(const std::vector<const RecoJet *> & jets_cleaned)
 }
 
 double 
-comp_cosThetaStar(const Particle::LorentzVector & daughterP4, const Particle::LorentzVector & motherP4)
+comp_cosThetaStar(const Particle::LorentzVector & daughterP4,
+                  const Particle::LorentzVector & motherP4)
 {
   // CV: compute "helicity angle" between momentum vectors of daughter and mother particle
   //     in the rest-frame of the mother particle

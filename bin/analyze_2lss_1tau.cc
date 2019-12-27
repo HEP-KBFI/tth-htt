@@ -1949,20 +1949,20 @@ int main(int argc, char* argv[])
 //--- compute variables BDTs used to discriminate ttH vs. ttV and ttH vs. ttba -- they will be used more than once -- Xanda
     const int nJet25_Recl = comp_n_jet25_recl(selJets);
 
-    const double mindr_lep1_jet  = comp_mindr_lep1_jet(*selLepton_lead, selJets);
-    const double mindr_lep2_jet  = comp_mindr_lep2_jet(*selLepton_sublead, selJets);
+    const double mindr_lep1_jet  = comp_mindr_jet(*selLepton_lead, selJets);
+    const double mindr_lep2_jet  = comp_mindr_jet(*selLepton_sublead, selJets);
     const double max_lep_eta     = std::max(selLepton_lead->absEta(), selLepton_sublead->absEta());
     const double tau_pt          = selHadTau->pt();
     const double ptmiss          = met.pt();
     const double dr_leps         = deltaR(selLepton_lead->p4(), selLepton_sublead->p4());
-    const double mT_lep1         = comp_MT_met_lep1(*selLepton_lead,    met.pt(), met.phi());
-    const double mT_lep2         = comp_MT_met_lep2(*selLepton_sublead, met.pt(), met.phi());
+    const double mT_lep1         = comp_MT_met(*selLepton_lead,    met.pt(), met.phi());
+    const double mT_lep2         = comp_MT_met(*selLepton_sublead, met.pt(), met.phi());
     const double dr_lep1_tau     = deltaR(selLepton_lead->p4(),    selHadTau->p4());
     const double dr_lep2_tau     = deltaR(selLepton_sublead->p4(), selHadTau->p4());
     const double avg_dr_jet      = comp_avg_dr_jet(selJets);
-    const double lep1_conePt     = comp_lep1_conePt(*selLepton_lead);
-    const double lep2_conePt     = comp_lep2_conePt(*selLepton_sublead);
-    const double mindr_tau_jet   = comp_mindr_hadTau1_jet(*selHadTau, selJets);
+    const double lep1_conePt     = comp_lep_conePt(*selLepton_lead);
+    const double lep2_conePt     = comp_lep_conePt(*selLepton_sublead);
+    const double mindr_tau_jet   = comp_mindr_jet(*selHadTau, selJets);
     const double mbb             = selBJets_medium.size() > 1 ?  (selBJets_medium[0]->p4() + selBJets_medium[1]->p4()).mass() : -1000;
     const double mTauTauVis1_sel = (selLepton_lead->p4() + selHadTau->p4()).mass();
     const double mTauTauVis2_sel = (selLepton_sublead->p4() + selHadTau->p4()).mass();
@@ -2074,7 +2074,7 @@ int main(int argc, char* argv[])
       {"sum_Lep_charge",  selLepton_lead -> charge() + selLepton_sublead -> charge() + selHadTau->charge()},
       {"HadTop_pt",       HadTop_pt_CSVsort4rd},
       {"res_HTT",         max_mvaOutput_HTT_CSVsort4rd},
-      {"massL3",          comp_MT_met_lep1(selLepton_lead->cone_p4() + selLepton_sublead->cone_p4() + selHadTau->p4(), met.pt(), met.phi())}, //
+      {"massL3",          comp_MT_met(selLepton_lead->cone_p4() + selLepton_sublead->cone_p4() + selHadTau->p4(), met.pt(), met.phi())}, //
       {"nJet",            selJets.size()},
       {"nBJetLoose",      selBJets_loose.size()},
       {"nBJetMedium",     selBJets_medium.size()},
@@ -2284,7 +2284,7 @@ int main(int argc, char* argv[])
           ("mindr_lep1_jet",                 std::min(10., mindr_lep1_jet) )
           ("mindr_lep2_jet",                 std::min(10., mindr_lep2_jet) )
           ("mT_lep1",                        mT_lep1)
-          ("MT_met_lep1",                    comp_MT_met_lep1(selLepton_lead->cone_p4(), met.pt(), met.phi()))
+          ("MT_met_lep1",                    comp_MT_met(selLepton_lead->cone_p4(), met.pt(), met.phi()))
           ("dr_lep1_tau",                    dr_lep1_tau)
           ("lep2_pt",                        selLepton_sublead->pt())
           ("lep2_conePt",                    lep2_conePt)
@@ -2304,7 +2304,7 @@ int main(int argc, char* argv[])
           ("tau1_pt",                         selHadTau->pt())
           ("tau1_eta",                        selHadTau->absEta())
           ("tau1_phi",                        selHadTau->phi())
-          ("mT_tau1",                        comp_MT_met_lep1(*selHadTau,    met.pt(), met.phi()))
+          ("mT_tau1",                        comp_MT_met(*selHadTau,    met.pt(), met.phi()))
           ("dr_leps",                        dr_leps)
           ("mTauTauVis1",                    mTauTauVis1_sel)
           ("mTauTauVis2",                    mTauTauVis2_sel)
@@ -2348,7 +2348,7 @@ int main(int argc, char* argv[])
           ("mbb_medium",     selBJets_medium.size()>1 ?  (selBJets_medium[0]->p4()+selBJets_medium[1]->p4()).mass() : 0 )
           ("nElectron",      selElectrons.size())
           ("sum_Lep_charge", selLepton_lead -> charge() + selLepton_sublead -> charge() + selHadTau->charge())
-          ("massL",          selLeptons.size() > 1 ? comp_MT_met_lep1(selLeptons[0]->cone_p4() + selLeptons[1]->cone_p4(), met.pt(), met.phi())  : 0.)
+          ("massL",          selLeptons.size() > 1 ? comp_MT_met(selLeptons[0]->cone_p4() + selLeptons[1]->cone_p4(), met.pt(), met.phi())  : 0.)
           ("min_Deta_mostfwdJet_jet", min_Deta_mostfwdJet_jet)
           ("min_Deta_leadfwdJet_jet", min_Deta_leadfwdJet_jet)
           ("met_LD",    met_LD)
@@ -2388,8 +2388,8 @@ int main(int argc, char* argv[])
           ("selHadTau_lead_decayMode", selHadTau ->  decayMode())
           ("selHadTau_lead_idDecayMode", selHadTau ->  idDecayMode())
           ("tau1_mva_id",                     selHadTau->id_mva(TauID::MVAoldDMdR032017v2))
-          ("massLT",          selLeptons.size() > 1 ? comp_MT_met_lep1(selLeptons[0]->cone_p4() + selLeptons[1]->cone_p4(), met.pt(), met.phi())  : 0.)
-          ("massL3",          selLeptons.size() > 1 ? comp_MT_met_lep1(selLeptons[0]->cone_p4() + selLeptons[1]->cone_p4() + selHadTau->p4(), met.pt(), met.phi())  : 0.)
+          ("massLT",          selLeptons.size() > 1 ? comp_MT_met(selLeptons[0]->cone_p4() + selLeptons[1]->cone_p4(), met.pt(), met.phi())  : 0.)
+          ("massL3",          selLeptons.size() > 1 ? comp_MT_met(selLeptons[0]->cone_p4() + selLeptons[1]->cone_p4() + selHadTau->p4(), met.pt(), met.phi())  : 0.)
 
         .fill()
       ;

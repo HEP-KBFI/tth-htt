@@ -1327,13 +1327,13 @@ int main(int argc, char* argv[])
 //    in 2lss category of ttH multilepton analysis
     const int nJet25_Recl = comp_n_jet25_recl(selJets);
 
-    const double mindr_lep1_jet = comp_mindr_lep1_jet(*selLepton_lead, selJets);
-    const double mindr_lep2_jet = comp_mindr_lep2_jet(*selLepton_sublead, selJets);
+    const double mindr_lep1_jet = comp_mindr_jet(*selLepton_lead, selJets);
+    const double mindr_lep2_jet = comp_mindr_jet(*selLepton_sublead, selJets);
     const double max_lep_eta    = std::max(selLepton_lead->absEta(), selLepton_sublead->absEta());
-    const double mT_lep1        = comp_MT_met_lep1(*selLepton_lead,    met.pt(), met.phi());
+    const double mT_lep1        = comp_MT_met(*selLepton_lead,    met.pt(), met.phi());
     const double avg_dr_jet     = comp_avg_dr_jet(selJets);
-    const double lep1_conePt    = comp_lep1_conePt(*selLepton_lead);
-    const double lep2_conePt    = comp_lep2_conePt(*selLepton_sublead);
+    const double lep1_conePt    = comp_lep_conePt(*selLepton_lead);
+    const double lep2_conePt    = comp_lep_conePt(*selLepton_sublead);
     const double minMET400      = std::min(met.pt(), 400.);
 
     std::map<std::string, double> mvaInputs_2lss = {
@@ -1461,7 +1461,7 @@ int main(int argc, char* argv[])
       ;
 
       const double dr_leps        = deltaR(selLepton_lead->p4(), selLepton_sublead->p4());
-      const double mT_lep2        = comp_MT_met_lep2(*selLepton_sublead, met.pt(), met.phi());
+      const double mT_lep2        = comp_MT_met(*selLepton_sublead, met.pt(), met.phi());
       const double max_dr_jet     = comp_max_dr_jet(selJets);
       const double mbb            = selBJets_medium.size() > 1 ?  (selBJets_medium[0]->p4() + selBJets_medium[1]->p4()).mass() : -1000;
       const double mbb_loose      = selBJets_loose.size() > 1 ? (selBJets_loose[0]->p4() + selBJets_loose[1]->p4()).mass() : -1000;

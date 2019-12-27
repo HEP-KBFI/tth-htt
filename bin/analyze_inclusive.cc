@@ -623,7 +623,7 @@ main(int argc,
 
     if(preselLeptons.size() > 1)
     {
-      const double massL = comp_MT_met_lep1(preselLeptons[0]->p4() + preselLeptons[1]->p4(), met.pt(), met.phi());
+      const double massL = comp_MT_met(preselLeptons[0]->p4() + preselLeptons[1]->p4(), met.pt(), met.phi());
       snm->read(massL, FloatVariableType::massL);
     }
 
@@ -644,8 +644,8 @@ main(int argc,
     if(! selLeptons.empty())
     {
       const RecoLepton * selLepton_lead = selLeptons[0];
-      mindr_lep1_jet = comp_mindr_lep1_jet(*selLepton_lead, selJets);
-      mT_met_lep1    = comp_MT_met_lep1(selLepton_lead->p4(), met.pt(), met.phi());
+      mindr_lep1_jet = comp_mindr_jet(*selLepton_lead, selJets);
+      mT_met_lep1    = comp_MT_met(selLepton_lead->p4(), met.pt(), met.phi());
       double mTauTauVis1_sel  = ! selHadTaus.empty()      ?
         (selLepton_lead->p4() + selHadTaus.at(0)->p4()).mass() :
         snm->placeholder_value
@@ -658,8 +658,8 @@ main(int argc,
       if(selLeptons.size() > 1)
       {
         const RecoLepton * selLepton_sublead = selLeptons[1];
-        mindr_lep2_jet = comp_mindr_lep2_jet(*selLepton_sublead, selJets);
-        mT_met_lep2    = comp_MT_met_lep2(selLepton_sublead->p4(), met.pt(), met.phi());
+        mindr_lep2_jet = comp_mindr_jet(*selLepton_sublead, selJets);
+        mT_met_lep2    = comp_MT_met(selLepton_sublead->p4(), met.pt(), met.phi());
         const double dR_leps        = deltaR(selLepton_lead->p4(), selLepton_sublead->p4());
         double mTauTauVis2_sel      = ! selHadTaus.empty()  ?
           (selLepton_sublead->p4() + selHadTaus.at(0)->p4()).mass() :
@@ -671,21 +671,21 @@ main(int argc,
         snm->read(dR_leps,         FloatVariableType::dr_leps);
         snm->read(mTauTauVis2_sel, FloatVariableType::mvis_l2tau);
 
-        //lep1_conePt = comp_lep1_conePt(*selLepton_lead);
-        //lep2_conePt = comp_lep2_conePt(*selLepton_sublead);
+        //lep1_conePt = comp_lep_conePt(*selLepton_lead);
+        //lep2_conePt = comp_lep_conePt(*selLepton_sublead);
         //sum_lep_charge_2lss = selLepton_lead->charge() + selLepton_sublead->charge();
         //max_lep_eta_2lss = std::max(selLepton_lead -> absEta(), selLepton_sublead -> absEta());
 
         if(selLeptons.size() > 2)
         {
           const RecoLepton * selLepton_third = selLeptons[2];
-          mT_met_lep3    = comp_MT_met_lep3(selLepton_third->p4(), met.pt(), met.phi());
-          mindr_lep3_jet = comp_mindr_lep3_jet(*selLepton_third, selJets);
+          mT_met_lep3    = comp_MT_met(selLepton_third->p4(), met.pt(), met.phi());
+          mindr_lep3_jet = comp_mindr_jet(*selLepton_third, selJets);
 
           snm->read(mT_met_lep3,    FloatVariableType::mT_met_lep3);
           snm->read(mindr_lep3_jet, FloatVariableType::mindr_lep3_jet);
 
-          //lep3_conePt = comp_lep3_conePt(*selLepton_third);
+          //lep3_conePt = comp_lep_conePt(*selLepton_third);
           //sum_lep_charge_3l = selLepton_lead->charge() + selLepton_sublead->charge() + selLepton_third->charge();
           //max_lep_eta_3l = std::max({ selLepton_lead->absEta(), selLepton_sublead->absEta(), selLepton_third->absEta() });
         }
@@ -695,8 +695,8 @@ main(int argc,
     if(selLeptons.size() > 3)
     {
       const RecoLepton * selLepton_fourth = selLeptons[3];
-      const double mT_met_lep4    = comp_MT_met_lep3(selLepton_fourth->p4(), met.pt(), met.phi());
-      const double mindr_lep4_jet = comp_mindr_lep4_jet(*selLepton_fourth, selJets);
+      const double mT_met_lep4    = comp_MT_met(selLepton_fourth->p4(), met.pt(), met.phi());
+      const double mindr_lep4_jet = comp_mindr_jet(*selLepton_fourth, selJets);
 
       snm->read(mT_met_lep4,    FloatVariableType::mT_met_lep4);
       snm->read(mindr_lep4_jet, FloatVariableType::mindr_lep4_jet);
@@ -706,7 +706,7 @@ main(int argc,
     {
       const RecoHadTau * selHadTau = selHadTaus[0];
 
-      const double mindr_tau_jet = comp_mindr_hadTau1_jet(*selHadTau, selJets);
+      const double mindr_tau_jet = comp_mindr_jet(*selHadTau, selJets);
 
       const double dR_l0tau = ! selLeptons.empty()      ?
         deltaR(selLeptons.at(0)->p4(), selHadTau->p4()) :
@@ -734,7 +734,7 @@ main(int argc,
       const RecoHadTau * selHadTau_sublead = selHadTaus[1];
       const double tt_deltaR      = deltaR(selHadTau_lead->p4(), selHadTau_sublead->p4());
       const double tt_mvis        = (selHadTau_lead->p4() + selHadTau_sublead->p4()).mass();
-      const double mindr_tau2_jet = comp_mindr_hadTau2_jet(*selHadTau_sublead, selJets);
+      const double mindr_tau2_jet = comp_mindr_jet(*selHadTau_sublead, selJets);
 
       snm->read(tt_deltaR,      FloatVariableType::dr_taus);
       snm->read(tt_mvis,        FloatVariableType::mTauTauVis);
