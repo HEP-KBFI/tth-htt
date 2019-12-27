@@ -1955,8 +1955,8 @@ int main(int argc, char* argv[])
     const double tau_pt          = selHadTau->pt();
     const double ptmiss          = met.pt();
     const double dr_leps         = deltaR(selLepton_lead->p4(), selLepton_sublead->p4());
-    const double mT_lep1         = comp_MT_met(*selLepton_lead,    met.pt(), met.phi());
-    const double mT_lep2         = comp_MT_met(*selLepton_sublead, met.pt(), met.phi());
+    const double mT_lep1         = comp_MT_met(selLepton_lead,    met.pt(), met.phi());
+    const double mT_lep2         = comp_MT_met(selLepton_sublead, met.pt(), met.phi());
     const double dr_lep1_tau     = deltaR(selLepton_lead->p4(),    selHadTau->p4());
     const double dr_lep2_tau     = deltaR(selLepton_sublead->p4(), selHadTau->p4());
     const double avg_dr_jet      = comp_avg_dr_jet(selJets);
@@ -2074,7 +2074,7 @@ int main(int argc, char* argv[])
       {"sum_Lep_charge",  selLepton_lead -> charge() + selLepton_sublead -> charge() + selHadTau->charge()},
       {"HadTop_pt",       HadTop_pt_CSVsort4rd},
       {"res_HTT",         max_mvaOutput_HTT_CSVsort4rd},
-      {"massL3",          comp_MT_met(selLepton_lead->cone_p4() + selLepton_sublead->cone_p4() + selHadTau->p4(), met.pt(), met.phi())}, //
+      {"massL3",          comp_massL3(selLepton_lead, selLepton_sublead, selHadTau, met.pt(), met.phi())},
       {"nJet",            selJets.size()},
       {"nBJetLoose",      selBJets_loose.size()},
       {"nBJetMedium",     selBJets_medium.size()},
@@ -2284,7 +2284,7 @@ int main(int argc, char* argv[])
           ("mindr_lep1_jet",                 std::min(10., mindr_lep1_jet) )
           ("mindr_lep2_jet",                 std::min(10., mindr_lep2_jet) )
           ("mT_lep1",                        mT_lep1)
-          ("MT_met_lep1",                    comp_MT_met(selLepton_lead->cone_p4(), met.pt(), met.phi()))
+          ("MT_met_lep1",                    comp_MT_met(selLepton_lead, met.pt(), met.phi()))
           ("dr_lep1_tau",                    dr_lep1_tau)
           ("lep2_pt",                        selLepton_sublead->pt())
           ("lep2_conePt",                    lep2_conePt)
@@ -2304,7 +2304,7 @@ int main(int argc, char* argv[])
           ("tau1_pt",                         selHadTau->pt())
           ("tau1_eta",                        selHadTau->absEta())
           ("tau1_phi",                        selHadTau->phi())
-          ("mT_tau1",                        comp_MT_met(*selHadTau,    met.pt(), met.phi()))
+          ("mT_tau1",                        comp_MT_met(selHadTau,    met.pt(), met.phi()))
           ("dr_leps",                        dr_leps)
           ("mTauTauVis1",                    mTauTauVis1_sel)
           ("mTauTauVis2",                    mTauTauVis2_sel)
@@ -2348,7 +2348,7 @@ int main(int argc, char* argv[])
           ("mbb_medium",     selBJets_medium.size()>1 ?  (selBJets_medium[0]->p4()+selBJets_medium[1]->p4()).mass() : 0 )
           ("nElectron",      selElectrons.size())
           ("sum_Lep_charge", selLepton_lead -> charge() + selLepton_sublead -> charge() + selHadTau->charge())
-          ("massL",          selLeptons.size() > 1 ? comp_MT_met(selLeptons[0]->cone_p4() + selLeptons[1]->cone_p4(), met.pt(), met.phi())  : 0.)
+          ("massL",          selLeptons.size() > 1 ? comp_massL2(selLeptons[0], selLeptons[1], met.pt(), met.phi())  : 0.)
           ("min_Deta_mostfwdJet_jet", min_Deta_mostfwdJet_jet)
           ("min_Deta_leadfwdJet_jet", min_Deta_leadfwdJet_jet)
           ("met_LD",    met_LD)
@@ -2388,8 +2388,8 @@ int main(int argc, char* argv[])
           ("selHadTau_lead_decayMode", selHadTau ->  decayMode())
           ("selHadTau_lead_idDecayMode", selHadTau ->  idDecayMode())
           ("tau1_mva_id",                     selHadTau->id_mva(TauID::MVAoldDMdR032017v2))
-          ("massLT",          selLeptons.size() > 1 ? comp_MT_met(selLeptons[0]->cone_p4() + selLeptons[1]->cone_p4(), met.pt(), met.phi())  : 0.)
-          ("massL3",          selLeptons.size() > 1 ? comp_MT_met(selLeptons[0]->cone_p4() + selLeptons[1]->cone_p4() + selHadTau->p4(), met.pt(), met.phi())  : 0.)
+          ("massLT",          selLeptons.size() > 1 ? comp_massL2(selLeptons[0], selLeptons[1], met.pt(), met.phi())  : 0.)
+          ("massL3",          selLeptons.size() > 1 ? comp_massL3(selLeptons[0], selLeptons[1], selHadTau, met.pt(), met.phi())  : 0.)
 
         .fill()
       ;

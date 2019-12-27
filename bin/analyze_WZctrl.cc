@@ -1324,7 +1324,7 @@ int main(int argc, char* argv[])
     const double mindr_lep1_jet = comp_mindr_jet(*selLepton_lead, selJets);
     const double mindr_lep2_jet = comp_mindr_jet(*selLepton_sublead, selJets);
     const double max_lep_eta    = std::max(selLepton_lead->absEta(), selLepton_sublead->absEta());
-    const double mT_lep1        = comp_MT_met(*selLepton_lead,    met.pt(), met.phi());
+    const double mT_lep1        = comp_MT_met(selLepton_lead,    met.pt(), met.phi());
     const double avg_dr_jet     = comp_avg_dr_jet(selJets);
     double mvaOutput_2lss_ttV = 1.;
     double mvaOutput_2lss_ttbar = 1.;
@@ -1435,7 +1435,7 @@ int main(int argc, char* argv[])
       ;
 
       const double dr_leps        = deltaR(selLepton_lead->p4(), selLepton_sublead->p4());
-      const double mT_lep2        = comp_MT_met(*selLepton_sublead, met.pt(), met.phi());
+      const double mT_lep2        = comp_MT_met(selLepton_sublead, met.pt(), met.phi());
       const double max_dr_jet     = comp_max_dr_jet(selJets);
       const double mbb            = selBJets_medium.size() > 1 ?  (selBJets_medium[0]->p4() + selBJets_medium[1]->p4()).mass() : -1000;
       const double mbb_loose      = selBJets_loose.size() > 1 ? (selBJets_loose[0]->p4() + selBJets_loose[1]->p4()).mass() : -1000;

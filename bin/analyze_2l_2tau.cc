@@ -1589,8 +1589,8 @@ int main(int argc, char* argv[])
     const double tau2_pt          = selHadTau_sublead->pt();
     const double mindr_lep1_jet   = std::min(10., comp_mindr_jet(*selLepton_lead, selJets));
     const double mindr_lep2_jet   = std::min(10., comp_mindr_jet(*selLepton_sublead, selJets));
-    const double mT_lep1          = comp_MT_met(selLepton_lead->cone_p4(),    met.pt(), met.phi());
-    const double mT_lep2          = comp_MT_met(selLepton_sublead->cone_p4(), met.pt(), met.phi());
+    const double mT_lep1          = comp_MT_met(selLepton_lead,    met.pt(), met.phi());
+    const double mT_lep2          = comp_MT_met(selLepton_sublead, met.pt(), met.phi());
     const double mindr_tau1_jet   = comp_mindr_jet(*selHadTau_lead,    selJets);
     const double mindr_tau2_jet   = comp_mindr_jet(*selHadTau_sublead, selJets);
     const double dr_lep1_tau1     = deltaR(selLepton_lead->p4(),    selHadTau_lead->p4());

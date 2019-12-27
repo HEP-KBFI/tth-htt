@@ -1,5 +1,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/mvaInputVariables.h"
 
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
+#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h" // RecoHadTau
+
 #include <DataFormats/Math/interface/deltaR.h> // deltaR()
 
 #include <TLorentzVector.h> // TLorentzVector
@@ -11,6 +14,15 @@ namespace
   double square(double x)
   {
     return x*x;
+  }
+
+  Particle::LorentzVector
+  getP4(const ChargedParticle * particle)
+  {
+    const RecoLepton * lepton = dynamic_cast<const RecoLepton *>(particle);
+    const RecoHadTau * hadTau = dynamic_cast<const RecoHadTau *>(particle);
+    assert(lepton || hadTau);
+    return lepton ? lepton->cone_p4() : hadTau->p4();
   }
 }
 
@@ -30,11 +42,49 @@ comp_MT_met(const Particle::LorentzVector & leptonP4,
 }
 
 double
-comp_MT_met(const Particle & lepton,
+comp_MT_met(const RecoLepton * lepton,
             double met_pt,
             double met_phi)
 {
-  return comp_MT_met(lepton.p4(), met_pt, met_phi);
+  return comp_MT_met(lepton->cone_p4(), met_pt, met_phi);
+}
+
+double
+comp_MT_met(const RecoHadTau * hadTau,
+            double met_pt,
+            double met_phi)
+{
+  return comp_MT_met(hadTau->p4(), met_pt, met_phi);
+}
+
+double
+comp_massL2(const ChargedParticle * particle1,
+            const ChargedParticle * particle2,
+            double met_pt,
+            double met_phi)
+{
+  return comp_MT_met(::getP4(particle1) + ::getP4(particle2), met_pt, met_phi);
+}
+
+double
+comp_massL3(const ChargedParticle * particle1,
+            const ChargedParticle * particle2,
+            const ChargedParticle * particle3,
+            double met_pt,
+            double met_phi)
+{
+  return comp_MT_met(::getP4(particle1) + ::getP4(particle2) + ::getP4(particle3), met_pt, met_phi);
+}
+
+double
+comp_massL4(const ChargedParticle * particle1,
+            const ChargedParticle * particle2,
+            const ChargedParticle * particle3,
+            const ChargedParticle * particle4,
+            double met_pt,
+            double met_phi)
+{
+  return comp_MT_met(::getP4(particle1) + ::getP4(particle2) + ::getP4(particle3) + ::getP4(particle4), met_pt, met_phi);
 }
 
 namespace

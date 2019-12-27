@@ -1828,8 +1828,8 @@ int main(int argc, char* argv[])
     const double mindr_tau_jet = std::min(10., comp_mindr_jet(*selHadTau, selJets));
     const double avg_dr_jet    = comp_avg_dr_jet(selJets);;
     const double ptmiss        = met.pt();
-    const double mT_lep        = comp_MT_met(selLepton->cone_p4(), met.pt(), met.phi());
-    const double mT_tau        = comp_MT_met(*selHadTau, met.pt(), met.phi());
+    const double mT_lep        = comp_MT_met(selLepton, met.pt(), met.phi());
+    const double mT_tau        = comp_MT_met(selHadTau, met.pt(), met.phi());
     const double htmiss        = mht_p4.pt();
     const double tau_mva       = selHadTau->raw_mva();
     const double tau_pt        = selHadTau->pt();

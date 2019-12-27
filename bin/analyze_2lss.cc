@@ -1752,7 +1752,7 @@ int main(int argc, char* argv[])
 //--- compute output of BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar
 //    in 2lss category of ttH multilepton analysis
     mvaInputs_2lss["max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))"] = std::max(std::fabs(selLepton_lead->eta()), std::fabs(selLepton_sublead->eta()));
-    mvaInputs_2lss["MT_met_lep1"]                = comp_MT_met(selLepton_lead->cone_p4(), met.pt(), met.phi());
+    mvaInputs_2lss["MT_met_lep1"]                = comp_MT_met(selLepton_lead, met.pt(), met.phi());
     mvaInputs_2lss["nJet25_Recl"]                = nJet25_Recl;
     mvaInputs_2lss["mindr_lep1_jet"]             = TMath::Min(10., mindr_lep1_jet);
     mvaInputs_2lss["mindr_lep2_jet"]             = TMath::Min(10., mindr_lep2_jet);
@@ -1861,13 +1861,13 @@ int main(int argc, char* argv[])
       {"lep1_conePt",     lep1_conePt},
       {"lep1_eta",        selLepton_lead -> eta()},
       {"lep1_phi",        selLepton_lead -> phi()},
-      {"mT_lep1",         comp_MT_met(selLepton_lead->cone_p4(), met.pt(), met.phi())}, //
+      {"mT_lep1",         comp_MT_met(selLepton_lead, met.pt(), met.phi())}, //
       {"mindr_lep1_jet",  mindr_lep1_jet},
       {"lep1_charge",     selLepton_lead -> charge()},
       {"lep2_conePt",     lep2_conePt},
       {"lep2_eta",        selLepton_sublead -> eta()},
       {"lep2_phi",        selLepton_sublead -> phi()},
-      {"mT_lep2",         comp_MT_met(selLepton_sublead->cone_p4(), met.pt(), met.phi())}, //
+      {"mT_lep2",         comp_MT_met(selLepton_sublead, met.pt(), met.phi())}, //
       {"mindr_lep2_jet",  mindr_lep2_jet},
       {"Dilep_pdgId",     selElectrons.size() + 1},
       {"maxeta",          TMath::Max(selLepton_lead -> absEta(), selLepton_sublead -> absEta())},
@@ -2141,8 +2141,8 @@ int main(int argc, char* argv[])
           ("lep1_tth_mva",           selLepton_lead -> mvaRawTTH())
           ("mindr_lep1_jet",         TMath::Min(10., mindr_lep1_jet) )
           ("mindr_lep2_jet",         TMath::Min(10., mindr_lep2_jet) )
-          ("mT_lep1",                comp_MT_met(selLepton_lead->cone_p4(), met.pt(), met.phi()))
-          ("MT_met_lep1",            comp_MT_met(selLepton_lead->cone_p4(), met.pt(), met.phi()))
+          ("mT_lep1",                comp_MT_met(selLepton_lead, met.pt(), met.phi()))
+          ("MT_met_lep1",            comp_MT_met(selLepton_lead, met.pt(), met.phi()))
           ("lep2_pt",                selLepton_sublead -> pt())
           ("lep2_conePt",            comp_lep_conePt(*selLepton_sublead))
           ("lep2_eta",               selLepton_sublead -> eta())
@@ -2150,7 +2150,7 @@ int main(int argc, char* argv[])
           ("max_Lep_eta",            TMath::Max(std::abs(selLepton_lead -> eta()), std::abs(selLepton_sublead -> eta())))
           ("avg_dr_lep",             1.0) // comp_avg_dr_jet(selLeptons))
           ("lep2_tth_mva",           selLepton_sublead -> mvaRawTTH())
-          ("mT_lep2",                comp_MT_met(selLepton_sublead->cone_p4(), met.pt(), met.phi()))
+          ("mT_lep2",                comp_MT_met(selLepton_sublead, met.pt(), met.phi()))
           ("avg_dr_jet",             comp_avg_dr_jet(selJets))
           ("nJet25_Recl",            comp_n_jet25_recl(selJets))
           ("ptmiss",                 met.pt())
@@ -2187,7 +2187,7 @@ int main(int argc, char* argv[])
           ("mbb_medium",          selBJets_medium.size()>1 ?  (selBJets_medium[0]->p4()+selBJets_medium[1]->p4()).mass() : 0 )
           ("nElectron",                      selElectrons.size())
           ("sum_Lep_charge", selLepton_lead -> charge() + selLepton_sublead -> charge())
-          ("massLT",          selLeptons.size() > 1 ? comp_MT_met(selLeptons[0]->cone_p4() + selLeptons[1]->cone_p4(), met.pt(), met.phi())  : 0.)
+          ("massLT",          selLeptons.size() > 1 ? comp_massL2(selLeptons[0], selLeptons[1], met.pt(), met.phi())  : 0.)
           ("massL",           massL(fakeableLeptons))
           ("min_Deta_mostfwdJet_jet", min_Deta_mostfwdJet_jet)
           ("min_Deta_leadfwdJet_jet", min_Deta_leadfwdJet_jet)
@@ -2224,8 +2224,8 @@ int main(int argc, char* argv[])
 
     if(snm)
     {
-      const double mT_lep1        = comp_MT_met(selLepton_lead->cone_p4(), met.pt(), met.phi());
-      const double mT_lep2        = comp_MT_met(selLepton_sublead->cone_p4(), met.pt(), met.phi());
+      const double mT_lep1        = comp_MT_met(selLepton_lead, met.pt(), met.phi());
+      const double mT_lep2        = comp_MT_met(selLepton_sublead, met.pt(), met.phi());
       const double max_dr_jet     = comp_max_dr_jet(selJets);
       const double mbb            = selBJets_medium.size() > 1 ? (selBJets_medium[0]->p4() + selBJets_medium[1]->p4()).mass() : -1.;
       const double mbb_loose      = selBJets_loose.size() > 1 ? (selBJets_loose[0]->p4() + selBJets_loose[1]->p4()).mass() : -1.;

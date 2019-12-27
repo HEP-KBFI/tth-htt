@@ -623,7 +623,7 @@ main(int argc,
 
     if(preselLeptons.size() > 1)
     {
-      const double massL = comp_MT_met(preselLeptons[0]->p4() + preselLeptons[1]->p4(), met.pt(), met.phi());
+      const double massL = comp_massL2(preselLeptons[0], preselLeptons[1], met.pt(), met.phi());
       snm->read(massL, FloatVariableType::massL);
     }
 
@@ -645,7 +645,7 @@ main(int argc,
     {
       const RecoLepton * selLepton_lead = selLeptons[0];
       mindr_lep1_jet = comp_mindr_jet(*selLepton_lead, selJets);
-      mT_met_lep1    = comp_MT_met(selLepton_lead->p4(), met.pt(), met.phi());
+      mT_met_lep1    = comp_MT_met(selLepton_lead, met.pt(), met.phi());
       double mTauTauVis1_sel  = ! selHadTaus.empty()      ?
         (selLepton_lead->p4() + selHadTaus.at(0)->p4()).mass() :
         snm->placeholder_value
@@ -659,7 +659,7 @@ main(int argc,
       {
         const RecoLepton * selLepton_sublead = selLeptons[1];
         mindr_lep2_jet = comp_mindr_jet(*selLepton_sublead, selJets);
-        mT_met_lep2    = comp_MT_met(selLepton_sublead->p4(), met.pt(), met.phi());
+        mT_met_lep2    = comp_MT_met(selLepton_sublead, met.pt(), met.phi());
         const double dR_leps        = deltaR(selLepton_lead->p4(), selLepton_sublead->p4());
         double mTauTauVis2_sel      = ! selHadTaus.empty()  ?
           (selLepton_sublead->p4() + selHadTaus.at(0)->p4()).mass() :
@@ -679,7 +679,7 @@ main(int argc,
         if(selLeptons.size() > 2)
         {
           const RecoLepton * selLepton_third = selLeptons[2];
-          mT_met_lep3    = comp_MT_met(selLepton_third->p4(), met.pt(), met.phi());
+          mT_met_lep3    = comp_MT_met(selLepton_third, met.pt(), met.phi());
           mindr_lep3_jet = comp_mindr_jet(*selLepton_third, selJets);
 
           snm->read(mT_met_lep3,    FloatVariableType::mT_met_lep3);
@@ -695,7 +695,7 @@ main(int argc,
     if(selLeptons.size() > 3)
     {
       const RecoLepton * selLepton_fourth = selLeptons[3];
-      const double mT_met_lep4    = comp_MT_met(selLepton_fourth->p4(), met.pt(), met.phi());
+      const double mT_met_lep4    = comp_MT_met(selLepton_fourth, met.pt(), met.phi());
       const double mindr_lep4_jet = comp_mindr_jet(*selLepton_fourth, selJets);
 
       snm->read(mT_met_lep4,    FloatVariableType::mT_met_lep4);

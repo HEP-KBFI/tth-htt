@@ -1790,7 +1790,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     const double avg_dr_jet = comp_avg_dr_jet(selJets);
     const double max_lep12_eta = std::max(selLepton_lead->absEta(), selLepton_sublead->absEta());
     mvaInputs_3l["max(abs(LepGood_eta[iF_Recl[0]]),abs(LepGood_eta[iF_Recl[1]]))"] = max_lep12_eta;
-    mvaInputs_3l["MT_met_lep1"]                = comp_MT_met(selLepton_lead->cone_p4(), met.pt(), met.phi());
+    mvaInputs_3l["MT_met_lep1"]                = comp_MT_met(selLepton_lead, met.pt(), met.phi());
     mvaInputs_3l["nJet25_Recl"]                = comp_n_jet25_recl(selJets);
     mvaInputs_3l["mindr_lep1_jet"]             = mindr_lep1_jet;
     mvaInputs_3l["mindr_lep2_jet"]             = mindr_lep2_jet;
@@ -1847,9 +1847,9 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
       }
     }
 
-    const double mT_lep1           = comp_MT_met(selLepton_lead->cone_p4(), met.pt(), met.phi());
-    const double mT_lep2           = comp_MT_met(selLepton_sublead->cone_p4(), met.pt(), met.phi());
-    const double mT_lep3           = comp_MT_met(selLepton_third->cone_p4(), met.pt(), met.phi());
+    const double mT_lep1           = comp_MT_met(selLepton_lead, met.pt(), met.phi());
+    const double mT_lep2           = comp_MT_met(selLepton_sublead, met.pt(), met.phi());
+    const double mT_lep3           = comp_MT_met(selLepton_third, met.pt(), met.phi());
     const double max_dr_jet        = comp_max_dr_jet(selJets);
     const double mbb               = selBJets_medium.size() > 1 ? (selBJets_medium[0]->p4() + selBJets_medium[1]->p4()).mass() : 0.;
     const double mbb_loose         = selBJets_loose.size() > 1 ? (selBJets_loose[0]->p4() + selBJets_loose[1]->p4()).mass() : -1.;
@@ -1938,7 +1938,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
       {"sum_Lep_charge",  sum_Lep_charge},
       {"HadTop_pt",       HadTop_pt_CSVsort4rd},
       {"res_HTT",         max_mvaOutput_HTT_CSVsort4rd},
-      {"massL3",          comp_MT_met(selLeptons[0]->cone_p4() + selLeptons[1]->cone_p4() + selLeptons[2]->cone_p4(), met.pt(), met.phi())}, //
+      {"massL3",          comp_massL3(selLeptons[0], selLeptons[1], selLeptons[2], met.pt(), met.phi())},
       {"nJet",            selJets.size()},
       {"nBJetLoose",      selBJets_loose.size()},
       {"nBJetMedium",     selBJets_medium.size()},
@@ -2233,21 +2233,21 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
           ("lep1_phi",            selLepton_lead -> phi())
           ("lep1_tth_mva",        selLepton_lead -> mvaRawTTH())
           ("mindr_lep1_jet",      TMath::Min(10., mindr_lep1_jet))
-          ("mT_lep1",             comp_MT_met(selLepton_lead->cone_p4(), met.pt(), met.phi()))
+          ("mT_lep1",             comp_MT_met(selLepton_lead, met.pt(), met.phi()))
           ("lep2_pt",             selLepton_sublead -> pt())
           ("lep2_conePt",         lep2_conePt)
           ("lep2_eta",            selLepton_sublead -> eta())
           ("lep2_phi",            selLepton_sublead -> phi())
           ("lep2_tth_mva",        selLepton_sublead -> mvaRawTTH())
           ("mindr_lep2_jet",      TMath::Min(10., mindr_lep2_jet))
-          ("mT_lep2",             comp_MT_met(selLepton_sublead->cone_p4(), met.pt(), met.phi()))
+          ("mT_lep2",             comp_MT_met(selLepton_sublead, met.pt(), met.phi()))
           ("lep3_pt",             selLepton_third -> pt())
           ("lep3_conePt",         lep3_conePt)
           ("lep3_eta",            selLepton_third -> eta())
           ("lep3_phi",            selLepton_third -> phi())
           ("lep3_tth_mva",        selLepton_third -> mvaRawTTH())
           ("mindr_lep3_jet",      TMath::Min(10., mindr_lep3_jet))
-          ("mT_lep3",             comp_MT_met(selLepton_third->cone_p4(), met.pt(), met.phi()))
+          ("mT_lep3",             comp_MT_met(selLepton_third, met.pt(), met.phi()))
           ("avg_dr_jet",          avg_dr_jet)
           ("ptmiss",              met.pt())
           ("htmiss",              mht_p4.pt())
@@ -2320,8 +2320,8 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
           ("HadTop_pt",      HadTop_pt_CSVsort4rd)
           ("res_HTT",        max_mvaOutput_HTT_CSVsort4rd)
           ("max_Lep_eta",    max_lep_eta)
-          ("massLT",          selLeptons.size() > 1 ? comp_MT_met(selLeptons[0]->cone_p4() + selLeptons[1]->cone_p4(), met.pt(), met.phi())  : 0.)
-          ("massL3",          selLeptons.size() > 2 ? comp_MT_met(selLeptons[0]->cone_p4() + selLeptons[1]->cone_p4() + selLeptons[2]->cone_p4(), met.pt(), met.phi())  : 0.)
+          ("massLT",          selLeptons.size() > 1 ? comp_massL2(selLeptons[0], selLeptons[1], met.pt(), met.phi())  : 0.)
+          ("massL3",          selLeptons.size() > 2 ? comp_massL3(selLeptons[0], selLeptons[1], selLeptons[2], met.pt(), met.phi())  : 0.)
           ("massL_FO",           massL(fakeableLeptons))
           ("massL",           massL(selLeptons))
           ("has_SFOS",       hasSFOS)

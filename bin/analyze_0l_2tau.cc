@@ -1606,8 +1606,8 @@ int main(int argc, char* argv[])
     svFitAlgo.integrate(measuredTauLeptons, met.p4().px(), met.p4().py(), met.cov());
     //double mTauTau = -1.; // CV: temporarily comment-out the following line, to make code compile with "old" and "new" version of ClassicSVfit
     double mTauTau   = ( svFitAlgo.isValidSolution() ) ? static_cast<classic_svFit::HistogramAdapterDiTau*>(svFitAlgo.getHistogramAdapter())->getMass() : -1.;
-    double mT_tau1   = comp_MT_met(*selHadTau_lead, met.pt(), met.phi());
-    double mT_tau2   = comp_MT_met(*selHadTau_sublead, met.pt(), met.phi());
+    double mT_tau1   = comp_MT_met(selHadTau_lead, met.pt(), met.phi());
+    double mT_tau2   = comp_MT_met(selHadTau_sublead, met.pt(), met.phi());
     //double pZeta     = comp_pZeta(selHadTau_lead -> p4(), selHadTau_sublead -> p4(), met.p4().px(), met.p4().py());
     //double pZetaVis  = comp_pZetaVis(selHadTau_lead -> p4(), selHadTau_sublead -> p4());
     double pZetaComb = comp_pZetaComb(selHadTau_lead -> p4(), selHadTau_sublead -> p4(), met.p4().px(), met.p4().py());
@@ -1642,8 +1642,8 @@ int main(int argc, char* argv[])
       //{"nJet",		selJets.size()},
       {"mindr_tau1_jet",   TMath::Min(10., comp_mindr_jet(*selHadTau_lead, selJets))},
       {"mindr_tau2_jet",   TMath::Min(10., comp_mindr_jet(*selHadTau_sublead, selJets))},
-      {"mT_tau1",          comp_MT_met(*selHadTau_lead, met.pt(), met.phi())},
-      {"mT_tau2",          comp_MT_met(*selHadTau_sublead, met.pt(), met.phi())}
+      {"mT_tau1",          comp_MT_met(selHadTau_lead, met.pt(), met.phi())},
+      {"mT_tau2",          comp_MT_met(selHadTau_sublead, met.pt(), met.phi())}
       };
     double mva_0l_2tau_deeptauLoose_2 = mva_xgb_Legacy(mvaInputs_ttbar);
 
@@ -1657,8 +1657,8 @@ int main(int argc, char* argv[])
     mvaInputs_XGB_Updated["tau1_eta"] = selHadTau_lead->absEta();
     mvaInputs_XGB_Updated["tau2_eta"] = selHadTau_sublead->absEta();
     mvaInputs_XGB_Updated["dr_taus"] = deltaR(selHadTau_lead->p4(), selHadTau_sublead->p4());
-    mvaInputs_XGB_Updated["mT_tau1"] = comp_MT_met(*selHadTau_lead, met.pt(), met.phi());
-    mvaInputs_XGB_Updated["mT_tau2"] = comp_MT_met(*selHadTau_sublead, met.pt(), met.phi());
+    mvaInputs_XGB_Updated["mT_tau1"] = comp_MT_met(selHadTau_lead, met.pt(), met.phi());
+    mvaInputs_XGB_Updated["mT_tau2"] = comp_MT_met(selHadTau_sublead, met.pt(), met.phi());
     mvaInputs_XGB_Updated["mTauTauVis"] = mTauTauVis;
     mvaInputs_XGB_Updated["mTauTau"] = mTauTau;
     mvaInputs_XGB_Updated["nJet"] = selJets.size();
