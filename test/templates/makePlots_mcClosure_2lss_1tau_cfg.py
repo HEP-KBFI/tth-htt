@@ -9,6 +9,21 @@ process.makePlots.distributions.extend([
         yAxisTitle = cms.string("dN/dMVA")
     ),
     cms.PSet(
+        histogramName = cms.string("sel/evt/$PROCESS/output_NN_ttH"),
+        xAxisTitle = cms.string("MVA Discriminant (NN ttH)"),
+        yAxisTitle = cms.string("dN/dMVA")
+    ),
+    cms.PSet(
+        histogramName = cms.string("sel/evt/$PROCESS/output_NN_tH"),
+        xAxisTitle = cms.string("MVA Discriminant (NN tH)"),
+        yAxisTitle = cms.string("dN/dMVA")
+    ),
+    cms.PSet(
+        histogramName = cms.string("sel/evt/$PROCESS/output_NN_rest"),
+        xAxisTitle = cms.string("MVA Discriminant (NN rest)"),
+        yAxisTitle = cms.string("dN/dMVA")
+    ),
+    cms.PSet(
         histogramName = cms.string("sel/evt/$PROCESS/mTauTauVis1"),
         xAxisTitle = cms.string("m_{#tau#tau}^{vis} [GeV]"),
         yAxisTitle = cms.string("dN/dm_{#tau#tau}^{vis} [1/GeV]")

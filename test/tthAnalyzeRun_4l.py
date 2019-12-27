@@ -118,6 +118,20 @@ if __name__ == '__main__':
   if sample_filter:
     samples = filter_samples(samples, sample_filter)
 
+  original_histos = {
+    "EventCounter" : {},
+    "numJets"      : {},
+  }
+  if control_region :
+      sig_extraction_histos = {
+      "control" : {}
+      }
+  else :
+      sig_extraction_histos = {
+      "mass_4L"      : {},
+      "mva_4l"       : {},
+      }
+  original_histos.update(sig_extraction_histos)
   analysis = analyzeConfig_4l(
     configDir = os.path.join("/home",       getpass.getuser(), "ttHAnalysis", era, version),
     outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis", era, version),
@@ -140,13 +154,7 @@ if __name__ == '__main__':
     num_parallel_jobs                     = num_parallel_jobs,
     executable_addBackgrounds             = "addBackgrounds",
     executable_addBackgroundJetToTauFakes = "addBackgroundLeptonFakes",
-    histograms_to_fit                     = {
-      "EventCounter" : {},
-      "numJets"      : {},
-      "massL"        : {},
-      "mva_4l"       : {},
-      "control"      : {},
-    },
+    histograms_to_fit                     = original_histos,
     select_rle_output                     = True,
     select_root_output                    = False,
     dry_run                               = dry_run,

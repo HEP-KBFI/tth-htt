@@ -623,7 +623,23 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     WeightHistManager* weights_;
   };
 
-  const std::map<std::string, std::vector<double>> categories_list_NN = {
+  const std::map<std::string, std::vector<double>> categories_list_CR =
+  {
+    {"control_eee", {}},
+    {"control_eem", {}},
+    {"control_emm", {}},
+    {"control_mmm", {}}
+  };
+  const std::map<std::string, std::vector<double>> categories_list_SVA =
+  {
+    {"mass_3L_lj_pos", {}},
+    {"mass_3L_lj_neg", {}},
+    {"mass_3L_hj_pos", {}},
+    {"mass_3L_hj_neg", {}},
+    {"mass_3L_rest", {}}
+  };
+  const std::map<std::string, std::vector<double>> categories_list_NN =
+  {
     {"output_NN_ttH_bl",      {0.0, 0.47, 0.54, 0.60, 0.70, 0.80, 1.0}},
     {"output_NN_ttH_bt",      {0.0, 0.54, 0.62, 0.71, 0.79, 0.85, 0.91, 1.0}},
     {"output_NN_tH_bl",       {0.0, 0.47, 0.52, 0.58, 0.66, 1.0}},
@@ -634,6 +650,8 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     {"output_NN_rest_mmm", {0.0, 0.52, 0.59, 0.70, 1.0}},
     {"output_NN_cr",       {0, 1}}
   };
+  const std::map<std::string, std::vector<double>> categories_list_tobook = isControlRegion ? categories_list_CR : categories_list_NN;
+
 
   vstring ctrl_categories = { "other" };
   for(int nele_ctrl = 0; nele_ctrl < 4; ++nele_ctrl)
@@ -726,15 +744,13 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
 
         selHistManager->evt_[evt_cat_str] = new EvtHistManager_3l(makeHistManager_cfg(
           process_and_genMatchName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift
-        ));
+        ), isControlRegion);
         selHistManager->evt_[evt_cat_str]->bookCategories(
           fs,
-          categories_list_NN
+          categories_list_tobook,
+          categories_list_SVA,
+          isControlRegion
         );
-        if(isControlRegion)
-        {
-          selHistManager->evt_[evt_cat_str]->setCRcategories(fs, ctrl_categories);
-        }
         selHistManager->evt_[evt_cat_str]->bookHistograms(fs);
       }
 
@@ -767,15 +783,13 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
 
             selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] = new EvtHistManager_3l(makeHistManager_cfg(
               decayMode_and_genMatchName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift
-            ));
+            ), isControlRegion);
             selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] -> bookCategories(
               fs,
-              categories_list_NN
+              categories_list_tobook,
+              categories_list_SVA,
+              isControlRegion
             );
-            if(isControlRegion)
-            {
-              selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] -> setCRcategories(fs, ctrl_categories);
-            }
             selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] -> bookHistograms(fs);
           }
         }
@@ -833,7 +847,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
       "lep1_genLepPt", "lep2_genLepPt", "lep3_genLepPt",
       "lep1_fake_prob", "lep2_fake_prob", "lep3_fake_prob",
       "lep1_frWeight", "lep2_frWeight", "lep3_frWeight",
-      "mvaOutput_3l_ttV", "mvaOutput_3l_ttbar", "mvaDiscr_3l",
+      "mvaOutput_3l_ttV", "mvaOutput_3l_ttbar",
       "mbb_loose", "mbb_medium",
       "dr_Lep_lss", "dr_Lep_los1", "dr_Lep_los2", "eta_LepLep_los1", "eta_LepLep_los2", "eta_LepLep_los",
       "mostFwdJet_eta", "mostFwdJet_pt", "mostFwdJet_phi", "mostFwdJet_E",
@@ -857,7 +871,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
   int selectedEntries = 0;
   double selectedEntries_weighted = 0.;
   std::map<std::string, int> selectedEntries_byGenMatchType;             // key = process_and_genMatch
-  std::map<std::string, std::map<std::string, double>> selectedEntries_weighted_byGenMatchType; // keys = central_or_shift, process_and_genMatch
+  std::map<std::string, double> selectedEntries_weighted_byGenMatchType; // key = process_and_genMatch
   TH1* histogram_analyzedEntries = fs.make<TH1D>("analyzedEntries", "analyzedEntries", 1, -0.5, +0.5);
   TH1* histogram_selectedEntries = fs.make<TH1D>("selectedEntries", "selectedEntries", 1, -0.5, +0.5);
   cutFlowTableType cutFlowTable;
@@ -886,7 +900,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
   CutFlowTableHistManager * cutFlowHistManager = new CutFlowTableHistManager(cutFlowTableCfg, cuts);
   cutFlowHistManager->bookHistograms(fs);
 
-  bool isDebugTF = false;
+  bool isDebugTF = true;
   while(inputTree -> hasNextEvent() && (! run_lumi_eventSelector || (run_lumi_eventSelector && ! run_lumi_eventSelector -> areWeDone())))
   {
     if(inputTree -> canReport(reportEvery))
@@ -899,6 +913,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     }
     ++analyzedEntries;
     histogram_analyzedEntries->Fill(0.);
+    //if(eventInfo.event != 987370) continue;
 
     if (run_lumi_eventSelector && !(*run_lumi_eventSelector)(eventInfo))
     {
@@ -1832,15 +1847,17 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
       }
     }
 
-    const double mT_lep1           = comp_MT_met_lep1(selLepton_lead->p4(), met.pt(), met.phi());
-    const double mT_lep2           = comp_MT_met_lep2(selLepton_sublead->p4(), met.pt(), met.phi());
-    const double mT_lep3           = comp_MT_met_lep3(selLepton_third->p4(), met.pt(), met.phi());
+    const double mT_lep1           = comp_MT_met_lep1(selLepton_lead->cone_p4(), met.pt(), met.phi());
+    const double mT_lep2           = comp_MT_met_lep2(selLepton_sublead->cone_p4(), met.pt(), met.phi());
+    const double mT_lep3           = comp_MT_met_lep3(selLepton_third->cone_p4(), met.pt(), met.phi());
     const double max_dr_jet        = comp_max_dr_jet(selJets);
     const double mbb               = selBJets_medium.size() > 1 ? (selBJets_medium[0]->p4() + selBJets_medium[1]->p4()).mass() : 0.;
     const double mbb_loose         = selBJets_loose.size() > 1 ? (selBJets_loose[0]->p4() + selBJets_loose[1]->p4()).mass() : -1.;
     const double min_dr_lep_jet    = std::min({ mindr_lep1_jet, mindr_lep2_jet, mindr_lep3_jet });
     const double dr_leps           = deltaR(selLepton_lead->p4(), selLepton_sublead->p4());
     const double max_lep_eta       = std::max({ selLepton_lead->absEta(), selLepton_sublead->absEta(), selLepton_third->absEta() });
+    const double mass_3L           = (selLepton_lead->p4() + selLepton_sublead->p4() + selLepton_third->p4()).mass();
+    const int    sum_Lep_charge    = selLepton_lead -> charge() + selLepton_sublead -> charge() + selLepton_third->charge();
     const double min_dr_lep    = std::min({
       deltaR(selLepton_lead->p4(), selLepton_sublead->p4()),
       deltaR(selLepton_lead->p4(), selLepton_third->p4()),
@@ -1886,20 +1903,6 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     if (dr_los1 < dr_los2) eta_los = eta_los1;
     else eta_los = eta_los2;
 
-    /*
-    "lep1_conePt", "lep1_eta", "lep1_phi", "mT_lep1",
-    "lep2_conePt", "lep2_eta", "lep2_phi", "mT_lep2",
-    "lep3_conePt", "lep3_eta", "lep3_phi", "mT_lep3",
-    "mindr_lep1_jet", "mindr_lep2_jet", "mindr_lep3_jet", "min_dr_Lep",
-    "avg_dr_jet", "met_LD", "mbb_loose",
-    "leadFwdJet_eta", "leadFwdJet_pt", "min_Deta_leadfwdJet_jet",
-    "jet1_pt", "jet1_eta", "jet1_phi",
-    "jet2_pt", "jet2_eta", "jet2_phi",
-    "jet3_pt", "jet3_eta", "jet3_phi",
-    "sum_Lep_charge", "HadTop_pt",
-    "res_HTT", "massL3", "nJet",
-    "nBJetLoose", "nBJetMedium", "nJetForward", "nElectron", "has_SFOS"
-    */
     std::map<std::string, double> mvaInputVariables_NN_list = {
       {"lep1_conePt",     lep1_conePt},
       {"lep1_eta",        selLepton_lead -> eta()},
@@ -1932,10 +1935,10 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
       {"jet3_pt",         selJets.size() > 2 ?  selJets[2]->pt()  : 0.},
       {"jet3_eta",        selJets.size() > 2 ?  selJets[2]->eta() : 0.},
       {"jet3_phi",        selJets.size() > 2 ?  selJets[2]->phi() : 0.},
-      {"sum_Lep_charge",  selLepton_lead -> charge() + selLepton_sublead -> charge() + selLepton_third->charge()},
+      {"sum_Lep_charge",  sum_Lep_charge},
       {"HadTop_pt",       HadTop_pt_CSVsort4rd},
       {"res_HTT",         max_mvaOutput_HTT_CSVsort4rd},
-      {"massL3",          comp_MT_met_lep1(selLeptons[0]->p4() + selLeptons[1]->p4() + selLeptons[2]->p4(), met.pt(), met.phi())}, //
+      {"massL3",          comp_MT_met_lep1(selLeptons[0]->cone_p4() + selLeptons[1]->cone_p4() + selLeptons[2]->cone_p4(), met.pt(), met.phi())}, //
       {"nJet",            selJets.size()},
       {"nBJetLoose",      selBJets_loose.size()},
       {"nBJetMedium",     selBJets_medium.size()},
@@ -1955,9 +1958,13 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
       }
 
 
-  std::string category_NN = "output_NN_";
+  std::string category_NN = "";
+  std::string category_SVA = "mass_3L_";
   double output_NN = -10.0;
+  if ( !isControlRegion )
+  {
   if (passEvents) {
+    category_NN = "output_NN_";
     if (
       mvaOutput_NN_TF["predictions_ttH"] >= mvaOutput_NN_TF["predictions_rest"] &&\
       mvaOutput_NN_TF["predictions_ttH"] >= mvaOutput_NN_TF["predictions_tH"]
@@ -1982,27 +1989,73 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     ) {
       category_NN += "rest";
       output_NN = mvaOutput_NN_TF["predictions_rest"];
-      if ( selElectrons.size() == 3) category_NN += "_eee";
-      if ( selElectrons.size() == 2) category_NN += "_eem";
-      if ( selElectrons.size() == 1) category_NN += "_emm";
-      if ( selElectrons.size() == 0) category_NN += "_mmm";
+      if (
+        selLepton_lead_type == kElectron && selLepton_sublead_type == kElectron && selLepton_third_type == kElectron
+      ) category_NN += "_eee"; // to not break in FO region
+      else if (
+        (selLepton_sublead_type == kElectron && selLepton_third_type == kElectron) ||
+        (selLepton_lead_type == kElectron &&  selLepton_third_type == kElectron) ||
+        (selLepton_lead_type == kElectron && selLepton_sublead_type == kElectron)
+      ) category_NN += "_eem";
+      else if (
+        selLepton_lead_type == kElectron || selLepton_sublead_type == kElectron || selLepton_third_type == kElectron
+      ) category_NN += "_emm";
+      else if ( selElectrons.size() == 0) category_NN += "_mmm";
       }
-
-  }
-  else if(isControlRegion)
-  {
+  } else {
     category_NN += "cr";
   }
-  else assert(0);
+  ///////////////////////////////
+  // SVA variables
+  if ( selJets.size() > 1)
+  {
+    if (selJets.size() < 4) category_SVA += "lj";
+    else category_SVA += "hj";
+    if (sum_Lep_charge > 0 ) category_SVA += "_pos";
+    else category_SVA += "_neg";
+  } else category_SVA += "rest";
 
-//--- compute integer discriminant based on both BDT outputs,
-//    as defined in Table 16 (10) of AN-2015/321 (AN-2016/211) for analysis of 2015 (2016) data
-    Double_t mvaDiscr_3l = -1;
-    if      ( mvaOutput_3l_ttbar > +0.30 && mvaOutput_3l_ttV >  +0.25 ) mvaDiscr_3l = 5.;
-    else if ( mvaOutput_3l_ttbar > +0.30 && mvaOutput_3l_ttV <= +0.25 ) mvaDiscr_3l = 4.;
-    else if ( mvaOutput_3l_ttbar > -0.30 && mvaOutput_3l_ttV >  +0.25 ) mvaDiscr_3l = 3.;
-    else if ( mvaOutput_3l_ttbar > -0.30 && mvaOutput_3l_ttV <= +0.25 ) mvaDiscr_3l = 2.;
-    else                                                                mvaDiscr_3l = 1.;
+  } else // is control region
+  {
+    category_NN = "control_";
+    if (
+      selLepton_lead_type == kElectron && selLepton_sublead_type == kElectron && selLepton_third_type == kElectron
+    ) category_NN += "eee"; // to not break in FO region
+    else if (
+      (selLepton_sublead_type == kElectron && selLepton_third_type == kElectron) ||
+      (selLepton_lead_type == kElectron &&  selLepton_third_type == kElectron) ||
+      (selLepton_lead_type == kElectron && selLepton_sublead_type == kElectron)
+    ) category_NN += "eem";
+    else if (
+      selLepton_lead_type == kElectron || selLepton_sublead_type == kElectron || selLepton_third_type == kElectron
+    ) category_NN += "emm";
+    else if ( selElectrons.size() == 0) category_NN += "mmm";
+
+    output_NN = -10.0;
+    if ( selBJets_medium.size() == 0 )
+    {
+      if ( selJets.size() == 1 ) output_NN = 1;
+      if ( selJets.size() == 2 ) output_NN = 2;
+      if ( selJets.size() == 3 ) output_NN = 3;
+      if ( selJets.size() > 3  ) output_NN = 4;
+    }
+    else if ( selBJets_medium.size() == 1 )
+    {
+      if ( selJets.size() == 2 ) output_NN = 5;
+      if ( selJets.size() == 3 ) output_NN = 6;
+      if ( selJets.size() == 4 ) output_NN = 7;
+      if ( selJets.size() > 4  ) output_NN = 8;
+    }
+    else if ( selBJets_medium.size() > 1 )
+    {
+      if ( selJets.size() == 2 ) output_NN = 9;
+      if ( selJets.size() == 3 ) output_NN = 10;
+      if ( selJets.size() == 4 ) output_NN = 11;
+      if ( selJets.size() > 4  ) output_NN = 12;
+    }
+    else assert(0);
+  }
+
 
 //--- retrieve gen-matching flags
     std::vector<const GenMatchEntry*> genMatches = genMatchInterface.getGenMatch(selLeptons);
@@ -2085,12 +2138,11 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
             selHistManager_evt->fillHistograms(
             selElectrons.size(), selMuons.size(), selHadTaus.size(),
             selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
-            ctrl_category,
-            mvaOutput_3l_ttV, mvaOutput_3l_ttbar, mvaDiscr_3l,
-            output_NN,
-            category_NN,
+            mvaOutput_3l_ttV, mvaOutput_3l_ttbar,
+            mass_3L, category_SVA,
+            output_NN, category_NN,
             memOutput_3l_matched.is_initialized() ? &memOutput_3l_matched : nullptr,
-            kv.second
+            kv.second, isControlRegion
           );
           }
         }
@@ -2113,14 +2165,12 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
                 selJets.size(),
                 selBJets_loose.size(),
                 selBJets_medium.size(),
-                ctrl_category,
                 mvaOutput_3l_ttV,
                 mvaOutput_3l_ttbar,
-                mvaDiscr_3l,
-                output_NN,
-                category_NN,
+                mass_3L, category_SVA,
+                output_NN, category_NN,
                 memOutput_3l_matched.is_initialized() ? &memOutput_3l_matched : nullptr,
-                kv.second
+                kv.second, isControlRegion
               );
               }
             }
@@ -2183,21 +2233,21 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
           ("lep1_phi",            selLepton_lead -> phi())
           ("lep1_tth_mva",        selLepton_lead -> mvaRawTTH())
           ("mindr_lep1_jet",      TMath::Min(10., mindr_lep1_jet))
-          ("mT_lep1",             comp_MT_met_lep1(*selLepton_lead, met.pt(), met.phi()))
+          ("mT_lep1",             comp_MT_met_lep1(selLepton_lead->cone_p4(), met.pt(), met.phi()))
           ("lep2_pt",             selLepton_sublead -> pt())
           ("lep2_conePt",         lep2_conePt)
           ("lep2_eta",            selLepton_sublead -> eta())
           ("lep2_phi",            selLepton_sublead -> phi())
           ("lep2_tth_mva",        selLepton_sublead -> mvaRawTTH())
           ("mindr_lep2_jet",      TMath::Min(10., mindr_lep2_jet))
-          ("mT_lep2",             comp_MT_met_lep1(*selLepton_sublead, met.pt(), met.phi()))
+          ("mT_lep2",             comp_MT_met_lep1(selLepton_sublead->cone_p4(), met.pt(), met.phi()))
           ("lep3_pt",             selLepton_third -> pt())
           ("lep3_conePt",         lep3_conePt)
           ("lep3_eta",            selLepton_third -> eta())
           ("lep3_phi",            selLepton_third -> phi())
           ("lep3_tth_mva",        selLepton_third -> mvaRawTTH())
           ("mindr_lep3_jet",      TMath::Min(10., mindr_lep3_jet))
-          ("mT_lep3",             comp_MT_met_lep1(*selLepton_third, met.pt(), met.phi()))
+          ("mT_lep3",             comp_MT_met_lep1(selLepton_third->cone_p4(), met.pt(), met.phi()))
           ("avg_dr_jet",          avg_dr_jet)
           ("ptmiss",              met.pt())
           ("htmiss",              mht_p4.pt())
@@ -2214,7 +2264,6 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
           ("lep3_fake_prob",      prob_fake_lepton_third)
           ("mvaOutput_3l_ttV",    mvaOutput_3l_ttV)
           ("mvaOutput_3l_ttbar",  mvaOutput_3l_ttbar)
-          ("mvaDiscr_3l",         mvaDiscr_3l)
 	  ("memOutput_isValid",   memOutput_3l_matched.is_initialized() ? memOutput_3l_matched.isValid() : -1.)
 	  ("memOutput_errorFlag", memOutput_3l_matched.is_initialized() ? memOutput_3l_matched.errorFlag() : -1.)
           ("memOutput_ttH",       memOutput_ttH)
@@ -2271,8 +2320,8 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
           ("HadTop_pt",      HadTop_pt_CSVsort4rd)
           ("res_HTT",        max_mvaOutput_HTT_CSVsort4rd)
           ("max_Lep_eta",    max_lep_eta)
-          ("massLT",          selLeptons.size() > 1 ? comp_MT_met_lep1(selLeptons[0]->p4() + selLeptons[1]->p4(), met.pt(), met.phi())  : 0.)
-          ("massL3",          selLeptons.size() > 2 ? comp_MT_met_lep1(selLeptons[0]->p4() + selLeptons[1]->p4() + selLeptons[2]->p4(), met.pt(), met.phi())  : 0.)
+          ("massLT",          selLeptons.size() > 1 ? comp_MT_met_lep1(selLeptons[0]->cone_p4() + selLeptons[1]->cone_p4(), met.pt(), met.phi())  : 0.)
+          ("massL3",          selLeptons.size() > 2 ? comp_MT_met_lep1(selLeptons[0]->cone_p4() + selLeptons[1]->cone_p4() + selLeptons[2]->cone_p4(), met.pt(), met.phi())  : 0.)
           ("massL_FO",           massL(fakeableLeptons))
           ("massL",           massL(selLeptons))
           ("has_SFOS",       hasSFOS)
@@ -2429,10 +2478,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     std::string process_and_genMatch = process_string;
     process_and_genMatch += selLepton_genMatch.name_;
     ++selectedEntries_byGenMatchType[process_and_genMatch];
-    for(const std::string & central_or_shift: central_or_shifts_local)
-    {
-      selectedEntries_weighted_byGenMatchType[central_or_shift][process_and_genMatch] += evtWeightRecorder.get(central_or_shift);
-    }
+    selectedEntries_weighted_byGenMatchType[process_and_genMatch] += evtWeightRecorder.get(central_or_shift_main);
     histogram_selectedEntries->Fill(0.);
     if(isDEBUG)
     {
@@ -2464,7 +2510,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
       std::string process_and_genMatch = process_string;
       process_and_genMatch += leptonGenMatch_definition.name_;
       std::cout << " " << process_and_genMatch << " = " << selectedEntries_byGenMatchType[process_and_genMatch]
-                << " (weighted = " << selectedEntries_weighted_byGenMatchType[central_or_shift][process_and_genMatch] << ")\n";
+		<< " (weighted = " << selectedEntries_weighted_byGenMatchType[process_and_genMatch] << ")" << std::endl;
     }
   }
   std::cout << std::endl;

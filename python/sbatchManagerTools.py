@@ -5,6 +5,8 @@ from tthAnalysis.HiggsToTauTau.common import logging
 
 import os
 import jinja2
+import math
+import uuid
 
 def find_duplicates(input_file_names):
   input_file_names_occurrence = {}
@@ -251,6 +253,125 @@ def generate_sbatch_line(
         job_template_file      = job_template_file,
     )
     return submissionStatement
+
+def get_num_jobs(nof_input_files, max_input_files_per_job):
+    assert(nof_input_files > 0)
+    assert(max_input_files_per_job > 0)
+    nof_jobs = [ int(math.ceil(float(nof_input_files) / max_input_files_per_job)) ]
+    while nof_jobs[-1] > 1:
+        nof_jobs.append(int(math.ceil(float(nof_jobs[-1]) / max_input_files_per_job)))
+    return sum(nof_jobs)
+
+def createScript_sbatch_hadd_nonBlocking(
+        sbatch_script_file_name,
+        inputFiles,
+        outputFiles,
+        script_file_name,
+        log_file_name           = None,
+        working_dir             = None,
+        auxDirName              = '',
+        verbose                 = False,
+        dry_run                 = False,
+        max_input_files_per_job = 10,
+        use_home                = False,
+        min_file_size           = 20000,
+        max_num_submittedJobs   = 5000,
+        max_mem                 = '',
+      ):
+
+    header = """
+from tthAnalysis.HiggsToTauTau.sbatchManager import sbatchManager
+from tthAnalysis.HiggsToTauTau.ClusterHistogramAggregatorNonBlocking import ClusterHistogramAggregatorNonBlocking
+
+import time
+
+sbatch_managers = []
+cluster_histogram_aggregators = []
+
+    """
+    job_template = """
+m_{{idx}} = sbatchManager(
+  '{{pool_id}}', 
+  verbose               = {{verbose}}, 
+  dry_run               = {{dry_run}}, 
+  use_home              = {{use_home}}, 
+  min_file_size         = {{min_file_size}},
+  max_num_submittedJobs = {{max_num_submittedJobs}},
+)
+m_{{idx}}.setWorkingDir('{{working_dir}}')
+m_{{idx}}.log_completion = {{verbose}}
+{% if max_mem|length %}m_{{idx}}.max_mem = '{{max_mem}}'{% endif %}
+sbatch_managers.append(m_{{idx}})
+
+cluster_histogram_aggregator_{{ idx }} = ClusterHistogramAggregatorNonBlocking(
+  input_files             = {{input_file_names}},
+  final_output_file       = '{{output_file_name}}',
+  max_input_files_per_job = {{max_input_files_per_job}},
+  sbatch_manager          = m_{{ idx }},
+  auxDirName              = '{{auxDirName}}',
+  script_file_name        = '{{script_file_name}}',
+  log_file_name           = '{{log_file_name}}',
+)
+cluster_histogram_aggregator_{{idx}}.create_jobs()
+cluster_histogram_aggregators.append(cluster_histogram_aggregator_{{idx}})
+"""
+
+    footer = """
+aggregator_status = { jobIdx : False for jobIdx in range(len(cluster_histogram_aggregators)) }
+while True:
+  are_all_finished = True
+  for jobIdx in aggregator_status:
+    if aggregator_status[jobIdx]:
+      continue
+    else:
+      aggregator_status[jobIdx] = cluster_histogram_aggregators[jobIdx].is_done()
+      if not aggregator_status[jobIdx]:
+        are_all_finished = False
+  if are_all_finished:
+    break
+  else:
+    time.sleep(60)
+"""
+    script_str = "ClusterHistogramAggregator"
+    
+    content = []
+    nof_jobs = 0
+    for idxKey, key in enumerate(outputFiles.keys()):
+        input_file_names_duplicates = find_duplicates(inputFiles[key])
+        if input_file_names_duplicates:
+          raise RuntimeError(
+            "Found duplicate input files to produce output file %s: %s" % \
+            (outputFiles[key], ", ".join(input_file_names_duplicates))
+          )
+        assert(script_file_name.find(script_str) != -1)
+        script_file_name_key = script_file_name.replace(script_str, "{}_{}".format(key, script_str))
+        assert (log_file_name.find(script_str) != -1)
+        log_file_name_key = log_file_name.replace(script_str, "{}_{}".format(key, script_str))
+        template_vars = {
+            'working_dir'             : working_dir,
+            'input_file_names'        : inputFiles[key],
+            'output_file_name'        : outputFiles[key],
+            'auxDirName'              : auxDirName,
+            'pool_id'                 : uuid.uuid4(),
+            'max_input_files_per_job' : max_input_files_per_job,
+            'script_file_name'        : script_file_name_key,
+            'log_file_name'           : log_file_name_key,
+            'verbose'                 : verbose,
+            'dry_run'                 : dry_run,
+            'use_home'                : use_home,
+            'min_file_size'           : min_file_size,
+            'max_num_submittedJobs'   : max_num_submittedJobs,
+            'idx'                     : idxKey,
+            'max_mem'                 : max_mem,
+        }
+        job_code = jinja2.Template(job_template).render(**template_vars)
+        content.append(job_code)
+        nof_jobs += get_num_jobs(len(inputFiles[key]), max_input_files_per_job)
+
+    script_content = header + '\n'.join(content) + footer
+    createFile(sbatch_script_file_name, script_content.splitlines())
+
+    return nof_jobs
 
 def createScript_sbatch_hadd(
     sbatch_script_file_name,
