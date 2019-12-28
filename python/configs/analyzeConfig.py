@@ -1239,6 +1239,8 @@ class analyzeConfig(object):
         lines.append("  )")
         lines.append(")")
         lines.append("process.makePlots.intLumiData = cms.double(%.1f)" % (self.lumi / 1000))
+        if 'extra_params' in jobOptions:
+          lines.append(jobOptions['extra_params'])
         self.createCfg_makePlots_addShapes(lines)
         if hasattr(self, 'isControlRegion'):
           lines.append("extend({})".format(self.isControlRegion))
