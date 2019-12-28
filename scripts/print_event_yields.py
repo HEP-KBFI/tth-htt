@@ -24,6 +24,7 @@ DECAY_MODE_PROCESSES = {
 }
 ANALYSIS_REGIONS = collections.OrderedDict([
   ('sr',        'Tight'                    ),
+  ( 'flip',     'Tight'                    ),
   ('fake',      'Fakeable_wFakeRateWeights'),
   ('mcclosure', 'Fakeable_mcClosure'       ),
 ])
@@ -88,6 +89,8 @@ def fmt_float(val, significant_digits = 4, max_pow = 3):
     val_pow = val / 10**val_lg10
     return '{:.{prec}}e{pow}'.format(val_pow, prec = significant_digits, pow = val_lg10)
   alt_precision = significant_digits
+  if val_lg10 > 0:
+    alt_precision = max(significant_digits, val_lg10) + 1
   return '{:.{prec}}'.format(val, prec = alt_precision)
 
 def get_evt_yields(input_file_name):
@@ -228,7 +231,10 @@ def get_table(input_file_name, allowed_decay_modes = None, show_gen_matching = T
         line.append('')
       if allowed_systematics == 'all':
         line.append(systematics)
-      line.append('{} ({})'.format(fmt_float(SM_exp[systematics]['yield']), SM_exp[systematics]['count']))
+      print(SM_exp[systematics]['yield'])
+      print(fmt_float(SM_exp[systematics]['yield'], max_pow = 4))
+      print(fmt_float(SM_exp[systematics]['yield'], max_pow = 5))
+      line.append('{} ({})'.format(fmt_float(SM_exp[systematics]['yield'], max_pow = 4), SM_exp[systematics]['count']))
       assert(len(line) == len(header))
       lines.append(line)
   return lines
@@ -277,23 +283,29 @@ def extract_metadata(hadd_stage2_path):
     raise RuntimeError("Unrecognizable channel found in path %s: %s" % (hadd_stage2_path, channel))
   region = path_split[8]
   region_name = ''
+  region_key = ''
   if region.startswith('Tight'):
     region_name = 'SR'
+    region_key = 'sr'
     if channel in [ '2lss', '2lss_1tau' ] and region.startswith('Tight_OS'):
       region_name = 'flip AR'
+      region_key = 'flip'
   elif region.startswith('Fakeable_wFakeRateWeights'):
     region_name = 'fake AR'
+    region_key = 'fake'
   elif region.startswith('Fakeable_mcClosure'):
     region_split = region.split('_')
     typ = region_split[2]
     assert(typ in [ 'e', 'm', 't' ])
     region_name = 'MC closure ({})'.format(typ)
+    region_key = 'mcclosure'
   metadata = {
     'path'        : hadd_stage2_path,
     'era'         : era,
     'channel'     : channel,
     'region'      : region,
     'region_name' : region_name,
+    'region_key'  : region_key,
   }
   return metadata
 
@@ -321,7 +333,7 @@ def find_hadd_stage2(input_path, regions):
     for current_path in current_paths:
       region_paths = hdfs.listdir(current_path)
       for region_path in region_paths:
-        if os.path.basename(region_path).startswith(tuple(regions)):
+        if os.path.basename(region_path).startswith(tuple( ANALYSIS_REGIONS[region] for region in regions)):
           next_paths.append(region_path)
     current_paths = next_paths
     nof_levels += 1
@@ -336,22 +348,33 @@ def find_hadd_stage2(input_path, regions):
   if nof_levels == 10:
     next_paths = []
     for current_path in current_paths:
+      candidate_files = []
       metadata = extract_metadata(current_path)
-      hadd_stage2 = os.path.join(current_path, 'hadd_stage2_{}.root'.format(metadata['region']))
-      if hdfs.isfile(hadd_stage2):
-        next_paths.append(hadd_stage2)
+      if metadata['region_key'] not in regions:
+        continue
+      for candidate_file in hdfs.listdir(current_path):
+        if not hdfs.isfile(candidate_file):
+          continue
+        candidate_file_basename = os.path.basename(candidate_file)
+        if candidate_file_basename.startswith('hadd_stage2_') and (
+           candidate_file_basename.endswith('_{}.root'.format(metadata['region'])) or
+           candidate_file_basename.replace('lep', '').replace('sum', '').endswith('_{}.root'.format(metadata['region']))
+          ):
+          candidate_files.append(candidate_file)
+      if candidate_files:
+        assert(len(candidate_files) == 1)
+        next_paths.append(candidate_files[0])
     current_paths = next_paths
   return current_paths
 
 def path_sorter(path):
   metadata = extract_metadata(path)
-  if all(key in metadata for key in [ 'era', 'channel', 'region' ]):
-    region_index = -1
-    for region_idx, region_key in enumerate(ANALYSIS_REGIONS.keys()):
-      if metadata['region'].startswith(ANALYSIS_REGIONS[region_key]):
-        region_index = region_idx
-        break
-    return (CHANNEL_LIST.index(metadata['channel']), region_index, int(metadata['era']))
+  if all(key in metadata for key in [ 'era', 'channel', 'region_key' ]):
+    return (
+      CHANNEL_LIST.index(metadata['channel']),
+      ANALYSIS_REGIONS.keys().index(metadata['region_key']),
+      int(metadata['era'])
+    )
   else:
     return (-1, -1, -1)
 
@@ -393,7 +416,7 @@ if __name__ == '__main__':
   allowed_decay_modes = args.decay_modes
   show_gen_matching = args.gen_matching
   allowed_systematics = args.systematics
-  searchable_regions = [ ANALYSIS_REGIONS[region] for region in args.regions ]
+  searchable_regions = args.regions
 
   if len(allowed_decay_modes) > 1 and '' in allowed_decay_modes:
     raise ValueError("Conflicting values to 'decay_modes' parameter")
