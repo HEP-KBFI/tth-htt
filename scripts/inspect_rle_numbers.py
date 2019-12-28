@@ -15,86 +15,102 @@ REGEX_RLE = re.compile('^(\d+):(\d+):(\d+)$')
 SAMPLES_EXCLUDE = [ 'hadd' ]
 SYSTEMATICS_EXCLUDE = [ 'addBackgrounds', 'hadd' ]
 
-def get_input_paths(input_path_candidates):
-  input_paths = []
-  channels = {}
-  for input_path_candidate in input_path_candidates:
-    input_path = input_path_candidate
-    if input_path_candidate.rstrip(os.path.sep).split(os.path.sep)[-1] != OUTPUT_RLE:
-      input_path = os.path.join(input_path_candidate, OUTPUT_RLE)
-    if not hdfs.isdir(input_path):
-      raise ValueError("No such directory: %s" % input_path)
-    input_paths.append(input_path)
-    input_path_channels = hdfs.listdir(input_path)
-    for input_path_subdir in input_path_channels:
-      channel = os.path.basename(input_path_subdir)
-      if channel in channels:
-        raise RuntimeError("Channel %s found in two areas: %s and %s" % (channel, input_path, channels[channel]))
-      channels[channel] = input_path
-  return input_paths
+def get_paths(input_paths, whitelist, blacklist):
+  valid_paths = {}
+  for input_path in input_paths:
+    input_path_split = [ subpath for subpath in input_path.split(os.path.sep) if subpath != '' ]
+    nof_levels = len(input_path_split)
+    if nof_levels == 6:
+      input_path_subdir = os.path.join(input_path, OUTPUT_RLE)
+      if not hdfs.isdir(input_path_subdir):
+        raise ValueError("No such directory: %s" % input_path_subdir)
+      for channel_dir in sorted(hdfs.listdir(input_path_subdir)):
+        channel_name = os.path.basename(channel_dir)
+        if whitelist and channel_name not in whitelist:
+          logging.info("Excluding channel: {}".format(channel_name))
+          continue
+        if channel_name in blacklist:
+          logging.info("Excluding channel: {}".format(channel_name))
+          continue
+        if channel_name in valid_paths:
+          raise ValueError(
+            "Found duplicate paths for the same channel: %s and %s" % (valid_paths[channel_name], input_path)
+          )
+        logging.debug('Found channel {} at path {}'.format(channel_name, channel_dir))
+        valid_paths[channel_name] = channel_dir
+    elif nof_levels == 8:
+      if input_path_split[-2] != OUTPUT_RLE:
+        raise ValueError("Invalid path: %s" % input_path)
+      channel_name = input_path_split[-1]
+      if whitelist and channel_name not in whitelist:
+        raise ValueError("Path %s conflicting with whitelist: %s" % (input_path, ', '.join(whitelist)))
+      if channel_name in blacklist:
+        raise ValueError("Path %s conflicting with blacklist: %s" % (input_path, ', '.join(blacklist)))
+      if channel_name in valid_paths:
+        raise ValueError(
+          "Found duplicate paths for the same channel: %s and %s" % (valid_paths[channel_name], input_path)
+        )
+      logging.debug('Found channel {} at path {}'.format(channel_name, input_path))
+      valid_paths[channel_name] = input_path
+    else:
+      raise ValueError("Invalid path: %s" % input_path)
+  assert(len(set(valid_paths.values())) == len(valid_paths))
+  return valid_paths
 
 def get_rles(input_paths, whitelist, blacklist):
   has_errors = False
   rles = collections.OrderedDict()
-  for input_path in input_paths:
-    for channel_dir in sorted(hdfs.listdir(input_path)):
-      channel_name = os.path.basename(channel_dir)
-      if whitelist and channel_name not in whitelist:
-        logging.info("Excluding channel: {}".format(channel_name))
-        continue
-      if channel_name in blacklist:
-        logging.info("Excluding channel: {}".format(channel_name))
-        continue
-      logging.debug('Found channel: {}'.format(channel_name))
-      rles[channel_name] = collections.OrderedDict()
-      for region_dir in sorted(hdfs.listdir(channel_dir)):
-        region_name = os.path.basename(region_dir)
-        logging.debug('Found region {} in channel {}'.format(channel_name, region_name))
-        rles[channel_name][region_name] = collections.OrderedDict()
-        for sample_dir in sorted(hdfs.listdir(region_dir)):
-          sample_name = os.path.basename(sample_dir)
-          if sample_name in SAMPLES_EXCLUDE:
+  valid_paths = get_paths(input_paths, whitelist, blacklist)
+  for channel_name, channel_dir in valid_paths.items():
+    rles[channel_name] = collections.OrderedDict()
+    for region_dir in sorted(hdfs.listdir(channel_dir)):
+      region_name = os.path.basename(region_dir)
+      logging.debug('Found region {} in channel {}'.format(channel_name, region_name))
+      rles[channel_name][region_name] = collections.OrderedDict()
+      for sample_dir in sorted(hdfs.listdir(region_dir)):
+        sample_name = os.path.basename(sample_dir)
+        if sample_name in SAMPLES_EXCLUDE:
+          continue
+        logging.debug('Found sample {} in region {} and channel {}'.format(sample_name, region_name, channel_name))
+        rles[channel_name][region_name][sample_name] = collections.OrderedDict()
+        for rle_dir in sorted(hdfs.listdir(sample_dir)):
+          central_or_shift = os.path.basename(rle_dir)
+          if central_or_shift in SYSTEMATICS_EXCLUDE:
             continue
-          logging.debug('Found sample {} in region {} and channel {}'.format(sample_name, region_name, channel_name))
-          rles[channel_name][region_name][sample_name] = collections.OrderedDict()
-          for rle_dir in sorted(hdfs.listdir(sample_dir)):
-            central_or_shift = os.path.basename(rle_dir)
-            if central_or_shift in SYSTEMATICS_EXCLUDE:
-              continue
-            logging.debug(
-              'Found systematics {} for sample {} in region {} and channel {}'.format(
-                central_or_shift, sample_name, region_name, channel_name
-              )
+          logging.debug(
+            'Found systematics {} for sample {} in region {} and channel {}'.format(
+              central_or_shift, sample_name, region_name, channel_name
             )
-            rles[channel_name][region_name][sample_name][central_or_shift] = []
-            rle_filenames = sorted(hdfs.listdir(rle_dir))
-            if not rle_filenames:
-              logging.warning('Directory {} is empty'.format(rle_dir))
-              continue
-            rle_arr = []
-            for rle_filename in rle_filenames:
-              if not rle_filename.endswith('.txt'):
-                raise RuntimeError("Unexpected extension in file: %s" % rle_filename)
-              with open(rle_filename, 'r') as rle_file:
-                for line in rle_file:
-                  line_stripped = line.rstrip('\n')
-                  if not REGEX_RLE.match(line_stripped):
-                    raise RuntimeError("Unexpected line found in %s: %s" % (rle_filename, line_stripped))
-                  rle = line_stripped
-                  if rle in rle_arr:
-                    logging.error(
-                      "Duplicate event %s found in channel %s, region %s, sample %s, systematics %s" % \
-                      (rle, channel_name, region_name, sample_name, central_or_shift)
-                    )
-                    has_errors = True
-                    continue
-                  rle_arr.append(rle)
-            logging.debug(
-              'Found {} events in sample {}, region {}, systematics {}, channel {}'.format(
-                len(rle_arr), sample_name, region_name, central_or_shift, channel_name
-              )
+          )
+          rles[channel_name][region_name][sample_name][central_or_shift] = []
+          rle_filenames = sorted(hdfs.listdir(rle_dir))
+          if not rle_filenames:
+            logging.warning('Directory {} is empty'.format(rle_dir))
+            continue
+          rle_arr = []
+          for rle_filename in rle_filenames:
+            if not rle_filename.endswith('.txt'):
+              raise RuntimeError("Unexpected extension in file: %s" % rle_filename)
+            with open(rle_filename, 'r') as rle_file:
+              for line in rle_file:
+                line_stripped = line.rstrip('\n')
+                if not REGEX_RLE.match(line_stripped):
+                  raise RuntimeError("Unexpected line found in %s: %s" % (rle_filename, line_stripped))
+                rle = line_stripped
+                if rle in rle_arr:
+                  logging.error(
+                    "Duplicate event %s found in channel %s, region %s, sample %s, systematics %s" % \
+                    (rle, channel_name, region_name, sample_name, central_or_shift)
+                  )
+                  has_errors = True
+                  continue
+                rle_arr.append(rle)
+          logging.debug(
+            'Found {} events in sample {}, region {}, systematics {}, channel {}'.format(
+              len(rle_arr), sample_name, region_name, central_or_shift, channel_name
             )
-            rles[channel_name][region_name][sample_name][central_or_shift].extend(rle_arr)
+          )
+          rles[channel_name][region_name][sample_name][central_or_shift].extend(rle_arr)
   return rles, has_errors
 
 def build_rle_file(rles, output):
@@ -285,8 +301,7 @@ if __name__ == '__main__':
   args = parser.parse_args()
 
   logging.getLogger().setLevel(logging.DEBUG if args.verbose else logging.INFO)
-  input_paths = get_input_paths(args.input)
-  rles, input_errors = get_rles(input_paths, args.whitelist, args.blacklist)
+  rles, input_errors = get_rles(args.input, args.whitelist, args.blacklist)
 
   data_errors = validate_data(rles)
   region_errors = validate_regions(rles)
