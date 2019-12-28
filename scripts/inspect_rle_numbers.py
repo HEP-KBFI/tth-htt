@@ -34,6 +34,7 @@ def get_input_paths(input_path_candidates):
   return input_paths
 
 def get_rles(input_paths, whitelist, blacklist):
+  has_errors = False
   rles = collections.OrderedDict()
   for input_path in input_paths:
     for channel_dir in sorted(hdfs.listdir(input_path)):
@@ -85,6 +86,7 @@ def get_rles(input_paths, whitelist, blacklist):
                       "Duplicate event %s found in channel %s, region %s, sample %s, systematics %s" % \
                       (rle, channel_name, region_name, sample_name, central_or_shift)
                     )
+                    has_errors = True
                     continue
                   rle_arr.append(rle)
             logging.debug(
@@ -93,7 +95,7 @@ def get_rles(input_paths, whitelist, blacklist):
               )
             )
             rles[channel_name][region_name][sample_name][central_or_shift].extend(rle_arr)
-  return rles
+  return rles, has_errors
 
 def build_rle_file(rles, output):
   rles_aggregated = collections.OrderedDict()
@@ -284,13 +286,13 @@ if __name__ == '__main__':
 
   logging.getLogger().setLevel(logging.DEBUG if args.verbose else logging.INFO)
   input_paths = get_input_paths(args.input)
-  rles = get_rles(input_paths, args.whitelist, args.blacklist)
+  rles, input_errors = get_rles(input_paths, args.whitelist, args.blacklist)
 
   data_errors = validate_data(rles)
   region_errors = validate_regions(rles)
   channel_errors = validate_channels(rles)
 
-  if data_errors or region_errors or channel_errors:
+  if input_errors or data_errors or region_errors or channel_errors:
     raise RuntimeError('Did not pass validation')
 
   if args.output:
