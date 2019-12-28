@@ -1,0 +1,411 @@
+#!/usr/bin/env python
+
+from tthAnalysis.HiggsToTauTau.safe_root import ROOT
+from tthAnalysis.HiggsToTauTau.common import SmartFormatter
+from tthAnalysis.HiggsToTauTau.hdfs import hdfs
+
+import os
+import collections
+import prettytable
+import math
+import csv
+import argparse
+
+EVENTCOUNTER = 'EventCounter'
+SYS_HISTOGRAM_PREFIX = 'CMS_ttHl_'
+GEN_MATCHES = [ 'fake', 'Convs', 'gentau', 'faketau' ]
+DECAY_MODES = {
+  'ttH' : [ 'htt', 'hww', 'hzz', 'hmm', 'hzg' ],
+  'HH'  : [ 'tttt',  'zzzz',  'wwww',  'ttzz',  'ttww',  'zzww', 'bbtt', 'bbww', 'bbzz' ],
+}
+DECAY_MODE_PROCESSES = {
+  'ttH' : [ 'ttH', 'tHq', 'tHW', 'VH', 'ZH', 'WH', 'ggH', 'qqH', 'TTWH', 'TTZH' ],
+  'HH'  : [ 'HH' ]
+}
+ANALYSIS_REGIONS = {
+  'sr'        : 'Tight',
+  'fake'      : 'Fakeable_wFakeRateWeights',
+  'mcclosure' : 'Fakeable_mcClosure',
+}
+
+def get_dir(fptr, path):
+  dir_ptr = fptr.Get(path)
+  if type(dir_ptr) != ROOT.TDirectoryFile:
+    raise RuntimeError(
+      "Object at '%s' in file %s is not an instance of ROOT.TDirectoryFile" % (path, fptr.GetName())
+    )
+  return dir_ptr
+
+def get_keys(dir_ptr, include = None, exclude = None):
+  keys = [ key.GetName() for key in dir_ptr.GetListOfKeys() ]
+  if include:
+    keys = [ key for key in keys if include(key) ]
+  if exclude:
+    keys = [ key for key in keys if not exclude(key) ]
+  return keys
+
+def get_systematics(histogram_name):
+  assert(histogram_name.endswith(EVENTCOUNTER))
+  if histogram_name == EVENTCOUNTER:
+    return 'central'
+  else:
+    assert(histogram_name.startswith(SYS_HISTOGRAM_PREFIX))
+    histogram_name_prefix = histogram_name.replace('_{}'.format(EVENTCOUNTER), '').replace(SYS_HISTOGRAM_PREFIX, '')
+    assert(histogram_name_prefix.endswith(('Up', 'Down')))
+    return histogram_name_prefix
+
+def parse_process(process):
+  process_name = process
+  decay_mode = ''
+  gen_match = ''
+  if process_name.endswith(tuple('_{}'.format(gm) for gm in GEN_MATCHES)):
+    process_name_split = process_name.split('_')
+    process_name = '_'.join(process_name_split[:-1])
+    gen_match = process_name_split[-1]
+    assert(gen_match in GEN_MATCHES)
+  for decay_mode_process in DECAY_MODE_PROCESSES:
+    if process_name.endswith(tuple('_{}'.format(dm) for dm in DECAY_MODES[decay_mode_process])):
+      process_name_split = process_name.split('_')
+      process_name = '_'.join(process_name_split[:-1])
+      decay_mode = process_name_split[-1]
+      assert(decay_mode in DECAY_MODES[decay_mode_process])
+      assert(process_name in DECAY_MODE_PROCESSES[decay_mode_process])
+      break
+  return process_name, decay_mode, gen_match
+
+def fmt_float(val, significant_digits = 4, max_pow = 3):
+  assert(type(val) == float)
+  if val == 0.:
+    return "0"
+  abs_val = abs(val)
+  val_lg10 = int(math.log10(abs_val))
+  if val_lg10 < 0:
+    val_lg10 -= 1
+  if abs(val_lg10) > max_pow:
+    val_pow = val / 10**val_lg10
+    return '{:.{prec}}e{pow}'.format(val_pow, prec = significant_digits, pow = val_lg10)
+  alt_precision = significant_digits
+  return '{:.{prec}}'.format(val, prec = alt_precision)
+
+def get_evt_yields(input_file_name):
+  assert(hdfs.isfile(input_file_name))
+  input_file = ROOT.TFile.Open(input_file_name, 'read')
+
+  subdirectories = get_keys(input_file, exclude = lambda key: key in [ 'analyzedEntries', 'selectedEntries' ])
+  is_single_subcategory = len(subdirectories) == 1
+  results = collections.OrderedDict()
+
+  for subdirectory in subdirectories:
+    evt_directory_path = os.path.join(subdirectory, 'sel', 'evt')
+    evt_directory_ptr = get_dir(input_file, evt_directory_path)
+    subcategory_name = '' if is_single_subcategory else subdirectory
+    processes = get_keys(evt_directory_ptr, exclude = lambda key: key.startswith(('tHq', 'tHW', 'HH')) and 'kt_' in key)
+    for process in processes:
+      process_path = os.path.join(evt_directory_path, process)
+      process_dir_ptr = get_dir(input_file, process_path)
+      process_name, decay_mode, gen_match = parse_process(process)
+      histogram_names = get_keys(process_dir_ptr, include = lambda key: EVENTCOUNTER in key)
+      for histogram_name in histogram_names:
+        histogram_path = os.path.join(process_path, histogram_name)
+        histogram = input_file.Get(histogram_path)
+        if type(histogram) != ROOT.TH1D:
+          raise RuntimeError(
+            "Object at '%s' in file %s is not an instance of ROOT.TH1D" % (histogram_path, input_file_name)
+          )
+        systematics = get_systematics(histogram_name)
+        event_count = int(histogram.GetEntries())
+        event_yield = histogram.Integral()
+        if systematics.startswith('FR'):
+          continue
+        if subcategory_name not in results:
+          results[subcategory_name] = collections.OrderedDict()
+        if process_name not in results[subcategory_name]:
+          results[subcategory_name][process_name] = collections.OrderedDict()
+        if decay_mode not in results[subcategory_name][process_name]:
+          results[subcategory_name][process_name][decay_mode] = collections.OrderedDict()
+        if gen_match not in results[subcategory_name][process_name][decay_mode]:
+          results[subcategory_name][process_name][decay_mode][gen_match] = collections.OrderedDict()
+        if systematics in results[subcategory_name][process_name][decay_mode][gen_match]:
+          raise RuntimeError(
+            "Possible double-counting the event counts and yields by reading histogram '%s' in file %s: "
+            "subcategory name = %s, process name = %s, decay mode = %s, gen matching = %s, systematics = %s" % (
+              histogram_path, input_file_name, subcategory_name, process_name, decay_mode, gen_match, systematics
+            )
+          )
+        results[subcategory_name][process_name][decay_mode][gen_match][systematics] = {
+          'count' : event_count,
+          'yield' : event_yield,
+        }
+        del histogram
+      del process_dir_ptr
+    del evt_directory_ptr
+  input_file.Close()
+  return results
+
+def get_table(input_file_name, allowed_decay_modes = None, show_gen_matching = True, allowed_systematics = 'central'):
+  results = get_evt_yields(input_file_name)
+  if not results:
+    return
+
+  header = []
+  if len(results) > 1:
+    header.append('Event subcategory')
+  header.append('Process')
+  if allowed_decay_modes:
+    header.append('Decay mode')
+  if show_gen_matching:
+    header.append('Gen matching')
+  if allowed_systematics == 'all':
+    header.append('Systematics')
+  header.append('Event yields (counts)')
+
+  lines = [ header ]
+  for subcategory in results:
+    SM_exp = collections.OrderedDict()
+    for process in results[subcategory]:
+      for decay_mode in results[subcategory][process]:
+        if (not allowed_decay_modes and decay_mode                                       ) or \
+           (    allowed_decay_modes and decay_mode and process not in allowed_decay_modes):
+          continue
+        for gen_matching in results[subcategory][process][decay_mode]:
+          if not show_gen_matching and gen_matching:
+            continue
+          for systematics, stats in results[subcategory][process][decay_mode][gen_matching].items():
+            if allowed_systematics == 'central' and systematics != 'central':
+              continue
+            if systematics.startswith('thu'):
+              systematics_split = systematics.split('_')
+              assert(len(systematics_split) == 4)
+              if systematics_split[2].lower() not in process.lower():
+                continue
+            yields = str(stats['count'])
+            if process != 'data_obs':
+              yields = '{} ({})'.format(fmt_float(stats['yield']), yields)
+            line = []
+            if subcategory:
+              line.append(subcategory)
+            line.append(process)
+            if allowed_decay_modes:
+              line.append(decay_mode)
+            if show_gen_matching:
+              line.append(gen_matching)
+            if allowed_systematics == 'all':
+              line.append(systematics)
+            line.append(yields)
+            assert(len(line) == len(header))
+            lines.append(line)
+
+            if not decay_mode and \
+               not gen_matching and process not in [ 'data_obs', 'fakes_mc', 'flips_mc' ] and \
+               not systematics.startswith('thu'):
+              if systematics not in SM_exp:
+                SM_exp[systematics] = {
+                  'yield' : 0.,
+                  'count' : 0,
+                }
+              SM_exp[systematics]['yield'] += stats['yield']
+              SM_exp[systematics]['count'] += stats['count']
+    for systematics in SM_exp:
+      if allowed_systematics == 'central' and systematics != 'central':
+        continue
+      line = []
+      if subcategory:
+        line.append(subcategory)
+      line.append('SM expectation')
+      if allowed_decay_modes:
+        line.append('')
+      if show_gen_matching:
+        line.append('')
+      if allowed_systematics == 'all':
+        line.append(systematics)
+      line.append('{} ({})'.format(fmt_float(SM_exp[systematics]['yield']), SM_exp[systematics]['count']))
+      assert(len(line) == len(header))
+      lines.append(line)
+  return lines
+
+def print_table(lines, metadata):
+  assert('path' in metadata)
+  fmt_str = ''
+  if all(key in metadata for key in [ 'era', 'channel', 'region_name' ]):
+    fmt_str = 'ERA = {era}, CHANNEL = {channel}, REGION = {region_name}, '
+  fmt_str += 'FILE = {path}'
+  print(fmt_str.format(**metadata))
+
+  table = prettytable.PrettyTable(lines[0])
+  for line in lines[1:]:
+    table.add_row(line)
+  print(table)
+
+def reformat_table(lines, title):
+  result = [ title ]
+  header = lines[0]
+  header_modified = header[:-1] + ['Event yields', 'Event counts']
+  result.append(header_modified)
+  for row in lines[1:]:
+    row_modified = row[:-1]
+    row_last_split = row[-1].replace('(', '').replace(')', '').split()
+    assert(0 < len(row_last_split) < 3)
+    yields = float(row_last_split[0])
+    counts = int(row_last_split[1]) if len(row_last_split) == 2 else int(yields)
+    row_modified += [ yields, counts ]
+    result.append(row_modified)
+  return result
+
+def save_table(lines, output_filename):
+  with open(output_filename, 'w') as output_file:
+    table_writer = csv.writer(output_file, quoting = csv.QUOTE_NONNUMERIC)
+    for row in lines:
+      table_writer.writerow(row)
+
+def extract_metadata(hadd_stage2_path):
+  path_split = [ subpath for subpath in hadd_stage2_path.split(os.path.sep) if subpath != '' ]
+  if len(path_split) < 9:
+    return { 'path' : hadd_stage2_path }
+  era = path_split[4]
+  channel = path_split[7]
+  region = path_split[8]
+  region_name = ''
+  if region.startswith('Tight'):
+    region_name = 'SR'
+    if channel in [ '2lss', '2lss_1tau' ] and region.startswith('Tight_OS'):
+      region_name = 'flip AR'
+  elif region.startswith('Fakeable_wFakeRateWeights'):
+    region_name = 'fake AR'
+  elif region.startswith('Fakeable_mcClosure'):
+    region_split = region.split('_')
+    typ = region_split[2]
+    assert(typ in [ 'e', 'm', 't' ])
+    region_name = 'MC closure ({})'.format(typ)
+  metadata = {
+    'path'        : hadd_stage2_path,
+    'era'         : era,
+    'channel'     : channel,
+    'region'      : region,
+    'region_name' : region_name,
+  }
+  return metadata
+
+def find_hadd_stage2(input_path, regions):
+  path_split = [ subpath for subpath in input_path.split(os.path.sep) if subpath != '' ]
+  nof_levels = len(path_split)
+  if not ( 5 < nof_levels < 11 ):
+    raise ValueError("Invalid path: %s" % input_path)
+
+  current_paths = [ input_path ]
+  if nof_levels == 6:
+    assert (len(current_paths) == 1)
+    current_path = os.path.join(current_paths.pop(), 'histograms')
+    if not hdfs.isdir(current_path):
+      return []
+    current_paths = [ current_path ]
+    nof_levels += 1
+  if nof_levels == 7:
+    assert(len(current_paths) == 1)
+    current_path = current_paths.pop()
+    current_paths = hdfs.listdir(current_path)
+    nof_levels += 1
+  if nof_levels == 8:
+    next_paths = []
+    for current_path in current_paths:
+      region_paths = hdfs.listdir(current_path)
+      for region_path in region_paths:
+        if os.path.basename(region_path).startswith(tuple(regions)):
+          next_paths.append(region_path)
+    current_paths = next_paths
+    nof_levels += 1
+  if nof_levels == 9:
+    next_paths = []
+    for current_path in current_paths:
+      next_path = os.path.join(current_path, 'hadd')
+      if hdfs.isdir(next_path):
+        next_paths.append(next_path)
+    current_paths = next_paths
+    nof_levels += 1
+  if nof_levels == 10:
+    next_paths = []
+    for current_path in current_paths:
+      metadata = extract_metadata(current_path)
+      hadd_stage2 = os.path.join(current_path, 'hadd_stage2_{}.root'.format(metadata['region']))
+      if hdfs.isfile(hadd_stage2):
+        next_paths.append(hadd_stage2)
+    current_paths = next_paths
+  return current_paths
+
+if __name__ == '__main__':
+  parser = argparse.ArgumentParser(
+    formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 35)
+  )
+  parser.add_argument('-i', '--input',
+    type = str, dest = 'input', metavar = 'file', required = True, nargs = '+',
+    help = 'R|Output of any hadd stage',
+  )
+  parser.add_argument('-o', '--output',
+    type = str, dest = 'output', metavar = 'file', required = False, default = '',
+    help = 'R|Name of the output CSV file',
+  )
+  parser.add_argument('-d', '--decay-modes',
+    type = str, dest = 'decay_modes', metavar = 'processes', required = False, default = [ 'ttH' ], nargs = '+',
+    choices = list(DECAY_MODE_PROCESSES.keys()) + [ '' ],
+    help = 'R|Processes for which the event yields and counts are split by decay modes',
+  )
+  parser.add_argument('-g', '--gen-matching',
+    dest = 'gen_matching', action = 'store_true', default = False,
+    help = 'R|Show event yields and counts split by gen matching',
+  )
+  parser.add_argument('-s', '--systematics',
+    type = str, dest = 'systematics', metavar = 'choice', required = False, default = 'central',
+    choices = [ 'central', 'all' ],
+    help = 'R|Show event yields and counts for central or all systematics',
+  )
+  parser.add_argument('-r', '--region',
+    type = str, dest = 'regions', metavar = 'region', required = False, default = [ 'sr' ], nargs = '+',
+    choices = ANALYSIS_REGIONS.keys(),
+    help = 'R|Which hadd stage2 files to search for',
+  )
+  args = parser.parse_args()
+
+  input_file_paths = args.input
+  output_file_name = args.output
+  allowed_decay_modes = args.decay_modes
+  show_gen_matching = args.gen_matching
+  allowed_systematics = args.systematics
+  searchable_regions = [ ANALYSIS_REGIONS[region] for region in args.regions ]
+
+  if len(allowed_decay_modes) > 1 and '' in allowed_decay_modes:
+    raise ValueError("Conflicting values to 'decay_modes' parameter")
+
+  input_file_names = []
+  for input_file_path in input_file_paths:
+    if hdfs.isfile(input_file_path):
+      input_file_names.append(os.path.abspath(input_file_path))
+    else:
+      if not input_file_path.startswith('/hdfs/local'):
+        raise ValueError("Invalid path: %s" % input_file_path)
+      input_file_names.extend(find_hadd_stage2(input_file_path, searchable_regions))
+  if not input_file_names:
+    raise ValueError("No valid input files found from: %s" % ', '.join(input_file_paths))
+  input_file_names = list(sorted(set(input_file_names)))
+
+  tables = []
+  for input_file_name in input_file_names:
+    table = get_table(
+      input_file_name,
+      allowed_decay_modes = allowed_decay_modes,
+      show_gen_matching   = show_gen_matching,
+      allowed_systematics = allowed_systematics,
+    )
+    metadata = extract_metadata(input_file_name)
+    print_table(table, metadata)
+    if output_file_name:
+      assert ('path' in metadata)
+      title = []
+      if all(key in metadata for key in [ 'era', 'channel', 'region_name' ]):
+        title = [ metadata[key] for key in [ 'era', 'channel', 'region_name' ] ]
+      title.append(metadata['path'])
+      tables.extend(reformat_table(table, title))
+
+  if output_file_name:
+    output_file_dir = os.path.dirname(os.path.abspath(output_file_name))
+    if not os.path.isdir(output_file_dir):
+      os.makedirs(output_file_dir)
+    save_table(tables, output_file_name)
