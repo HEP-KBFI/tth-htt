@@ -13,7 +13,7 @@ import argparse
 
 EVENTCOUNTER = 'EventCounter'
 SYS_HISTOGRAM_PREFIX = 'CMS_ttHl_'
-GEN_MATCHES = [ 'fake', 'Convs', 'gentau', 'faketau' ]
+GEN_MATCHES = [ 'fake', 'flip', 'Convs', 'gentau', 'faketau' ]
 DECAY_MODES = {
   'ttH' : [ 'htt', 'hww', 'hzz', 'hmm', 'hzg' ],
   'HH'  : [ 'tttt',  'zzzz',  'wwww',  'ttzz',  'ttww',  'zzww', 'bbtt', 'bbww', 'bbzz' ],
@@ -92,6 +92,9 @@ def get_evt_yields(input_file_name):
   input_file = ROOT.TFile.Open(input_file_name, 'read')
 
   subdirectories = get_keys(input_file, exclude = lambda key: key in [ 'analyzedEntries', 'selectedEntries' ])
+  for whitelist in [ '1l_1tau_Fakeable_wFakeRateWeights', '1l_1tau_Tight' ]:
+    if whitelist in subdirectories:
+      subdirectories = [ whitelist ]
   is_single_subcategory = len(subdirectories) == 1
   results = collections.OrderedDict()
 
@@ -159,6 +162,10 @@ def get_table(input_file_name, allowed_decay_modes = None, show_gen_matching = T
     header.append('Systematics')
   header.append('Event yields (counts)')
 
+  exclude_from_SM_exp = ['data_obs', 'fakes_mc']
+  if '1l_1tau' not in input_file_name:
+    exclude_from_SM_exp.append('flips_mc')
+
   lines = [ header ]
   for subcategory in results:
     SM_exp = collections.OrderedDict()
@@ -196,7 +203,7 @@ def get_table(input_file_name, allowed_decay_modes = None, show_gen_matching = T
             lines.append(line)
 
             if not decay_mode and \
-               not gen_matching and process not in [ 'data_obs', 'fakes_mc', 'flips_mc' ] and \
+               not gen_matching and process not in exclude_from_SM_exp and \
                not systematics.startswith('thu'):
               if systematics not in SM_exp:
                 SM_exp[systematics] = {
