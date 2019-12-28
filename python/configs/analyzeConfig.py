@@ -1584,6 +1584,8 @@ class analyzeConfig(object):
         lines_makefile.append("")
         if make_target_validate not in self.phoniesToAdd:
             self.phoniesToAdd.append(make_target_validate)
+        if make_target_validate not in self.targets:
+            self.targets.append(make_target_validate)
 
     def addToMakefile_outRoot(self, lines_makefile):
         """Adds the commands to Makefile that are necessary for building the final condensed *.root output file
