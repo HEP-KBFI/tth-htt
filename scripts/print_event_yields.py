@@ -409,8 +409,6 @@ if __name__ == '__main__':
   if not input_file_names:
     raise ValueError("No valid input files found from: %s" % ', '.join(input_file_paths))
   input_file_names = list(sorted(set(input_file_names), key = path_sorter))
-  for input_file_name in input_file_names:
-    print(input_file_name)
 
   tables = []
   for input_file_name in input_file_names:
