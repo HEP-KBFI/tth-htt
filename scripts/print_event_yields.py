@@ -22,11 +22,14 @@ DECAY_MODE_PROCESSES = {
   'ttH' : [ 'ttH', 'tHq', 'tHW', 'VH', 'ZH', 'WH', 'ggH', 'qqH', 'TTWH', 'TTZH' ],
   'HH'  : [ 'HH' ]
 }
-ANALYSIS_REGIONS = {
-  'sr'        : 'Tight',
-  'fake'      : 'Fakeable_wFakeRateWeights',
-  'mcclosure' : 'Fakeable_mcClosure',
-}
+ANALYSIS_REGIONS = collections.OrderedDict([
+  ('sr',        'Tight'                    ),
+  ('fake',      'Fakeable_wFakeRateWeights'),
+  ('mcclosure', 'Fakeable_mcClosure'       ),
+])
+CHANNEL_LIST = [
+  '0l_2tau', '1l_1tau', '1l_2tau', '2l_2tau', '2lss', '2los_1tau', '2lss_1tau', '3l', '3lctrl', '3l_1tau', '4l', '4lctrl',
+]
 
 def get_dir(fptr, path):
   dir_ptr = fptr.Get(path)
@@ -270,6 +273,8 @@ def extract_metadata(hadd_stage2_path):
     return { 'path' : hadd_stage2_path }
   era = path_split[4]
   channel = path_split[7]
+  if channel not in CHANNEL_LIST:
+    raise RuntimeError("Unrecognizable channel found in path %s: %s" % (hadd_stage2_path, channel))
   region = path_split[8]
   region_name = ''
   if region.startswith('Tight'):
@@ -338,6 +343,18 @@ def find_hadd_stage2(input_path, regions):
     current_paths = next_paths
   return current_paths
 
+def path_sorter(path):
+  metadata = extract_metadata(path)
+  if all(key in metadata for key in [ 'era', 'channel', 'region' ]):
+    region_index = -1
+    for region_idx, region_key in enumerate(ANALYSIS_REGIONS.keys()):
+      if metadata['region'].startswith(ANALYSIS_REGIONS[region_key]):
+        region_index = region_idx
+        break
+    return (CHANNEL_LIST.index(metadata['channel']), region_index, int(metadata['era']))
+  else:
+    return (-1, -1, -1)
+
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(
     formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 35)
@@ -391,7 +408,9 @@ if __name__ == '__main__':
       input_file_names.extend(find_hadd_stage2(input_file_path, searchable_regions))
   if not input_file_names:
     raise ValueError("No valid input files found from: %s" % ', '.join(input_file_paths))
-  input_file_names = list(sorted(set(input_file_names)))
+  input_file_names = list(sorted(set(input_file_names), key = path_sorter))
+  for input_file_name in input_file_names:
+    print(input_file_name)
 
   tables = []
   for input_file_name in input_file_names:
