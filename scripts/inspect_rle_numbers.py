@@ -81,10 +81,11 @@ def get_rles(input_paths, whitelist, blacklist):
                     raise RuntimeError("Unexpected line found in %s: %s" % (rle_filename, line_stripped))
                   rle = line_stripped
                   if rle in rle_arr:
-                    raise ValueError(
+                    logging.error(
                       "Duplicate event %s found in channel %s, region %s, sample %s, systematics %s" % \
                       (rle, channel_name, region_name, sample_name, central_or_shift)
                     )
+                    continue
                   rle_arr.append(rle)
             logging.debug(
               'Found {} events in sample {}, region {}, systematics {}, channel {}'.format(
