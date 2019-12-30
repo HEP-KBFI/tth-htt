@@ -427,6 +427,8 @@ int main(int argc, char* argv[])
   bool redoGenMatching = cfg_analyze.getParameter<bool>("redoGenMatching");
   bool genMatchingByIndex = cfg_analyze.getParameter<bool>("genMatchingByIndex");
 
+  std::string selEventsFileName_output = cfg_analyze.getParameter<std::string>("selEventsFileName_output");
+
   fwlite::InputSource inputFiles(cfg);
   int maxEvents = inputFiles.maxEvents();
   std::cout << " maxEvents = " << maxEvents << std::endl;
@@ -568,6 +570,9 @@ int main(int argc, char* argv[])
     lheInfoReader = new LHEInfoReader(hasLHE);
     inputTree->registerReader(lheInfoReader);
   }
+
+//--- open output file containing run:lumi:event numbers of events passing final event selection criteria
+  std::ostream* selEventsFile = new std::ofstream(selEventsFileName_output.data(), std::ios::out);
 
   ElectronHistManager selElectronHistManager(makeHistManager_cfg(process_string, 
     Form("jetToTauFakeRate_%s/electrons", chargeSelection_string.data()), era_string, central_or_shift, "minimalHistograms"));
@@ -1005,8 +1010,8 @@ int main(int argc, char* argv[])
       assert(selJets_sortedByBtag.size() >= 2);
       m_bb = (selJets_sortedByBtag[0]->p4() + selJets_sortedByBtag[1]->p4()).mass();
     }
-    double mT_e = ( selLepton_e ) ? comp_MT_met_lep1(*selLepton_e, met.pt(), met.phi()) : -1.;
-    double mT_mu = ( selLepton_e ) ? comp_MT_met_lep1(*selLepton_mu, met.pt(), met.phi()) : -1.;
+    double mT_e = ( selLepton_e ) ? comp_MT_met(selLepton_e, met.pt(), met.phi()) : -1.;
+    double mT_mu = ( selLepton_e ) ? comp_MT_met(selLepton_mu, met.pt(), met.phi()) : -1.;
 
     // require that trigger paths match event category (with event category based on selLeptons)
     if ( !((fakeableElectrons.size() >= 2 &&                               selTrigger_1e                                       ) ||
@@ -1206,6 +1211,8 @@ int main(int argc, char* argv[])
       }
     }
 
+    (*selEventsFile) << eventInfo.str() << '\n';
+
     ++selectedEntries;
     selectedEntries_weighted += evtWeight;
     histogram_selectedEntries->Fill(0.);
@@ -1232,6 +1239,8 @@ int main(int argc, char* argv[])
 
 //--- memory clean-up
   delete dataToMCcorrectionInterface;
+
+  delete selEventsFile;
 
   delete muonReader;
   delete electronReader;

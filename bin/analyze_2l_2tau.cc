@@ -801,7 +801,7 @@ int main(int argc, char* argv[])
   int selectedEntries = 0;
   double selectedEntries_weighted = 0.;
   std::map<std::string, int> selectedEntries_byGenMatchType;             // key = process_and_genMatch
-  std::map<std::string, double> selectedEntries_weighted_byGenMatchType; // key = process_and_genMatch
+  std::map<std::string, std::map<std::string, double>> selectedEntries_weighted_byGenMatchType; // keys = central_or_shift, process_and_genMatch
   TH1* histogram_analyzedEntries = fs.make<TH1D>("analyzedEntries", "analyzedEntries", 1, -0.5, +0.5);
   TH1* histogram_selectedEntries = fs.make<TH1D>("selectedEntries", "selectedEntries", 1, -0.5, +0.5);
   cutFlowTableType cutFlowTable;
@@ -1545,7 +1545,7 @@ int main(int argc, char* argv[])
     cutFlowTable.update("signal region veto", evtWeightRecorder.get(central_or_shift_main));
     cutFlowHistManager->fillHistograms("signal region veto", evtWeightRecorder.get(central_or_shift_main));
 
-    std::vector<double> WeightBM; // weights to do histograms for BMs 
+    std::vector<double> WeightBM; // weights to do histograms for BMs
     std::map<std::string, double> Weight_ktScan; // weights to do histograms for BMs
     double HHWeight = 1.0; // X: for the SM point -- the point explicited on this code
 
@@ -1587,20 +1587,20 @@ int main(int argc, char* argv[])
     const double cosThetaS_hadTau = comp_cosThetaStar(selHadTau_lead->p4(), selHadTau_sublead->p4());
     const double tau1_pt          = selHadTau_lead->pt();
     const double tau2_pt          = selHadTau_sublead->pt();
-    const double mindr_lep1_jet   = std::min(10., comp_mindr_lep1_jet(*selLepton_lead, selJets));
-    const double mindr_lep2_jet   = std::min(10., comp_mindr_lep2_jet(*selLepton_sublead, selJets));
-    const double mT_lep1          = comp_MT_met_lep1(*selLepton_lead,    met.pt(), met.phi());
-    const double mT_lep2          = comp_MT_met_lep2(*selLepton_sublead, met.pt(), met.phi());
-    const double mindr_tau1_jet   = comp_mindr_hadTau1_jet(*selHadTau_lead,    selJets);
-    const double mindr_tau2_jet   = comp_mindr_hadTau2_jet(*selHadTau_sublead, selJets);
+    const double mindr_lep1_jet   = std::min(10., comp_mindr_jet(*selLepton_lead, selJets));
+    const double mindr_lep2_jet   = std::min(10., comp_mindr_jet(*selLepton_sublead, selJets));
+    const double mT_lep1          = comp_MT_met(selLepton_lead,    met.pt(), met.phi());
+    const double mT_lep2          = comp_MT_met(selLepton_sublead, met.pt(), met.phi());
+    const double mindr_tau1_jet   = comp_mindr_jet(*selHadTau_lead,    selJets);
+    const double mindr_tau2_jet   = comp_mindr_jet(*selHadTau_sublead, selJets);
     const double dr_lep1_tau1     = deltaR(selLepton_lead->p4(),    selHadTau_lead->p4());
     const double dr_lep2_tau1     = deltaR(selLepton_sublead->p4(), selHadTau_lead->p4());
     const double dr_lep1_tau2     = deltaR(selLepton_lead->p4(),    selHadTau_sublead->p4());
     const double dr_lep2_tau2     = deltaR(selLepton_sublead->p4(), selHadTau_sublead->p4());
     const double max_dr_lep_tau   = std::max({ dr_lep2_tau1, dr_lep2_tau2, dr_lep1_tau1, dr_lep1_tau2 });
     const double min_dr_lep_tau   = std::min({ dr_lep2_tau1, dr_lep2_tau2, dr_lep1_tau1, dr_lep1_tau2 });
-    const double lep1_conePt      = comp_lep1_conePt(*selLepton_lead);
-    const double lep2_conePt      = comp_lep2_conePt(*selLepton_sublead);
+    const double lep1_conePt      = comp_lep_conePt(*selLepton_lead);
+    const double lep2_conePt      = comp_lep_conePt(*selLepton_sublead);
     const double dr_taus          = deltaR(selHadTau_lead->p4(), selHadTau_sublead->p4());
     const double dr_leps          = deltaR(selLepton_lead->p4(), selLepton_sublead->p4());
     const double min_dr_lep_jet   = std::min({ 10., mindr_lep1_jet, mindr_lep2_jet });
@@ -1945,16 +1945,10 @@ int main(int argc, char* argv[])
       snm->read(mbb_loose,                              FloatVariableType::mbb_loose);
 
       snm->read(cosThetaS_hadTau,                       FloatVariableType::cosThetaS_hadTau);
+      snm->read(mva_2l_2tau,                            FloatVariableType::mvaOutput_2l_2tau);
       // HTT not filled
       // HadTop_pt not filled
       // Hj_tagger not filled
-
-      //snm->read(mvaOutput_plainKin_ttV,                 FloatVariableType::mvaOutput_plainKin_ttV);
-      //snm->read(mvaOutput_plainKin_tt,                  FloatVariableType::mvaOutput_plainKin_tt);
-      //snm->read(mvaOutput_plainKin_1B_VT,               FloatVariableType::mvaOutput_plainKin_1B_VT);
-      // mvaOutput_HTT_SUM_VT not filled
-
-      //snm->read(mvaOutput_plainKin_SUM_VT,              FloatVariableType::mvaOutput_plainKin_SUM_VT);
 
       // mvaOutput_2lss_ttV not filled
       // mvaOutput_2lss_tt not filled
@@ -2004,7 +1998,10 @@ int main(int argc, char* argv[])
     process_and_genMatch += "&";
     process_and_genMatch += selHadTau_genMatch.name_;
     ++selectedEntries_byGenMatchType[process_and_genMatch];
-    selectedEntries_weighted_byGenMatchType[process_and_genMatch] += evtWeightRecorder.get(central_or_shift_main);
+    for(const std::string & central_or_shift: central_or_shifts_local)
+    {
+      selectedEntries_weighted_byGenMatchType[central_or_shift][process_and_genMatch] += evtWeightRecorder.get(central_or_shift);
+    }
     histogram_selectedEntries->Fill(0.);
     if(isDEBUG)
     {
@@ -2040,7 +2037,7 @@ int main(int argc, char* argv[])
         process_and_genMatch += "&";
         process_and_genMatch += hadTauGenMatch_definition.name_;
         std::cout << " " << process_and_genMatch << " = " << selectedEntries_byGenMatchType[process_and_genMatch]
-		  << " (weighted = " << selectedEntries_weighted_byGenMatchType[process_and_genMatch] << ")" << std::endl;
+                  << " (weighted = " << selectedEntries_weighted_byGenMatchType[central_or_shift][process_and_genMatch] << ")\n";
       }
     }
   }

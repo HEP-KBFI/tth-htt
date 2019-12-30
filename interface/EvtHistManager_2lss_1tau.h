@@ -26,9 +26,7 @@ class EvtHistManager_2lss_1tau
 
   void
   bookCategories(TFileDirectory & dir,
-                  const std::vector<std::string> & categories_sig_1p2_rest_1_th_1p2,
-                  const std::vector<std::string> & categories_sig_2_rest_2p2_th_2,
-                  const std::vector<std::string> & categories_sig_2_rest_2p5_th_2
+                const std::map<std::string, std::vector<double>> & categories_NN
                );
   void
   fillHistograms(int numElectrons,
@@ -42,12 +40,8 @@ class EvtHistManager_2lss_1tau
                  double mTauTauVis1,
                  double mTauTauVis2,
                  double memOutput_LR,
-                 const std::string & category_3l_sig_1p2_rest_1_th_1p2_TF,
-                 double output_NN_sig_1p2_rest_1_th_1p2,
-                 const std::string & category_sig_2_rest_2p2_th_2_TF,
-                 double output_sig_2_rest_2p2_th_2,
-                 const std::string & category_sig_2_rest_2p5_th_2_TF,
-                 double output_NN_sig_2_rest_2p5_th_2
+                 const std::string & category_NN_TF,
+                 double output_NN
                );
 
   const TH1 *
@@ -82,9 +76,7 @@ class EvtHistManager_2lss_1tau
   TH1 * histogram_memOutput_LR_;
 
   TH1 * histogram_EventCounter_;
-  std::map<std::string, TH1 *> histograms_by_category_sig_1p2_rest_1_th_1p2_;
-  std::map<std::string, TH1 *> histograms_by_category_sig_2_rest_2p2_th_2_;
-  std::map<std::string, TH1 *> histograms_by_category_sig_2_rest_2p5_th_2_;
+  std::map<std::string, TH1 *> histograms_by_category_;
   int option_; // flag to book & fill either full or minimal set of histograms (to reduce memory consumption of hadd jobs)
 };
 

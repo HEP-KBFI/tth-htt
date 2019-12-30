@@ -24,7 +24,9 @@ class EvtHistManager_2lss
 
   void
   bookCategories(TFileDirectory & dir,
-                 const std::vector<std::string> & categories);
+                 const std::map<std::string, std::vector<double>> &  categories,
+                 const std::map<std::string, std::vector<double>> &  categories_SVA
+               );
 
   void
   fillHistograms(int numElectrons,
@@ -39,7 +41,9 @@ class EvtHistManager_2lss
                  double mvaDiscr_2lss,
                  double mvaOutput_Hj_tagger,
                  double mvaOutput_category,
-                 const std::string & category);
+                 const std::string & category,
+                 double mass_2L,
+                 const std::string & category_SVA);
 
   const TH1 *
   getHistogram_EventCounter() const;
@@ -66,6 +70,7 @@ class EvtHistManager_2lss
 
   TH1 * histogram_mvaOutput_Hj_tagger_;
   std::map<std::string, TH1 *> histograms_by_category_;
+  std::map<std::string, TH1 *> histograms_by_category_SVA_;
 
   TH1 * histogram_EventCounter_;
 };

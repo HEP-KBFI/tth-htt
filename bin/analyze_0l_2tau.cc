@@ -891,7 +891,7 @@ int main(int argc, char* argv[])
   int selectedEntries = 0;
   double selectedEntries_weighted = 0.;
   std::map<std::string, int> selectedEntries_byGenMatchType;             // key = process_and_genMatch
-  std::map<std::string, double> selectedEntries_weighted_byGenMatchType; // key = process_and_genMatch
+  std::map<std::string, std::map<std::string, double>> selectedEntries_weighted_byGenMatchType; // keys = central_or_shift, process_and_genMatch
   TH1* histogram_analyzedEntries = fs.make<TH1D>("analyzedEntries", "analyzedEntries", 1, -0.5, +0.5);
   TH1* histogram_selectedEntries = fs.make<TH1D>("selectedEntries", "selectedEntries", 1, -0.5, +0.5);
   cutFlowTableType cutFlowTable;
@@ -1606,8 +1606,8 @@ int main(int argc, char* argv[])
     svFitAlgo.integrate(measuredTauLeptons, met.p4().px(), met.p4().py(), met.cov());
     //double mTauTau = -1.; // CV: temporarily comment-out the following line, to make code compile with "old" and "new" version of ClassicSVfit
     double mTauTau   = ( svFitAlgo.isValidSolution() ) ? static_cast<classic_svFit::HistogramAdapterDiTau*>(svFitAlgo.getHistogramAdapter())->getMass() : -1.;
-    double mT_tau1   = comp_MT_met_hadTau1(*selHadTau_lead, met.pt(), met.phi());
-    double mT_tau2   = comp_MT_met_hadTau2(*selHadTau_sublead, met.pt(), met.phi());
+    double mT_tau1   = comp_MT_met(selHadTau_lead, met.pt(), met.phi());
+    double mT_tau2   = comp_MT_met(selHadTau_sublead, met.pt(), met.phi());
     //double pZeta     = comp_pZeta(selHadTau_lead -> p4(), selHadTau_sublead -> p4(), met.p4().px(), met.p4().py());
     //double pZetaVis  = comp_pZetaVis(selHadTau_lead -> p4(), selHadTau_sublead -> p4());
     double pZetaComb = comp_pZetaComb(selHadTau_lead -> p4(), selHadTau_sublead -> p4(), met.p4().px(), met.p4().py());
@@ -1619,8 +1619,8 @@ int main(int argc, char* argv[])
     //const double pt_HHvis_medium        = selBJets_medium.size() > 1 ? (selHadTau_lead->p4()+selHadTau_sublead->p4()+selBJets_medium[0]->p4() + selBJets_medium[1]->p4()).pt() : -1.;
 
 //--- compute output of BDTs used to discriminate ttH vs. ttbar trained by Arun for 1l_2tau category
-    const double mindr_tau1_jet  = std::min(10., comp_mindr_hadTau1_jet(*selHadTau_lead, selJets));
-    const double mindr_tau2_jet  = std::min(10., comp_mindr_hadTau2_jet(*selHadTau_sublead, selJets));
+    const double mindr_tau1_jet  = std::min(10., comp_mindr_jet(*selHadTau_lead, selJets));
+    const double mindr_tau2_jet  = std::min(10., comp_mindr_jet(*selHadTau_sublead, selJets));
     const double cosThetaS_hadTau = comp_cosThetaStar(selHadTau_lead->p4(), selHadTau_sublead->p4());
 
 
@@ -1640,16 +1640,16 @@ int main(int argc, char* argv[])
       {"met_LD",           met_LD},
       //{"nBJetLoose",        selBJets_loose.size()},
       //{"nJet",		selJets.size()},
-      {"mindr_tau1_jet",   TMath::Min(10., comp_mindr_hadTau1_jet(*selHadTau_lead, selJets))},
-      {"mindr_tau2_jet",   TMath::Min(10., comp_mindr_hadTau2_jet(*selHadTau_sublead, selJets))},
-      {"mT_tau1",          comp_MT_met_hadTau1(*selHadTau_lead, met.pt(), met.phi())},
-      {"mT_tau2",          comp_MT_met_hadTau2(*selHadTau_sublead, met.pt(), met.phi())}
+      {"mindr_tau1_jet",   TMath::Min(10., comp_mindr_jet(*selHadTau_lead, selJets))},
+      {"mindr_tau2_jet",   TMath::Min(10., comp_mindr_jet(*selHadTau_sublead, selJets))},
+      {"mT_tau1",          comp_MT_met(selHadTau_lead, met.pt(), met.phi())},
+      {"mT_tau2",          comp_MT_met(selHadTau_sublead, met.pt(), met.phi())}
       };
     double mva_0l_2tau_deeptauLoose_2 = mva_xgb_Legacy(mvaInputs_ttbar);
 
     // mvaInputs_XGB_Updated
-    mvaInputs_XGB_Updated["mindr_tau1_jet"] = TMath::Min(10., comp_mindr_hadTau1_jet(*selHadTau_lead, selJets));
-    mvaInputs_XGB_Updated["mindr_tau2_jet"] = TMath::Min(10., comp_mindr_hadTau2_jet(*selHadTau_sublead, selJets));
+    mvaInputs_XGB_Updated["mindr_tau1_jet"] = TMath::Min(10., comp_mindr_jet(*selHadTau_lead, selJets));
+    mvaInputs_XGB_Updated["mindr_tau2_jet"] = TMath::Min(10., comp_mindr_jet(*selHadTau_sublead, selJets));
     mvaInputs_XGB_Updated["avg_dr_jet"] = comp_avg_dr_jet(selJets);
     mvaInputs_XGB_Updated["ptmiss"] = met.pt();
     mvaInputs_XGB_Updated["tau1_pt"] = selHadTau_lead->pt();
@@ -1657,8 +1657,8 @@ int main(int argc, char* argv[])
     mvaInputs_XGB_Updated["tau1_eta"] = selHadTau_lead->absEta();
     mvaInputs_XGB_Updated["tau2_eta"] = selHadTau_sublead->absEta();
     mvaInputs_XGB_Updated["dr_taus"] = deltaR(selHadTau_lead->p4(), selHadTau_sublead->p4());
-    mvaInputs_XGB_Updated["mT_tau1"] = comp_MT_met_hadTau1(*selHadTau_lead, met.pt(), met.phi());
-    mvaInputs_XGB_Updated["mT_tau2"] = comp_MT_met_hadTau2(*selHadTau_sublead, met.pt(), met.phi());
+    mvaInputs_XGB_Updated["mT_tau1"] = comp_MT_met(selHadTau_lead, met.pt(), met.phi());
+    mvaInputs_XGB_Updated["mT_tau2"] = comp_MT_met(selHadTau_sublead, met.pt(), met.phi());
     mvaInputs_XGB_Updated["mTauTauVis"] = mTauTauVis;
     mvaInputs_XGB_Updated["mTauTau"] = mTauTau;
     mvaInputs_XGB_Updated["nJet"] = selJets.size();
@@ -1689,8 +1689,8 @@ int main(int argc, char* argv[])
           selHistManager->electrons_->fillHistograms(preselElectrons, evtWeight);
           selHistManager->muons_->fillHistograms(preselMuons, evtWeight);
           selHistManager->hadTaus_->fillHistograms({ selHadTau_lead, selHadTau_sublead }, evtWeight);
-          selHistManager->leadHadTau_->fillHistograms({ selHadTau_lead }, evtWeight);
-          selHistManager->subleadHadTau_->fillHistograms({ selHadTau_sublead }, evtWeight);
+          selHistManager->leadHadTau_->fillHistograms(selHadTaus, evtWeight);
+          selHistManager->subleadHadTau_->fillHistograms(selHadTaus, evtWeight);
           selHistManager->jets_->fillHistograms(selJets, evtWeight);
           selHistManager->leadJet_->fillHistograms(selJets, evtWeight);
           selHistManager->subleadJet_->fillHistograms(selJets, evtWeight);
@@ -1896,8 +1896,8 @@ int main(int argc, char* argv[])
       }
 
       bdt_filler -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })
-          ("mindr_tau1_jet", TMath::Min(10., comp_mindr_hadTau1_jet(*selHadTau_lead, selJets)))
-          ("mindr_tau2_jet", TMath::Min(10., comp_mindr_hadTau2_jet(*selHadTau_sublead, selJets)))
+          ("mindr_tau1_jet", TMath::Min(10., comp_mindr_jet(*selHadTau_lead, selJets)))
+          ("mindr_tau2_jet", TMath::Min(10., comp_mindr_jet(*selHadTau_sublead, selJets)))
           ("avg_dr_jet",     comp_avg_dr_jet(selJets))
           ("ptmiss",         met.pt())
           ("htmiss",         mht_p4.pt())
@@ -2053,6 +2053,7 @@ int main(int argc, char* argv[])
       snm->read(met.phi(),                              FloatVariableType::PFMETphi);
       snm->read(mht_p4.pt(),                            FloatVariableType::MHT);
       snm->read(met_LD,                                 FloatVariableType::metLD);
+      snm->read(mva_0l_2tau_deeptauLoose_2,             FloatVariableType::mvaOutput_0l_2tau);
 
       // mindr_lep_jet not filled
       // mindr_lep2_jet not filled
@@ -2155,7 +2156,10 @@ int main(int argc, char* argv[])
     std::string process_and_genMatch = process_string;
     process_and_genMatch += selHadTau_genMatch.name_;
     ++selectedEntries_byGenMatchType[process_and_genMatch];
-    selectedEntries_weighted_byGenMatchType[process_and_genMatch] += evtWeightRecorder.get(central_or_shift_main);
+    for(const std::string & central_or_shift: central_or_shifts_local)
+    {
+      selectedEntries_weighted_byGenMatchType[central_or_shift][process_and_genMatch] += evtWeightRecorder.get(central_or_shift);
+    }
     histogram_selectedEntries->Fill(0.);
     if(isDEBUG)
     {
@@ -2187,7 +2191,7 @@ int main(int argc, char* argv[])
       std::string process_and_genMatch = process_string;
       process_and_genMatch += hadTauGenMatch_definition.name_;
       std::cout << " " << process_and_genMatch << " = " << selectedEntries_byGenMatchType[process_and_genMatch]
-		<< " (weighted = " << selectedEntries_weighted_byGenMatchType[process_and_genMatch] << ")" << std::endl;
+                << " (weighted = " << selectedEntries_weighted_byGenMatchType[central_or_shift][process_and_genMatch] << ")\n";
     }
   }
   std::cout << std::endl;

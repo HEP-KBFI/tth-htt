@@ -90,53 +90,13 @@ main(int argc,
       << "No ParameterSet 'process' found in configuration file = " << argv[1] << " !!\n";
   }
 
-  const std::vector<std::string> mvaInputVariables_TensorFlow_3l_ttH_tH_3cat_v8 = {
-    "avg_dr_jet", "ptmiss", "mbb_medium",
-    "jet1_pt", "jet2_pt", "jet3_pt", "jet4_pt",
-    "max_lep_eta",
-    "lep1_mT", "lep1_conept", "lep2_mT", "lep2_conept", "lep3_mT", "lep3_conept",
-    "jetForward1_pt", "res-HTT_CSVsort4rd", "HadTop_pt_CSVsort4rd",
-    "nJet", "nJetForward", "nBJetLoose",
-    "nBJetMedium", "nElectron", "sum_lep_charge"
-  };
-  const std::vector<std::string> classes_TensorFlow_3l_ttH_tH_3cat = {
-    "predictions_ttH",  "predictions_rest", "predictions_tH"
-  };
-  const std::string mvaFileName_TensorFlow_3l_ttH_tH_3cat_v8 =
-    "tthAnalysis/HiggsToTauTau/data/NN_for_legacy_sync/test_model_3l_ttH_tH_3cat_nottZ_no4mom_noSemi_noStand_v8.pb"
-  ;
-  const TensorFlowInterface mva_3l_ttH_tH_3cat_v8_TF(
-    mvaFileName_TensorFlow_3l_ttH_tH_3cat_v8,
-    mvaInputVariables_TensorFlow_3l_ttH_tH_3cat_v8,
-    classes_TensorFlow_3l_ttH_tH_3cat
-  );
-
-  const std::string mvaFileName_TensorFlow_2lss_ttH_tH_4cat_onlyTHQ_v4 =
-    "tthAnalysis/HiggsToTauTau/data/NN_for_legacy_sync/test_model_2lss_ttH_tH_4cat_onlyTHQ_notEnrich_v4.pb"
-  ;
-  const std::vector<std::string> mvaInputVariables_TensorFlow_2lss_ttH_tH_4cat_onlyTHQ_v4 = {
-    "avg_dr_jet", "ptmiss", "mbb_medium",
-    "jet1_pt", "jet2_pt", "jet3_pt", "jet4_pt", "max_lep_eta",
-    "lep1_mT", "lep1_conept", "lep1_min_dr_jet",
-    "lep2_mT", "lep2_conept", "lep2_min_dr_jet",
-    "nJetForward", "jetForward1_pt", "jetForward1_eta_abs",
-    "res-HTT_CSVsort4rd", "HadTop_pt_CSVsort4rd",
-    "nJet", "nBJetLoose", "nBJetMedium", "nElectron", "sum_lep_charge", "mvaOutput_Hj_tagger"
-  };
-  // the order also matters
-  const std::vector<std::string> classes_TensorFlow_2lss_ttH_tH_4cat = {
-    "predictions_ttH", "predictions_ttW", "predictions_rest", "predictions_tH"
-  };
-  const TensorFlowInterface mva_2lss_ttH_tH_4cat_onlyTHQ_v4(
-    mvaFileName_TensorFlow_2lss_ttH_tH_4cat_onlyTHQ_v4,
-    mvaInputVariables_TensorFlow_2lss_ttH_tH_4cat_onlyTHQ_v4,
-    classes_TensorFlow_2lss_ttH_tH_4cat
-  );
-
-  const std::string mvaFileName_Hj_tagger = "tthAnalysis/HiggsToTauTau/data/Hj_deepcsv_BDTG_2017.weights.xml";
+  const std::string mvaFileName_Hj_tagger = "tthAnalysis/HiggsToTauTau/data/NN_for_legacy_opt/Hjtagger_legacy_xgboost_v1.weights.xml";
   std::vector<std::string> mvaInputVariables_Hj_tagger = {
-    "Jet25_lepdrmin", "max(Jet25_bDiscriminator,0.)",
-    "max(Jet25_qg,0.)", "Jet25_lepdrmax", "Jet25_pt"
+    "Jet25_bDiscriminator",
+    "Jet25_pt",
+    "Jet25_lepdrmin",
+    "Jet25_lepdrmax",
+    "Jet25_qg"
   };
   const TMVAInterface mva_Hj_tagger(mvaFileName_Hj_tagger, mvaInputVariables_Hj_tagger);
 
@@ -663,19 +623,19 @@ main(int argc,
 
     if(preselLeptons.size() > 1)
     {
-      const double massL = comp_MT_met_lep1(preselLeptons[0]->p4() + preselLeptons[1]->p4(), met.pt(), met.phi());
+      const double massL = comp_massL2(preselLeptons[0], preselLeptons[1], met.pt(), met.phi());
       snm->read(massL, FloatVariableType::massL);
     }
 
-    double lep1_conePt         = 0.;
-    double lep2_conePt         = 0.;
-    double sum_lep_charge_2lss = 0.;
-    double sum_lep_charge_3l   = 0.;
+    //double lep1_conePt         = 0.;
+    //double lep2_conePt         = 0.;
+    //double sum_lep_charge_2lss = 0.;
+    //double sum_lep_charge_3l   = 0.;
     double mT_met_lep3         = 0.;
     double mindr_lep3_jet      = 0.;
-    double lep3_conePt         = 0.;
-    double max_lep_eta_2lss    = 0.;
-    double max_lep_eta_3l      = 0.;
+    //double lep3_conePt         = 0.;
+    //double max_lep_eta_2lss    = 0.;
+    //double max_lep_eta_3l      = 0.;
     double mT_met_lep1         = 0.;
     double mindr_lep1_jet      = 0.;
     double mindr_lep2_jet      = 0.;
@@ -684,8 +644,8 @@ main(int argc,
     if(! selLeptons.empty())
     {
       const RecoLepton * selLepton_lead = selLeptons[0];
-      mindr_lep1_jet = comp_mindr_lep1_jet(*selLepton_lead, selJets);
-      mT_met_lep1    = comp_MT_met_lep1(selLepton_lead->p4(), met.pt(), met.phi());
+      mindr_lep1_jet = comp_mindr_jet(*selLepton_lead, selJets);
+      mT_met_lep1    = comp_MT_met(selLepton_lead, met.pt(), met.phi());
       double mTauTauVis1_sel  = ! selHadTaus.empty()      ?
         (selLepton_lead->p4() + selHadTaus.at(0)->p4()).mass() :
         snm->placeholder_value
@@ -698,8 +658,8 @@ main(int argc,
       if(selLeptons.size() > 1)
       {
         const RecoLepton * selLepton_sublead = selLeptons[1];
-        mindr_lep2_jet = comp_mindr_lep2_jet(*selLepton_sublead, selJets);
-        mT_met_lep2    = comp_MT_met_lep2(selLepton_sublead->p4(), met.pt(), met.phi());
+        mindr_lep2_jet = comp_mindr_jet(*selLepton_sublead, selJets);
+        mT_met_lep2    = comp_MT_met(selLepton_sublead, met.pt(), met.phi());
         const double dR_leps        = deltaR(selLepton_lead->p4(), selLepton_sublead->p4());
         double mTauTauVis2_sel      = ! selHadTaus.empty()  ?
           (selLepton_sublead->p4() + selHadTaus.at(0)->p4()).mass() :
@@ -711,102 +671,32 @@ main(int argc,
         snm->read(dR_leps,         FloatVariableType::dr_leps);
         snm->read(mTauTauVis2_sel, FloatVariableType::mvis_l2tau);
 
-        lep1_conePt = comp_lep1_conePt(*selLepton_lead);
-        lep2_conePt = comp_lep2_conePt(*selLepton_sublead);
-        sum_lep_charge_2lss = selLepton_lead->charge() + selLepton_sublead->charge();
-        max_lep_eta_2lss = std::max(selLepton_lead -> absEta(), selLepton_sublead -> absEta());
+        //lep1_conePt = comp_lep_conePt(*selLepton_lead);
+        //lep2_conePt = comp_lep_conePt(*selLepton_sublead);
+        //sum_lep_charge_2lss = selLepton_lead->charge() + selLepton_sublead->charge();
+        //max_lep_eta_2lss = std::max(selLepton_lead -> absEta(), selLepton_sublead -> absEta());
 
         if(selLeptons.size() > 2)
         {
           const RecoLepton * selLepton_third = selLeptons[2];
-          mT_met_lep3    = comp_MT_met_lep3(selLepton_third->p4(), met.pt(), met.phi());
-          mindr_lep3_jet = comp_mindr_lep3_jet(*selLepton_third, selJets);
+          mT_met_lep3    = comp_MT_met(selLepton_third, met.pt(), met.phi());
+          mindr_lep3_jet = comp_mindr_jet(*selLepton_third, selJets);
 
           snm->read(mT_met_lep3,    FloatVariableType::mT_met_lep3);
           snm->read(mindr_lep3_jet, FloatVariableType::mindr_lep3_jet);
 
-          lep3_conePt = comp_lep3_conePt(*selLepton_third);
-          sum_lep_charge_3l = selLepton_lead->charge() + selLepton_sublead->charge() + selLepton_third->charge();
-          max_lep_eta_3l = std::max({ selLepton_lead->absEta(), selLepton_sublead->absEta(), selLepton_third->absEta() });
+          //lep3_conePt = comp_lep_conePt(*selLepton_third);
+          //sum_lep_charge_3l = selLepton_lead->charge() + selLepton_sublead->charge() + selLepton_third->charge();
+          //max_lep_eta_3l = std::max({ selLepton_lead->absEta(), selLepton_sublead->absEta(), selLepton_third->absEta() });
         }
       }
     }
 
-    const std::map<std::string, double> mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF = {
-      { "avg_dr_jet",           ! selJets.empty() ? avg_dr_jet : 0 },
-      { "ptmiss",               met.pt() },
-      { "mbb_medium",           mbb },
-      { "max_dr_jet",           ! selJets.empty() ? max_dr_jet : 0 },
-      { "jet1_pt",              ! selJets.empty() ? selJets[0]->pt() : 0 },
-      { "jet2_pt",              selJets.size() > 1 ? selJets[1]->pt() : 0 },
-      { "jet3_pt",              selJets.size() > 2 ? selJets[2]->pt() : 0 },
-      { "jet4_pt",              selJets.size() > 3 ? selJets[3]->pt() : 0 },
-      { "max_lep_eta",          max_lep_eta_2lss },
-      { "lep1_mT",              mT_met_lep1 },
-      { "lep1_conept",          lep1_conePt },
-      { "lep1_min_dr_jet",      TMath::Min(10., mindr_lep1_jet) },
-      { "lep2_mT",              mT_met_lep2 },
-      { "lep2_conept",          lep2_conePt },
-      { "lep2_min_dr_jet",      TMath::Min(10., mindr_lep2_jet) },
-      { "nJetForward",          selJetsForward.size() },
-      { "jetForward1_pt",       ! selJetsForward.empty() ?  selJetsForward[0]->pt() : 0 },
-      { "jetForward1_eta_abs",  ! selJetsForward.empty() ?  selJetsForward[0]->absEta() : -1 },
-      { "res-HTT_CSVsort4rd",   HTT },
-      { "HadTop_pt_CSVsort4rd", HadTop_pt },
-      { "nJet",                 selJets.size() },
-      { "nBJetLoose",           selBJets_loose.size() },
-      { "nBJetMedium",          selBJets_medium.size() },
-      { "nElectron",            selElectrons.size() },
-      { "sum_lep_charge",       sum_lep_charge_2lss },
-      { "mvaOutput_Hj_tagger",  mvaOutput_Hj_tagger },
-    };
-    const std::map<std::string, double> mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4 =
-      mva_2lss_ttH_tH_4cat_onlyTHQ_v4(mvaInputs_2lss_ttH_tH_4cat_onlyTHQ_v4_TF)
-    ;
-
-    snm->read(mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4.at("predictions_ttH"),  FloatVariableType::mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4_ttH);
-    snm->read(mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4.at("predictions_tH"),   FloatVariableType::mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4_tH);
-    snm->read(mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4.at("predictions_ttW"),  FloatVariableType::mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4_ttW);
-    snm->read(mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4.at("predictions_rest"), FloatVariableType::mvaOutput_2lss_ttH_tH_4cat_onlyTHQ_v4_rest);
-
-    const std::map<std::string, double> mvaInputs_3l_ttH_tH_3cat_v8_TF = {
-      { "avg_dr_jet",           ! selJets.empty() ? avg_dr_jet : 0 },
-      { "ptmiss",               met.pt() },
-      { "mbb_medium",           selBJets_medium.size()>1 ?  (selBJets_medium[0]->p4()+selBJets_medium[1]->p4()).mass() : 0 },
-      { "jet1_pt",              ! selJets.empty() ? selJets[0]->pt() : 0 },
-      { "jet2_pt",              selJets.size() > 1 ? selJets[1]->pt() : 0 },
-      { "jet3_pt",              selJets.size() > 2 ?  selJets[2]->pt() : 0 },
-      { "jet4_pt",              selJets.size() > 3 ?  selJets[3]->pt() : 0 },
-      { "max_lep_eta",          max_lep_eta_3l },
-      { "lep1_mT",              mT_met_lep1 },
-      { "lep1_conept",          lep1_conePt },
-      { "lep2_mT",              mT_met_lep2 },
-      { "lep2_conept",          lep2_conePt },
-      { "lep3_mT",              mT_met_lep3 },
-      { "lep3_conept",          lep3_conePt },
-      { "jetForward1_pt",       ! selJetsForward.empty() ? selJetsForward[0]->pt() : 0 },
-      { "res-HTT_CSVsort4rd",   HTT },
-      { "HadTop_pt_CSVsort4rd", HadTop_pt },
-      { "nJet",                 selJets.size() },
-      { "nJetForward",          selJetsForward.size() },
-      { "nBJetLoose",           selBJets_loose.size() },
-      { "nBJetMedium",          selBJets_medium.size() },
-      { "nElectron",            selElectrons.size() },
-      { "sum_lep_charge",       sum_lep_charge_3l },
-    };
-    const std::map<std::string, double> mvaOutput_3l_ttH_tH_3cat_v8 =
-      mva_3l_ttH_tH_3cat_v8_TF(mvaInputs_3l_ttH_tH_3cat_v8_TF)
-    ;
-
-    snm->read(mvaOutput_3l_ttH_tH_3cat_v8.at("predictions_ttH"),  FloatVariableType::mvaOutput_3l_ttH_tH_3cat_v8_ttH);
-    snm->read(mvaOutput_3l_ttH_tH_3cat_v8.at("predictions_tH"),   FloatVariableType::mvaOutput_3l_ttH_tH_3cat_v8_tH);
-    snm->read(mvaOutput_3l_ttH_tH_3cat_v8.at("predictions_rest"), FloatVariableType::mvaOutput_3l_ttH_tH_3cat_v8_rest);
-
     if(selLeptons.size() > 3)
     {
       const RecoLepton * selLepton_fourth = selLeptons[3];
-      const double mT_met_lep4    = comp_MT_met_lep3(selLepton_fourth->p4(), met.pt(), met.phi());
-      const double mindr_lep4_jet = comp_mindr_lep4_jet(*selLepton_fourth, selJets);
+      const double mT_met_lep4    = comp_MT_met(selLepton_fourth, met.pt(), met.phi());
+      const double mindr_lep4_jet = comp_mindr_jet(*selLepton_fourth, selJets);
 
       snm->read(mT_met_lep4,    FloatVariableType::mT_met_lep4);
       snm->read(mindr_lep4_jet, FloatVariableType::mindr_lep4_jet);
@@ -816,7 +706,7 @@ main(int argc,
     {
       const RecoHadTau * selHadTau = selHadTaus[0];
 
-      const double mindr_tau_jet = comp_mindr_hadTau1_jet(*selHadTau, selJets);
+      const double mindr_tau_jet = comp_mindr_jet(*selHadTau, selJets);
 
       const double dR_l0tau = ! selLeptons.empty()      ?
         deltaR(selLeptons.at(0)->p4(), selHadTau->p4()) :
@@ -844,7 +734,7 @@ main(int argc,
       const RecoHadTau * selHadTau_sublead = selHadTaus[1];
       const double tt_deltaR      = deltaR(selHadTau_lead->p4(), selHadTau_sublead->p4());
       const double tt_mvis        = (selHadTau_lead->p4() + selHadTau_sublead->p4()).mass();
-      const double mindr_tau2_jet = comp_mindr_hadTau2_jet(*selHadTau_sublead, selJets);
+      const double mindr_tau2_jet = comp_mindr_jet(*selHadTau_sublead, selJets);
 
       snm->read(tt_deltaR,      FloatVariableType::dr_taus);
       snm->read(tt_mvis,        FloatVariableType::mTauTauVis);

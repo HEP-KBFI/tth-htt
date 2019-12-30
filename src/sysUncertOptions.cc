@@ -44,23 +44,32 @@ getJet_option(const std::string & central_or_shift,
               bool isMC)
 {
   int central_or_shift_int = isMC ? kJetMET_central : kJetMET_central_nonNominal;
-  if     (central_or_shift == "CMS_ttHl_JESUp"             ) central_or_shift_int = kJetMET_jesUp;
-  else if(central_or_shift == "CMS_ttHl_JESDown"           ) central_or_shift_int = kJetMET_jesDown;
-  else if(central_or_shift == "CMS_ttHl_JERUp"             ) central_or_shift_int = kJetMET_jerUp;
-  else if(central_or_shift == "CMS_ttHl_JERDown"           ) central_or_shift_int = kJetMET_jerDown;
-  else if(central_or_shift == "CMS_ttHl_JESAbsoluteUp"     ) central_or_shift_int = kJetMET_jesAbsoluteUp;
-  else if(central_or_shift == "CMS_ttHl_JESAbsoluteDown"   ) central_or_shift_int = kJetMET_jesAbsoluteDown;
-  else if(central_or_shift == "CMS_ttHl_JESBBEC1Up"        ) central_or_shift_int = kJetMET_jesBBEC1Up;
-  else if(central_or_shift == "CMS_ttHl_JESBBEC1Down"      ) central_or_shift_int = kJetMET_jesBBEC1Down;
-  else if(central_or_shift == "CMS_ttHl_JESEC2Up"          ) central_or_shift_int = kJetMET_jesEC2Up;
-  else if(central_or_shift == "CMS_ttHl_JESEC2Down"        ) central_or_shift_int = kJetMET_jesEC2Down;
-  else if(central_or_shift == "CMS_ttHl_JESFlavorQCDUp"    ) central_or_shift_int = kJetMET_jesFlavorQCDUp;
-  else if(central_or_shift == "CMS_ttHl_JESFlavorQCDDown"  ) central_or_shift_int = kJetMET_jesFlavorQCDDown;
-  else if(central_or_shift == "CMS_ttHl_JESHFUp"           ) central_or_shift_int = kJetMET_jesHFUp;
-  else if(central_or_shift == "CMS_ttHl_JESHFDown"         ) central_or_shift_int = kJetMET_jesHFDown;
-  else if(central_or_shift == "CMS_ttHl_JESRelativeBalUp"  ) central_or_shift_int = kJetMET_jesRelativeBalUp;
-  else if(central_or_shift == "CMS_ttHl_JESRelativeBalDown") central_or_shift_int = kJetMET_jesRelativeBalDown;
-  //
+  if     (central_or_shift == "CMS_ttHl_JESUp"                    ) central_or_shift_int = kJetMET_jesUp;
+  else if(central_or_shift == "CMS_ttHl_JESDown"                  ) central_or_shift_int = kJetMET_jesDown;
+  else if(central_or_shift == "CMS_ttHl_JERUp"                    ) central_or_shift_int = kJetMET_jerUp;
+  else if(central_or_shift == "CMS_ttHl_JERDown"                  ) central_or_shift_int = kJetMET_jerDown;
+  else if(central_or_shift == "CMS_ttHl_JESAbsoluteUp"            ) central_or_shift_int = kJetMET_jesAbsoluteUp;
+  else if(central_or_shift == "CMS_ttHl_JESAbsoluteDown"          ) central_or_shift_int = kJetMET_jesAbsoluteDown;
+  else if(central_or_shift == "CMS_ttHl_JESAbsolute_EraUp"        ) central_or_shift_int = kJetMET_jesAbsolute_EraUp;
+  else if(central_or_shift == "CMS_ttHl_JESAbsolute_EraDown"      ) central_or_shift_int = kJetMET_jesAbsolute_EraDown;
+  else if(central_or_shift == "CMS_ttHl_JESBBEC1Up"               ) central_or_shift_int = kJetMET_jesBBEC1Up;
+  else if(central_or_shift == "CMS_ttHl_JESBBEC1Down"             ) central_or_shift_int = kJetMET_jesBBEC1Down;
+  else if(central_or_shift == "CMS_ttHl_JESBBEC1_EraUp"           ) central_or_shift_int = kJetMET_jesBBEC1_EraUp;
+  else if(central_or_shift == "CMS_ttHl_JESBBEC1_EraDown"         ) central_or_shift_int = kJetMET_jesBBEC1_EraDown;
+  else if(central_or_shift == "CMS_ttHl_JESEC2Up"                 ) central_or_shift_int = kJetMET_jesEC2Up;
+  else if(central_or_shift == "CMS_ttHl_JESEC2Down"               ) central_or_shift_int = kJetMET_jesEC2Down;
+  else if(central_or_shift == "CMS_ttHl_JESEC2_EraUp"             ) central_or_shift_int = kJetMET_jesEC2_EraUp;
+  else if(central_or_shift == "CMS_ttHl_JESEC2_EraDown"           ) central_or_shift_int = kJetMET_jesEC2_EraDown;
+  else if(central_or_shift == "CMS_ttHl_JESFlavorQCDUp"           ) central_or_shift_int = kJetMET_jesFlavorQCDUp;
+  else if(central_or_shift == "CMS_ttHl_JESFlavorQCDDown"         ) central_or_shift_int = kJetMET_jesFlavorQCDDown;
+  else if(central_or_shift == "CMS_ttHl_JESHFUp"                  ) central_or_shift_int = kJetMET_jesHFUp;
+  else if(central_or_shift == "CMS_ttHl_JESHFDown"                ) central_or_shift_int = kJetMET_jesHFDown;
+  else if(central_or_shift == "CMS_ttHl_JESHF_EraUp"              ) central_or_shift_int = kJetMET_jesHF_EraUp;
+  else if(central_or_shift == "CMS_ttHl_JESHF_EraDown"            ) central_or_shift_int = kJetMET_jesHF_EraDown;
+  else if(central_or_shift == "CMS_ttHl_JESRelativeBalUp"         ) central_or_shift_int = kJetMET_jesRelativeBalUp;
+  else if(central_or_shift == "CMS_ttHl_JESRelativeBalDown"       ) central_or_shift_int = kJetMET_jesRelativeBalDown;
+  else if(central_or_shift == "CMS_ttHl_JESRelativeSample_EraUp"  ) central_or_shift_int = kJetMET_jesRelativeSample_EraUp;
+  else if(central_or_shift == "CMS_ttHl_JESRelativeSample_EraDown") central_or_shift_int = kJetMET_jesRelativeSample_EraDown;
   return central_or_shift_int;
 }
 
@@ -69,12 +78,34 @@ getMET_option(const std::string & central_or_shift,
               bool isMC)
 {
   int central_or_shift_int = isMC ? kJetMET_central : kJetMET_central_nonNominal;
-  if     (central_or_shift == "CMS_ttHl_JESUp"            ) central_or_shift_int = kJetMET_jesUp;
-  else if(central_or_shift == "CMS_ttHl_JESDown"          ) central_or_shift_int = kJetMET_jesDown;
-  else if(central_or_shift == "CMS_ttHl_JERUp"            ) central_or_shift_int = kJetMET_jerUp;
-  else if(central_or_shift == "CMS_ttHl_JERDown"          ) central_or_shift_int = kJetMET_jerDown;
-  else if(central_or_shift == "CMS_ttHl_UnclusteredEnUp"  ) central_or_shift_int = kJetMET_UnclusteredEnUp;
-  else if(central_or_shift == "CMS_ttHl_UnclusteredEnDown") central_or_shift_int = kJetMET_UnclusteredEnDown;
+  if     (central_or_shift == "CMS_ttHl_JESUp"                    ) central_or_shift_int = kJetMET_jesUp;
+  else if(central_or_shift == "CMS_ttHl_JESDown"                  ) central_or_shift_int = kJetMET_jesDown;
+  else if(central_or_shift == "CMS_ttHl_JERUp"                    ) central_or_shift_int = kJetMET_jerUp;
+  else if(central_or_shift == "CMS_ttHl_JERDown"                  ) central_or_shift_int = kJetMET_jerDown;
+  else if(central_or_shift == "CMS_ttHl_UnclusteredEnUp"          ) central_or_shift_int = kJetMET_UnclusteredEnUp;
+  else if(central_or_shift == "CMS_ttHl_UnclusteredEnDown"        ) central_or_shift_int = kJetMET_UnclusteredEnDown;
+  else if(central_or_shift == "CMS_ttHl_JESAbsoluteUp"            ) central_or_shift_int = kJetMET_jesAbsoluteUp;
+  else if(central_or_shift == "CMS_ttHl_JESAbsoluteDown"          ) central_or_shift_int = kJetMET_jesAbsoluteDown;
+  else if(central_or_shift == "CMS_ttHl_JESAbsolute_EraUp"        ) central_or_shift_int = kJetMET_jesAbsolute_EraUp;
+  else if(central_or_shift == "CMS_ttHl_JESAbsolute_EraDown"      ) central_or_shift_int = kJetMET_jesAbsolute_EraDown;
+  else if(central_or_shift == "CMS_ttHl_JESBBEC1Up"               ) central_or_shift_int = kJetMET_jesBBEC1Up;
+  else if(central_or_shift == "CMS_ttHl_JESBBEC1Down"             ) central_or_shift_int = kJetMET_jesBBEC1Down;
+  else if(central_or_shift == "CMS_ttHl_JESBBEC1_EraUp"           ) central_or_shift_int = kJetMET_jesBBEC1_EraUp;
+  else if(central_or_shift == "CMS_ttHl_JESBBEC1_EraDown"         ) central_or_shift_int = kJetMET_jesBBEC1_EraDown;
+  else if(central_or_shift == "CMS_ttHl_JESEC2Up"                 ) central_or_shift_int = kJetMET_jesEC2Up;
+  else if(central_or_shift == "CMS_ttHl_JESEC2Down"               ) central_or_shift_int = kJetMET_jesEC2Down;
+  else if(central_or_shift == "CMS_ttHl_JESEC2_EraUp"             ) central_or_shift_int = kJetMET_jesEC2_EraUp;
+  else if(central_or_shift == "CMS_ttHl_JESEC2_EraDown"           ) central_or_shift_int = kJetMET_jesEC2_EraDown;
+  else if(central_or_shift == "CMS_ttHl_JESFlavorQCDUp"           ) central_or_shift_int = kJetMET_jesFlavorQCDUp;
+  else if(central_or_shift == "CMS_ttHl_JESFlavorQCDDown"         ) central_or_shift_int = kJetMET_jesFlavorQCDDown;
+  else if(central_or_shift == "CMS_ttHl_JESHFUp"                  ) central_or_shift_int = kJetMET_jesHFUp;
+  else if(central_or_shift == "CMS_ttHl_JESHFDown"                ) central_or_shift_int = kJetMET_jesHFDown;
+  else if(central_or_shift == "CMS_ttHl_JESHF_EraUp"              ) central_or_shift_int = kJetMET_jesHF_EraUp;
+  else if(central_or_shift == "CMS_ttHl_JESHF_EraDown"            ) central_or_shift_int = kJetMET_jesHF_EraDown;
+  else if(central_or_shift == "CMS_ttHl_JESRelativeBalUp"         ) central_or_shift_int = kJetMET_jesRelativeBalUp;
+  else if(central_or_shift == "CMS_ttHl_JESRelativeBalDown"       ) central_or_shift_int = kJetMET_jesRelativeBalDown;
+  else if(central_or_shift == "CMS_ttHl_JESRelativeSample_EraUp"  ) central_or_shift_int = kJetMET_jesRelativeSample_EraUp;
+  else if(central_or_shift == "CMS_ttHl_JESRelativeSample_EraDown") central_or_shift_int = kJetMET_jesRelativeSample_EraDown;
   return central_or_shift_int;
 }
 

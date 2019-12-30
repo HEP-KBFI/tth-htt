@@ -18,7 +18,7 @@ class EvtHistManager_3l
   : public HistManagerBase
 {
  public:
-  EvtHistManager_3l(const edm::ParameterSet & cfg);
+  EvtHistManager_3l(const edm::ParameterSet & cfg, bool isControlRegion);
   ~EvtHistManager_3l() {}
 
   /// book and fill histograms
@@ -26,15 +26,10 @@ class EvtHistManager_3l
   bookHistograms(TFileDirectory & dir) override;
 
   void
-  setCRcategories(TFileDirectory & dir,
-                  const std::vector<std::string> & ctrl_categories);
-
-  void
   bookCategories(TFileDirectory & dir,
-                 const std::map<std::string, std::vector<double>> & categories,
-                 const std::map<std::string, std::vector<double>> & categories_TensorFlow_3l_sig_2_rest_2_th_2_withWZ,
-                 const std::map<std::string, std::vector<double>> & categories_TensorFlow_3l_sig_2p5_rest_2_th_2p5_withWZ,
-                 const std::map<std::string, std::vector<double>> & categories_TensorFlow_3l_sig_2_rest_2p5_th_2_withWZ
+                 const std::map<std::string, std::vector<double>> & categories_list_NN,
+                 const std::map<std::string, std::vector<double>> & categories_list_SVA,
+                 bool isControlRegion
                );
 
   void
@@ -44,16 +39,14 @@ class EvtHistManager_3l
                  int numJets,
                  int numBJets_loose,
                  int numBJets_medium,
-                 const std::string & ctrl_category,
                  double mvaOutput_3l_ttV,
                  double mvaOutput_3l_ttbar,
-                 double mvaDiscr_3l,
-                 double mvaOutput_category, const std::string & category,
-                 double mvaOutput_category_sig_2_rest_2_th_2_withWZ,   const std::string & category_sig_2_rest_2_th_2_withWZ,
-                 double mvaOutput_category_sig_2p5_rest_2_th_2p5_withWZ,   const std::string & category_sig_2p5_rest_2_th_2p5_withWZ,
-                 double mvaOutput_category_sig_2_rest_2p5_th_2_withWZ,   const std::string & category_sig_2_rest_2p5_th_2_withWZ,
+                 double mass_3L, const std::string & category_SVA,
+                 double mvaOutput_category_NN,   const std::string & category_NN,
                  const MEMOutput_3l * memOutput_3l,
-                 double evtWeight);
+                 double evtWeight,
+                 bool isControlRegion
+               );
 
   const TH1 *
   getHistogram_EventCounter() const;
@@ -76,12 +69,9 @@ class EvtHistManager_3l
 
   TH1 * histogram_mvaOutput_3l_ttV_;
   TH1 * histogram_mvaOutput_3l_ttbar_;
-  TH1 * histogram_mvaDiscr_3l_;
 
   std::map<std::string, TH1 *> histograms_by_category_;
-  std::map<std::string, TH1 *> histograms_by_category_TensorFlow_3l_sig_2_rest_2_th_2_withWZ_;
-  std::map<std::string, TH1 *> histograms_by_category_TensorFlow_3l_sig_2p5_rest_2_th_2p5_withWZ_;
-  std::map<std::string, TH1 *> histograms_by_category_TensorFlow_3l_sig_2_rest_2p5_th_2_withWZ_;
+  std::map<std::string, TH1 *> histograms_by_category_SVA_;
 
   TH1 * histogram_memOutput_isValid_;
   TH1 * histogram_memOutput_errorFlag_;
@@ -90,8 +80,6 @@ class EvtHistManager_3l
   TH1 * histogram_memOutput_LR_;
   TH1 * histogram_mem_logCPUTime_;
   TH1 * histogram_mem_logRealTime_;
-
-  TH1 * histogram_ctrl_;
 
   TH1 * histogram_EventCounter_;
 };

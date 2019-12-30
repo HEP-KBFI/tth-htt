@@ -850,7 +850,7 @@ int main(int argc, char* argv[])
   int selectedEntries = 0;
   double selectedEntries_weighted = 0.;
   std::map<std::string, int> selectedEntries_byGenMatchType;             // key = process_and_genMatch
-  std::map<std::string, double> selectedEntries_weighted_byGenMatchType; // key = process_and_genMatch
+  std::map<std::string, std::map<std::string, double>> selectedEntries_weighted_byGenMatchType; // key = central_or_shift, process_and_genMatch
   TH1* histogram_analyzedEntries = fs.make<TH1D>("analyzedEntries", "analyzedEntries", 1, -0.5, +0.5);
   TH1* histogram_selectedEntries = fs.make<TH1D>("selectedEntries", "selectedEntries", 1, -0.5, +0.5);
   cutFlowTableType cutFlowTable;
@@ -1661,11 +1661,11 @@ int main(int argc, char* argv[])
     const double dr_taus            = deltaR(selHadTau_lead->p4(), selHadTau_sublead->p4());
     const double ptmiss             = mht_p4.pt();
     const double lep_conePt         = selLepton->cone_pt();
-    const double mT_lep             = comp_MT_met_lep1(*selLepton, met.pt(), met.phi());
+    const double mT_lep             = comp_MT_met(selLepton, met.pt(), met.phi());
     const double mTauTauVis         = (selHadTau_lead->p4() + selHadTau_sublead->p4()).mass();
-    const double mindr_lep_jet      = std::min(10., comp_mindr_lep1_jet(*selLepton, selJets));
-    const double mindr_tau1_jet     = std::min(10., comp_mindr_hadTau1_jet(*selHadTau_lead, selJets));
-    const double mindr_tau2_jet     = std::min(10., comp_mindr_hadTau2_jet(*selHadTau_sublead, selJets));
+    const double mindr_lep_jet      = std::min(10., comp_mindr_jet(*selLepton, selJets));
+    const double mindr_tau1_jet     = std::min(10., comp_mindr_jet(*selHadTau_lead, selJets));
+    const double mindr_tau2_jet     = std::min(10., comp_mindr_jet(*selHadTau_sublead, selJets));
     const double dr_lep_tau_ss      = deltaR(selLepton->p4(), selHadTau_SS->p4());
     const double dr_lep_tau_lead    = deltaR(selLepton->p4(), selHadTau_lead->p4());
     const double dr_lep_tau_sublead = deltaR(selLepton->p4(), selHadTau_sublead->p4());
@@ -1702,7 +1702,7 @@ int main(int argc, char* argv[])
       { "met_LD",          met_LD       },
       { "res_HTT",         HTT             },
       { "HadTop_pt",       HadTop_pt       },
-      { "massL3",           comp_MT_met_lep1(selHadTau_lead->p4() + selHadTau_sublead->p4() + selLepton->p4(), met.pt(), met.phi())},
+      { "massL3",           comp_massL3(selHadTau_lead, selHadTau_sublead, selLepton, met.pt(), met.phi())},
       { "mbb_loose",        selBJets_loose.size()>1 ?  (selBJets_loose[0]->p4()+selBJets_loose[1]->p4()).mass() : 0.},
       { "avg_dr_jet",      avg_dr_jet      },
       { "max_Lep_eta",  std::max({selLepton->absEta(), selHadTau_lead->absEta(), selHadTau_sublead->absEta()})}
@@ -1918,7 +1918,7 @@ int main(int argc, char* argv[])
           //("tau_fake_prob_sublead",          (selHadTau_sublead->genHadTau() != 0) ? 1.0 : evtWeightRecorder.get_jetToTau_FR_sublead(central_or_shift_main))
 
           ("met_LD",    met_LD)
-          ("massL3",          comp_MT_met_lep1(selHadTau_lead->p4() + selHadTau_sublead->p4() + selLepton->p4(), met.pt(), met.phi()))
+          ("massL3",          comp_massL3(selHadTau_lead, selHadTau_sublead, selLepton, met.pt(), met.phi()))
           ("massL",           massL(fakeableLeptons))
           ("jet1_pt",   selJets.size() > 0 ? selJets[0]->pt() : -1000)
           ("jet1_eta",  selJets.size() > 0 ? selJets[0]->eta() : -1000)
@@ -2067,8 +2067,6 @@ int main(int argc, char* argv[])
       snm->read(HadTop_pt,                              FloatVariableType::HadTop_pt);
       // Hj_tagger not filled
 
-      snm->read(mvaOutput_legacy,                   FloatVariableType::mvaOutput_HTT_SUM_VT);
-
       // mvaOutput_2lss_ttV not filled
       // mvaOutput_2lss_tt not filled
       // mvaOutput_2lss_1tau_plainKin_tt not filled
@@ -2082,6 +2080,7 @@ int main(int argc, char* argv[])
       // mvaOutput_3l_ttbar not filled
       // mvaOutput_plainKin_SUM_M not filled
       // mvaOutput_plainKin_1B_M not filled
+      snm->read(mvaOutput_legacy,             FloatVariableType::mvaOutput_1l_2tau);
 
       snm->read(evtWeightRecorder.get_FR(central_or_shift_main),             FloatVariableType::FR_weight);
       snm->read(evtWeightRecorder.get_sf_triggerEff(central_or_shift_main),  FloatVariableType::triggerSF_weight);
@@ -2117,7 +2116,10 @@ int main(int argc, char* argv[])
     process_and_genMatch += "&";
     process_and_genMatch += selHadTau_genMatch.name_;
     ++selectedEntries_byGenMatchType[process_and_genMatch];
-    selectedEntries_weighted_byGenMatchType[process_and_genMatch] += evtWeightRecorder.get(central_or_shift_main);
+    for(const std::string & central_or_shift: central_or_shifts_local)
+    {
+      selectedEntries_weighted_byGenMatchType[central_or_shift][process_and_genMatch] += evtWeightRecorder.get(central_or_shift);
+    }
     histogram_selectedEntries->Fill(0.);
     if(isDEBUG)
     {
@@ -2154,7 +2156,7 @@ int main(int argc, char* argv[])
         process_and_genMatch += "&";
         process_and_genMatch += hadTauGenMatch_definition.name_;
         std::cout << " " << process_and_genMatch << " = " << selectedEntries_byGenMatchType[process_and_genMatch]
-		  << " (weighted = " << selectedEntries_weighted_byGenMatchType[process_and_genMatch] << ")" << std::endl;
+                  << " (weighted = " << selectedEntries_weighted_byGenMatchType[central_or_shift][process_and_genMatch] << ")\n";
       }
     }
   }

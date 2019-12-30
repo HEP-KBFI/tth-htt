@@ -125,9 +125,9 @@ HistogramManager::HistogramManager(const vstring & processesBackground,
                                    const std::string & processSignal,
                                    const vstring & categories,
                                    const edm::ParameterSet & cfg)
-  : currentDir_(nullptr),
-    isUpToDate_(false),
-    histogram_uncertainty_(nullptr)
+  : currentDir_(nullptr)
+  , isUpToDate_(false)
+  , histogram_uncertainty_(nullptr)
 {
   processes_ = processesBackground;
   if ( processSignal != "" ) processes_.push_back(processSignal);
@@ -336,11 +336,14 @@ HistogramManager::update()
       } // if sysShiftUp, sysShiftDown
     } // sysShift
 
-    delete histograms_postfit_[process];
+    if(histograms_postfit_.count(process) && histograms_postfit_.at(process) != histogram_postfit)
+    {
+      delete histograms_postfit_[process];
+    }
     histograms_postfit_[process] = histogram_postfit;
   } // process
 
-  delete histogram_uncertainty_;
+  //delete histogram_uncertainty_; // let it "leak" -- seems that some other parts in the code are owning the pointer as well
   const std::string histogramName_uncertainty = Form("%s_uncertainty", currentHistogramName_.data());
   histogram_uncertainty_ = static_cast<TH1 *>(histograms_prefit_.cbegin()->second->Clone(histogramName_uncertainty.data()));
   histogram_uncertainty_->Reset();

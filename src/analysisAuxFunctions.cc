@@ -591,6 +591,11 @@ get_key_hist(const EventInfo & eventInfo,
     int VH_pdgID = 0;
     int count_Vs = 0;
     std::string decayModeStrTest = eventInfo.getDecayModeString();
+    if(decayModeStrTest.empty())
+    {
+      std::cout << "Found rare decay mode: " << eventInfo.genHiggsDecayMode << '\n';
+      return "";
+    }
     if ( decayModeStrTest == "hzg" || decayModeStrTest == "hmm")
     {
       decayModeStrTest = "hzz";// for definitivess, that should be very rare
@@ -605,9 +610,11 @@ get_key_hist(const EventInfo & eventInfo,
     }
     if(count_Vs != 1)
     {
-        std::cout<< "More than one gen V in VH, or not one gen V in VH or a weird decay mode "
-        << count_Vs << " " << decayModeStrTest << "\n";
-      ; // this case is extremelly rare, we can affort
+        std::cout
+          << "Invalid number of generator level vector bosons found: "
+          << count_Vs << " for decay mode " << decayModeStrTest << '\n'
+        ; // rarely happens, can afford to ignore it
+        return "";
     }
     if(VH_pdgID == 23)
     {

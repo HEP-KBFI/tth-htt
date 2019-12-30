@@ -20,10 +20,35 @@ EvtHistManager_2lss::EvtHistManager_2lss(const edm::ParameterSet & cfg)
     "mvaOutput_2lss_ttV",
     "mvaOutput_2lss_ttbar",
     "mvaOutput_Hj_tagger",
+    "mvaDiscr_2lss"
   };
   const std::vector<std::string> sysOpts_all = {
-    "mvaDiscr_2lss",
     "EventCounter",
+    "output_NN_ttH_ee",
+    "output_NN_ttH_em",
+    "output_NN_ttH_mm",
+    "output_NN_ttW_ee",
+    "output_NN_ttW_em",
+    "output_NN_ttW_mm",
+    "output_NN_rest_ee",
+    "output_NN_rest_em",
+    "output_NN_rest_mm",
+    "output_NN_tH_ee",
+    "output_NN_tH_em",
+    "output_NN_tH_mm",
+    "mass_2L_ee_lj_pos",
+    "mass_2L_ee_lj_neg",
+    "mass_2L_ee_hj_pos",
+    "mass_2L_ee_hj_neg",
+    "mass_2L_em_lj_pos",
+    "mass_2L_em_lj_neg",
+    "mass_2L_em_hj_pos",
+    "mass_2L_em_hj_neg",
+    "mass_2L_mm_lj_pos",
+    "mass_2L_mm_lj_neg",
+    "mass_2L_mm_hj_pos",
+    "mass_2L_mm_hj_neg",
+    "mass_2L_cr"
   };
   for(const std::string & sysOpt: sysOpts_central)
   {
@@ -43,12 +68,37 @@ EvtHistManager_2lss::getHistogram_EventCounter() const
 
 void
 EvtHistManager_2lss::bookCategories(TFileDirectory & dir,
-                                    const std::vector<std::string> & categories)
+                                    const std::map<std::string, std::vector<double>> & categories,
+                                    const std::map<std::string, std::vector<double>> & categories_SVA
+                                  )
 {
-  for(const std::string & category: categories)
+  for(auto category: categories)
   {
-    histograms_by_category_[category] = book1D(dir, category, category, 100,  0., +1.);
-    central_or_shiftOptions_[category] = { "*" };
+    if ( category.second.size() > 0 )
+    {
+      int npoints = category.second.size();
+      Float_t binsx[npoints];
+      std::copy(category.second.begin(), category.second.end(), binsx);
+      histograms_by_category_[category.first] = book1D(dir, category.first, category.first, npoints - 1, binsx);
+    } else {
+      histograms_by_category_[category.first] = book1D(dir, category.first, category.first, 100,  0., +1.);
+    }
+    central_or_shiftOptions_[category.first] = { "*" };
+  }
+  ///////
+  for(auto category: categories_SVA)
+  {
+    if ( category.second.size() > 0 ) // the CR should have only one bin
+    {
+      int npoints = category.second.size();
+      Float_t binsx[npoints];
+      std::copy(category.second.begin(), category.second.end(), binsx);
+      histograms_by_category_SVA_[category.first] = book1D(dir, category.first, category.first, npoints - 1, binsx);
+    } else {
+      Float_t bins_mass_2L[10] = {10.,40.0,55.0,70.0,80.0,95.0,110.0,140.0,180.,800.0};
+      histograms_by_category_SVA_[category.first] = book1D(dir, category.first, category.first, 9,  bins_mass_2L);
+    }
+    central_or_shiftOptions_[category.first] = { "*" };
   }
 }
 
@@ -83,7 +133,9 @@ EvtHistManager_2lss::fillHistograms(int numElectrons,
                                     double mvaDiscr_2lss,
                                     double mvaOutput_Hj_tagger,
                                     double mvaOutput_category,
-                                    const std::string & category)
+                                    const std::string & category,
+                                    double mass_2L,
+                                    const std::string & category_SVA)
 {
   const double evtWeightErr = 0.;
 

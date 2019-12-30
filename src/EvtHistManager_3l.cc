@@ -4,7 +4,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // get_era(), kEra_*
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 
-EvtHistManager_3l::EvtHistManager_3l(const edm::ParameterSet & cfg)
+EvtHistManager_3l::EvtHistManager_3l(const edm::ParameterSet & cfg, bool isControlRegion)
   : HistManagerBase(cfg)
   , era_(get_era(cfg.getParameter<std::string>("era")))
 {
@@ -26,45 +26,33 @@ EvtHistManager_3l::EvtHistManager_3l(const edm::ParameterSet & cfg)
     "memOutput_LR",
     "mem_logCPUTime",
     "mem_logRealTime",
-    "output_NN_3l_ttH_tH_3cat_v8_ttH_bl",
-    "output_NN_3l_ttH_tH_3cat_v8_ttH_bt",
-    "output_NN_3l_ttH_tH_3cat_v8_tH_bl",
-    "output_NN_3l_ttH_tH_3cat_v8_tH_bt",
-    "output_NN_3l_ttH_tH_3cat_v8_rest_bl",
-    "output_NN_3l_ttH_tH_3cat_v8_rest_bt",
-    "output_NN_3l_ttH_tH_3cat_v8_cr",
-    "output_NN_sig_2p5_rest_2_th_2p5_withWZ_ttH_bl",
-    "output_NN_sig_2p5_rest_2_th_2p5_withWZ_ttH_bt",
-    "output_NN_sig_2p5_rest_2_th_2p5_withWZ_tH_bl",
-    "output_NN_sig_2p5_rest_2_th_2p5_withWZ_tH_bt",
-    "output_NN_sig_2p5_rest_2_th_2p5_withWZ_rest_eee_bl",
-    "output_NN_sig_2p5_rest_2_th_2p5_withWZ_rest_eee_bt",
-    "output_NN_sig_2p5_rest_2_th_2p5_withWZ_rest_eem_bl",
-    "output_NN_sig_2p5_rest_2_th_2p5_withWZ_rest_eem_bt",
-    "output_NN_sig_2p5_rest_2_th_2p5_withWZ_rest_emm_bl",
-    "output_NN_sig_2p5_rest_2_th_2p5_withWZ_rest_emm_bt",
-    "output_NN_sig_2p5_rest_2_th_2p5_withWZ_rest_mmm_bl",
-    "output_NN_sig_2p5_rest_2_th_2p5_withWZ_rest_mmm_bt",
-    "output_NN_sig_2p5_rest_2_th_2p5_withWZ_cr",
-    "output_NN_sig_2_rest_2p5_th_2_withWZ_ttH_bl",
-    "output_NN_sig_2_rest_2p5_th_2_withWZ_ttH_bt",
-    "output_NN_sig_2_rest_2p5_th_2_withWZ_tH_bl",
-    "output_NN_sig_2_rest_2p5_th_2_withWZ_tH_bt",
-    "output_NN_sig_2_rest_2p5_th_2_withWZ_rest_eee_bl",
-    "output_NN_sig_2_rest_2p5_th_2_withWZ_rest_eee_bt",
-    "output_NN_sig_2_rest_2p5_th_2_withWZ_rest_eem_bl",
-    "output_NN_sig_2_rest_2p5_th_2_withWZ_rest_eem_bt",
-    "output_NN_sig_2_rest_2p5_th_2_withWZ_rest_emm_bl",
-    "output_NN_sig_2_rest_2p5_th_2_withWZ_rest_emm_bt",
-    "output_NN_sig_2_rest_2p5_th_2_withWZ_rest_mmm_bl",
-    "output_NN_sig_2_rest_2p5_th_2_withWZ_rest_mmm_bt",
-    "output_NN_sig_2_rest_2p5_th_2_withWZ_cr",
-    "output_NN_sig_2_rest_2_th_2_withWZ_cr"
+    "output_NN_cr"
   };
-  const std::vector<std::string> sysOpts_all = {
-    "mvaDiscr_3l",
-    "EventCounter",
+  std::vector<std::string> sysOpts_all = {
+    "EventCounter"
   };
+  if ( isControlRegion )
+  {
+    sysOpts_all.push_back("control_eee");
+    sysOpts_all.push_back("control_eem");
+    sysOpts_all.push_back("control_emm");
+    sysOpts_all.push_back("control_mmm");
+  } else {
+    sysOpts_all.push_back("output_NN_ttH_bl");
+    sysOpts_all.push_back("output_NN_ttH_bt");
+    sysOpts_all.push_back("output_NN_tH_bl");
+    sysOpts_all.push_back("output_NN_tH_bt");
+    sysOpts_all.push_back("output_NN_rest_eee");
+    sysOpts_all.push_back("output_NN_rest_eem");
+    sysOpts_all.push_back("output_NN_rest_emm");
+    sysOpts_all.push_back("output_NN_rest_mmm");
+
+    sysOpts_all.push_back("mass_3L_lj_pos");
+    sysOpts_all.push_back("mass_3L_lj_neg");
+    sysOpts_all.push_back("mass_3L_hj_pos");
+    sysOpts_all.push_back("mass_3L_hj_neg");
+
+  }
   for(const std::string & sysOpt: sysOpts_central)
   {
     central_or_shiftOptions_[sysOpt] = { "central" };
@@ -83,15 +71,18 @@ EvtHistManager_3l::getHistogram_EventCounter() const
 
 void
 EvtHistManager_3l::bookCategories(TFileDirectory & dir,
-                                  const std::map<std::string, std::vector<double>> & categories,
-                                  const std::map<std::string, std::vector<double>> & categories_TensorFlow_3l_sig_2_rest_2_th_2_withWZ,
-                                  const std::map<std::string, std::vector<double>> & categories_TensorFlow_3l_sig_2p5_rest_2_th_2p5_withWZ,
-                                  const std::map<std::string, std::vector<double>> & categories_TensorFlow_3l_sig_2_rest_2p5_th_2_withWZ
+                                  const std::map<std::string, std::vector<double>> & categories_list_NN,
+                                  const std::map<std::string, std::vector<double>> & categories_list_SVA,
+                                  bool isControlRegion
                                 )
 {
-  for(auto category: categories)
+  for(auto category: categories_list_NN)
   {
-    if ( category.second.size() > 0 )
+    if ( isControlRegion )
+    {
+      histograms_by_category_[category.first] = book1D(dir, category.first, category.first, 12,  0.5, +12.5);
+    }
+    else if ( category.second.size() > 0 )
     {
       int npoints = category.second.size();
       Float_t binsx[npoints];
@@ -102,65 +93,13 @@ EvtHistManager_3l::bookCategories(TFileDirectory & dir,
     }
     central_or_shiftOptions_[category.first] = { "*" };
   }
-  ////////////////////////////////
-  for(auto category: categories_TensorFlow_3l_sig_2_rest_2_th_2_withWZ)
+  if ( !isControlRegion )
   {
-    if ( category.second.size() > 0 )
+    Float_t bins_mass_3L[6] = {20.,100.,140.,190.,250.,1000.};
+    for(auto category: categories_list_SVA)
     {
-      int npoints = category.second.size();
-      Float_t binsx[npoints];
-      std::copy(category.second.begin(), category.second.end(), binsx);
-      histograms_by_category_TensorFlow_3l_sig_2_rest_2_th_2_withWZ_[category.first] = book1D(dir, category.first, category.first, npoints - 1, binsx);
-    } else {
-      histograms_by_category_TensorFlow_3l_sig_2_rest_2_th_2_withWZ_[category.first] = book1D(dir, category.first, category.first, 100,  0., +1.);
-    }
-    central_or_shiftOptions_[category.first] = { "*" };
-  }
-  ////////////////////////////////
-  for(auto category: categories_TensorFlow_3l_sig_2p5_rest_2_th_2p5_withWZ)
-  {
-    if ( category.second.size() > 0 )
-    {
-      int npoints = category.second.size();
-      Float_t binsx[npoints];
-      std::copy(category.second.begin(), category.second.end(), binsx);
-      histograms_by_category_TensorFlow_3l_sig_2p5_rest_2_th_2p5_withWZ_[category.first] = book1D(dir, category.first, category.first, npoints - 1, binsx);
-    } else {
-      histograms_by_category_TensorFlow_3l_sig_2p5_rest_2_th_2p5_withWZ_[category.first] = book1D(dir, category.first, category.first, 100,  0., +1.);
-    }
-    central_or_shiftOptions_[category.first] = { "*" };
-  }
-  ////////////////////////////////
-  for(auto category: categories_TensorFlow_3l_sig_2_rest_2p5_th_2_withWZ)
-  {
-    if ( category.second.size() > 0 )
-    {
-      int npoints = category.second.size();
-      Float_t binsx[npoints];
-      std::copy(category.second.begin(), category.second.end(), binsx);
-      histograms_by_category_TensorFlow_3l_sig_2_rest_2p5_th_2_withWZ_[category.first] = book1D(dir, category.first, category.first, npoints - 1, binsx);
-    } else {
-      histograms_by_category_TensorFlow_3l_sig_2_rest_2p5_th_2_withWZ_[category.first] = book1D(dir, category.first, category.first, 100,  0., +1.);
-    }
-    central_or_shiftOptions_[category.first] = { "*" };
-  }
-  ////////////////////////////////
-}
-
-void
-EvtHistManager_3l::setCRcategories(TFileDirectory & dir,
-                                   const std::vector<std::string> & ctrl_categories)
-{
-  ctrl_cateories_ = ctrl_categories;
-  if(! ctrl_cateories_.empty())
-  {
-    histogram_ctrl_ = book1D(dir, "control", "control", ctrl_cateories_.size(), -0.5, ctrl_cateories_.size() - 0.5);
-    if(histogram_ctrl_)
-    {
-      for(std::size_t ctrl_idx = 0; ctrl_idx < ctrl_cateories_.size(); ++ctrl_idx)
-      {
-        histogram_ctrl_->GetXaxis()->SetBinLabel(ctrl_idx + 1, ctrl_cateories_.at(ctrl_idx).data());
-      }
+      histograms_by_category_SVA_[category.first] = book1D(dir, category.first, category.first, 5,  bins_mass_3L);
+      central_or_shiftOptions_[category.first] = { "*" };
     }
   }
 }
@@ -180,7 +119,6 @@ EvtHistManager_3l::bookHistograms(TFileDirectory & dir)
 
   histogram_mvaOutput_3l_ttV_   = book1D(dir, "mvaOutput_3l_ttV",   "mvaOutput_3l_ttV",   40, -1., +1.);
   histogram_mvaOutput_3l_ttbar_ = book1D(dir, "mvaOutput_3l_ttbar", "mvaOutput_3l_ttbar", 40, -1., +1.);
-  histogram_mvaDiscr_3l_        = book1D(dir, "mvaDiscr_3l",        "mvaDiscr_3l",         5,  0.5, 5.5);
 
   histogram_memOutput_isValid_           = book1D(dir, "memOutput_isValid",           "memOutput_isValid",             3,  -1.5, +1.5);
   histogram_memOutput_errorFlag_         = book1D(dir, "memOutput_errorFlag",         "memOutput_errorFlag",           2,  -0.5, +1.5);
@@ -200,16 +138,14 @@ EvtHistManager_3l::fillHistograms(int numElectrons,
                                   int numJets,
                                   int numBJets_loose,
                                   int numBJets_medium,
-                                  const std::string & ctrl_category,
                                   double mvaOutput_3l_ttV,
                                   double mvaOutput_3l_ttbar,
-                                  double mvaDiscr_3l,
-                                  double mvaOutput_category,   const std::string & category,
-                                  double mvaOutput_category_sig_2_rest_2_th_2_withWZ,   const std::string & category_sig_2_rest_2_th_2_withWZ,
-                                  double mvaOutput_category_sig_2p5_rest_2_th_2p5_withWZ,   const std::string & category_sig_2p5_rest_2_th_2p5_withWZ,
-                                  double mvaOutput_category_sig_2_rest_2p5_th_2_withWZ,   const std::string & category_sig_2_rest_2p5_th_2_withWZ,
-				  const MEMOutput_3l * memOutput_3l,
-                                  double evtWeight)
+                                  double mass_3L, const std::string & category_SVA,
+                                  double mvaOutput_category_NN,   const std::string & category_NN,
+				                          const MEMOutput_3l * memOutput_3l,
+                                  double evtWeight,
+                                  bool isControlRegion
+                                )
 {
   const double evtWeightErr = 0.;
 
@@ -225,42 +161,21 @@ EvtHistManager_3l::fillHistograms(int numElectrons,
 
   fillWithOverFlow(histogram_mvaOutput_3l_ttV_,   mvaOutput_3l_ttV,   evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaOutput_3l_ttbar_, mvaOutput_3l_ttbar, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaDiscr_3l_,        mvaDiscr_3l,        evtWeight, evtWeightErr);
 
-  if(! ctrl_cateories_.empty())
+  if(! histograms_by_category_.count(category_NN))
   {
-    const auto ctrl_it = std::find(ctrl_cateories_.cbegin(), ctrl_cateories_.cend(), ctrl_category);
-    if(ctrl_it == ctrl_cateories_.cend())
+    throw cmsException(this, __func__, __LINE__) << "Histogram of the name '" << category_NN << "' was never booked";
+  }
+  fillWithOverFlow(histograms_by_category_[category_NN], mvaOutput_category_NN, evtWeight, evtWeightErr);
+
+  if ( !isControlRegion )
+  {
+    if(! histograms_by_category_SVA_.count(category_SVA))
     {
-      throw cmsException(this, __func__, __LINE__) << "Unrecognizable category: " << ctrl_category;
+      throw cmsException(this, __func__, __LINE__) << "Histogram of the name '" << category_SVA << "' was never booked";
     }
-    const int ctrl_idx = std::distance(ctrl_cateories_.cbegin(), ctrl_it);
-    fillWithOverFlow(histogram_ctrl_, ctrl_idx, evtWeight, evtWeightErr);
+    fillWithOverFlow(histograms_by_category_SVA_[category_SVA], mass_3L, evtWeight, evtWeightErr);
   }
-
-  if(! histograms_by_category_.count(category))
-  {
-    throw cmsException(this, __func__, __LINE__) << "Histogram of the name '" << category << "' was never booked";
-  }
-  fillWithOverFlow(histograms_by_category_[category], mvaOutput_category, evtWeight, evtWeightErr);
-
-  if(! histograms_by_category_TensorFlow_3l_sig_2_rest_2_th_2_withWZ_.count(category_sig_2_rest_2_th_2_withWZ))
-  {
-    throw cmsException(this, __func__, __LINE__) << "Histogram of the name '" << category_sig_2_rest_2_th_2_withWZ << "' was never booked";
-  }
-  fillWithOverFlow(histograms_by_category_TensorFlow_3l_sig_2_rest_2_th_2_withWZ_[category_sig_2_rest_2_th_2_withWZ], mvaOutput_category_sig_2_rest_2_th_2_withWZ, evtWeight, evtWeightErr);
-
-  if(! histograms_by_category_TensorFlow_3l_sig_2p5_rest_2_th_2p5_withWZ_.count(category_sig_2p5_rest_2_th_2p5_withWZ))
-  {
-    throw cmsException(this, __func__, __LINE__) << "Histogram of the name '" << category_sig_2p5_rest_2_th_2p5_withWZ << "' was never booked";
-  }
-  fillWithOverFlow(histograms_by_category_TensorFlow_3l_sig_2p5_rest_2_th_2p5_withWZ_[category_sig_2p5_rest_2_th_2p5_withWZ], mvaOutput_category_sig_2p5_rest_2_th_2p5_withWZ, evtWeight, evtWeightErr);
-
-  if(! histograms_by_category_TensorFlow_3l_sig_2_rest_2p5_th_2_withWZ_.count(category_sig_2_rest_2p5_th_2_withWZ))
-  {
-    throw cmsException(this, __func__, __LINE__) << "Histogram of the name '" << category_sig_2_rest_2p5_th_2_withWZ << "' was never booked";
-  }
-  fillWithOverFlow(histograms_by_category_TensorFlow_3l_sig_2_rest_2p5_th_2_withWZ_[category_sig_2_rest_2p5_th_2_withWZ], mvaOutput_category_sig_2_rest_2p5_th_2_withWZ, evtWeight, evtWeightErr);
 
   if(memOutput_3l)
   {

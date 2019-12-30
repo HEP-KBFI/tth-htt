@@ -67,12 +67,20 @@ void Plotter_ttH::makePlot(double canvasSizeX, double canvasSizeY,
   TH1* histogramTTZ_density = 0;
   TH1* histogramTTH = 0;
   TH1* histogramTTH_density = 0;
+  TH1* histogramTH = 0;
+  TH1* histogramTH_density = 0;
+  TH1* histogramOtherH = 0;
+  TH1* histogramOtherH_density = 0;
   TH1* histogramTT = 0;
   TH1* histogramTT_density = 0;
   TH1* histogramWZ = 0;
   TH1* histogramWZ_density = 0;
-  TH1* histogramDiboson = 0;
-  TH1* histogramDiboson_density = 0;
+  TH1* histogramWW = 0;
+  TH1* histogramWW_density = 0;
+  TH1* histogramZZ = 0;
+  TH1* histogramZZ_density = 0;
+  TH1* histogramDY = 0;
+  TH1* histogramDY_density = 0;
   TH1* histogramEWK = 0;
   TH1* histogramEWK_density = 0;
   TH1* histogramRares = 0;
@@ -98,7 +106,19 @@ void Plotter_ttH::makePlot(double canvasSizeX, double canvasSizeY,
       std::string histogramNameBackground_density = Form("%s_NotDivided", histogramBackground->GetName());
       histogramBackground_density = (TH1*)histogramBackground->Clone(histogramNameBackground_density.data());
     }
-    if ( process.find("TTWW") != std::string::npos ) {
+    if ( process.find("TTWH") != std::string::npos ||
+         process.find("ggH") != std::string::npos  ||
+         process.find("qqH") != std::string::npos  ||
+         process.find("VH") != std::string::npos   ||
+         process.find("HH") != std::string::npos    ) {
+      if( histogramOtherH && histogramOtherH_density ) {
+        histogramOtherH->Add(histogramBackground);
+        histogramOtherH_density->Add(histogramBackground_density);
+      } else {
+        histogramOtherH = histogramBackground;
+        histogramOtherH_density = histogramBackground_density;
+      }
+    } else if ( process.find("TTWW") != std::string::npos ) {
       histogramTTWW = histogramBackground;
       histogramTTWW_density = histogramBackground_density;
     } else if ( process.find("TTW") != std::string::npos ) {
@@ -110,18 +130,33 @@ void Plotter_ttH::makePlot(double canvasSizeX, double canvasSizeY,
     } else if ( process.find("ttH") != std::string::npos ) {
       histogramTTH = histogramBackground;
       histogramTTH_density = histogramBackground_density;
+    } else if ( process.find("tHq") != std::string::npos ||
+                process.find("tHW") != std::string::npos  ) {
+      if( histogramTH && histogramTH_density ) {
+        histogramTH->Add(histogramBackground);
+        histogramTH_density->Add(histogramBackground_density);
+      } else {
+        histogramTH = histogramBackground;
+        histogramTH_density = histogramBackground_density;
+      }
     } else if ( process.find("TT") != std::string::npos ) {
       histogramTT = histogramBackground;
       histogramTT_density = histogramBackground_density;
     } else if ( process.find("EWK") != std::string::npos ) {
       histogramEWK = histogramBackground;
       histogramEWK_density = histogramBackground_density;
-    } else if ( process.find("Diboson") != std::string::npos ) { 
-      histogramDiboson = histogramBackground;
-      histogramDiboson_density = histogramBackground_density;
+    } else if ( process.find("DY") != std::string::npos ) {
+      histogramDY = histogramBackground;
+      histogramDY_density = histogramBackground_density;
     } else if ( process.find("WZ") != std::string::npos ) {
       histogramWZ = histogramBackground;
       histogramWZ_density = histogramBackground_density;
+    } else if ( process.find("WW") != std::string::npos ) {
+      histogramWW = histogramBackground;
+      histogramWW_density = histogramBackground_density;
+    } else if ( process.find("ZZ") != std::string::npos ) {
+      histogramZZ = histogramBackground;
+      histogramZZ_density = histogramBackground_density;
     } else if ( process.find("Rares") != std::string::npos ) {
       histogramRares = histogramBackground;
       histogramRares_density = histogramBackground_density;
@@ -271,9 +306,13 @@ void Plotter_ttH::makePlot(double canvasSizeX, double canvasSizeY,
   const int color_ttZ         = 822; // light green
   const int color_ttH         = 628; // red
   const int color_ttjets      =  16; // gray
-  const int color_EWK         = 610; // purple
-  const int color_Diboson     = 634; // dark red
-  const int color_WZ          = 634; // dark red
+  const int color_TH          = 600; // blue
+  const int color_OtherH      = 622; // pink
+  const int color_EWK         = 627; // grayish red
+  const int color_DY          = 395; // dark yellow
+  const int color_ZZ          = 634; // dark red
+  const int color_WZ          = 874; // purple
+  const int color_WW          = 436; // dark cyan
   const int color_Rares       = 851; // light blue
   const int color_Conversions = 800; // yellow/orange
   const int color_Fakes       =   1; // black
@@ -286,10 +325,14 @@ void Plotter_ttH::makePlot(double canvasSizeX, double canvasSizeY,
   //const std::string legendEntry_ttW     = "t#bar{t}W";
   const std::string legendEntry_ttZ         = "t#bar{t}Z";
   const std::string legendEntry_ttH         = "t#bar{t}H";
+  const std::string legendEntry_TH          = "tH";
+  const std::string legendEntry_OtherH      = "Other H";
   const std::string legendEntry_ttjets      = "t#bar{t}+jets";
   const std::string legendEntry_EWK         = "EWK";
-  const std::string legendEntry_Diboson     = "Diboson";
+  const std::string legendEntry_DY          = "DY";
+  const std::string legendEntry_ZZ          = "ZZ";
   const std::string legendEntry_WZ          = "WZ";
+  const std::string legendEntry_WW          = "WW";
   const std::string legendEntry_Rares       = "Rares";
   const std::string legendEntry_Conversions = "Conversions";
   const std::string legendEntry_Fakes       = "Fakes";
@@ -304,7 +347,7 @@ void Plotter_ttH::makePlot(double canvasSizeX, double canvasSizeY,
       color = color_ttH; 
       legendEntry = legendEntry_ttH;
     } else if ( !histogramTTZ_density ) { // "signal" is ttZ
-      color = color_ttZ; 
+      color = color_ttZ;
       legendEntry = legendEntry_ttZ;
     } else if ( !histogramTTW_density ) { // "signal" is ttW
       color = color_ttW; 
@@ -332,6 +375,16 @@ void Plotter_ttH::makePlot(double canvasSizeX, double canvasSizeY,
     histogramsForStack_density.push_back(histogramTTH_density);
     legend->AddEntry(histogramTTH_density, legendEntry_ttH.data(), "f");
   } 
+  if ( histogramTH_density ) {
+    histogramTH_density->SetFillColor(color_TH);
+    histogramsForStack_density.push_back(histogramTH_density);
+    legend->AddEntry(histogramTH_density, legendEntry_TH.data(), "f");
+  }
+  if ( histogramOtherH_density ) {
+    histogramOtherH_density->SetFillColor(color_OtherH);
+    histogramsForStack_density.push_back(histogramOtherH_density);
+    legend->AddEntry(histogramOtherH_density, legendEntry_OtherH.data(), "f");
+  }
   if ( histogramTT_density ) {
     histogramTT_density->SetFillColor(color_ttjets);
     histogramsForStack_density.push_back(histogramTT_density);
@@ -341,15 +394,26 @@ void Plotter_ttH::makePlot(double canvasSizeX, double canvasSizeY,
     histogramEWK_density->SetFillColor(color_EWK);
     histogramsForStack_density.push_back(histogramEWK_density);
     legend->AddEntry(histogramEWK_density, legendEntry_EWK.data(), "f");
-  } 
-  if ( histogramDiboson_density ) {
-    histogramDiboson_density->SetFillColor(color_Diboson);
-    histogramsForStack_density.push_back(histogramDiboson_density);
-    legend->AddEntry(histogramDiboson_density, legendEntry_Diboson.data(), "f");
-  } else if ( histogramWZ_density ) {
+  }
+  if ( histogramDY_density ) {
+    histogramDY_density->SetFillColor(color_DY);
+    histogramsForStack_density.push_back(histogramDY_density);
+    legend->AddEntry(histogramDY_density, legendEntry_DY.data(), "f");
+  }
+  if ( histogramZZ_density ) {
+    histogramZZ_density->SetFillColor(color_ZZ);
+    histogramsForStack_density.push_back(histogramZZ_density);
+    legend->AddEntry(histogramZZ_density, legendEntry_ZZ.data(), "f");
+  }
+  if ( histogramWZ_density ) {
     histogramWZ_density->SetFillColor(color_WZ);
     histogramsForStack_density.push_back(histogramWZ_density);
     legend->AddEntry(histogramWZ_density, legendEntry_WZ.data(), "f");
+  }
+  if ( histogramWW_density ) {
+    histogramWW_density->SetFillColor(color_WW);
+    histogramsForStack_density.push_back(histogramWW_density);
+    legend->AddEntry(histogramWW_density, legendEntry_WW.data(), "f");
   }
   if ( histogramRares_density ) {
     histogramRares_density->SetFillColor(color_Rares);
@@ -393,10 +457,14 @@ void Plotter_ttH::makePlot(double canvasSizeX, double canvasSizeY,
     if      ( histogramTTW_density         ) sumBinContents += histogramTTW_density->GetBinContent(iBin);
     if      ( histogramTTZ_density         ) sumBinContents += histogramTTZ_density->GetBinContent(iBin);
     if      ( histogramTTH_density         ) sumBinContents += histogramTTH_density->GetBinContent(iBin);
+    if      ( histogramTH_density          ) sumBinContents += histogramTH_density->GetBinContent(iBin);
+    if      ( histogramOtherH_density      ) sumBinContents += histogramOtherH_density->GetBinContent(iBin);
     if      ( histogramTT_density          ) sumBinContents += histogramTT_density->GetBinContent(iBin);
     if      ( histogramEWK_density         ) sumBinContents += histogramEWK_density->GetBinContent(iBin);
-    if      ( histogramDiboson_density     ) sumBinContents += histogramDiboson_density->GetBinContent(iBin);
-    else if ( histogramWZ_density          ) sumBinContents += histogramWZ_density->GetBinContent(iBin);
+    if      ( histogramDY_density          ) sumBinContents += histogramDY_density->GetBinContent(iBin);
+    if      ( histogramZZ_density          ) sumBinContents += histogramZZ_density->GetBinContent(iBin);
+    if      ( histogramWZ_density          ) sumBinContents += histogramWZ_density->GetBinContent(iBin);
+    if      ( histogramWW_density          ) sumBinContents += histogramWW_density->GetBinContent(iBin);
     if      ( histogramRares_density       ) sumBinContents += histogramRares_density->GetBinContent(iBin);
     if      ( histogramConversions_density ) sumBinContents += histogramConversions_density->GetBinContent(iBin);
     if      ( histogramFakes_density       ) sumBinContents += histogramFakes_density->GetBinContent(iBin);
@@ -491,10 +559,14 @@ void Plotter_ttH::makePlot(double canvasSizeX, double canvasSizeY,
     if      ( histogramTTW         ) histogramSum->Add(histogramTTW);
     if      ( histogramTTZ         ) histogramSum->Add(histogramTTZ);
     if      ( histogramTTH         ) histogramSum->Add(histogramTTH);
+    if      ( histogramTH          ) histogramSum->Add(histogramTH);
+    if      ( histogramOtherH      ) histogramSum->Add(histogramOtherH);
     if      ( histogramTT          ) histogramSum->Add(histogramTT);
     if      ( histogramEWK         ) histogramSum->Add(histogramEWK);
-    else if ( histogramDiboson     ) histogramSum->Add(histogramDiboson);
-    else if ( histogramWZ          ) histogramSum->Add(histogramWZ);
+    if      ( histogramDY          ) histogramSum->Add(histogramDY);
+    if      ( histogramZZ          ) histogramSum->Add(histogramZZ);
+    if      ( histogramWZ          ) histogramSum->Add(histogramWZ);
+    if      ( histogramWW          ) histogramSum->Add(histogramWW);
     if      ( histogramRares       ) histogramSum->Add(histogramRares);
     if      ( histogramConversions ) histogramSum->Add(histogramConversions);
     if      ( histogramFakes       ) histogramSum->Add(histogramFakes);
@@ -542,7 +614,7 @@ void Plotter_ttH::makePlot(double canvasSizeX, double canvasSizeY,
     yAxis_bottom->SetTickLength(0.04);  
     
     if ( histogramUncertainty ) {
-      histogramRatioUncertainty = (TH1*)histogramUncertainty->Clone("histogramRatioUncertainty");
+      histogramRatioUncertainty = (TH1*)histogramUncertainty_density->Clone("histogramRatioUncertainty");
       if ( !histogramRatioUncertainty->GetSumw2N() ) histogramRatioUncertainty->Sumw2();
       checkCompatibleBinning(histogramRatioUncertainty, histogramSum);
       histogramRatioUncertainty->Divide(histogramSum);
@@ -593,12 +665,20 @@ void Plotter_ttH::makePlot(double canvasSizeX, double canvasSizeY,
   delete histogramTTZ_density;
   delete histogramTTH;
   delete histogramTTH_density;
+  delete histogramTH;
+  delete histogramTH_density;
+  delete histogramOtherH;
+  delete histogramOtherH_density;
   delete histogramTT;
   delete histogramTT_density;
   delete histogramWZ;
   delete histogramWZ_density;
-  delete histogramDiboson;
-  delete histogramDiboson_density;
+  delete histogramWW;
+  delete histogramWW_density;
+  delete histogramZZ;
+  delete histogramZZ_density;
+  delete histogramDY;
+  delete histogramDY_density;
   delete histogramEWK;
   delete histogramEWK_density;
   delete histogramRares;
