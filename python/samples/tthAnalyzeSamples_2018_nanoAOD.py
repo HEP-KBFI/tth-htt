@@ -15701,7 +15701,7 @@ samples_2018["/THW_ctcvcp_5f_Hincl_13TeV_madgraph_pythia8/RunIIAutumn18MiniAOD-1
   ("nof_db_files",                    436),
   ("nof_events",                      {
   }),
-  ("nof_tree_events",                 14298988),
+  ("nof_tree_events",                 14198988),
   ("nof_db_events",                   14998988),
   ("fsize_local",                     43455258114), # 43.46GB, avg file size 289.70MB
   ("fsize_db",                        958252346048), # 958.25GB, avg file size 2.20GB
@@ -16069,7 +16069,7 @@ samples_2018["/GluGluHToBB_M125_13TeV_amcatnloFXFX_pythia8/RunIIAutumn18MiniAOD-
   ("nof_db_files",                    320),
   ("nof_events",                      {
   }),
-  ("nof_tree_events",                 15034579),
+  ("nof_tree_events",                 14934589),
   ("nof_db_events",                   15034579),
   ("fsize_local",                     20098589166), # 20.10GB, avg file size 133.10MB
   ("fsize_db",                        654781502160), # 654.78GB, avg file size 2.05GB
