@@ -243,32 +243,37 @@ def validate_channels(rles):
         if sample_name not in validation_set:
           validation_set[sample_name] = collections.OrderedDict()
         for central_or_shift in rles[channel][region][sample_name]:
+          if central_or_shift not in validation_set[sample_name]:
+            validation_set[sample_name][central_or_shift] = collections.OrderedDict()
           for rle in rles[channel][region][sample_name][central_or_shift]:
-            if rle not in validation_set[sample_name]:
-              validation_set[sample_name][rle] = collections.OrderedDict()
-            validation_set[sample_name][rle][channel] = { 'region' : region, 'central_or_shift' : central_or_shift }
+            if rle not in validation_set[sample_name][central_or_shift]:
+              validation_set[sample_name][central_or_shift][rle] = collections.OrderedDict()
+            validation_set[sample_name][central_or_shift][rle][channel] = region
   has_errors = False
   for sample_name in validation_set:
-    for rle in validation_set[sample_name]:
-      if len(validation_set[sample_name][rle]) > 1:
-        if len(validation_set[sample_name][rle]) and \
-           '2los_1tau' in validation_set[sample_name][rle] and validation_set[sample_name][rle]['2los_1tau']['region'] == 'Tight' and \
-           '2lss_1tau' in validation_set[sample_name][rle] and validation_set[sample_name][rle]['2lss_1tau']['region'] == 'Tight_OS_OS':
-          continue
-        logging.error(
-          "Found the same event {} from sample {} in multiple channels: {}".format(
-            rle,
-            sample_name,
-            ', '.join([
-              '%s (region %s, systematics %s)' % (
-                channel,
-                validation_set[sample_name][rle][channel]['region'],
-                validation_set[sample_name][rle][channel]['central_or_shift']
-              ) for channel in validation_set[sample_name][rle]
-            ])
+    for central_or_shift in validation_set[sample_name]:
+      for rle in validation_set[sample_name][central_or_shift]:
+        if len(validation_set[sample_name][central_or_shift][rle]) > 1:
+          if len(validation_set[sample_name][central_or_shift][rle])                               and \
+             '2los_1tau' in validation_set[sample_name][central_or_shift][rle]                     and \
+              validation_set[sample_name][central_or_shift][rle]['2los_1tau']['region'] == 'Tight' and \
+             '2lss_1tau' in validation_set[sample_name][central_or_shift][rle]                     and \
+              validation_set[sample_name][central_or_shift][rle]['2lss_1tau']['region'] == 'Tight_OS_OS':
+            continue
+          logging.error(
+            "Found the same event {} from sample {} in multiple channels: {}".format(
+              rle,
+              sample_name,
+              ', '.join([
+                '%s (region %s, systematics %s)' % (
+                  channel,
+                  validation_set[sample_name][central_or_shift][rle][channel],
+                  central_or_shift
+                ) for channel in validation_set[sample_name][central_or_shift][rle]
+              ])
+            )
           )
-        )
-        has_errors = True
+          has_errors = True
   if not has_errors:
     logging.info("No overlaps found between the signal regions of channels: {}".format(', '.join(rles.keys())))
   return has_errors
