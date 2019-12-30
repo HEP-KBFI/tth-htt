@@ -81,7 +81,8 @@ struct fitResultType
     , normErr_QCD_fakes_(-1.)  
     , norm_QCD_fakes_Conv_Corrected_(-1.)  
     , normErr_QCD_fakes_Conv_Corrected_(-1.)  
-
+    , norm_TTj_minus_TTg_(-1.)
+    , normErr_TTj_minus_TTg_(-1.)  
   {
     TString line_tstring(line.data());
     bool parseError = false;
@@ -136,7 +137,8 @@ struct fitResultType
   double normErr_QCD_fakes_;
   double norm_QCD_fakes_Conv_Corrected_;
   double normErr_QCD_fakes_Conv_Corrected_;
-
+  double norm_TTj_minus_TTg_;
+  double normErr_TTj_minus_TTg_;
 
   void SetConv_corr(double corr, double corr_err){
     double default_Conv_corr_e_ = Conv_corr_e_; // set to 1.                                                                                                                                                                            
@@ -281,6 +283,23 @@ void readConversionCorr(TFile* inputFile, std::map<std::string, fitResultType*>&
 }
 
 
+void ComputeHistBinIntegral(TH1* histogram, std::map<std::string, fitResultType*>::iterator fitResult){
+  double integral = 0.;
+  double integralErr2 = 0.;
+  int numBins = histogram->GetNbinsX();
+  for ( int idxBin = 0; idxBin <= (numBins + 1); ++idxBin ) { // CV: include underflow and overflow bins                                                                                                                                                             
+    double binContent = histogram->GetBinContent(idxBin);
+    double binError = histogram->GetBinError(idxBin);
+    integral += binContent;
+    integralErr2 += (binError*binError);
+  }
+  std::cout << " ComputeHistBinIntegral(): integral " << integral << " integralErr2 " << integralErr2 << std::endl;
+  double integralErr = TMath::Sqrt(integralErr2);
+  fitResult->second->norm_TTj_minus_TTg_ = integral;
+  fitResult->second->normErr_TTj_minus_TTg_ = integralErr;      
+}
+
+
 void FixHistBinIntegral(std::string& histogramName, TFile* inputFile, const std::string& ProcessName, const std::string& variable_den, double& integral, double& integralErr2)
 {
     //double integral_temp = 0.;
@@ -335,6 +354,38 @@ void readPrefit(TFile* inputFile_stage2, TFile* inputFile_stage1_5, std::map<std
     std::string histogramName_TT_fakes = histogramName;  // Copying path for TTbar fakes 
     std::string histogramName_QCD_fakes = histogramName; // Copying path for QCD fakes 
     std::string histogramName_QCD_fakes_Conv_Corrected = histogramName; // Copying path for QCD fakes (Conv Corr.)
+
+    std::string histogramName_TT_fakes_copy = histogramName;
+    std::string histogramName_TTg = histogramName;
+    histogramName_TT_fakes_copy.append("TTj");                                                                                                                                                                                                                       
+     
+    histogramName_TTg.append("TTg"); 
+    histogramName_TT_fakes_copy.append("/");
+    histogramName_TTg.append("/");   
+    histogramName_TT_fakes_copy.append(variable_den);
+    histogramName_TTg.append(variable_den); 
+    std::cout << "loading histogram_TT_fakes_copy = '" << histogramName_TT_fakes_copy << "'" << std::endl;
+    TH1* histogram_TT_fakes_copy = dynamic_cast<TH1*>(inputFile_stage1_5->Get(histogramName_TT_fakes_copy.data()));
+    if ( !histogram_TT_fakes_copy ) throw cms::Exception("fillHistogram")
+				 << "Failed to load histogram = '" << histogramName_TT_fakes_copy << "' from file = '" << inputFile_stage1_5->GetName() << "' !!\n";
+    TH1* histogram_TTg = dynamic_cast<TH1*>(inputFile_stage1_5->Get(histogramName_TTg.data()));
+    if ( !histogram_TTg ) throw cms::Exception("fillHistogram")
+				 << "Failed to load histogram = '" << histogramName_TTg << "' from file = '" << inputFile_stage1_5->GetName() << "' !!\n";
+    std::cout<< " histogram_TT_fakes_copy->GetEntries() " << histogram_TT_fakes_copy->GetEntries() << " histogram_TT_fakes_copy->Integral() " << histogram_TT_fakes_copy->Integral() << std::endl; 
+    std::cout<< " histogram_TTg->GetEntries() " << histogram_TTg->GetEntries() << " histogram_TTg->Integral() " << histogram_TTg->Integral() << std::endl; 
+
+    histogram_TT_fakes_copy->Add(histogram_TTg, -1.0); // TTj - TTg 
+
+    std::cout<< "After Subtraction: histogram_TT_fakes_copy->GetEntries() " << histogram_TT_fakes_copy->GetEntries() << " histogram_TT_fakes_copy->Integral() " << histogram_TT_fakes_copy->Integral() << std::endl; 
+
+    //double integral_TTj_minus_TTg = 0.;
+    //double integralErr2_TTj_minus_TTg = 0.;
+    ComputeHistBinIntegral(histogram_TT_fakes_copy, fitResult);
+    //std::cout<< " integral_TTj_minus_TTg " << integral_TTj_minus_TTg << " integralErr_TTj_minus_TTg " << integralErr_TTj_minus_TTg << std::endl;      
+    
+
+
+
 
     double integral_data_fakes_prefit = 0.;
     double integralErr2_data_fakes_prefit = 0.; 
@@ -398,8 +449,9 @@ TH2* bookHistogram(fwlite::TFileService& fs, const std::string& histogramName, c
 
 
 void fillHistogram(TH2* histogram, const std::map<std::string, fitResultType*>& fitResults_pass, const std::map<std::string, fitResultType*>& fitResults_fail, int prefit_or_postfit, 
-		   bool is_data_fakes = true, bool is_TT_fakes = false, bool is_QCD_fakes = false, bool use_Conv_Corrected_QCD = false)
+		   bool is_data_fakes = true, bool is_TT_fakes = false, bool is_QCD_fakes = false, bool use_Conv_Corrected_QCD = false, bool is_TTj_minus_TTg = false)
 {
+  
   const TAxis* xAxis = histogram->GetXaxis();
   const TAxis* yAxis = histogram->GetYaxis();
   for ( int idxBinX = 1; idxBinX <= xAxis->GetNbins(); ++idxBinX ) {
@@ -420,7 +472,7 @@ void fillHistogram(TH2* histogram, const std::map<std::string, fitResultType*>& 
 
       if ( fitResult_pass != fitResults_pass.end() && fitResult_fail != fitResults_fail.end() ) {
 	double nPass, nPassErr, nFail, nFailErr;
-	if(is_data_fakes && !is_TT_fakes && !is_QCD_fakes){ // For data driven fakes
+	if(is_data_fakes && !is_TT_fakes && !is_QCD_fakes && !is_TTj_minus_TTg){ // For data driven fakes
 	  if ( prefit_or_postfit == kPrefit ) {
 	    std::cout<< "Pre-fit data fakes" << std::endl;
 	    nPass = fitResult_pass->second->norm_data_fakes_prefit_;
@@ -435,13 +487,13 @@ void fillHistogram(TH2* histogram, const std::map<std::string, fitResultType*>& 
 	    nFail = fitResult_fail->second->norm_data_fakes_postfit_;
 	    nFailErr = fitResult_fail->second->normErr_data_fakes_postfit_;
 	  } else assert(0);
-	}else if(!is_data_fakes && is_TT_fakes && !is_QCD_fakes){ // For TTBar MC driven fakes
+	}else if(!is_data_fakes && is_TT_fakes && !is_QCD_fakes && !is_TTj_minus_TTg){ // For TTBar MC driven fakes
 	    std::cout<< "TTbar MC driven fakes" << std::endl;
 	    nPass = fitResult_pass->second->norm_TT_fakes_;
 	    nPassErr = fitResult_pass->second->normErr_TT_fakes_;
 	    nFail = fitResult_fail->second->norm_TT_fakes_;
 	    nFailErr = fitResult_fail->second->normErr_TT_fakes_;
-	}else if(!is_data_fakes && !is_TT_fakes && is_QCD_fakes){ // For QCD MC driven fakes
+	}else if(!is_data_fakes && !is_TT_fakes && is_QCD_fakes && !is_TTj_minus_TTg ){ // For QCD MC driven fakes
 	  if(use_Conv_Corrected_QCD){
 	    std::cout<< "QCD MC driven fakes (Corrected for Conversions)" << std::endl;
 	    nPass = fitResult_pass->second->norm_QCD_fakes_Conv_Corrected_;
@@ -455,6 +507,12 @@ void fillHistogram(TH2* histogram, const std::map<std::string, fitResultType*>& 
 	    nFail = fitResult_fail->second->norm_QCD_fakes_;
 	    nFailErr = fitResult_fail->second->normErr_QCD_fakes_;
 	  }
+	}else if(!is_data_fakes && !is_TT_fakes && !is_QCD_fakes && is_TTj_minus_TTg ){ // For TTj - TTg
+	    std::cout<< "(TTj - TTg) MC driven fakes " << std::endl;
+	    nPass = fitResult_pass->second->norm_TTj_minus_TTg_;
+	    nPassErr = fitResult_pass->second->normErr_TTj_minus_TTg_;
+	    nFail = fitResult_fail->second->norm_TTj_minus_TTg_;
+	    nFailErr = fitResult_fail->second->normErr_TTj_minus_TTg_;
 	}else assert(0);
 	double avFakeRate, avFakeRateErrUp, avFakeRateErrDown;
         bool errorFlag;
@@ -462,7 +520,7 @@ void fillHistogram(TH2* histogram, const std::map<std::string, fitResultType*>& 
         compFakeRate(nPass, nPassErr, nFail, nFailErr, avFakeRate, avFakeRateErrUp, avFakeRateErrDown, errorFlag);
 
 
-	if((fitResult_pass->second->lepton_type_ == fitResultType::kElectron) && is_data_fakes){ // Applying Conv corrections to electrons in case of data fakes only                                               
+	if((fitResult_pass->second->lepton_type_ == fitResultType::kElectron) && is_data_fakes){ // Applying Conv corrections to electrons in case of data fakes (numerator) only                                               
           avFakeRate *= fitResult_pass->second->Conv_corr_e_ ; // apply the correction                                                                                                                                                  
           double def_avFakeRateErrUp = avFakeRateErrUp;
           double def_avFakeRateErrDown = avFakeRateErrDown;
@@ -526,7 +584,7 @@ void fillGraph(TGraphAsymmErrors* graph, TH2* histogram, double absEta)
 }
 
 
-void makeControlPlot(TGraphAsymmErrors* graph_data, TGraphAsymmErrors* graph_mc_QCD_fakes,  TGraphAsymmErrors* graph_mc_QCD_fakes_Conv_Corr, TGraphAsymmErrors* graph_mc_TT_fakes,  const TArrayD& ptBins, double minAbsEta, double maxAbsEta, bool useLogScale, const std::string& outputFileName)
+void makeControlPlot(TGraphAsymmErrors* graph_data, TGraphAsymmErrors* graph_mc_QCD_fakes,  TGraphAsymmErrors* graph_mc_QCD_fakes_Conv_Corr, TGraphAsymmErrors* graph_mc_TT_fakes, TGraphAsymmErrors* graph_mc_TTj_minus_TTg_fakes, const TArrayD& ptBins, double minAbsEta, double maxAbsEta, bool useLogScale, const std::string& outputFileName)
 {
 
   TCanvas* canvas = new TCanvas("canvas", "canvas", 1200, 900);
@@ -614,6 +672,17 @@ void makeControlPlot(TGraphAsymmErrors* graph_data, TGraphAsymmErrors* graph_mc_
     graph_mc_QCD_fakes_Conv_Corr->Draw("psame");
   }
 
+  if ( graph_mc_TTj_minus_TTg_fakes ) {
+    graph_mc_TTj_minus_TTg_fakes->SetMarkerStyle(32);
+    graph_mc_TTj_minus_TTg_fakes->SetMarkerSize(2);
+    graph_mc_TTj_minus_TTg_fakes->SetMarkerColor(1);
+    graph_mc_TTj_minus_TTg_fakes->SetLineStyle(1);
+    graph_mc_TTj_minus_TTg_fakes->SetLineWidth(1);
+    graph_mc_TTj_minus_TTg_fakes->SetLineColor(1);
+    graph_mc_TTj_minus_TTg_fakes->Draw("psame");
+  }
+
+
 
   TLegend* legend = 0;
     legend = new TLegend(0.73, 0.76, 0.88, 0.91, NULL, "brNDC");
@@ -627,6 +696,7 @@ void makeControlPlot(TGraphAsymmErrors* graph_data, TGraphAsymmErrors* graph_mc_
     if ( graph_mc_QCD_fakes ) legend->AddEntry(graph_mc_QCD_fakes,   "Fakes (QCD)", "p");
     if ( graph_mc_QCD_fakes_Conv_Corr ) legend->AddEntry(graph_mc_QCD_fakes_Conv_Corr,   "Fakes (QCD #gamma Corr.)", "p");
     if ( graph_mc_TT_fakes ) legend->AddEntry(graph_mc_TT_fakes,   "Fakes (t#bar{t})", "p");
+    if ( graph_mc_TTj_minus_TTg_fakes ) legend->AddEntry(graph_mc_TTj_minus_TTg_fakes,   "Fakes (t#bar{t}_{j} - t#tbar{t}_{g})", "p");
     legend->Draw();
 
 
@@ -807,12 +877,16 @@ int main(int argc, char* argv[])
   TH2* histogram_e_data_fakes_prefit = bookHistogram(fs, Form("%s_prefit", histogramName_e.data()), ptBins_e_array, absEtaBins_e_array);
   fillHistogram(histogram_e_data_fakes_prefit, fitResults_e_pass, fitResults_e_fail, kPrefit);
   TH2* histogram_e_mc_TT_fakes = bookHistogram(fs, Form("%s_TT_fakes", histogramName_e.data()), ptBins_e_array, absEtaBins_e_array);
-  fillHistogram(histogram_e_mc_TT_fakes, fitResults_e_pass, fitResults_e_fail, kPrefit, false, true, false, false);
+  fillHistogram(histogram_e_mc_TT_fakes, fitResults_e_pass, fitResults_e_fail, kPrefit, false, true, false, false, false);
   TH2* histogram_e_mc_QCD_fakes = bookHistogram(fs, Form("%s_QCD_fakes", histogramName_e.data()), ptBins_e_array, absEtaBins_e_array);
-  fillHistogram(histogram_e_mc_QCD_fakes, fitResults_e_pass, fitResults_e_fail, kPrefit, false, false, true, false); // Using Uncorrected QCD MC  
+  fillHistogram(histogram_e_mc_QCD_fakes, fitResults_e_pass, fitResults_e_fail, kPrefit, false, false, true, false, false); // Using Uncorrected QCD MC  
   TH2* histogram_e_mc_QCD_fakes_Conv_Corrected = bookHistogram(fs, Form("%s_QCD_fakes_Conv_Corr", histogramName_e.data()), ptBins_e_array, absEtaBins_e_array);
-  fillHistogram(histogram_e_mc_QCD_fakes_Conv_Corrected, fitResults_e_pass, fitResults_e_fail, kPrefit, false, false, true, true); // Using Conv. Corrected QCD MC  
+  fillHistogram(histogram_e_mc_QCD_fakes_Conv_Corrected, fitResults_e_pass, fitResults_e_fail, kPrefit, false, false, true, true, false); // Using Conv. Corrected QCD MC  
   
+  TH2* histogram_e_mc_TTj_minus_TTg_fakes = bookHistogram(fs, Form("%s_TTj_minus_TTg_fakes", histogramName_e.data()), ptBins_e_array, absEtaBins_e_array);
+  fillHistogram(histogram_e_mc_TTj_minus_TTg_fakes, fitResults_e_pass, fitResults_e_fail, kPrefit, false, false, false, false, true);
+
+
 
   TAxis* yAxis_e = histogram_e_data_fakes_postfit->GetYaxis();
   for ( int idxBinY = 1; idxBinY <= yAxis_e->GetNbins(); ++idxBinY ) {
@@ -835,12 +909,17 @@ int main(int argc, char* argv[])
     TGraphAsymmErrors* graph_mc_QCD_fakes_Conv_Corr = bookGraph(fs, graphName_mc_QCD_fakes_Conv_Corr, ptBins_e_array);
     fillGraph(graph_mc_QCD_fakes_Conv_Corr, histogram_e_mc_QCD_fakes_Conv_Corrected, absEta);
     
+    std::string graphName_mc_TTj_minus_TTg_fakes = TString(Form("graph_e_absEta%1.2fto%1.2f_mc_TTj_minus_TTg_fakes", minAbsEta, maxAbsEta)).ReplaceAll(".", "_").Data();
+    TGraphAsymmErrors* graph_mc_TTj_minus_TTg_fakes = bookGraph(fs, graphName_mc_TTj_minus_TTg_fakes, ptBins_e_array);
+    fillGraph(graph_mc_TTj_minus_TTg_fakes, histogram_e_mc_TTj_minus_TTg_fakes, absEta);
+
+
     std::string outputFileName_plot = std::string(outputFileName, 0, outputFileName.find_last_of('.'));
     outputFileName_plot.append(Form("_e_%s.png", getEtaBin(minAbsEta, maxAbsEta).data()));
 
 
-    makeControlPlot(graph_data, graph_mc_QCD_fakes, graph_mc_QCD_fakes_Conv_Corr,  graph_mc_TT_fakes, ptBins_e_array, minAbsEta, maxAbsEta, true, outputFileName_plot);
-    makeControlPlot(graph_data, graph_mc_QCD_fakes, graph_mc_QCD_fakes_Conv_Corr,  graph_mc_TT_fakes, ptBins_e_array, minAbsEta, maxAbsEta, false, outputFileName_plot);
+    makeControlPlot(graph_data, graph_mc_QCD_fakes, graph_mc_QCD_fakes_Conv_Corr,  graph_mc_TT_fakes, graph_mc_TTj_minus_TTg_fakes, ptBins_e_array, minAbsEta, maxAbsEta, true, outputFileName_plot);
+    makeControlPlot(graph_data, graph_mc_QCD_fakes, graph_mc_QCD_fakes_Conv_Corr,  graph_mc_TT_fakes, graph_mc_TTj_minus_TTg_fakes, ptBins_e_array, minAbsEta, maxAbsEta, false, outputFileName_plot);
   }  
 
 
@@ -872,13 +951,15 @@ int main(int argc, char* argv[])
 
 
     TGraphAsymmErrors* graph_mc_QCD_fakes_Conv_Corr = 0;
+    TGraphAsymmErrors* graph_mc_TTj_minus_TTg_fakes = 0;
+
 
     std::string outputFileName_plot = std::string(outputFileName, 0, outputFileName.find_last_of('.'));
     outputFileName_plot.append(Form("_mu_%s.png", getEtaBin(minAbsEta, maxAbsEta).data()));
 
 
-    makeControlPlot(graph_data, graph_mc_QCD_fakes, graph_mc_QCD_fakes_Conv_Corr,  graph_mc_TT_fakes, ptBins_e_array, minAbsEta, maxAbsEta, true, outputFileName_plot);
-    makeControlPlot(graph_data, graph_mc_QCD_fakes, graph_mc_QCD_fakes_Conv_Corr,  graph_mc_TT_fakes, ptBins_e_array, minAbsEta, maxAbsEta, false, outputFileName_plot);
+    makeControlPlot(graph_data, graph_mc_QCD_fakes, graph_mc_QCD_fakes_Conv_Corr,  graph_mc_TT_fakes, graph_mc_TTj_minus_TTg_fakes, ptBins_mu_array, minAbsEta, maxAbsEta, true, outputFileName_plot);
+    makeControlPlot(graph_data, graph_mc_QCD_fakes, graph_mc_QCD_fakes_Conv_Corr,  graph_mc_TT_fakes, graph_mc_TTj_minus_TTg_fakes, ptBins_mu_array, minAbsEta, maxAbsEta, false, outputFileName_plot);
 
 
   }
