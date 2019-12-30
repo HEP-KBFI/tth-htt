@@ -18871,13 +18871,13 @@ samples_2018["/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18M
   ("type",                            "mc"),
   ("sample_category",                 "EWK"),
   ("process_name_specific",           "DYJetsToLL_M-50_amcatnloFXFX_ext2"),
-  ("nof_files",                       2886),
+  ("nof_files",                       2802),
   ("nof_db_files",                    2805),
   ("nof_events",                      {
   }),
-  ("nof_tree_events",                 193362165),
+  ("nof_tree_events",                 193157948),
   ("nof_db_events",                   193465480),
-  ("fsize_local",                     222360024330), # 222.36GB, avg file size 77.05MB
+  ("fsize_local",                     221894796522), # 221.89GB, avg file size 79.19MB
   ("fsize_db",                        7864644678843), # 7.86TB, avg file size 2.80GB
   ("use_it",                          True),
   ("xsection",                        6077.22),
