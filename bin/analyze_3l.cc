@@ -900,7 +900,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
   CutFlowTableHistManager * cutFlowHistManager = new CutFlowTableHistManager(cutFlowTableCfg, cuts);
   cutFlowHistManager->bookHistograms(fs);
 
-  bool isDebugTF = true;
+  bool isDebugTF = false;
   while(inputTree -> hasNextEvent() && (! run_lumi_eventSelector || (run_lumi_eventSelector && ! run_lumi_eventSelector -> areWeDone())))
   {
     if(inputTree -> canReport(reportEvery))
@@ -1991,7 +1991,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
       output_NN = mvaOutput_NN_TF["predictions_rest"];
       if (
         selLepton_lead_type == kElectron && selLepton_sublead_type == kElectron && selLepton_third_type == kElectron
-      ) category_NN += "_eee"; // to not break in FO region
+      ) category_NN += "_eee";
       else if (
         (selLepton_sublead_type == kElectron && selLepton_third_type == kElectron) ||
         (selLepton_lead_type == kElectron &&  selLepton_third_type == kElectron) ||
@@ -2000,7 +2000,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
       else if (
         selLepton_lead_type == kElectron || selLepton_sublead_type == kElectron || selLepton_third_type == kElectron
       ) category_NN += "_emm";
-      else if ( selElectrons.size() == 0) category_NN += "_mmm";
+      else category_NN += "_mmm";
       }
   } else {
     category_NN += "cr";
