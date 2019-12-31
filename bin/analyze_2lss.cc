@@ -1788,7 +1788,7 @@ int main(int argc, char* argv[])
 
     // resolved HTT
 
-    double max_mvaOutput_HTT_CSVsort4rd = 0.;
+    double max_mvaOutput_HTT_CSVsort4rd = -9.;
     bool max_truth_HTT_CSVsort4rd = false;
     double HadTop_pt_CSVsort4rd = 0.;
     //double HadTop_eta_CSVsort4rd = 0.;
@@ -1827,7 +1827,7 @@ int main(int argc, char* argv[])
 
     //std::map<std::string, double> mvaOutput_Hj_tagger;
     std::map<std::string, double> mvaInputs_Hj_tagger;
-    double mvaOutput_Hj_tagger = 0.;
+    double mvaOutput_Hj_tagger = -9.;
     for ( std::vector<const RecoJet*>::const_iterator selJet = selJets.begin();
 	  selJet != selJets.end(); ++selJet ) {
       if ((*selJet)->pt()==Wj1_pt_CSVsort4rd_1 || (*selJet)->pt()==Wj2_pt_CSVsort4rd_1 || (*selJet)->pt()==b_pt_CSVsort4rd_1) continue;
@@ -1872,8 +1872,8 @@ int main(int argc, char* argv[])
       {"Dilep_pdgId",     selElectrons.size() + 1},
       {"maxeta",          TMath::Max(selLepton_lead -> absEta(), selLepton_sublead -> absEta())},
       {"jetFwd1_eta",     selJetsForward.size() > 0 ? selJetsForward[0] -> absEta() : 0.},
-      {"jetFwd1_pt",      selJetsForward.size() > 0 ? selJetsForward[0] -> pt()     : 0.},
-      {"mbb",             selBJets_loose.size()>1 ?  (selBJets_loose[0]->p4()+selBJets_loose[1]->p4()).mass() : 0},
+      {"jetFwd1_pt",      selJetsForward.size() > 0 ? selJetsForward[0] -> pt()     : -9.},
+      {"mbb",             selBJets_loose.size()>1 ?  (selBJets_loose[0]->p4()+selBJets_loose[1]->p4()).mass() : -9},
       {"avg_dr_jet",      avg_dr_jet},
       {"metLD",           met_LD},
       {"hadTop_BDT",      max_mvaOutput_HTT_CSVsort4rd},
@@ -1882,15 +1882,15 @@ int main(int argc, char* argv[])
       {"jet1_pt",         selJets[0]->pt()},
       {"jet1_eta",        selJets[0]->absEta()},
       {"jet1_phi",        selJets[0]->phi()},
-      {"jet2_pt",         selJets.size() > 1 ?  selJets[1]->pt()  : 0.},
-      {"jet2_eta",        selJets.size() > 1 ?  selJets[1]->eta() : 0.},
-      {"jet2_phi",        selJets.size() > 1 ?  selJets[1]->phi() : 0.},
-      {"jet3_pt",         selJets.size() > 2 ?  selJets[2]->pt()  : 0.},
-      {"jet3_eta",        selJets.size() > 2 ?  selJets[2]->eta() : 0.},
-      {"jet3_phi",        selJets.size() > 2 ?  selJets[2]->phi() : 0.},
-      {"jet4_pt",         selJets.size() > 3 ?  selJets[3]->pt()  : 0.},
-      {"jet4_eta",        selJets.size() > 3 ?  selJets[3]->eta() : 0.},
-      {"jet4_phi",        selJets.size() > 3 ?  selJets[3]->phi() : 0.},
+      {"jet2_pt",         selJets.size() > 1 ?  selJets[1]->pt()  : -9.},
+      {"jet2_eta",        selJets.size() > 1 ?  selJets[1]->eta() : -9.},
+      {"jet2_phi",        selJets.size() > 1 ?  selJets[1]->phi() : -9.},
+      {"jet3_pt",         selJets.size() > 2 ?  selJets[2]->pt()  : -9.},
+      {"jet3_eta",        selJets.size() > 2 ?  selJets[2]->eta() : -9.},
+      {"jet3_phi",        selJets.size() > 2 ?  selJets[2]->phi() : -9.},
+      {"jet4_pt",         selJets.size() > 3 ?  selJets[3]->pt()  : -9.},
+      {"jet4_eta",        selJets.size() > 3 ?  selJets[3]->eta() : -9.},
+      {"jet4_phi",        selJets.size() > 3 ?  selJets[3]->phi() : -9.},
       {"nBJetLoose",      selBJets_loose.size()},
       {"nBJetMedium",     selBJets_medium.size()},
       {"Hj_tagger_hadTop", mvaOutput_Hj_tagger}
