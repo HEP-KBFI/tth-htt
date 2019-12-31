@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2019-12-08 20:08:59 with the following command:
+# file generated at 2019-12-31 02:27:29 with the following command:
 # create_dictionary.py -m python/samples/metaDict_2018.py -p python/samples/sampleLocations_2018.txt -N samples_2018 -E 2018 -o python/samples -g tthAnalyzeSamples_2018_base.py -M
 
 samples_2018 = OD()
@@ -17880,16 +17880,16 @@ samples_2018["/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18M
   ("type",                            "mc"),
   ("sample_category",                 "EWK"),
   ("process_name_specific",           "DYJetsToLL_M-50_amcatnloFXFX_ext2"),
-  ("nof_files",                       577),
+  ("nof_files",                       561),
   ("nof_db_files",                    2805),
   ("nof_events",                      {
-    'Count'                                                      : [    193362165, ],
-    'CountWeighted'                                              : [    131034569,    131039487,    131054716, ],
-    'CountWeightedLHEWeightScale'                                : [    129388092,    133504883,    135806630,    125799700,    131030261,    134364690,    122623799,    128711344,    132868785, ],
+    'Count'                                                      : [    193157948, ],
+    'CountWeighted'                                              : [    130895990,    130902134,    130916770, ],
+    'CountWeightedLHEWeightScale'                                : [    129251523,    133363933,    135663300,    125666889,    130893319,    134222829,    122494320,    128575365,    132728478, ],
   }),
-  ("nof_tree_events",                 193362165),
+  ("nof_tree_events",                 193157948),
   ("nof_db_events",                   193465480),
-  ("fsize_local",                     369084442050), # 369.08GB, avg file size 639.66MB
+  ("fsize_local",                     379754015110), # 379.75GB, avg file size 676.92MB
   ("fsize_db",                        7864644678843), # 7.86TB, avg file size 2.80GB
   ("use_it",                          True),
   ("xsection",                        6077.22),
@@ -17901,7 +17901,7 @@ samples_2018["/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18M
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2019Dec06_mc_woPresel_nom_all/ntuples/DYJetsToLL_M-50_amcatnloFXFX_ext2"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2019Dec30_woPresel_nom_all/ntuples/DYJetsToLL_M-50_amcatnloFXFX_ext2"),
         ("selection", "*"),
         ("blacklist", []),
       ]),

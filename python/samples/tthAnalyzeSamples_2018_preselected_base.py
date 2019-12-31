@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2019-12-18 03:16:46 with the following command:
+# file generated at 2019-12-31 04:24:57 with the following command:
 # create_dictionary.py -m python/samples/metaDict_2018.py -p python/samples/sampleLocations_2018_preselected.txt -N samples_2018 -E 2018 -o python/samples -g tthAnalyzeSamples_2018_preselected_base.py -M
 
 samples_2018 = OD()
@@ -17591,13 +17591,13 @@ samples_2018["/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18M
   ("nof_files",                       29),
   ("nof_db_files",                    2805),
   ("nof_events",                      {
-    'Count'                                                      : [    193362165, ],
-    'CountWeighted'                                              : [    131034570,    131039489,    131054717, ],
-    'CountWeightedLHEWeightScale'                                : [    129388094,    133504884,    135806630,    125799697,    131030259,    134364689,    122623800,    128711344,    132868785, ],
+    'Count'                                                      : [    193157948, ],
+    'CountWeighted'                                              : [    130895989,    130902133,    130916773, ],
+    'CountWeightedLHEWeightScale'                                : [    129251522,    133363934,    135663301,    125666888,    130893321,    134222828,    122494319,    128575363,    132728476, ],
   }),
-  ("nof_tree_events",                 45651696),
+  ("nof_tree_events",                 45603579),
   ("nof_db_events",                   193465480),
-  ("fsize_local",                     102886607154), # 102.89GB, avg file size 3.55GB
+  ("fsize_local",                     105713298271), # 105.71GB, avg file size 3.65GB
   ("fsize_db",                        7864644678843), # 7.86TB, avg file size 2.80GB
   ("use_it",                          True),
   ("xsection",                        6077.22),
@@ -17609,7 +17609,7 @@ samples_2018["/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18M
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2019Dec08_wPresel_nom_all/ntuples/DYJetsToLL_M-50_amcatnloFXFX_ext2"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2019Dec30_wPresel_nom_all/ntuples/DYJetsToLL_M-50_amcatnloFXFX_ext2"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
