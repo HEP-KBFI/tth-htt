@@ -801,6 +801,8 @@ class analyzeConfig(object):
             "{}.{:<{len}} = EvtYieldHistManager_{}".format  (process_string, 'cfgEvtYieldHistManager', self.era, len = max_option_len),
             "{}.{:<{len}} = recommendedMEtFilters_{}".format(process_string, 'cfgMEtFilter',           self.era, len = max_option_len),
           ])
+        if not is_mc:
+          lines.append("{}.{:<{len}} = trigger_runs_{}".format(process_string, 'triggerWhiteList', self.era, len = max_option_len))
         for jobOptions_key in jobOptions_keys:
             if jobOptions_key not in jobOptions:
               continue
@@ -854,7 +856,7 @@ class analyzeConfig(object):
             if isLeptonFR:
                 available_triggers = list(self.triggerTable.triggers_leptonFR[trigger] - blacklist)
             else:
-                available_triggers = list(self.triggerTable.triggers_analysis[trigger] - blacklist)
+                available_triggers = list(set(trigger_stat['name'] for trigger_stat in self.triggerTable.triggers_analysis[trigger]) - blacklist)
             use_trigger = bool(trigger in sample_info['triggers'])
             lines.extend([
                 "{:<{len}} = cms.vstring({})".format(trigger_string,     available_triggers, len = max_option_len + len(process_string) + 1),

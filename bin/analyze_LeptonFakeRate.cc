@@ -144,6 +144,12 @@ main(int argc,
   const bool use_triggers_1mu = cfg_analyze.getParameter<bool>("use_triggers_1mu");
   const bool use_triggers_2mu = cfg_analyze.getParameter<bool>("use_triggers_2mu");
 
+  edm::ParameterSet triggerWhiteList;
+  if(! isMC)
+  {
+    triggerWhiteList = cfg_analyze.getParameter<edm::ParameterSet>("triggerWhiteList");
+  }
+
   const edm::VParameterSet cfg_triggers_e = cfg_analyze.getParameter<edm::VParameterSet>("triggers_e_cfg");
   std::vector<hltPath_LeptonFakeRate *> triggers_e;
   if(use_triggers_1e || use_triggers_2e)
