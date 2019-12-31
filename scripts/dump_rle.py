@@ -77,6 +77,8 @@ if __name__ == '__main__':
                       help = 'R|Name of the lumi branch')
   parser.add_argument('-e', '--event', metavar = 'name', required = False, type = str, default = 'event',
                       help = 'R|Name of the event branch')
+  parser.add_argument('-S', '--suffix', metavar = 'suffix', required = False, type = str, default = '',
+                      help = 'R|Suffix of the loaded sample')
   parser.add_argument('-f', '--force', dest = 'force', action = 'store_true', default = False,
                       help = 'R|Force the creation of output directory if missing')
   parser.add_argument('-p', '--post-processed', dest = 'post_processed', action = 'store_true', default = False,

@@ -121,6 +121,7 @@ if __name__ == '__main__':
     num_parallel_jobs                = num_parallel_jobs,
     executable_comp_jetToTauFakeRate = "comp_jetToTauFakeRate",
     hlt_filter                       = hlt_filter,
+    select_rle_output                = True,
     dry_run                          = dry_run,
     isDebug                          = debug,
     use_home                         = use_home,

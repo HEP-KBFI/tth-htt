@@ -1239,6 +1239,8 @@ class analyzeConfig(object):
         lines.append("  )")
         lines.append(")")
         lines.append("process.makePlots.intLumiData = cms.double(%.1f)" % (self.lumi / 1000))
+        if 'extra_params' in jobOptions:
+          lines.append(jobOptions['extra_params'])
         self.createCfg_makePlots_addShapes(lines)
         if hasattr(self, 'isControlRegion'):
           lines.append("extend({})".format(self.isControlRegion))
@@ -1582,6 +1584,8 @@ class analyzeConfig(object):
         lines_makefile.append("")
         if make_target_validate not in self.phoniesToAdd:
             self.phoniesToAdd.append(make_target_validate)
+        if make_target_validate not in self.targets:
+            self.targets.append(make_target_validate)
 
     def addToMakefile_outRoot(self, lines_makefile):
         """Adds the commands to Makefile that are necessary for building the final condensed *.root output file

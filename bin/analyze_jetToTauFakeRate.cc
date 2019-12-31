@@ -427,6 +427,8 @@ int main(int argc, char* argv[])
   bool redoGenMatching = cfg_analyze.getParameter<bool>("redoGenMatching");
   bool genMatchingByIndex = cfg_analyze.getParameter<bool>("genMatchingByIndex");
 
+  std::string selEventsFileName_output = cfg_analyze.getParameter<std::string>("selEventsFileName_output");
+
   fwlite::InputSource inputFiles(cfg);
   int maxEvents = inputFiles.maxEvents();
   std::cout << " maxEvents = " << maxEvents << std::endl;
@@ -568,6 +570,9 @@ int main(int argc, char* argv[])
     lheInfoReader = new LHEInfoReader(hasLHE);
     inputTree->registerReader(lheInfoReader);
   }
+
+//--- open output file containing run:lumi:event numbers of events passing final event selection criteria
+  std::ostream* selEventsFile = new std::ofstream(selEventsFileName_output.data(), std::ios::out);
 
   ElectronHistManager selElectronHistManager(makeHistManager_cfg(process_string, 
     Form("jetToTauFakeRate_%s/electrons", chargeSelection_string.data()), era_string, central_or_shift, "minimalHistograms"));
@@ -1206,6 +1211,8 @@ int main(int argc, char* argv[])
       }
     }
 
+    (*selEventsFile) << eventInfo.str() << '\n';
+
     ++selectedEntries;
     selectedEntries_weighted += evtWeight;
     histogram_selectedEntries->Fill(0.);
@@ -1232,6 +1239,8 @@ int main(int argc, char* argv[])
 
 //--- memory clean-up
   delete dataToMCcorrectionInterface;
+
+  delete selEventsFile;
 
   delete muonReader;
   delete electronReader;
