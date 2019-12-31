@@ -168,7 +168,10 @@ if __name__ == '__main__':
       "output_NN_rest_eem" : {},
       "output_NN_rest_emm" : {},
       "output_NN_rest_mmm" : {},
-      "mass_3L"  : {}
+      "mass_3L_lj_pos" : {},
+      "mass_3L_lj_neg" : {},
+      "mass_3L_hj_pos" : {},
+      "mass_3L_hj_neg" : {},
       }
   original_histos.update(sig_extraction_histos)
   analysis = analyzeConfig_3l(
