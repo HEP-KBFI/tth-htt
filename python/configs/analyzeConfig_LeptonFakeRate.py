@@ -292,10 +292,9 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
       inputFiles: input file (the ROOT file produced by hadd_stage1)
       outputFile: output file of the job
     """
-    outputFile = os.path.basename(jobOptions['outputFile']) if self.is_sbatch else jobOptions['outputFile']
     lines = []
     lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % jobOptions['inputFile'])
-    lines.append("process.fwliteOutput.fileName = cms.string('%s')" % outputFile)
+    lines.append("process.fwliteOutput.fileName = cms.string('%s')" % jobOptions['outputFile'])
     lines.append("process.comp_LeptonFakeRate.histogramName_e = cms.string('FR_mva%s_el_data_comb')" % convert_lep_wp(self.lep_mva_cut_e))
     lines.append("process.comp_LeptonFakeRate.absEtaBins_e = cms.vdouble(%s)" % jobOptions['absEtaBins_e'])
     lines.append("process.comp_LeptonFakeRate.ptBins_e = cms.vdouble(%s)" % jobOptions['ptBins_e'])
@@ -363,19 +362,10 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     self.filesToClean.append(jobOptions['outputFile'])
 
   def addToMakefile_comp_LeptonFakeRate(self, lines_makefile):
-    if self.is_sbatch:
-      lines_makefile.append("sbatch_comp_LeptonFakeRate: %s" % " ".join([ " ".join(jobOptions['inputFile']) for jobOptions in self.jobOptions_comp_LeptonFakeRate.values() ]))
-      lines_makefile.append("\t%s %s" % ("python", self.sbatchFile_comp_LeptonFakeRate))
-      lines_makefile.append("")
     for jobOptions in self.jobOptions_comp_LeptonFakeRate.values():
-      if self.is_makefile:
-        lines_makefile.append("%s: %s" % (jobOptions['outputFile'], " ".join(jobOptions['inputFile'])))
-        lines_makefile.append("\t%s %s" % (self.executable_comp_LeptonFakeRate, jobOptions['cfgFile_modified']))
-        lines_makefile.append("")
-      elif self.is_sbatch:
-        lines_makefile.append("%s: %s" % (jobOptions['outputFile'], "sbatch_comp_LeptonFakeRate"))
-        lines_makefile.append("\t%s" % ":") # CV: null command
-        lines_makefile.append("")
+      lines_makefile.append("%s: %s" % (jobOptions['outputFile'], " ".join(jobOptions['inputFile'])))
+      lines_makefile.append("\t%s %s" % (self.executable_comp_LeptonFakeRate, jobOptions['cfgFile_modified']))
+      lines_makefile.append("")
       self.filesToClean.append(jobOptions['outputFile'])
 
   def create(self):
