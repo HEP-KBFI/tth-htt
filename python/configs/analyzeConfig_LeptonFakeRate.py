@@ -292,9 +292,10 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
       inputFiles: input file (the ROOT file produced by hadd_stage1)
       outputFile: output file of the job
     """
+    outputFile = os.path.basename(jobOptions['outputFile']) if self.is_sbatch else jobOptions['outputFile']
     lines = []
     lines.append("process.fwliteInput.fileNames = cms.vstring(%s)" % jobOptions['inputFile'])
-    lines.append("process.fwliteOutput.fileName = cms.string('%s')" % jobOptions['outputFile'])
+    lines.append("process.fwliteOutput.fileName = cms.string('%s')" % outputFile)
     lines.append("process.comp_LeptonFakeRate.histogramName_e = cms.string('FR_mva%s_el_data_comb')" % convert_lep_wp(self.lep_mva_cut_e))
     lines.append("process.comp_LeptonFakeRate.absEtaBins_e = cms.vdouble(%s)" % jobOptions['absEtaBins_e'])
     lines.append("process.comp_LeptonFakeRate.ptBins_e = cms.vdouble(%s)" % jobOptions['ptBins_e'])
