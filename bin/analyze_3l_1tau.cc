@@ -1633,8 +1633,8 @@ int main(int argc, char* argv[])
 //    in 3l category of ttH multilepton analysis
     const int nJet        = selJets.size();
 
-    const double mTauTauVis1_sel      = selLepton1_OS ? (selLepton1_OS->p4() + selHadTau->p4()).mass() : -1.;
-    const double mTauTauVis2_sel      = selLepton2_OS ? (selLepton2_OS->p4() + selHadTau->p4()).mass() : -1.;
+    const double mTauTauVis1_sel      = selLepton1_OS ? (selLepton1_OS->cone_p4() + selHadTau->p4()).mass() : -1.;
+    const double mTauTauVis2_sel      = selLepton2_OS ? (selLepton2_OS->cone_p4() + selHadTau->p4()).mass() : -1.;
     const double lep1_conePt          = comp_lep_conePt(*selLepton_lead);
     const double lep2_conePt          = comp_lep_conePt(*selLepton_sublead);
     const double lep3_conePt          = comp_lep_conePt(*selLepton_third);

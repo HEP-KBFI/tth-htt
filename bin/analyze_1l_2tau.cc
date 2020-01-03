@@ -2010,7 +2010,7 @@ int main(int argc, char* argv[])
       const double max_dr_lep_tau  = std::max(dr_lep_tau_lead, dr_lep_tau_sublead);
       const double min_dr_tau_jet  = std::min(mindr_tau1_jet, mindr_tau2_jet);
       const double min_dr_lep_tau  = std::min(dr_lep_tau_lead, dr_lep_tau_sublead);
-      const double mTauTauVis1_sel = (selHadTau_lead->p4() + selLepton->p4()).mass();
+      const double mTauTauVis1_sel = (selHadTau_lead->p4() + selLepton->cone_p4()).mass();
       const int nLightJet          = selJets.size() - selBJets_loose.size() + selJetsForward.size();
 
       snm->read(eventInfo);

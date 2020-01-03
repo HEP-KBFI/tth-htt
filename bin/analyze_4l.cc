@@ -1483,7 +1483,7 @@ int main(int argc, char* argv[])
           std::cout << std::endl;
           std::cout << std::endl;
         }
-        const double mass_4L           = (selLepton_lead->p4() + selLepton_sublead->p4() + selLepton_third->p4()  + selLepton_fourth->p4()).mass();
+        const double mass_4L           = (selLepton_lead->cone_p4() + selLepton_sublead->cone_p4() + selLepton_third->cone_p4()  + selLepton_fourth->cone_p4()).mass();
 
 //--- retrieve gen-matching flags
     std::vector<const GenMatchEntry*> genMatches = genMatchInterface.getGenMatch(selLeptons);
