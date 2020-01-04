@@ -690,13 +690,13 @@ void makeControlPlot(TGraphAsymmErrors* graph_data, TGraphAsymmErrors* graph_mc_
     legend->SetBorderSize(0);
     legend->SetFillColor(10);
     legend->SetTextFont(42);
-    legend->SetTextSize(0.050);
+    legend->SetTextSize(0.040);
     legend->SetMargin(0.24);
     if ( graph_data ) legend->AddEntry(graph_data, "Data",       "p");
     if ( graph_mc_QCD_fakes ) legend->AddEntry(graph_mc_QCD_fakes,   "Fakes (QCD)", "p");
-    if ( graph_mc_QCD_fakes_Conv_Corr ) legend->AddEntry(graph_mc_QCD_fakes_Conv_Corr,   "Fakes (QCD #gamma Corr.)", "p");
+    if ( graph_mc_QCD_fakes_Conv_Corr ) legend->AddEntry(graph_mc_QCD_fakes_Conv_Corr,   "Fakes (QCD#gamma)", "p");
     if ( graph_mc_TT_fakes ) legend->AddEntry(graph_mc_TT_fakes,   "Fakes (t#bar{t})", "p");
-    if ( graph_mc_TTj_minus_TTg_fakes ) legend->AddEntry(graph_mc_TTj_minus_TTg_fakes,   "Fakes (t#bar{t}_{j} - t#tbar{t}_{g})", "p");
+    if ( graph_mc_TTj_minus_TTg_fakes ) legend->AddEntry(graph_mc_TTj_minus_TTg_fakes,   "Fakes (t#bar{t}_{j} - t#bar{t}_{#gamma})", "p");
     legend->Draw();
 
 
