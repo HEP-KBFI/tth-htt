@@ -365,7 +365,7 @@ void readPrefit(TFile* inputFile_stage2, TFile* inputFile_stage1_5, std::map<std
     histogramName_TT_fakes_copy.append(variable_den);
     histogramName_TTg.append(variable_den); 
     std::cout << "loading histogram_TT_fakes_copy = '" << histogramName_TT_fakes_copy << "'" << std::endl;
-    TH1* histogram_TT_fakes_copy = dynamic_cast<TH1*>(inputFile_stage1_5->Get(histogramName_TT_fakes_copy.data()));
+    TH1* histogram_TT_fakes_copy = dynamic_cast<TH1*>(inputFile_stage1_5->Get(histogramName_TT_fakes_copy.data())->Clone());
     if ( !histogram_TT_fakes_copy ) throw cms::Exception("fillHistogram")
 				 << "Failed to load histogram = '" << histogramName_TT_fakes_copy << "' from file = '" << inputFile_stage1_5->GetName() << "' !!\n";
     TH1* histogram_TTg = dynamic_cast<TH1*>(inputFile_stage1_5->Get(histogramName_TTg.data()));
@@ -690,13 +690,13 @@ void makeControlPlot(TGraphAsymmErrors* graph_data, TGraphAsymmErrors* graph_mc_
     legend->SetBorderSize(0);
     legend->SetFillColor(10);
     legend->SetTextFont(42);
-    legend->SetTextSize(0.050);
+    legend->SetTextSize(0.040);
     legend->SetMargin(0.24);
     if ( graph_data ) legend->AddEntry(graph_data, "Data",       "p");
     if ( graph_mc_QCD_fakes ) legend->AddEntry(graph_mc_QCD_fakes,   "Fakes (QCD)", "p");
-    if ( graph_mc_QCD_fakes_Conv_Corr ) legend->AddEntry(graph_mc_QCD_fakes_Conv_Corr,   "Fakes (QCD #gamma Corr.)", "p");
+    if ( graph_mc_QCD_fakes_Conv_Corr ) legend->AddEntry(graph_mc_QCD_fakes_Conv_Corr,   "Fakes (QCD#gamma)", "p");
     if ( graph_mc_TT_fakes ) legend->AddEntry(graph_mc_TT_fakes,   "Fakes (t#bar{t})", "p");
-    if ( graph_mc_TTj_minus_TTg_fakes ) legend->AddEntry(graph_mc_TTj_minus_TTg_fakes,   "Fakes (t#bar{t}_{j} - t#tbar{t}_{g})", "p");
+    if ( graph_mc_TTj_minus_TTg_fakes ) legend->AddEntry(graph_mc_TTj_minus_TTg_fakes,   "Fakes (t#bar{t}_{j} - t#bar{t}_{#gamma})", "p");
     legend->Draw();
 
 
