@@ -708,6 +708,8 @@ class analyzeConfig(object):
         if 'skipEvery' in sample_info:
             assert('skipEvery' not in jobOptions)
             jobOptions['skipEvery'] = sample_info['skipEvery']
+        if 'useObjectMultiplicity' not in jobOptions:
+            jobOptions['useObjectMultiplicity'] = False
 
         jobOptions_local = [
             'process',
