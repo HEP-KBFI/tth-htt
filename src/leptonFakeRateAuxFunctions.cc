@@ -247,7 +247,7 @@ numerator_and_denominatorHistManagers::fillHistograms(const RecoLepton & lepton,
           electronHistManager_genHadTau_->fillHistograms(electron, evtWeight);
           electronHistManager_genHadTauOrLepton_->fillHistograms(electron, evtWeight);
         }
-        else if(electron.genPhoton() && !electron.genLepton() && electron.genPhoton()->pt() > 0.5 * electron.pt())
+        else if(electron.genPhoton())
         {
           electronHistManager_genPhoton_->fillHistograms(electron, evtWeight);
         }
