@@ -231,9 +231,6 @@ def get_table(input_file_name, allowed_decay_modes = None, show_gen_matching = T
         line.append('')
       if allowed_systematics == 'all':
         line.append(systematics)
-      print(SM_exp[systematics]['yield'])
-      print(fmt_float(SM_exp[systematics]['yield'], max_pow = 4))
-      print(fmt_float(SM_exp[systematics]['yield'], max_pow = 5))
       line.append('{} ({})'.format(fmt_float(SM_exp[systematics]['yield'], max_pow = 4), SM_exp[systematics]['count']))
       assert(len(line) == len(header))
       lines.append(line)
