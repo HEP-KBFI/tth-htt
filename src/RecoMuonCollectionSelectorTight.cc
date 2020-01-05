@@ -11,6 +11,7 @@ RecoMuonSelectorTight::RecoMuonSelectorTight(int era,
   , set_selection_flags_(set_selection_flags)
   , debug_(debug)
   , min_pt_(5.) // L
+  , min_cone_pt_(10.) // F
   , max_absEta_(2.4) // F
   , max_dxy_(0.05) // F
   , max_dz_(0.1) // F
@@ -34,6 +35,14 @@ RecoMuonSelectorTight::operator()(const RecoMuon & muon) const
     std::cout << get_human_line(this, __func__) << ":\n muon: " << muon << '\n';
   }
 
+  if(muon.cone_pt() < min_cone_pt_)
+  {
+    if(debug_)
+    {
+      std::cout << "FAILS cone pT = " << muon.cone_pt() << " >= " << min_cone_pt_ << " tight cut\n";
+    }
+    return false;
+  }
   if(muon.pt() < min_pt_)
   {
     if(debug_)
