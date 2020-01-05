@@ -365,7 +365,7 @@ void readPrefit(TFile* inputFile_stage2, TFile* inputFile_stage1_5, std::map<std
     histogramName_TT_fakes_copy.append(variable_den);
     histogramName_TTg.append(variable_den); 
     std::cout << "loading histogram_TT_fakes_copy = '" << histogramName_TT_fakes_copy << "'" << std::endl;
-    TH1* histogram_TT_fakes_copy = dynamic_cast<TH1*>(inputFile_stage1_5->Get(histogramName_TT_fakes_copy.data()));
+    TH1* histogram_TT_fakes_copy = dynamic_cast<TH1*>(inputFile_stage1_5->Get(histogramName_TT_fakes_copy.data())->Clone());
     if ( !histogram_TT_fakes_copy ) throw cms::Exception("fillHistogram")
 				 << "Failed to load histogram = '" << histogramName_TT_fakes_copy << "' from file = '" << inputFile_stage1_5->GetName() << "' !!\n";
     TH1* histogram_TTg = dynamic_cast<TH1*>(inputFile_stage1_5->Get(histogramName_TTg.data()));
