@@ -1362,7 +1362,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     const bool tH_like  = (selBJets_medium.size() >= 1 && ((selJets.size() - selBJets_loose.size()) + selJetsForward.size()) >= 1);
     const bool ttH_like = (selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) && selJets.size() >= 2;
     const bool passEvents = ttH_like || tH_like;
-    if((! passEvents && ! isControlRegion) || (isControlRegion && selJets.empty()))
+    if((! passEvents && ! isControlRegion) || (isControlRegion && selJets.size() < 1))
     {
       if(run_lumi_eventSelector)
       {
