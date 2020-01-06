@@ -1890,8 +1890,8 @@ int main(int argc, char* argv[])
       const double mbb             = selBJets_medium.size() > 1 ? (selBJets_medium[0]->p4() + selBJets_medium[1]->p4()).mass() : -1.;
       const double mbb_loose       = selBJets_loose.size() > 1 ? (selBJets_loose[0]->p4() + selBJets_loose[1]->p4()).mass() : -1.;
       const double min_dr_tau_jet  = std::min(mindr_tau1_jet, mindr_tau2_jet);
-      const double mTauTauVis1_sel = (selHadTau_lead->p4() + selLepton_lead->p4()).mass();
-      const double mTauTauVis2_sel = (selHadTau_lead->p4() + selLepton_sublead->p4()).mass();
+      const double mTauTauVis1_sel = (selHadTau_lead->p4() + selLepton_lead->cone_p4()).mass();
+      const double mTauTauVis2_sel = (selHadTau_lead->p4() + selLepton_sublead->cone_p4()).mass();
       const double max_lep_eta     = std::max(selLepton_lead->absEta(), selLepton_sublead->absEta());
       const int nLightJet          = selJets.size() - selBJets_loose.size() + selJetsForward.size();
 

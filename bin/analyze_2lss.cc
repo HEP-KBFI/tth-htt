@@ -1703,8 +1703,8 @@ int main(int argc, char* argv[])
     double mT2_top_3particle = -1.;
     double mT2_top_2particle = -1.;
     double mT2_W = -1.;
-    const Particle::LorentzVector & selLeptonP4_lead = selLepton_lead->p4();
-    const Particle::LorentzVector & selLeptonP4_sublead = selLepton_sublead->p4();
+    const Particle::LorentzVector & selLeptonP4_lead = selLepton_lead->cone_p4();
+    const Particle::LorentzVector & selLeptonP4_sublead = selLepton_sublead->cone_p4();
 
     if(selJets.size() >= 2)
     {
@@ -1960,7 +1960,7 @@ int main(int argc, char* argv[])
 
     ///////////////////////////////
     // SVA variables
-    const double mass_2L           = (selLepton_lead->p4() + selLepton_sublead->p4()).mass();
+    const double mass_2L           = (selLepton_lead->cone_p4() + selLepton_sublead->cone_p4()).mass();
     const int    sum_Lep_charge    = selLepton_lead -> charge() + selLepton_sublead -> charge();
     std::string category_SVA = "mass_2L_";
     if ( selJets.size() > 3)

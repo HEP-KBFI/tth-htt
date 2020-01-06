@@ -463,7 +463,7 @@ massL(const std::vector<const RecoLepton *> & Leptons)
     for(auto lepton2_it = lepton1_it + 1; lepton2_it != Leptons.end(); ++lepton2_it)
     {
       const RecoLepton * lepton2 = *lepton2_it;
-      const double mass = (lepton1->p4() + lepton2->p4()).mass();
+      const double mass = (lepton1->cone_p4() + lepton2->cone_p4()).mass();
       if(mass < massFO)
       {
         massFO = mass;

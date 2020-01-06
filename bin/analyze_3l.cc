@@ -1862,7 +1862,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     const double min_dr_lep_jet    = std::min({ mindr_lep1_jet, mindr_lep2_jet, mindr_lep3_jet });
     const double dr_leps           = deltaR(selLepton_lead->p4(), selLepton_sublead->p4());
     const double max_lep_eta       = std::max({ selLepton_lead->absEta(), selLepton_sublead->absEta(), selLepton_third->absEta() });
-    const double mass_3L           = (selLepton_lead->p4() + selLepton_sublead->p4() + selLepton_third->p4()).mass();
+    const double mass_3L           = (selLepton_lead->cone_p4() + selLepton_sublead->cone_p4() + selLepton_third->cone_p4()).mass();
     const int    sum_Lep_charge    = selLepton_lead -> charge() + selLepton_sublead -> charge() + selLepton_third->charge();
     const double min_dr_lep    = std::min({
       deltaR(selLepton_lead->p4(), selLepton_sublead->p4()),
