@@ -1496,7 +1496,7 @@ class analyzeConfig(object):
 
     def get_hadd_settings(self):
         if len(self.central_or_shifts) > 1:
-            if self.channel in [ '1l_1tau' ]:
+            if self.channel in [ '1l_1tau', '2lss' ]:
                 return 2, '4096M'
             else:
                 return 3, ''
