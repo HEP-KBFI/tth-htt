@@ -1,5 +1,9 @@
 from tthAnalysis.NanoAOD.triggers import Triggers
 
+trigger_runs_2016 = Triggers('2016').runs
+trigger_runs_2017 = Triggers('2017').runs
+trigger_runs_2018 = Triggers('2018').runs
+
 # Integrated luminosity
 
 # Reproduced https://github.com/HEP-KBFI/tth-nanoAOD/blob/dde7a1e5640f7a66ad635cb6f618dd1119bc1244/test/datasets/txt/datasets_data_2016_17Jul18.txt#L50

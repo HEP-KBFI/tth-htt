@@ -276,6 +276,12 @@ int main(int argc, char* argv[])
     central_or_shifts_local = { central_or_shift_main };
   }
 
+  edm::ParameterSet triggerWhiteList;
+  if(! isMC)
+  {
+    triggerWhiteList = cfg_analyze.getParameter<edm::ParameterSet>("triggerWhiteList");
+  }
+
   const edm::ParameterSet syncNtuple_cfg = cfg_analyze.getParameter<edm::ParameterSet>("syncNtuple");
   const std::string syncNtuple_tree = syncNtuple_cfg.getParameter<std::string>("tree");
   const std::string syncNtuple_output = syncNtuple_cfg.getParameter<std::string>("output");
@@ -1056,11 +1062,11 @@ int main(int argc, char* argv[])
       }
     }
 
-    bool isTriggered_1e = hltPaths_isTriggered(triggers_1e, isDEBUG);
-    bool isTriggered_2e = hltPaths_isTriggered(triggers_2e, isDEBUG);
-    bool isTriggered_1mu = hltPaths_isTriggered(triggers_1mu, isDEBUG);
-    bool isTriggered_2mu = hltPaths_isTriggered(triggers_2mu, isDEBUG);
-    bool isTriggered_1e1mu = hltPaths_isTriggered(triggers_1e1mu, isDEBUG);
+    bool isTriggered_1e = hltPaths_isTriggered(triggers_1e, triggerWhiteList, eventInfo, isMC, isDEBUG);
+    bool isTriggered_2e = hltPaths_isTriggered(triggers_2e, triggerWhiteList, eventInfo, isMC, isDEBUG);
+    bool isTriggered_1mu = hltPaths_isTriggered(triggers_1mu, triggerWhiteList, eventInfo, isMC, isDEBUG);
+    bool isTriggered_2mu = hltPaths_isTriggered(triggers_2mu, triggerWhiteList, eventInfo, isMC, isDEBUG);
+    bool isTriggered_1e1mu = hltPaths_isTriggered(triggers_1e1mu, triggerWhiteList, eventInfo, isMC, isDEBUG);
 
     bool selTrigger_1e = use_triggers_1e && isTriggered_1e;
     bool selTrigger_2e = use_triggers_2e && isTriggered_2e;
@@ -1964,8 +1970,8 @@ int main(int argc, char* argv[])
     const double lep2_conePt     = comp_lep_conePt(*selLepton_sublead);
     const double mindr_tau_jet   = comp_mindr_jet(*selHadTau, selJets);
     const double mbb             = selBJets_medium.size() > 1 ?  (selBJets_medium[0]->p4() + selBJets_medium[1]->p4()).mass() : -1000;
-    const double mTauTauVis1_sel = (selLepton_lead->p4() + selHadTau->p4()).mass();
-    const double mTauTauVis2_sel = (selLepton_sublead->p4() + selHadTau->p4()).mass();
+    const double mTauTauVis1_sel = (selLepton_lead->cone_p4() + selHadTau->p4()).mass();
+    const double mTauTauVis2_sel = (selLepton_sublead->cone_p4() + selHadTau->p4()).mass();
     const double HTT             = max_mvaOutput_HTT_CSVsort4rd;
     const double HadTop_pt       = HadTop_pt_CSVsort4rd;
     double min_Deta_mostfwdJet_jet = 0;

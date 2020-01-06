@@ -251,6 +251,12 @@ int main(int argc, char* argv[])
     central_or_shifts_local = { central_or_shift_main };
   }
 
+  edm::ParameterSet triggerWhiteList;
+  if(! isMC)
+  {
+    triggerWhiteList = cfg_analyze.getParameter<edm::ParameterSet>("triggerWhiteList");
+  }
+
   const edm::ParameterSet syncNtuple_cfg = cfg_analyze.getParameter<edm::ParameterSet>("syncNtuple");
   const std::string syncNtuple_tree = syncNtuple_cfg.getParameter<std::string>("tree");
   const std::string syncNtuple_output = syncNtuple_cfg.getParameter<std::string>("output");
@@ -967,11 +973,11 @@ int main(int argc, char* argv[])
       }
     }
 
-    bool isTriggered_1e = hltPaths_isTriggered(triggers_1e);
-    bool isTriggered_2e = hltPaths_isTriggered(triggers_2e);
-    bool isTriggered_1mu = hltPaths_isTriggered(triggers_1mu);
-    bool isTriggered_2mu = hltPaths_isTriggered(triggers_2mu);
-    bool isTriggered_1e1mu = hltPaths_isTriggered(triggers_1e1mu);
+    bool isTriggered_1e = hltPaths_isTriggered(triggers_1e, triggerWhiteList, eventInfo, isMC);
+    bool isTriggered_2e = hltPaths_isTriggered(triggers_2e, triggerWhiteList, eventInfo, isMC);
+    bool isTriggered_1mu = hltPaths_isTriggered(triggers_1mu, triggerWhiteList, eventInfo, isMC);
+    bool isTriggered_2mu = hltPaths_isTriggered(triggers_2mu, triggerWhiteList, eventInfo, isMC);
+    bool isTriggered_1e1mu = hltPaths_isTriggered(triggers_1e1mu, triggerWhiteList, eventInfo, isMC);
 
     bool selTrigger_1e = use_triggers_1e && isTriggered_1e;
     bool selTrigger_2e = use_triggers_2e && isTriggered_2e;
@@ -1873,8 +1879,8 @@ int main(int argc, char* argv[])
       }
     }
 
-    const double mTauTauVis1_sel = (selLepton_lead->p4() + selHadTau->p4()).mass();
-    const double mTauTauVis2_sel = (selLepton_sublead->p4() + selHadTau->p4()).mass();
+    const double mTauTauVis1_sel = (selLepton_lead->cone_p4() + selHadTau->p4()).mass();
+    const double mTauTauVis2_sel = (selLepton_sublead->cone_p4() + selHadTau->p4()).mass();
 
     if ( bdt_filler ) {
       bdt_filler -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })

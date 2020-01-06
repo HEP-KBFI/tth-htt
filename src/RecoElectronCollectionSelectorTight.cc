@@ -12,6 +12,7 @@ RecoElectronSelectorTight::RecoElectronSelectorTight(int era,
   , apply_offline_e_trigger_cuts_(true)
   , debug_(debug)
   , min_pt_(7.) // L
+  , min_cone_pt_(10) // F
   , max_absEta_(2.5) // F
   , max_dxy_(0.05) // F
   , max_dz_(0.1) // F
@@ -82,6 +83,14 @@ RecoElectronSelectorTight::operator()(const RecoElectron & electron) const
     std::cout << get_human_line(this, __func__) << ":\n" << electron;
   }
 
+  if(electron.cone_pt() < min_cone_pt_)
+  {
+    if(debug_)
+    {
+      std::cout << "FAILS cone pT = " << electron.cone_pt() << " >= " << min_cone_pt_ << " tight cut\n";
+    }
+    return false;
+  }
   if(electron.pt() < min_pt_)
   {
     if(debug_)

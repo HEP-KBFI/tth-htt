@@ -264,6 +264,12 @@ int main(int argc, char* argv[])
     central_or_shifts_local = { central_or_shift_main };
   }
 
+  edm::ParameterSet triggerWhiteList;
+  if(! isMC)
+  {
+    triggerWhiteList = cfg_analyze.getParameter<edm::ParameterSet>("triggerWhiteList");
+  }
+
   const edm::ParameterSet syncNtuple_cfg = cfg_analyze.getParameter<edm::ParameterSet>("syncNtuple");
   const std::string syncNtuple_tree = syncNtuple_cfg.getParameter<std::string>("tree");
   const std::string syncNtuple_output = syncNtuple_cfg.getParameter<std::string>("output");
@@ -1047,15 +1053,15 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
       }
     }
 
-    bool isTriggered_1e = hltPaths_isTriggered(triggers_1e, isDEBUG);
-    bool isTriggered_1mu = hltPaths_isTriggered(triggers_1mu, isDEBUG);
-    bool isTriggered_2e = hltPaths_isTriggered(triggers_2e, isDEBUG);
-    bool isTriggered_1e1mu = hltPaths_isTriggered(triggers_1e1mu, isDEBUG);
-    bool isTriggered_2mu = hltPaths_isTriggered(triggers_2mu, isDEBUG);
-    bool isTriggered_3e = hltPaths_isTriggered(triggers_3e, isDEBUG);
-    bool isTriggered_2e1mu = hltPaths_isTriggered(triggers_2e1mu, isDEBUG);
-    bool isTriggered_1e2mu = hltPaths_isTriggered(triggers_1e2mu, isDEBUG);
-    bool isTriggered_3mu = hltPaths_isTriggered(triggers_3mu, isDEBUG);
+    bool isTriggered_1e = hltPaths_isTriggered(triggers_1e, triggerWhiteList, eventInfo, isMC, isDEBUG);
+    bool isTriggered_1mu = hltPaths_isTriggered(triggers_1mu, triggerWhiteList, eventInfo, isMC, isDEBUG);
+    bool isTriggered_2e = hltPaths_isTriggered(triggers_2e, triggerWhiteList, eventInfo, isMC, isDEBUG);
+    bool isTriggered_1e1mu = hltPaths_isTriggered(triggers_1e1mu, triggerWhiteList, eventInfo, isMC, isDEBUG);
+    bool isTriggered_2mu = hltPaths_isTriggered(triggers_2mu, triggerWhiteList, eventInfo, isMC, isDEBUG);
+    bool isTriggered_3e = hltPaths_isTriggered(triggers_3e, triggerWhiteList, eventInfo, isMC, isDEBUG);
+    bool isTriggered_2e1mu = hltPaths_isTriggered(triggers_2e1mu, triggerWhiteList, eventInfo, isMC, isDEBUG);
+    bool isTriggered_1e2mu = hltPaths_isTriggered(triggers_1e2mu, triggerWhiteList, eventInfo, isMC, isDEBUG);
+    bool isTriggered_3mu = hltPaths_isTriggered(triggers_3mu, triggerWhiteList, eventInfo, isMC, isDEBUG);
     if ( isDEBUG ) {
       std::cout << "isTriggered:"
 		<< " 1e = " << isTriggered_1e << ","
@@ -1856,7 +1862,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     const double min_dr_lep_jet    = std::min({ mindr_lep1_jet, mindr_lep2_jet, mindr_lep3_jet });
     const double dr_leps           = deltaR(selLepton_lead->p4(), selLepton_sublead->p4());
     const double max_lep_eta       = std::max({ selLepton_lead->absEta(), selLepton_sublead->absEta(), selLepton_third->absEta() });
-    const double mass_3L           = (selLepton_lead->p4() + selLepton_sublead->p4() + selLepton_third->p4()).mass();
+    const double mass_3L           = (selLepton_lead->cone_p4() + selLepton_sublead->cone_p4() + selLepton_third->cone_p4()).mass();
     const int    sum_Lep_charge    = selLepton_lead -> charge() + selLepton_sublead -> charge() + selLepton_third->charge();
     const double min_dr_lep    = std::min({
       deltaR(selLepton_lead->p4(), selLepton_sublead->p4()),

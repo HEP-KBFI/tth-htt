@@ -294,6 +294,12 @@ int main(int argc, char* argv[])
     central_or_shifts_local = { central_or_shift_main };
   }
 
+  edm::ParameterSet triggerWhiteList;
+  if(! isMC)
+  {
+    triggerWhiteList = cfg_analyze.getParameter<edm::ParameterSet>("triggerWhiteList");
+  }
+
   const edm::ParameterSet syncNtuple_cfg = cfg_analyze.getParameter<edm::ParameterSet>("syncNtuple");
   const bool jetCleaningByIndex = cfg_analyze.getParameter<bool>("jetCleaningByIndex");
 
@@ -1106,10 +1112,10 @@ int main(int argc, char* argv[])
       genQuarkFromTop = genQuarkFromTopReader->read();
     }
 
-    bool isTriggered_1e = hltPaths_isTriggered(triggers_1e, isDEBUG);
-    bool isTriggered_1e1tau = hltPaths_isTriggered(triggers_1e1tau, isDEBUG);
-    bool isTriggered_1mu = hltPaths_isTriggered(triggers_1mu, isDEBUG);
-    bool isTriggered_1mu1tau = hltPaths_isTriggered(triggers_1mu1tau, isDEBUG);
+    bool isTriggered_1e = hltPaths_isTriggered(triggers_1e, triggerWhiteList, eventInfo, isMC, isDEBUG);
+    bool isTriggered_1e1tau = hltPaths_isTriggered(triggers_1e1tau, triggerWhiteList, eventInfo, isMC, isDEBUG);
+    bool isTriggered_1mu = hltPaths_isTriggered(triggers_1mu, triggerWhiteList, eventInfo, isMC, isDEBUG);
+    bool isTriggered_1mu1tau = hltPaths_isTriggered(triggers_1mu1tau, triggerWhiteList, eventInfo, isMC, isDEBUG);
 
     bool selTrigger_1e = use_triggers_1e && isTriggered_1e;
     bool selTrigger_1e1tau = use_triggers_1e1tau && isTriggered_1e1tau;
@@ -1807,7 +1813,7 @@ int main(int argc, char* argv[])
     double leg2Mass = selHadTau->mass();
     if ( leg2Mass < classic_svFit::chargedPionMass ) leg2Mass = classic_svFit::chargedPionMass;
     if ( leg2Mass > 1.5                            ) leg2Mass = 1.5;
-    measuredTauLeptons.push_back(classic_svFit::MeasuredTauLepton(leg1Type, selLepton->pt(), selLepton->eta(), selLepton->phi(), leg1Mass));
+    measuredTauLeptons.push_back(classic_svFit::MeasuredTauLepton(leg1Type, selLepton->cone_pt(), selLepton->eta(), selLepton->phi(), leg1Mass));
     measuredTauLeptons.push_back(classic_svFit::MeasuredTauLepton(leg2Type, selHadTau->pt(), selHadTau->eta(), selHadTau->phi(), leg2Mass));
     ClassicSVfit svFitAlgo;
     svFitAlgo.addLogM_dynamic(false);
@@ -1835,11 +1841,11 @@ int main(int argc, char* argv[])
     const double tau_pt        = selHadTau->pt();
     const double tau_eta       = selHadTau->absEta();
     const double dr_lep_tau    = deltaR(selLepton->p4(), selHadTau->p4());
-    const double costS         = comp_cosThetaS(selLepton->p4(), selHadTau->p4());
-    const double mTauTauVis    = (selLepton->p4() + selHadTau->p4()).mass();
-    const double Pzeta         = comp_pZeta(selLepton->p4(), selHadTau->p4(), met.p4().px(), met.p4().py());
-    const double PzetaVis      = comp_pZetaVis(selLepton->p4(), selHadTau->p4());
-    const double PzetaComb     = comp_pZetaComb(selLepton->p4(), selHadTau->p4(), met.p4().px(), met.p4().py());
+    const double costS         = comp_cosThetaS(selLepton->cone_p4(), selHadTau->p4());
+    const double mTauTauVis    = (selLepton->cone_p4() + selHadTau->p4()).mass();
+    const double Pzeta         = comp_pZeta(selLepton->cone_p4(), selHadTau->p4(), met.p4().px(), met.p4().py());
+    const double PzetaVis      = comp_pZetaVis(selLepton->cone_p4(), selHadTau->p4());
+    const double PzetaComb     = comp_pZetaComb(selLepton->cone_p4(), selHadTau->p4(), met.p4().px(), met.p4().py());
     const double mbb           = ( selBJets_medium.size() >= 2 ) ? (selBJets_medium[0]->p4() + selBJets_medium[1]->p4()).mass() : -1.;
     const double mbb_loose     = ( selBJets_loose.size()  >= 2 ) ? (selBJets_loose[0]->p4()  + selBJets_loose[1]->p4()).mass()  : -1.;
 

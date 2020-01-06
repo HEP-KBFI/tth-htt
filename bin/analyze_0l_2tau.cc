@@ -249,6 +249,12 @@ int main(int argc, char* argv[])
     central_or_shifts_local = { central_or_shift_main };
   }
 
+  edm::ParameterSet triggerWhiteList;
+  if(! isMC)
+  {
+    triggerWhiteList = cfg_analyze.getParameter<edm::ParameterSet>("triggerWhiteList");
+  }
+
   const edm::ParameterSet syncNtuple_cfg = cfg_analyze.getParameter<edm::ParameterSet>("syncNtuple");
   const std::string syncNtuple_tree = syncNtuple_cfg.getParameter<std::string>("tree");
   const std::string syncNtuple_output = syncNtuple_cfg.getParameter<std::string>("output");
@@ -1051,7 +1057,7 @@ int main(int argc, char* argv[])
       genQuarkFromTop = genQuarkFromTopReader->read();
     }
 
-    bool isTriggered_2tau = hltPaths_isTriggered(triggers_2tau, isDEBUG);
+    bool isTriggered_2tau = hltPaths_isTriggered(triggers_2tau, triggerWhiteList, eventInfo, isMC, isDEBUG);
 
     bool selTrigger_2tau = use_triggers_2tau && isTriggered_2tau;
     if ( !selTrigger_2tau ) {

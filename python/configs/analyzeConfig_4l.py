@@ -410,7 +410,6 @@ class analyzeConfig_4l(analyzeConfig):
                   'fillGenEvtHistograms'     : True,
                   'apply_hlt_filter'         : self.hlt_filter,
                   'useNonNominal'            : self.use_nonnominal,
-                  'useObjectMultiplicity'    : True,
                   'isControlRegion'          : self.isControlRegion,
                   'minNumJets'               : 0 if self.isControlRegion else 2,
                 }

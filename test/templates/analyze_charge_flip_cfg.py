@@ -3,6 +3,7 @@ import os
 
 from tthAnalysis.HiggsToTauTau.configs.recommendedMEtFilters_cfi import *
 from tthAnalysis.HiggsToTauTau.configs.EvtYieldHistManager_cfi import *
+from tthAnalysis.HiggsToTauTau.analysisSettings import *
 
 process = cms.PSet()
 
@@ -49,6 +50,7 @@ process.analyze_charge_flip = cms.PSet(
 
     cfgMEtFilter = cms.PSet(),
     cfgEvtYieldHistManager = cms.PSet(),
+    triggerWhiteList = cms.PSet(),
 
     branchName_electrons = cms.string('Electron'),
     branchName_muons = cms.string('Muon'),

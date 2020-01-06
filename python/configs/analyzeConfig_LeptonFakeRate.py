@@ -362,19 +362,10 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     self.filesToClean.append(jobOptions['outputFile'])
 
   def addToMakefile_comp_LeptonFakeRate(self, lines_makefile):
-    if self.is_sbatch:
-      lines_makefile.append("sbatch_comp_LeptonFakeRate: %s" % " ".join([ " ".join(jobOptions['inputFile']) for jobOptions in self.jobOptions_comp_LeptonFakeRate.values() ]))
-      lines_makefile.append("\t%s %s" % ("python", self.sbatchFile_comp_LeptonFakeRate))
-      lines_makefile.append("")
     for jobOptions in self.jobOptions_comp_LeptonFakeRate.values():
-      if self.is_makefile:
-        lines_makefile.append("%s: %s" % (jobOptions['outputFile'], " ".join(jobOptions['inputFile'])))
-        lines_makefile.append("\t%s %s" % (self.executable_comp_LeptonFakeRate, jobOptions['cfgFile_modified']))
-        lines_makefile.append("")
-      elif self.is_sbatch:
-        lines_makefile.append("%s: %s" % (jobOptions['outputFile'], "sbatch_comp_LeptonFakeRate"))
-        lines_makefile.append("\t%s" % ":") # CV: null command
-        lines_makefile.append("")
+      lines_makefile.append("%s: %s" % (jobOptions['outputFile'], " ".join(jobOptions['inputFile'])))
+      lines_makefile.append("\t%s %s" % (self.executable_comp_LeptonFakeRate, jobOptions['cfgFile_modified']))
+      lines_makefile.append("")
       self.filesToClean.append(jobOptions['outputFile'])
 
   def create(self):
@@ -510,7 +501,6 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
             'triggers_e_cfg'           : "leptonFR_triggers['{}']['{}']".format(self.era, 'e'),
             'lep_mva_cut_e'            : float(self.lep_mva_cut_e),
             'lep_mva_cut_mu'           : float(self.lep_mva_cut_mu),
-            'useObjectMultiplicity'    : True,
           }
           self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info)
 

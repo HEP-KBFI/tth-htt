@@ -265,6 +265,12 @@ int main(int argc, char* argv[])
     central_or_shifts_local = { central_or_shift_main };
   }
 
+  edm::ParameterSet triggerWhiteList;
+  if(! isMC)
+  {
+    triggerWhiteList = cfg_analyze.getParameter<edm::ParameterSet>("triggerWhiteList");
+  }
+
   const edm::ParameterSet syncNtuple_cfg = cfg_analyze.getParameter<edm::ParameterSet>("syncNtuple");
   const std::string syncNtuple_tree = syncNtuple_cfg.getParameter<std::string>("tree");
   const std::string syncNtuple_output = syncNtuple_cfg.getParameter<std::string>("output");
@@ -1010,10 +1016,10 @@ int main(int argc, char* argv[])
       genQuarkFromTop = genQuarkFromTopReader->read();
     }
 
-    bool isTriggered_1e = hltPaths_isTriggered(triggers_1e, isDEBUG);
-    bool isTriggered_1e1tau = hltPaths_isTriggered(triggers_1e1tau, isDEBUG);
-    bool isTriggered_1mu = hltPaths_isTriggered(triggers_1mu, isDEBUG);
-    bool isTriggered_1mu1tau = hltPaths_isTriggered(triggers_1mu1tau, isDEBUG);
+    bool isTriggered_1e = hltPaths_isTriggered(triggers_1e, triggerWhiteList, eventInfo, isMC, isDEBUG);
+    bool isTriggered_1e1tau = hltPaths_isTriggered(triggers_1e1tau, triggerWhiteList, eventInfo, isMC, isDEBUG);
+    bool isTriggered_1mu = hltPaths_isTriggered(triggers_1mu, triggerWhiteList, eventInfo, isMC, isDEBUG);
+    bool isTriggered_1mu1tau = hltPaths_isTriggered(triggers_1mu1tau, triggerWhiteList, eventInfo, isMC, isDEBUG);
 
     bool selTrigger_1e = use_triggers_1e && isTriggered_1e;
     bool selTrigger_1e1tau = use_triggers_1e1tau && isTriggered_1e1tau;
@@ -2004,7 +2010,7 @@ int main(int argc, char* argv[])
       const double max_dr_lep_tau  = std::max(dr_lep_tau_lead, dr_lep_tau_sublead);
       const double min_dr_tau_jet  = std::min(mindr_tau1_jet, mindr_tau2_jet);
       const double min_dr_lep_tau  = std::min(dr_lep_tau_lead, dr_lep_tau_sublead);
-      const double mTauTauVis1_sel = (selHadTau_lead->p4() + selLepton->p4()).mass();
+      const double mTauTauVis1_sel = (selHadTau_lead->p4() + selLepton->cone_p4()).mass();
       const int nLightJet          = selJets.size() - selBJets_loose.size() + selJetsForward.size();
 
       snm->read(eventInfo);
