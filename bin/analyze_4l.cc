@@ -1179,18 +1179,25 @@ int main(int argc, char* argv[])
     cutFlowTable.update(">= 4 presel leptons", evtWeightRecorder.get(central_or_shift_main));
     cutFlowHistManager->fillHistograms(">= 4 presel leptons", evtWeightRecorder.get(central_or_shift_main));
 
+    if ( !isControlRegion )
+    {
     // apply requirement on jets (incl. b-tagged jets) and hadronic taus on preselection level
-    if ( !((int)selJets.size() >= minNumJets) ) {
+    if ( !((int)selJets.size() >= minNumJets)) {
       if ( run_lumi_eventSelector ) {
         std::cout << "event " << eventInfo.str() << " FAILS selJets selection." << std::endl;
         printCollection("selJets", selJets);
       }
       continue;
     }
+  }
+
     cutFlowTable.update(">=N jets", evtWeightRecorder.get(central_or_shift_main));
     cutFlowHistManager->fillHistograms(">= N jets", evtWeightRecorder.get(central_or_shift_main));
 
-    if ( !isControlRegion && !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) ) {
+    if (!isControlRegion)
+    {
+      if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) )
+    {
       if ( run_lumi_eventSelector ) {
         std::cout << "event " << eventInfo.str() << " FAILS selBJets selection." << std::endl;
 	printCollection("selJets", selJets);
@@ -1199,6 +1206,7 @@ int main(int argc, char* argv[])
       }
       continue;
     }
+    } 
     cutFlowTable.update(">= 2 loose b-jets || 1 medium b-jet", evtWeightRecorder.get(central_or_shift_main));
     cutFlowHistManager->fillHistograms(">= 2 loose b-jets || 1 medium b-jet", evtWeightRecorder.get(central_or_shift_main));
 
