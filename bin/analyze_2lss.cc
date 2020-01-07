@@ -582,6 +582,7 @@ int main(int argc, char* argv[])
     "Jet25_qg"
   };
   TMVAInterface mva_Hj_tagger(mvaFileName_Hj_tagger, mvaInputVariables_Hj_tagger);
+  mva_Hj_tagger.enableBDTTransform();
 
   std::string mvaFileName_Hjj_tagger = "tthAnalysis/HiggsToTauTau/data/Hjj_csv_BDTG.weights.xml";
   std::vector<std::string> mvaInputVariables_Hjj_tagger;
@@ -600,20 +601,6 @@ int main(int argc, char* argv[])
   */
   std::string mvaFileName_TensorFlow_2lss_ttH_tH_4cat_onlyTHQ_v4 = "tthAnalysis/HiggsToTauTau/data/NN_for_legacy_opt/2017tautag2p1samples_xsecrwonly_oldvars_tH_selection.pb";
   std::vector<std::string> mvaInputVariables_NN = {
-    /*
-    "jet3_pt","jet3_eta","lep1_eta",
-    "jet2_pt","jet1_pt","jetFwd1_eta",
-    "mT_lep1","mT_lep2","jet4_phi",
-    "lep2_conePt","hadTop_BDT",
-    "jet1_phi","jet2_eta",
-    "n_presel_jetFwd","n_presel_jet",
-    "lep1_charge","avg_dr_jet","lep1_phi",
-    "Hj_tagger_hadTop","nBJetLoose",
-    "jet4_pt","mindr_lep1_jet","lep1_conePt",
-    "jetFwd1_pt","lep2_phi","jet2_phi","lep2_eta","mbb",
-    "mindr_lep2_jet","jet4_eta","nBJetMedium",
-    "Dilep_pdgId","metLD","jet3_phi","maxeta","jet1_eta"
-    */
     "jet3_pt","jet3_eta","lep1_eta",
     "jet2_pt","jet1_pt","jetFwd1_eta",
     "mT_lep1","mT_lep2","jet4_phi",
@@ -1881,8 +1868,8 @@ int main(int argc, char* argv[])
       {"jetFwd1_eta",     selJetsForward.size() > 0 ? selJetsForward[0] -> absEta() : 9.},
       {"jetFwd1_pt",      selJetsForward.size() > 0 ? selJetsForward[0] -> pt()     : -9.},
       {"mbb",             selBJets_loose.size()>1 ?  (selBJets_loose[0]->p4()+selBJets_loose[1]->p4()).mass() : -9},
-      {"avg_dr_jet",      avg_dr_jet}, // -9
-      {"metLD",           met_LD}, // -9
+      {"avg_dr_jet",      selJets.size() > 1 ?  avg_dr_jet : -9},
+      {"metLD",           met_LD > 0 ? met_LD : -9},
       {"hadTop_BDT",      max_mvaOutput_HTT_CSVsort4rd},
       {"n_presel_jet",    selJets.size()},
       {"n_presel_jetFwd", selJetsForward.size()},
@@ -1904,10 +1891,13 @@ int main(int argc, char* argv[])
       };
     std::map<std::string, double> mvaOutput_NN = mva_NN(mvaInputVariables_NN_list);
     if ( isDEBUG_TF ) {
-      std::cout << "result tH 4cat v1 :";
+      std::cout << "event " << eventInfo.str() << "\n";
+      std::cout << "Variables :\n";
+      for(auto elem : mvaInputVariables_NN_list) std::cout << elem.first << " " << elem.second << "\n";
+      std::cout << "\n";
+      std::cout << "result :";
       for(auto elem : mvaOutput_NN) std::cout << elem.first << " " << elem.second << " ";
       std::cout << "\n";
-      std::cout << "mvaOutput_Hj_tagger = " << mvaOutput_Hj_tagger;
     }
 
 //--- do NN categories
