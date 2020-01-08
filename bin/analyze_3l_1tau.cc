@@ -844,7 +844,7 @@ int main(int argc, char* argv[])
   };
   CutFlowTableHistManager * cutFlowHistManager = new CutFlowTableHistManager(cutFlowTableCfg, cuts);
   cutFlowHistManager->bookHistograms(fs);
-
+  bool isDebugTF = false;
   while(inputTree -> hasNextEvent() && (! run_lumi_eventSelector || (run_lumi_eventSelector && ! run_lumi_eventSelector -> areWeDone())))
   {
     if(inputTree -> canReport(reportEvery))
@@ -1667,6 +1667,15 @@ int main(int argc, char* argv[])
       { "met_LD",          met_LD}
     };
     const double mvaOutput_legacy = mva_legacy(mvaInputVariables_plainKin_ttV);
+    if ( isDebugTF ) {
+      std::cout << "event " << eventInfo.str() << "\n";
+      std::cout << "variables ";
+      for (auto elem :mvaInputVariables_plainKin_ttV) std::cout << elem.first << " " << elem.second << "\n";
+      std::cout << std::endl;
+      std::cout << "result  " << mvaOutput_legacy;
+      std::cout << std::endl;
+      std::cout << std::endl;
+    }
 
     MEMOutput_3l_1tau memOutput_3l_1tau_matched;
     if(memReader)
