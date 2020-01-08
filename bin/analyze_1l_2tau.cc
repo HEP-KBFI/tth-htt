@@ -889,7 +889,7 @@ int main(int argc, char* argv[])
   CutFlowTableHistManager * cutFlowHistManager = new CutFlowTableHistManager(cutFlowTableCfg, cuts);
   cutFlowHistManager->bookHistograms(fs);
 
-  bool isDebugTF = true;
+  bool isDebugTF = false;
   while(inputTree -> hasNextEvent() && (! run_lumi_eventSelector || (run_lumi_eventSelector && ! run_lumi_eventSelector -> areWeDone())))
   {
     if(inputTree -> canReport(reportEvery))
@@ -902,7 +902,7 @@ int main(int argc, char* argv[])
     }
     ++analyzedEntries;
     histogram_analyzedEntries->Fill(0.);
-    if(eventInfo.event != 2554209) continue;
+    //if(eventInfo.event != 2554209) continue;
 
     if (run_lumi_eventSelector && !(*run_lumi_eventSelector)(eventInfo))
     {
