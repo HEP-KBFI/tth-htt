@@ -240,20 +240,19 @@ comp_max_dr_jet(const std::vector<const RecoJet *> & jets_cleaned)
   return dRmax;
 }
 
-double 
-comp_cosThetaStar(const Particle::LorentzVector & daughterP4,
-                  const Particle::LorentzVector & motherP4)
+double
+comp_cosThetaStar(const Particle::LorentzVector & daughterP4_lead,
+                  const Particle::LorentzVector & daughterP4_sublead)
 {
   // CV: compute "helicity angle" between momentum vectors of daughter and mother particle
   //     in the rest-frame of the mother particle
   //    (cf. Section 2.6.2 and Fig. 59 of AN-2015/001)
-  TLorentzVector daughterP4_lv;
-  daughterP4_lv.SetPtEtaPhiM(daughterP4.pt(), daughterP4.eta(), daughterP4.phi(), daughterP4.mass());
-
-  TLorentzVector motherP4_lv;
-  motherP4_lv.SetPtEtaPhiM(motherP4.pt(), motherP4.eta(), motherP4.phi(), motherP4.mass());
-
-  daughterP4_lv.Boost(-motherP4_lv.BoostVector());
-  const double cosThetaStar = std::fabs(daughterP4_lv.CosTheta());
-  return cosThetaStar;
+  TLorentzVector hadTauP4tlv_lead;
+  hadTauP4tlv_lead.SetPtEtaPhiM(daughterP4_lead.pt(), daughterP4_lead.eta(), daughterP4_lead.phi(), daughterP4_lead.mass());
+  TLorentzVector hadTauP4tlv_sublead;
+  hadTauP4tlv_sublead.SetPtEtaPhiM(daughterP4_sublead.pt(), daughterP4_sublead.eta(), daughterP4_sublead.phi(), daughterP4_sublead.mass());
+  const TLorentzVector diTauP4 = hadTauP4tlv_lead + hadTauP4tlv_sublead;
+  TLorentzVector hadTauBoost = hadTauP4tlv_lead;
+  hadTauBoost.Boost(-diTauP4.BoostVector());
+  return std::fabs(hadTauBoost.CosTheta());
 }
