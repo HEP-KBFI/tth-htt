@@ -1918,7 +1918,7 @@ int main(int argc, char* argv[])
         {
           continue;
         }
-        for(std::vector<const RecoJet *>::const_iterator selWJet2 = selWJet1 + 1; selWJet2 != selJets.end(); ++selWJet2)
+        for(std::vector<const RecoJet *>::const_iterator selWJet2 = selJets.begin(); selWJet2 != selJets.end(); ++selWJet2)
         {
           if(&(*selWJet2) == &(*selBJet))
           {
