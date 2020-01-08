@@ -889,6 +889,7 @@ int main(int argc, char* argv[])
   CutFlowTableHistManager * cutFlowHistManager = new CutFlowTableHistManager(cutFlowTableCfg, cuts);
   cutFlowHistManager->bookHistograms(fs);
 
+  bool isDebugTF = false;
   while(inputTree -> hasNextEvent() && (! run_lumi_eventSelector || (run_lumi_eventSelector && ! run_lumi_eventSelector -> areWeDone())))
   {
     if(inputTree -> canReport(reportEvery))
@@ -1714,6 +1715,15 @@ int main(int argc, char* argv[])
       { "max_Lep_eta",  std::max({selLepton->absEta(), selHadTau_lead->absEta(), selHadTau_sublead->absEta()})}
     };
     const double mvaOutput_legacy = mva_legacy(mvaInputs_legacy);
+    if ( isDebugTF ) {
+      std::cout << "event " << eventInfo.str() << "\n";
+      std::cout << "variables ";
+      for (auto elem :mvaInputs_legacy) std::cout << elem.first << " " << elem.second << "\n";
+      std::cout << std::endl;
+      std::cout << "result  " << mvaOutput_legacy;
+      std::cout << std::endl;
+      std::cout << std::endl;
+    }
 
 //--- retrieve gen-matching flags
     std::vector<const GenMatchEntry*> genMatches = genMatchInterface.getGenMatch(selLeptons, selHadTaus);
