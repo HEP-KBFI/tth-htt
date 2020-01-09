@@ -92,6 +92,43 @@ void CheckPhotonMatch(const RecoElectron & preselElectron, std::vector<GenPhoton
  
 }
 
+void CheckLeptonMatch(const RecoElectron & preselElectron, std::vector<GenLepton> genLeptons, double dR = 0.5)
+{
+
+  int genLepton_counter = 0;
+  for(std::vector<GenLepton>::iterator genLepton = genLeptons.begin(); genLepton != genLeptons.end(); genLepton++) {
+    //Particle::LorentzVector electron_4_vector =  preselElectron.p4();
+    //Particle::LorentzVector genLepton_4_vector = (*genLepton).p4();
+    double dR_lep_GenLepton = deltaR(preselElectron.eta(), preselElectron.phi(), (*genLepton).eta(), (*genLepton).phi());
+    if(dR_lep_GenLepton <= dR){
+      genLepton_counter++;
+      std::cout<< " genLepton # " << genLepton_counter << std::endl;
+      std::cout<< " This genLepton is within dR <= "  << dR << " from the selected RecoElectron " << std::endl;
+      std::cout<< " genLepton: " << (*genLepton) << std::endl; 
+    }
+  }
+  std::cout << "There are " << genLepton_counter << " genLeptons matched to this RecoElectron"<< std::endl;
+ 
+}
+
+void CheckGenParticleMatch(const RecoElectron & preselElectron, std::vector<GenParticle> genParticles, double dR = 0.5, std::string label = "genParticle")
+{
+  int genParticle_counter = 0;
+  for(std::vector<GenParticle>::iterator genParticle = genParticles.begin(); genParticle != genParticles.end(); genParticle++) {
+    //Particle::LorentzVector electron_4_vector =  preselElectron.p4();
+    //Particle::LorentzVector genParticle_4_vector = (*genParticle).p4();
+    double dR_lep_GenParticle = deltaR(preselElectron.eta(), preselElectron.phi(), (*genParticle).eta(), (*genParticle).phi());
+    if(dR_lep_GenParticle <= dR){
+      genParticle_counter++;
+      std::cout<< " genParticle # " << genParticle_counter << std::endl;
+      std::cout<< " This genParticle is within dR <= "  << dR << " from the selected RecoElectron " << std::endl;
+      std::cout<< " genParticle: " << (*genParticle) << std::endl; 
+    }
+  }
+  std::cout << "There are " << genParticle_counter << " " << label << "s matched to this RecoElectron"<< std::endl;
+ 
+}
+
 
 int
 main(int argc,
@@ -1339,6 +1376,7 @@ main(int argc,
 
       if(preselElectron.isTight())
       {
+
         if(isDEBUG || run_lumi_eventSelector)
         {
           std::cout << "numerator filled\n";
