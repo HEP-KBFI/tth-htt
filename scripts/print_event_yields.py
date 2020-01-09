@@ -10,7 +10,10 @@ import prettytable
 import math
 import csv
 import argparse
+import re
 
+OUTPUT_NN = 'output_NN'
+OUTPUT_NN_RE = re.compile('{}_(?P<node>\w+)_(?P<category>\w+)'.format(OUTPUT_NN))
 EVENTCOUNTER = 'EventCounter'
 SYS_HISTOGRAM_PREFIX = 'CMS_ttHl_'
 GEN_MATCHES = [ 'fake', 'flip', 'Convs', 'gentau', 'faketau' ]
@@ -49,14 +52,25 @@ def get_keys(dir_ptr, include = None, exclude = None):
   return keys
 
 def get_systematics(histogram_name):
-  assert(histogram_name.endswith(EVENTCOUNTER))
-  if histogram_name == EVENTCOUNTER:
-    return 'central'
-  else:
-    assert(histogram_name.startswith(SYS_HISTOGRAM_PREFIX))
-    histogram_name_prefix = histogram_name.replace('_{}'.format(EVENTCOUNTER), '').replace(SYS_HISTOGRAM_PREFIX, '')
+  assert(histogram_name.endswith(EVENTCOUNTER) or OUTPUT_NN_RE.match(histogram_name))
+  if histogram_name.startswith(SYS_HISTOGRAM_PREFIX):
+    if EVENTCOUNTER in histogram_name:
+      histogram_name_prefix = histogram_name.replace('_{}'.format(EVENTCOUNTER), '').replace(SYS_HISTOGRAM_PREFIX, '')
+    else:
+      histogram_name_prefix = histogram_name.split('_{}'.format(OUTPUT_NN))[0].replace(SYS_HISTOGRAM_PREFIX, '')
     assert(histogram_name_prefix.endswith(('Up', 'Down')))
     return histogram_name_prefix
+  else:
+    return 'central'
+
+def get_node_subcategory(histogram_name):
+  output_nn_match = OUTPUT_NN_RE.match(histogram_name)
+  if output_nn_match:
+    node = output_nn_match.group('node')
+    category = output_nn_match.group('category')
+    return node, category
+  else:
+    return '', ''
 
 def parse_process(process):
   process_name = process
@@ -113,7 +127,7 @@ def get_evt_yields(input_file_name):
       process_path = os.path.join(evt_directory_path, process)
       process_dir_ptr = get_dir(input_file, process_path)
       process_name, decay_mode, gen_match = parse_process(process)
-      histogram_names = get_keys(process_dir_ptr, include = lambda key: EVENTCOUNTER in key)
+      histogram_names = get_keys(process_dir_ptr, include = lambda key: EVENTCOUNTER in key or OUTPUT_NN_RE.match(key))
       for histogram_name in histogram_names:
         histogram_path = os.path.join(process_path, histogram_name)
         histogram = input_file.Get(histogram_path)
@@ -122,6 +136,7 @@ def get_evt_yields(input_file_name):
             "Object at '%s' in file %s is not an instance of ROOT.TH1D" % (histogram_path, input_file_name)
           )
         systematics = get_systematics(histogram_name)
+        node, category = get_node_subcategory(histogram_name)
         event_count = int(histogram.GetEntries())
         event_yield = histogram.Integral()
         if systematics.startswith('FR'):
@@ -134,14 +149,20 @@ def get_evt_yields(input_file_name):
           results[subcategory_name][process_name][decay_mode] = collections.OrderedDict()
         if gen_match not in results[subcategory_name][process_name][decay_mode]:
           results[subcategory_name][process_name][decay_mode][gen_match] = collections.OrderedDict()
-        if systematics in results[subcategory_name][process_name][decay_mode][gen_match]:
+        if systematics not in results[subcategory_name][process_name][decay_mode][gen_match]:
+          results[subcategory_name][process_name][decay_mode][gen_match][systematics] = collections.OrderedDict()
+        if node not in results[subcategory_name][process_name][decay_mode][gen_match][systematics]:
+          results[subcategory_name][process_name][decay_mode][gen_match][systematics][node] = collections.OrderedDict()
+        if category in results[subcategory_name][process_name][decay_mode][gen_match][systematics][node]:
           raise RuntimeError(
             "Possible double-counting the event counts and yields by reading histogram '%s' in file %s: "
-            "subcategory name = %s, process name = %s, decay mode = %s, gen matching = %s, systematics = %s" % (
-              histogram_path, input_file_name, subcategory_name, process_name, decay_mode, gen_match, systematics
+            "subcategory name = %s, process name = %s, decay mode = %s, gen matching = %s, systematics = %s, "
+            "node = %s, category = %s" % (
+              histogram_path, input_file_name, subcategory_name, process_name, decay_mode, gen_match, systematics,
+              node, category,
             )
           )
-        results[subcategory_name][process_name][decay_mode][gen_match][systematics] = {
+        results[subcategory_name][process_name][decay_mode][gen_match][systematics][node][category] = {
           'count' : event_count,
           'yield' : event_yield,
         }
@@ -151,7 +172,8 @@ def get_evt_yields(input_file_name):
   input_file.Close()
   return results
 
-def get_table(input_file_name, allowed_decay_modes = None, show_gen_matching = True, allowed_systematics = 'central'):
+def get_table(input_file_name, allowed_decay_modes = None, show_gen_matching = True, allowed_systematics = 'central',
+              show_by_nodes = False):
   results = get_evt_yields(input_file_name)
   if not results:
     return
@@ -166,6 +188,9 @@ def get_table(input_file_name, allowed_decay_modes = None, show_gen_matching = T
     header.append('Gen matching')
   if allowed_systematics == 'all':
     header.append('Systematics')
+  if show_by_nodes:
+    header.append('Node')
+    header.append('Category')
   header.append('Event yields (counts)')
 
   exclude_from_SM_exp = ['data_obs', 'fakes_mc']
@@ -183,7 +208,7 @@ def get_table(input_file_name, allowed_decay_modes = None, show_gen_matching = T
         for gen_matching in results[subcategory][process][decay_mode]:
           if not show_gen_matching and gen_matching:
             continue
-          for systematics, stats in results[subcategory][process][decay_mode][gen_matching].items():
+          for systematics in results[subcategory][process][decay_mode][gen_matching]:
             if allowed_systematics == 'central' and systematics != 'central':
               continue
             if systematics.startswith('thu'):
@@ -191,49 +216,72 @@ def get_table(input_file_name, allowed_decay_modes = None, show_gen_matching = T
               assert(len(systematics_split) == 4)
               if systematics_split[2].lower() not in process.lower():
                 continue
-            yields = str(stats['count'])
-            if process != 'data_obs':
-              yields = '{} ({})'.format(fmt_float(stats['yield']), yields)
-            line = []
-            if subcategory:
-              line.append(subcategory)
-            line.append(process)
-            if allowed_decay_modes:
-              line.append(decay_mode)
-            if show_gen_matching:
-              line.append(gen_matching)
-            if allowed_systematics == 'all':
-              line.append(systematics)
-            line.append(yields)
-            assert(len(line) == len(header))
-            lines.append(line)
+            for node in results[subcategory][process][decay_mode][gen_matching][systematics]:
+              if not show_by_nodes and node:
+                continue
+              if node not in SM_exp:
+                SM_exp[node] = collections.OrderedDict()
+              for category, stats in results[subcategory][process][decay_mode][gen_matching][systematics][node].items():
+                if not show_by_nodes and category:
+                  continue
+                if category not in SM_exp[node]:
+                  SM_exp[node][category] = collections.OrderedDict()
+                yields = str(stats['count'])
+                if process != 'data_obs':
+                  yields = '{} ({})'.format(fmt_float(stats['yield']), yields)
+                line = []
+                if subcategory:
+                  line.append(subcategory)
+                line.append(process)
+                if allowed_decay_modes:
+                  line.append(decay_mode)
+                if show_gen_matching:
+                  line.append(gen_matching)
+                if allowed_systematics == 'all':
+                  line.append(systematics)
+                if show_by_nodes:
+                  line.append(node)
+                  line.append(category)
+                line.append(yields)
+                assert(len(line) == len(header))
+                lines.append(line)
 
-            if not decay_mode and \
-               not gen_matching and process not in exclude_from_SM_exp and \
-               not systematics.startswith('thu'):
-              if systematics not in SM_exp:
-                SM_exp[systematics] = {
-                  'yield' : 0.,
-                  'count' : 0,
-                }
-              SM_exp[systematics]['yield'] += stats['yield']
-              SM_exp[systematics]['count'] += stats['count']
-    for systematics in SM_exp:
-      if allowed_systematics == 'central' and systematics != 'central':
+                if not decay_mode and \
+                   not gen_matching and process not in exclude_from_SM_exp and \
+                   not systematics.startswith('thu'):
+                  if systematics not in SM_exp[node][category]:
+                    SM_exp[node][category][systematics] = {
+                      'yield' : 0.,
+                      'count' : 0,
+                    }
+                  SM_exp[node][category][systematics]['yield'] += stats['yield']
+                  SM_exp[node][category][systematics]['count'] += stats['count']
+    for node in SM_exp:
+      if not show_by_nodes and node:
         continue
-      line = []
-      if subcategory:
-        line.append(subcategory)
-      line.append('SM expectation')
-      if allowed_decay_modes:
-        line.append('')
-      if show_gen_matching:
-        line.append('')
-      if allowed_systematics == 'all':
-        line.append(systematics)
-      line.append('{} ({})'.format(fmt_float(SM_exp[systematics]['yield'], max_pow = 4), SM_exp[systematics]['count']))
-      assert(len(line) == len(header))
-      lines.append(line)
+      for category in SM_exp[node]:
+        if not show_by_nodes and category:
+          continue
+        for systematics in SM_exp[node][category]:
+          if allowed_systematics == 'central' and systematics != 'central':
+            continue
+          line = []
+          if subcategory:
+            line.append(subcategory)
+          line.append('SM expectation')
+          if allowed_decay_modes:
+            line.append('')
+          if show_gen_matching:
+            line.append('')
+          if allowed_systematics == 'all':
+            line.append(systematics)
+          if show_by_nodes:
+            line.append(node)
+            line.append(category)
+          SM_exp_results = SM_exp[node][category][systematics]
+          line.append('{} ({})'.format(fmt_float(SM_exp_results['yield'], max_pow = 4), SM_exp_results['count']))
+          assert(len(line) == len(header))
+          lines.append(line)
   return lines
 
 def print_table(lines, metadata):
@@ -406,6 +454,10 @@ if __name__ == '__main__':
     choices = ANALYSIS_REGIONS.keys(),
     help = 'R|Which hadd stage2 files to search for',
   )
+  parser.add_argument('-n', '--node',
+    dest = 'node', action = 'store_true', default = False,
+    help = 'R|Show event yields and counts split by NN node (effective only in 2lss, 3l)',
+  )
   args = parser.parse_args()
 
   input_file_paths = args.input
@@ -414,6 +466,7 @@ if __name__ == '__main__':
   show_gen_matching = args.gen_matching
   allowed_systematics = args.systematics
   searchable_regions = args.regions
+  show_by_nodes = args.node
 
   if len(allowed_decay_modes) > 1 and '' in allowed_decay_modes:
     raise ValueError("Conflicting values to 'decay_modes' parameter")
@@ -437,6 +490,7 @@ if __name__ == '__main__':
       allowed_decay_modes = allowed_decay_modes,
       show_gen_matching   = show_gen_matching,
       allowed_systematics = allowed_systematics,
+      show_by_nodes       = show_by_nodes,
     )
     metadata = extract_metadata(input_file_name)
     print_table(table, metadata)
