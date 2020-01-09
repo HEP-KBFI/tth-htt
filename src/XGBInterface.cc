@@ -160,7 +160,7 @@ XGBInterface::XGBInterface(const std::string & mvaFileName,
   , moduleMainString_even_(nullptr)
   , moduleMain_even_(nullptr)
   , mvaInputVariables_(mvaInputVariables)
-  , fitFunctionFileName_(fitFunctionFileName)
+  , fitFunctionFileName_(LocalFileInPath(fitFunctionFileName).fullPath())
 {
   if(mode_ != Mode::k_old)
   {
@@ -220,7 +220,7 @@ XGBInterface::XGBInterface(const std::string & mvaFileName_odd,
   , moduleMainString_even_(nullptr)
   , moduleMain_even_(nullptr)
   , mvaInputVariables_(mvaInputVariables)
-  , fitFunctionFileName_(fitFunctionFileName)
+  , fitFunctionFileName_(LocalFileInPath(fitFunctionFileName).fullPath())
 {
   if(mode_ != Mode::k_odd_even)
   {

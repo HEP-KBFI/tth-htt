@@ -99,7 +99,7 @@ TMVAInterface::TMVAInterface(const std::string & mvaFileName,
   , mva_odd_(nullptr)
   , mva_even_(nullptr)
   , isBDTTransform_(false)
-  , fitFunctionFileName_(fitFunctionFileName)
+  , fitFunctionFileName_(LocalFileInPath(fitFunctionFileName).fullPath())
   , Transform_Ptr_(nullptr)
 {
 
@@ -143,7 +143,7 @@ TMVAInterface::TMVAInterface(const std::string & mvaFileName_odd,
   , mva_odd_(nullptr)
   , mva_even_(nullptr)
   , isBDTTransform_(false)
-  , fitFunctionFileName_(fitFunctionFileName)
+  , fitFunctionFileName_(LocalFileInPath(fitFunctionFileName).fullPath())
   , Transform_Ptr_(nullptr)
 {
 
