@@ -240,6 +240,12 @@ int main(int argc, char* argv[])
     central_or_shifts_local = { central_or_shift_main };
   }
 
+  edm::ParameterSet triggerWhiteList;
+  if(! isMC)
+  {
+    triggerWhiteList = cfg_analyze.getParameter<edm::ParameterSet>("triggerWhiteList");
+  }
+
   const edm::ParameterSet syncNtuple_cfg = cfg_analyze.getParameter<edm::ParameterSet>("syncNtuple");
   const std::string syncNtuple_tree = syncNtuple_cfg.getParameter<std::string>("tree");
   const std::string syncNtuple_output = syncNtuple_cfg.getParameter<std::string>("output");
@@ -771,15 +777,15 @@ int main(int argc, char* argv[])
       }
     }
 
-    bool isTriggered_1e = hltPaths_isTriggered(triggers_1e, isDEBUG);
-    bool isTriggered_1mu = hltPaths_isTriggered(triggers_1mu, isDEBUG);
-    bool isTriggered_2e = hltPaths_isTriggered(triggers_2e, isDEBUG);
-    bool isTriggered_1e1mu = hltPaths_isTriggered(triggers_1e1mu, isDEBUG);
-    bool isTriggered_2mu = hltPaths_isTriggered(triggers_2mu, isDEBUG);
-    bool isTriggered_3e = hltPaths_isTriggered(triggers_3e, isDEBUG);
-    bool isTriggered_2e1mu = hltPaths_isTriggered(triggers_2e1mu, isDEBUG);
-    bool isTriggered_1e2mu = hltPaths_isTriggered(triggers_1e2mu, isDEBUG);
-    bool isTriggered_3mu = hltPaths_isTriggered(triggers_3mu, isDEBUG);
+    bool isTriggered_1e = hltPaths_isTriggered(triggers_1e, triggerWhiteList, eventInfo, isMC, isDEBUG);
+    bool isTriggered_1mu = hltPaths_isTriggered(triggers_1mu, triggerWhiteList, eventInfo, isMC, isDEBUG);
+    bool isTriggered_2e = hltPaths_isTriggered(triggers_2e, triggerWhiteList, eventInfo, isMC, isDEBUG);
+    bool isTriggered_1e1mu = hltPaths_isTriggered(triggers_1e1mu, triggerWhiteList, eventInfo, isMC, isDEBUG);
+    bool isTriggered_2mu = hltPaths_isTriggered(triggers_2mu, triggerWhiteList, eventInfo, isMC, isDEBUG);
+    bool isTriggered_3e = hltPaths_isTriggered(triggers_3e, triggerWhiteList, eventInfo, isMC, isDEBUG);
+    bool isTriggered_2e1mu = hltPaths_isTriggered(triggers_2e1mu, triggerWhiteList, eventInfo, isMC, isDEBUG);
+    bool isTriggered_1e2mu = hltPaths_isTriggered(triggers_1e2mu, triggerWhiteList, eventInfo, isMC, isDEBUG);
+    bool isTriggered_3mu = hltPaths_isTriggered(triggers_3mu, triggerWhiteList, eventInfo, isMC, isDEBUG);
     if ( isDEBUG ) {
       std::cout << "isTriggered:"
 		<< " 1e = " << isTriggered_1e << ","
@@ -1312,10 +1318,10 @@ int main(int argc, char* argv[])
 
 //--- compute output of BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar
 //    in 2lss category of ttH multilepton analysis
-    const double mindr_lep1_jet = comp_mindr_lep1_jet(*selLepton_lead, selJets);
-    const double mindr_lep2_jet = comp_mindr_lep2_jet(*selLepton_sublead, selJets);
+    const double mindr_lep1_jet = comp_mindr_jet(*selLepton_lead, selJets);
+    const double mindr_lep2_jet = comp_mindr_jet(*selLepton_sublead, selJets);
     const double max_lep_eta    = std::max(selLepton_lead->absEta(), selLepton_sublead->absEta());
-    const double mT_lep1        = comp_MT_met_lep1(*selLepton_lead,    met.pt(), met.phi());
+    const double mT_lep1        = comp_MT_met(selLepton_lead,    met.pt(), met.phi());
     const double avg_dr_jet     = comp_avg_dr_jet(selJets);
     const double mT             = 1.0;
     double mvaOutput_2lss_ttV = 1.0;
@@ -1423,12 +1429,12 @@ int main(int argc, char* argv[])
       ;
 
       const double dr_leps        = deltaR(selLepton_lead->p4(), selLepton_sublead->p4());
-      const double mT_lep2        = comp_MT_met_lep2(*selLepton_sublead, met.pt(), met.phi());
+      const double mT_lep2        = comp_MT_met(selLepton_sublead, met.pt(), met.phi());
       const double max_dr_jet     = comp_max_dr_jet(selJets);
       const double mbb            = selBJets_medium.size() > 1 ?  (selBJets_medium[0]->p4() + selBJets_medium[1]->p4()).mass() : -1000;
       const double mbb_loose      = selBJets_loose.size() > 1 ? (selBJets_loose[0]->p4() + selBJets_loose[1]->p4()).mass() : -1000;
       const double min_dr_lep_jet = std::min(mindr_lep1_jet, mindr_lep2_jet);
-      const double mindr_lep3_jet = selLepton_third ? comp_mindr_lep3_jet(*selLepton_sublead, selJets) : -1.;
+      const double mindr_lep3_jet = selLepton_third ? comp_mindr_jet(*selLepton_sublead, selJets) : -1.;
       const int nLightJet         = selJets.size() - selBJets_loose.size() + selJetsForward.size();
 
       snm->read(eventInfo);

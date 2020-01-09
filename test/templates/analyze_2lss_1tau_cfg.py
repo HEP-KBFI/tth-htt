@@ -3,6 +3,7 @@ import os
 
 from tthAnalysis.HiggsToTauTau.configs.recommendedMEtFilters_cfi import *
 from tthAnalysis.HiggsToTauTau.configs.EvtYieldHistManager_cfi import *
+from tthAnalysis.HiggsToTauTau.analysisSettings import *
 
 process = cms.PSet()
 
@@ -83,6 +84,7 @@ process.analyze_2lss_1tau = cms.PSet(
     apply_l1PreFireWeight = cms.bool(True),
     apply_met_filters = cms.bool(True),
     cfgMEtFilter = cms.PSet(),
+    triggerWhiteList = cms.PSet(),
     apply_hadTauFakeRateSF = cms.bool(False),
 
     fillGenEvtHistograms = cms.bool(False),

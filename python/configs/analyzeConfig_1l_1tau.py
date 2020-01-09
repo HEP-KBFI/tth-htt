@@ -463,7 +463,6 @@ class analyzeConfig_1l_1tau(analyzeConfig):
                   'apply_hlt_filter'         : self.hlt_filter,
                   'useNonNominal'            : self.use_nonnominal,
                   'fillGenEvtHistograms'     : True,
-                  'useObjectMultiplicity'    : True,
                   'evtCategories'            : self.categories,
                 }
                 self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info, lepton_and_hadTau_selection)
@@ -726,10 +725,15 @@ class analyzeConfig_1l_1tau(analyzeConfig):
         histogramDir = None
         label = None
         make_plots_backgrounds = None
+        extra_params = None
         if category == "1l_1tau_SS":
           histogramDir = getHistogramDir(self.category_inclusive, "Tight", "disabled", "SS")
           label = "1l+1#tau_{h} SS"
           make_plots_backgrounds = self.make_plots_backgrounds_SS
+          extra_params = "process.makePlots.distributions = cms.VPSet(" \
+            "distribution for distribution in process.makePlots.distributions " \
+            "if not distribution.histogramName.value().startswith(('sel/met', 'sel/hadTaus'))" \
+          ")"
         elif category == "1l_1tau_OS":
           histogramDir = getHistogramDir(self.category_inclusive, "Tight", "disabled", "OS")
           label = "1l+1#tau_{h} OS"
@@ -748,6 +752,8 @@ class analyzeConfig_1l_1tau(analyzeConfig):
           'label' : label,
           'make_plots_backgrounds' : make_plots_backgrounds
         }
+        if extra_params:
+          self.jobOptions_make_plots[key_makePlots_job]['extra_params'] = extra_params
         self.createCfg_makePlots(self.jobOptions_make_plots[key_makePlots_job])
         if "Fakeable_mcClosure" in self.lepton_and_hadTau_selections: #TODO
           key_hadd_stage2_job = getKey(get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), chargeSumSelection)

@@ -247,7 +247,7 @@ numerator_and_denominatorHistManagers::fillHistograms(const RecoLepton & lepton,
           electronHistManager_genHadTau_->fillHistograms(electron, evtWeight);
           electronHistManager_genHadTauOrLepton_->fillHistograms(electron, evtWeight);
         }
-        else if(electron.genPhoton() && !electron.genLepton() && electron.genPhoton()->pt() > 0.5 * electron.pt())
+        else if(electron.genPhoton())
         {
           electronHistManager_genPhoton_->fillHistograms(electron, evtWeight);
         }
@@ -290,11 +290,24 @@ numerator_and_denominatorHistManagers::fillHistograms(const RecoLepton & lepton,
     evtHistManager_LeptonFakeRate_->fillHistograms(met, mT, mT_fix, evtWeight);
     if(isMC_)
     {
-      if(lepton.genHadTau())                       evtHistManager_LeptonFakeRate_genHadTau_        ->fillHistograms(met, mT, mT_fix, evtWeight);
-      if(                      lepton.genLepton()) evtHistManager_LeptonFakeRate_genLepton_        ->fillHistograms(met, mT, mT_fix, evtWeight);
-      if(                      lepton.genPhoton()) evtHistManager_LeptonFakeRate_genPhoton_        ->fillHistograms(met, mT, mT_fix, evtWeight);
-      if(lepton.genHadTau() || lepton.genLepton()) evtHistManager_LeptonFakeRate_genHadTauOrLepton_->fillHistograms(met, mT, mT_fix, evtWeight);
-      else                                         evtHistManager_LeptonFakeRate_genJet_           ->fillHistograms(met, mT, mT_fix, evtWeight);
+      if(lepton.genLepton())
+      {
+        evtHistManager_LeptonFakeRate_genLepton_        ->fillHistograms(met, mT, mT_fix, evtWeight);
+        evtHistManager_LeptonFakeRate_genHadTauOrLepton_->fillHistograms(met, mT, mT_fix, evtWeight);
+      }
+      else if(lepton.genHadTau())
+      {
+        evtHistManager_LeptonFakeRate_genHadTau_        ->fillHistograms(met, mT, mT_fix, evtWeight);
+        evtHistManager_LeptonFakeRate_genHadTauOrLepton_->fillHistograms(met, mT, mT_fix, evtWeight);
+      }
+      else if(lepton.genPhoton())
+      {
+        evtHistManager_LeptonFakeRate_genPhoton_->fillHistograms(met, mT, mT_fix, evtWeight);
+      }
+      else
+      {
+        evtHistManager_LeptonFakeRate_genJet_->fillHistograms(met, mT, mT_fix, evtWeight);
+      }
     }
 
     if(cutFlowTable)

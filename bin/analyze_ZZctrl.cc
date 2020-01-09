@@ -244,6 +244,12 @@ int main(int argc, char* argv[])
     central_or_shifts_local = { central_or_shift_main };
   }
 
+  edm::ParameterSet triggerWhiteList;
+  if(! isMC)
+  {
+    triggerWhiteList = cfg_analyze.getParameter<edm::ParameterSet>("triggerWhiteList");
+  }
+
   const edm::ParameterSet syncNtuple_cfg = cfg_analyze.getParameter<edm::ParameterSet>("syncNtuple");
   const std::string syncNtuple_tree = syncNtuple_cfg.getParameter<std::string>("tree");
   const std::string syncNtuple_output = syncNtuple_cfg.getParameter<std::string>("output");
@@ -830,15 +836,15 @@ int main(int argc, char* argv[])
       }
     }
 
-    bool isTriggered_1e = hltPaths_isTriggered(triggers_1e, isDEBUG);
-    bool isTriggered_1mu = hltPaths_isTriggered(triggers_1mu, isDEBUG);
-    bool isTriggered_2e = hltPaths_isTriggered(triggers_2e, isDEBUG);
-    bool isTriggered_1e1mu = hltPaths_isTriggered(triggers_1e1mu, isDEBUG);
-    bool isTriggered_2mu = hltPaths_isTriggered(triggers_2mu, isDEBUG);
-    bool isTriggered_3e = hltPaths_isTriggered(triggers_3e, isDEBUG);
-    bool isTriggered_2e1mu = hltPaths_isTriggered(triggers_2e1mu, isDEBUG);
-    bool isTriggered_1e2mu = hltPaths_isTriggered(triggers_1e2mu, isDEBUG);
-    bool isTriggered_3mu = hltPaths_isTriggered(triggers_3mu, isDEBUG);
+    bool isTriggered_1e = hltPaths_isTriggered(triggers_1e, triggerWhiteList, eventInfo, isMC, isDEBUG);
+    bool isTriggered_1mu = hltPaths_isTriggered(triggers_1mu, triggerWhiteList, eventInfo, isMC, isDEBUG);
+    bool isTriggered_2e = hltPaths_isTriggered(triggers_2e, triggerWhiteList, eventInfo, isMC, isDEBUG);
+    bool isTriggered_1e1mu = hltPaths_isTriggered(triggers_1e1mu, triggerWhiteList, eventInfo, isMC, isDEBUG);
+    bool isTriggered_2mu = hltPaths_isTriggered(triggers_2mu, triggerWhiteList, eventInfo, isMC, isDEBUG);
+    bool isTriggered_3e = hltPaths_isTriggered(triggers_3e, triggerWhiteList, eventInfo, isMC, isDEBUG);
+    bool isTriggered_2e1mu = hltPaths_isTriggered(triggers_2e1mu, triggerWhiteList, eventInfo, isMC, isDEBUG);
+    bool isTriggered_1e2mu = hltPaths_isTriggered(triggers_1e2mu, triggerWhiteList, eventInfo, isMC, isDEBUG);
+    bool isTriggered_3mu = hltPaths_isTriggered(triggers_3mu, triggerWhiteList, eventInfo, isMC, isDEBUG);
         if ( isDEBUG ) {
       std::cout << "isTriggered:"
                 << " 1e = " << isTriggered_1e << ","
@@ -1508,29 +1514,29 @@ int main(int argc, char* argv[])
 
       bdt_filler -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })
           ("lep1_pt",             selLepton_lead -> pt())
-          ("lep1_conePt",         comp_lep1_conePt(*selLepton_lead))
+          ("lep1_conePt",         comp_lep_conePt(*selLepton_lead))
           ("lep1_eta",            selLepton_lead -> eta())
           ("lep1_tth_mva",        selLepton_lead -> mvaRawTTH())
-          ("mindr_lep1_jet",      TMath::Min(10., comp_mindr_lep1_jet(*selLepton_lead, selJets)))
-          ("mT_lep1",             comp_MT_met_lep1(*selLepton_lead, met.pt(), met.phi()))
+          ("mindr_lep1_jet",      TMath::Min(10., comp_mindr_jet(*selLepton_lead, selJets)))
+          ("mT_lep1",             comp_MT_met(selLepton_lead, met.pt(), met.phi()))
           ("lep2_pt",             selLepton_sublead -> pt())
-          ("lep2_conePt",         comp_lep1_conePt(*selLepton_sublead))
+          ("lep2_conePt",         comp_lep_conePt(*selLepton_sublead))
           ("lep2_eta",            selLepton_sublead -> eta())
           ("lep2_tth_mva",        selLepton_sublead -> mvaRawTTH())
-          ("mindr_lep2_jet",      TMath::Min(10., comp_mindr_lep1_jet(*selLepton_sublead, selJets)))
-          ("mT_lep2",             comp_MT_met_lep1(*selLepton_sublead, met.pt(), met.phi()))
+          ("mindr_lep2_jet",      TMath::Min(10., comp_mindr_jet(*selLepton_sublead, selJets)))
+          ("mT_lep2",             comp_MT_met(selLepton_sublead, met.pt(), met.phi()))
           ("lep3_pt",             selLepton_third -> pt())
-          ("lep3_conePt",         comp_lep1_conePt(*selLepton_third))
+          ("lep3_conePt",         comp_lep_conePt(*selLepton_third))
           ("lep3_eta",            selLepton_third -> eta())
           ("lep3_tth_mva",        selLepton_third -> mvaRawTTH())
-          ("mindr_lep3_jet",      TMath::Min(10., comp_mindr_lep1_jet(*selLepton_third, selJets)))
-          ("mT_lep3",             comp_MT_met_lep1(*selLepton_third, met.pt(), met.phi()))
+          ("mindr_lep3_jet",      TMath::Min(10., comp_mindr_jet(*selLepton_third, selJets)))
+          ("mT_lep3",             comp_MT_met(selLepton_third, met.pt(), met.phi()))
           ("lep4_pt",             selLepton_fourth -> pt())
-          ("lep4_conePt",         comp_lep1_conePt(*selLepton_fourth))
+          ("lep4_conePt",         comp_lep_conePt(*selLepton_fourth))
           ("lep4_eta",            selLepton_fourth -> eta())
           ("lep4_tth_mva",        selLepton_fourth -> mvaRawTTH())
-          ("mindr_lep4_jet",      TMath::Min(10., comp_mindr_lep1_jet(*selLepton_fourth, selJets)))
-          ("mT_lep4",             comp_MT_met_lep1(*selLepton_fourth, met.pt(), met.phi()))
+          ("mindr_lep4_jet",      TMath::Min(10., comp_mindr_jet(*selLepton_fourth, selJets)))
+          ("mT_lep4",             comp_MT_met(selLepton_fourth, met.pt(), met.phi()))
           ("avg_dr_jet",          comp_avg_dr_jet(selJets))
           ("ptmiss",              met.pt())
           ("htmiss",              mht_p4.pt())
@@ -1565,18 +1571,18 @@ int main(int argc, char* argv[])
 
     if(snm)
     {
-      const double mT_lep1        = comp_MT_met_lep1(selLepton_lead->p4(), met.pt(), met.phi());
-      const double mT_lep2        = comp_MT_met_lep2(selLepton_sublead->p4(), met.pt(), met.phi());
-      const double mT_lep3        = comp_MT_met_lep3(selLepton_third->p4(), met.pt(), met.phi());
-      const double mT_lep4        = comp_MT_met_lep4(selLepton_fourth->p4(), met.pt(), met.phi());
+      const double mT_lep1        = comp_MT_met(selLepton_lead, met.pt(), met.phi());
+      const double mT_lep2        = comp_MT_met(selLepton_sublead, met.pt(), met.phi());
+      const double mT_lep3        = comp_MT_met(selLepton_third, met.pt(), met.phi());
+      const double mT_lep4        = comp_MT_met(selLepton_fourth, met.pt(), met.phi());
       const double max_dr_jet     = comp_max_dr_jet(selJets);
       const double mbb            = selBJets_medium.size() > 1 ? (selBJets_medium[0]->p4() + selBJets_medium[1]->p4()).mass() : -1.;
       const double mbb_loose      = selBJets_loose.size() > 1 ? (selBJets_loose[0]->p4() + selBJets_loose[1]->p4()).mass() : -1.;
       const double avg_dr_jet     = comp_avg_dr_jet(selJets);
-      const double mindr_lep1_jet = comp_mindr_lep1_jet(*selLepton_lead, selJets);
-      const double mindr_lep2_jet = comp_mindr_lep2_jet(*selLepton_sublead, selJets);
-      const double mindr_lep3_jet = comp_mindr_lep3_jet(*selLepton_third, selJets);
-      const double mindr_lep4_jet = comp_mindr_lep4_jet(*selLepton_fourth, selJets);
+      const double mindr_lep1_jet = comp_mindr_jet(*selLepton_lead, selJets);
+      const double mindr_lep2_jet = comp_mindr_jet(*selLepton_sublead, selJets);
+      const double mindr_lep3_jet = comp_mindr_jet(*selLepton_third, selJets);
+      const double mindr_lep4_jet = comp_mindr_jet(*selLepton_fourth, selJets);
       const double min_dr_lep_jet = std::min({ mindr_lep1_jet, mindr_lep2_jet, mindr_lep3_jet, mindr_lep4_jet });
       const double dr_leps        = deltaR(selLepton_lead->p4(), selLepton_sublead->p4());
       const double max_lep_eta    = std::max({

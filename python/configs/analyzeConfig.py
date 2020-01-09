@@ -482,7 +482,7 @@ class analyzeConfig(object):
 
         self.hadTau_selection_relaxed = None
         if self.era in [ '2016', '2017', '2018' ]:
-            self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_deeptau_{}.root".format(era)
+            self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_deeptau_{}_v2.root".format(era)
         else:
             raise ValueError('Invalid era: %s' % self.era)
         assert(os.path.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', self.hadTauFakeRateWeight_inputFile)))
@@ -709,6 +709,8 @@ class analyzeConfig(object):
         if 'skipEvery' in sample_info:
             assert('skipEvery' not in jobOptions)
             jobOptions['skipEvery'] = sample_info['skipEvery']
+        if 'useObjectMultiplicity' not in jobOptions:
+            jobOptions['useObjectMultiplicity'] = False
 
         jobOptions_local = [
             'process',
@@ -802,6 +804,8 @@ class analyzeConfig(object):
             "{}.{:<{len}} = EvtYieldHistManager_{}".format  (process_string, 'cfgEvtYieldHistManager', self.era, len = max_option_len),
             "{}.{:<{len}} = recommendedMEtFilters_{}".format(process_string, 'cfgMEtFilter',           self.era, len = max_option_len),
           ])
+        if not is_mc:
+          lines.append("{}.{:<{len}} = trigger_runs_{}".format(process_string, 'triggerWhiteList', self.era, len = max_option_len))
         for jobOptions_key in jobOptions_keys:
             if jobOptions_key not in jobOptions:
               continue
@@ -855,7 +859,7 @@ class analyzeConfig(object):
             if isLeptonFR:
                 available_triggers = list(self.triggerTable.triggers_leptonFR[trigger] - blacklist)
             else:
-                available_triggers = list(self.triggerTable.triggers_analysis[trigger] - blacklist)
+                available_triggers = list(set(trigger_stat['name'] for trigger_stat in self.triggerTable.triggers_analysis[trigger]) - blacklist)
             use_trigger = bool(trigger in sample_info['triggers'])
             lines.extend([
                 "{:<{len}} = cms.vstring({})".format(trigger_string,     available_triggers, len = max_option_len + len(process_string) + 1),
@@ -1240,6 +1244,8 @@ class analyzeConfig(object):
         lines.append("  )")
         lines.append(")")
         lines.append("process.makePlots.intLumiData = cms.double(%.1f)" % (self.lumi / 1000))
+        if 'extra_params' in jobOptions:
+          lines.append(jobOptions['extra_params'])
         self.createCfg_makePlots_addShapes(lines)
         if hasattr(self, 'isControlRegion'):
           lines.append("extend({})".format(self.isControlRegion))
@@ -1491,7 +1497,7 @@ class analyzeConfig(object):
 
     def get_hadd_settings(self):
         if len(self.central_or_shifts) > 1:
-            if self.channel in [ '0l_2tau', '1l_1tau' ]:
+            if self.channel in [ '1l_1tau', '2lss' ]:
                 return 2, '4096M'
             else:
                 return 3, ''
@@ -1583,6 +1589,8 @@ class analyzeConfig(object):
         lines_makefile.append("")
         if make_target_validate not in self.phoniesToAdd:
             self.phoniesToAdd.append(make_target_validate)
+        if make_target_validate not in self.targets:
+            self.targets.append(make_target_validate)
 
     def addToMakefile_outRoot(self, lines_makefile):
         """Adds the commands to Makefile that are necessary for building the final condensed *.root output file

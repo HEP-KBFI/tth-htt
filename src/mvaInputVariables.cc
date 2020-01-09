@@ -1,5 +1,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/mvaInputVariables.h"
 
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
+#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h" // RecoHadTau
+
 #include <DataFormats/Math/interface/deltaR.h> // deltaR()
 
 #include <TLorentzVector.h> // TLorentzVector
@@ -12,12 +15,27 @@ namespace
   {
     return x*x;
   }
+
+  Particle::LorentzVector
+  getP4(const ChargedParticle * particle)
+  {
+    const RecoLepton * lepton = dynamic_cast<const RecoLepton *>(particle);
+    const RecoHadTau * hadTau = dynamic_cast<const RecoHadTau *>(particle);
+    assert(lepton || hadTau);
+    Particle::LorentzVector lv = lepton ? lepton->cone_p4() : hadTau->p4();
+    if(lepton)
+    {
+      // treat all leptons as massless
+      lv.SetM(0.);
+    }
+    return lv;
+  }
 }
 
 double
-comp_MT_met_lep1(const Particle::LorentzVector & leptonP4,
-                 double met_pt,
-                 double met_phi)
+comp_MT_met(const Particle::LorentzVector & leptonP4,
+            double met_pt,
+            double met_phi)
 {
   const double met_px = met_pt*std::cos(met_phi);
   const double met_py = met_pt*std::sin(met_phi);
@@ -30,83 +48,49 @@ comp_MT_met_lep1(const Particle::LorentzVector & leptonP4,
 }
 
 double
-comp_MT_met_lep1(const Particle & lepton,
-                 double met_pt,
-                 double met_phi)
+comp_MT_met(const RecoLepton * lepton,
+            double met_pt,
+            double met_phi)
 {
-  return comp_MT_met_lep1(lepton.p4(), met_pt, met_phi);
+  return comp_MT_met(::getP4(lepton), met_pt, met_phi);
 }
 
 double
-comp_MT_met_lep2(const Particle::LorentzVector & leptonP4,
-                 double met_pt,
-                 double met_phi)
+comp_MT_met(const RecoHadTau * hadTau,
+            double met_pt,
+            double met_phi)
 {
-  return comp_MT_met_lep1(leptonP4, met_pt, met_phi);
+  return comp_MT_met(::getP4(hadTau), met_pt, met_phi);
 }
 
 double
-comp_MT_met_lep2(const Particle & lepton,
-                 double met_pt,
-                 double met_phi)
+comp_massL2(const ChargedParticle * particle1,
+            const ChargedParticle * particle2,
+            double met_pt,
+            double met_phi)
 {
-  return comp_MT_met_lep2(lepton.p4(), met_pt, met_phi);
+  return comp_MT_met(::getP4(particle1) + ::getP4(particle2), met_pt, met_phi);
 }
 
 double
-comp_MT_met_lep3(const Particle::LorentzVector & leptonP4,
-                 double met_pt,
-                 double met_phi)
+comp_massL3(const ChargedParticle * particle1,
+            const ChargedParticle * particle2,
+            const ChargedParticle * particle3,
+            double met_pt,
+            double met_phi)
 {
-  return comp_MT_met_lep1(leptonP4, met_pt, met_phi);
+  return comp_MT_met(::getP4(particle1) + ::getP4(particle2) + ::getP4(particle3), met_pt, met_phi);
 }
 
 double
-comp_MT_met_lep3(const Particle & lepton,
-                 double met_pt,
-                 double met_phi)
+comp_massL4(const ChargedParticle * particle1,
+            const ChargedParticle * particle2,
+            const ChargedParticle * particle3,
+            const ChargedParticle * particle4,
+            double met_pt,
+            double met_phi)
 {
-  return comp_MT_met_lep3(lepton.p4(), met_pt, met_phi);
-}
-
-double
-comp_MT_met_lep4(const Particle::LorentzVector & leptonP4,
-                 double met_pt,
-                 double met_phi)
-{
-  return comp_MT_met_lep1(leptonP4, met_pt, met_phi);
-}
-
-double
-comp_MT_met_lep4(const Particle & lepton,
-                 double met_pt,
-                 double met_phi)
-{
-  return comp_MT_met_lep4(lepton.p4(), met_pt, met_phi);
-}
-
-double
-comp_MT_met_hadTau1(const Particle & hadTau,
-                    double met_pt,
-                    double met_phi)
-{
-  return comp_MT_met_lep1(hadTau, met_pt, met_phi);
-}
-
-double
-comp_MT_met_hadTau2(const Particle & hadTau,
-                    double met_pt,
-                    double met_phi)
-{
-  return comp_MT_met_lep1(hadTau, met_pt, met_phi);
-}
-
-double
-comp_MT_met_hadTau3(const Particle & hadTau,
-                    double met_pt,
-                    double met_phi)
-{
-  return comp_MT_met_lep1(hadTau, met_pt, met_phi);
+  return comp_MT_met(::getP4(particle1) + ::getP4(particle2) + ::getP4(particle3) + ::getP4(particle4), met_pt, met_phi);
 }
 
 namespace
@@ -196,82 +180,22 @@ comp_n_jet25_recl(const std::vector<const RecoJet *> & jets_cleaned)
 }
 
 double
-comp_mindr_lep1_jet(const Particle & lepton,
-                    const std::vector<const RecoJet *> & jets_cleaned)
+comp_mindr_jet(const Particle & particle,
+               const std::vector<const RecoJet *> & jets_cleaned)
 {
   double dRmin = 1.e+3;
   for(const RecoJet * jet: jets_cleaned)
   {
-    const double dR = deltaR(lepton.eta(), lepton.phi(), jet->eta(), jet->phi());
+    const double dR = deltaR(particle.eta(), particle.phi(), jet->eta(), jet->phi());
     dRmin = std::min(dR, dRmin);
   }
   return dRmin;
 }
 
 double
-comp_mindr_lep2_jet(const Particle & lepton,
-                    const std::vector<const RecoJet *> & jets_cleaned)
-{
-  return comp_mindr_lep1_jet(lepton, jets_cleaned);
-}
-
-double
-comp_mindr_lep3_jet(const Particle & lepton,
-                    const std::vector<const RecoJet *> & jets_cleaned)
-{
-  return comp_mindr_lep1_jet(lepton, jets_cleaned);
-}
-
-double
-comp_mindr_lep4_jet(const Particle & lepton,
-                    const std::vector<const RecoJet *> & jets_cleaned)
-{
-  return comp_mindr_lep1_jet(lepton, jets_cleaned);
-}
-
-double
-comp_mindr_hadTau1_jet(const Particle & hadTau,
-                       const std::vector<const RecoJet *> & jets_cleaned)
-{
-  return comp_mindr_lep1_jet(hadTau, jets_cleaned);
-}
-
-double
-comp_mindr_hadTau2_jet(const Particle & hadTau,
-                       const std::vector<const RecoJet *> & jets_cleaned)
-{
-  return comp_mindr_lep1_jet(hadTau, jets_cleaned);
-}
-
-double
-comp_mindr_hadTau3_jet(const Particle & hadTau,
-                       const std::vector<const RecoJet *> & jets_cleaned)
-{
-  return comp_mindr_lep1_jet(hadTau, jets_cleaned);
-}
-
-double
-comp_lep1_conePt(const RecoLepton & lepton)
+comp_lep_conePt(const RecoLepton & lepton)
 {
   return lepton.cone_pt();
-}
-
-double
-comp_lep2_conePt(const RecoLepton & lepton)
-{
-  return comp_lep1_conePt(lepton);
-}
-
-double
-comp_lep3_conePt(const RecoLepton & lepton)
-{
-  return comp_lep1_conePt(lepton);
-}
-
-double
-comp_lep4_conePt(const RecoLepton & lepton)
-{
-  return comp_lep1_conePt(lepton);
 }
 
 double
@@ -322,19 +246,19 @@ comp_max_dr_jet(const std::vector<const RecoJet *> & jets_cleaned)
   return dRmax;
 }
 
-double 
-comp_cosThetaStar(const Particle::LorentzVector & daughterP4, const Particle::LorentzVector & motherP4)
+double
+comp_cosThetaStar(const Particle::LorentzVector & daughterP4_lead,
+                  const Particle::LorentzVector & daughterP4_sublead)
 {
   // CV: compute "helicity angle" between momentum vectors of daughter and mother particle
   //     in the rest-frame of the mother particle
   //    (cf. Section 2.6.2 and Fig. 59 of AN-2015/001)
-  TLorentzVector daughterP4_lv;
-  daughterP4_lv.SetPtEtaPhiM(daughterP4.pt(), daughterP4.eta(), daughterP4.phi(), daughterP4.mass());
-
-  TLorentzVector motherP4_lv;
-  motherP4_lv.SetPtEtaPhiM(motherP4.pt(), motherP4.eta(), motherP4.phi(), motherP4.mass());
-
-  daughterP4_lv.Boost(-motherP4_lv.BoostVector());
-  const double cosThetaStar = std::fabs(daughterP4_lv.CosTheta());
-  return cosThetaStar;
+  TLorentzVector daughterP4tlv_lead;
+  daughterP4tlv_lead.SetPtEtaPhiM(daughterP4_lead.pt(), daughterP4_lead.eta(), daughterP4_lead.phi(), daughterP4_lead.mass());
+  TLorentzVector daughterP4tlv_sublead;
+  daughterP4tlv_sublead.SetPtEtaPhiM(daughterP4_sublead.pt(), daughterP4_sublead.eta(), daughterP4_sublead.phi(), daughterP4_sublead.mass());
+  const TLorentzVector motherP4 = daughterP4tlv_lead + daughterP4tlv_sublead;
+  TLorentzVector daughterBoost = daughterP4tlv_lead; // can be subleading, too, doesn't matter
+  daughterBoost.Boost(-motherP4.BoostVector());
+  return std::fabs(daughterBoost.CosTheta());
 }

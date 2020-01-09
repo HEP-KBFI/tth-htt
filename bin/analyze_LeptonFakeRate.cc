@@ -55,6 +55,8 @@
 #include <PhysicsTools/FWLite/interface/TFileService.h> // fwlite::TFileService
 #include <DataFormats/FWLite/interface/InputSource.h> // fwlite::InputSource
 #include <DataFormats/FWLite/interface/OutputFiles.h> // fwlite::OutputFiles
+#include <DataFormats/Math/interface/deltaR.h>
+
 
 #include <TRandom3.h> // TRandom3
 #include <TBenchmark.h> // TBenchmark
@@ -70,6 +72,63 @@
 
 typedef std::vector<std::string> vstring;
 typedef std::vector<double> vdouble;
+
+void CheckPhotonMatch(const RecoElectron & preselElectron, std::vector<GenPhoton> genPhotons, double dR = 0.5)
+{
+
+  int photon_counter = 0;
+  for(std::vector<GenPhoton>::iterator genPhoton = genPhotons.begin(); genPhoton != genPhotons.end(); genPhoton++) {
+    //Particle::LorentzVector electron_4_vector =  preselElectron.p4();
+    //Particle::LorentzVector genPhoton_4_vector = (*genPhoton).p4();
+    double dR_lep_Genphoton = deltaR(preselElectron.eta(), preselElectron.phi(), (*genPhoton).eta(), (*genPhoton).phi());
+    if(dR_lep_Genphoton <= dR){
+      photon_counter++;
+      std::cout<< " genPhoton # " << photon_counter << std::endl;
+      std::cout<< " This genPhoton is within dR <= "  << dR << " from the selected RecoElectron " << std::endl;
+      std::cout<< " genPhoton: " << (*genPhoton) << std::endl; 
+    }
+  }
+  std::cout << "There are " << photon_counter << " genphotons matched to this RecoElectron"<< std::endl;
+ 
+}
+
+void CheckLeptonMatch(const RecoElectron & preselElectron, std::vector<GenLepton> genLeptons, double dR = 0.5)
+{
+
+  int genLepton_counter = 0;
+  for(std::vector<GenLepton>::iterator genLepton = genLeptons.begin(); genLepton != genLeptons.end(); genLepton++) {
+    //Particle::LorentzVector electron_4_vector =  preselElectron.p4();
+    //Particle::LorentzVector genLepton_4_vector = (*genLepton).p4();
+    double dR_lep_GenLepton = deltaR(preselElectron.eta(), preselElectron.phi(), (*genLepton).eta(), (*genLepton).phi());
+    if(dR_lep_GenLepton <= dR){
+      genLepton_counter++;
+      std::cout<< " genLepton # " << genLepton_counter << std::endl;
+      std::cout<< " This genLepton is within dR <= "  << dR << " from the selected RecoElectron " << std::endl;
+      std::cout<< " genLepton: " << (*genLepton) << std::endl; 
+    }
+  }
+  std::cout << "There are " << genLepton_counter << " genLeptons matched to this RecoElectron"<< std::endl;
+ 
+}
+
+void CheckGenParticleMatch(const RecoElectron & preselElectron, std::vector<GenParticle> genParticles, double dR = 0.5, std::string label = "genParticle")
+{
+  int genParticle_counter = 0;
+  for(std::vector<GenParticle>::iterator genParticle = genParticles.begin(); genParticle != genParticles.end(); genParticle++) {
+    //Particle::LorentzVector electron_4_vector =  preselElectron.p4();
+    //Particle::LorentzVector genParticle_4_vector = (*genParticle).p4();
+    double dR_lep_GenParticle = deltaR(preselElectron.eta(), preselElectron.phi(), (*genParticle).eta(), (*genParticle).phi());
+    if(dR_lep_GenParticle <= dR){
+      genParticle_counter++;
+      std::cout<< " genParticle # " << genParticle_counter << std::endl;
+      std::cout<< " This genParticle is within dR <= "  << dR << " from the selected RecoElectron " << std::endl;
+      std::cout<< " genParticle: " << (*genParticle) << std::endl; 
+    }
+  }
+  std::cout << "There are " << genParticle_counter << " " << label << "s matched to this RecoElectron"<< std::endl;
+ 
+}
+
 
 int
 main(int argc,
@@ -143,6 +202,12 @@ main(int argc,
   const bool use_triggers_2e  = cfg_analyze.getParameter<bool>("use_triggers_2e");
   const bool use_triggers_1mu = cfg_analyze.getParameter<bool>("use_triggers_1mu");
   const bool use_triggers_2mu = cfg_analyze.getParameter<bool>("use_triggers_2mu");
+
+  edm::ParameterSet triggerWhiteList;
+  if(! isMC)
+  {
+    triggerWhiteList = cfg_analyze.getParameter<edm::ParameterSet>("triggerWhiteList");
+  }
 
   const edm::VParameterSet cfg_triggers_e = cfg_analyze.getParameter<edm::VParameterSet>("triggers_e_cfg");
   std::vector<hltPath_LeptonFakeRate *> triggers_e;
@@ -365,6 +430,7 @@ main(int argc,
 
   RecoElectronReader * electronReader = new RecoElectronReader(era, branchName_electrons, isMC, readGenObjects);
   inputTree->registerReader(electronReader);
+  //RecoElectronCollectionGenMatcher electronGenMatcher(true);
   RecoElectronCollectionGenMatcher electronGenMatcher;
   RecoElectronCollectionCleaner electronCleaner(0.3);
   RecoElectronCollectionSelectorLoose preselElectronSelector(era);
@@ -1310,10 +1376,12 @@ main(int argc,
 
       if(preselElectron.isTight())
       {
+
         if(isDEBUG || run_lumi_eventSelector)
         {
           std::cout << "numerator filled\n";
-        }
+	}
+
         // electron enters numerator
         histograms_incl_beforeCuts_num = histograms_e_numerator_incl_beforeCuts;
         histograms_incl_afterCuts_num  = histograms_e_numerator_incl_afterCuts;
@@ -1340,9 +1408,10 @@ main(int argc,
       }
 
 
-      if(preselElectron.isFakeable() && !(preselElectron.isTight())) // applying (isFakeable && !(isTight)) condition [TALLINN METHOD]
       //if(preselElectron.isFakeable())                              // applying (isFakeable) condition [GIOVANNI'S METHOD]
-      {
+      if(preselElectron.isFakeable() && !(preselElectron.isTight())) // applying (isFakeable && !(isTight)) condition [TALLINN METHOD]
+	{
+
         if(isDEBUG || run_lumi_eventSelector)
         {
           std::cout << "denominator filled\n";

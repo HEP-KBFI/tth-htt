@@ -184,6 +184,12 @@ int main(int argc, char* argv[])
     eventWeightManager = new EvtWeightManager(additionalEvtWeight);
     eventWeightManager->set_central_or_shift(central_or_shift);
   }
+
+  edm::ParameterSet triggerWhiteList;
+  if(! isMC)
+  {
+    triggerWhiteList = cfg_analyze.getParameter<edm::ParameterSet>("triggerWhiteList");
+  }
   
   checkOptionValidity(central_or_shift, isMC);
   const int electronPt_option = getElectronPt_option(central_or_shift);
@@ -614,8 +620,8 @@ int main(int argc, char* argv[])
       }
     }
 
-    bool isTriggered_1e = hltPaths_isTriggered(triggers_1e);
-    bool isTriggered_2e = hltPaths_isTriggered(triggers_2e);
+    bool isTriggered_1e = hltPaths_isTriggered(triggers_1e, triggerWhiteList, eventInfo, isMC);
+    bool isTriggered_2e = hltPaths_isTriggered(triggers_2e, triggerWhiteList, eventInfo, isMC);
     
     bool selTrigger_1e = use_triggers_1e && isTriggered_1e;
     bool selTrigger_2e = use_triggers_2e && isTriggered_2e;

@@ -2,6 +2,9 @@
 #define tthAnalysis_HiggsToTauTau_hltPath_h
 
 #include "tthAnalysis/HiggsToTauTau/interface/ReaderBase.h" // ReaderBase
+#include "tthAnalysis/HiggsToTauTau/interface/EventInfo.h" // EventInfo
+
+#include "FWCore/ParameterSet/interface/ParameterSet.h" // edm::ParameterSet
 
 #include <Rtypes.h> // Int_t
 
@@ -57,6 +60,13 @@ filter_hltPaths(const std::vector<hltPath *> & hltPaths,
 
 bool
 hltPaths_isTriggered(const std::vector<hltPath *> & hltPaths,
+                     bool verbose = false);
+
+bool
+hltPaths_isTriggered(const std::vector<hltPath *> & hltPaths,
+                     const edm::ParameterSet & runRanges,
+                     const EventInfo & eventInfo,
+                     bool isMC,
                      bool verbose = false);
 
 void

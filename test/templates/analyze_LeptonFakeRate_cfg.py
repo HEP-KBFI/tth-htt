@@ -4,6 +4,7 @@ import os
 from tthAnalysis.NanoAOD.LeptonFakeRate_trigger_cfi import *
 from tthAnalysis.HiggsToTauTau.configs.recommendedMEtFilters_cfi import *
 from tthAnalysis.HiggsToTauTau.configs.EvtYieldHistManager_cfi import *
+from tthAnalysis.HiggsToTauTau.analysisSettings import *
 
 process = cms.PSet()
 
@@ -63,6 +64,7 @@ process.analyze_LeptonFakeRate = cms.PSet(
     cfgMEtFilter = cms.PSet(),
     fillGenEvtHistograms = cms.bool(True),
     cfgEvtYieldHistManager = cms.PSet(),
+    triggerWhiteList = cms.PSet(),
 
     branchName_electrons = cms.string('Electron'),
     branchName_muons = cms.string('Muon'),
@@ -88,7 +90,7 @@ process.analyze_LeptonFakeRate = cms.PSet(
     isDEBUG = cms.bool(False),
     applyMETFilters = cms.bool(True),
     hasLHE = cms.bool(True),
-    useObjectMultiplicity = cms.bool(True),
+    useObjectMultiplicity = cms.bool(False),
 
     evtWeight = cms.PSet(
         apply = cms.bool(False),

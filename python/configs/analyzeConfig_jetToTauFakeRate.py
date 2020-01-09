@@ -44,11 +44,12 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
         running_method,
         num_parallel_jobs,
         executable_comp_jetToTauFakeRate,
-        verbose    = False,
-        hlt_filter = False,
-        dry_run    = False,
-        isDebug    = False,
-        use_home   = False,
+        verbose           = False,
+        hlt_filter        = False,
+        select_rle_output = False,
+        dry_run           = False,
+        isDebug           = False,
+        use_home          = False,
       ):
     analyzeConfig.__init__(self,
       configDir             = configDir,
@@ -100,6 +101,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
 
     self.make_plots_backgrounds = [ "TT", "TTW", "TTWW", "TTZ", "EWK", "Rares" ]
     self.processes_to_comp = self.make_plots_backgrounds + [ "ttH" ]
+    self.select_rle_output = select_rle_output
 
   def createCfg_analyze(self, jobOptions, sample_info):
     """Create python configuration file for the analyze_jetToTauFakeRate executable (analysis code)
@@ -285,6 +287,8 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
             cfgFile_modified_path = os.path.join(self.dirs[key_analyze_dir][DKEY_CFGS], "analyze_%s_%s_%s_%i_cfg.py" % analyze_job_tuple)
             logFile_path = os.path.join(self.dirs[key_analyze_dir][DKEY_LOGS], "analyze_%s_%s_%s_%i.log" % analyze_job_tuple)
             histogramFile_path = os.path.join(self.dirs[key_analyze_dir][DKEY_HIST], "analyze_%s_%s_%s_%i.root" % analyze_job_tuple)
+            rleOutputFile_path = os.path.join(self.dirs[key_analyze_dir][DKEY_RLES], "rle_%s_%s_%s_%i.txt" % analyze_job_tuple) \
+              if self.select_rle_output else ""
 
             self.jobOptions_analyze[key_analyze_job] = {
               'ntupleFiles'                 : ntupleFiles,
@@ -299,10 +303,10 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
               'hadTau_selection_tight'      : self.hadTau_selection_tight,
               'hadTauSelection_denominator' : self.hadTau_selection_denominator,
               'hadTauSelections_numerator'  : self.hadTau_selections_numerator,
+              'selEventsFileName_output'    : rleOutputFile_path,
               'absEtaBins'                  : self.absEtaBins,
               'decayModes'                  : self.decayModes,
               'central_or_shift'            : central_or_shift,
-              'useObjectMultiplicity'       : self.era in [ '2018' ],
               'apply_hlt_filter'            : self.hlt_filter,
             }
             self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info)

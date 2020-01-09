@@ -9,7 +9,7 @@ process.makePlots.distributions = cms.VPSet(
         yAxisTitle = cms.string("N")
     ),
     cms.PSet(
-        histogramName = cms.string("electrons/$PROCESS/pt"),
+        histogramName = cms.string("electrons/$PROCESS/cone_pt"),
         xMin = cms.double(10.),
         xMax = cms.double(200.),
         xAxisTitle = cms.string("e p_{T} [GeV]"),
@@ -32,18 +32,12 @@ process.makePlots.distributions = cms.VPSet(
         yAxisTitle = cms.string("N")
     ),
     cms.PSet(
-        histogramName = cms.string("electrons/$PROCESS/gen_times_recCharge"),
-        xAxisTitle = cms.string("e gen. times rec. Charge"),
-        xAxisOffset = cms.double(1.45),
-        yAxisTitle = cms.string("N")
-    ),
-    cms.PSet(
         histogramName = cms.string("evt/$PROCESS/numMuons"),
         xAxisTitle = cms.string("#mu Multiplicity"),
         yAxisTitle = cms.string("N")
     ),
     cms.PSet(
-        histogramName = cms.string("muons/$PROCESS/pt"),
+        histogramName = cms.string("muons/$PROCESS/cone_pt"),
         xMin = cms.double(10.),
         xMax = cms.double(200.),
         xAxisTitle = cms.string("#mu p_{T} [GeV]"),

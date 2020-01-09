@@ -273,6 +273,12 @@ int main(int argc, char* argv[])
     central_or_shifts_local = { central_or_shift_main };
   }
 
+  edm::ParameterSet triggerWhiteList;
+  if(! isMC)
+  {
+    triggerWhiteList = cfg_analyze.getParameter<edm::ParameterSet>("triggerWhiteList");
+  }
+
   bool isDEBUG = cfg_analyze.getParameter<bool>("isDEBUG");
   if ( isDEBUG ) std::cout << "Warning: DEBUG mode enabled -> trigger selection will not be applied for data !!" << std::endl;
 
@@ -955,15 +961,15 @@ int main(int argc, char* argv[])
       }
     }
 
-    bool isTriggered_1e = hltPaths_isTriggered(triggers_1e, isDEBUG);
-    bool isTriggered_1mu = hltPaths_isTriggered(triggers_1mu, isDEBUG);
-    bool isTriggered_2e = hltPaths_isTriggered(triggers_2e, isDEBUG);
-    bool isTriggered_1e1mu = hltPaths_isTriggered(triggers_1e1mu, isDEBUG);
-    bool isTriggered_2mu = hltPaths_isTriggered(triggers_2mu, isDEBUG);
-    bool isTriggered_3e = hltPaths_isTriggered(triggers_3e, isDEBUG);
-    bool isTriggered_2e1mu = hltPaths_isTriggered(triggers_2e1mu, isDEBUG);
-    bool isTriggered_1e2mu = hltPaths_isTriggered(triggers_1e2mu, isDEBUG);
-    bool isTriggered_3mu = hltPaths_isTriggered(triggers_3mu, isDEBUG);
+    bool isTriggered_1e = hltPaths_isTriggered(triggers_1e, triggerWhiteList, eventInfo, isMC, isDEBUG);
+    bool isTriggered_1mu = hltPaths_isTriggered(triggers_1mu, triggerWhiteList, eventInfo, isMC, isDEBUG);
+    bool isTriggered_2e = hltPaths_isTriggered(triggers_2e, triggerWhiteList, eventInfo, isMC, isDEBUG);
+    bool isTriggered_1e1mu = hltPaths_isTriggered(triggers_1e1mu, triggerWhiteList, eventInfo, isMC, isDEBUG);
+    bool isTriggered_2mu = hltPaths_isTriggered(triggers_2mu, triggerWhiteList, eventInfo, isMC, isDEBUG);
+    bool isTriggered_3e = hltPaths_isTriggered(triggers_3e, triggerWhiteList, eventInfo, isMC, isDEBUG);
+    bool isTriggered_2e1mu = hltPaths_isTriggered(triggers_2e1mu, triggerWhiteList, eventInfo, isMC, isDEBUG);
+    bool isTriggered_1e2mu = hltPaths_isTriggered(triggers_1e2mu, triggerWhiteList, eventInfo, isMC, isDEBUG);
+    bool isTriggered_3mu = hltPaths_isTriggered(triggers_3mu, triggerWhiteList, eventInfo, isMC, isDEBUG);
     if ( isDEBUG ) {
       std::cout << "isTriggered:"
 		<< " 1e = " << isTriggered_1e << ","
@@ -1627,22 +1633,22 @@ int main(int argc, char* argv[])
 //    in 3l category of ttH multilepton analysis
     const int nJet        = selJets.size();
 
-    const double mTauTauVis1_sel      = selLepton1_OS ? (selLepton1_OS->p4() + selHadTau->p4()).mass() : -1.;
-    const double mTauTauVis2_sel      = selLepton2_OS ? (selLepton2_OS->p4() + selHadTau->p4()).mass() : -1.;
-    const double lep1_conePt          = comp_lep1_conePt(*selLepton_lead);
-    const double lep2_conePt          = comp_lep2_conePt(*selLepton_sublead);
-    const double lep3_conePt          = comp_lep3_conePt(*selLepton_third);
-    const double mindr_lep1_jet       = comp_mindr_lep1_jet(*selLepton_lead, selJets);
-    const double mindr_lep2_jet       = comp_mindr_lep2_jet(*selLepton_sublead, selJets);
-    const double mindr_lep3_jet       = comp_mindr_lep3_jet(*selLepton_third, selJets);
+    const double mTauTauVis1_sel      = selLepton1_OS ? (selLepton1_OS->cone_p4() + selHadTau->p4()).mass() : -1.;
+    const double mTauTauVis2_sel      = selLepton2_OS ? (selLepton2_OS->cone_p4() + selHadTau->p4()).mass() : -1.;
+    const double lep1_conePt          = comp_lep_conePt(*selLepton_lead);
+    const double lep2_conePt          = comp_lep_conePt(*selLepton_sublead);
+    const double lep3_conePt          = comp_lep_conePt(*selLepton_third);
+    const double mindr_lep1_jet       = comp_mindr_jet(*selLepton_lead, selJets);
+    const double mindr_lep2_jet       = comp_mindr_jet(*selLepton_sublead, selJets);
+    const double mindr_lep3_jet       = comp_mindr_jet(*selLepton_third, selJets);
     const double mindr_lep1_jet_min10 = std::min(10., mindr_lep1_jet);
     const double mindr_lep2_jet_min10 = std::min(10., mindr_lep2_jet);
     const double mindr_lep3_jet_min10 = std::min(10., mindr_lep3_jet);
-    const double mindr_tau_jet        = comp_mindr_hadTau1_jet(*selHadTau, selJets);
+    const double mindr_tau_jet        = comp_mindr_jet(*selHadTau, selJets);
     const double mindr_tau_jet_min10  = std::min(10., mindr_tau_jet);
     const double avg_dr_jet           = comp_avg_dr_jet(selJets);
-    const double mT_lep1              = comp_MT_met_lep1(selLepton_lead->cone_p4(), met.pt(), met.phi());
-    const double mT_lep2              = comp_MT_met_lep2(selLepton_sublead->cone_p4(), met.pt(), met.phi());
+    const double mT_lep1              = comp_MT_met(selLepton_lead, met.pt(), met.phi());
+    const double mT_lep2              = comp_MT_met(selLepton_sublead, met.pt(), met.phi());
     const double max_lep_eta          = std::max({ selLepton_lead->absEta(), selLepton_sublead->absEta(), selLepton_third->absEta() });
     const double ptmiss               = met.pt();
     const double tau_pt               = selHadTau->pt();
@@ -1913,7 +1919,7 @@ int main(int argc, char* argv[])
           ("lep3_eta",            selLepton_third->eta())
           ("lep3_tth_mva",        selLepton_third->mvaRawTTH())
           ("mindr_lep3_jet",      mindr_lep3_jet_min10)
-          ("mT_lep3",             comp_MT_met_lep1(selLepton_third->cone_p4(), met.pt(), met.phi()))
+          ("mT_lep3",             comp_MT_met(selLepton_third, met.pt(), met.phi()))
           ("dr_lep3_tau",         deltaR(selLepton_third->p4(), selHadTau->p4()))
           ("mindr_tau_jet",       mindr_tau_jet_min10)
           ("avg_dr_jet",          avg_dr_jet)
@@ -1959,7 +1965,7 @@ int main(int argc, char* argv[])
           ("dr_los1",             dr_los1)
           ("dr_los2",             dr_los2)
           ("has_SFOS",       isSFOS(selLeptons))
-          ("massLT",              comp_MT_met_lep1(selLeptons[0]->cone_p4()  + selLeptons[1]->cone_p4() + selLeptons[2]->cone_p4() + selHadTau->p4(), met.pt(), met.phi()))
+          ("massLT",              comp_massL4(selLeptons[0], selLeptons[1], selLeptons[2], selHadTau, met.pt(), met.phi()))
           ("massL_FO",           massL(fakeableLeptons))
           ("massL",           massL(selLeptons))
           ("met_LD",              met_LD)
@@ -1984,7 +1990,7 @@ int main(int argc, char* argv[])
       const double dr_lep2_tau1   = deltaR(selLepton_sublead->p4(), selHadTau->p4());
       const double dr_lep3_tau1   = deltaR(selLepton_third->p4(), selHadTau->p4());
       const double max_dr_jet     = comp_max_dr_jet(selJets);
-      const double mT_lep3        = comp_MT_met_lep3(selLepton_third->cone_p4(), met.pt(), met.phi());
+      const double mT_lep3        = comp_MT_met(selLepton_third, met.pt(), met.phi());
       const double mbb            = selBJets_medium.size() > 1 ? (selBJets_medium[0]->p4() + selBJets_medium[1]->p4()).mass() : -1.;
       const double avr_dr_lep_tau = (dr_lep1_tau1 + dr_lep2_tau1 + dr_lep3_tau1) / 3;
       const double max_dr_lep_tau = std::max({ dr_lep2_tau1, dr_lep1_tau1, dr_lep3_tau1 });

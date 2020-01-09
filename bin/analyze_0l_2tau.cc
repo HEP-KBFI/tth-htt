@@ -249,6 +249,12 @@ int main(int argc, char* argv[])
     central_or_shifts_local = { central_or_shift_main };
   }
 
+  edm::ParameterSet triggerWhiteList;
+  if(! isMC)
+  {
+    triggerWhiteList = cfg_analyze.getParameter<edm::ParameterSet>("triggerWhiteList");
+  }
+
   const edm::ParameterSet syncNtuple_cfg = cfg_analyze.getParameter<edm::ParameterSet>("syncNtuple");
   const std::string syncNtuple_tree = syncNtuple_cfg.getParameter<std::string>("tree");
   const std::string syncNtuple_output = syncNtuple_cfg.getParameter<std::string>("output");
@@ -1051,7 +1057,7 @@ int main(int argc, char* argv[])
       genQuarkFromTop = genQuarkFromTopReader->read();
     }
 
-    bool isTriggered_2tau = hltPaths_isTriggered(triggers_2tau, isDEBUG);
+    bool isTriggered_2tau = hltPaths_isTriggered(triggers_2tau, triggerWhiteList, eventInfo, isMC, isDEBUG);
 
     bool selTrigger_2tau = use_triggers_2tau && isTriggered_2tau;
     if ( !selTrigger_2tau ) {
@@ -1480,7 +1486,7 @@ int main(int argc, char* argv[])
       //btag_iterator++;
       for ( std::vector<const RecoJet*>::const_iterator selWJet1 = selJets.begin(); selWJet1 != selJets.end(); ++selWJet1 ) {
        if ( &(*selWJet1) == &(*selBJet) ) continue;
-       for ( std::vector<const RecoJet*>::const_iterator selWJet2 = selWJet1 + 1; selWJet2 != selJets.end(); ++selWJet2 ) {
+       for ( std::vector<const RecoJet*>::const_iterator selWJet2 = selJets.begin(); selWJet2 != selJets.end(); ++selWJet2 ) {
     if ( &(*selWJet2) == &(*selBJet) ) continue;
     if ( &(*selWJet2) == &(*selWJet1) ) continue;
     bool isGenMatched = false;
@@ -1606,8 +1612,8 @@ int main(int argc, char* argv[])
     svFitAlgo.integrate(measuredTauLeptons, met.p4().px(), met.p4().py(), met.cov());
     //double mTauTau = -1.; // CV: temporarily comment-out the following line, to make code compile with "old" and "new" version of ClassicSVfit
     double mTauTau   = ( svFitAlgo.isValidSolution() ) ? static_cast<classic_svFit::HistogramAdapterDiTau*>(svFitAlgo.getHistogramAdapter())->getMass() : -1.;
-    double mT_tau1   = comp_MT_met_hadTau1(*selHadTau_lead, met.pt(), met.phi());
-    double mT_tau2   = comp_MT_met_hadTau2(*selHadTau_sublead, met.pt(), met.phi());
+    double mT_tau1   = comp_MT_met(selHadTau_lead, met.pt(), met.phi());
+    double mT_tau2   = comp_MT_met(selHadTau_sublead, met.pt(), met.phi());
     //double pZeta     = comp_pZeta(selHadTau_lead -> p4(), selHadTau_sublead -> p4(), met.p4().px(), met.p4().py());
     //double pZetaVis  = comp_pZetaVis(selHadTau_lead -> p4(), selHadTau_sublead -> p4());
     double pZetaComb = comp_pZetaComb(selHadTau_lead -> p4(), selHadTau_sublead -> p4(), met.p4().px(), met.p4().py());
@@ -1619,8 +1625,8 @@ int main(int argc, char* argv[])
     //const double pt_HHvis_medium        = selBJets_medium.size() > 1 ? (selHadTau_lead->p4()+selHadTau_sublead->p4()+selBJets_medium[0]->p4() + selBJets_medium[1]->p4()).pt() : -1.;
 
 //--- compute output of BDTs used to discriminate ttH vs. ttbar trained by Arun for 1l_2tau category
-    const double mindr_tau1_jet  = std::min(10., comp_mindr_hadTau1_jet(*selHadTau_lead, selJets));
-    const double mindr_tau2_jet  = std::min(10., comp_mindr_hadTau2_jet(*selHadTau_sublead, selJets));
+    const double mindr_tau1_jet  = std::min(10., comp_mindr_jet(*selHadTau_lead, selJets));
+    const double mindr_tau2_jet  = std::min(10., comp_mindr_jet(*selHadTau_sublead, selJets));
     const double cosThetaS_hadTau = comp_cosThetaStar(selHadTau_lead->p4(), selHadTau_sublead->p4());
 
 
@@ -1640,16 +1646,16 @@ int main(int argc, char* argv[])
       {"met_LD",           met_LD},
       //{"nBJetLoose",        selBJets_loose.size()},
       //{"nJet",		selJets.size()},
-      {"mindr_tau1_jet",   TMath::Min(10., comp_mindr_hadTau1_jet(*selHadTau_lead, selJets))},
-      {"mindr_tau2_jet",   TMath::Min(10., comp_mindr_hadTau2_jet(*selHadTau_sublead, selJets))},
-      {"mT_tau1",          comp_MT_met_hadTau1(*selHadTau_lead, met.pt(), met.phi())},
-      {"mT_tau2",          comp_MT_met_hadTau2(*selHadTau_sublead, met.pt(), met.phi())}
+      {"mindr_tau1_jet",   TMath::Min(10., comp_mindr_jet(*selHadTau_lead, selJets))},
+      {"mindr_tau2_jet",   TMath::Min(10., comp_mindr_jet(*selHadTau_sublead, selJets))},
+      {"mT_tau1",          comp_MT_met(selHadTau_lead, met.pt(), met.phi())},
+      {"mT_tau2",          comp_MT_met(selHadTau_sublead, met.pt(), met.phi())}
       };
     double mva_0l_2tau_deeptauLoose_2 = mva_xgb_Legacy(mvaInputs_ttbar);
 
     // mvaInputs_XGB_Updated
-    mvaInputs_XGB_Updated["mindr_tau1_jet"] = TMath::Min(10., comp_mindr_hadTau1_jet(*selHadTau_lead, selJets));
-    mvaInputs_XGB_Updated["mindr_tau2_jet"] = TMath::Min(10., comp_mindr_hadTau2_jet(*selHadTau_sublead, selJets));
+    mvaInputs_XGB_Updated["mindr_tau1_jet"] = TMath::Min(10., comp_mindr_jet(*selHadTau_lead, selJets));
+    mvaInputs_XGB_Updated["mindr_tau2_jet"] = TMath::Min(10., comp_mindr_jet(*selHadTau_sublead, selJets));
     mvaInputs_XGB_Updated["avg_dr_jet"] = comp_avg_dr_jet(selJets);
     mvaInputs_XGB_Updated["ptmiss"] = met.pt();
     mvaInputs_XGB_Updated["tau1_pt"] = selHadTau_lead->pt();
@@ -1657,8 +1663,8 @@ int main(int argc, char* argv[])
     mvaInputs_XGB_Updated["tau1_eta"] = selHadTau_lead->absEta();
     mvaInputs_XGB_Updated["tau2_eta"] = selHadTau_sublead->absEta();
     mvaInputs_XGB_Updated["dr_taus"] = deltaR(selHadTau_lead->p4(), selHadTau_sublead->p4());
-    mvaInputs_XGB_Updated["mT_tau1"] = comp_MT_met_hadTau1(*selHadTau_lead, met.pt(), met.phi());
-    mvaInputs_XGB_Updated["mT_tau2"] = comp_MT_met_hadTau2(*selHadTau_sublead, met.pt(), met.phi());
+    mvaInputs_XGB_Updated["mT_tau1"] = comp_MT_met(selHadTau_lead, met.pt(), met.phi());
+    mvaInputs_XGB_Updated["mT_tau2"] = comp_MT_met(selHadTau_sublead, met.pt(), met.phi());
     mvaInputs_XGB_Updated["mTauTauVis"] = mTauTauVis;
     mvaInputs_XGB_Updated["mTauTau"] = mTauTau;
     mvaInputs_XGB_Updated["nJet"] = selJets.size();
@@ -1896,8 +1902,8 @@ int main(int argc, char* argv[])
       }
 
       bdt_filler -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })
-          ("mindr_tau1_jet", TMath::Min(10., comp_mindr_hadTau1_jet(*selHadTau_lead, selJets)))
-          ("mindr_tau2_jet", TMath::Min(10., comp_mindr_hadTau2_jet(*selHadTau_sublead, selJets)))
+          ("mindr_tau1_jet", TMath::Min(10., comp_mindr_jet(*selHadTau_lead, selJets)))
+          ("mindr_tau2_jet", TMath::Min(10., comp_mindr_jet(*selHadTau_sublead, selJets)))
           ("avg_dr_jet",     comp_avg_dr_jet(selJets))
           ("ptmiss",         met.pt())
           ("htmiss",         mht_p4.pt())
