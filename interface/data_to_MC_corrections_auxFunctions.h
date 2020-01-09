@@ -48,12 +48,6 @@ namespace aux
   compSF(double eff_data,
          double eff_mc);
 
-  constexpr int
-  dmCheck(int dm)
-  {
-    return dm == 11 ? 10 : dm;
-  }
-
   bool
   hasDecayMode(const std::vector<int> & allowedDecayModes,
                int hadTau_decayMode);
@@ -117,13 +111,6 @@ namespace aux
   loadTriggerEff_1m_1tau_lepLeg_2018(vLutWrapperBase & effTrigger_1m1tau_lepLeg_data,
                                      vLutWrapperBase & effTrigger_1m1tau_lepLeg_mc,
                                      std::map<std::string, TFile *> & inputFiles);
-
-  getTriggerEfficiencyFunc
-  getTriggerFuncMC(TriggerSFsys triggerSF_option,
-                   bool flip = true);
-
-  getTriggerEfficiencyFunc
-  getTriggerFuncData(TriggerSFsys triggerSF_option);
 }
 
 #endif // DATA_TO_MC_CORRECTIONS_AUXFUNCTIONS_H

@@ -342,19 +342,15 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     create_cfg(self.cfgFile_prep_dcard, jobOptions['cfgFile_modified'], lines)
 
   def addToMakefile_backgrounds_from_data(self, lines_makefile):
-    ## --- OLD LINES -- ##
-    #self.addToMakefile_addBackgrounds(lines_makefile, "phony_addBackgrounds_sum", "phony_hadd_stage1", self.sbatchFile_addBackgrounds_sum, self.jobOptions_addBackgrounds)
-    #self.addToMakefile_hadd_stage1_5(lines_makefile, "phony_hadd_stage1_5", "phony_addBackgrounds_sum")
-    #self.addToMakefile_addBackgrounds(lines_makefile, "phony_addBackgrounds_LeptonFakeRate", "phony_hadd_stage1_5", self.sbatchFile_addBackgrounds_LeptonFakeRate, self.jobOptions_addBackgrounds_LeptonFakeRate)
-    #self.addToMakefile_addBackgrounds(lines_makefile, "phony_addBackgrounds_Convs_LeptonFakeRate", "phony_hadd_stage1_5", self.sbatchFile_addBackgrounds_Convs_LeptonFakeRate, self.jobOptions_addBackgrounds_Convs_LeptonFakeRate)
-    ## --- NEW LINES --- ##
-    self.addToMakefile_hadd_stage1_5(lines_makefile, "phony_hadd_stage1_5", "phony_hadd_stage1")
+    max_input_files_per_job = 10 if len(self.central_or_shifts) == 1 else 5
+    self.addToMakefile_hadd_stage1_5(lines_makefile, "phony_hadd_stage1_5", "phony_hadd_stage1", max_input_files_per_job)
     self.addToMakefile_addBackgrounds(lines_makefile, "phony_addBackgrounds_sum", "phony_hadd_stage1_5", self.sbatchFile_addBackgrounds_sum, self.jobOptions_addBackgrounds_sum)
     self.addToMakefile_addBackgrounds(lines_makefile, "phony_addBackgrounds_LeptonFakeRate", "phony_hadd_stage1_5", self.sbatchFile_addBackgrounds_LeptonFakeRate, self.jobOptions_addBackgrounds_LeptonFakeRate)
     self.addToMakefile_addBackgrounds(lines_makefile, "phony_addBackgrounds_Convs_LeptonFakeRate", "phony_hadd_stage1_5", self.sbatchFile_addBackgrounds_Convs_LeptonFakeRate, self.jobOptions_addBackgrounds_Convs_LeptonFakeRate)
 
   def addToMakefile_backgrounds_from_MC(self, lines_makefile):
-    self.addToMakefile_hadd_stage1_5(lines_makefile, "phony_hadd_stage1_5", "phony_addBackgrounds_sum")
+    max_input_files_per_job = 10 if len(self.central_or_shifts) == 1 else 5
+    self.addToMakefile_hadd_stage1_5(lines_makefile, "phony_hadd_stage1_5", "phony_addBackgrounds_sum", max_input_files_per_job)
     self.addToMakefile_addBackgrounds(lines_makefile, "phony_addBackgrounds_Convs_LeptonFakeRate", "phony_hadd_stage1_5", self.sbatchFile_addBackgrounds_Convs_LeptonFakeRate, self.jobOptions_addBackgrounds_Convs_LeptonFakeRate)
 
   def addToMakefile_combine(self, lines_makefile):
@@ -366,19 +362,10 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     self.filesToClean.append(jobOptions['outputFile'])
 
   def addToMakefile_comp_LeptonFakeRate(self, lines_makefile):
-    if self.is_sbatch:
-      lines_makefile.append("sbatch_comp_LeptonFakeRate: %s" % " ".join([ " ".join(jobOptions['inputFile']) for jobOptions in self.jobOptions_comp_LeptonFakeRate.values() ]))
-      lines_makefile.append("\t%s %s" % ("python", self.sbatchFile_comp_LeptonFakeRate))
-      lines_makefile.append("")
     for jobOptions in self.jobOptions_comp_LeptonFakeRate.values():
-      if self.is_makefile:
-        lines_makefile.append("%s: %s" % (jobOptions['outputFile'], " ".join(jobOptions['inputFile'])))
-        lines_makefile.append("\t%s %s" % (self.executable_comp_LeptonFakeRate, jobOptions['cfgFile_modified']))
-        lines_makefile.append("")
-      elif self.is_sbatch:
-        lines_makefile.append("%s: %s" % (jobOptions['outputFile'], "sbatch_comp_LeptonFakeRate"))
-        lines_makefile.append("\t%s" % ":") # CV: null command
-        lines_makefile.append("")
+      lines_makefile.append("%s: %s" % (jobOptions['outputFile'], " ".join(jobOptions['inputFile'])))
+      lines_makefile.append("\t%s %s" % (self.executable_comp_LeptonFakeRate, jobOptions['cfgFile_modified']))
+      lines_makefile.append("")
       self.filesToClean.append(jobOptions['outputFile'])
 
   def create(self):
@@ -514,7 +501,6 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
             'triggers_e_cfg'           : "leptonFR_triggers['{}']['{}']".format(self.era, 'e'),
             'lep_mva_cut_e'            : float(self.lep_mva_cut_e),
             'lep_mva_cut_mu'           : float(self.lep_mva_cut_mu),
-            'useObjectMultiplicity'    : True,
           }
           self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info)
 
@@ -818,18 +804,18 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
       self.createCfg_comp_LeptonFakeRate(self.jobOptions_comp_LeptonFakeRate[key_comp_LeptonFakeRate])
       self.targets.append(self.jobOptions_comp_LeptonFakeRate[key_comp_LeptonFakeRate]['outputFile'])
 
+    self.sbatchFile_analyze = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_analyze_LeptonFakeRate.py")
+    self.sbatchFile_addBackgrounds_sum = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_addBackgrounds_sum_LeptonFakeRate.py")
+    self.sbatchFile_addBackgrounds_LeptonFakeRate = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_addBackgrounds_LeptonFakeRate.py")
+    self.sbatchFile_addBackgrounds_Convs_LeptonFakeRate = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_addBackgrounds_Convs_LeptonFakeRate.py")
+    self.sbatchFile_comp_LeptonFakeRate = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_comp_LeptonFakeRate.py")
     if self.is_sbatch:
       logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)
-      self.sbatchFile_analyze = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_analyze_LeptonFakeRate.py")
       self.createScript_sbatch_analyze(self.executable_analyze, self.sbatchFile_analyze, self.jobOptions_analyze)
-      self.sbatchFile_addBackgrounds_sum = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_addBackgrounds_sum_LeptonFakeRate.py")
       self.createScript_sbatch(self.executable_addBackgrounds_recursively, self.sbatchFile_addBackgrounds_sum, self.jobOptions_addBackgrounds_sum)
-      self.sbatchFile_addBackgrounds_LeptonFakeRate = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_addBackgrounds_LeptonFakeRate.py")
       self.createScript_sbatch(self.executable_addBackgrounds_LeptonFakeRate, self.sbatchFile_addBackgrounds_LeptonFakeRate, self.jobOptions_addBackgrounds_LeptonFakeRate)
-      self.sbatchFile_addBackgrounds_Convs_LeptonFakeRate = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_addBackgrounds_Convs_LeptonFakeRate.py")
       self.createScript_sbatch(self.executable_addBackgrounds_LeptonFakeRate, self.sbatchFile_addBackgrounds_Convs_LeptonFakeRate, self.jobOptions_addBackgrounds_Convs_LeptonFakeRate)
       logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_comp_LeptonFakeRate)
-      self.sbatchFile_comp_LeptonFakeRate = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_comp_LeptonFakeRate.py")
       self.createScript_sbatch(self.executable_comp_LeptonFakeRate, self.sbatchFile_comp_LeptonFakeRate, self.jobOptions_comp_LeptonFakeRate)
 
     lines_makefile = []

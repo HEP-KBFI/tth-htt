@@ -96,11 +96,6 @@ typedef std::vector<std::string> vstring;
 typedef std::vector<double> vdouble;
 typedef std::vector<int> vint;
 
-//const int hadTauSelection_antiElectron = 1; // vLoose
-//const int hadTauSelection_antiMuon = 1; // Loose
-const int hadTauSelection_antiElectron = -1; // not applied
-const int hadTauSelection_antiMuon = -1; // not applied
-
 /**
  * @brief Auxiliary class for filling histograms for denominator
  */
@@ -135,8 +130,6 @@ struct denominatorHistManagers
     if ( decayMode != -1 ) subdir_.append(Form("_dm%i", decayMode));
     fakeableHadTauSelector_ = new RecoHadTauSelectorFakeable(era_);
     fakeableHadTauSelector_->set(hadTauSelection_denominator);
-    fakeableHadTauSelector_->set_min_antiElectron(hadTauSelection_antiElectron);
-    fakeableHadTauSelector_->set_min_antiMuon(hadTauSelection_antiMuon);
   }
   ~denominatorHistManagers()
   {
@@ -259,8 +252,6 @@ struct numeratorSelector_and_HistManagers : public denominatorHistManagers
     if ( decayMode != -1 ) subdir_.append(Form("_dm%i", decayMode));
     tightHadTauSelector_ = new RecoHadTauSelectorTight(era_);
     tightHadTauSelector_->set(hadTauSelection_numerator);
-    tightHadTauSelector_->set_min_antiElectron(hadTauSelection_antiElectron);
-    tightHadTauSelector_->set_min_antiMuon(hadTauSelection_antiMuon);
   }
   ~numeratorSelector_and_HistManagers()
   {
@@ -383,6 +374,12 @@ int main(int argc, char* argv[])
     eventWeightManager->set_central_or_shift(central_or_shift);
   }
 
+  edm::ParameterSet triggerWhiteList;
+  if(! isMC)
+  {
+    triggerWhiteList = cfg_analyze.getParameter<edm::ParameterSet>("triggerWhiteList");
+  }
+
   bool isDEBUG = cfg_analyze.getParameter<bool>("isDEBUG");
   if ( isDEBUG ) std::cout << "Warning: DEBUG mode enabled -> trigger selection will not be applied for data !!" << std::endl;
 
@@ -403,8 +400,7 @@ int main(int argc, char* argv[])
   edm::ParameterSet cfg_dataToMCcorrectionInterface;
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("era", era_string);
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("hadTauSelection", hadTau_selection_tight); // has no effect (will be overwritten)
-  cfg_dataToMCcorrectionInterface.addParameter<int>("hadTauSelection_antiElectron", hadTauSelection_antiElectron);
-  cfg_dataToMCcorrectionInterface.addParameter<int>("hadTauSelection_antiMuon", hadTauSelection_antiMuon);
+  cfg_dataToMCcorrectionInterface.addParameter<bool>("isDEBUG", isDEBUG);
   Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface = nullptr;
   switch(era)
   {
@@ -436,6 +432,8 @@ int main(int argc, char* argv[])
   bool jetCleaningByIndex = cfg_analyze.getParameter<bool>("jetCleaningByIndex");
   bool redoGenMatching = cfg_analyze.getParameter<bool>("redoGenMatching");
   bool genMatchingByIndex = cfg_analyze.getParameter<bool>("genMatchingByIndex");
+
+  std::string selEventsFileName_output = cfg_analyze.getParameter<std::string>("selEventsFileName_output");
 
   fwlite::InputSource inputFiles(cfg);
   int maxEvents = inputFiles.maxEvents();
@@ -506,12 +504,8 @@ int main(int argc, char* argv[])
   RecoHadTauCollectionCleaner hadTauCleaner(0.3);
   RecoHadTauCollectionSelectorFakeable preselHadTauSelector(era);
   preselHadTauSelector.set(hadTauSelection_denominator);
-  preselHadTauSelector.set_min_antiElectron(hadTauSelection_antiElectron);
-  preselHadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);
   RecoHadTauCollectionSelectorTight tightHadTauSelector(era);
   tightHadTauSelector.set(hadTau_selection_tight);
-  tightHadTauSelector.set_min_antiElectron(hadTauSelection_antiElectron);
-  tightHadTauSelector.set_min_antiMuon(hadTauSelection_antiMuon);
 
   RecoJetReader* jetReader = new RecoJetReader(era, isMC, branchName_jets, readGenObjects);
   jetReader->setPtMass_central_or_shift(jetPt_option);
@@ -582,6 +576,9 @@ int main(int argc, char* argv[])
     lheInfoReader = new LHEInfoReader(hasLHE);
     inputTree->registerReader(lheInfoReader);
   }
+
+//--- open output file containing run:lumi:event numbers of events passing final event selection criteria
+  std::ostream* selEventsFile = new std::ofstream(selEventsFileName_output.data(), std::ios::out);
 
   ElectronHistManager selElectronHistManager(makeHistManager_cfg(process_string, 
     Form("jetToTauFakeRate_%s/electrons", chargeSelection_string.data()), era_string, central_or_shift, "minimalHistograms"));
@@ -785,9 +782,9 @@ int main(int argc, char* argv[])
       }
     }
 
-    bool isTriggered_1e = hltPaths_isTriggered(triggers_1e);
-    bool isTriggered_1mu = hltPaths_isTriggered(triggers_1mu);
-    bool isTriggered_1e1mu = hltPaths_isTriggered(triggers_1e1mu);
+    bool isTriggered_1e = hltPaths_isTriggered(triggers_1e, triggerWhiteList, eventInfo, isMC);
+    bool isTriggered_1mu = hltPaths_isTriggered(triggers_1mu, triggerWhiteList, eventInfo, isMC);
+    bool isTriggered_1e1mu = hltPaths_isTriggered(triggers_1e1mu, triggerWhiteList, eventInfo, isMC);
 
     bool selTrigger_1e = use_triggers_1e && isTriggered_1e;
     bool selTrigger_1mu = use_triggers_1mu && isTriggered_1mu;
@@ -986,7 +983,7 @@ int main(int argc, char* argv[])
 
 //--- apply data/MC corrections for efficiencies of leptons passing the loose identification and isolation criteria
 //    to also pass the tight identification and isolation criteria
-      evtWeightRecorder.record_leptonSF(dataToMCcorrectionInterface->getSF_leptonID_and_Iso_tight_to_loose_woTightCharge());
+      evtWeightRecorder.record_leptonIDSF(dataToMCcorrectionInterface);
     }
 
 //--- apply final event selection 
@@ -1019,8 +1016,8 @@ int main(int argc, char* argv[])
       assert(selJets_sortedByBtag.size() >= 2);
       m_bb = (selJets_sortedByBtag[0]->p4() + selJets_sortedByBtag[1]->p4()).mass();
     }
-    double mT_e = ( selLepton_e ) ? comp_MT_met_lep1(*selLepton_e, met.pt(), met.phi()) : -1.;
-    double mT_mu = ( selLepton_e ) ? comp_MT_met_lep1(*selLepton_mu, met.pt(), met.phi()) : -1.;
+    double mT_e = ( selLepton_e ) ? comp_MT_met(selLepton_e, met.pt(), met.phi()) : -1.;
+    double mT_mu = ( selLepton_e ) ? comp_MT_met(selLepton_mu, met.pt(), met.phi()) : -1.;
 
     // require that trigger paths match event category (with event category based on selLeptons)
     if ( !((fakeableElectrons.size() >= 2 &&                               selTrigger_1e                                       ) ||
@@ -1220,9 +1217,15 @@ int main(int argc, char* argv[])
       }
     }
 
+    (*selEventsFile) << eventInfo.str() << '\n';
+
     ++selectedEntries;
     selectedEntries_weighted += evtWeight;
     histogram_selectedEntries->Fill(0.);
+    if(isDEBUG)
+    {
+      std::cout << evtWeightRecorder << '\n';
+    }
   }
 
   std::cout << "max num. Entries = " << inputTree -> getCumulativeMaxEventCount()
@@ -1242,6 +1245,8 @@ int main(int argc, char* argv[])
 
 //--- memory clean-up
   delete dataToMCcorrectionInterface;
+
+  delete selEventsFile;
 
   delete muonReader;
   delete electronReader;

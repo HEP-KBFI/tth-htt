@@ -16,12 +16,8 @@ class EvtHistManager_4l
   : public HistManagerBase
 {
  public:
-  EvtHistManager_4l(const edm::ParameterSet & cfg);
+  EvtHistManager_4l(const edm::ParameterSet & cfg, bool isControlRegion);
   ~EvtHistManager_4l() {}
-
-  void
-  setCRcategories(TFileDirectory & dir,
-                  const std::vector<std::string> & ctrl_categories);
 
   /// book and fill histograms
   void
@@ -33,9 +29,9 @@ class EvtHistManager_4l
                  int numJets,
                  int numBJets_loose,
                  int numBJets_medium,
-                 double massL,
+                 double mass_4L,
                  double mva_4l,
-                 const std::string & ctrl_category,
+                 int ctrl_category,
                  double evtWeight);
 
   const TH1 *
@@ -50,7 +46,7 @@ class EvtHistManager_4l
   TH1 * histogram_numJets_;
   TH1 * histogram_numBJets_loose_;
   TH1 * histogram_numBJets_medium_;
-  TH1 * histogram_massL_;
+  TH1 * histogram_mass_4L_;
   TH1 * histogram_mva_4l_;
 
   // CV: used to check loss in signal efficiency in case events with high jet and b-jet multiplicity are vetoed

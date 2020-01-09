@@ -167,6 +167,12 @@ int main(int argc, char* argv[])
     eventWeightManager->set_central_or_shift(central_or_shift);
   }
 
+  edm::ParameterSet triggerWhiteList;
+  if(! isMC)
+  {
+    triggerWhiteList = cfg_analyze.getParameter<edm::ParameterSet>("triggerWhiteList");
+  }
+
   checkOptionValidity(central_or_shift, isMC);
   const int jetPt_option = getJet_option (central_or_shift, isMC);
   const int met_option   = getMET_option (central_or_shift, isMC);
@@ -193,6 +199,7 @@ int main(int argc, char* argv[])
   edm::ParameterSet cfg_dataToMCcorrectionInterface;
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("era", era_string);
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("hadTauSelection", "disabled");
+  cfg_dataToMCcorrectionInterface.addParameter<bool>("isDEBUG", isDEBUG);
   Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface = nullptr;
   switch(era)
   {
@@ -728,8 +735,8 @@ int main(int argc, char* argv[])
       }
     }
 
-    bool isTriggered_1mu = hltPaths_isTriggered(triggers_1mu);
-    bool isTriggered_2mu = hltPaths_isTriggered(triggers_2mu);
+    bool isTriggered_1mu = hltPaths_isTriggered(triggers_1mu, triggerWhiteList, eventInfo, isMC);
+    bool isTriggered_2mu = hltPaths_isTriggered(triggers_2mu, triggerWhiteList, eventInfo, isMC);
     
     bool selTrigger_1mu = use_triggers_1mu && isTriggered_1mu;
     bool selTrigger_2mu = use_triggers_2mu && isTriggered_2mu;
@@ -738,7 +745,6 @@ int main(int argc, char* argv[])
 	        std::cout << "event FAILS trigger selection." << std::endl; 
 	        std::cout << " (selTrigger_1mu = " << isTriggered_1mu 
 			  << ", selTrigger_2mu = " << isTriggered_2mu << ")" << std::endl;
-			    //std::cout << hltPaths_isTriggered(triggers_1mu) << " " << isMC << " " << hltPaths_isTriggered(triggers_2mu) << " " << use_triggers_1mu << " " << use_triggers_2mu << std::endl;			 
         }
         fail_counter->Fill("Trigger", evtWeightRecorder.get(central_or_shift));
         continue;
@@ -929,7 +935,7 @@ int main(int argc, char* argv[])
       }
       else if(leptonSelection == kTight)
       {
-        evtWeightRecorder.record_leptonSF(dataToMCcorrectionInterface->getSF_leptonID_and_Iso_tight_to_loose_wTightCharge());
+        evtWeightRecorder.record_leptonIDSF(dataToMCcorrectionInterface, false);
       }
     } 
   
@@ -1344,6 +1350,10 @@ int main(int argc, char* argv[])
     ++selectedEntries;
     selectedEntries_weighted += evtWeight;
     histogram_selectedEntries->Fill(0.);
+    if(isDEBUG)
+    {
+      std::cout << evtWeightRecorder << '\n';
+    }
   }
 
   std::cout << "max num. Entries = " << inputTree -> getCumulativeMaxEventCount()

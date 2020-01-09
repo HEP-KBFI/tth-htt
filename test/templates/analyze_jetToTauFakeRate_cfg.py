@@ -3,6 +3,7 @@ import os
 
 from tthAnalysis.HiggsToTauTau.configs.recommendedMEtFilters_cfi import *
 from tthAnalysis.HiggsToTauTau.configs.EvtYieldHistManager_cfi import *
+from tthAnalysis.HiggsToTauTau.analysisSettings import *
 
 process = cms.PSet()
 
@@ -59,6 +60,7 @@ process.analyze_jetToTauFakeRate = cms.PSet(
 
     fillGenEvtHistograms = cms.bool(False),
     cfgEvtYieldHistManager = cms.PSet(),
+    triggerWhiteList = cms.PSet(),
 
     branchName_electrons = cms.string('Electron'),
     branchName_muons = cms.string('Muon'),
@@ -82,7 +84,7 @@ process.analyze_jetToTauFakeRate = cms.PSet(
     selEventsFileName_output = cms.string(''),
     isDEBUG = cms.bool(False),
     hasLHE = cms.bool(True),
-    useObjectMultiplicity = cms.bool(True),
+    useObjectMultiplicity = cms.bool(False),
 
     evtWeight = cms.PSet(
         apply = cms.bool(False),

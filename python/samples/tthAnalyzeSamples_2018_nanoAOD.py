@@ -15701,7 +15701,7 @@ samples_2018["/THW_ctcvcp_5f_Hincl_13TeV_madgraph_pythia8/RunIIAutumn18MiniAOD-1
   ("nof_db_files",                    436),
   ("nof_events",                      {
   }),
-  ("nof_tree_events",                 14298988),
+  ("nof_tree_events",                 14198988),
   ("nof_db_events",                   14998988),
   ("fsize_local",                     43455258114), # 43.46GB, avg file size 289.70MB
   ("fsize_db",                        958252346048), # 958.25GB, avg file size 2.20GB
@@ -15717,7 +15717,7 @@ samples_2018["/THW_ctcvcp_5f_Hincl_13TeV_madgraph_pythia8/RunIIAutumn18MiniAOD-1
       OD([
         ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/THW_ctcvcp_5f_Hincl_13TeV_madgraph_pythia8/2018_2019Sep29_THW_ctcvcp_5f_Hincl_13TeV_madgraph_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_122218"),
         ("selection", "*"),
-        ("blacklist", [11, 32, 39, 42, 51, 52, 62]),
+        ("blacklist", [11, 32, 39, 42, 51, 52, 62, 81]),
       ]),
     ]
   ),
@@ -16069,7 +16069,7 @@ samples_2018["/GluGluHToBB_M125_13TeV_amcatnloFXFX_pythia8/RunIIAutumn18MiniAOD-
   ("nof_db_files",                    320),
   ("nof_events",                      {
   }),
-  ("nof_tree_events",                 15034579),
+  ("nof_tree_events",                 14934589),
   ("nof_db_events",                   15034579),
   ("fsize_local",                     20098589166), # 20.10GB, avg file size 133.10MB
   ("fsize_db",                        654781502160), # 654.78GB, avg file size 2.05GB
@@ -18871,13 +18871,13 @@ samples_2018["/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18M
   ("type",                            "mc"),
   ("sample_category",                 "EWK"),
   ("process_name_specific",           "DYJetsToLL_M-50_amcatnloFXFX_ext2"),
-  ("nof_files",                       2886),
+  ("nof_files",                       2802),
   ("nof_db_files",                    2805),
   ("nof_events",                      {
   }),
-  ("nof_tree_events",                 193362165),
+  ("nof_tree_events",                 193157948),
   ("nof_db_events",                   193465480),
-  ("fsize_local",                     222360024330), # 222.36GB, avg file size 77.05MB
+  ("fsize_local",                     221894796522), # 221.89GB, avg file size 79.19MB
   ("fsize_db",                        7864644678843), # 7.86TB, avg file size 2.80GB
   ("use_it",                          True),
   ("xsection",                        6077.22),

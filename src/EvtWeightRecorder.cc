@@ -242,8 +242,9 @@ EvtWeightRecorder::get_chargeMisIdProb() const
 double
 EvtWeightRecorder::get_data_to_MC_correction(const std::string & central_or_shift) const
 {
-  return isMC_ ? get_sf_triggerEff(central_or_shift) * get_leptonSF() * get_tauSF(central_or_shift) *
-                 get_btag(central_or_shift) * get_dy_norm(central_or_shift) * get_toppt_rwgt(central_or_shift)
+  return isMC_ ? get_sf_triggerEff(central_or_shift) * get_leptonSF() * get_leptonIDSF(central_or_shift) *
+                 get_tauSF(central_or_shift) * get_btag(central_or_shift) * get_dy_norm(central_or_shift) *
+                 get_toppt_rwgt(central_or_shift)
                : 1.
   ;
 }
@@ -356,46 +357,6 @@ EvtWeightRecorder::record_dy_norm(const DYMCNormScaleFactors * const dyNormScale
 }
 
 void
-EvtWeightRecorder::record_toppt_rwgt(const std::vector<GenParticle> & genTopQuarks)
-{
-  assert(isMC_);
-  weights_toppt_rwgt_.clear();
-
-  // find generator-level top and anti-top quark
-  const GenParticle* genTopQuark     = nullptr;
-  const GenParticle* genAntiTopQuark = nullptr;
-  for (std::vector<GenParticle>::const_iterator genQuark = genTopQuarks.begin(); genQuark != genTopQuarks.end(); ++genQuark)
-  {
-    if ( genQuark->pdgId() == +6 ) genTopQuark     = &(*genQuark);
-    if ( genQuark->pdgId() == -6 ) genAntiTopQuark = &(*genQuark);
-  }
-
-  double topPtWeight = 1.;
-  if (genTopQuark && genAntiTopQuark)
-  {
-    // CV: coefficients for top pT reweighting for Run 2 data vs POWHEG MC taken from
-    //       https://twiki.cern.ch/twiki/bin/view/CMS/TopPtReweighting#Use_case_3_ttbar_MC_is_used_to_m
-    const double a =  0.0615;
-    const double b = -0.0005;
-    topPtWeight = sqrt(exp(a + b*genTopQuark->pt())*exp(a + b*genAntiTopQuark->pt()));
-  }
-
-  for(const std::string & central_or_shift: central_or_shifts_)
-  {
-    const int topPtReweighting_option = getTopPtReweighting_option(central_or_shift);
-    if(weights_toppt_rwgt_.count(topPtReweighting_option))
-    {
-      continue;
-    }
-    
-    if      (topPtReweighting_option == kTopPtReweighting_central  ) weights_toppt_rwgt_[topPtReweighting_option] = topPtWeight;
-    else if (topPtReweighting_option == kTopPtReweighting_shiftUp  ) weights_toppt_rwgt_[topPtReweighting_option] = topPtWeight*topPtWeight;
-    else if (topPtReweighting_option == kTopPtReweighting_shiftDown) weights_toppt_rwgt_[topPtReweighting_option] = 1.;
-    else assert(0);
-  }
-}
-
-void
 EvtWeightRecorder::record_toppt_rwgt(double sf)
 {
   assert(isMC_);
@@ -462,6 +423,44 @@ EvtWeightRecorder::record_leptonSF(double weight)
 {
   assert(isMC_);
   leptonSF_ *= weight;
+}
+
+void
+EvtWeightRecorder::record_leptonIDSF(const Data_to_MC_CorrectionInterface_Base * const dataToMCcorrectionInterface,
+                                     bool woTightCharge)
+{
+  assert(isMC_);
+  weights_leptonID_and_Iso_.clear();
+  for(const std::string & central_or_shift: central_or_shifts_)
+  {
+    const LeptonIDSFsys leptonIDSF_option = getLeptonIDSFsys_option(central_or_shift);
+    if(weights_leptonID_and_Iso_.count(leptonIDSF_option))
+    {
+      continue;
+    }
+    if(woTightCharge)
+    {
+      weights_leptonID_and_Iso_[leptonIDSF_option] = dataToMCcorrectionInterface->getSF_leptonID_and_Iso_tight_to_loose_woTightCharge(leptonIDSF_option);
+    }
+    else
+    {
+      weights_leptonID_and_Iso_[leptonIDSF_option] = dataToMCcorrectionInterface->getSF_leptonID_and_Iso_tight_to_loose_wTightCharge(leptonIDSF_option);
+    }
+  }
+}
+
+double
+EvtWeightRecorder::get_leptonIDSF(const std::string & central_or_shift) const
+{
+  if(isMC_ && ! weights_leptonID_and_Iso_.empty())
+  {
+    const LeptonIDSFsys leptonIDSF_option = getLeptonIDSFsys_option(central_or_shift);
+    if(weights_leptonID_and_Iso_.count(leptonIDSF_option))
+    {
+      return weights_leptonID_and_Iso_.at(leptonIDSF_option);
+    }
+  }
+  return 1.;
 }
 
 void
@@ -1175,6 +1174,7 @@ operator<<(std::ostream & os,
           "  inclusive weight      = " << evtWeightRecorder.get_inclusive(central_or_shift)             << "\n"
           "  trigger eff SF        = " << evtWeightRecorder.get_sf_triggerEff(central_or_shift)         << "\n"
           "  lepton SF             = " << evtWeightRecorder.get_leptonSF()                              << "\n"
+          "  lepton ID SF          = " << evtWeightRecorder.get_leptonIDSF(central_or_shift)            << "\n"
           "  tau SF                = " << evtWeightRecorder.get_tauSF(central_or_shift)                 << "\n"
           "  DY norm weight        = " << evtWeightRecorder.get_dy_norm(central_or_shift)               << "\n"
           "  btag weight           = " << evtWeightRecorder.get_btag(central_or_shift)                  << "\n"

@@ -38,52 +38,60 @@ DYMCNormScaleFactors::getWeight(const std::vector<GenParticle> & genTauLeptons,
   }
 
   double weight = 1.;
+  double weight_error = 0.;
   if(genTauLeptonPlus && genTauLeptonMinus)
   {
     const Particle::LorentzVector dileptonP4 = genTauLeptonPlus->p4() + genTauLeptonMinus->p4();
     const double dileptonMass = dileptonP4.mass();
 
-    if(era_ == kEra_2016){ //kept same as 2017 till it is evaluated separately for 2016
-      if     (nBMedium >= 2 && nJets >= 4)                 weight = 1.353;
-      else if(nBMedium >= 2 && nJets == 3)                 weight = 0.949;
-      else if(nBMedium >= 2 && nJets == 2)                 weight = 0.828;
-      else if(nBMedium == 1 && nBLoose >= 2 && nJets >= 4) weight = 1.55;
-      else if(nBMedium == 1 && nBLoose >= 2 && nJets == 3) weight = 1.198;
-      else if(nBMedium == 1 && nBLoose >= 2 && nJets == 2) weight = 0.971;
-      else if(nBMedium == 1 && nBLoose == 1 && nJets >= 4) weight = 1.554;
-      else if(nBMedium == 1 && nBLoose == 1 && nJets == 3) weight = 1.20;
-      else if(nBMedium == 1 && nBLoose == 1 && nJets == 2) weight = 1.0;
-      else if(nBMedium == 0 && nBLoose >= 2 && nJets >= 4) weight = 1.431;
-      else if(nBMedium == 0 && nBLoose >= 2 && nJets == 3) weight = 1.138;
-      else if(nBMedium == 0 && nBLoose >= 2 && nJets == 2) weight = 1.01;
+    if(era_ == kEra_2016)
+    {
+      if     (nBMedium >= 2 && nJets >= 4)                 { weight = 0.740; weight_error = 0.148; }
+      else if(nBMedium >= 2 && nJets == 3)                 { weight = 0.654; weight_error = 0.096; }
+      else if(nBMedium >= 2 && nJets == 2)                 { weight = 0.649; weight_error = 0.090; }
+      else if(nBMedium == 1 && nBLoose >= 2 && nJets >= 4) { weight = 1.100; weight_error = 0.051; }
+      else if(nBMedium == 1 && nBLoose >= 2 && nJets == 3) { weight = 0.876; weight_error = 0.113; }
+      else if(nBMedium == 1 && nBLoose >= 2 && nJets == 2) { weight = 0.792; weight_error = 0.029; }
+      else if(nBMedium == 1 && nBLoose == 1 && nJets >= 4) { weight = 1.125; weight_error = 0.043; }
+      else if(nBMedium == 1 && nBLoose == 1 && nJets == 3) { weight = 0.963; weight_error = 0.035; }
+      else if(nBMedium == 1 && nBLoose == 1 && nJets == 2) { weight = 0.887; weight_error = 0.011; }
+      else if(nBMedium == 0 && nBLoose >= 2 && nJets >= 4) { weight = 1.040; weight_error = 0.024; }
+      else if(nBMedium == 0 && nBLoose >= 2 && nJets == 3) { weight = 0.841; weight_error = 0.062; }
+      else if(nBMedium == 0 && nBLoose >= 2 && nJets == 2) { weight = 0.791; weight_error = 0.007; }
     }
-    else if(era_ == kEra_2017){
-      if     (nBMedium >= 2 && nJets >= 4)                 weight = 1.353;
-      else if(nBMedium >= 2 && nJets == 3)                 weight = 0.949;
-      else if(nBMedium >= 2 && nJets == 2)                 weight = 0.828;
-      else if(nBMedium == 1 && nBLoose >= 2 && nJets >= 4) weight = 1.55;
-      else if(nBMedium == 1 && nBLoose >= 2 && nJets == 3) weight = 1.198;
-      else if(nBMedium == 1 && nBLoose >= 2 && nJets == 2) weight = 0.971;
-      else if(nBMedium == 1 && nBLoose == 1 && nJets >= 4) weight = 1.554;
-      else if(nBMedium == 1 && nBLoose == 1 && nJets == 3) weight = 1.20;
-      else if(nBMedium == 1 && nBLoose == 1 && nJets == 2) weight = 1.0;
-      else if(nBMedium == 0 && nBLoose >= 2 && nJets >= 4) weight = 1.431;
-      else if(nBMedium == 0 && nBLoose >= 2 && nJets == 3) weight = 1.138;
-      else if(nBMedium == 0 && nBLoose >= 2 && nJets == 2) weight = 1.01; 
+    else if(era_ == kEra_2017)
+    {
+      if     (nBMedium >= 2 && nJets >= 4)                 { weight = 1.388; weight_error = 0.073; }
+      else if(nBMedium >= 2 && nJets == 3)                 { weight = 0.915; weight_error = 0.043; }
+      else if(nBMedium >= 2 && nJets == 2)                 { weight = 0.767; weight_error = 0.025; }
+      else if(nBMedium == 1 && nBLoose >= 2 && nJets >= 4) { weight = 1.559; weight_error = 0.040; }
+      else if(nBMedium == 1 && nBLoose >= 2 && nJets == 3) { weight = 1.187; weight_error = 0.112; }
+      else if(nBMedium == 1 && nBLoose >= 2 && nJets == 2) { weight = 0.964; weight_error = 0.011; }
+      else if(nBMedium == 1 && nBLoose == 1 && nJets >= 4) { weight = 1.565; weight_error = 0.034; }
+      else if(nBMedium == 1 && nBLoose == 1 && nJets == 3) { weight = 1.194; weight_error = 0.048; }
+      else if(nBMedium == 1 && nBLoose == 1 && nJets == 2) { weight = 0.995; weight_error = 0.009; }
+      else if(nBMedium == 0 && nBLoose >= 2 && nJets >= 4) { weight = 1.452; weight_error = 0.044; }
+      else if(nBMedium == 0 && nBLoose >= 2 && nJets == 3) { weight = 1.134; weight_error = 0.056; }
+      else if(nBMedium == 0 && nBLoose >= 2 && nJets == 2) { weight = 1.003; weight_error = 0.028; }
     }
-    else if(era_ == kEra_2018){
-      if     (nBMedium >= 2 && nJets >= 4)                 weight = 1.261;
-      else if(nBMedium >= 2 && nJets == 3)                 weight = 0.964;
-      else if(nBMedium >= 2 && nJets == 2)                 weight = 0.781;
-      else if(nBMedium == 1 && nBLoose >= 2 && nJets >= 4) weight = 1.873;
-      else if(nBMedium == 1 && nBLoose >= 2 && nJets == 3) weight = 1.318;
-      else if(nBMedium == 1 && nBLoose >= 2 && nJets == 2) weight = 1.081;
-      else if(nBMedium == 1 && nBLoose == 1 && nJets >= 4) weight = 1.757;
-      else if(nBMedium == 1 && nBLoose == 1 && nJets == 3) weight = 1.264;
-      else if(nBMedium == 1 && nBLoose == 1 && nJets == 2) weight = 1.038;
-      else if(nBMedium == 0 && nBLoose >= 2 && nJets >= 4) weight = 1.769;
-      else if(nBMedium == 0 && nBLoose >= 2 && nJets == 3) weight = 1.336;
-      else if(nBMedium == 0 && nBLoose >= 2 && nJets == 2) weight = 1.038;
+    else if(era_ == kEra_2018)
+    {
+      if     (nBMedium >= 2 && nJets >= 4)                 { weight = 1.372; weight_error = 0.090; }
+      else if(nBMedium >= 2 && nJets == 3)                 { weight = 0.990; weight_error = 0.095; }
+      else if(nBMedium >= 2 && nJets == 2)                 { weight = 0.812; weight_error = 0.042; }
+      else if(nBMedium == 1 && nBLoose >= 2 && nJets >= 4) { weight = 1.706; weight_error = 0.050; }
+      else if(nBMedium == 1 && nBLoose >= 2 && nJets == 3) { weight = 1.205; weight_error = 0.033; }
+      else if(nBMedium == 1 && nBLoose >= 2 && nJets == 2) { weight = 1.024; weight_error = 0.011; }
+      else if(nBMedium == 1 && nBLoose == 1 && nJets >= 4) { weight = 1.648; weight_error = 0.047; }
+      else if(nBMedium == 1 && nBLoose == 1 && nJets == 3) { weight = 1.191; weight_error = 0.037; }
+      else if(nBMedium == 1 && nBLoose == 1 && nJets == 2) { weight = 1.006; weight_error = 0.008; }
+      else if(nBMedium == 0 && nBLoose >= 2 && nJets >= 4) { weight = 1.609; weight_error = 0.029; }
+      else if(nBMedium == 0 && nBLoose >= 2 && nJets == 3) { weight = 1.201; weight_error = 0.035; }
+      else if(nBMedium == 0 && nBLoose >= 2 && nJets == 2) { weight = 1.034; weight_error = 0.025; }
+    }
+    else
+    {
+      throw cmsException(this, __func__, __LINE__) << "Invalid era: " << era_;
     }
 
     if(debug_)
@@ -93,62 +101,20 @@ DYMCNormScaleFactors::getWeight(const std::vector<GenParticle> & genTauLeptons,
                 << " nBMedium = "       << nBMedium
                 << " nBLoose = "        << nBLoose
                 << " nJets = "          << nJets
-                << " --> weight = "     << weight << '\n'
+                << " --> weight = "     << weight
+                << " +/- "              << weight_error
+                << '\n'
       ;
     }
   }
-  double retVal = 1.;
-  
-  double error=0, emdiff = 0;
-  if(era_ == kEra_2016){ //kept same as 2017 till it is evaluated separately for 2016
-    if     (nBMedium >= 2 && nJets >= 4)                 {error = 0.055; emdiff = weight - 0.431;}
-    else if(nBMedium >= 2 && nJets == 3)                 {error = 0.026; emdiff = weight - 0.464;}
-    else if(nBMedium >= 2 && nJets == 2)                 {error = 0.016; emdiff = weight - 0.494;}
-    else if(nBMedium == 1 && nBLoose >= 2 && nJets >= 4) {error = 0.040; emdiff = weight - 1.410;}
-    else if(nBMedium == 1 && nBLoose >= 2 && nJets == 3) {error = 0.020; emdiff = weight - 1.063;}
-    else if(nBMedium == 1 && nBLoose >= 2 && nJets == 2) {error = 0.010; emdiff = weight - 0.925;}
-    else if(nBMedium == 1 && nBLoose == 1 && nJets >= 4) {error = 0.030; emdiff = weight - 1.449;}
-    else if(nBMedium == 1 && nBLoose == 1 && nJets == 3) {error = 0.013; emdiff = weight - 1.128;}
-    else if(nBMedium == 1 && nBLoose == 1 && nJets == 2) {error = 0.006; emdiff = weight - 0.968;}
-    else if(nBMedium == 0 && nBLoose >= 2 && nJets >= 4) {error = 0.020; emdiff = weight - 1.267;}
-    else if(nBMedium == 0 && nBLoose >= 2 && nJets == 3) {error = 0.010; emdiff = weight - 1.019;}
-    else if(nBMedium == 0 && nBLoose >= 2 && nJets == 2) {error = 0.006; emdiff = weight - 0.933;}
-  }							   	      
-  else if(era_ == kEra_2017){				   	      
-    if     (nBMedium >= 2 && nJets >= 4)                 {error = 0.055; emdiff = weight - 0.431;}
-    else if(nBMedium >= 2 && nJets == 3)                 {error = 0.026; emdiff = weight - 0.464;}
-    else if(nBMedium >= 2 && nJets == 2)                 {error = 0.016; emdiff = weight - 0.494;}
-    else if(nBMedium == 1 && nBLoose >= 2 && nJets >= 4) {error = 0.040; emdiff = weight - 1.410;}
-    else if(nBMedium == 1 && nBLoose >= 2 && nJets == 3) {error = 0.020; emdiff = weight - 1.063;}
-    else if(nBMedium == 1 && nBLoose >= 2 && nJets == 2) {error = 0.010; emdiff = weight - 0.925;}
-    else if(nBMedium == 1 && nBLoose == 1 && nJets >= 4) {error = 0.030; emdiff = weight - 1.449;}
-    else if(nBMedium == 1 && nBLoose == 1 && nJets == 3) {error = 0.013; emdiff = weight - 1.128;}
-    else if(nBMedium == 1 && nBLoose == 1 && nJets == 2) {error = 0.006; emdiff = weight - 0.968;}
-    else if(nBMedium == 0 && nBLoose >= 2 && nJets >= 4) {error = 0.020; emdiff = weight - 1.267;}
-    else if(nBMedium == 0 && nBLoose >= 2 && nJets == 3) {error = 0.010; emdiff = weight - 1.019;}
-    else if(nBMedium == 0 && nBLoose >= 2 && nJets == 2) {error = 0.006; emdiff = weight - 0.933;}
-  }							   	      
-  else if(era_ == kEra_2018){				   	      
-    if     (nBMedium >= 2 && nJets >= 4)                 {error = 0.054; emdiff = weight - 0.732;}
-    else if(nBMedium >= 2 && nJets == 3)                 {error = 0.028; emdiff = weight - 0.514;}
-    else if(nBMedium >= 2 && nJets == 2)                 {error = 0.015; emdiff = weight - 0.544;}
-    else if(nBMedium == 1 && nBLoose >= 2 && nJets >= 4) {error = 0.057; emdiff = weight - 1.709;}
-    else if(nBMedium == 1 && nBLoose >= 2 && nJets == 3) {error = 0.024; emdiff = weight - 1.281;}
-    else if(nBMedium == 1 && nBLoose >= 2 && nJets == 2) {error = 0.012; emdiff = weight - 1.063;}
-    else if(nBMedium == 1 && nBLoose == 1 && nJets >= 4) {error = 0.038; emdiff = weight - 1.667;}
-    else if(nBMedium == 1 && nBLoose == 1 && nJets == 3) {error = 0.015; emdiff = weight - 1.236;}
-    else if(nBMedium == 1 && nBLoose == 1 && nJets == 2) {error = 0.006; emdiff = weight - 1.017;}
-    else if(nBMedium == 0 && nBLoose >= 2 && nJets >= 4) {error = 0.030; emdiff = weight - 1.616;}
-    else if(nBMedium == 0 && nBLoose >= 2 && nJets == 3) {error = 0.014; emdiff = weight - 1.207;}
-    else if(nBMedium == 0 && nBLoose >= 2 && nJets == 2) {error = 0.006; emdiff = weight - 1.053;}
-  }
 
   switch(central_or_shift)
-    {
-    case kDYMCNormScaleFactors_central:   retVal = weight;           break;
-    case kDYMCNormScaleFactors_shiftUp:   retVal = weight + error; break; //error on SF only
-    case kDYMCNormScaleFactors_shiftDown: retVal = weight - std::sqrt(error*error + emdiff*emdiff); break; // cover difference of SFs from Z->ee and Z->mumu 
+  {
+    case kDYMCNormScaleFactors_central:                           break;
+    case kDYMCNormScaleFactors_shiftUp:   weight += weight_error; break; // cover difference of SFs from Z->ee and Z->mumu
+    case kDYMCNormScaleFactors_shiftDown: weight -= weight_error; break; // cover difference of SFs from Z->ee and Z->mumu
     default: assert(0);
   }
-  return retVal;
+  assert(weight > 0.);
+  return weight;
 }

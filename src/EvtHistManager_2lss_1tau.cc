@@ -45,9 +45,9 @@ EvtHistManager_2lss_1tau::EvtHistManager_2lss_1tau(const edm::ParameterSet& cfg)
   };
   const std::vector<std::string> sysOpts_all = {
     "EventCounter",
-    "output_NN_sig_1p2_rest_1_th_1p2_ttH",
-    "output_NN_sig_1p2_rest_1_th_1p2_tH",
-    "output_NN_sig_1p2_rest_1_th_1p2_rest"
+    "output_NN_ttH",
+    "output_NN_tH",
+    "output_NN_rest"
   };
   for(const std::string & sysOpt: sysOpts_central)
   {
@@ -67,25 +67,21 @@ EvtHistManager_2lss_1tau::getHistogram_EventCounter() const
 
 void
 EvtHistManager_2lss_1tau::bookCategories(TFileDirectory & dir,
-                                  const std::vector<std::string> & categories_sig_1p2_rest_1_th_1p2,
-                                  const std::vector<std::string> & categories_sig_2_rest_2p2_th_2,
-                                  const std::vector<std::string> & categories_sig_2_rest_2p5_th_2
+                                  const std::map<std::string, std::vector<double>> &  categories_list_NN
                                 )
 {
-  for(const std::string & category: categories_sig_1p2_rest_1_th_1p2)
+  for(auto category: categories_list_NN)
   {
-    histograms_by_category_sig_1p2_rest_1_th_1p2_[category] = book1D(dir, category, category, 40,  0., +1.);
-    central_or_shiftOptions_[category] = { "*" };
-  }
-  for(const std::string & category: categories_sig_2_rest_2p2_th_2)
-  {
-    histograms_by_category_sig_2_rest_2p2_th_2_[category] = book1D(dir, category, category, 40,  0., +1.);
-    central_or_shiftOptions_[category] = { "*" };
-  }
-  for(const std::string & category: categories_sig_2_rest_2p5_th_2)
-  {
-    histograms_by_category_sig_2_rest_2p5_th_2_[category] = book1D(dir, category, category, 40,  0., +1.);
-    central_or_shiftOptions_[category] = { "*" };
+    if ( category.second.size() > 0 )
+    {
+      int npoints = category.second.size();
+      Float_t binsx[npoints];
+      std::copy(category.second.begin(), category.second.end(), binsx);
+      histograms_by_category_[category.first] = book1D(dir, category.first, category.first, npoints - 1, binsx);
+    } else {
+      histograms_by_category_[category.first] = book1D(dir, category.first, category.first, 100,  0., +1.);
+    }
+    central_or_shiftOptions_[category.first] = { "*" };
   }
 }
 
@@ -124,12 +120,8 @@ EvtHistManager_2lss_1tau::fillHistograms(int numElectrons,
                                          double mTauTauVis1,
                                          double mTauTauVis2,
                                          double memOutput_LR,
-                                         const std::string & category_3l_sig_1p2_rest_1_th_1p2_TF,
-                                         double output_NN_sig_1p2_rest_1_th_1p2,
-                                         const std::string & category_sig_2_rest_2p2_th_2_TF,
-                                         double output_sig_2_rest_2p2_th_2,
-                                         const std::string & category_sig_2_rest_2p5_th_2_TF,
-                                         double output_NN_sig_2_rest_2p5_th_2
+                                         const std::string & category_NN_TF,
+                                         double output_NN
                                        )
 {
   const double evtWeightErr = 0.;
@@ -153,22 +145,10 @@ EvtHistManager_2lss_1tau::fillHistograms(int numElectrons,
 
   fillWithOverFlow(histogram_EventCounter_, 0., evtWeight, evtWeightErr);
 
-  if(! histograms_by_category_sig_1p2_rest_1_th_1p2_.count(category_3l_sig_1p2_rest_1_th_1p2_TF))
+  if(! histograms_by_category_.count(category_NN_TF))
   {
-    throw cmsException(this, __func__, __LINE__) << "Histogram of the name '" << category_3l_sig_1p2_rest_1_th_1p2_TF << "' was never booked";
+    throw cmsException(this, __func__, __LINE__) << "Histogram of the name '" << category_NN_TF << "' was never booked";
   }
-  fillWithOverFlow(histograms_by_category_sig_1p2_rest_1_th_1p2_[category_3l_sig_1p2_rest_1_th_1p2_TF], output_NN_sig_1p2_rest_1_th_1p2, evtWeight, evtWeightErr);
-  //////////////////////////////////////////////////
-  if(! histograms_by_category_sig_2_rest_2p2_th_2_.count(category_sig_2_rest_2p2_th_2_TF))
-  {
-    throw cmsException(this, __func__, __LINE__) << "Histogram of the name '" << category_sig_2_rest_2p2_th_2_TF << "' was never booked";
-  }
-  fillWithOverFlow(histograms_by_category_sig_2_rest_2p2_th_2_[category_sig_2_rest_2p2_th_2_TF], output_sig_2_rest_2p2_th_2, evtWeight, evtWeightErr);
-  //////////////////////////////////////////////////
-  if(! histograms_by_category_sig_2_rest_2p5_th_2_.count(category_sig_2_rest_2p5_th_2_TF))
-  {
-    throw cmsException(this, __func__, __LINE__) << "Histogram of the name '" << category_sig_2_rest_2p5_th_2_TF << "' was never booked";
-  }
-  fillWithOverFlow(histograms_by_category_sig_2_rest_2p5_th_2_[category_sig_2_rest_2p5_th_2_TF], output_NN_sig_2_rest_2p5_th_2, evtWeight, evtWeightErr);
+  fillWithOverFlow(histograms_by_category_[category_NN_TF], output_NN, evtWeight, evtWeightErr);
 
 }

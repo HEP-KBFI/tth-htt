@@ -4,7 +4,7 @@ from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_2lss import analyzeConfig_2
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 from tthAnalysis.HiggsToTauTau.analysisSettings import systematics, get_lumi
 from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
-from tthAnalysis.HiggsToTauTau.common import logging, load_samples
+from tthAnalysis.HiggsToTauTau.common import logging, load_samples, load_samples_stitched
 
 import os
 import sys
@@ -14,8 +14,9 @@ import re
 # E.g. to run: ./test/tthAnalyzeRun_2lss.py -v 2017Dec13 -m default -e 2017
 
 mode_choices     = [ 'default', 'forBDTtraining', 'sync' ]
-sys_choices      = [ 'full' ] + systematics.an_extended_opts
+sys_choices      = [ 'full', 'internal' ] + systematics.an_extended_opts
 systematics.full = systematics.an_extended
+systematics.internal = systematics.an_internal_no_mem
 
 parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
@@ -24,12 +25,13 @@ parser.add_preselect()
 parser.add_rle_select()
 parser.add_nonnominal()
 parser.add_hlt_filter()
-parser.add_files_per_job()
+parser.add_files_per_job(files_per_job = 2)
 parser.add_use_home()
 parser.add_jet_cleaning()
 parser.add_gen_matching()
 parser.add_tau_id()
 parser.enable_regrouped_jec()
+parser.add_stitched()
 args = parser.parse_args()
 
 # Common arguments
@@ -57,6 +59,7 @@ jet_cleaning      = args.jet_cleaning
 gen_matching      = args.gen_matching
 tau_id            = args.tau_id
 regroup_jec       = args.enable_regrouped_jec
+use_stitched      = args.use_stitched
 
 if regroup_jec:
   if 'full' not in systematics_label:
@@ -97,6 +100,9 @@ elif mode == "sync":
 else:
   raise ValueError("Invalid mode: %s" % mode)
 
+if use_stitched:
+  samples = load_samples_stitched(samples, era, load_dy = 'dy' in use_stitched, load_wjets = 'wjets' in use_stitched)
+
 if __name__ == '__main__':
   logging.info(
     "Running the jobs with the following systematic uncertainties enabled: %s" % \
@@ -135,26 +141,31 @@ if __name__ == '__main__':
     histograms_to_fit         = {
         "EventCounter"                          : {},
         "mvaDiscr_2lss"                         : {},
-        "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_ttH_ee_bl" : {},
-        "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_ttH_ee_bt" : {},
-        "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_ttH_em_bl" : {},
-        "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_ttH_em_bt" : {},
-        "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_ttH_mm_bl" : {},
-        "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_ttH_mm_bt" : {},
-        "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_ttW_ee_bl" : {},
-        "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_ttW_ee_bt" : {},
-        "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_ttW_em_bl" : {},
-        "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_ttW_em_bt" : {},
-        "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_ttW_mm_bl" : {},
-        "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_ttW_mm_bt" : {},
-        "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_rest_bl" : {},
-        "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_rest_bt" : {},
-        "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_tH_ee_bl" : {},
-        "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_tH_ee_bt" : {},
-        "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_tH_em_bl" : {},
-        "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_tH_em_bt" : {},
-        "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_tH_mm_bl" : {},
-        "output_NN_2lss_ttH_tH_4cat_onlyTHQ_v4_tH_mm_bt" : {}
+        "output_NN_ttH_ee"                      : {},
+        "output_NN_ttH_em"                      : {},
+        "output_NN_ttH_mm"                      : {},
+        "output_NN_ttW_ee"                      : {},
+        "output_NN_ttW_em"                      : {},
+        "output_NN_ttW_mm"                      : {},
+        "output_NN_rest_ee"                     : {},
+        "output_NN_rest_em"                     : {},
+        "output_NN_rest_mm"                     : {},
+        "output_NN_tH_ee"                       : {},
+        "output_NN_tH_em"                       : {},
+        "output_NN_tH_mm"                       : {},
+        "mass_2L_ee_lj_pos"                     : {},
+        "mass_2L_ee_lj_neg"                     : {},
+        "mass_2L_ee_hj_pos"                     : {},
+        "mass_2L_ee_hj_neg"                     : {},
+        "mass_2L_em_lj_pos"                     : {},
+        "mass_2L_em_lj_neg"                     : {},
+        "mass_2L_em_hj_pos"                     : {},
+        "mass_2L_em_hj_neg"                     : {},
+        "mass_2L_mm_lj_pos"                     : {},
+        "mass_2L_mm_lj_neg"                     : {},
+        "mass_2L_mm_hj_pos"                     : {},
+        "mass_2L_mm_hj_neg"                     : {},
+        "mass_2L_cr"                            : {}
     },
     select_rle_output         = True,
     dry_run                   = dry_run,

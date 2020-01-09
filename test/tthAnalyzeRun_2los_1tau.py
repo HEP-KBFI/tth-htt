@@ -12,8 +12,9 @@ import getpass
 # E.g.: ./test/tthAnalyzeRun_2los_1tau.py -v 2017Dec13 -m default -e 2017
 
 mode_choices     = [ 'default', 'forBDTtraining', 'sync' ]
-sys_choices      = [ 'full' ] + systematics.an_extended_opts
+sys_choices      = [ 'full', 'internal' ] + systematics.an_extended_opts
 systematics.full = systematics.an_extended
+systematics.internal = systematics.an_internal_no_mem
 
 parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
@@ -151,9 +152,6 @@ if __name__ == '__main__':
       "EventCounter"                              : {},
       "mTauTauVis"                                : {},
       "mvaOutput_legacy"                          : {},
-      "mvaOutput_legacy_2"                          : {},
-      "mvaOutput_legacy_3"                          : {},
-      "mvaOutput_legacy_4"                          : {},
     },
     select_rle_output         = True,
     dry_run                   = dry_run,

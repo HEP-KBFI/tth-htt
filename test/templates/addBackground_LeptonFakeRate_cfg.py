@@ -42,6 +42,10 @@ process.addBackground_LeptonFakeRate = cms.PSet(
       "CMS_ttHl_JERUp",
       "CMS_ttHl_JERDown",
       "CMS_ttHl_UnclusteredEnUp",
-      "CMS_ttHl_UnclusteredEnDown"
+      "CMS_ttHl_UnclusteredEnDown",
+      "MET_RespUp",
+      "MET_RespDown",
+      "MET_ResolUp",
+      "MET_ResolDown"        
     )
 )

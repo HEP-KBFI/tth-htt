@@ -120,10 +120,10 @@ class analyzeConfig_0l_2tau(analyzeConfig):
     self.executable_addBackgrounds = executable_addBackgrounds
     self.executable_addFakes = executable_addBackgroundJetToTauFakes
 
-    self.nonfake_backgrounds = [ "TTW", "TTWW", "TTZ", "WZ", "ZZ", "Rares", "DY", "TT", "tHq", "tHW", "VH", "WH", "ZH", "HH", "ggH", "qqH", "TTWH", "TTZH" ]
+    self.nonfake_backgrounds = [ "TTW", "TTWW", "TTZ", "WW", "WZ", "ZZ", "Rares", "DY", "TT", "tHq", "tHW", "VH", "WH", "ZH", "HH", "ggH", "qqH", "TTWH", "TTZH" ]
     samples_categories_MC = self.get_samples_categories_MC(self.nonfake_backgrounds)
     self.prep_dcard_processesToCopy = [ "data_obs" ] + samples_categories_MC + [ "data_fakes", "fakes_mc" ]
-    self.make_plots_backgrounds = self.nonfake_backgrounds + [ "data_fakes" ]
+    self.make_plots_backgrounds = [ process for process in self.nonfake_backgrounds if process not in [ "WH", "ZH" ] ] + [ "data_fakes" ]
 
     self.cfgFile_analyze = os.path.join(self.template_dir, cfgFile_analyze)
     self.histogramDir_prep_dcard = "0l_2tau_OS_Tight"
@@ -411,7 +411,6 @@ class analyzeConfig_0l_2tau(analyzeConfig):
                   'apply_hlt_filter'         : self.hlt_filter,
                   'useNonNominal'            : self.use_nonnominal,
                   'fillGenEvtHistograms'     : True,
-                  'useObjectMultiplicity'    : True,
                   'evtCategories'            : self.categories,
                 }
                 self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info, hadTau_selection)
@@ -457,12 +456,10 @@ class analyzeConfig_0l_2tau(analyzeConfig):
           key_addBackgrounds_dir = getKey("addBackgrounds")
           addBackgrounds_job_fakes_tuple = ("fakes_mc", hadTau_selection_and_frWeight, hadTau_charge_selection)
           key_addBackgrounds_job_fakes = getKey(*addBackgrounds_job_fakes_tuple)
-          sample_categories = []
-          sample_categories.extend(self.nonfake_backgrounds)
-          sample_categories.extend(self.ttHProcs)
           processes_input = []
           for process_input_base in processes_input_base:
-            if "HH" in process_input_base : continue
+            if "HH" in process_input_base:
+              continue
             processes_input.append("%s_fake" % process_input_base)
           self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_fakes] = {
             'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job],
@@ -607,7 +604,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
                 'inputFile_mcClosure_%s' % hadTau_type : self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_fakes]['outputFile'],
                 'histogramName_mcClosure_%s' % hadTau_type : "%s/sel/evt/fakes_mc/%s" % (histogramDir_mcClosure, histogramToFit)
             })
-            self.createCfg_add_syst_fakerate(self.jobOptions_add_syst_fakerate[key_add_syst_fakerate_job])
+          self.createCfg_add_syst_fakerate(self.jobOptions_add_syst_fakerate[key_add_syst_fakerate_job])
 
     logging.info("Creating configuration files to run 'makePlots'")
     key_makePlots_dir = getKey("makePlots")
@@ -648,17 +645,17 @@ class analyzeConfig_0l_2tau(analyzeConfig):
       }
       self.createCfg_makePlots_mcClosure(self.jobOptions_make_plots[key_makePlots_job])
 
+    self.sbatchFile_analyze = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_analyze_%s.py" % self.channel)
+    self.sbatchFile_addBackgrounds = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_addBackgrounds_%s.py" % self.channel)
+    self.sbatchFile_addBackgrounds_sum = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_addBackgrounds_sum_%s.py" % self.channel)
+    self.sbatchFile_addFakes = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_addFakes_%s.py" % self.channel)
     if self.is_sbatch:
       logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)
-      self.sbatchFile_analyze = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_analyze_%s.py" % self.channel)
       self.createScript_sbatch_analyze(self.executable_analyze, self.sbatchFile_analyze, self.jobOptions_analyze)
       logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_addBackgrounds)
-      self.sbatchFile_addBackgrounds = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_addBackgrounds_%s.py" % self.channel)
       self.createScript_sbatch(self.executable_addBackgrounds, self.sbatchFile_addBackgrounds, self.jobOptions_addBackgrounds)
-      self.sbatchFile_addBackgrounds_sum = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_addBackgrounds_sum_%s.py" % self.channel)
       self.createScript_sbatch(self.executable_addBackgrounds, self.sbatchFile_addBackgrounds_sum, self.jobOptions_addBackgrounds_sum)
       logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_addFakes)
-      self.sbatchFile_addFakes = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_addFakes_%s.py" % self.channel)
       self.createScript_sbatch(self.executable_addFakes, self.sbatchFile_addFakes, self.jobOptions_addFakes)
 
     logging.info("Creating Makefile")

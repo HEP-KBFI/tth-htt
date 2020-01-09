@@ -14,8 +14,9 @@ import re
 # E.g.: ./test/tthAnalyzeRun_1l_1tau.py -v 2017Dec13 -m default -e 2017
 
 mode_choices     = [ 'default', 'forBDTtraining', 'sync' ]
-sys_choices      = [ 'full' ] + systematics.an_extended_opts + [ 'topPtReweighting' ]
+sys_choices      = [ 'full', 'internal' ] + systematics.an_extended_opts + [ 'topPtReweighting' ]
 systematics.full = systematics.an_extended + systematics.topPtReweighting
+systematics.internal = systematics.an_internal_no_mem
 
 parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
@@ -110,15 +111,9 @@ elif mode == "sync":
 else:
   raise ValueError("Invalid mode: %s" % mode)
 
-evtCategories = None
-if mode == "default" and len(central_or_shifts) <= 1:
-  evtCategories = [
-    "1l_1tau" , "1l_1tau_OS", "1l_1tau_SS", "1l_1tau_OS_wChargeFlipWeights"
-  ]
-else:
-  evtCategories = [
-    "1l_1tau" , "1l_1tau_OS", "1l_1tau_SS", "1l_1tau_OS_wChargeFlipWeights"
-  ]
+evtCategories = [
+  "1l_1tau" , "1l_1tau_OS", "1l_1tau_SS", "1l_1tau_OS_wChargeFlipWeights"
+]
 
 for sample_name, sample_info in samples.items():
   if sample_name == 'sum_events':
@@ -132,6 +127,8 @@ for sample_name, sample_info in samples.items():
     sample_info["use_it"] = mode == "default"
     sample_info["sample_category"] = "TT"
     sample_info["apply_toppt_rwgt"] = True
+  elif sample_info["process_name_specific"] in [ "WZTo2L2Q", "ZZTo2L2Q" ]:
+    sample_info["use_it"] = True
   if MC_only :
     if sample_info["type"] == "data" :
       sample_info["use_it"] = False

@@ -19,32 +19,6 @@ process.makePlots.distributions.extend([
         yAxisTitle = cms.string('dN/dm_{#tau#tau}^{vis} [1/GeV]')
     ),
     cms.PSet(
-        histogramName = cms.string("sel/evt/$PROCESS/mvaOutput_plainKin_tt"),
-        xAxisTitle = cms.string("MVA Discriminant"),
-        yAxisTitle = cms.string("dN/dMVA")
-    ),
-    cms.PSet(
-        histogramName = cms.string("sel/evt/$PROCESS/mvaOutput_plainKin_ttV"),
-        xAxisTitle = cms.string("MVA Discriminant"),
-        yAxisTitle = cms.string("dN/dMVA")
-    ),
-    cms.PSet(
-        histogramName = cms.string("sel/evt/$PROCESS/mvaOutput_plainKin_SUM_VT"),
-        xAxisTitle = cms.string("MVA Discriminant"),
-        yAxisTitle = cms.string("dN/dMVA"),
-        explicitBinning = cms.vdouble([ 0.0, 0.25, 0.50, 0.75, 1.0 ]),
-    ),
-    cms.PSet(
-        histogramName = cms.string("sel/evt/$PROCESS/mvaOutput_plainKin_1B_VT"),
-        xAxisTitle = cms.string("MVA Discriminant"),
-        yAxisTitle = cms.string("dN/dMVA")
-    ),
-    cms.PSet(
-        histogramName = cms.string("sel/evt/$PROCESS/mvaOutput_plainKin_SUM_VT_noRebin"),
-        xAxisTitle = cms.string("MVA Discriminant"),
-        yAxisTitle = cms.string("dN/dMVA")
-    ),
-    cms.PSet(
         histogramName = cms.string("sel/evt/$PROCESS/mvaOutput_final"),
         xAxisTitle = cms.string("MVA Discriminant"),
         yAxisTitle = cms.string("dN/dMVA")

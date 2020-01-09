@@ -1,5 +1,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/hltPath.h"
 
+#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
+
 #include <TTree.h> // TTree
 
 #include <iostream> // std::ostream
@@ -90,6 +92,48 @@ hltPaths_isTriggered(const std::vector<hltPath *> & hltPaths,
       return passes;
     }
   );
+}
+
+bool
+hltPaths_isTriggered(const std::vector<hltPath *> & hltPaths,
+                     const edm::ParameterSet & runRanges,
+                     const EventInfo & eventInfo,
+                     bool isMC,
+                     bool verbose)
+{
+  if(isMC)
+  {
+    return hltPaths_isTriggered(hltPaths, verbose);
+  }
+  bool isTriggered = false;
+  for(const hltPath * const path: hltPaths)
+  {
+    if(path->getValue())
+    {
+      if(! runRanges.exists(path->getBranchName()))
+      {
+        throw cmsException(__func__, __LINE__) << "Unable to find run ranges for HLT path: " << path->getBranchName();
+      }
+      const std::vector<unsigned int> runs = runRanges.getParameter<std::vector<unsigned int>>(path->getBranchName());
+      if(std::find(runs.cbegin(), runs.cend(), eventInfo.run) == runs.cend())
+      {
+        std::cout
+          << "  WARNING: path '" << path->getBranchName() << "' is supposedly triggered but it shouldn't exist for run: "
+          << eventInfo.run << " => flipping its trigger bit to FALSE\n"
+        ;
+      }
+      else
+      {
+        if(verbose)
+        {
+          std::cout << "  " << path->getLabel() << ": " << *path;
+        }
+        isTriggered = true;
+        break;
+      }
+    }
+  }
+  return isTriggered;
 }
 
 void

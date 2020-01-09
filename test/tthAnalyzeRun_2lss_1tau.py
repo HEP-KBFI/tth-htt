@@ -16,8 +16,9 @@ import re
 mode_choices         = [
   'default', 'addMEM', 'forBDTtraining_beforeAddMEM', 'forBDTtraining_afterAddMEM', 'sync', 'sync_wMEM',
 ]
-sys_choices      = [ 'full' ] + systematics.an_extended_opts + [ 'MEM_2lss_1tau' ]
-systematics.full = systematics.an_extended + systematics.MEM_2lss_1tau
+sys_choices      = [ 'full', 'internal' ] + systematics.an_extended_opts + [ 'MEM_2lss_1tau' ]
+systematics.full = systematics.an_extended
+systematics.internal = systematics.an_internal_no_mem
 
 parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
@@ -69,6 +70,9 @@ if regroup_jec:
   systematics.full.extend(systematics.JEC_regrouped)
 
 # Use the arguments
+if "MEM" in mode:
+  systematics.full += systematics.MEM_2lss_1tau
+  systematics.internal += systematics.MEM_2lss_1tau
 central_or_shifts = []
 for systematic_label in systematics_label:
   for central_or_shift in getattr(systematics, systematic_label):
@@ -207,15 +211,9 @@ if __name__ == '__main__':
       "mTauTauVis"      : {},
       "memOutput_LR"    : {},
       "mvaOutput_final" : {},
-      "output_NN_sig_1p2_rest_1_th_1p2_ttH" : {},
-      "output_NN_sig_1p2_rest_1_th_1p2_tH" : {},
-      "output_NN_sig_1p2_rest_1_th_1p2_rest" : {},
-      "output_NN_sig_2_rest_2p2_th_2_ttH" : {},
-      "output_NN_sig_2_rest_2p2_th_2_tH" : {},
-      "output_NN_sig_2_rest_2p2_th_2_rest" : {},
-      "output_NN_sig_2_rest_2p5_th_2_ttH" : {},
-      "output_NN_sig_2_rest_2p5_th_2_tH" : {},
-      "output_NN_sig_2_rest_2p5_th_2_rest" : {},
+      "output_NN_ttH" : {},
+      "output_NN_tH" : {},
+      "output_NN_rest" : {}
     },
     select_rle_output         = True,
     dry_run                   = dry_run,

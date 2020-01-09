@@ -87,9 +87,9 @@ namespace aux
     else if(boost::ends_with(hadTauSelection, "VLoose" )) hadTauSelection_param = "vloose";
     else if(boost::ends_with(hadTauSelection, "Loose"  )) hadTauSelection_param = "loose";
     else if(boost::ends_with(hadTauSelection, "Medium" )) hadTauSelection_param = "medium";
-    else if(boost::ends_with(hadTauSelection, "Tight"  )) hadTauSelection_param = "tight";
-    else if(boost::ends_with(hadTauSelection, "VTight" )) hadTauSelection_param = "vtight";
     else if(boost::ends_with(hadTauSelection, "VVTight")) hadTauSelection_param = "vvtight";
+    else if(boost::ends_with(hadTauSelection, "VTight" )) hadTauSelection_param = "vtight";
+    else if(boost::ends_with(hadTauSelection, "Tight"  )) hadTauSelection_param = "tight";
     else throw cmsException(__func__, __LINE__)
            << "Invalid Configuration parameter 'hadTauSelection' = " << hadTauSelection
          ;
@@ -153,7 +153,7 @@ namespace aux
   {
     if(eff_data == 0. && eff_mc == 0.)
     {
-      std::cout << "WARNING: efficiency in data and in MC are both zero -> returning SF = 1 instead";
+      std::cout << "WARNING: efficiency in data and in MC are both zero -> returning SF = 1 instead\n";
       return 1.;
     }
     return std::min(eff_data / std::max(1.e-6, eff_mc), 1.e+1);
@@ -522,32 +522,5 @@ namespace aux
         lut::kXptYabsEta, -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
       ));
     }
-  }
-
-  getTriggerEfficiencyFunc
-  getTriggerFuncMC(TriggerSFsys triggerSF_option,
-                   bool flip)
-  {
-    switch(triggerSF_option)
-    {
-      case TriggerSFsys::central:   return        &TauTriggerSFs2017::getTriggerEfficiencyMC;
-      case TriggerSFsys::shiftUp:   return flip ? &TauTriggerSFs2017::getTriggerEfficiencyMCUncertDown :
-                                                  &TauTriggerSFs2017::getTriggerEfficiencyMCUncertUp;
-      case TriggerSFsys::shiftDown: return flip ? &TauTriggerSFs2017::getTriggerEfficiencyMCUncertUp :
-                                                  &TauTriggerSFs2017::getTriggerEfficiencyMCUncertDown;
-    }
-    return nullptr;
-  }
-
-  getTriggerEfficiencyFunc
-  getTriggerFuncData(TriggerSFsys triggerSF_option)
-  {
-    switch(triggerSF_option)
-    {
-      case TriggerSFsys::central:   return &TauTriggerSFs2017::getTriggerEfficiencyData;           break;
-      case TriggerSFsys::shiftUp:   return &TauTriggerSFs2017::getTriggerEfficiencyDataUncertUp;   break;
-      case TriggerSFsys::shiftDown: return &TauTriggerSFs2017::getTriggerEfficiencyDataUncertDown; break;
-    }
-    return nullptr;
   }
 }
