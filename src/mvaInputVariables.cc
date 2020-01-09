@@ -22,7 +22,13 @@ namespace
     const RecoLepton * lepton = dynamic_cast<const RecoLepton *>(particle);
     const RecoHadTau * hadTau = dynamic_cast<const RecoHadTau *>(particle);
     assert(lepton || hadTau);
-    return lepton ? lepton->cone_p4() : hadTau->p4();
+    Particle::LorentzVector lv = lepton ? lepton->cone_p4() : hadTau->p4();
+    if(lepton)
+    {
+      // treat all leptons as massless
+      lv.SetM(0.);
+    }
+    return lv;
   }
 }
 
@@ -46,7 +52,7 @@ comp_MT_met(const RecoLepton * lepton,
             double met_pt,
             double met_phi)
 {
-  return comp_MT_met(lepton->cone_p4(), met_pt, met_phi);
+  return comp_MT_met(::getP4(lepton), met_pt, met_phi);
 }
 
 double
@@ -54,7 +60,7 @@ comp_MT_met(const RecoHadTau * hadTau,
             double met_pt,
             double met_phi)
 {
-  return comp_MT_met(hadTau->p4(), met_pt, met_phi);
+  return comp_MT_met(::getP4(hadTau), met_pt, met_phi);
 }
 
 double
