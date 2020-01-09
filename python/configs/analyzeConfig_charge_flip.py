@@ -232,7 +232,6 @@ class analyzeConfig_charge_flip(analyzeConfig):
               'leptonSelection'          : lepton_selection,
               'applyFakeRateWeights'     : "disabled",
               'central_or_shift'         : central_or_shift,
-              'useObjectMultiplicity'    : True,
             }
             self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info)
 

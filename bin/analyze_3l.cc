@@ -1368,7 +1368,10 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     const bool tH_like  = (selBJets_medium.size() >= 1 && ((selJets.size() - selBJets_loose.size()) + selJetsForward.size()) >= 1);
     const bool ttH_like = (selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) && selJets.size() >= 2;
     const bool passEvents = ttH_like || tH_like;
-    if((! passEvents && ! isControlRegion) || (isControlRegion && selJets.empty()))
+    if(
+      (! passEvents && ! isControlRegion) ||
+      (isControlRegion && (selJets.size() < 1 || ((int)selJets.size() == 1 && selBJets_medium.size() == 1)))
+    )
     {
       if(run_lumi_eventSelector)
       {
@@ -1583,7 +1586,6 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     const bool isSameFlavor_OS_FO = isSFOS(fakeableLeptons);
     bool is_tH_like_and_not_ttH_like = tH_like && !ttH_like;
     double met_LD_cut = 0.;
-    //if (tH_like && !do_sync) met_LD_cut = -1.;
     if      ( selJets.size() >= 4 ) met_LD_cut = -1.; // MET LD cut not applied
     else if ( isSameFlavor_OS_FO     ) met_LD_cut = 45.;
     else                            met_LD_cut = 30.;
@@ -1593,7 +1595,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
         std::cout << " (met_LD = " << met_LD << ", met_LD_cut = " << met_LD_cut << ")" << std::endl;
       }
 
-      if ( !tH_like ) continue; // MET LD cut not applied if tH_like
+      if ( !tH_like || isControlRegion) continue; // MET LD cut not applied if tH_like
       else is_tH_like_and_not_ttH_like = true;
 
     }
@@ -1831,7 +1833,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
       //btag_iterator++;
       for ( std::vector<const RecoJet*>::const_iterator selWJet1 = selJets.begin(); selWJet1 != selJets.end(); ++selWJet1 ) {
        if ( &(*selWJet1) == &(*selBJet) ) continue;
-       for ( std::vector<const RecoJet*>::const_iterator selWJet2 = selWJet1 + 1; selWJet2 != selJets.end(); ++selWJet2 ) {
+       for ( std::vector<const RecoJet*>::const_iterator selWJet2 = selJets.begin(); selWJet2 != selJets.end(); ++selWJet2 ) {
     if ( &(*selWJet2) == &(*selBJet) ) continue;
     if ( &(*selWJet2) == &(*selWJet1) ) continue;
     bool isGenMatched = false;
@@ -1862,7 +1864,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     const double min_dr_lep_jet    = std::min({ mindr_lep1_jet, mindr_lep2_jet, mindr_lep3_jet });
     const double dr_leps           = deltaR(selLepton_lead->p4(), selLepton_sublead->p4());
     const double max_lep_eta       = std::max({ selLepton_lead->absEta(), selLepton_sublead->absEta(), selLepton_third->absEta() });
-    const double mass_3L           = (selLepton_lead->p4() + selLepton_sublead->p4() + selLepton_third->p4()).mass();
+    const double mass_3L           = (selLepton_lead->cone_p4() + selLepton_sublead->cone_p4() + selLepton_third->cone_p4()).mass();
     const int    sum_Lep_charge    = selLepton_lead -> charge() + selLepton_sublead -> charge() + selLepton_third->charge();
     const double min_dr_lep    = std::min({
       deltaR(selLepton_lead->p4(), selLepton_sublead->p4()),
@@ -2013,7 +2015,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
   }
   ///////////////////////////////
   // SVA variables
-  if ( selJets.size() > 1)
+  if ( selJets.size() > 1 && ! is_tH_like_and_not_ttH_like)
   {
     if (selJets.size() < 4) category_SVA += "lj";
     else category_SVA += "hj";

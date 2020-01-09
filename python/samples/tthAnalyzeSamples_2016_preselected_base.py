@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2019-12-31 18:36:41 with the following command:
+# file generated at 2020-01-08 19:43:35 with the following command:
 # create_dictionary.py -m python/samples/metaDict_2016.py -p python/samples/sampleLocations_2016_preselected.txt -N samples_2016 -E 2016 -o python/samples -g tthAnalyzeSamples_2016_preselected_base.py -M
 
 samples_2016 = OD()
@@ -27924,29 +27924,29 @@ samples_2016["/TTTo2L2Nu_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIISummer16Min
   ("type",                            "mc"),
   ("sample_category",                 "TT"),
   ("process_name_specific",           "TTTo2L2Nu"),
-  ("nof_files",                       7),
+  ("nof_files",                       34),
   ("nof_db_files",                    778),
   ("nof_events",                      {
     'Count'                                                      : [     67926800, ],
-    'CountWeighted'                                              : [     67380928,     67380367,     67364452, ],
-    'CountWeightedLHEWeightScale'                                : [     75919202,     74593187,     73741079,     69035346,     67380166,     66102547,     62464956,     60674519,     59202166, ],
-    'CountWeightedL1PrefireNom'                                  : [     66136927,     66134751,     66128641, ],
-    'CountWeightedL1Prefire'                                     : [     66136927,     65814029,     66458831, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [     74485720,     73200255,     72377898,     67748420,     66135755,     64894923,     61310958,     59565257,     58129810, ],
-    'CountWeightedTopPtRwgtSF'                                   : [     67429048,     67429006,     67428597, ],
-    'CountWeightedTopPtRwgtSFSquared'                            : [     67568878,     67568955,     67568705, ],
-    'CountWeightedLHEWeightScaleTopPtRwgtSF'                     : [     75986011,     74668253,     73824124,     69074810,     67426959,     66163866,     62484483,     60707939,     59246896, ],
-    'CountWeightedLHEWeightScaleTopPtRwgtSFSquared'              : [     76152276,     74840570,     74003120,     69205775,     67566806,     66311879,     62587785,     60821939,     59369775, ],
-    'CountWeightedL1PrefireNomTopPtRwgtSF'                       : [     66193054,     66191568,     66194219, ],
-    'CountWeightedL1PrefireNomTopPtRwgtSFSquared'                : [     66338071,     66336649,     66339396, ],
-    'CountWeightedL1PrefireTopPtRwgtSF'                          : [     66193054,     65872276,     66512817, ],
-    'CountWeightedL1PrefireTopPtRwgtSFSquared'                   : [     66338071,     66018197,     66656956, ],
-    'CountWeightedLHEWeightScaleL1PrefireNomTopPtRwgtSF'         : [     74560925,     73282954,     72468052,     67795419,     66191016,     64962496,     61337306,     59604767,     58180077, ],
-    'CountWeightedLHEWeightScaleL1PrefireNomTopPtRwgtSFSquared'  : [     74733621,     73461095,     72652296,     67932180,     66336048,     65115140,     61445837,     59723381,     58307062, ],
+    'CountWeighted'                                              : [     67380927,     67380368,     67364451, ],
+    'CountWeightedLHEWeightScale'                                : [     75919203,     74593190,     73741080,     69035347,     67380166,     66102550,     62464955,     60674520,     59202165, ],
+    'CountWeightedL1PrefireNom'                                  : [     66136924,     66134754,     66128639, ],
+    'CountWeightedL1Prefire'                                     : [     66136924,     65814029,     66458830, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [     74485717,     73200255,     72377899,     67748422,     66135758,     64894924,     61310959,     59565255,     58129808, ],
+    'CountWeightedTopPtRwgtSF'                                   : [     67429044,     67429008,     67428595, ],
+    'CountWeightedTopPtRwgtSFSquared'                            : [     67568877,     67568956,     67568705, ],
+    'CountWeightedLHEWeightScaleTopPtRwgtSF'                     : [     75986013,     74668249,     73824126,     69074809,     67426957,     66163870,     62484485,     60707940,     59246896, ],
+    'CountWeightedLHEWeightScaleTopPtRwgtSFSquared'              : [     76152275,     74840572,     74003121,     69205776,     67566807,     66311874,     62587783,     60821940,     59369774, ],
+    'CountWeightedL1PrefireNomTopPtRwgtSF'                       : [     66193053,     66191568,     66194220, ],
+    'CountWeightedL1PrefireNomTopPtRwgtSFSquared'                : [     66338074,     66336652,     66339397, ],
+    'CountWeightedL1PrefireTopPtRwgtSF'                          : [     66193053,     65872277,     66512817, ],
+    'CountWeightedL1PrefireTopPtRwgtSFSquared'                   : [     66338074,     66018194,     66656960, ],
+    'CountWeightedLHEWeightScaleL1PrefireNomTopPtRwgtSF'         : [     74560924,     73282953,     72468052,     67795423,     66191015,     64962497,     61337306,     59604766,     58180075, ],
+    'CountWeightedLHEWeightScaleL1PrefireNomTopPtRwgtSFSquared'  : [     74733619,     73461092,     72652293,     67932176,     66336046,     65115140,     61445836,     59723380,     58307061, ],
   }),
   ("nof_tree_events",                 25358934),
   ("nof_db_events",                   67926800),
-  ("fsize_local",                     90872772978), # 90.87GB, avg file size 12.98GB
+  ("fsize_local",                     90914143999), # 90.91GB, avg file size 2.67GB
   ("fsize_db",                        2988515757147), # 2.99TB, avg file size 3.84GB
   ("use_it",                          False),
   ("xsection",                        88.4),
@@ -27958,7 +27958,7 @@ samples_2016["/TTTo2L2Nu_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIISummer16Min
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Dec12_wPresel_nom_all/ntuples/TTTo2L2Nu"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2020Jan08_wPresel_nom_all/ntuples/TTTo2L2Nu"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -28098,19 +28098,19 @@ samples_2016["/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer1
   ("type",                            "mc"),
   ("sample_category",                 "TT"),
   ("process_name_specific",           "TTJets_DiLept"),
-  ("nof_files",                       1),
+  ("nof_files",                       4),
   ("nof_db_files",                    48),
   ("nof_events",                      {
     'Count'                                                      : [      6068369, ],
-    'CountWeighted'                                              : [      6070790,      6068469,      6067059, ],
-    'CountWeightedLHEWeightScale'                                : [      8030840,      7446630,      6927186,      6544508,      6070769,      5644846,      5435779,      5040211,      4688356, ],
-    'CountWeightedL1PrefireNom'                                  : [      5954765,      5953287,      5952797, ],
-    'CountWeightedL1Prefire'                                     : [      5954765,      5924940,      5984558, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [      7875281,      7305644,      6798375,      6417670,      5954720,      5539830,      5330398,      4944655,      4601106, ],
+    'CountWeighted'                                              : [      6070790,      6068468,      6067059, ],
+    'CountWeightedLHEWeightScale'                                : [      8030839,      7446630,      6927185,      6544507,      6070769,      5644845,      5435778,      5040211,      4688356, ],
+    'CountWeightedL1PrefireNom'                                  : [      5954765,      5953287,      5952796, ],
+    'CountWeightedL1Prefire'                                     : [      5954765,      5924940,      5984557, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [      7875281,      7305644,      6798376,      6417670,      5954720,      5539830,      5330397,      4944655,      4601106, ],
   }),
   ("nof_tree_events",                 2249461),
   ("nof_db_events",                   6068369),
-  ("fsize_local",                     8569981952), # 8.57GB, avg file size 8.57GB
+  ("fsize_local",                     8574567953), # 8.57GB, avg file size 2.14GB
   ("fsize_db",                        258912481730), # 258.91GB, avg file size 5.39GB
   ("use_it",                          True),
   ("xsection",                        88.4),
@@ -28122,7 +28122,7 @@ samples_2016["/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer1
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Dec12_wPresel_nom_all/ntuples/TTJets_DiLept"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2020Jan08_wPresel_nom_all/ntuples/TTJets_DiLept"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -28146,19 +28146,19 @@ samples_2016["/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer1
   ("type",                            "mc"),
   ("sample_category",                 "TT"),
   ("process_name_specific",           "TTJets_DiLept_ext1"),
-  ("nof_files",                       3),
+  ("nof_files",                       13),
   ("nof_db_files",                    208),
   ("nof_events",                      {
     'Count'                                                      : [     24767666, ],
-    'CountWeighted'                                              : [     24765834,     24769195,     24766166, ],
-    'CountWeightedLHEWeightScale'                                : [     32779955,     30393816,     28270079,     26713499,     24765725,     23037129,     22188140,     20571117,     19133825, ],
-    'CountWeightedL1PrefireNom'                                  : [     24296796,     24297913,     24297266, ],
-    'CountWeightedL1Prefire'                                     : [     24296796,     24174898,     24418069, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [     32144178,     29817060,     27743718,     26195118,     24296594,     22607988,     21757417,     20180835,     18777266, ],
+    'CountWeighted'                                              : [     24765833,     24769195,     24766168, ],
+    'CountWeightedLHEWeightScale'                                : [     32779955,     30393816,     28270078,     26713501,     24765725,     23037128,     22188139,     20571118,     19133825, ],
+    'CountWeightedL1PrefireNom'                                  : [     24296797,     24297914,     24297265, ],
+    'CountWeightedL1Prefire'                                     : [     24296797,     24174897,     24418070, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [     32144177,     29817060,     27743716,     26195118,     24296594,     22607988,     21757417,     20180836,     18777267, ],
   }),
   ("nof_tree_events",                 9176081),
   ("nof_db_events",                   24767666),
-  ("fsize_local",                     34961873649), # 34.96GB, avg file size 11.65GB
+  ("fsize_local",                     34972964071), # 34.97GB, avg file size 2.69GB
   ("fsize_db",                        1057101408492), # 1.06TB, avg file size 5.08GB
   ("use_it",                          True),
   ("xsection",                        88.4),
@@ -28170,7 +28170,7 @@ samples_2016["/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer1
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Dec12_wPresel_nom_all/ntuples/TTJets_DiLept_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2020Jan08_wPresel_nom_all/ntuples/TTJets_DiLept_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -29728,19 +29728,19 @@ samples_2016["/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIIS
   ("type",                            "mc"),
   ("sample_category",                 "EWK"),
   ("process_name_specific",           "DYJetsToLL_M-10to50"),
-  ("nof_files",                       4),
+  ("nof_files",                       18),
   ("nof_db_files",                    264),
   ("nof_events",                      {
     'Count'                                                      : [     35114961, ],
-    'CountWeighted'                                              : [     35109108,     35114773,     35108758, ],
-    'CountWeightedLHEWeightScale'                                : [     24018614,     35367454,     49152675,     23792885,     35109021,     48866844,     23628863,     34921482,     48658818, ],
-    'CountWeightedL1PrefireNom'                                  : [     35082205,     35086740,     35082709, ],
-    'CountWeightedL1Prefire'                                     : [     35082205,     35074016,     35090213, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [     23996301,     35339191,     49117178,     23771797,     35082092,     48832691,     23608673,     34895457,     48625668, ],
+    'CountWeighted'                                              : [     35109108,     35114773,     35108760, ],
+    'CountWeightedLHEWeightScale'                                : [     24018614,     35367455,     49152675,     23792884,     35109020,     48866843,     23628862,     34921481,     48658818, ],
+    'CountWeightedL1PrefireNom'                                  : [     35082202,     35086739,     35082707, ],
+    'CountWeightedL1Prefire'                                     : [     35082202,     35074014,     35090214, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [     23996301,     35339192,     49117176,     23771798,     35082094,     48832695,     23608672,     34895457,     48625666, ],
   }),
   ("nof_tree_events",                 307208),
   ("nof_db_events",                   35114961),
-  ("fsize_local",                     555163885), # 555.16MB, avg file size 138.79MB
+  ("fsize_local",                     577738163), # 577.74MB, avg file size 32.10MB
   ("fsize_db",                        852575436868), # 852.58GB, avg file size 3.23GB
   ("use_it",                          True),
   ("xsection",                        18610.0),
@@ -29752,7 +29752,7 @@ samples_2016["/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIIS
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Dec12_wPresel_nom_all/ntuples/DYJetsToLL_M-10to50"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2020Jan08_wPresel_nom_all/ntuples/DYJetsToLL_M-10to50"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -29776,19 +29776,19 @@ samples_2016["/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunII
   ("type",                            "mc"),
   ("sample_category",                 "EWK"),
   ("process_name_specific",           "DYJetsToLL_M-10to50_amcatnloFXFX"),
-  ("nof_files",                       7),
+  ("nof_files",                       34),
   ("nof_db_files",                    483),
   ("nof_events",                      {
     'Count'                                                      : [     67881873, ],
-    'CountWeighted'                                              : [     49393692,     49397078,     49390691, ],
-    'CountWeightedLHEWeightScale'                                : [     42184742,     50862205,     53817516,     39959033,     49393167,     54203617,     38285176,     48269594,     54459308, ],
-    'CountWeightedL1PrefireNom'                                  : [     49356048,     49357977,     49354327, ],
-    'CountWeightedL1Prefire'                                     : [     49356048,     49344678,     49367236, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [     42149602,     50822350,     53775501,     39926413,     49355515,     54162859,     38254686,     48233698,     54419816, ],
+    'CountWeighted'                                              : [     49393692,     49397077,     49390691, ],
+    'CountWeightedLHEWeightScale'                                : [     42184743,     50862204,     53817515,     39959033,     49393166,     54203615,     38285176,     48269594,     54459309, ],
+    'CountWeightedL1PrefireNom'                                  : [     49356049,     49357977,     49354326, ],
+    'CountWeightedL1Prefire'                                     : [     49356049,     49344678,     49367236, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [     42149602,     50822349,     53775502,     39926412,     49355514,     54162860,     38254687,     48233696,     54419816, ],
   }),
   ("nof_tree_events",                 660949),
   ("nof_db_events",                   67981236),
-  ("fsize_local",                     1304952734), # 1.30GB, avg file size 186.42MB
+  ("fsize_local",                     1354393590), # 1.35GB, avg file size 39.84MB
   ("fsize_db",                        1594691281733), # 1.59TB, avg file size 3.30GB
   ("use_it",                          False),
   ("xsection",                        18610.0),
@@ -29800,7 +29800,7 @@ samples_2016["/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunII
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Dec12_wPresel_nom_all/ntuples/DYJetsToLL_M-10to50_amcatnloFXFX"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2020Jan08_wPresel_nom_all/ntuples/DYJetsToLL_M-10to50_amcatnloFXFX"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -29824,19 +29824,19 @@ samples_2016["/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunII
   ("type",                            "mc"),
   ("sample_category",                 "EWK"),
   ("process_name_specific",           "DYJetsToLL_M-10to50_amcatnloFXFX_ext1"),
-  ("nof_files",                       3),
+  ("nof_files",                       15),
   ("nof_db_files",                    287),
   ("nof_events",                      {
     'Count'                                                      : [     40074126, ],
-    'CountWeighted'                                              : [     29166461,     29165684,     29159221, ],
-    'CountWeightedLHEWeightScale'                                : [     24907027,     30031929,     31780684,     23591874,     29166173,     32006226,     22602931,     28498767,     32155591, ],
-    'CountWeightedL1PrefireNom'                                  : [     29144110,     29142704,     29137950, ],
-    'CountWeightedL1Prefire'                                     : [     29144110,     29137405,     29150725, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [     24886311,     30008442,     31755896,     23572649,     29143800,     31982187,     22584972,     28477602,     32132302, ],
+    'CountWeighted'                                              : [     29166462,     29165685,     29159223, ],
+    'CountWeightedLHEWeightScale'                                : [     24907027,     30031930,     31780686,     23591875,     29166172,     32006227,     22602931,     28498766,     32155592, ],
+    'CountWeightedL1PrefireNom'                                  : [     29144110,     29142703,     29137949, ],
+    'CountWeightedL1Prefire'                                     : [     29144110,     29137404,     29150724, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [     24886310,     30008442,     31755897,     23572650,     29143800,     31982185,     22584971,     28477604,     32132302, ],
   }),
   ("nof_tree_events",                 390905),
   ("nof_db_events",                   40364234),
-  ("fsize_local",                     795121440), # 795.12MB, avg file size 265.04MB
+  ("fsize_local",                     813456248), # 813.46MB, avg file size 54.23MB
   ("fsize_db",                        946826425333), # 946.83GB, avg file size 3.30GB
   ("use_it",                          False),
   ("xsection",                        18610.0),
@@ -29848,7 +29848,7 @@ samples_2016["/DYJetsToLL_M-10to50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunII
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Dec30_wPresel_nom_all/ntuples/DYJetsToLL_M-10to50_amcatnloFXFX_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2020Jan08_wPresel_nom_all/ntuples/DYJetsToLL_M-10to50_amcatnloFXFX_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -29872,19 +29872,19 @@ samples_2016["/DY1JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunII
   ("type",                            "mc"),
   ("sample_category",                 "EWK"),
   ("process_name_specific",           "DY1JetsToLL_M-10to50"),
-  ("nof_files",                       5),
+  ("nof_files",                       21),
   ("nof_db_files",                    296),
   ("nof_events",                      {
     'Count'                                                      : [     39958449, ],
-    'CountWeighted'                                              : [     39963908,     39963037,     39954240, ],
-    'CountWeightedLHEWeightScale'                                : [     33839422,     41944384,     49305095,     32247532,     39963700,     46971296,     31031468,     38449350,     45191437, ],
-    'CountWeightedL1PrefireNom'                                  : [     39846549,     39844952,     39839592, ],
+    'CountWeighted'                                              : [     39963907,     39963035,     39954241, ],
+    'CountWeightedLHEWeightScale'                                : [     33839422,     41944383,     49305096,     32247531,     39963703,     46971296,     31031468,     38449349,     45191433, ],
+    'CountWeightedL1PrefireNom'                                  : [     39846549,     39844952,     39839589, ],
     'CountWeightedL1Prefire'                                     : [     39846549,     39810726,     39881946, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [     33735134,     41821350,     49167192,     32148248,     39846329,     46840022,     30936073,     38336901,     45065280, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [     33735135,     41821354,     49167195,     32148249,     39846328,     46840025,     30936074,     38336899,     45065281, ],
   }),
   ("nof_tree_events",                 1861326),
   ("nof_db_events",                   39958449),
-  ("fsize_local",                     3736629524), # 3.74GB, avg file size 747.33MB
+  ("fsize_local",                     3762100005), # 3.76GB, avg file size 179.15MB
   ("fsize_db",                        1114603185048), # 1.11TB, avg file size 3.77GB
   ("use_it",                          False),
   ("xsection",                        859.68),
@@ -29896,7 +29896,7 @@ samples_2016["/DY1JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunII
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Dec12_wPresel_nom_all/ntuples/DY1JetsToLL_M-10to50"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2020Jan08_wPresel_nom_all/ntuples/DY1JetsToLL_M-10to50"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -29920,19 +29920,19 @@ samples_2016["/DY2JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunII
   ("type",                            "mc"),
   ("sample_category",                 "EWK"),
   ("process_name_specific",           "DY2JetsToLL_M-10to50"),
-  ("nof_files",                       2),
+  ("nof_files",                       8),
   ("nof_db_files",                    144),
   ("nof_events",                      {
     'Count'                                                      : [     19461065, ],
-    'CountWeighted'                                              : [     19462886,     19460980,     19458532, ],
-    'CountWeightedLHEWeightScale'                                : [     19796193,     22391956,     24493139,     17221014,     19462832,     21271507,     15375482,     17364806,     18968911, ],
-    'CountWeightedL1PrefireNom'                                  : [     19370950,     19369052,     19368031, ],
-    'CountWeightedL1Prefire'                                     : [     19370950,     19344148,     19397652, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [     19700649,     22288377,     24383411,     17136559,     19370857,     21174687,     15299171,     17281904,     18881501, ],
+    'CountWeighted'                                              : [     19462886,     19460979,     19458531, ],
+    'CountWeightedLHEWeightScale'                                : [     19796192,     22391955,     24493140,     17221013,     19462829,     21271507,     15375482,     17364807,     18968912, ],
+    'CountWeightedL1PrefireNom'                                  : [     19370948,     19369051,     19368033, ],
+    'CountWeightedL1Prefire'                                     : [     19370948,     19344146,     19397654, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [     19700647,     22288378,     24383410,     17136558,     19370856,     21174686,     15299172,     17281903,     18881498, ],
   }),
   ("nof_tree_events",                 780701),
   ("nof_db_events",                   19461065),
-  ("fsize_local",                     1878292589), # 1.88GB, avg file size 939.15MB
+  ("fsize_local",                     1887687661), # 1.89GB, avg file size 235.96MB
   ("fsize_db",                        571063486084), # 571.06GB, avg file size 3.97GB
   ("use_it",                          False),
   ("xsection",                        455.25),
@@ -29944,7 +29944,7 @@ samples_2016["/DY2JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunII
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Dec30_wPresel_nom_all/ntuples/DY2JetsToLL_M-10to50"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2020Jan08_wPresel_nom_all/ntuples/DY2JetsToLL_M-10to50"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -29968,19 +29968,19 @@ samples_2016["/DY3JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunII
   ("type",                            "mc"),
   ("sample_category",                 "EWK"),
   ("process_name_specific",           "DY3JetsToLL_M-10to50"),
-  ("nof_files",                       1),
+  ("nof_files",                       3),
   ("nof_db_files",                    36),
   ("nof_events",                      {
     'Count'                                                      : [      4964197, ],
-    'CountWeighted'                                              : [      4964157,      4965178,      4964385, ],
-    'CountWeightedLHEWeightScale'                                : [      5580452,      5854063,      6028710,      4734568,      4963813,      5110129,      4140160,      4339501,      4465879, ],
+    'CountWeighted'                                              : [      4964157,      4965178,      4964384, ],
+    'CountWeightedLHEWeightScale'                                : [      5580452,      5854064,      6028710,      4734567,      4963813,      5110129,      4140160,      4339501,      4465879, ],
     'CountWeightedL1PrefireNom'                                  : [      4922378,      4922888,      4922641, ],
-    'CountWeightedL1Prefire'                                     : [      4922378,      4910514,      4934045, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [      5532722,      5805506,      5979793,      4693468,      4922124,      5068044,      4103846,      4302549,      4428713, ],
+    'CountWeightedL1Prefire'                                     : [      4922378,      4910513,      4934045, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [      5532721,      5805506,      5979793,      4693467,      4922123,      5068043,      4103846,      4302549,      4428713, ],
   }),
   ("nof_tree_events",                 269397),
   ("nof_db_events",                   4964197),
-  ("fsize_local",                     719223259), # 719.22MB, avg file size 719.22MB
+  ("fsize_local",                     722338833), # 722.34MB, avg file size 240.78MB
   ("fsize_db",                        157220526981), # 157.22GB, avg file size 4.37GB
   ("use_it",                          False),
   ("xsection",                        111.81),
@@ -29992,7 +29992,7 @@ samples_2016["/DY3JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunII
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Dec12_wPresel_nom_all/ntuples/DY3JetsToLL_M-10to50"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2020Jan08_wPresel_nom_all/ntuples/DY3JetsToLL_M-10to50"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -30016,11 +30016,11 @@ samples_2016["/DY4JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunII
   ("type",                            "mc"),
   ("sample_category",                 "EWK"),
   ("process_name_specific",           "DY4JetsToLL_M-10to50"),
-  ("nof_files",                       1),
+  ("nof_files",                       2),
   ("nof_db_files",                    18),
   ("nof_events",                      {
     'Count'                                                      : [      2087849, ],
-    'CountWeighted'                                              : [      2087960,      2088064,      2087666, ],
+    'CountWeighted'                                              : [      2087959,      2088064,      2087666, ],
     'CountWeightedLHEWeightScale'                                : [      2538027,      2506847,      2458879,      2114319,      2087796,      2047523,      1818390,      1795409,      1760559, ],
     'CountWeightedL1PrefireNom'                                  : [      2053117,      2053106,      2052982, ],
     'CountWeightedL1Prefire'                                     : [      2053117,      2043809,      2062335, ],
@@ -30028,7 +30028,7 @@ samples_2016["/DY4JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunII
   }),
   ("nof_tree_events",                 142383),
   ("nof_db_events",                   2087849),
-  ("fsize_local",                     462314344), # 462.31MB, avg file size 462.31MB
+  ("fsize_local",                     462919447), # 462.92MB, avg file size 231.46MB
   ("fsize_db",                        74436479210), # 74.44GB, avg file size 4.14GB
   ("use_it",                          False),
   ("xsection",                        43.12),
@@ -30040,7 +30040,7 @@ samples_2016["/DY4JetsToLL_M-10to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunII
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Dec12_wPresel_nom_all/ntuples/DY4JetsToLL_M-10to50"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2020Jan08_wPresel_nom_all/ntuples/DY4JetsToLL_M-10to50"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -30076,7 +30076,7 @@ samples_2016["/DYJetsToLL_M-5to50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pyt
   }),
   ("nof_tree_events",                 38939),
   ("nof_db_events",                   1008250),
-  ("fsize_local",                     108697344), # 108.70MB, avg file size 108.70MB
+  ("fsize_local",                     108695629), # 108.70MB, avg file size 108.70MB
   ("fsize_db",                        32622487452), # 32.62GB, avg file size 4.66GB
   ("use_it",                          False),
   ("xsection",                        262.89),
@@ -30088,7 +30088,7 @@ samples_2016["/DYJetsToLL_M-5to50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pyt
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Dec12_wPresel_nom_all/ntuples/DYJetsToLL_M-5to50_HT-100to200"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2020Jan08_wPresel_nom_all/ntuples/DYJetsToLL_M-5to50_HT-100to200"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -30112,19 +30112,19 @@ samples_2016["/DYJetsToLL_M-5to50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pyt
   ("type",                            "mc"),
   ("sample_category",                 "EWK"),
   ("process_name_specific",           "DYJetsToLL_M-5to50_HT-100to200_ext1"),
-  ("nof_files",                       1),
+  ("nof_files",                       5),
   ("nof_db_files",                    70),
   ("nof_events",                      {
     'Count'                                                      : [      8284053, ],
-    'CountWeighted'                                              : [      8285392,      8282826,      8283079, ],
-    'CountWeightedLHEWeightScale'                                : [      9602545,      9925745,     10112173,      8016388,      8285066,      8438405,      6900212,      7128932,      7260429, ],
+    'CountWeighted'                                              : [      8285392,      8282825,      8283079, ],
+    'CountWeightedLHEWeightScale'                                : [      9602545,      9925745,     10112174,      8016388,      8285066,      8438404,      6900212,      7128932,      7260429, ],
     'CountWeightedL1PrefireNom'                                  : [      8193170,      8191636,      8192020, ],
-    'CountWeightedL1Prefire'                                     : [      8193170,      8167480,      8218813, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [      9497992,      9818553,     10003768,      7926985,      8192938,      8345788,      6821683,      7048508,      7179136, ],
+    'CountWeightedL1Prefire'                                     : [      8193170,      8167479,      8218813, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [      9497992,      9818552,     10003769,      7926985,      8192937,      8345788,      6821682,      7048508,      7179135, ],
   }),
   ("nof_tree_events",                 320724),
   ("nof_db_events",                   8583596),
-  ("fsize_local",                     882200800), # 882.20MB, avg file size 882.20MB
+  ("fsize_local",                     888319042), # 888.32MB, avg file size 177.66MB
   ("fsize_db",                        278893599730), # 278.89GB, avg file size 3.98GB
   ("use_it",                          False),
   ("xsection",                        262.89),
@@ -30136,7 +30136,7 @@ samples_2016["/DYJetsToLL_M-5to50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pyt
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Dec12_wPresel_nom_all/ntuples/DYJetsToLL_M-5to50_HT-100to200_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2020Jan08_wPresel_nom_all/ntuples/DYJetsToLL_M-5to50_HT-100to200_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -30172,7 +30172,7 @@ samples_2016["/DYJetsToLL_M-5to50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pyt
   }),
   ("nof_tree_events",                 51721),
   ("nof_db_events",                   1045127),
-  ("fsize_local",                     177505097), # 177.51MB, avg file size 177.51MB
+  ("fsize_local",                     177503516), # 177.50MB, avg file size 177.50MB
   ("fsize_db",                        39497917957), # 39.50GB, avg file size 4.39GB
   ("use_it",                          False),
   ("xsection",                        44.52),
@@ -30184,7 +30184,7 @@ samples_2016["/DYJetsToLL_M-5to50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pyt
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Dec12_wPresel_nom_all/ntuples/DYJetsToLL_M-5to50_HT-200to400"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2020Jan08_wPresel_nom_all/ntuples/DYJetsToLL_M-5to50_HT-200to400"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -30220,7 +30220,7 @@ samples_2016["/DYJetsToLL_M-5to50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pyt
   }),
   ("nof_tree_events",                 98997),
   ("nof_db_events",                   2077880),
-  ("fsize_local",                     338449008), # 338.45MB, avg file size 338.45MB
+  ("fsize_local",                     338445232), # 338.45MB, avg file size 338.45MB
   ("fsize_db",                        78367782998), # 78.37GB, avg file size 3.73GB
   ("use_it",                          False),
   ("xsection",                        44.52),
@@ -30232,7 +30232,7 @@ samples_2016["/DYJetsToLL_M-5to50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pyt
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Dec12_wPresel_nom_all/ntuples/DYJetsToLL_M-5to50_HT-200to400_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2020Jan08_wPresel_nom_all/ntuples/DYJetsToLL_M-5to50_HT-200to400_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -30268,7 +30268,7 @@ samples_2016["/DYJetsToLL_M-5to50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pyt
   }),
   ("nof_tree_events",                 60289),
   ("nof_db_events",                   1016799),
-  ("fsize_local",                     246302271), # 246.30MB, avg file size 246.30MB
+  ("fsize_local",                     246299346), # 246.30MB, avg file size 246.30MB
   ("fsize_db",                        44119485779), # 44.12GB, avg file size 5.51GB
   ("use_it",                          False),
   ("xsection",                        4.284),
@@ -30280,7 +30280,7 @@ samples_2016["/DYJetsToLL_M-5to50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pyt
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Dec12_wPresel_nom_all/ntuples/DYJetsToLL_M-5to50_HT-400to600"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2020Jan08_wPresel_nom_all/ntuples/DYJetsToLL_M-5to50_HT-400to600"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -30316,7 +30316,7 @@ samples_2016["/DYJetsToLL_M-5to50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pyt
   }),
   ("nof_tree_events",                 63273),
   ("nof_db_events",                   2071405),
-  ("fsize_local",                     258468817), # 258.47MB, avg file size 258.47MB
+  ("fsize_local",                     258465921), # 258.47MB, avg file size 258.47MB
   ("fsize_db",                        90110016244), # 90.11GB, avg file size 5.01GB
   ("use_it",                          False),
   ("xsection",                        4.284),
@@ -30328,7 +30328,7 @@ samples_2016["/DYJetsToLL_M-5to50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pyt
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Dec12_wPresel_nom_all/ntuples/DYJetsToLL_M-5to50_HT-400to600_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2020Jan08_wPresel_nom_all/ntuples/DYJetsToLL_M-5to50_HT-400to600_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -30364,7 +30364,7 @@ samples_2016["/DYJetsToLL_M-5to50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pyt
   }),
   ("nof_tree_events",                 70723),
   ("nof_db_events",                   1021077),
-  ("fsize_local",                     314932547), # 314.93MB, avg file size 314.93MB
+  ("fsize_local",                     314929091), # 314.93MB, avg file size 314.93MB
   ("fsize_db",                        49930642077), # 49.93GB, avg file size 6.24GB
   ("use_it",                          False),
   ("xsection",                        1.293),
@@ -30376,7 +30376,7 @@ samples_2016["/DYJetsToLL_M-5to50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pyt
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Dec12_wPresel_nom_all/ntuples/DYJetsToLL_M-5to50_HT-600toInf"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2020Jan08_wPresel_nom_all/ntuples/DYJetsToLL_M-5to50_HT-600toInf"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -30400,19 +30400,19 @@ samples_2016["/DYJetsToLL_M-5to50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pyt
   ("type",                            "mc"),
   ("sample_category",                 "EWK"),
   ("process_name_specific",           "DYJetsToLL_M-5to50_HT-600toInf_ext1"),
-  ("nof_files",                       1),
+  ("nof_files",                       2),
   ("nof_db_files",                    15),
   ("nof_events",                      {
     'Count'                                                      : [      2017380, ],
     'CountWeighted'                                              : [      2017834,      2017225,      2017171, ],
-    'CountWeightedLHEWeightScale'                                : [      2577490,      2370636,      2191346,      2193166,      2017816,      1864970,      1904483,      1751962,      1619734, ],
-    'CountWeightedL1PrefireNom'                                  : [      1901153,      1900756,      1900978, ],
-    'CountWeightedL1Prefire'                                     : [      1901153,      1875363,      1927208, ],
+    'CountWeightedLHEWeightScale'                                : [      2577490,      2370636,      2191346,      2193166,      2017815,      1864970,      1904482,      1751962,      1619734, ],
+    'CountWeightedL1PrefireNom'                                  : [      1901152,      1900756,      1900978, ],
+    'CountWeightedL1Prefire'                                     : [      1901152,      1875363,      1927208, ],
     'CountWeightedLHEWeightScaleL1PrefireNom'                    : [      2424271,      2233254,      2067237,      2063335,      1901131,      1759793,      1792129,      1651215,      1528708, ],
   }),
   ("nof_tree_events",                 139278),
   ("nof_db_events",                   2017380),
-  ("fsize_local",                     619083215), # 619.08MB, avg file size 619.08MB
+  ("fsize_local",                     619587302), # 619.59MB, avg file size 309.79MB
   ("fsize_db",                        98595971175), # 98.60GB, avg file size 6.57GB
   ("use_it",                          False),
   ("xsection",                        1.293),
@@ -30424,7 +30424,7 @@ samples_2016["/DYJetsToLL_M-5to50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pyt
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Dec12_wPresel_nom_all/ntuples/DYJetsToLL_M-5to50_HT-600toInf_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2020Jan08_wPresel_nom_all/ntuples/DYJetsToLL_M-5to50_HT-600toInf_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -30448,19 +30448,19 @@ samples_2016["/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISumme
   ("type",                            "mc"),
   ("sample_category",                 "EWK"),
   ("process_name_specific",           "DYJetsToLL_M-50_ext1"),
-  ("nof_files",                       4),
+  ("nof_files",                       18),
   ("nof_db_files",                    360),
   ("nof_events",                      {
     'Count'                                                      : [     49748967, ],
-    'CountWeighted'                                              : [     49752198,     49748037,     49741785, ],
-    'CountWeightedLHEWeightScale'                                : [     44764198,     50063705,     54826172,     44458488,     49752198,     54510990,     44216265,     49505043,     54261143, ],
-    'CountWeightedL1PrefireNom'                                  : [     49227528,     49222883,     49219872, ],
-    'CountWeightedL1Prefire'                                     : [     49227528,     49083127,     49371058, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [     44277003,     49532334,     54256483,     43978145,     49227528,     53948026,     43741350,     48985762,     53703506, ],
+    'CountWeighted'                                              : [     49752196,     49748036,     49741785, ],
+    'CountWeightedLHEWeightScale'                                : [     44764196,     50063706,     54826173,     44458489,     49752196,     54510989,     44216264,     49505042,     54261141, ],
+    'CountWeightedL1PrefireNom'                                  : [     49227528,     49222880,     49219872, ],
+    'CountWeightedL1Prefire'                                     : [     49227528,     49083126,     49371059, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [     44277001,     49532334,     54256485,     43978144,     49227528,     53948024,     43741349,     48985759,     53703504, ],
   }),
   ("nof_tree_events",                 11169401),
   ("nof_db_events",                   49748967),
-  ("fsize_local",                     25781122148), # 25.78GB, avg file size 6.45GB
+  ("fsize_local",                     25804798798), # 25.80GB, avg file size 1.43GB
   ("fsize_db",                        1453769168837), # 1.45TB, avg file size 4.04GB
   ("use_it",                          False),
   ("xsection",                        6077.22),
@@ -30472,7 +30472,7 @@ samples_2016["/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISumme
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Dec30_wPresel_nom_all/ntuples/DYJetsToLL_M-50_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2020Jan08_wPresel_nom_all/ntuples/DYJetsToLL_M-50_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -30496,19 +30496,19 @@ samples_2016["/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISumme
   ("type",                            "mc"),
   ("sample_category",                 "EWK"),
   ("process_name_specific",           "DYJetsToLL_M-50_ext2"),
-  ("nof_files",                       8),
+  ("nof_files",                       36),
   ("nof_db_files",                    701),
   ("nof_events",                      {
     'Count'                                                      : [     96531428, ],
-    'CountWeighted'                                              : [     96502930,     96568661,     96522632, ],
-    'CountWeightedLHEWeightScale'                                : [     86872206,     97107116,    106365429,     86280808,     96502397,    105755507,     85812238,     96025518,    105272015, ],
-    'CountWeightedL1PrefireNom'                                  : [     95491348,     95536944,     95506867, ],
-    'CountWeightedL1Prefire'                                     : [     95491348,     95210258,     95771169, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [     85924200,     96081580,    105257701,     85346151,     95490669,    104660854,     84888146,     95023732,    104187739, ],
+    'CountWeighted'                                              : [     96502931,     96568660,     96522632, ],
+    'CountWeightedLHEWeightScale'                                : [     86872206,     97107111,    106365430,     86280805,     96502397,    105755503,     85812236,     96025517,    105272017, ],
+    'CountWeightedL1PrefireNom'                                  : [     95491349,     95536945,     95506867, ],
+    'CountWeightedL1Prefire'                                     : [     95491349,     95210259,     95771170, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [     85924199,     96081580,    105257699,     85346149,     95490669,    104660854,     84888145,     95023729,    104187733, ],
   }),
   ("nof_tree_events",                 21664879),
   ("nof_db_events",                   96531428),
-  ("fsize_local",                     50031070067), # 50.03GB, avg file size 6.25GB
+  ("fsize_local",                     50076834157), # 50.08GB, avg file size 1.39GB
   ("fsize_db",                        2831155987616), # 2.83TB, avg file size 4.04GB
   ("use_it",                          False),
   ("xsection",                        6077.22),
@@ -30520,7 +30520,7 @@ samples_2016["/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISumme
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Dec30_wPresel_nom_all/ntuples/DYJetsToLL_M-50_ext2"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2020Jan08_wPresel_nom_all/ntuples/DYJetsToLL_M-50_ext2"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -30544,19 +30544,19 @@ samples_2016["/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISumm
   ("type",                            "mc"),
   ("sample_category",                 "EWK"),
   ("process_name_specific",           "DYJetsToLL_M-50_amcatnloFXFX_ext2"),
-  ("nof_files",                       9),
+  ("nof_files",                       44),
   ("nof_db_files",                    871),
   ("nof_events",                      {
     'Count'                                                      : [    120777245, ],
-    'CountWeighted'                                              : [     80924660,     80940010,     80919737, ],
-    'CountWeightedLHEWeightScale'                                : [     79683195,     82424231,     83887653,     77402793,     80920773,     83127211,     75410515,     79512721,     82296985, ],
-    'CountWeightedL1PrefireNom'                                  : [     80057436,     80066061,     80054745, ],
-    'CountWeightedL1Prefire'                                     : [     80057436,     79818461,     80293512, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [     78814850,     81531078,     82977544,     76567254,     80054094,     82237558,     74605453,     78670056,     81428598, ],
+    'CountWeighted'                                              : [     80924662,     80940009,     80919739, ],
+    'CountWeightedLHEWeightScale'                                : [     79683195,     82424234,     83887651,     77402793,     80920773,     83127213,     75410513,     79512722,     82296981, ],
+    'CountWeightedL1PrefireNom'                                  : [     80057437,     80066059,     80054744, ],
+    'CountWeightedL1Prefire'                                     : [     80057437,     79818460,     80293513, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [     78814850,     81531077,     82977541,     76567254,     80054094,     82237557,     74605454,     78670056,     81428598, ],
   }),
   ("nof_tree_events",                 27803838),
   ("nof_db_events",                   120777245),
-  ("fsize_local",                     68868589898), # 68.87GB, avg file size 7.65GB
+  ("fsize_local",                     68928622001), # 68.93GB, avg file size 1.57GB
   ("fsize_db",                        3525213031335), # 3.53TB, avg file size 4.05GB
   ("use_it",                          True),
   ("xsection",                        6077.22),
@@ -30568,7 +30568,7 @@ samples_2016["/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISumm
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Dec30_wPresel_nom_all/ntuples/DYJetsToLL_M-50_amcatnloFXFX_ext2"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2020Jan08_wPresel_nom_all/ntuples/DYJetsToLL_M-50_amcatnloFXFX_ext2"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -30592,19 +30592,19 @@ samples_2016["/DY1JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISumm
   ("type",                            "mc"),
   ("sample_category",                 "EWK"),
   ("process_name_specific",           "DY1JetsToLL_M-50"),
-  ("nof_files",                       5),
+  ("nof_files",                       23),
   ("nof_db_files",                    475),
   ("nof_events",                      {
     'Count'                                                      : [     61213495, ],
-    'CountWeighted'                                              : [     61195149,     61220652,     61198648, ],
-    'CountWeightedLHEWeightScale'                                : [     56929140,     61778057,     65774503,     56382820,     61195149,     65167160,     55942914,     60728418,     64678326, ],
-    'CountWeightedL1PrefireNom'                                  : [     60399428,     60415957,     60402149, ],
-    'CountWeightedL1Prefire'                                     : [     60399428,     60183800,     60613088, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [     56170294,     60971375,     64920137,     55633860,     60399428,     64323401,     55201939,     59940513,     63843112, ],
+    'CountWeighted'                                              : [     61195149,     61220651,     61198650, ],
+    'CountWeightedLHEWeightScale'                                : [     56929140,     61778056,     65774506,     56382821,     61195149,     65167161,     55942914,     60728417,     64678327, ],
+    'CountWeightedL1PrefireNom'                                  : [     60399428,     60415958,     60402149, ],
+    'CountWeightedL1Prefire'                                     : [     60399428,     60183800,     60613089, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [     56170297,     60971373,     64920137,     55633860,     60399428,     64323402,     55201937,     59940516,     63843111, ],
   }),
   ("nof_tree_events",                 15096507),
   ("nof_db_events",                   63730337),
-  ("fsize_local",                     36697373645), # 36.70GB, avg file size 7.34GB
+  ("fsize_local",                     36726234335), # 36.73GB, avg file size 1.60GB
   ("fsize_db",                        1975229807254), # 1.98TB, avg file size 4.16GB
   ("use_it",                          False),
   ("xsection",                        998.61),
@@ -30616,7 +30616,7 @@ samples_2016["/DY1JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISumm
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Dec30_wPresel_nom_all/ntuples/DY1JetsToLL_M-50"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2020Jan08_wPresel_nom_all/ntuples/DY1JetsToLL_M-50"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -30640,19 +30640,19 @@ samples_2016["/DY2JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISumm
   ("type",                            "mc"),
   ("sample_category",                 "EWK"),
   ("process_name_specific",           "DY2JetsToLL_M-50"),
-  ("nof_files",                       2),
+  ("nof_files",                       10),
   ("nof_db_files",                    144),
   ("nof_events",                      {
     'Count'                                                      : [     19879279, ],
-    'CountWeighted'                                              : [     19876359,     19883590,     19877853, ],
-    'CountWeightedLHEWeightScale'                                : [     19931193,     20614124,     21054410,     19211064,     19876359,     20308120,     18643593,     19296377,     19720037, ],
-    'CountWeightedL1PrefireNom'                                  : [     19529534,     19533361,     19530853, ],
-    'CountWeightedL1Prefire'                                     : [     19529534,     19438156,     19620555, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [     19575274,     20252828,     20689440,     18869262,     19529534,     19957330,     18312951,     18960403,     19380460, ],
+    'CountWeighted'                                              : [     19876357,     19883591,     19877853, ],
+    'CountWeightedLHEWeightScale'                                : [     19931194,     20614126,     21054410,     19211064,     19876357,     20308122,     18643593,     19296379,     19720036, ],
+    'CountWeightedL1PrefireNom'                                  : [     19529533,     19533361,     19530854, ],
+    'CountWeightedL1Prefire'                                     : [     19529533,     19438156,     19620555, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [     19575274,     20252829,     20689442,     18869262,     19529533,     19957332,     18312951,     18960403,     19380460, ],
   }),
   ("nof_tree_events",                 5387858),
   ("nof_db_events",                   19879279),
-  ("fsize_local",                     14559175974), # 14.56GB, avg file size 7.28GB
+  ("fsize_local",                     14572842871), # 14.57GB, avg file size 1.46GB
   ("fsize_db",                        665323381795), # 665.32GB, avg file size 4.62GB
   ("use_it",                          False),
   ("xsection",                        349.25),
@@ -30664,7 +30664,7 @@ samples_2016["/DY2JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISumm
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Dec12_wPresel_nom_all/ntuples/DY2JetsToLL_M-50"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2020Jan08_wPresel_nom_all/ntuples/DY2JetsToLL_M-50"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -30688,19 +30688,19 @@ samples_2016["/DY3JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISumm
   ("type",                            "mc"),
   ("sample_category",                 "EWK"),
   ("process_name_specific",           "DY3JetsToLL_M-50"),
-  ("nof_files",                       1),
+  ("nof_files",                       3),
   ("nof_db_files",                    48),
   ("nof_events",                      {
     'Count'                                                      : [      5857441, ],
-    'CountWeighted'                                              : [      5858182,      5857138,      5859215, ],
-    'CountWeightedLHEWeightScale'                                : [      6190344,      6166836,      6099817,      5878176,      5858164,      5795928,      5633194,      5615396,      5557437, ],
-    'CountWeightedL1PrefireNom'                                  : [      5725048,      5724356,      5725658, ],
+    'CountWeighted'                                              : [      5858181,      5857138,      5859214, ],
+    'CountWeightedLHEWeightScale'                                : [      6190344,      6166836,      6099817,      5878176,      5858164,      5795927,      5633194,      5615395,      5557437, ],
+    'CountWeightedL1PrefireNom'                                  : [      5725048,      5724355,      5725658, ],
     'CountWeightedL1Prefire'                                     : [      5725048,      5690888,      5759133, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [      6047099,      6026227,      5962934,      5742702,      5724990,      5666371,      5503830,      5488357,      5433632, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [      6047099,      6026227,      5962934,      5742702,      5724990,      5666371,      5503829,      5488356,      5433632, ],
   }),
   ("nof_tree_events",                 1681427),
   ("nof_db_events",                   5857441),
-  ("fsize_local",                     5124177202), # 5.12GB, avg file size 5.12GB
+  ("fsize_local",                     5128638248), # 5.13GB, avg file size 1.71GB
   ("fsize_db",                        212438796731), # 212.44GB, avg file size 4.43GB
   ("use_it",                          False),
   ("xsection",                        127.52),
@@ -30712,7 +30712,7 @@ samples_2016["/DY3JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISumm
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Dec12_wPresel_nom_all/ntuples/DY3JetsToLL_M-50"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2020Jan08_wPresel_nom_all/ntuples/DY3JetsToLL_M-50"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -30736,19 +30736,19 @@ samples_2016["/DY4JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISumm
   ("type",                            "mc"),
   ("sample_category",                 "EWK"),
   ("process_name_specific",           "DY4JetsToLL_M-50"),
-  ("nof_files",                       1),
+  ("nof_files",                       3),
   ("nof_db_files",                    30),
   ("nof_events",                      {
     'Count'                                                      : [      4197868, ],
-    'CountWeighted'                                              : [      4198091,      4198285,      4197952, ],
-    'CountWeightedLHEWeightScale'                                : [      4678985,      4479030,      4283836,      4383405,      4198034,      4016528,      4151341,      3977238,      3806570, ],
+    'CountWeighted'                                              : [      4198090,      4198285,      4197952, ],
+    'CountWeightedLHEWeightScale'                                : [      4678985,      4479029,      4283835,      4383405,      4198034,      4016528,      4151340,      3977238,      3806570, ],
     'CountWeightedL1PrefireNom'                                  : [      4060647,      4060567,      4060683, ],
     'CountWeightedL1Prefire'                                     : [      4060647,      4026373,      4095037, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [      4521686,      4331321,      4145019,      4237206,      4060597,      3887362,      4013810,      3847957,      3684950, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [      4521686,      4331321,      4145019,      4237206,      4060597,      3887363,      4013809,      3847956,      3684950, ],
   }),
   ("nof_tree_events",                 1259195),
   ("nof_db_events",                   4197868),
-  ("fsize_local",                     4614956317), # 4.61GB, avg file size 4.61GB
+  ("fsize_local",                     4618044767), # 4.62GB, avg file size 1.54GB
   ("fsize_db",                        169839944436), # 169.84GB, avg file size 5.66GB
   ("use_it",                          False),
   ("xsection",                        50.039),
@@ -30760,7 +30760,7 @@ samples_2016["/DY4JetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISumm
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Dec12_wPresel_nom_all/ntuples/DY4JetsToLL_M-50"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2020Jan08_wPresel_nom_all/ntuples/DY4JetsToLL_M-50"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -30784,19 +30784,19 @@ samples_2016["/DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia
   ("type",                            "mc"),
   ("sample_category",                 "EWK"),
   ("process_name_specific",           "DYJetsToLL_M50_HT100to200"),
-  ("nof_files",                       1),
+  ("nof_files",                       2),
   ("nof_db_files",                    20),
   ("nof_events",                      {
     'Count'                                                      : [      2053013, ],
     'CountWeighted'                                              : [      2053215,      2053210,      2052761, ],
-    'CountWeightedLHEWeightScale'                                : [      2155450,      2146595,      2123173,      2061114,      2053203,      2031137,      1985949,      1978658,      1957787, ],
+    'CountWeightedLHEWeightScale'                                : [      2155449,      2146595,      2123173,      2061114,      2053203,      2031137,      1985949,      1978658,      1957787, ],
     'CountWeightedL1PrefireNom'                                  : [      1997503,      1997470,      1997305, ],
     'CountWeightedL1Prefire'                                     : [      1997503,      1983508,      2011524, ],
     'CountWeightedLHEWeightScaleL1PrefireNom'                    : [      2096623,      2088469,      2066206,      2004775,      1997485,      1976554,      1931601,      1924941,      1905111, ],
   }),
   ("nof_tree_events",                 616822),
   ("nof_db_events",                   2751187),
-  ("fsize_local",                     1880140014), # 1.88GB, avg file size 1.88GB
+  ("fsize_local",                     1881453923), # 1.88GB, avg file size 940.73MB
   ("fsize_db",                        99023772526), # 99.02GB, avg file size 4.95GB
   ("use_it",                          False),
   ("xsection",                        183.53),
@@ -30808,7 +30808,7 @@ samples_2016["/DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Dec12_wPresel_nom_all/ntuples/DYJetsToLL_M50_HT100to200"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2020Jan08_wPresel_nom_all/ntuples/DYJetsToLL_M50_HT100to200"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -30832,19 +30832,19 @@ samples_2016["/DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia
   ("type",                            "mc"),
   ("sample_category",                 "EWK"),
   ("process_name_specific",           "DYJetsToLL_M50_HT100to200_ext1"),
-  ("nof_files",                       1),
+  ("nof_files",                       4),
   ("nof_db_files",                    73),
   ("nof_events",                      {
     'Count'                                                      : [      7765864, ],
     'CountWeighted'                                              : [      7765477,      7767884,      7765817, ],
-    'CountWeightedLHEWeightScale'                                : [      8153702,      8119943,      8032636,      7795965,      7765447,      7683575,      7510931,      7483204,      7405415, ],
+    'CountWeightedLHEWeightScale'                                : [      8153702,      8119942,      8032636,      7795966,      7765448,      7683575,      7510931,      7483203,      7405415, ],
     'CountWeightedL1PrefireNom'                                  : [      7555371,      7556174,      7555714, ],
     'CountWeightedL1Prefire'                                     : [      7555371,      7502314,      7608342, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [      7931124,      7900458,      7817042,      7582850,      7555302,      7477056,      7305384,      7280411,      7206163, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [      7931124,      7900457,      7817040,      7582850,      7555302,      7477056,      7305384,      7280412,      7206163, ],
   }),
   ("nof_tree_events",                 2332034),
   ("nof_db_events",                   8265899),
-  ("fsize_local",                     7102144056), # 7.10GB, avg file size 7.10GB
+  ("fsize_local",                     7106017895), # 7.11GB, avg file size 1.78GB
   ("fsize_db",                        299870117814), # 299.87GB, avg file size 4.11GB
   ("use_it",                          False),
   ("xsection",                        183.53),
@@ -30856,7 +30856,7 @@ samples_2016["/DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Dec12_wPresel_nom_all/ntuples/DYJetsToLL_M50_HT100to200_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2020Jan08_wPresel_nom_all/ntuples/DYJetsToLL_M50_HT100to200_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -30892,7 +30892,7 @@ samples_2016["/DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia
   }),
   ("nof_tree_events",                 313731),
   ("nof_db_events",                   962195),
-  ("fsize_local",                     1152104972), # 1.15GB, avg file size 1.15GB
+  ("fsize_local",                     1152101267), # 1.15GB, avg file size 1.15GB
   ("fsize_db",                        39589451138), # 39.59GB, avg file size 3.30GB
   ("use_it",                          False),
   ("xsection",                        55.411),
@@ -30904,7 +30904,7 @@ samples_2016["/DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Dec12_wPresel_nom_all/ntuples/DYJetsToLL_M50_HT200to400"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2020Jan08_wPresel_nom_all/ntuples/DYJetsToLL_M50_HT200to400"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -30928,19 +30928,19 @@ samples_2016["/DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia
   ("type",                            "mc"),
   ("sample_category",                 "EWK"),
   ("process_name_specific",           "DYJetsToLL_M50_HT200to400_ext1"),
-  ("nof_files",                       1),
+  ("nof_files",                       5),
   ("nof_db_files",                    68),
   ("nof_events",                      {
     'Count'                                                      : [      8646942, ],
     'CountWeighted'                                              : [      8646694,      8647577,      8647287, ],
-    'CountWeightedLHEWeightScale'                                : [      9636896,      9229992,      8833788,      9027770,      8646646,      8275771,      8547166,      8186615,      7835470, ],
+    'CountWeightedLHEWeightScale'                                : [      9636896,      9229992,      8833787,      9027770,      8646645,      8275771,      8547166,      8186615,      7835471, ],
     'CountWeightedL1PrefireNom'                                  : [      8287059,      8287170,      8287579, ],
-    'CountWeightedL1Prefire'                                     : [      8287059,      8200656,      8374018, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [      9230492,      8846041,      8470661,      8647008,      8286966,      7935560,      8186659,      7846045,      7513357, ],
+    'CountWeightedL1Prefire'                                     : [      8287059,      8200655,      8374017, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [      9230493,      8846041,      8470661,      8647008,      8286966,      7935559,      8186658,      7846045,      7513356, ],
   }),
   ("nof_tree_events",                 2821168),
   ("nof_db_events",                   8646942),
-  ("fsize_local",                     10349485375), # 10.35GB, avg file size 10.35GB
+  ("fsize_local",                     10354896762), # 10.35GB, avg file size 2.07GB
   ("fsize_db",                        353330107045), # 353.33GB, avg file size 5.20GB
   ("use_it",                          False),
   ("xsection",                        55.411),
@@ -30952,7 +30952,7 @@ samples_2016["/DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Dec12_wPresel_nom_all/ntuples/DYJetsToLL_M50_HT200to400_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2020Jan08_wPresel_nom_all/ntuples/DYJetsToLL_M50_HT200to400_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -30988,7 +30988,7 @@ samples_2016["/DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia
   }),
   ("nof_tree_events",                 375364),
   ("nof_db_events",                   1070454),
-  ("fsize_local",                     1611468531), # 1.61GB, avg file size 1.61GB
+  ("fsize_local",                     1611465628), # 1.61GB, avg file size 1.61GB
   ("fsize_db",                        49969495510), # 49.97GB, avg file size 5.55GB
   ("use_it",                          False),
   ("xsection",                        7.9592),
@@ -31000,7 +31000,7 @@ samples_2016["/DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Dec12_wPresel_nom_all/ntuples/DYJetsToLL_M50_HT400to600"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2020Jan08_wPresel_nom_all/ntuples/DYJetsToLL_M50_HT400to600"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -31024,19 +31024,19 @@ samples_2016["/DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia
   ("type",                            "mc"),
   ("sample_category",                 "EWK"),
   ("process_name_specific",           "DYJetsToLL_M50_HT400to600_ext1"),
-  ("nof_files",                       1),
+  ("nof_files",                       3),
   ("nof_db_files",                    76),
   ("nof_events",                      {
     'Count'                                                      : [      5057866, ],
-    'CountWeighted'                                              : [      5057052,      5057452,      5057306, ],
+    'CountWeighted'                                              : [      5057052,      5057452,      5057305, ],
     'CountWeightedLHEWeightScale'                                : [      6035899,      5615126,      5242098,      5437360,      5057044,      4721060,      4969841,      4622149,      4313998, ],
     'CountWeightedL1PrefireNom'                                  : [      4763119,      4763137,      4763198, ],
     'CountWeightedL1Prefire'                                     : [      4763119,      4695888,      4830996, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [      5677139,      5287652,      4941283,      5114862,      4763081,      4450748,      4675608,      4353644,      4067468, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [      5677139,      5287652,      4941283,      5114862,      4763080,      4450747,      4675607,      4353644,      4067468, ],
   }),
   ("nof_tree_events",                 1773725),
   ("nof_db_events",                   8655207),
-  ("fsize_local",                     7608770138), # 7.61GB, avg file size 7.61GB
+  ("fsize_local",                     7611714257), # 7.61GB, avg file size 2.54GB
   ("fsize_db",                        405134119563), # 405.13GB, avg file size 5.33GB
   ("use_it",                          False),
   ("xsection",                        7.9592),
@@ -31048,7 +31048,7 @@ samples_2016["/DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Dec12_wPresel_nom_all/ntuples/DYJetsToLL_M50_HT400to600_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2020Jan08_wPresel_nom_all/ntuples/DYJetsToLL_M50_HT400to600_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -31072,19 +31072,19 @@ samples_2016["/DYJetsToLL_M-50_HT-600to800_TuneCUETP8M1_13TeV-madgraphMLM-pythia
   ("type",                            "mc"),
   ("sample_category",                 "EWK"),
   ("process_name_specific",           "DYJetsToLL_M50_HT600to800"),
-  ("nof_files",                       1),
+  ("nof_files",                       5),
   ("nof_db_files",                    103),
   ("nof_events",                      {
     'Count'                                                      : [      8292957, ],
-    'CountWeighted'                                              : [      8294001,      8293631,      8293204, ],
-    'CountWeightedLHEWeightScale'                                : [     10195875,      9338327,      8599507,      9055258,      8293984,      7636536,      8164562,      7476666,      6884335, ],
-    'CountWeightedL1PrefireNom'                                  : [      7794348,      7793819,      7794318, ],
-    'CountWeightedL1Prefire'                                     : [      7794348,      7682920,      7907164, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [      9564726,      8773106,      8089565,      8497858,      7794280,      7186274,      7664434,      7028919,      6480423, ],
+    'CountWeighted'                                              : [      8294002,      8293630,      8293204, ],
+    'CountWeightedLHEWeightScale'                                : [     10195875,      9338328,      8599506,      9055258,      8293983,      7636535,      8164562,      7476666,      6884336, ],
+    'CountWeightedL1PrefireNom'                                  : [      7794347,      7793819,      7794318, ],
+    'CountWeightedL1Prefire'                                     : [      7794347,      7682919,      7907165, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [      9564726,      8773106,      8089565,      8497858,      7794279,      7186273,      7664433,      7028918,      6480423, ],
   }),
   ("nof_tree_events",                 2996179),
   ("nof_db_events",                   8292957),
-  ("fsize_local",                     13726178114), # 13.73GB, avg file size 13.73GB
+  ("fsize_local",                     13729783454), # 13.73GB, avg file size 2.75GB
   ("fsize_db",                        422117016594), # 422.12GB, avg file size 4.10GB
   ("use_it",                          False),
   ("xsection",                        2.0041),
@@ -31096,7 +31096,7 @@ samples_2016["/DYJetsToLL_M-50_HT-600to800_TuneCUETP8M1_13TeV-madgraphMLM-pythia
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Dec12_wPresel_nom_all/ntuples/DYJetsToLL_M50_HT600to800"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2020Jan08_wPresel_nom_all/ntuples/DYJetsToLL_M50_HT600to800"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -31120,19 +31120,19 @@ samples_2016["/DYJetsToLL_M-50_HT-800to1200_TuneCUETP8M1_13TeV-madgraphMLM-pythi
   ("type",                            "mc"),
   ("sample_category",                 "EWK"),
   ("process_name_specific",           "DYJetsToLL_M50_HT800to1200"),
-  ("nof_files",                       1),
+  ("nof_files",                       2),
   ("nof_db_files",                    28),
   ("nof_events",                      {
     'Count'                                                      : [      2572143, ],
     'CountWeighted'                                              : [      2572179,      2572042,      2572624, ],
-    'CountWeightedLHEWeightScale'                                : [      3218950,      2912631,      2653667,      2842652,      2572169,      2343465,      2547789,      2305271,      2100316, ],
+    'CountWeightedLHEWeightScale'                                : [      3218950,      2912630,      2653667,      2842652,      2572169,      2343465,      2547789,      2305271,      2100316, ],
     'CountWeightedL1PrefireNom'                                  : [      2439690,      2439505,      2439935, ],
     'CountWeightedL1Prefire'                                     : [      2439690,      2410021,      2469654, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [      3047514,      2761345,      2518914,      2692495,      2439673,      2225437,      2414146,      2187356,      1995269, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [      3047513,      2761345,      2518914,      2692494,      2439673,      2225437,      2414146,      2187356,      1995269, ],
   }),
   ("nof_tree_events",                 953704),
   ("nof_db_events",                   2673066),
-  ("fsize_local",                     4556675333), # 4.56GB, avg file size 4.56GB
+  ("fsize_local",                     4557818796), # 4.56GB, avg file size 2.28GB
   ("fsize_db",                        142376357906), # 142.38GB, avg file size 5.08GB
   ("use_it",                          False),
   ("xsection",                        0.92367),
@@ -31144,7 +31144,7 @@ samples_2016["/DYJetsToLL_M-50_HT-800to1200_TuneCUETP8M1_13TeV-madgraphMLM-pythi
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Dec12_wPresel_nom_all/ntuples/DYJetsToLL_M50_HT800to1200"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2020Jan08_wPresel_nom_all/ntuples/DYJetsToLL_M50_HT800to1200"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -31180,7 +31180,7 @@ samples_2016["/DYJetsToLL_M-50_HT-1200to2500_TuneCUETP8M1_13TeV-madgraphMLM-pyth
   }),
   ("nof_tree_events",                 229551),
   ("nof_db_events",                   596079),
-  ("fsize_local",                     1139835685), # 1.14GB, avg file size 1.14GB
+  ("fsize_local",                     1139833103), # 1.14GB, avg file size 1.14GB
   ("fsize_db",                        34502618926), # 34.50GB, avg file size 4.31GB
   ("use_it",                          False),
   ("xsection",                        0.22025),
@@ -31192,7 +31192,7 @@ samples_2016["/DYJetsToLL_M-50_HT-1200to2500_TuneCUETP8M1_13TeV-madgraphMLM-pyth
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Dec12_wPresel_nom_all/ntuples/DYJetsToLL_M50_HT1200to2500"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2020Jan08_wPresel_nom_all/ntuples/DYJetsToLL_M50_HT1200to2500"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -31228,7 +31228,7 @@ samples_2016["/DYJetsToLL_M-50_HT-2500toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythi
   }),
   ("nof_tree_events",                 163945),
   ("nof_db_events",                   399492),
-  ("fsize_local",                     834773308), # 834.77MB, avg file size 834.77MB
+  ("fsize_local",                     834767128), # 834.77MB, avg file size 834.77MB
   ("fsize_db",                        24982088640), # 24.98GB, avg file size 6.25GB
   ("use_it",                          False),
   ("xsection",                        0.004007),
@@ -31240,7 +31240,7 @@ samples_2016["/DYJetsToLL_M-50_HT-2500toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythi
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Dec12_wPresel_nom_all/ntuples/DYJetsToLL_M50_HT2500toInf"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2020Jan08_wPresel_nom_all/ntuples/DYJetsToLL_M50_HT2500toInf"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -31264,19 +31264,19 @@ samples_2016["/DYBBJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISum
   ("type",                            "mc"),
   ("sample_category",                 "EWK"),
   ("process_name_specific",           "DYBBJetsToLL_M-50"),
-  ("nof_files",                       1),
+  ("nof_files",                       2),
   ("nof_db_files",                    18),
   ("nof_events",                      {
     'Count'                                                      : [      2554303, ],
     'CountWeighted'                                              : [      2553994,      2554413,      2554784, ],
-    'CountWeightedLHEWeightScale'                                : [      2704275,      2660108,      2603218,      2594631,      2553972,      2500895,      2506625,      2468984,      2418766, ],
+    'CountWeightedLHEWeightScale'                                : [      2704275,      2660107,      2603218,      2594631,      2553972,      2500895,      2506625,      2468984,      2418766, ],
     'CountWeightedL1PrefireNom'                                  : [      2512935,      2513104,      2513454, ],
     'CountWeightedL1Prefire'                                     : [      2512935,      2502060,      2523723, ],
     'CountWeightedLHEWeightScaleL1PrefireNom'                    : [      2659214,      2616898,      2561637,      2551802,      2512907,      2461308,      2465576,      2429549,      2380765, ],
   }),
   ("nof_tree_events",                 883844),
   ("nof_db_events",                   2554303),
-  ("fsize_local",                     2648755426), # 2.65GB, avg file size 2.65GB
+  ("fsize_local",                     2650159682), # 2.65GB, avg file size 1.33GB
   ("fsize_db",                        95636695840), # 95.64GB, avg file size 5.31GB
   ("use_it",                          False),
   ("xsection",                        14.6),
@@ -31288,7 +31288,7 @@ samples_2016["/DYBBJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISum
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Dec12_wPresel_nom_all/ntuples/DYBBJetsToLL_M-50"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2020Jan08_wPresel_nom_all/ntuples/DYBBJetsToLL_M-50"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -33472,19 +33472,19 @@ samples_2016["/ZZTo4L_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94
   ("type",                            "mc"),
   ("sample_category",                 "ZZ"),
   ("process_name_specific",           "ZZTo4L"),
-  ("nof_files",                       1),
+  ("nof_files",                       4),
   ("nof_db_files",                    50),
   ("nof_events",                      {
     'Count'                                                      : [      6669988, ],
-    'CountWeighted'                                              : [      6670022,      6671614,      6669607, ],
-    'CountWeightedLHEWeightScale'                                : [      6382064,      6826927,      7110275,      6189162,      6670022,      7001469,      6037353,      6547696,      6919571, ],
-    'CountWeightedL1PrefireNom'                                  : [      6608284,      6609343,      6608139, ],
-    'CountWeightedL1Prefire'                                     : [      6608284,      6591553,      6624928, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [      6320937,      6763913,      7045972,      6129561,      6608284,      6938244,      5978992,      6487047,      6857225, ],
+    'CountWeighted'                                              : [      6670022,      6671613,      6669608, ],
+    'CountWeightedLHEWeightScale'                                : [      6382064,      6826926,      7110275,      6189161,      6670022,      7001469,      6037353,      6547696,      6919571, ],
+    'CountWeightedL1PrefireNom'                                  : [      6608283,      6609343,      6608139, ],
+    'CountWeightedL1Prefire'                                     : [      6608283,      6591553,      6624928, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [      6320936,      6763913,      7045972,      6129561,      6608283,      6938244,      5978992,      6487047,      6857225, ],
   }),
   ("nof_tree_events",                 1633899),
   ("nof_db_events",                   6669988),
-  ("fsize_local",                     4472892022), # 4.47GB, avg file size 4.47GB
+  ("fsize_local",                     4477731181), # 4.48GB, avg file size 1.12GB
   ("fsize_db",                        206407053220), # 206.41GB, avg file size 4.13GB
   ("use_it",                          True),
   ("xsection",                        1.256),
@@ -33496,7 +33496,7 @@ samples_2016["/ZZTo4L_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Dec12_wPresel_nom_all/ntuples/ZZTo4L"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2020Jan08_wPresel_nom_all/ntuples/ZZTo4L"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -33520,19 +33520,19 @@ samples_2016["/ZZTo4L_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv3-PUMorion
   ("type",                            "mc"),
   ("sample_category",                 "ZZ"),
   ("process_name_specific",           "ZZTo4L_amcatnloFXFX_ext1"),
-  ("nof_files",                       2),
+  ("nof_files",                       6),
   ("nof_db_files",                    76),
   ("nof_events",                      {
     'Count'                                                      : [     10610210, ],
-    'CountWeighted'                                              : [      7321788,      7320693,      7320996, ],
-    'CountWeightedLHEWeightScale'                                : [      7002186,      7605097,      7980889,      6682423,      7321518,      7756375,      6430289,      7095812,      7577185, ],
-    'CountWeightedL1PrefireNom'                                  : [      7246424,      7245429,      7245999, ],
-    'CountWeightedL1Prefire'                                     : [      7246424,      7226150,      7266535, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [      6925396,      7526237,      7900607,      6609643,      7246190,      7679423,      6360820,      7023616,      7503046, ],
+    'CountWeighted'                                              : [      7321788,      7320694,      7320997, ],
+    'CountWeightedLHEWeightScale'                                : [      7002185,      7605096,      7980889,      6682423,      7321517,      7756375,      6430288,      7095812,      7577185, ],
+    'CountWeightedL1PrefireNom'                                  : [      7246424,      7245428,      7245998, ],
+    'CountWeightedL1Prefire'                                     : [      7246424,      7226151,      7266535, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [      6925396,      7526237,      7900607,      6609643,      7246190,      7679422,      6360820,      7023616,      7503046, ],
   }),
   ("nof_tree_events",                 2985178),
   ("nof_db_events",                   10711278),
-  ("fsize_local",                     8681457433), # 8.68GB, avg file size 4.34GB
+  ("fsize_local",                     8687640130), # 8.69GB, avg file size 1.45GB
   ("fsize_db",                        328957846220), # 328.96GB, avg file size 4.33GB
   ("use_it",                          False),
   ("xsection",                        1.256),
@@ -33544,7 +33544,7 @@ samples_2016["/ZZTo4L_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv3-PUMorion
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Dec12_wPresel_nom_all/ntuples/ZZTo4L_amcatnloFXFX_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2020Jan08_wPresel_nom_all/ntuples/ZZTo4L_amcatnloFXFX_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -33568,19 +33568,19 @@ samples_2016["/ZZTo2L2Nu_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17
   ("type",                            "mc"),
   ("sample_category",                 "ZZ"),
   ("process_name_specific",           "ZZTo2L2Nu"),
-  ("nof_files",                       1),
+  ("nof_files",                       5),
   ("nof_db_files",                    74),
   ("nof_events",                      {
     'Count'                                                      : [      8431925, ],
-    'CountWeighted'                                              : [      8433283,      8431061,      8432561, ],
-    'CountWeightedLHEWeightScale'                                : [      8466894,      8589194,      8696033,      8294350,      8433283,      8550149,      8150579,      8301017,      8428763, ],
-    'CountWeightedL1PrefireNom'                                  : [      8301369,      8299629,      8301150, ],
+    'CountWeighted'                                              : [      8433283,      8431062,      8432562, ],
+    'CountWeightedLHEWeightScale'                                : [      8466894,      8589194,      8696032,      8294349,      8433283,      8550149,      8150579,      8301017,      8428763, ],
+    'CountWeightedL1PrefireNom'                                  : [      8301369,      8299630,      8301150, ],
     'CountWeightedL1Prefire'                                     : [      8301369,      8267861,      8334848, ],
     'CountWeightedLHEWeightScaleL1PrefireNom'                    : [      8334264,      8455018,      8560430,      8164530,      8301369,      8417147,      8023111,      8171738,      8297920, ],
   }),
   ("nof_tree_events",                 2708328),
   ("nof_db_events",                   8931750),
-  ("fsize_local",                     6834706474), # 6.83GB, avg file size 6.83GB
+  ("fsize_local",                     6841148543), # 6.84GB, avg file size 1.37GB
   ("fsize_db",                        286633172052), # 286.63GB, avg file size 3.87GB
   ("use_it",                          False),
   ("xsection",                        0.564),
@@ -33592,7 +33592,7 @@ samples_2016["/ZZTo2L2Nu_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Dec12_wPresel_nom_all/ntuples/ZZTo2L2Nu"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2020Jan08_wPresel_nom_all/ntuples/ZZTo2L2Nu"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -33616,19 +33616,19 @@ samples_2016["/ZZTo2L2Nu_13TeV_powheg_pythia8_ext1/RunIISummer16MiniAODv3-PUMori
   ("type",                            "mc"),
   ("sample_category",                 "ZZ"),
   ("process_name_specific",           "ZZTo2L2Nu_ext1"),
-  ("nof_files",                       5),
+  ("nof_files",                       25),
   ("nof_db_files",                    362),
   ("nof_events",                      {
     'Count'                                                      : [     48056232, ],
-    'CountWeighted'                                              : [     48056852,     48057030,     48046438, ],
-    'CountWeightedLHEWeightScale'                                : [     48256659,     48953209,     49561253,     47272847,     48056852,     48729448,     46452986,     47310327,     48037269, ],
-    'CountWeightedL1PrefireNom'                                  : [     47307006,     47305658,     47300545, ],
-    'CountWeightedL1Prefire'                                     : [     47307006,     47115147,     47497722, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [     47500177,     48187875,     48787903,     46532406,     47307006,     47970856,     45725976,     46572751,     47290979, ],
+    'CountWeighted'                                              : [     48056850,     48057031,     48046438, ],
+    'CountWeightedLHEWeightScale'                                : [     48256659,     48953207,     49561251,     47272845,     48056850,     48729449,     46452988,     47310326,     48037270, ],
+    'CountWeightedL1PrefireNom'                                  : [     47307008,     47305658,     47300544, ],
+    'CountWeightedL1Prefire'                                     : [     47307008,     47115146,     47497721, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [     47500178,     48187875,     48787899,     46532408,     47307008,     47970855,     45725977,     46572749,     47290980, ],
   }),
   ("nof_tree_events",                 15440377),
   ("nof_db_events",                   48655100),
-  ("fsize_local",                     38933257012), # 38.93GB, avg file size 7.79GB
+  ("fsize_local",                     38965159225), # 38.97GB, avg file size 1.56GB
   ("fsize_db",                        1556906583517), # 1.56TB, avg file size 4.30GB
   ("use_it",                          False),
   ("xsection",                        0.564),
@@ -33640,7 +33640,7 @@ samples_2016["/ZZTo2L2Nu_13TeV_powheg_pythia8_ext1/RunIISummer16MiniAODv3-PUMori
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Dec12_wPresel_nom_all/ntuples/ZZTo2L2Nu_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2020Jan08_wPresel_nom_all/ntuples/ZZTo2L2Nu_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -33664,19 +33664,19 @@ samples_2016["/ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIISummer16MiniAODv
   ("type",                            "mc"),
   ("sample_category",                 "ZZ"),
   ("process_name_specific",           "ZZTo2L2Q"),
-  ("nof_files",                       2),
+  ("nof_files",                       8),
   ("nof_db_files",                    128),
   ("nof_events",                      {
     'Count'                                                      : [     14263269, ],
     'CountWeighted'                                              : [      9005203,      9007482,      9005549, ],
-    'CountWeightedLHEWeightScale'                                : [      9062499,      9395102,      9627068,      8634365,      9005361,      9270398,      8275056,      8672951,      8961332, ],
-    'CountWeightedL1PrefireNom'                                  : [      8846935,      8848075,      8847193, ],
-    'CountWeightedL1Prefire'                                     : [      8846935,      8805321,      8888406, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [      8897191,      9228661,      9459503,      8477451,      8847197,      9110403,      8125276,      8521071,      8807893, ],
+    'CountWeightedLHEWeightScale'                                : [      9062499,      9395102,      9627068,      8634366,      9005360,      9270398,      8275056,      8672951,      8961332, ],
+    'CountWeightedL1PrefireNom'                                  : [      8846936,      8848074,      8847193, ],
+    'CountWeightedL1Prefire'                                     : [      8846936,      8805322,      8888406, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [      8897190,      9228661,      9459502,      8477452,      8847196,      9110403,      8125276,      8521071,      8807892, ],
   }),
   ("nof_tree_events",                 3535586),
   ("nof_db_events",                   15462693),
-  ("fsize_local",                     11476172912), # 11.48GB, avg file size 5.74GB
+  ("fsize_local",                     11487480804), # 11.49GB, avg file size 1.44GB
   ("fsize_db",                        536411748052), # 536.41GB, avg file size 4.19GB
   ("use_it",                          False),
   ("xsection",                        5.52),
@@ -33688,7 +33688,7 @@ samples_2016["/ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIISummer16MiniAODv
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2019Dec12_wPresel_nom_all/ntuples/ZZTo2L2Q"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2020Jan08_wPresel_nom_all/ntuples/ZZTo2L2Q"),
         ("selection", "*"),
         ("blacklist", []),
       ]),

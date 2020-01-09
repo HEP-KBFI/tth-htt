@@ -889,6 +889,7 @@ int main(int argc, char* argv[])
   CutFlowTableHistManager * cutFlowHistManager = new CutFlowTableHistManager(cutFlowTableCfg, cuts);
   cutFlowHistManager->bookHistograms(fs);
 
+  bool isDebugTF = false;
   while(inputTree -> hasNextEvent() && (! run_lumi_eventSelector || (run_lumi_eventSelector && ! run_lumi_eventSelector -> areWeDone())))
   {
     if(inputTree -> canReport(reportEvery))
@@ -901,6 +902,7 @@ int main(int argc, char* argv[])
     }
     ++analyzedEntries;
     histogram_analyzedEntries->Fill(0.);
+    //if(eventInfo.event != 2554209) continue;
 
     if (run_lumi_eventSelector && !(*run_lumi_eventSelector)(eventInfo))
     {
@@ -1632,12 +1634,12 @@ int main(int argc, char* argv[])
       //btag_iterator++;
       for ( std::vector<const RecoJet*>::const_iterator selWJet1 = selJets.begin(); selWJet1 != selJets.end(); ++selWJet1 ) {
        if ( &(*selWJet1) == &(*selBJet) ) continue;
-       for ( std::vector<const RecoJet*>::const_iterator selWJet2 = selWJet1 + 1; selWJet2 != selJets.end(); ++selWJet2 ) {
+       for ( std::vector<const RecoJet*>::const_iterator selWJet2 = selJets.begin(); selWJet2 != selJets.end(); ++selWJet2 ) {
     if ( &(*selWJet2) == &(*selBJet) ) continue;
     if ( &(*selWJet2) == &(*selWJet1) ) continue;
     bool isGenMatched = false;
     double genTopPt_teste = 0.;
-    const std::map<int, double> bdtResult = (*hadTopTagger)(**selBJet, **selWJet1, **selWJet2, calculate_matching, isGenMatched, genTopPt_teste, genVar, genVarAnti );
+    const std::map<int, double> bdtResult = (*hadTopTagger)(**selBJet, **selWJet1, **selWJet2, calculate_matching, isGenMatched, genTopPt_teste, genVar, genVarAnti, isDebugTF );
     // genTopPt_teste is filled with the result of gen-matching
     //if ( isGenMatched ) hadtruth = true;
     // save genpt of all options
@@ -1714,6 +1716,19 @@ int main(int argc, char* argv[])
       { "max_Lep_eta",  std::max({selLepton->absEta(), selHadTau_lead->absEta(), selHadTau_sublead->absEta()})}
     };
     const double mvaOutput_legacy = mva_legacy(mvaInputs_legacy);
+    if ( isDebugTF ) {
+      std::cout<< "met_pt = "<< met.pt() << "; met_phi =  " << met.phi() << "\n";
+
+      std::cout << "event " << eventInfo.str() << "\n";
+      std::cout << "variables ";
+      for (auto elem :mvaInputs_legacy) std::cout << elem.first << " " << elem.second << "\n";
+      std::cout << std::endl;
+      std::cout << "result  " << mvaOutput_legacy;
+      std::cout << std::endl;
+      std::cout << std::endl;
+
+      printCollection("selJets", selJets);
+    }
 
 //--- retrieve gen-matching flags
     std::vector<const GenMatchEntry*> genMatches = genMatchInterface.getGenMatch(selLeptons, selHadTaus);
@@ -2010,7 +2025,7 @@ int main(int argc, char* argv[])
       const double max_dr_lep_tau  = std::max(dr_lep_tau_lead, dr_lep_tau_sublead);
       const double min_dr_tau_jet  = std::min(mindr_tau1_jet, mindr_tau2_jet);
       const double min_dr_lep_tau  = std::min(dr_lep_tau_lead, dr_lep_tau_sublead);
-      const double mTauTauVis1_sel = (selHadTau_lead->p4() + selLepton->p4()).mass();
+      const double mTauTauVis1_sel = (selHadTau_lead->p4() + selLepton->cone_p4()).mass();
       const int nLightJet          = selJets.size() - selBJets_loose.size() + selJetsForward.size();
 
       snm->read(eventInfo);

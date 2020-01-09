@@ -582,6 +582,7 @@ int main(int argc, char* argv[])
     "Jet25_qg"
   };
   TMVAInterface mva_Hj_tagger(mvaFileName_Hj_tagger, mvaInputVariables_Hj_tagger);
+  mva_Hj_tagger.enableBDTTransform();
 
   std::string mvaFileName_Hjj_tagger = "tthAnalysis/HiggsToTauTau/data/Hjj_csv_BDTG.weights.xml";
   std::vector<std::string> mvaInputVariables_Hjj_tagger;
@@ -600,20 +601,6 @@ int main(int argc, char* argv[])
   */
   std::string mvaFileName_TensorFlow_2lss_ttH_tH_4cat_onlyTHQ_v4 = "tthAnalysis/HiggsToTauTau/data/NN_for_legacy_opt/2017tautag2p1samples_xsecrwonly_oldvars_tH_selection.pb";
   std::vector<std::string> mvaInputVariables_NN = {
-    /*
-    "jet3_pt","jet3_eta","lep1_eta",
-    "jet2_pt","jet1_pt","jetFwd1_eta",
-    "mT_lep1","mT_lep2","jet4_phi",
-    "lep2_conePt","hadTop_BDT",
-    "jet1_phi","jet2_eta",
-    "n_presel_jetFwd","n_presel_jet",
-    "lep1_charge","avg_dr_jet","lep1_phi",
-    "Hj_tagger_hadTop","nBJetLoose",
-    "jet4_pt","mindr_lep1_jet","lep1_conePt",
-    "jetFwd1_pt","lep2_phi","jet2_phi","lep2_eta","mbb",
-    "mindr_lep2_jet","jet4_eta","nBJetMedium",
-    "Dilep_pdgId","metLD","jet3_phi","maxeta","jet1_eta"
-    */
     "jet3_pt","jet3_eta","lep1_eta",
     "jet2_pt","jet1_pt","jetFwd1_eta",
     "mT_lep1","mT_lep2","jet4_phi",
@@ -707,7 +694,8 @@ int main(int argc, char* argv[])
      {"mass_2L_mm_lj_neg", {}},
      {"mass_2L_mm_hj_pos", {}},
      {"mass_2L_mm_hj_neg", {}},
-     {"mass_2L_cr",        {0,1}}
+     {"mass_2L_cr",        {0,1}},
+     {"mass_2L_rest",        {0,1}}
    };
 
   for(const std::string & central_or_shift: central_or_shifts_local)
@@ -1684,7 +1672,7 @@ int main(int argc, char* argv[])
     double mindr_lep1_jet=comp_mindr_jet(*selLepton_lead, selJets);
     double mindr_lep2_jet=comp_mindr_jet(*selLepton_sublead, selJets);
     const double max_lep_eta=TMath::Max(std::abs(selLepton_lead -> eta()), std::abs(selLepton_sublead -> eta()));
-    double avg_dr_jet=comp_avg_dr_jet(selJets);
+    double avg_dr_jet= comp_avg_dr_jet(selJets);
     double nJet25_Recl=comp_n_jet25_recl(selJets);
     double lep1_conePt=comp_lep_conePt(*selLepton_lead);
     double lep2_conePt=comp_lep_conePt(*selLepton_sublead);
@@ -1703,8 +1691,8 @@ int main(int argc, char* argv[])
     double mT2_top_3particle = -1.;
     double mT2_top_2particle = -1.;
     double mT2_W = -1.;
-    const Particle::LorentzVector & selLeptonP4_lead = selLepton_lead->p4();
-    const Particle::LorentzVector & selLeptonP4_sublead = selLepton_sublead->p4();
+    const Particle::LorentzVector & selLeptonP4_lead = selLepton_lead->cone_p4();
+    const Particle::LorentzVector & selLeptonP4_sublead = selLepton_sublead->cone_p4();
 
     if(selJets.size() >= 2)
     {
@@ -1806,7 +1794,7 @@ int main(int argc, char* argv[])
     for ( std::vector<const RecoJet*>::const_iterator selBJet = selJets.begin(); selBJet != selJets.end(); ++selBJet ) {
       for ( std::vector<const RecoJet*>::const_iterator selWJet1 = selJets.begin(); selWJet1 != selJets.end(); ++selWJet1 ) {
         if ( &(*selWJet1) == &(*selBJet) ) continue;
-        for ( std::vector<const RecoJet*>::const_iterator selWJet2 = selWJet1 + 1; selWJet2 != selJets.end(); ++selWJet2 ) {
+        for ( std::vector<const RecoJet*>::const_iterator selWJet2 = selJets.begin(); selWJet2 != selJets.end(); ++selWJet2 ) {
           if ( &(*selWJet2) == &(*selBJet) ) continue;
           if ( &(*selWJet2) == &(*selWJet1) ) continue;
           bool isGenMatched = false;
@@ -1877,36 +1865,39 @@ int main(int argc, char* argv[])
       {"mindr_lep2_jet",  mindr_lep2_jet},
       {"Dilep_pdgId",     selElectrons.size() + 1},
       {"maxeta",          TMath::Max(selLepton_lead -> absEta(), selLepton_sublead -> absEta())},
-      {"jetFwd1_eta",     selJetsForward.size() > 0 ? selJetsForward[0] -> absEta() : 0.},
-      {"jetFwd1_pt",      selJetsForward.size() > 0 ? selJetsForward[0] -> pt()     : 0.},
-      {"mbb",             selBJets_loose.size()>1 ?  (selBJets_loose[0]->p4()+selBJets_loose[1]->p4()).mass() : 0},
-      {"avg_dr_jet",      avg_dr_jet},
-      {"metLD",           met_LD},
+      {"jetFwd1_eta",     selJetsForward.size() > 0 ? selJetsForward[0] -> absEta() : 9.},
+      {"jetFwd1_pt",      selJetsForward.size() > 0 ? selJetsForward[0] -> pt()     : -9.},
+      {"mbb",             selBJets_loose.size()>1 ?  (selBJets_loose[0]->p4()+selBJets_loose[1]->p4()).mass() : -9},
+      {"avg_dr_jet",      selJets.size() > 1 ?  avg_dr_jet : -9},
+      {"metLD",           met_LD > 0 ? met_LD : -9},
       {"hadTop_BDT",      max_mvaOutput_HTT_CSVsort4rd},
       {"n_presel_jet",    selJets.size()},
       {"n_presel_jetFwd", selJetsForward.size()},
       {"jet1_pt",         selJets[0]->pt()},
       {"jet1_eta",        selJets[0]->absEta()},
       {"jet1_phi",        selJets[0]->phi()},
-      {"jet2_pt",         selJets.size() > 1 ?  selJets[1]->pt()  : -0.},
-      {"jet2_eta",        selJets.size() > 1 ?  selJets[1]->absEta() : -0.},
-      {"jet2_phi",        selJets.size() > 1 ?  selJets[1]->phi() : -9.},
-      {"jet3_pt",         selJets.size() > 2 ?  selJets[2]->pt()  : -0.},
-      {"jet3_eta",        selJets.size() > 2 ?  selJets[2]->absEta() : -0.},
-      {"jet3_phi",        selJets.size() > 2 ?  selJets[2]->phi() : -9.},
-      {"jet4_pt",         selJets.size() > 3 ?  selJets[3]->pt()  : -0.},
-      {"jet4_eta",        selJets.size() > 3 ?  selJets[3]->absEta() : -0.},
-      {"jet4_phi",        selJets.size() > 3 ?  selJets[3]->phi() : -9.},
+      {"jet2_pt",         selJets.size() > 1 ?  selJets[1]->pt()     : -9.},
+      {"jet2_eta",        selJets.size() > 1 ?  selJets[1]->absEta() :  9.},
+      {"jet2_phi",        selJets.size() > 1 ?  selJets[1]->phi()    : -9.},
+      {"jet3_pt",         selJets.size() > 2 ?  selJets[2]->pt()     : -9.},
+      {"jet3_eta",        selJets.size() > 2 ?  selJets[2]->absEta() :  9.},
+      {"jet3_phi",        selJets.size() > 2 ?  selJets[2]->phi()    : -9.},
+      {"jet4_pt",         selJets.size() > 3 ?  selJets[3]->pt()     : -9.},
+      {"jet4_eta",        selJets.size() > 3 ?  selJets[3]->absEta() :  9.},
+      {"jet4_phi",        selJets.size() > 3 ?  selJets[3]->phi()    : -9.},
       {"nBJetLoose",      selBJets_loose.size()},
       {"nBJetMedium",     selBJets_medium.size()},
       {"Hj_tagger_hadTop", mvaOutput_Hj_tagger}
       };
     std::map<std::string, double> mvaOutput_NN = mva_NN(mvaInputVariables_NN_list);
     if ( isDEBUG_TF ) {
-      std::cout << "result tH 4cat v1 :";
+      std::cout << "event " << eventInfo.str() << "\n";
+      std::cout << "Variables :\n";
+      for(auto elem : mvaInputVariables_NN_list) std::cout << elem.first << " " << elem.second << "\n";
+      std::cout << "\n";
+      std::cout << "result :";
       for(auto elem : mvaOutput_NN) std::cout << elem.first << " " << elem.second << " ";
       std::cout << "\n";
-      std::cout << "mvaOutput_Hj_tagger = " << mvaOutput_Hj_tagger;
     }
 
 //--- do NN categories
@@ -1960,24 +1951,26 @@ int main(int argc, char* argv[])
 
     ///////////////////////////////
     // SVA variables
-    const double mass_2L           = (selLepton_lead->p4() + selLepton_sublead->p4()).mass();
+    const double mass_2L           = (selLepton_lead->cone_p4() + selLepton_sublead->cone_p4()).mass();
     const int    sum_Lep_charge    = selLepton_lead -> charge() + selLepton_sublead -> charge();
     std::string category_SVA = "mass_2L_";
-    if ( selJets.size() > 3)
-    {
-      if  ( ( selLepton_lead_type == kElectron && selLepton_sublead_type == kElectron ) ) {
-        category_SVA += "ee";
-      } else if (  selLepton_lead_type == kMuon     && selLepton_sublead_type == kMuon      ) {
-        category_SVA += "mm";
-      } else if ( (selLepton_lead_type == kElectron && selLepton_sublead_type == kMuon    ) ||
-      (selLepton_lead_type == kMuon     && selLepton_sublead_type == kElectron) ) {
-        category_SVA += "em";
-      }
-      if (selJets.size() < 6) category_SVA += "_lj";
-      else category_SVA += "_hj";
-      if (sum_Lep_charge > 0 ) category_SVA += "_pos";
-      else category_SVA += "_neg";
-    } else category_SVA += "cr";
+    if (! is_tH_like_and_not_ttH_like) {
+      if ( selJets.size() > 3 )
+        {
+          if  ( ( selLepton_lead_type == kElectron && selLepton_sublead_type == kElectron ) ) {
+            category_SVA += "ee";
+          } else if (  selLepton_lead_type == kMuon     && selLepton_sublead_type == kMuon      ) {
+            category_SVA += "mm";
+          } else if ( (selLepton_lead_type == kElectron && selLepton_sublead_type == kMuon    ) ||
+          (selLepton_lead_type == kMuon     && selLepton_sublead_type == kElectron) ) {
+            category_SVA += "em";
+          }
+          if (selJets.size() < 6) category_SVA += "_lj";
+          else category_SVA += "_hj";
+          if (sum_Lep_charge > 0 ) category_SVA += "_pos";
+          else category_SVA += "_neg";
+        } else category_SVA += "cr";
+    } else category_SVA += "rest";
 
 //--- retrieve gen-matching flags
     std::vector<const GenMatchEntry*> genMatches = genMatchInterface.getGenMatch(selLeptons);

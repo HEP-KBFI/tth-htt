@@ -708,6 +708,8 @@ class analyzeConfig(object):
         if 'skipEvery' in sample_info:
             assert('skipEvery' not in jobOptions)
             jobOptions['skipEvery'] = sample_info['skipEvery']
+        if 'useObjectMultiplicity' not in jobOptions:
+            jobOptions['useObjectMultiplicity'] = False
 
         jobOptions_local = [
             'process',
@@ -1494,7 +1496,7 @@ class analyzeConfig(object):
 
     def get_hadd_settings(self):
         if len(self.central_or_shifts) > 1:
-            if self.channel in [ '1l_1tau' ]:
+            if self.channel in [ '1l_1tau', '2lss' ]:
                 return 2, '4096M'
             else:
                 return 3, ''

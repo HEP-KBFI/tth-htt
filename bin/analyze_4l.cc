@@ -1179,18 +1179,26 @@ int main(int argc, char* argv[])
     cutFlowTable.update(">= 4 presel leptons", evtWeightRecorder.get(central_or_shift_main));
     cutFlowHistManager->fillHistograms(">= 4 presel leptons", evtWeightRecorder.get(central_or_shift_main));
 
+    if ( !isControlRegion )
+    {
     // apply requirement on jets (incl. b-tagged jets) and hadronic taus on preselection level
-    if ( !((int)selJets.size() >= minNumJets) ) {
+    if ( !((int)selJets.size() >= minNumJets)) {
       if ( run_lumi_eventSelector ) {
         std::cout << "event " << eventInfo.str() << " FAILS selJets selection." << std::endl;
         printCollection("selJets", selJets);
       }
       continue;
     }
+  }
+
     cutFlowTable.update(">=N jets", evtWeightRecorder.get(central_or_shift_main));
     cutFlowHistManager->fillHistograms(">= N jets", evtWeightRecorder.get(central_or_shift_main));
 
-    if ( !isControlRegion && !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) ) {
+    const int nofSFOSZbosonPairs = countZbosonSFOSpairs(selLeptons);
+    if (!isControlRegion)
+    {
+      if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) )
+    {
       if ( run_lumi_eventSelector ) {
         std::cout << "event " << eventInfo.str() << " FAILS selBJets selection." << std::endl;
 	printCollection("selJets", selJets);
@@ -1198,6 +1206,14 @@ int main(int argc, char* argv[])
 	printCollection("selBJets_medium", selBJets_medium);
       }
       continue;
+    }
+    } else if ( nofSFOSZbosonPairs == 1 && selBJets_medium.size() < 1)
+    {
+      if ( run_lumi_eventSelector ) {
+          std::cout << "event " << eventInfo.str() << " FAILS selBJets selection." << std::endl;
+  	      printCollection("selBJets_medium", selBJets_medium);
+        continue;
+      }
     }
     cutFlowTable.update(">= 2 loose b-jets || 1 medium b-jet", evtWeightRecorder.get(central_or_shift_main));
     cutFlowHistManager->fillHistograms(">= 2 loose b-jets || 1 medium b-jet", evtWeightRecorder.get(central_or_shift_main));
@@ -1390,21 +1406,6 @@ int main(int argc, char* argv[])
     cutFlowTable.update("H->ZZ*->4l veto", evtWeightRecorder.get(central_or_shift_main));
     cutFlowHistManager->fillHistograms("H->ZZ*->4l veto", evtWeightRecorder.get(central_or_shift_main));
 
-    const bool isSameFlavor_OS_FO = isSFOS(fakeableLeptons);
-    double met_LD_cut = 0.;
-    if      ( selJets.size() >= 4 ) met_LD_cut = -1.; // MET LD cut not applied
-    else if ( isSameFlavor_OS_FO     ) met_LD_cut = 45.;
-    else                            met_LD_cut = 30.;
-    if ( met_LD_cut > 0 && met_LD < met_LD_cut ) {
-      if ( run_lumi_eventSelector ) {
-    	std::cout << "event " << eventInfo.str() << " FAILS MET LD selection." << std::endl;
-    	std::cout << " (met_LD = " << met_LD << ", met_LD_cut = " << met_LD_cut << ")" << std::endl;
-      }
-      continue;
-    }
-    cutFlowTable.update("met LD", evtWeightRecorder.get(central_or_shift_main));
-    cutFlowHistManager->fillHistograms("met LD", evtWeightRecorder.get(central_or_shift_main));
-
     if ( apply_met_filters ) {
       if ( !metFilterSelector(metFilters) ) {
 	if ( run_lumi_eventSelector ) {
@@ -1483,7 +1484,7 @@ int main(int argc, char* argv[])
           std::cout << std::endl;
           std::cout << std::endl;
         }
-        const double mass_4L           = (selLepton_lead->p4() + selLepton_sublead->p4() + selLepton_third->p4()  + selLepton_fourth->p4()).mass();
+        const double mass_4L           = (selLepton_lead->cone_p4() + selLepton_sublead->cone_p4() + selLepton_third->cone_p4()  + selLepton_fourth->cone_p4()).mass();
 
 //--- retrieve gen-matching flags
     std::vector<const GenMatchEntry*> genMatches = genMatchInterface.getGenMatch(selLeptons);
@@ -1492,7 +1493,6 @@ int main(int argc, char* argv[])
     int ctrl_category = -1;
     if(isControlRegion)
     {
-      const int nofSFOSZbosonPairs = countZbosonSFOSpairs(preselLeptons);
       if(nofSFOSZbosonPairs == 2)
       {
         ctrl_category = 0;
@@ -1512,6 +1512,7 @@ int main(int argc, char* argv[])
           ctrl_category = 3;
         }
       }
+      std::cout<<"nofSFOSZbosonPairs: " << nofSFOSZbosonPairs << " selJets.size(): " << selJets.size() << " selBJets_medium.size() " << selBJets_medium.size() << "\n";
     }
     for(const std::string & central_or_shift: central_or_shifts_local)
     {

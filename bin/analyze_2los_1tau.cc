@@ -1579,7 +1579,7 @@ int main(int argc, char* argv[])
       selLepton_OS = selLepton_sublead;
       selLepton_SS = selLepton_lead;
     }
-    double mTauTauVis_sel = ( selLepton_OS ) ? (selLepton_OS->p4() + selHadTau->p4()).mass() : -1.;
+    double mTauTauVis_sel = ( selLepton_OS ) ? (selLepton_OS->cone_p4() + selHadTau->p4()).mass() : -1.;
 
 //--- compute output of BDTs used to discriminate ttH vs. ttV and ttH vs. ttbar
 
@@ -1617,7 +1617,7 @@ int main(int argc, char* argv[])
       //btag_iterator++;
       for ( std::vector<const RecoJet*>::const_iterator selWJet1 = selJets.begin(); selWJet1 != selJets.end(); ++selWJet1 ) {
        if ( &(*selWJet1) == &(*selBJet) ) continue;
-       for ( std::vector<const RecoJet*>::const_iterator selWJet2 = selWJet1 + 1; selWJet2 != selJets.end(); ++selWJet2 ) {
+       for ( std::vector<const RecoJet*>::const_iterator selWJet2 = selJets.begin(); selWJet2 != selJets.end(); ++selWJet2 ) {
     if ( &(*selWJet2) == &(*selBJet) ) continue;
     if ( &(*selWJet2) == &(*selWJet1) ) continue;
     bool isGenMatched = false;
@@ -1879,8 +1879,8 @@ int main(int argc, char* argv[])
       }
     }
 
-    const double mTauTauVis1_sel = (selLepton_lead->p4() + selHadTau->p4()).mass();
-    const double mTauTauVis2_sel = (selLepton_sublead->p4() + selHadTau->p4()).mass();
+    const double mTauTauVis1_sel = (selLepton_lead->cone_p4() + selHadTau->p4()).mass();
+    const double mTauTauVis2_sel = (selLepton_sublead->cone_p4() + selHadTau->p4()).mass();
 
     if ( bdt_filler ) {
       bdt_filler -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })

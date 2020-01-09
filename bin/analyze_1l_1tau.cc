@@ -144,18 +144,6 @@ struct HadTauHistManagerWrapper_eta
   double etaMax_;
 };
 
-double comp_cosThetaS(const Particle::LorentzVector& hadTauP4_lead, const Particle::LorentzVector& hadTauP4_sublead)
-{
-  TLorentzVector hadTauP4tlv_lead;
-  hadTauP4tlv_lead.SetPtEtaPhiM(hadTauP4_lead.pt(), hadTauP4_lead.eta(), hadTauP4_lead.phi(), hadTauP4_lead.mass());
-  TLorentzVector hadTauP4tlv_sublead;
-  hadTauP4tlv_sublead.SetPtEtaPhiM(hadTauP4_sublead.pt(), hadTauP4_sublead.eta(), hadTauP4_sublead.phi(), hadTauP4_sublead.mass());
-  TLorentzVector diTauP4 = hadTauP4tlv_lead + hadTauP4tlv_sublead;
-  TLorentzVector hadTauBoost = hadTauP4tlv_lead;
-  hadTauBoost.Boost(-diTauP4.BoostVector());
-  return std::fabs(hadTauBoost.CosTheta());
-}
-
 /**
  * @brief Produce datacard and control plots for 1l_1tau category.
  */
@@ -1691,7 +1679,7 @@ int main(int argc, char* argv[])
       //btag_iterator++;
       for ( std::vector<const RecoJet*>::const_iterator selWJet1 = selJets.begin(); selWJet1 != selJets.end(); ++selWJet1 ) {
        if ( &(*selWJet1) == &(*selBJet) ) continue;
-       for ( std::vector<const RecoJet*>::const_iterator selWJet2 = selWJet1 + 1; selWJet2 != selJets.end(); ++selWJet2 ) {
+       for ( std::vector<const RecoJet*>::const_iterator selWJet2 = selJets.begin(); selWJet2 != selJets.end(); ++selWJet2 ) {
     if ( &(*selWJet2) == &(*selBJet) ) continue;
     if ( &(*selWJet2) == &(*selWJet1) ) continue;
     bool isGenMatched = false;
@@ -1813,7 +1801,7 @@ int main(int argc, char* argv[])
     double leg2Mass = selHadTau->mass();
     if ( leg2Mass < classic_svFit::chargedPionMass ) leg2Mass = classic_svFit::chargedPionMass;
     if ( leg2Mass > 1.5                            ) leg2Mass = 1.5;
-    measuredTauLeptons.push_back(classic_svFit::MeasuredTauLepton(leg1Type, selLepton->pt(), selLepton->eta(), selLepton->phi(), leg1Mass));
+    measuredTauLeptons.push_back(classic_svFit::MeasuredTauLepton(leg1Type, selLepton->cone_pt(), selLepton->eta(), selLepton->phi(), leg1Mass));
     measuredTauLeptons.push_back(classic_svFit::MeasuredTauLepton(leg2Type, selHadTau->pt(), selHadTau->eta(), selHadTau->phi(), leg2Mass));
     ClassicSVfit svFitAlgo;
     svFitAlgo.addLogM_dynamic(false);
@@ -1841,11 +1829,11 @@ int main(int argc, char* argv[])
     const double tau_pt        = selHadTau->pt();
     const double tau_eta       = selHadTau->absEta();
     const double dr_lep_tau    = deltaR(selLepton->p4(), selHadTau->p4());
-    const double costS         = comp_cosThetaS(selLepton->p4(), selHadTau->p4());
-    const double mTauTauVis    = (selLepton->p4() + selHadTau->p4()).mass();
-    const double Pzeta         = comp_pZeta(selLepton->p4(), selHadTau->p4(), met.p4().px(), met.p4().py());
-    const double PzetaVis      = comp_pZetaVis(selLepton->p4(), selHadTau->p4());
-    const double PzetaComb     = comp_pZetaComb(selLepton->p4(), selHadTau->p4(), met.p4().px(), met.p4().py());
+    const double costS         = comp_cosThetaStar(selLepton->cone_p4(), selHadTau->p4());
+    const double mTauTauVis    = (selLepton->cone_p4() + selHadTau->p4()).mass();
+    const double Pzeta         = comp_pZeta(selLepton->cone_p4(), selHadTau->p4(), met.p4().px(), met.p4().py());
+    const double PzetaVis      = comp_pZetaVis(selLepton->cone_p4(), selHadTau->p4());
+    const double PzetaComb     = comp_pZetaComb(selLepton->cone_p4(), selHadTau->p4(), met.p4().px(), met.p4().py());
     const double mbb           = ( selBJets_medium.size() >= 2 ) ? (selBJets_medium[0]->p4() + selBJets_medium[1]->p4()).mass() : -1.;
     const double mbb_loose     = ( selBJets_loose.size()  >= 2 ) ? (selBJets_loose[0]->p4()  + selBJets_loose[1]->p4()).mass()  : -1.;
 

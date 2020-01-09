@@ -1918,7 +1918,7 @@ int main(int argc, char* argv[])
         {
           continue;
         }
-        for(std::vector<const RecoJet *>::const_iterator selWJet2 = selWJet1 + 1; selWJet2 != selJets.end(); ++selWJet2)
+        for(std::vector<const RecoJet *>::const_iterator selWJet2 = selJets.begin(); selWJet2 != selJets.end(); ++selWJet2)
         {
           if(&(*selWJet2) == &(*selBJet))
           {
@@ -1970,8 +1970,8 @@ int main(int argc, char* argv[])
     const double lep2_conePt     = comp_lep_conePt(*selLepton_sublead);
     const double mindr_tau_jet   = comp_mindr_jet(*selHadTau, selJets);
     const double mbb             = selBJets_medium.size() > 1 ?  (selBJets_medium[0]->p4() + selBJets_medium[1]->p4()).mass() : -1000;
-    const double mTauTauVis1_sel = (selLepton_lead->p4() + selHadTau->p4()).mass();
-    const double mTauTauVis2_sel = (selLepton_sublead->p4() + selHadTau->p4()).mass();
+    const double mTauTauVis1_sel = (selLepton_lead->cone_p4() + selHadTau->p4()).mass();
+    const double mTauTauVis2_sel = (selLepton_sublead->cone_p4() + selHadTau->p4()).mass();
     const double HTT             = max_mvaOutput_HTT_CSVsort4rd;
     const double HadTop_pt       = HadTop_pt_CSVsort4rd;
     double min_Deta_mostfwdJet_jet = 0;

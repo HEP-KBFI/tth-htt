@@ -307,7 +307,6 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
               'absEtaBins'                  : self.absEtaBins,
               'decayModes'                  : self.decayModes,
               'central_or_shift'            : central_or_shift,
-              'useObjectMultiplicity'       : True,
               'apply_hlt_filter'            : self.hlt_filter,
             }
             self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info)
