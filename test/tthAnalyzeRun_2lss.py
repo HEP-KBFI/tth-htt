@@ -4,7 +4,7 @@ from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_2lss import analyzeConfig_2
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 from tthAnalysis.HiggsToTauTau.analysisSettings import systematics, get_lumi
 from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
-from tthAnalysis.HiggsToTauTau.common import logging, load_samples
+from tthAnalysis.HiggsToTauTau.common import logging, load_samples, load_samples_stitched
 
 import os
 import sys
@@ -25,12 +25,13 @@ parser.add_preselect()
 parser.add_rle_select()
 parser.add_nonnominal()
 parser.add_hlt_filter()
-parser.add_files_per_job(files_per_job = 1)
+parser.add_files_per_job(files_per_job = 2)
 parser.add_use_home()
 parser.add_jet_cleaning()
 parser.add_gen_matching()
 parser.add_tau_id()
 parser.enable_regrouped_jec()
+parser.add_stitched()
 args = parser.parse_args()
 
 # Common arguments
@@ -58,6 +59,7 @@ jet_cleaning      = args.jet_cleaning
 gen_matching      = args.gen_matching
 tau_id            = args.tau_id
 regroup_jec       = args.enable_regrouped_jec
+use_stitched      = args.use_stitched
 
 if regroup_jec:
   if 'full' not in systematics_label:
@@ -97,6 +99,9 @@ elif mode == "sync":
   samples = load_samples(era, suffix = sample_suffix)
 else:
   raise ValueError("Invalid mode: %s" % mode)
+
+if use_stitched:
+  samples = load_samples_stitched(samples, era, load_dy = 'dy' in use_stitched, load_wjets = 'wjets' in use_stitched)
 
 if __name__ == '__main__':
   logging.info(
