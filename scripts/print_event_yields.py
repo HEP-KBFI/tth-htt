@@ -26,10 +26,10 @@ DECAY_MODE_PROCESSES = {
   'HH'  : [ 'HH' ]
 }
 ANALYSIS_REGIONS = collections.OrderedDict([
-  ('sr',        'Tight'                    ),
-  ( 'flip',     'Tight'                    ),
-  ('fake',      'Fakeable_wFakeRateWeights'),
-  ('mcclosure', 'Fakeable_mcClosure'       ),
+  ( 'sr',        'Tight'                     ),
+  ( 'flip',     'Tight'                      ),
+  ( 'fake',      'Fakeable_wFakeRateWeights' ),
+  ( 'mcclosure', 'Fakeable_mcClosure'        ),
 ])
 CHANNEL_LIST = [
   '0l_2tau', '1l_1tau', '1l_2tau', '2l_2tau', '2lss', '2los_1tau', '2lss_1tau', '3l', '3lctrl', '3l_1tau', '4l', '4lctrl',
@@ -338,6 +338,9 @@ def extract_metadata(hadd_stage2_path):
   elif region.startswith('Fakeable_wFakeRateWeights'):
     region_name = 'fake AR'
     region_key = 'fake'
+    if channel in [ '2lss', '2lss_1tau' ] and region.startswith('Fakeable_wFakeRateWeights_OS'):
+      region_name = ''
+      region_key = ''
   elif region.startswith('Fakeable_mcClosure'):
     region_split = region.split('_')
     typ = region_split[2]
@@ -378,7 +381,7 @@ def find_hadd_stage2(input_path, regions):
     for current_path in current_paths:
       region_paths = hdfs.listdir(current_path)
       for region_path in region_paths:
-        if os.path.basename(region_path).startswith(tuple( ANALYSIS_REGIONS[region] for region in regions)):
+        if os.path.basename(region_path).startswith(tuple(ANALYSIS_REGIONS[region] for region in regions)):
           next_paths.append(region_path)
     current_paths = next_paths
     nof_levels += 1
