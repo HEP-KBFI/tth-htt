@@ -364,7 +364,7 @@ def extract_metadata(hadd_stage_path):
   }
   return metadata
 
-def find_hadd_stage2(input_path, regions):
+def find_hadd_stage_files(input_path, regions, find_hadd_stage1):
   path_split = [ subpath for subpath in input_path.split(os.path.sep) if subpath != '' ]
   nof_levels = len(path_split)
   if not ( 5 < nof_levels < 11 ):
@@ -395,9 +395,10 @@ def find_hadd_stage2(input_path, regions):
   if nof_levels == 9:
     next_paths = []
     for current_path in current_paths:
-      next_path = os.path.join(current_path, 'hadd')
-      if hdfs.isdir(next_path):
-        next_paths.append(next_path)
+      for next_path in hdfs.listdir(current_path):
+        next_path_basename = os.path.basename(next_path)
+        if not (find_hadd_stage1 != (next_path_basename != 'hadd')):
+          next_paths.append(next_path)
     current_paths = next_paths
     nof_levels += 1
   if nof_levels == 10:
@@ -411,7 +412,7 @@ def find_hadd_stage2(input_path, regions):
         if not hdfs.isfile(candidate_file):
           continue
         candidate_file_basename = os.path.basename(candidate_file)
-        if candidate_file_basename.startswith('hadd_stage2_') and (
+        if candidate_file_basename.startswith('hadd_stage{}_'.format(1 if find_hadd_stage1 else 2)) and (
            candidate_file_basename.endswith('_{}.root'.format(metadata['region'])) or
            candidate_file_basename.replace('lep', '').replace('sum', '').endswith('_{}.root'.format(metadata['region']))
           ):
@@ -468,6 +469,10 @@ if __name__ == '__main__':
     dest = 'node', action = 'store_true', default = False,
     help = 'R|Show event yields and counts split by NN node (effective only in 2lss, 3l)',
   )
+  parser.add_argument('-S', '--sample',
+    dest = 'sample', action = 'store_true', default = False,
+    help = 'R|Show results by sample from hadd stage1 files',
+  )
   args = parser.parse_args()
 
   input_file_paths = args.input
@@ -477,6 +482,7 @@ if __name__ == '__main__':
   allowed_systematics = args.systematics
   searchable_regions = args.regions
   show_by_nodes = args.node
+  show_by_sample = args.sample
 
   if len(allowed_decay_modes) > 1 and '' in allowed_decay_modes:
     raise ValueError("Conflicting values to 'decay_modes' parameter")
@@ -488,7 +494,7 @@ if __name__ == '__main__':
     else:
       if not input_file_path.startswith('/hdfs/local'):
         raise ValueError("Invalid path: %s" % input_file_path)
-      input_file_names.extend(find_hadd_stage2(input_file_path, searchable_regions))
+      input_file_names.extend(find_hadd_stage_files(input_file_path, searchable_regions, show_by_sample))
   if not input_file_names:
     raise ValueError("No valid input files found from: %s" % ', '.join(input_file_paths))
   input_file_names = list(sorted(set(input_file_names), key = path_sorter))
