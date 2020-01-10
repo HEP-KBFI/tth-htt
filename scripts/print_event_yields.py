@@ -27,13 +27,14 @@ DECAY_MODE_PROCESSES = {
 }
 ANALYSIS_REGIONS = collections.OrderedDict([
   ( 'sr',        'Tight'                     ),
-  ( 'flip',     'Tight'                      ),
+  ( 'flip',      'Tight'                     ),
   ( 'fake',      'Fakeable_wFakeRateWeights' ),
   ( 'mcclosure', 'Fakeable_mcClosure'        ),
 ])
 CHANNEL_LIST = [
   '0l_2tau', '1l_1tau', '1l_2tau', '2l_2tau', '2lss', '2los_1tau', '2lss_1tau', '3l', '3lctrl', '3l_1tau', '4l', '4lctrl',
 ]
+TITLE_KEYS = [ 'era', 'channel', 'region_name', 'sample' ]
 
 def get_dir(fptr, path):
   dir_ptr = fptr.Get(path)
@@ -287,8 +288,10 @@ def get_table(input_file_name, allowed_decay_modes = None, show_gen_matching = T
 def print_table(lines, metadata):
   assert('path' in metadata)
   fmt_str = ''
-  if all(key in metadata for key in [ 'era', 'channel', 'region_name' ]):
+  if all(key in metadata for key in TITLE_KEYS):
     fmt_str = 'ERA = {era}, CHANNEL = {channel}, REGION = {region_name}, '
+    if metadata['sample']:
+      fmt_str += "SAMPLE = {sample}, "
   fmt_str += 'FILE = {path}'
   print(fmt_str.format(**metadata))
 
@@ -300,7 +303,7 @@ def print_table(lines, metadata):
 def reformat_table(lines, title):
   result = [ title ]
   header = lines[0]
-  header_modified = header[:-1] + ['Event yields', 'Event counts']
+  header_modified = header[:-1] + [ 'Event yields', 'Event counts' ]
   result.append(header_modified)
   for row in lines[1:]:
     row_modified = row[:-1]
@@ -318,14 +321,14 @@ def save_table(lines, output_filename):
     for row in lines:
       table_writer.writerow(row)
 
-def extract_metadata(hadd_stage2_path):
-  path_split = [ subpath for subpath in hadd_stage2_path.split(os.path.sep) if subpath != '' ]
+def extract_metadata(hadd_stage_path):
+  path_split = [ subpath for subpath in hadd_stage_path.split(os.path.sep) if subpath != '' ]
   if len(path_split) < 9:
-    return { 'path' : hadd_stage2_path }
+    return { 'path' : hadd_stage_path}
   era = path_split[4]
   channel = path_split[7]
   if channel not in CHANNEL_LIST:
-    raise RuntimeError("Unrecognizable channel found in path %s: %s" % (hadd_stage2_path, channel))
+    raise RuntimeError("Unrecognizable channel found in path %s: %s" % (hadd_stage_path, channel))
   region = path_split[8]
   region_name = ''
   region_key = ''
@@ -347,13 +350,17 @@ def extract_metadata(hadd_stage2_path):
     assert(typ in [ 'e', 'm', 't' ])
     region_name = 'MC closure ({})'.format(typ)
     region_key = 'mcclosure'
+  sample_name = path_split[9]
+  if sample_name == 'hadd':
+    sample_name = ''
   metadata = {
-    'path'        : hadd_stage2_path,
+    'path'        : hadd_stage_path,
     'era'         : era,
     'channel'     : channel,
     'region'      : region,
     'region_name' : region_name,
     'region_key'  : region_key,
+    'sample'      : sample_name,
   }
   return metadata
 
@@ -498,10 +505,10 @@ if __name__ == '__main__':
     metadata = extract_metadata(input_file_name)
     print_table(table, metadata)
     if output_file_name:
-      assert ('path' in metadata)
+      assert('path' in metadata)
       title = []
-      if all(key in metadata for key in [ 'era', 'channel', 'region_name' ]):
-        title = [ metadata[key] for key in [ 'era', 'channel', 'region_name' ] ]
+      if all(key in metadata for key in TITLE_KEYS):
+        title = [ metadata[key] for key in TITLE_KEYS if metadata[key] ]
       title.append(metadata['path'])
       tables.extend(reformat_table(table, title))
 
