@@ -51,6 +51,8 @@ def reclassifySamples(samples_era_base, samples_era_hh_multilepton = None, sampl
         sample_info["sample_category"] = "TTZ"
       elif sample_name.startswith("/ST_"):
         sample_info["sample_category"] = "Rares"
+      elif sample_name.startswith('/WGToLNuG_Tune'):
+        sample_info["use_it"] = False
 
     if sample_info["process_name_specific"].startswith('signal') and 'hh' in sample_info["process_name_specific"]:
       if is_nonresonant(sample_info["sample_category"]) and not sample_info["process_name_specific"].endswith('2b2v_sl'):
