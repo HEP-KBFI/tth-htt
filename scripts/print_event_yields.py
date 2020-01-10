@@ -16,7 +16,7 @@ OUTPUT_NN = 'output_NN'
 OUTPUT_NN_RE = re.compile('{}_(?P<node>\w+)_(?P<category>\w+)'.format(OUTPUT_NN))
 EVENTCOUNTER = 'EventCounter'
 SYS_HISTOGRAM_PREFIX = 'CMS_ttHl_'
-GEN_MATCHES = [ 'fake', 'flip', 'Convs', 'gentau', 'faketau' ]
+GEN_MATCHES = [ 'prompt', 'fake', 'flip', 'Convs', 'gentau', 'faketau' ]
 DECAY_MODES = {
   'ttH' : [ 'htt', 'hww', 'hzz', 'hmm', 'hzg' ],
   'HH'  : [ 'tttt',  'zzzz',  'wwww',  'ttzz',  'ttww',  'zzww', 'bbtt', 'bbww', 'bbzz' ],
@@ -76,7 +76,7 @@ def get_node_subcategory(histogram_name):
 def parse_process(process):
   process_name = process
   decay_mode = ''
-  gen_match = ''
+  gen_match = 'prompt'
   if process_name.endswith(tuple('_{}'.format(gm) for gm in GEN_MATCHES)):
     process_name_split = process_name.split('_')
     process_name = '_'.join(process_name_split[:-1])
@@ -229,7 +229,7 @@ def get_table(input_file_names, allowed_decay_modes = None, show_gen_matching = 
              (    allowed_decay_modes and decay_mode and process not in allowed_decay_modes):
             continue
           for gen_matching in results[subcategory][process][sample][decay_mode]:
-            if not show_gen_matching and gen_matching:
+            if not show_gen_matching and gen_matching != 'prompt':
               continue
             for systematics in results[subcategory][process][sample][decay_mode][gen_matching]:
               if allowed_systematics == 'central' and systematics != 'central':
@@ -273,7 +273,8 @@ def get_table(input_file_names, allowed_decay_modes = None, show_gen_matching = 
 
                   if not sample and \
                      not decay_mode and \
-                     not gen_matching and process not in exclude_from_SM_exp and \
+                     gen_matching == 'prompt' and \
+                     process not in exclude_from_SM_exp and \
                      not systematics.startswith('thu'):
                     if systematics not in SM_exp[node][category]:
                       SM_exp[node][category][systematics] = {
@@ -300,7 +301,7 @@ def get_table(input_file_names, allowed_decay_modes = None, show_gen_matching = 
           if allowed_decay_modes:
             line.append('')
           if show_gen_matching:
-            line.append('')
+            line.append('prompt')
           if allowed_systematics == 'all':
             line.append(systematics)
           if show_by_nodes:
