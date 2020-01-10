@@ -899,6 +899,19 @@ int main(int argc, char* argv[])
   std::map<std::string, double> selectedEntries_weighted_byGenMatchType; // key = process_and_genMatch
   TH1* histogram_analyzedEntries = fs.make<TH1D>("analyzedEntries", "analyzedEntries", 1, -0.5, +0.5);
   TH1* histogram_selectedEntries = fs.make<TH1D>("selectedEntries", "selectedEntries", 1, -0.5, +0.5);
+  //---------------------------------------------------------------------------
+  // CV: book a few extra histogram for the HIG-19-008 paper
+  TH1* histogram_genBJetPt_fake = fs.make<TH1D>("genBJetPt_fake", "genBJetPt_fake", 250, 0., 250.);
+  TH1* histogram_genBJetEta_fake = fs.make<TH1D>("genBJetEta_fake", "genBJetEta_fake", 100, -5., +5.);
+  TH1* histogram_numGenBJets_fake = fs.make<TH1D>("numGenBJets_fake", "numGenBJets_fake", 10, -0.5, 9.5);
+  TH1* histogram_numRecBJets_loose_fake = fs.make<TH1D>("numRecBJetsLoose_fake", "numRecBJetsLoose_fake", 10, -0.5, 9.5);
+  TH1* histogram_numRecBJets_medium_fake = fs.make<TH1D>("numRecBJetsMedium_fake", "numRecBJetsMedium_fake", 10, -0.5, 9.5);
+  TH1* histogram_genBJetPt_nonfake = fs.make<TH1D>("genBJetPt_nonfake", "genBJetPt_nonfake", 250, 0., 250.);
+  TH1* histogram_genBJetEta_nonfake = fs.make<TH1D>("genBJetEta_nonfake", "genBJetEta_nonfake", 100, -5., +5.);
+  TH1* histogram_numGenBJets_nonfake = fs.make<TH1D>("numGenBJets_nonfake", "numGenBJets_nonfake", 10, -0.5, 9.5);
+  TH1* histogram_numRecBJets_loose_nonfake = fs.make<TH1D>("numRecBJetsLoose_nonfake", "numRecBJetsLoose_nonfake", 10, -0.5, 9.5);
+  TH1* histogram_numRecBJets_medium_nonfake = fs.make<TH1D>("numRecBJetsMedium_nonfake", "numRecBJetsMedium_nonfake", 10, -0.5, 9.5);
+  //---------------------------------------------------------------------------
   cutFlowTableType cutFlowTable;
   const edm::ParameterSet cutFlowTableCfg = makeHistManager_cfg(
     process_string, Form("%s/sel/cutFlow", histogramDir.data()), era_string, central_or_shift_main
@@ -2369,6 +2382,51 @@ int main(int argc, char* argv[])
     {
       std::cout << evtWeightRecorder << '\n';
     }
+
+    //---------------------------------------------------------------------------
+    // CV: fill a few extra histogram for the HIG-19-008 paper
+    if ( genMatches.size() > 0 ) 
+    {
+      bool isFake = false;
+      for ( auto genMatch : genMatches ) 
+      {
+        if ( genMatch->getName() == "_fake" ) isFake = true;
+      }
+      TH1* histogram_genBJetPt = nullptr;
+      TH1* histogram_genBJetEta = nullptr;
+      TH1* histogram_numGenBJets = nullptr;
+      TH1* histogram_numRecBJets_loose = nullptr;
+      TH1* histogram_numRecBJets_medium = nullptr;
+      if ( isFake ) 
+      {
+        histogram_genBJetPt = histogram_genBJetPt_fake;
+        histogram_genBJetEta = histogram_genBJetEta_fake;
+        histogram_numGenBJets = histogram_numGenBJets_fake;
+        histogram_numRecBJets_loose = histogram_numRecBJets_loose_fake;
+        histogram_numRecBJets_medium = histogram_numRecBJets_medium_fake;
+      }
+      else
+      {
+        histogram_genBJetPt = histogram_genBJetPt_nonfake;
+        histogram_genBJetEta = histogram_genBJetEta_nonfake;
+        histogram_numGenBJets = histogram_numGenBJets_nonfake;
+        histogram_numRecBJets_loose = histogram_numRecBJets_loose_nonfake;
+        histogram_numRecBJets_medium = histogram_numRecBJets_medium_nonfake;
+      }
+      double evtWeight = evtWeightRecorder.get(central_or_shift_main);
+      int numGenBJets = 0;
+      for ( auto genBJet : genBJets )
+      {
+        if ( std::fabs(genBJet.eta()) <  2.4 ) histogram_genBJetPt->Fill(genBJet.pt(), evtWeight);
+        if (           genBJet.pt()   > 25.  ) histogram_genBJetEta->Fill(genBJet.eta(), evtWeight);
+        if ( std::fabs(genBJet.eta()) <  2.4 &&
+                       genBJet.pt()   > 25.  ) ++numGenBJets;
+      }
+      histogram_numGenBJets->Fill(numGenBJets, evtWeight);
+      histogram_numRecBJets_loose->Fill(selBJets_loose.size(), evtWeight);
+      histogram_numRecBJets_medium->Fill(selBJets_medium.size(), evtWeight);
+    }
+    //---------------------------------------------------------------------------
   }
 
   if(snm)
