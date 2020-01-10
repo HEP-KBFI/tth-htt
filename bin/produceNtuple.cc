@@ -794,14 +794,15 @@ main(int argc,
       //     with respect to thresholds applied on analysis level
       //     to allow for e-ES and mu-ES uncertainties to be estimated
       const double minPt_lead = selLepton_lead -> is_electron() ? minPt_ele : minPt_mu;
-      if(! (selLepton_lead->cone_pt() > minPt_lead))
+      if(! (std::min(selLepton_lead->cone_pt(), selLepton_lead->pt()) > minPt_lead))
       {
         if(run_lumi_eventSelector || isDEBUG)
         {
           std::cout << "event FAILS lepton pT selection.\n"
                        "( leading selLepton "
-                       "pT = "         << selLepton_lead->cone_pt() << ", "
-                       "minPt_lead = " << minPt_lead << ")\n"
+                       "reco-pT = "    << selLepton_lead->pt()      << ", "
+                       "cone-pT = "    << selLepton_lead->cone_pt() << ", "
+                       "minPt_lead = " << minPt_lead                << ")\n"
           ;
         }
         continue;
