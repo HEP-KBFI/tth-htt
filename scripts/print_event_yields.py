@@ -108,7 +108,15 @@ def fmt_float(val, significant_digits = 4, max_pow = 3):
     alt_precision = max(significant_digits, val_lg10) + 1
   return '{:.{prec}}'.format(val, prec = alt_precision)
 
-def get_evt_yields(input_file_name):
+def get_evt_yields(input_file_name, results = None):
+  if not results:
+    results = collections.OrderedDict()
+  metadata = extract_metadata(input_file_name)
+  if not input_file_name:
+    return results, metadata
+  assert('sample' in metadata)
+  sample = metadata['sample']
+
   assert(hdfs.isfile(input_file_name))
   input_file = ROOT.TFile.Open(input_file_name, 'read')
 
@@ -117,7 +125,6 @@ def get_evt_yields(input_file_name):
     if whitelist in subdirectories:
       subdirectories = [ whitelist ]
   is_single_subcategory = len(subdirectories) == 1
-  results = collections.OrderedDict()
 
   for subdirectory in subdirectories:
     evt_directory_path = os.path.join(subdirectory, 'sel', 'evt')
@@ -146,24 +153,26 @@ def get_evt_yields(input_file_name):
           results[subcategory_name] = collections.OrderedDict()
         if process_name not in results[subcategory_name]:
           results[subcategory_name][process_name] = collections.OrderedDict()
-        if decay_mode not in results[subcategory_name][process_name]:
-          results[subcategory_name][process_name][decay_mode] = collections.OrderedDict()
-        if gen_match not in results[subcategory_name][process_name][decay_mode]:
-          results[subcategory_name][process_name][decay_mode][gen_match] = collections.OrderedDict()
-        if systematics not in results[subcategory_name][process_name][decay_mode][gen_match]:
-          results[subcategory_name][process_name][decay_mode][gen_match][systematics] = collections.OrderedDict()
-        if node not in results[subcategory_name][process_name][decay_mode][gen_match][systematics]:
-          results[subcategory_name][process_name][decay_mode][gen_match][systematics][node] = collections.OrderedDict()
-        if category in results[subcategory_name][process_name][decay_mode][gen_match][systematics][node]:
+        if sample not in results[subcategory_name][process_name]:
+          results[subcategory_name][process_name][sample] = collections.OrderedDict()
+        if decay_mode not in results[subcategory_name][process_name][sample]:
+          results[subcategory_name][process_name][sample][decay_mode] = collections.OrderedDict()
+        if gen_match not in results[subcategory_name][process_name][sample][decay_mode]:
+          results[subcategory_name][process_name][sample][decay_mode][gen_match] = collections.OrderedDict()
+        if systematics not in results[subcategory_name][process_name][sample][decay_mode][gen_match]:
+          results[subcategory_name][process_name][sample][decay_mode][gen_match][systematics] = collections.OrderedDict()
+        if node not in results[subcategory_name][process_name][sample][decay_mode][gen_match][systematics]:
+          results[subcategory_name][process_name][sample][decay_mode][gen_match][systematics][node] = collections.OrderedDict()
+        if category in results[subcategory_name][process_name][sample][decay_mode][gen_match][systematics][node]:
           raise RuntimeError(
             "Possible double-counting the event counts and yields by reading histogram '%s' in file %s: "
-            "subcategory name = %s, process name = %s, decay mode = %s, gen matching = %s, systematics = %s, "
-            "node = %s, category = %s" % (
-              histogram_path, input_file_name, subcategory_name, process_name, decay_mode, gen_match, systematics,
-              node, category,
+            "subcategory name = %s, process name = %s, sample = %s, decay mode = %s, gen matching = %s, "
+            "systematics = %s, node = %s, category = %s" % (
+              histogram_path, input_file_name, subcategory_name, process_name, sample, decay_mode, gen_match,
+              systematics, node, category,
             )
           )
-        results[subcategory_name][process_name][decay_mode][gen_match][systematics][node][category] = {
+        results[subcategory_name][process_name][sample][decay_mode][gen_match][systematics][node][category] = {
           'count' : event_count,
           'yield' : event_yield,
         }
@@ -171,18 +180,28 @@ def get_evt_yields(input_file_name):
       del process_dir_ptr
     del evt_directory_ptr
   input_file.Close()
-  return results
+  return results, metadata
 
-def get_table(input_file_name, allowed_decay_modes = None, show_gen_matching = True, allowed_systematics = 'central',
-              show_by_nodes = False):
-  results = get_evt_yields(input_file_name)
+def get_table(input_file_names, allowed_decay_modes = None, show_gen_matching = True, allowed_systematics = 'central',
+              show_by_nodes = False, show_by_sample = False):
+  channel = ''
+  results, metadata_stage2 = get_evt_yields(input_file_names['stage2'])
+  if 'channel' in metadata_stage2:
+    channel = metadata_stage2['channel']
+  for input_file_name in input_file_names['stage1']:
+    results, metadata_stage1 = get_evt_yields(input_file_name, results)
+    if not channel and 'channel' in metadata_stage1:
+      channel = metadata_stage1['channel']
   if not results:
     return
+  assert(channel)
 
   header = []
   if len(results) > 1:
     header.append('Event subcategory')
   header.append('Process')
+  if show_by_sample:
+    header.append('Sample')
   if allowed_decay_modes:
     header.append('Decay mode')
   if show_gen_matching:
@@ -194,69 +213,75 @@ def get_table(input_file_name, allowed_decay_modes = None, show_gen_matching = T
     header.append('Category')
   header.append('Event yields (counts)')
 
-  exclude_from_SM_exp = ['data_obs', 'fakes_mc']
-  if '1l_1tau' not in input_file_name:
+  exclude_from_SM_exp = [ 'data_obs', 'fakes_mc' ]
+  if channel == '1l_1tau':
     exclude_from_SM_exp.append('flips_mc')
 
   lines = [ header ]
   for subcategory in results:
     SM_exp = collections.OrderedDict()
     for process in results[subcategory]:
-      for decay_mode in results[subcategory][process]:
-        if (not allowed_decay_modes and decay_mode                                       ) or \
-           (    allowed_decay_modes and decay_mode and process not in allowed_decay_modes):
+      for sample in results[subcategory][process]:
+        if not show_by_sample and sample:
           continue
-        for gen_matching in results[subcategory][process][decay_mode]:
-          if not show_gen_matching and gen_matching:
+        for decay_mode in results[subcategory][process][sample]:
+          if (not allowed_decay_modes and decay_mode                                       ) or \
+             (    allowed_decay_modes and decay_mode and process not in allowed_decay_modes):
             continue
-          for systematics in results[subcategory][process][decay_mode][gen_matching]:
-            if allowed_systematics == 'central' and systematics != 'central':
+          for gen_matching in results[subcategory][process][sample][decay_mode]:
+            if not show_gen_matching and gen_matching:
               continue
-            if systematics.startswith('thu'):
-              systematics_split = systematics.split('_')
-              assert(len(systematics_split) == 4)
-              if systematics_split[2].lower() not in process.lower():
+            for systematics in results[subcategory][process][sample][decay_mode][gen_matching]:
+              if allowed_systematics == 'central' and systematics != 'central':
                 continue
-            for node in results[subcategory][process][decay_mode][gen_matching][systematics]:
-              if not show_by_nodes and node:
-                continue
-              if node not in SM_exp:
-                SM_exp[node] = collections.OrderedDict()
-              for category, stats in results[subcategory][process][decay_mode][gen_matching][systematics][node].items():
-                if not show_by_nodes and category:
+              if systematics.startswith('thu'):
+                systematics_split = systematics.split('_')
+                assert(len(systematics_split) == 4)
+                if systematics_split[2].lower() not in process.lower():
                   continue
-                if category not in SM_exp[node]:
-                  SM_exp[node][category] = collections.OrderedDict()
-                yields = str(stats['count'])
-                if process != 'data_obs':
-                  yields = '{} ({})'.format(fmt_float(stats['yield']), yields)
-                line = []
-                if subcategory:
-                  line.append(subcategory)
-                line.append(process)
-                if allowed_decay_modes:
-                  line.append(decay_mode)
-                if show_gen_matching:
-                  line.append(gen_matching)
-                if allowed_systematics == 'all':
-                  line.append(systematics)
-                if show_by_nodes:
-                  line.append(node)
-                  line.append(category)
-                line.append(yields)
-                assert(len(line) == len(header))
-                lines.append(line)
+              for node in results[subcategory][process][sample][decay_mode][gen_matching][systematics]:
+                if not show_by_nodes and node:
+                  continue
+                if node not in SM_exp:
+                  SM_exp[node] = collections.OrderedDict()
+                for category, stats in results[subcategory][process][sample][decay_mode][gen_matching][systematics][node].items():
+                  if not show_by_nodes and category:
+                    continue
+                  if category not in SM_exp[node]:
+                    SM_exp[node][category] = collections.OrderedDict()
+                  yields = str(stats['count'])
+                  if process != 'data_obs':
+                    yields = '{} ({})'.format(fmt_float(stats['yield']), yields)
+                  line = []
+                  if subcategory:
+                    line.append(subcategory)
+                  line.append(process)
+                  if show_by_sample:
+                    line.append(sample)
+                  if allowed_decay_modes:
+                    line.append(decay_mode)
+                  if show_gen_matching:
+                    line.append(gen_matching)
+                  if allowed_systematics == 'all':
+                    line.append(systematics)
+                  if show_by_nodes:
+                    line.append(node)
+                    line.append(category)
+                  line.append(yields)
+                  assert(len(line) == len(header))
+                  lines.append(line)
 
-                if not decay_mode and \
-                   not gen_matching and process not in exclude_from_SM_exp and \
-                   not systematics.startswith('thu'):
-                  if systematics not in SM_exp[node][category]:
-                    SM_exp[node][category][systematics] = {
-                      'yield' : 0.,
-                      'count' : 0,
-                    }
-                  SM_exp[node][category][systematics]['yield'] += stats['yield']
-                  SM_exp[node][category][systematics]['count'] += stats['count']
+                  if not sample and \
+                     not decay_mode and \
+                     not gen_matching and process not in exclude_from_SM_exp and \
+                     not systematics.startswith('thu'):
+                    if systematics not in SM_exp[node][category]:
+                      SM_exp[node][category][systematics] = {
+                        'yield' : 0.,
+                        'count' : 0,
+                      }
+                    SM_exp[node][category][systematics]['yield'] += stats['yield']
+                    SM_exp[node][category][systematics]['count'] += stats['count']
     for node in SM_exp:
       if not show_by_nodes and node:
         continue
@@ -270,6 +295,8 @@ def get_table(input_file_name, allowed_decay_modes = None, show_gen_matching = T
           if subcategory:
             line.append(subcategory)
           line.append('SM expectation')
+          if show_by_sample:
+            line.append('')
           if allowed_decay_modes:
             line.append('')
           if show_gen_matching:
@@ -292,7 +319,7 @@ def print_table(lines, metadata):
     fmt_str = 'ERA = {era}, CHANNEL = {channel}, REGION = {region_name}, '
     if metadata['sample']:
       fmt_str += "SAMPLE = {sample}, "
-  fmt_str += 'FILE = {path}'
+  fmt_str += 'PATH = {path}'
   print(fmt_str.format(**metadata))
 
   table = prettytable.PrettyTable(lines[0])
@@ -324,7 +351,7 @@ def save_table(lines, output_filename):
 def extract_metadata(hadd_stage_path):
   path_split = [ subpath for subpath in hadd_stage_path.split(os.path.sep) if subpath != '' ]
   if len(path_split) < 9:
-    return { 'path' : hadd_stage_path}
+    return { 'path' : hadd_stage_path }
   era = path_split[4]
   channel = path_split[7]
   if channel not in CHANNEL_LIST:
@@ -350,9 +377,7 @@ def extract_metadata(hadd_stage_path):
     assert(typ in [ 'e', 'm', 't' ])
     region_name = 'MC closure ({})'.format(typ)
     region_key = 'mcclosure'
-  sample_name = path_split[9]
-  if sample_name == 'hadd':
-    sample_name = ''
+  sample_name = path_split[9] if (len(path_split) > 9 and path_split[9] != 'hadd') else ''
   metadata = {
     'path'        : hadd_stage_path,
     'era'         : era,
@@ -363,6 +388,15 @@ def extract_metadata(hadd_stage_path):
     'sample'      : sample_name,
   }
   return metadata
+
+def is_hadd_stage_file(input_path, is_hadd_stage1, metadata = None):
+  if not metadata:
+    metadata = extract_metadata(input_path)
+  candidate_file_basename = os.path.basename(input_path)
+  return candidate_file_basename.startswith('hadd_stage{}_'.format(1 if is_hadd_stage1 else 2)) and (
+     candidate_file_basename.endswith('_{}.root'.format(metadata['region'])) or
+     candidate_file_basename.replace('lep', '').replace('sum', '').endswith('_{}.root'.format(metadata['region']))
+    )
 
 def find_hadd_stage_files(input_path, regions, find_hadd_stage1):
   path_split = [ subpath for subpath in input_path.split(os.path.sep) if subpath != '' ]
@@ -411,11 +445,7 @@ def find_hadd_stage_files(input_path, regions, find_hadd_stage1):
       for candidate_file in hdfs.listdir(current_path):
         if not hdfs.isfile(candidate_file):
           continue
-        candidate_file_basename = os.path.basename(candidate_file)
-        if candidate_file_basename.startswith('hadd_stage{}_'.format(1 if find_hadd_stage1 else 2)) and (
-           candidate_file_basename.endswith('_{}.root'.format(metadata['region'])) or
-           candidate_file_basename.replace('lep', '').replace('sum', '').endswith('_{}.root'.format(metadata['region']))
-          ):
+        if is_hadd_stage_file(candidate_file, find_hadd_stage1, metadata):
           candidate_files.append(candidate_file)
       if candidate_files:
         assert(len(candidate_files) == 1)
@@ -487,28 +517,58 @@ if __name__ == '__main__':
   if len(allowed_decay_modes) > 1 and '' in allowed_decay_modes:
     raise ValueError("Conflicting values to 'decay_modes' parameter")
 
-  input_file_names = []
+  input_file_names_hadd_stage1 = []
+  input_file_names_hadd_stage2 = []
   for input_file_path in input_file_paths:
+    if not input_file_path.startswith('/hdfs/local'):
+      raise ValueError("Invalid path: %s" % input_file_path)
+
     if hdfs.isfile(input_file_path):
-      input_file_names.append(os.path.abspath(input_file_path))
+      input_file_abs_path = os.path.abspath(input_file_path)
+      if is_hadd_stage_file(input_file_abs_path, True):
+        input_file_names_hadd_stage1.append(input_file_abs_path)
+      elif is_hadd_stage_file(input_file_abs_path, False):
+        input_file_names_hadd_stage2.append(input_file_abs_path)
+      else:
+        raise ValueError("Not a valid hadd stage 1 or stage 2 file: %s" % input_file_path)
     else:
-      if not input_file_path.startswith('/hdfs/local'):
-        raise ValueError("Invalid path: %s" % input_file_path)
-      input_file_names.extend(find_hadd_stage_files(input_file_path, searchable_regions, show_by_sample))
-  if not input_file_names:
+      input_file_names_hadd_stage1.extend(find_hadd_stage_files(input_file_path, searchable_regions, True))
+      input_file_names_hadd_stage2.extend(find_hadd_stage_files(input_file_path, searchable_regions, False))
+
+  input_file_names_regrouped = collections.OrderedDict()
+  for input_file_name in input_file_names_hadd_stage2:
+    prefix = os.path.dirname(os.path.dirname(input_file_name))
+    if prefix not in input_file_names_regrouped:
+      input_file_names_regrouped[prefix] = {
+        'stage2' : '',
+        'stage1' : [],
+      }
+    assert(not input_file_names_regrouped[prefix]['stage2'])
+    input_file_names_regrouped[prefix]['stage2'] = input_file_name
+  for input_file_name in input_file_names_hadd_stage1:
+    prefix = os.path.dirname(os.path.dirname(input_file_name))
+    if prefix not in input_file_names_regrouped:
+      input_file_names_regrouped[prefix] = {
+        'stage2': '',
+        'stage1': [],
+      }
+    input_file_names_regrouped[prefix]['stage1'].append(input_file_name)
+
+  prefixes = list(sorted(set(input_file_names_regrouped.keys()), key = path_sorter))
+  if not prefixes:
     raise ValueError("No valid input files found from: %s" % ', '.join(input_file_paths))
-  input_file_names = list(sorted(set(input_file_names), key = path_sorter))
 
   tables = []
-  for input_file_name in input_file_names:
+  for prefix, input_file_names in input_file_names_regrouped.items():
     table = get_table(
-      input_file_name,
+      input_file_names,
       allowed_decay_modes = allowed_decay_modes,
       show_gen_matching   = show_gen_matching,
       allowed_systematics = allowed_systematics,
       show_by_nodes       = show_by_nodes,
+      show_by_sample      = show_by_sample or (not show_by_sample and not input_file_names['stage2']),
     )
-    metadata = extract_metadata(input_file_name)
+    metadata = extract_metadata(prefix)
     print_table(table, metadata)
     if output_file_name:
       assert('path' in metadata)
