@@ -378,8 +378,9 @@ class analyzeConfig(object):
         self.stderr_file_path = os.path.join(self.configDir, "stderr_%s.log" % self.channel)
         self.sw_ver_file_cfg  = os.path.join(self.configDir, "VERSION_%s.log" % self.channel)
         self.sw_ver_file_out  = os.path.join(self.outputDir, "VERSION_%s.log" % self.channel)
-        self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out = get_log_version((
-            self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out
+        self.validation_out   = os.path.join(self.configDir, "VALIDATION_%s.log" % self.channel)
+        self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out, self.validation_out = get_log_version((
+            self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out, self.validation_out
         ))
 
         self.dirs = {}
@@ -1585,7 +1586,7 @@ class analyzeConfig(object):
         make_target_validate = "phony_validate"
         lines_makefile.append("%s: %s" % (make_target_validate, make_dependency))
         inspect_argument = '-w {}'.format(self.channel) if single_channel else ''
-        lines_makefile.append("\tinspect_rle_numbers.py -i %s %s" % (self.outputDir, inspect_argument))
+        lines_makefile.append("\tinspect_rle_numbers.py -v -i %s %s &> %s" % (self.outputDir, inspect_argument, self.validation_out))
         lines_makefile.append("")
         if make_target_validate not in self.phoniesToAdd:
             self.phoniesToAdd.append(make_target_validate)
