@@ -119,12 +119,16 @@ run_wrapped_executable() {
     if [ $OUTPUT_FILES_EXIST = true ]; then
       IS_OUTPUT_FILE_NEWEST=true;
       for INPUT_FILE in $INPUT_FILES; do
-        if [ $INPUT_FILE -nt $OUTPUT_FILE ]; then
-          echo "Input file $INPUT_FILE is newer than output $OUTPUT_FILE -> deleting the output file $OUTPUT_FILE and running the job";
-          rm $OUTPUT_FILE;
-          IS_OUTPUT_FILE_NEWEST=false;
-          break;
-        fi
+        for OUTPUT_FILE in $OUTPUT_FILES; do
+          OUTPUT_FILE_FULLPATH=${OUTPUT_DIR}/${OUTPUT_FILE}
+          if [ $INPUT_FILE -nt $OUTPUT_FILE_FULLPATH ]; then
+            echo -n "Input file $INPUT_FILE is newer than output $OUTPUT_FILE_FULLPATH -> ";
+            echo    "deleting the output file $OUTPUT_FILE_FULLPATH and running the job";
+            rm -f $OUTPUT_FILE_FULLPATH;
+            IS_OUTPUT_FILE_NEWEST=false;
+            break;
+          fi
+        done
       done
       if [ $IS_OUTPUT_FILE_NEWEST = true ]; then
         EXIT_CODE=0
