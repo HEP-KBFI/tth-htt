@@ -120,7 +120,11 @@ def get_evt_yields(input_file_name, results = None):
   assert(hdfs.isfile(input_file_name))
   input_file = ROOT.TFile.Open(input_file_name, 'read')
 
-  subdirectories = get_keys(input_file, exclude = lambda key: key in [ 'analyzedEntries', 'selectedEntries' ])
+  subdirectories = get_keys(
+    input_file,
+    exclude = lambda key: key in [ 'analyzedEntries', 'selectedEntries' ] or \
+                          key.endswith(('_fake', '_nonfake'))
+  )
   for whitelist in [ '1l_1tau_Fakeable_wFakeRateWeights', '1l_1tau_Tight' ]:
     if whitelist in subdirectories:
       subdirectories = [ whitelist ]
