@@ -84,7 +84,7 @@ run_wrapped_executable() {
     cp_cmd="$cp_cmd -f"
 
     # if all output files already exist, quit the job and return 0
-    INPUT_FILES={{ inputFiles }}
+    INPUT_FILES="{{ inputFiles }}"
     OUTPUT_FILES="{{ outputFiles }}"
     OUTPUT_FILES_EXIST=true
     if [ $(echo "$OUTPUT_FILES" | wc -w) -ne 1 ]; then
