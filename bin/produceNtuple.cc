@@ -259,15 +259,8 @@ main(int argc,
   const RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era, -1, isDEBUG);
   const RecoElectronCollectionSelectorTight tightElectronSelector(era, -1, isDEBUG);
 
-  double minPt_ele = -1.;
-  double minPt_mu  = -1.;
-  switch(era)
-  {
-    case kEra_2016:
-    case kEra_2017:
-    case kEra_2018: minPt_ele = 23.; minPt_mu = 18.; break;
-    default:        throw cmsException("produceNtuple", __LINE__) << "Unsupported era = " << era;
-  }
+  const double minPt_ele = 18.;
+  const double minPt_mu  =  9.;
 
   RecoHadTauReader * const hadTauReader = new RecoHadTauReader(era, branchName_hadTaus, isMC, readGenObjects);
   hadTauReader->setHadTauPt_central_or_shift(kHadTauPt_uncorrected);
