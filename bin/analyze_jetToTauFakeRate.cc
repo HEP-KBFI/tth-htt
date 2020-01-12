@@ -804,7 +804,7 @@ int main(int argc, char* argv[])
         continue;
       }
     }
-    cutFlowTable.update("trigger");
+    cutFlowTable.update("trigger", evtWeightRecorder.get(central_or_shift));
 
     if ( (selTrigger_1mu   && !apply_offline_e_trigger_cuts_1mu)   ||
          (selTrigger_1e1mu && !apply_offline_e_trigger_cuts_1e1mu) ||
@@ -943,7 +943,7 @@ int main(int argc, char* argv[])
     if ( !(preselLeptons.size() >= 2) ) {
       continue;
     }
-    cutFlowTable.update(">= 2 presel leptons");
+    cutFlowTable.update(">= 2 presel leptons", evtWeightRecorder.get(central_or_shift));
     const RecoLepton* preselLepton_lead = preselLeptons[0];
     int preselLepton_lead_type = getLeptonType(preselLepton_lead->pdgId());
     const RecoLepton* preselLepton_sublead = preselLeptons[1];
@@ -955,7 +955,7 @@ int main(int argc, char* argv[])
            (                               preselMuons.size() >= 2 &&  selTrigger_1mu                                      )) ) {
       continue;
     } 
-    cutFlowTable.update("presel lepton trigger match");
+    cutFlowTable.update("presel lepton trigger match", evtWeightRecorder.get(central_or_shift));
     
 //--- compute MHT and linear MET discriminant (met_LD)
     const RecoMEt met = metReader->read();

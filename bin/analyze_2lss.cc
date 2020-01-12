@@ -1352,8 +1352,8 @@ int main(int argc, char* argv[])
       }
       continue;
     }
-    cutFlowTable.update(">= 2 sel leptons", 1.);
-    cutFlowHistManager->fillHistograms(">= 2 sel leptons", 1.);
+    cutFlowTable.update(">= 2 sel leptons", evtWeightRecorder.get(central_or_shift_main));
+    cutFlowHistManager->fillHistograms(">= 2 sel leptons", evtWeightRecorder.get(central_or_shift_main));
     const RecoLepton* selLepton_lead = selLeptons[0];
     int selLepton_lead_type = getLeptonType(selLepton_lead->pdgId());
     const RecoLepton* selLepton_sublead = selLeptons[1];
@@ -1483,7 +1483,7 @@ int main(int argc, char* argv[])
       }
       continue;
     }
-    cutFlowTable.update("sel tau veto");
+    cutFlowTable.update("sel tau veto", evtWeightRecorder.get(central_or_shift_main));
     cutFlowHistManager->fillHistograms("sel tau veto", evtWeightRecorder.get(central_or_shift_main));
 
     const bool failsLowMassVeto = isfailsLowMassVeto(preselLeptonsFullUncleaned);
