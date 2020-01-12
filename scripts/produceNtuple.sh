@@ -32,6 +32,7 @@ EXECUTABLE=$(python -c "execfile('$SCRIPT'); print(executable)")
 IS_MC=$(python -c "execfile('$SCRIPT'); print(isMC)")
 IS_HH_NONRES=$(python -c "execfile('$SCRIPT'); print(isHHnonRes)")
 ERA=$(python -c "execfile('$SCRIPT'); print(era)")
+IS_TUNECP5=$(python -c "execfile('$SCRIPT'); print(isTuneCP5)")
 PILEUP=$(python -c "execfile('$SCRIPT'); print(pileup)")
 PROCESS_NAME=$(python -c "execfile('$SCRIPT'); print(process_name)")
 GOLDEN_JSON=$(python -c "execfile('$SCRIPT'); print(golden_json)")
@@ -40,7 +41,9 @@ REMOVE_INTERMEDIATE=$(python -c "execfile('$SCRIPT'); print(remove_intermediate)
 COMP_TOP_RWGT=$(python -c "execfile('$SCRIPT'); print(compTopRwgt)")
 echo "Found the following file(s): '$FILES'"
 echo "Found the following executable: '$EXECUTABLE'"
+echo "Era? '$ERA'"
 echo "Is MC? '$IS_MC'"
+echo "Is TuneCP5? '$IS_TUNECP5'"
 echo "Skip tools step? '$SKIP_TOOLS_STEP'"
 echo "Remove intermediate file? '$REMOVE_INTERMEDIATE'"
 echo "Compute SFs for top reweighting? '$COMP_TOP_RWGT'"
@@ -52,7 +55,13 @@ fi
 
 NANO_MODULES_DATA="absIso,tauIDLog,trigObjMatcher,jetIdx"
 NANO_MODULES_MC="$NANO_MODULES_DATA,genHiggsDecayMode,genAll,genMatchCollection,\
-puWeight${ERA}($PILEUP;$PROCESS_NAME),jetmetUncertainties${ERA}All,btagSF_deepFlav_${ERA}"
+puWeight${ERA}($PILEUP;$PROCESS_NAME),jetmetUncertainties${ERA}All"
+
+NANO_BTAGGING_SF_MODULE="btagSF_deepFlav_${ERA}"
+if [ "$IS_TUNECP5" == "True" ]; then
+  NANO_BTAGGING_SF_MODULE="${NANO_BTAGGING_SF_MODULE}_TuneCP5";
+fi
+NANO_MODULES_MC="$NANO_MODULES_MC,$NANO_BTAGGING_SF_MODULE"
 
 if [ "$IS_HH_NONRES" == "True" ]; then
   NANO_MODULES_MC="$NANO_MODULES_MC,diHiggsVar_${ERA}"
