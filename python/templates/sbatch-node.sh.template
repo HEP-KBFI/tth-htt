@@ -84,6 +84,7 @@ run_wrapped_executable() {
     cp_cmd="$cp_cmd -f"
 
     # if all output files already exist, quit the job and return 0
+    INPUT_FILES="{{ inputFiles }}"
     OUTPUT_FILES="{{ outputFiles }}"
     OUTPUT_FILES_EXIST=true
     if [ $(echo "$OUTPUT_FILES" | wc -w) -ge 1 ]; then
@@ -113,8 +114,23 @@ run_wrapped_executable() {
     fi
 
     if [ $OUTPUT_FILES_EXIST = true ]; then
-      EXIT_CODE=0
-      return $EXIT_CODE;
+      IS_OUTPUT_FILE_NEWEST=true;
+      for INPUT_FILE in $INPUT_FILES; do
+        for OUTPUT_FILE in $OUTPUT_FILES; do
+          OUTPUT_FILE_FULLPATH=${OUTPUT_DIR}/${OUTPUT_FILE}
+          if [ $INPUT_FILE -nt $OUTPUT_FILE_FULLPATH ]; then
+            echo -n "Input file $INPUT_FILE is newer than output $OUTPUT_FILE_FULLPATH -> ";
+            echo    "deleting the output file $OUTPUT_FILE_FULLPATH and running the job";
+            rm -f $OUTPUT_FILE_FULLPATH;
+            IS_OUTPUT_FILE_NEWEST=false;
+            break;
+          fi
+        done
+      done
+      if [ $IS_OUTPUT_FILE_NEWEST = true ]; then
+        EXIT_CODE=0
+        return $EXIT_CODE;
+      fi
     fi
 
     echo "Create job directory: mkdir -p $JOB_DIR"
