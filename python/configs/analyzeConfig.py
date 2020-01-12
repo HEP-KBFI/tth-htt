@@ -1415,11 +1415,10 @@ class analyzeConfig(object):
                     idxBatch = idxBatch + 1
                     if make_target_batch not in self.phoniesToAdd:
                         self.phoniesToAdd.append(make_target_batch)
-                else:
-                    outputFile_base = os.path.basename(outputFiles[key])
-                    lines_makefile.append("\thadd -f %s %s" % (outputFile_base, ' '.join(inputFiles[key])))
-                    if outputFile_base != outputFiles[key]:
-                        lines_makefile.append("\tmv %s %s" % (outputFile_base, outputFiles[key]))
+                outputFile_base = os.path.basename(outputFiles[key])
+                lines_makefile.append("\thadd -f %s %s" % (outputFile_base, ' '.join(inputFiles[key])))
+                if outputFile_base != outputFiles[key]:
+                    lines_makefile.append("\tmv %s %s" % (outputFile_base, outputFiles[key]))
             lines_makefile.append("")
             lines_makefile.append("%s: %s" % (make_target, " ".join(make_target_batches)))
         lines_makefile.append("")
