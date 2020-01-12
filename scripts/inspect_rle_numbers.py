@@ -257,11 +257,10 @@ def validate_channels(rles):
     for central_or_shift in validation_set[sample_name]:
       for rle in validation_set[sample_name][central_or_shift]:
         if len(validation_set[sample_name][central_or_shift][rle]) > 1:
-          if len(validation_set[sample_name][central_or_shift][rle])                               and \
-             '2los_1tau' in validation_set[sample_name][central_or_shift][rle]                     and \
-              validation_set[sample_name][central_or_shift][rle]['2los_1tau']['region'] == 'Tight' and \
-             '2lss_1tau' in validation_set[sample_name][central_or_shift][rle]                     and \
-              validation_set[sample_name][central_or_shift][rle]['2lss_1tau']['region'] == 'Tight_OS_OS':
+          if '2los_1tau' in validation_set[sample_name][central_or_shift][rle]           and \
+              validation_set[sample_name][central_or_shift][rle]['2los_1tau'] == 'Tight' and \
+             '2lss_1tau' in validation_set[sample_name][central_or_shift][rle]           and \
+              validation_set[sample_name][central_or_shift][rle]['2lss_1tau'] == 'Tight_OS_OS':
             continue
           logging.error(
             "Found the same event {} from sample {} in multiple channels: {}".format(
