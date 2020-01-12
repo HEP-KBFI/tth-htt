@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2019-11-21 16:11:21 with the following command:
+# file generated at 2020-01-11 15:43:19 with the following command:
 # find_samples.py -V -i ../NanoAOD/test/datasets/txt/datasets_mc_2017_RunIIFall17MiniAODv2.txt -m python/samples/metaDict_2017_mc.py -s ../NanoAOD/test/datasets/txt/sum_datasets_2017_RunIIFall17MiniAODv2.txt -c python/samples/sampleLocations_2017_nanoAOD.txt
 
 meta_dictionary = OD()
@@ -930,9 +930,22 @@ meta_dictionary["/WGToLNuG_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAODv
   ("nof_db_files",          134),
   ("fsize_db",              259323657535),
   ("xsection",              464.8),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 259.32GB; nevents: 6.28M; release: 9_4_7; last modified: 2018-10-21 07:04:53"),
+])
+
+meta_dictionary["/WGToLNuG_01J_5f_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v3/MINIAODSIM"] =  OD([
+  ("crab_string",           "2017v2_2020Jan10_WGToLNuG_01J_5f_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v3"),
+  ("sample_category",       "Rares"),
+  ("process_name_specific", "WGToLNuG_01J"),
+  ("nof_db_events",         25918966),
+  ("nof_db_files",          418),
+  ("fsize_db",              1050306523358),
+  ("xsection",              191.6),
+  ("use_it",                True),
+  ("genWeight",             True),
+  ("comment",               "88.40%; status: VALID; size: 1.05TB; nevents: 25.92M; release: 9_4_7; last modified: 2019-03-13 09:21:44"),
 ])
 
 meta_dictionary["/ZGToLLG_01J_5f_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v3/MINIAODSIM"] =  OD([
@@ -2418,7 +2431,7 @@ meta_dictionary["/QCD_Pt-1000toInf_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIFall
 # TT:         962.83M
 # TTWH:       200.00k
 # TTZH:       200.00k
-# Rares:      84.72M
+# Rares:      110.64M
 # VH:         10.67M
 # EWK:        938.88M
 # WW:         40.59M
