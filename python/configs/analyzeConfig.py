@@ -711,7 +711,7 @@ class analyzeConfig(object):
             assert('skipEvery' not in jobOptions)
             jobOptions['skipEvery'] = sample_info['skipEvery']
         if 'useObjectMultiplicity' not in jobOptions:
-            jobOptions['useObjectMultiplicity'] = False
+            jobOptions['useObjectMultiplicity'] = self.do_sync
 
         jobOptions_local = [
             'process',
