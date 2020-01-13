@@ -127,7 +127,7 @@ class tthAnalyzeParser(argparse.ArgumentParser):
 
   def add_files_per_job(self, files_per_job = 20):
     self.add_argument('-j', '--files-per-job',
-      type = positive_int_type, dest = 'files_per_job', metavar = 'number', default = files_per_job,
+      type = str, dest = 'files_per_job', metavar = 'number', default = str(files_per_job),
       help = 'R|Number of input files per job',
     )
 

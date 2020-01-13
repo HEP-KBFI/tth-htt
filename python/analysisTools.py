@@ -77,12 +77,47 @@ def initializeInputFileIds(sample_info, max_files_per_job):
     return ( inputFileIds, secondary_files, primary_store, secondary_store )
 
 def generateInputFileList(sample_info, max_files_per_job):
-    ( inputFileIds, secondary_files, primary_store, secondary_store ) = initializeInputFileIds(sample_info, max_files_per_job)
+    if type(max_files_per_job) == int:
+        max_files_per_job_int = max_files_per_job
+    else:
+        assert(type(max_files_per_job) == str)
+        max_files_per_job_default = -1
+        max_files_per_job_by_cat = {}
+        max_files_per_job_by_sample = {}
+        max_files_per_job_split = max_files_per_job.split(',')
+        for max_files_per_job_setting in max_files_per_job_split:
+            max_files_per_job_setting_split = max_files_per_job_setting.split(':')
+            if len(max_files_per_job_setting_split) == 1:
+                assert(max_files_per_job_default < 0)
+                max_files_per_job_default = int(max_files_per_job_setting_split[0])
+            elif len(max_files_per_job_setting_split) == 3:
+                max_files_per_job_type = max_files_per_job_setting_split[0]
+                max_files_per_job_key = max_files_per_job_setting_split[1]
+                max_files_per_job_value = int(max_files_per_job_setting_split[2])
+                if max_files_per_job_type == 'cat':
+                    assert(max_files_per_job_key not in max_files_per_job_by_cat)
+                    max_files_per_job_by_cat[max_files_per_job_key] = max_files_per_job_value
+                elif max_files_per_job_type == 'name':
+                    assert(max_files_per_job_key not in max_files_per_job_by_sample)
+                    max_files_per_job_by_sample[max_files_per_job_key] = max_files_per_job_value
+                else:
+                    raise RuntimeError("Invalid key '%s' in option: %s" % (max_files_per_job_type, max_files_per_job))
+            else:
+                raise RuntimeError("Invalid option: %s" % max_files_per_job)
+        max_files_per_job_int = max_files_per_job_default
+        for cat, value in max_files_per_job_by_cat.items():
+            if cat == sample_info['sample_category']:
+                max_files_per_job_int = value
+        for name, value in max_files_per_job_by_sample.items():
+            if name == sample_info['process_name_specific']:
+                max_files_per_job_int = value
+    assert(max_files_per_job_int > 0)
+    ( inputFileIds, secondary_files, primary_store, secondary_store ) = initializeInputFileIds(sample_info, max_files_per_job_int)
     inputFileList = {}
-    if max_files_per_job > 1:
+    if max_files_per_job_int > 1:
         for jobId in range(len(inputFileIds)):
             inputFileList[jobId + 1] = generate_input_list(inputFileIds[jobId], secondary_files, primary_store, secondary_store)
-    elif max_files_per_job == 1:
+    elif max_files_per_job_int == 1:
         for jobId_it in range(len(inputFileIds)):
             jobId = inputFileIds[jobId_it]
             inputFileList[jobId[0]] = generate_input_list(jobId, secondary_files, primary_store, secondary_store)
