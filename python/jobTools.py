@@ -182,7 +182,7 @@ def check_submission_cmd(submission_out, submission_cmd):
           current_submission, previous_submission
         )
       )
-      do_run = query_yes_no("Sure you want to resubmit with a different command?")
+      do_run = query_yes_no("Sure you want to resubmit with a different command?", default = "no")
       if not do_run:
         logging.info('Exiting')
         sys.exit(0)
