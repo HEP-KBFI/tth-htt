@@ -9,7 +9,6 @@ from tthAnalysis.HiggsToTauTau.common import logging, load_samples, load_samples
 import os
 import sys
 import getpass
-import re
 
 # E.g. to run: ./test/tthAnalyzeRun_2lss.py -v 2017Dec13 -m default -e 2017
 
