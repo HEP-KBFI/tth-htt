@@ -3,7 +3,7 @@ from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg
 from tthAnalysis.HiggsToTauTau.analysisTools import createMakefile as tools_createMakefile
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch as tools_createScript_sbatch
 from tthAnalysis.HiggsToTauTau.safe_root import ROOT
-from tthAnalysis.HiggsToTauTau.common import logging
+from tthAnalysis.HiggsToTauTau.common import logging, DEPENDENCIES
 
 from tthAnalysis.NanoAOD.triggers import Triggers
 
@@ -15,14 +15,6 @@ DKEY_CFGS       = "cfgs"
 DKEY_NTUPLES    = "ntuples"
 DKEY_LOGS       = "logs"
 MAKEFILE_TARGET = "sbatch_prodNtuple"
-
-DEPENDENCIES = [
-    "", # CMSSW_BASE/src
-    "tthAnalysis/HiggsToTauTau",
-    "PhysicsTools/NanoAODTools",
-    "tthAnalysis/NanoAODTools",
-    "tthAnalysis/NanoAOD",
-]
 
 def get_pileup_histograms(pileup_filename):
     pileup_file = ROOT.TFile.Open(pileup_filename, 'read')

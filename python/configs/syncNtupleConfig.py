@@ -1,7 +1,7 @@
 from tthAnalysis.HiggsToTauTau.configs.analyzeConfig import DKEY_SCRIPTS, DKEY_LOGS, DKEY_SYNC
 from tthAnalysis.HiggsToTauTau.jobTools import get_log_version, run_cmd, create_if_not_exists, record_software_state
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch_hadd
-from tthAnalysis.HiggsToTauTau.common import logging
+from tthAnalysis.HiggsToTauTau.common import logging, DEPENDENCIES
 
 import os
 import jinja2
@@ -9,17 +9,6 @@ import uuid
 import sys
 import collections
 import re
-
-DEPENDENCIES = [
-    "",  # CMSSW_BASE/src
-    "tthAnalysis/NanoAOD",
-    "tthAnalysis/HiggsToTauTau",
-    "TauAnalysisTools/TauTriggerSFs",
-    "TauAnalysis/ClassicSVfit",
-    "TauAnalysis/SVfitTF",
-    "ttH_Htautau_MEM_Analysis",
-    "tthAnalysis/tthMEM",
-]
 
 makeFileTemplate = '''
 .DEFAULT_GOAL := all

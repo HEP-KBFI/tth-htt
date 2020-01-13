@@ -4,20 +4,11 @@ from tthAnalysis.HiggsToTauTau.analysisTools import createMakefile as tools_crea
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch as tools_createScript_sbatch
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch_hadd as tools_createScript_sbatch_hadd
 from tthAnalysis.HiggsToTauTau.safe_root import ROOT
-from tthAnalysis.HiggsToTauTau.common import logging
+from tthAnalysis.HiggsToTauTau.common import logging, DEPENDENCIES
 
 import os
 import array
 import uuid
-
-DEPENDENCIES = [
-    "",  # CMSSW_BASE/src
-    "tthAnalysis/HiggsToTauTau",
-    "TauAnalysis/ClassicSVfit",
-    "TauAnalysis/SVfitTF",
-    "ttH_Htautau_MEM_Analysis",
-    "tthAnalysis/tthMEM",
-]
 
 DKEY_CFGS          = "cfgs"
 DKEY_NTUPLES       = "ntuples"

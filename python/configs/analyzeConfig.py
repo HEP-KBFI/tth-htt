@@ -4,7 +4,7 @@ from tthAnalysis.HiggsToTauTau.analysisTools import createMakefile as tools_crea
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch as tools_createScript_sbatch
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch_hadd_nonBlocking as tools_createScript_sbatch_hadd_nonBlocking
 from tthAnalysis.HiggsToTauTau.analysisSettings import Triggers, systematics
-from tthAnalysis.HiggsToTauTau.common import logging
+from tthAnalysis.HiggsToTauTau.common import logging, DEPENDENCIES
 from tthAnalysis.HiggsToTauTau.samples.stitch import get_branch_type
 
 from tthAnalysis.NanoAODTools.tHweights_cfi import tHweights, thIdxsNoCP, find_tHweight
@@ -21,17 +21,6 @@ LEP_MVA_WPS = {
   'default' : 'mu=0.85;e=0.80',
   'ttZctrl' : 'mu=0.85;e=0.50',
 }
-
-DEPENDENCIES = [
-    "",  # CMSSW_BASE/src
-    "tthAnalysis/NanoAOD",
-    "tthAnalysis/HiggsToTauTau",
-    "TauAnalysisTools/TauTriggerSFs",
-    "TauAnalysis/ClassicSVfit",
-    "TauAnalysis/SVfitTF",
-    "ttH_Htautau_MEM_Analysis",
-    "tthAnalysis/tthMEM",
-]
 
 DKEY_CFGS    = "cfgs"        # dir for python configuration and batch script files for each analysis job
 DKEY_HIST    = "histograms"  # dir for ROOT files containing histograms = output of the anaysis jobs
