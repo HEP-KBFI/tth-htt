@@ -161,6 +161,7 @@ if __name__ == '__main__':
     jet_cleaning       = jet_cleaning,
     gen_matching       = gen_matching,
     regroup_jec        = regroup_jec,
+    submission_cmd     = sys.argv,
   )
 
   job_statistics = analysis.create()

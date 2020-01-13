@@ -146,6 +146,49 @@ def get_log_version(list_of_log_files):
       # some log files already exist -> increase the version number
       version_idx += 1
 
+def find_earlier_version(log_file):
+  log_file_dir = os.path.dirname(log_file)
+  log_file_split = os.path.basename(log_file).split('.')
+  if not len(log_file_split) > 1:
+    raise RuntimeError("Not a valid log file: %s" % log_file)
+  log_file_reminder = log_file_split[-1]
+  try:
+    log_file_reminder_int = int(log_file_reminder)
+  except:
+    return ''
+  while log_file_reminder_int > 0:
+    log_file_candidate = os.path.join(log_file_dir, '.'.join(log_file_split[:-1] + [ str(log_file_reminder_int) ]))
+    if os.path.isfile(log_file_candidate):
+      return log_file_candidate
+    log_file_reminder_int -= 1
+  log_file_candidate = os.path.join(log_file_dir, '.'.join(log_file_split[:-1]))
+  if os.path.isfile(log_file_candidate):
+    return log_file_candidate
+  return ''
+
+def check_submission_cmd(submission_out, submission_cmd):
+  earlier_submission_out = find_earlier_version(submission_out)
+  current_submission = ' '.join(submission_cmd) if submission_cmd else str(submission_cmd)
+  if earlier_submission_out:
+    with open(earlier_submission_out, 'r') as earlier_submission_file:
+      lines = []
+      for line in earlier_submission_file:
+        lines.append(line.rstrip('\n'))
+      assert (len(lines) == 1)
+      previous_submission = lines[0]
+    if previous_submission != current_submission:
+      logging.warning(
+        "Current command ('{}') does not match to the previously run command ('{}')".format(
+          current_submission, previous_submission
+        )
+      )
+      do_run = query_yes_no("Sure you want to resubmit with a different command?")
+      if not do_run:
+        logging.info('Exiting')
+        sys.exit(0)
+  with open(submission_out, 'w') as submission_out_file:
+    submission_out_file.write('{}\n'.format(current_submission))
+
 def human_size(fsize, use_si = True, byte_suffix = 'B'):
   if use_si:
     multiplier = 1000.

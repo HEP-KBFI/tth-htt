@@ -158,6 +158,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
         dry_run           = False,
         isDebug           = False,
         use_home          = False,
+        submission_cmd    = None,
       ):
     analyzeConfig.__init__(self,
       configDir             = configDir,
@@ -183,6 +184,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
       isDebug               = isDebug,
       use_home              = use_home,
       lep_mva_wp            = lep_mva_wp,
+      submission_cmd        = submission_cmd,
     )
 
     self.cmssw_base_dir_combine = cmssw_base_dir_combine

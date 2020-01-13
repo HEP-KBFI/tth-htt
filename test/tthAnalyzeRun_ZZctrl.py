@@ -145,6 +145,7 @@ if __name__ == '__main__':
     use_nonnominal                        = use_nonnominal,
     hlt_filter                            = hlt_filter,
     use_home                              = use_home,
+    submission_cmd                        = sys.argv,
   )
 
   job_statistics = analysis.create()

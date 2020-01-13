@@ -68,6 +68,7 @@ class analyzeConfig_2lss(analyzeConfig):
         use_nonnominal            = False,
         hlt_filter                = False,
         use_home                  = False,
+        submission_cmd            = None,
       ):
     analyzeConfig.__init__(self,
       configDir                 = configDir,
@@ -94,6 +95,7 @@ class analyzeConfig_2lss(analyzeConfig):
       dry_run                   = dry_run,
       isDebug                   = isDebug,
       use_home                  = use_home,
+      submission_cmd            = submission_cmd,
     )
 
     self.MEMbranch = MEMbranch

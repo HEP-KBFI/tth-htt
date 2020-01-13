@@ -1,4 +1,4 @@
-from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, generate_file_ids, get_log_version, record_software_state
+from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, generate_file_ids, get_log_version, check_submission_cmd, record_software_state
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile, is_dymc_reweighting, is_dymc_normalization
 from tthAnalysis.HiggsToTauTau.analysisTools import createMakefile as tools_createMakefile, get_tH_weight_str, get_tH_SM_str
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch as tools_createScript_sbatch
@@ -106,6 +106,7 @@ class analyzeConfig(object):
           use_home                        = False,
           isDebug                         = False,
           template_dir                    = None,
+          submission_cmd                  = None,
       ):
 
         self.configDir = configDir
@@ -368,9 +369,13 @@ class analyzeConfig(object):
         self.sw_ver_file_cfg  = os.path.join(self.configDir, "VERSION_%s.log" % self.channel)
         self.sw_ver_file_out  = os.path.join(self.outputDir, "VERSION_%s.log" % self.channel)
         self.validation_out   = os.path.join(self.configDir, "VALIDATION_%s.log" % self.channel)
-        self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out, self.validation_out = get_log_version((
-            self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out, self.validation_out
+        self.submission_out   = os.path.join(self.configDir, "SUBMISSION_%s.log" % self.channel)
+        self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out, \
+        self.validation_out, self.submission_out = get_log_version((
+            self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out,
+            self.validation_out, self.submission_out,
         ))
+        check_submission_cmd(self.submission_out, submission_cmd)
 
         self.dirs = {}
 

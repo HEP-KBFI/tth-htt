@@ -98,6 +98,7 @@ if __name__ == '__main__':
     num_parallel_jobs  = num_parallel_jobs,
     dry_run            = dry_run,
     use_home           = use_home,
+    submission_cmd     = sys.argv,
   )
 
   job_statistics = puHistogramProduction.create()

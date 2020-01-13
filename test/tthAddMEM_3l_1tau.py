@@ -134,6 +134,7 @@ if __name__ == '__main__':
     dry_run                  = dry_run,
     use_nonnominal           = use_nonnominal,
     use_home                 = use_home,
+    submission_cmd           = sys.argv,
   )
 
   goodToGo = addMEMProduction.create()

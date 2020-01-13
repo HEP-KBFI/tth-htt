@@ -1,4 +1,4 @@
-from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, get_log_version, record_software_state
+from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, get_log_version, check_submission_cmd, record_software_state
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, createFile, generateInputFileList
 from tthAnalysis.HiggsToTauTau.analysisTools import createMakefile as tools_createMakefile
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch as tools_createScript_sbatch
@@ -84,6 +84,7 @@ class puHistogramConfig:
             verbose  = False,
             dry_run  = False,
             use_home = False,
+            submission_cmd = None,
           ):
 
         self.configDir             = configDir
@@ -121,9 +122,11 @@ class puHistogramConfig:
         self.stderr_file_path = os.path.join(self.configDir, "stderr_puProfile.log")
         self.sw_ver_file_cfg  = os.path.join(self.configDir, "VERSION_puProfile.log")
         self.sw_ver_file_out  = os.path.join(self.outputDir, "VERSION_puProfile.log")
-        self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out = get_log_version((
-            self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out
+        self.submission_out   = os.path.join(self.configDir, "SUBMISSION.log")
+        self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out, self.submission_out = get_log_version((
+            self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out, self.submission_out
         ))
+        check_submission_cmd(self.submission_out, submission_cmd)
 
         self.sbatchFile_puProfile = os.path.join(self.configDir, "sbatch_puProfile.py")
         self.cfgFiles_puProfile    = {}

@@ -50,6 +50,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
         dry_run           = False,
         isDebug           = False,
         use_home          = False,
+        submission_cmd    = None,
       ):
     analyzeConfig.__init__(self,
       configDir             = configDir,
@@ -73,6 +74,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
       dry_run               = dry_run,
       isDebug               = isDebug,
       use_home              = use_home,
+      submission_cmd        = submission_cmd,
     )
 
     self.charge_selections = charge_selections

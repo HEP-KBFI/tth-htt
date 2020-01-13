@@ -1,4 +1,4 @@
-from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, get_log_version, record_software_state
+from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, get_log_version, check_submission_cmd, record_software_state
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, generateInputFileList
 from tthAnalysis.HiggsToTauTau.analysisTools import createMakefile as tools_createMakefile
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch as tools_createScript_sbatch
@@ -64,6 +64,7 @@ class prodNtupleConfig:
              do_sync,
              verbose = False,
              pool_id        = '',
+            submission_cmd = None,
           ):
 
         self.configDir             = configDir
@@ -119,9 +120,11 @@ class prodNtupleConfig:
         self.stderr_file_path = os.path.join(self.configDir, "stderr_prodNtuple.log")
         self.sw_ver_file_cfg  = os.path.join(self.configDir, "VERSION_prodNtuple.log")
         self.sw_ver_file_out  = os.path.join(self.outputDir, "VERSION_prodNtuple.log")
-        self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out = get_log_version((
-            self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out
+        self.submission_out   = os.path.join(self.configDir, "SUBMISSION.log")
+        self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out, self.submission_out = get_log_version((
+            self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out, self.submission_out
         ))
+        check_submission_cmd(self.submission_out, submission_cmd)
 
         self.cfgFile_prodNtuple_original = os.path.join(self.template_dir, cfgFile_prodNtuple)
         self.sbatchFile_prodNtuple       = os.path.join(self.configDir, "sbatch_prodNtuple.py")
