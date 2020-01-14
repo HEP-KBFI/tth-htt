@@ -77,6 +77,7 @@ class analyzeConfig_2l_2tau(analyzeConfig):
         use_nonnominal            = False,
         hlt_filter                = False,
         use_home                  = False,
+        submission_cmd            = None,
       ):
     analyzeConfig.__init__(self,
       configDir                 = configDir,
@@ -103,6 +104,7 @@ class analyzeConfig_2l_2tau(analyzeConfig):
       do_sync                   = do_sync,
       isDebug                   = isDebug,
       use_home                  = use_home,
+      submission_cmd            = submission_cmd,
     )
 
     self.lepton_and_hadTau_selections = [ "Tight", "Fakeable" ]

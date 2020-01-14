@@ -202,6 +202,7 @@ if __name__ == '__main__':
     use_home              = use_home,
     skip_tools_step       = preselection,
     do_sync               = do_sync,
+    submission_cmd        = sys.argv,
   )
 
   num_jobs = ntupleProduction.create()

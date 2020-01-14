@@ -1,7 +1,7 @@
 from tthAnalysis.HiggsToTauTau.configs.analyzeConfig import DKEY_SCRIPTS, DKEY_LOGS, DKEY_SYNC
-from tthAnalysis.HiggsToTauTau.jobTools import get_log_version, run_cmd, create_if_not_exists, record_software_state
+from tthAnalysis.HiggsToTauTau.jobTools import get_log_version, check_submission_cmd, run_cmd, create_if_not_exists, record_software_state
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch_hadd
-from tthAnalysis.HiggsToTauTau.common import logging
+from tthAnalysis.HiggsToTauTau.common import logging, DEPENDENCIES
 
 import os
 import jinja2
@@ -9,17 +9,6 @@ import uuid
 import sys
 import collections
 import re
-
-DEPENDENCIES = [
-    "",  # CMSSW_BASE/src
-    "tthAnalysis/NanoAOD",
-    "tthAnalysis/HiggsToTauTau",
-    "TauAnalysisTools/TauTriggerSFs",
-    "TauAnalysis/ClassicSVfit",
-    "TauAnalysis/SVfitTF",
-    "ttH_Htautau_MEM_Analysis",
-    "tthAnalysis/tthMEM",
-]
 
 makeFileTemplate = '''
 .DEFAULT_GOAL := all
@@ -80,6 +69,7 @@ class syncNtupleConfig:
         project_dir = os.path.join(os.getenv('CMSSW_BASE'), 'src', 'tthAnalysis', 'HiggsToTauTau'),
         file_pattern = 'tthAnalyzeRun_%s.py',
         suffix = '',
+        submission_cmd = None,
       ):
 
     self.running_method     = running_method
@@ -161,11 +151,13 @@ class syncNtupleConfig:
       channel_makefile = os.path.join(self.config_dir, 'Makefile_%s' % channel)
       channel_outlog   = os.path.join(self.config_dir, 'stdout_sync_%s.log' % channel)
       channel_errlog   = os.path.join(self.config_dir, 'stderr_sync_%s.log' % channel)
+      submission_out   = os.path.join(self.config_dir, "SUBMISSION_%s.log" % channel)
       channel_outlog_create = os.path.join(self.config_dir, 'stdout_sync_create_%s.log' % channel)
       channel_errlog_create = os.path.join(self.config_dir, 'stderr_sync_create_%s.log' % channel)
-      channel_outlog, channel_errlog, channel_outlog_create, channel_errlog_create = get_log_version((
-        channel_outlog, channel_errlog, channel_outlog_create, channel_errlog_create
+      channel_outlog, channel_errlog, channel_outlog_create, channel_errlog_create, submission_out = get_log_version((
+        channel_outlog, channel_errlog, channel_outlog_create, channel_errlog_create, submission_out
       ))
+      check_submission_cmd(submission_out, submission_cmd)
 
       cmd_args = common_args if 'inclusive' not in channel else inclusive_args
       if 'inclusive' not in channel:

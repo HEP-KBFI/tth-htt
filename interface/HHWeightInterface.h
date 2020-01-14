@@ -64,6 +64,7 @@ private:
   std::vector<double> c2g_scan;
   std::vector<double> BM_klScan;
   std::vector<std::string> values_string;
+  int nof_sumEvt_entries;
 
   TFile * fileHH;
   TH2 * sumEvt;

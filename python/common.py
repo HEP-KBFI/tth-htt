@@ -1,6 +1,28 @@
 import sys
 import logging
 
+DEPENDENCIES = [
+  "",  # CMSSW_BASE/src
+  "PhysicsTools/NanoAODTools",
+  "tthAnalysis/NanoAODTools",
+  "tthAnalysis/NanoAOD",
+  "tthAnalysis/HiggsToTauTau",
+  "tthAnalysis/tthMEM",
+  "tthAnalysis/MEMmultilepton",
+  "ttH_Htautau_MEM_Analysis",
+  "TauPOG/TauIDSFs",
+  "TauAnalysisTools/TauTriggerSFs",
+  "TauAnalysis/ClassicSVfit4tau",
+  "TauAnalysis/ClassicSVfit",
+  "TauAnalysis/SVfitTF",
+  "hhAnalysis/multilepton",
+  "hhAnalysis/bbww",
+  "hhAnalysis/bbwwMEM",
+  "hhAnalysis/Heavymassestimator",
+  "HHStatAnalysis",
+  "Support",
+]
+
 logging.basicConfig(
   stream = sys.stdout,
   level  = logging.INFO,

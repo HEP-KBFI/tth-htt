@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2019-12-14 16:34:18 with the following command:
+# file generated at 2020-01-13 10:09:46 with the following command:
 # create_dictionary.py -m python/samples/metaDict_2017.py -p python/samples/sampleLocations_2017.txt -N samples_2017 -E 2017 -o python/samples -g tthAnalyzeSamples_2017_base.py -M
 
 samples_2017 = OD()
@@ -15,7 +15,7 @@ samples_2017["/SingleElectron/Run2017B-31Mar2018-v1/MINIAOD"] = OD([
   }),
   ("nof_tree_events",                 56501676),
   ("nof_db_events",                   60537490),
-  ("fsize_local",                     22866656715), # 22.87GB, avg file size 788.51MB
+  ("fsize_local",                     22866522981), # 22.87GB, avg file size 788.50MB
   ("fsize_db",                        1791096960075), # 1.79TB, avg file size 3.59GB
   ("use_it",                          True),
   ("triggers",                        ['1e', '1e1tau']),
@@ -25,7 +25,7 @@ samples_2017["/SingleElectron/Run2017B-31Mar2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Dec02_data_woPresel_nom_all/ntuples/SingleElectron_Run2017B_31Mar2018_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2020Jan12_data_woPresel_nom_all/ntuples/SingleElectron_Run2017B_31Mar2018_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -330,7 +330,7 @@ samples_2017["/SingleElectron/Run2017C-31Mar2018-v1/MINIAOD"] = OD([
   }),
   ("nof_tree_events",                 127361546),
   ("nof_db_events",                   136637888),
-  ("fsize_local",                     60511912839), # 60.51GB, avg file size 945.50MB
+  ("fsize_local",                     60511599885), # 60.51GB, avg file size 945.49MB
   ("fsize_db",                        4198024157433), # 4.20TB, avg file size 3.56GB
   ("use_it",                          True),
   ("triggers",                        ['1e', '1e1tau']),
@@ -340,7 +340,7 @@ samples_2017["/SingleElectron/Run2017C-31Mar2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Dec02_data_woPresel_nom_all/ntuples/SingleElectron_Run2017C_31Mar2018_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2020Jan12_data_woPresel_nom_all/ntuples/SingleElectron_Run2017C_31Mar2018_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -905,7 +905,7 @@ samples_2017["/SingleElectron/Run2017D-31Mar2018-v1/MINIAOD"] = OD([
   }),
   ("nof_tree_events",                 50610320),
   ("nof_db_events",                   51526710),
-  ("fsize_local",                     23549524820), # 23.55GB, avg file size 905.75MB
+  ("fsize_local",                     23549385995), # 23.55GB, avg file size 905.75MB
   ("fsize_db",                        1551689557804), # 1.55TB, avg file size 3.46GB
   ("use_it",                          True),
   ("triggers",                        ['1e', '1e1tau']),
@@ -915,7 +915,7 @@ samples_2017["/SingleElectron/Run2017D-31Mar2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Dec02_data_woPresel_nom_all/ntuples/SingleElectron_Run2017D_31Mar2018_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2020Jan12_data_woPresel_nom_all/ntuples/SingleElectron_Run2017D_31Mar2018_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -1471,7 +1471,7 @@ samples_2017["/SingleElectron/Run2017E-31Mar2018-v1/MINIAOD"] = OD([
   }),
   ("nof_tree_events",                 100205122),
   ("nof_db_events",                   102121689),
-  ("fsize_local",                     48242350128), # 48.24GB, avg file size 964.85MB
+  ("fsize_local",                     48242063939), # 48.24GB, avg file size 964.84MB
   ("fsize_db",                        3472568613831), # 3.47TB, avg file size 3.29GB
   ("use_it",                          True),
   ("triggers",                        ['1e', '1e1tau']),
@@ -1481,7 +1481,7 @@ samples_2017["/SingleElectron/Run2017E-31Mar2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Dec02_data_woPresel_nom_all/ntuples/SingleElectron_Run2017E_31Mar2018_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2020Jan12_data_woPresel_nom_all/ntuples/SingleElectron_Run2017E_31Mar2018_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -2037,7 +2037,7 @@ samples_2017["/SingleElectron/Run2017F-31Mar2018-v1/MINIAOD"] = OD([
   }),
   ("nof_tree_events",                 126059593),
   ("nof_db_events",                   128467223),
-  ("fsize_local",                     62151933686), # 62.15GB, avg file size 971.12MB
+  ("fsize_local",                     62151585193), # 62.15GB, avg file size 971.12MB
   ("fsize_db",                        4488676859926), # 4.49TB, avg file size 3.32GB
   ("use_it",                          True),
   ("triggers",                        ['1e', '1e1tau']),
@@ -2047,7 +2047,7 @@ samples_2017["/SingleElectron/Run2017F-31Mar2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Dec02_data_woPresel_nom_all/ntuples/SingleElectron_Run2017F_31Mar2018_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2020Jan12_data_woPresel_nom_all/ntuples/SingleElectron_Run2017F_31Mar2018_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -2657,7 +2657,7 @@ samples_2017["/SingleMuon/Run2017B-31Mar2018-v1/MINIAOD"] = OD([
   }),
   ("nof_tree_events",                 128496874),
   ("nof_db_events",                   136300266),
-  ("fsize_local",                     48455596300), # 48.46GB, avg file size 745.47MB
+  ("fsize_local",                     48455323774), # 48.46GB, avg file size 745.47MB
   ("fsize_db",                        3650463521822), # 3.65TB, avg file size 3.45GB
   ("use_it",                          True),
   ("triggers",                        ['1mu', '1mu1tau']),
@@ -2667,7 +2667,7 @@ samples_2017["/SingleMuon/Run2017B-31Mar2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Dec02_data_woPresel_nom_all/ntuples/SingleMuon_Run2017B_31Mar2018_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2020Jan12_data_woPresel_nom_all/ntuples/SingleMuon_Run2017B_31Mar2018_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -2972,7 +2972,7 @@ samples_2017["/SingleMuon/Run2017C-31Mar2018-v1/MINIAOD"] = OD([
   }),
   ("nof_tree_events",                 154633551),
   ("nof_db_events",                   165652756),
-  ("fsize_local",                     66891547308), # 66.89GB, avg file size 868.72MB
+  ("fsize_local",                     66891071791), # 66.89GB, avg file size 868.72MB
   ("fsize_db",                        4578913820228), # 4.58TB, avg file size 3.67GB
   ("use_it",                          True),
   ("triggers",                        ['1mu', '1mu1tau']),
@@ -2982,7 +2982,7 @@ samples_2017["/SingleMuon/Run2017C-31Mar2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Dec02_data_woPresel_nom_all/ntuples/SingleMuon_Run2017C_31Mar2018_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2020Jan12_data_woPresel_nom_all/ntuples/SingleMuon_Run2017C_31Mar2018_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -3547,7 +3547,7 @@ samples_2017["/SingleMuon/Run2017D-31Mar2018-v1/MINIAOD"] = OD([
   }),
   ("nof_tree_events",                 69031074),
   ("nof_db_events",                   70361660),
-  ("fsize_local",                     30015281340), # 30.02GB, avg file size 857.58MB
+  ("fsize_local",                     30015083137), # 30.02GB, avg file size 857.57MB
   ("fsize_db",                        1920098801002), # 1.92TB, avg file size 3.16GB
   ("use_it",                          True),
   ("triggers",                        ['1mu', '1mu1tau']),
@@ -3557,7 +3557,7 @@ samples_2017["/SingleMuon/Run2017D-31Mar2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Dec02_data_woPresel_nom_all/ntuples/SingleMuon_Run2017D_31Mar2018_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2020Jan12_data_woPresel_nom_all/ntuples/SingleMuon_Run2017D_31Mar2018_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -4113,7 +4113,7 @@ samples_2017["/SingleMuon/Run2017E-31Mar2018-v1/MINIAOD"] = OD([
   }),
   ("nof_tree_events",                 151713898),
   ("nof_db_events",                   154630534),
-  ("fsize_local",                     67256574199), # 67.26GB, avg file size 873.46MB
+  ("fsize_local",                     67256087487), # 67.26GB, avg file size 873.46MB
   ("fsize_db",                        4902457537015), # 4.90TB, avg file size 3.22GB
   ("use_it",                          True),
   ("triggers",                        ['1mu', '1mu1tau']),
@@ -4123,7 +4123,7 @@ samples_2017["/SingleMuon/Run2017E-31Mar2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Dec02_data_woPresel_nom_all/ntuples/SingleMuon_Run2017E_31Mar2018_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2020Jan12_data_woPresel_nom_all/ntuples/SingleMuon_Run2017E_31Mar2018_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -4679,7 +4679,7 @@ samples_2017["/SingleMuon/Run2017F-31Mar2018-v1/MINIAOD"] = OD([
   }),
   ("nof_tree_events",                 235937214),
   ("nof_db_events",                   242135500),
-  ("fsize_local",                     104407737135), # 104.41GB, avg file size 870.06MB
+  ("fsize_local",                     104407039634), # 104.41GB, avg file size 870.06MB
   ("fsize_db",                        7833216217809), # 7.83TB, avg file size 3.22GB
   ("use_it",                          True),
   ("triggers",                        ['1mu', '1mu1tau']),
@@ -4689,7 +4689,7 @@ samples_2017["/SingleMuon/Run2017F-31Mar2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Dec02_data_woPresel_nom_all/ntuples/SingleMuon_Run2017F_31Mar2018_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2020Jan12_data_woPresel_nom_all/ntuples/SingleMuon_Run2017F_31Mar2018_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -5299,7 +5299,7 @@ samples_2017["/DoubleEG/Run2017B-31Mar2018-v1/MINIAOD"] = OD([
   }),
   ("nof_tree_events",                 54125900),
   ("nof_db_events",                   58088760),
-  ("fsize_local",                     29039776758), # 29.04GB, avg file size 1.04GB
+  ("fsize_local",                     29039664252), # 29.04GB, avg file size 1.04GB
   ("fsize_db",                        1946674557955), # 1.95TB, avg file size 3.37GB
   ("use_it",                          True),
   ("triggers",                        ['2e', '3e']),
@@ -5309,7 +5309,7 @@ samples_2017["/DoubleEG/Run2017B-31Mar2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Dec02_data_woPresel_nom_all/ntuples/DoubleEG_Run2017B_31Mar2018_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2020Jan12_data_woPresel_nom_all/ntuples/DoubleEG_Run2017B_31Mar2018_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -5614,7 +5614,7 @@ samples_2017["/DoubleEG/Run2017C-31Mar2018-v1/MINIAOD"] = OD([
   }),
   ("nof_tree_events",                 60063430),
   ("nof_db_events",                   65181125),
-  ("fsize_local",                     32600782815), # 32.60GB, avg file size 1.09GB
+  ("fsize_local",                     32600557856), # 32.60GB, avg file size 1.09GB
   ("fsize_db",                        2194501360366), # 2.19TB, avg file size 3.22GB
   ("use_it",                          True),
   ("triggers",                        ['2e', '3e']),
@@ -5624,7 +5624,7 @@ samples_2017["/DoubleEG/Run2017C-31Mar2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Dec02_data_woPresel_nom_all/ntuples/DoubleEG_Run2017C_31Mar2018_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2020Jan12_data_woPresel_nom_all/ntuples/DoubleEG_Run2017C_31Mar2018_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -6189,7 +6189,7 @@ samples_2017["/DoubleEG/Run2017D-31Mar2018-v1/MINIAOD"] = OD([
   }),
   ("nof_tree_events",                 25209987),
   ("nof_db_events",                   25911432),
-  ("fsize_local",                     14075769543), # 14.08GB, avg file size 1.08GB
+  ("fsize_local",                     14075670218), # 14.08GB, avg file size 1.08GB
   ("fsize_db",                        847686026577), # 847.69GB, avg file size 3.39GB
   ("use_it",                          True),
   ("triggers",                        ['2e', '3e']),
@@ -6199,7 +6199,7 @@ samples_2017["/DoubleEG/Run2017D-31Mar2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Dec02_data_woPresel_nom_all/ntuples/DoubleEG_Run2017D_31Mar2018_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2020Jan12_data_woPresel_nom_all/ntuples/DoubleEG_Run2017D_31Mar2018_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -6755,7 +6755,7 @@ samples_2017["/DoubleEG/Run2017E-31Mar2018-v1/MINIAOD"] = OD([
   }),
   ("nof_tree_events",                 54624312),
   ("nof_db_events",                   56235775),
-  ("fsize_local",                     31362986095), # 31.36GB, avg file size 1.12GB
+  ("fsize_local",                     31362778725), # 31.36GB, avg file size 1.12GB
   ("fsize_db",                        2098322717194), # 2.10TB, avg file size 3.17GB
   ("use_it",                          True),
   ("triggers",                        ['2e', '3e']),
@@ -6765,7 +6765,7 @@ samples_2017["/DoubleEG/Run2017E-31Mar2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Dec02_data_woPresel_nom_all/ntuples/DoubleEG_Run2017E_31Mar2018_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2020Jan12_data_woPresel_nom_all/ntuples/DoubleEG_Run2017E_31Mar2018_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -7321,7 +7321,7 @@ samples_2017["/DoubleEG/Run2017F-31Mar2018-v1/MINIAOD"] = OD([
   }),
   ("nof_tree_events",                 72430490),
   ("nof_db_events",                   74344288),
-  ("fsize_local",                     41954787130), # 41.95GB, avg file size 1.13GB
+  ("fsize_local",                     41954535416), # 41.95GB, avg file size 1.13GB
   ("fsize_db",                        2845703836290), # 2.85TB, avg file size 3.28GB
   ("use_it",                          True),
   ("triggers",                        ['2e', '3e']),
@@ -7331,7 +7331,7 @@ samples_2017["/DoubleEG/Run2017F-31Mar2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Dec02_data_woPresel_nom_all/ntuples/DoubleEG_Run2017F_31Mar2018_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2020Jan12_data_woPresel_nom_all/ntuples/DoubleEG_Run2017F_31Mar2018_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -7941,7 +7941,7 @@ samples_2017["/DoubleMuon/Run2017B-31Mar2018-v1/MINIAOD"] = OD([
   }),
   ("nof_tree_events",                 13572040),
   ("nof_db_events",                   14501767),
-  ("fsize_local",                     5958743363), # 5.96GB, avg file size 851.25MB
+  ("fsize_local",                     5958448363), # 5.96GB, avg file size 851.21MB
   ("fsize_db",                        424924211171), # 424.92GB, avg file size 3.57GB
   ("use_it",                          True),
   ("triggers",                        ['2mu', '3mu']),
@@ -7951,7 +7951,7 @@ samples_2017["/DoubleMuon/Run2017B-31Mar2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Dec02_data_woPresel_nom_all/ntuples/DoubleMuon_Run2017B_31Mar2018_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2020Jan12_data_woPresel_nom_all/ntuples/DoubleMuon_Run2017B_31Mar2018_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -8256,7 +8256,7 @@ samples_2017["/DoubleMuon/Run2017C-31Mar2018-v1/MINIAOD"] = OD([
   }),
   ("nof_tree_events",                 46273101),
   ("nof_db_events",                   49636525),
-  ("fsize_local",                     23495779968), # 23.50GB, avg file size 1.02GB
+  ("fsize_local",                     23495147913), # 23.50GB, avg file size 1.02GB
   ("fsize_db",                        1471738797571), # 1.47TB, avg file size 3.18GB
   ("use_it",                          True),
   ("triggers",                        ['2mu', '3mu']),
@@ -8266,7 +8266,7 @@ samples_2017["/DoubleMuon/Run2017C-31Mar2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Dec02_data_woPresel_nom_all/ntuples/DoubleMuon_Run2017C_31Mar2018_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2020Jan12_data_woPresel_nom_all/ntuples/DoubleMuon_Run2017C_31Mar2018_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -8831,7 +8831,7 @@ samples_2017["/DoubleMuon/Run2017D-31Mar2018-v1/MINIAOD"] = OD([
   }),
   ("nof_tree_events",                 22646081),
   ("nof_db_events",                   23075733),
-  ("fsize_local",                     11573604592), # 11.57GB, avg file size 964.47MB
+  ("fsize_local",                     11573317383), # 11.57GB, avg file size 964.44MB
   ("fsize_db",                        683921495388), # 683.92GB, avg file size 3.07GB
   ("use_it",                          True),
   ("triggers",                        ['2mu', '3mu']),
@@ -8841,7 +8841,7 @@ samples_2017["/DoubleMuon/Run2017D-31Mar2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Dec02_data_woPresel_nom_all/ntuples/DoubleMuon_Run2017D_31Mar2018_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2020Jan12_data_woPresel_nom_all/ntuples/DoubleMuon_Run2017D_31Mar2018_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -9397,7 +9397,7 @@ samples_2017["/DoubleMuon/Run2017E-31Mar2018-v1/MINIAOD"] = OD([
   }),
   ("nof_tree_events",                 50596536),
   ("nof_db_events",                   51589091),
-  ("fsize_local",                     25967440508), # 25.97GB, avg file size 1.04GB
+  ("fsize_local",                     25966787753), # 25.97GB, avg file size 1.04GB
   ("fsize_db",                        1788420451830), # 1.79TB, avg file size 3.12GB
   ("use_it",                          True),
   ("triggers",                        ['2mu', '3mu']),
@@ -9407,7 +9407,7 @@ samples_2017["/DoubleMuon/Run2017E-31Mar2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Dec02_data_woPresel_nom_all/ntuples/DoubleMuon_Run2017E_31Mar2018_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2020Jan12_data_woPresel_nom_all/ntuples/DoubleMuon_Run2017E_31Mar2018_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -9963,7 +9963,7 @@ samples_2017["/DoubleMuon/Run2017F-31Mar2018-v1/MINIAOD"] = OD([
   }),
   ("nof_tree_events",                 75300854),
   ("nof_db_events",                   79756560),
-  ("fsize_local",                     38047811571), # 38.05GB, avg file size 975.58MB
+  ("fsize_local",                     38046904674), # 38.05GB, avg file size 975.56MB
   ("fsize_db",                        2739302963269), # 2.74TB, avg file size 3.23GB
   ("use_it",                          True),
   ("triggers",                        ['2mu', '3mu']),
@@ -9973,7 +9973,7 @@ samples_2017["/DoubleMuon/Run2017F-31Mar2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Dec02_data_woPresel_nom_all/ntuples/DoubleMuon_Run2017F_31Mar2018_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2020Jan12_data_woPresel_nom_all/ntuples/DoubleMuon_Run2017F_31Mar2018_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -10583,7 +10583,7 @@ samples_2017["/MuonEG/Run2017B-31Mar2018-v1/MINIAOD"] = OD([
   }),
   ("nof_tree_events",                 4153318),
   ("nof_db_events",                   4453465),
-  ("fsize_local",                     2404365249), # 2.40GB, avg file size 801.46MB
+  ("fsize_local",                     2404240434), # 2.40GB, avg file size 801.41MB
   ("fsize_db",                        151287246815), # 151.29GB, avg file size 3.15GB
   ("use_it",                          True),
   ("triggers",                        ['1e1mu', '2e1mu', '1e2mu']),
@@ -10593,7 +10593,7 @@ samples_2017["/MuonEG/Run2017B-31Mar2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Dec02_data_woPresel_nom_all/ntuples/MuonEG_Run2017B_31Mar2018_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2020Jan12_data_woPresel_nom_all/ntuples/MuonEG_Run2017B_31Mar2018_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -10898,7 +10898,7 @@ samples_2017["/MuonEG/Run2017C-31Mar2018-v1/MINIAOD"] = OD([
   }),
   ("nof_tree_events",                 14579589),
   ("nof_db_events",                   15595214),
-  ("fsize_local",                     9566943366), # 9.57GB, avg file size 1.20GB
+  ("fsize_local",                     9566660632), # 9.57GB, avg file size 1.20GB
   ("fsize_db",                        545138938415), # 545.14GB, avg file size 3.45GB
   ("use_it",                          True),
   ("triggers",                        ['1e1mu', '2e1mu', '1e2mu']),
@@ -10908,7 +10908,7 @@ samples_2017["/MuonEG/Run2017C-31Mar2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Dec02_data_woPresel_nom_all/ntuples/MuonEG_Run2017C_31Mar2018_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2020Jan12_data_woPresel_nom_all/ntuples/MuonEG_Run2017C_31Mar2018_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -11473,7 +11473,7 @@ samples_2017["/MuonEG/Run2017D-31Mar2018-v1/MINIAOD"] = OD([
   }),
   ("nof_tree_events",                 9012928),
   ("nof_db_events",                   9164365),
-  ("fsize_local",                     5995762909), # 6.00GB, avg file size 1.20GB
+  ("fsize_local",                     5995631752), # 6.00GB, avg file size 1.20GB
   ("fsize_db",                        316739663431), # 316.74GB, avg file size 3.44GB
   ("use_it",                          True),
   ("triggers",                        ['1e1mu', '2e1mu', '1e2mu']),
@@ -11483,7 +11483,7 @@ samples_2017["/MuonEG/Run2017D-31Mar2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Dec02_data_woPresel_nom_all/ntuples/MuonEG_Run2017D_31Mar2018_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2020Jan12_data_woPresel_nom_all/ntuples/MuonEG_Run2017D_31Mar2018_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -12039,7 +12039,7 @@ samples_2017["/MuonEG/Run2017E-31Mar2018-v1/MINIAOD"] = OD([
   }),
   ("nof_tree_events",                 18703362),
   ("nof_db_events",                   19043421),
-  ("fsize_local",                     12525765504), # 12.53GB, avg file size 1.25GB
+  ("fsize_local",                     12525233062), # 12.53GB, avg file size 1.25GB
   ("fsize_db",                        739577492849), # 739.58GB, avg file size 3.06GB
   ("use_it",                          True),
   ("triggers",                        ['1e1mu', '2e1mu', '1e2mu']),
@@ -12049,7 +12049,7 @@ samples_2017["/MuonEG/Run2017E-31Mar2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Dec02_data_woPresel_nom_all/ntuples/MuonEG_Run2017E_31Mar2018_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2020Jan12_data_woPresel_nom_all/ntuples/MuonEG_Run2017E_31Mar2018_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -12605,7 +12605,7 @@ samples_2017["/MuonEG/Run2017F-31Mar2018-v1/MINIAOD"] = OD([
   }),
   ("nof_tree_events",                 25342217),
   ("nof_db_events",                   25776363),
-  ("fsize_local",                     17010282780), # 17.01GB, avg file size 1.31GB
+  ("fsize_local",                     17009906670), # 17.01GB, avg file size 1.31GB
   ("fsize_db",                        1017624289576), # 1.02TB, avg file size 3.23GB
   ("use_it",                          True),
   ("triggers",                        ['1e1mu', '2e1mu', '1e2mu']),
@@ -12615,7 +12615,7 @@ samples_2017["/MuonEG/Run2017F-31Mar2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Dec02_data_woPresel_nom_all/ntuples/MuonEG_Run2017F_31Mar2018_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2020Jan12_data_woPresel_nom_all/ntuples/MuonEG_Run2017F_31Mar2018_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -13225,7 +13225,7 @@ samples_2017["/Tau/Run2017B-31Mar2018-v1/MINIAOD"] = OD([
   }),
   ("nof_tree_events",                 35638453),
   ("nof_db_events",                   38158216),
-  ("fsize_local",                     25907389038), # 25.91GB, avg file size 1.44GB
+  ("fsize_local",                     25907331488), # 25.91GB, avg file size 1.44GB
   ("fsize_db",                        1187014116504), # 1.19TB, avg file size 3.70GB
   ("use_it",                          True),
   ("triggers",                        ['1e1tau', '1mu1tau', '2tau']),
@@ -13235,7 +13235,7 @@ samples_2017["/Tau/Run2017B-31Mar2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Dec02_data_woPresel_nom_all/ntuples/Tau_Run2017B_31Mar2018_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2020Jan12_data_woPresel_nom_all/ntuples/Tau_Run2017B_31Mar2018_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -13540,7 +13540,7 @@ samples_2017["/Tau/Run2017C-31Mar2018-v1/MINIAOD"] = OD([
   }),
   ("nof_tree_events",                 51498406),
   ("nof_db_events",                   55416425),
-  ("fsize_local",                     37539871094), # 37.54GB, avg file size 1.44GB
+  ("fsize_local",                     37539753774), # 37.54GB, avg file size 1.44GB
   ("fsize_db",                        1688592326507), # 1.69TB, avg file size 3.54GB
   ("use_it",                          True),
   ("triggers",                        ['1e1tau', '1mu1tau', '2tau']),
@@ -13550,7 +13550,7 @@ samples_2017["/Tau/Run2017C-31Mar2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Dec02_data_woPresel_nom_all/ntuples/Tau_Run2017C_31Mar2018_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2020Jan12_data_woPresel_nom_all/ntuples/Tau_Run2017C_31Mar2018_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -14115,7 +14115,7 @@ samples_2017["/Tau/Run2017D-31Mar2018-v1/MINIAOD"] = OD([
   }),
   ("nof_tree_events",                 20147369),
   ("nof_db_events",                   20530776),
-  ("fsize_local",                     14995318240), # 15.00GB, avg file size 1.50GB
+  ("fsize_local",                     14995275249), # 15.00GB, avg file size 1.50GB
   ("fsize_db",                        619178562765), # 619.18GB, avg file size 3.40GB
   ("use_it",                          True),
   ("triggers",                        ['1e1tau', '1mu1tau', '2tau']),
@@ -14125,7 +14125,7 @@ samples_2017["/Tau/Run2017D-31Mar2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Dec02_data_woPresel_nom_all/ntuples/Tau_Run2017D_31Mar2018_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2020Jan12_data_woPresel_nom_all/ntuples/Tau_Run2017D_31Mar2018_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -14681,7 +14681,7 @@ samples_2017["/Tau/Run2017E-31Mar2018-v1/MINIAOD"] = OD([
   }),
   ("nof_tree_events",                 43518053),
   ("nof_db_events",                   44318231),
-  ("fsize_local",                     33266075701), # 33.27GB, avg file size 1.51GB
+  ("fsize_local",                     33265979951), # 33.27GB, avg file size 1.51GB
   ("fsize_db",                        1530408104522), # 1.53TB, avg file size 3.12GB
   ("use_it",                          True),
   ("triggers",                        ['1e1tau', '1mu1tau', '2tau']),
@@ -14691,7 +14691,7 @@ samples_2017["/Tau/Run2017E-31Mar2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Dec02_data_woPresel_nom_all/ntuples/Tau_Run2017E_31Mar2018_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2020Jan12_data_woPresel_nom_all/ntuples/Tau_Run2017E_31Mar2018_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -15247,7 +15247,7 @@ samples_2017["/Tau/Run2017F-31Mar2018-v1/MINIAOD"] = OD([
   }),
   ("nof_tree_events",                 86842621),
   ("nof_db_events",                   88506372),
-  ("fsize_local",                     66691700677), # 66.69GB, avg file size 1.55GB
+  ("fsize_local",                     66691450021), # 66.69GB, avg file size 1.55GB
   ("fsize_db",                        3105005600619), # 3.11TB, avg file size 3.40GB
   ("use_it",                          True),
   ("triggers",                        ['1e1tau', '1mu1tau', '2tau']),
@@ -15257,7 +15257,7 @@ samples_2017["/Tau/Run2017F-31Mar2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2019Dec02_data_woPresel_nom_all/ntuples/Tau_Run2017F_31Mar2018_v1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2020Jan12_data_woPresel_nom_all/ntuples/Tau_Run2017F_31Mar2018_v1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -19650,7 +19650,7 @@ samples_2017["/WGToLNuG_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAODv2-P
   ("nof_db_events",                   6283083),
   ("fsize_local",                     11676293152), # 11.68GB, avg file size 898.18MB
   ("fsize_db",                        259323657535), # 259.32GB, avg file size 1.94GB
-  ("use_it",                          True),
+  ("use_it",                          False),
   ("xsection",                        464.8),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),

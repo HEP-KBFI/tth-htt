@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2019-12-09 06:26:07 with the following command:
+# file generated at 2020-01-11 19:37:27 with the following command:
 # create_dictionary.py -m python/samples/metaDict_2016.py -p python/samples/sampleLocations_2016_nanoAOD.txt -N samples_2016 -E 2016 -o python/samples -g tthAnalyzeSamples_2016_nanoAOD.py -M
 
 samples_2016 = OD()
@@ -28143,7 +28143,7 @@ samples_2016["/WGToLNuG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16Min
   ("nof_db_events",                   5059865),
   ("fsize_local",                     5947265514), # 5.95GB, avg file size 116.61MB
   ("fsize_db",                        148377698646), # 148.38GB, avg file size 3.30GB
-  ("use_it",                          True),
+  ("use_it",                          False),
   ("xsection",                        464.8),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
@@ -28185,7 +28185,7 @@ samples_2016["/WGToLNuG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16Min
   ("nof_db_events",                   10231994),
   ("fsize_local",                     12029708332), # 12.03GB, avg file size 116.79MB
   ("fsize_db",                        299146793202), # 299.15GB, avg file size 4.10GB
-  ("use_it",                          True),
+  ("use_it",                          False),
   ("xsection",                        464.8),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
@@ -28227,7 +28227,7 @@ samples_2016["/WGToLNuG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16Min
   ("nof_db_events",                   12219986),
   ("fsize_local",                     14365520580), # 14.37GB, avg file size 116.79MB
   ("fsize_db",                        357306491523), # 357.31GB, avg file size 3.97GB
-  ("use_it",                          True),
+  ("use_it",                          False),
   ("xsection",                        464.8),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
@@ -28238,6 +28238,48 @@ samples_2016["/WGToLNuG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16Min
     [
       OD([
         ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2019Nov25/WGToLNuG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/2016v3_2019Nov25_WGToLNuG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext3-v1/191125_170908"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
+samples_2016["/WGToLNuG_01J_5f_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "Rares"),
+  ("process_name_specific",           "WGToLNuG_01J"),
+  ("nof_files",                       536),
+  ("nof_db_files",                    348),
+  ("nof_events",                      {
+  }),
+  ("nof_tree_events",                 26722551),
+  ("nof_db_events",                   26722551),
+  ("fsize_local",                     32369539182), # 32.37GB, avg file size 60.39MB
+  ("fsize_db",                        903161012258), # 903.16GB, avg file size 2.60GB
+  ("use_it",                          True),
+  ("xsection",                        191.6),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2020Jan10/WGToLNuG_01J_5f_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/2016v3_2020Jan10_WGToLNuG_01J_5f_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/200110_144023"),
         ("selection", "*"),
         ("blacklist", []),
       ]),

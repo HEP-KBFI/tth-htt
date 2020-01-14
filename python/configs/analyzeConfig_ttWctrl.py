@@ -66,6 +66,7 @@ class analyzeConfig_ttWctrl(analyzeConfig):
         do_sync                   = False,
         use_nonnominal            = False,
         rle_select                = '',
+        submission_cmd            = None,
       ):
     analyzeConfig.__init__(self,
       configDir                 = configDir,
@@ -92,6 +93,7 @@ class analyzeConfig_ttWctrl(analyzeConfig):
       isDebug                   = isDebug,
       use_home                  = use_home,
       do_sync                   = do_sync,
+      submission_cmd            = submission_cmd,
     )
 
     self.lepton_selections = [ "Tight", "Fakeable" ]

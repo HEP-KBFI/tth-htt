@@ -125,6 +125,7 @@ if __name__ == '__main__':
     central_or_shifts       = central_or_shifts,
     use_nonnominal          = use_nonnominal,
     use_home                = use_home,
+    submission_cmd          = sys.argv,
   )
 
   job_statistics = analysis.create()

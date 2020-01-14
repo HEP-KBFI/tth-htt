@@ -14,6 +14,7 @@ OUTPUT_RLE = 'output_rle'
 REGEX_RLE = re.compile('^(\d+):(\d+):(\d+)$')
 SAMPLES_EXCLUDE = [ 'hadd' ]
 SYSTEMATICS_EXCLUDE = [ 'addBackgrounds', 'hadd' ]
+SYSTEMATICS_CENTRAL = 'central'
 
 def get_paths(input_paths, whitelist, blacklist):
   valid_paths = {}
@@ -57,7 +58,7 @@ def get_paths(input_paths, whitelist, blacklist):
   assert(len(set(valid_paths.values())) == len(valid_paths))
   return valid_paths
 
-def get_rles(input_paths, whitelist, blacklist):
+def get_rles(input_paths, whitelist, blacklist, read_all_systematics):
   has_errors = False
   rles = collections.OrderedDict()
   valid_paths = get_paths(input_paths, whitelist, blacklist)
@@ -76,6 +77,8 @@ def get_rles(input_paths, whitelist, blacklist):
         for rle_dir in sorted(hdfs.listdir(sample_dir)):
           central_or_shift = os.path.basename(rle_dir)
           if central_or_shift in SYSTEMATICS_EXCLUDE:
+            continue
+          if not read_all_systematics and central_or_shift != SYSTEMATICS_CENTRAL:
             continue
           logging.debug(
             'Found systematics {} for sample {} in region {} and channel {}'.format(
@@ -254,11 +257,10 @@ def validate_channels(rles):
     for central_or_shift in validation_set[sample_name]:
       for rle in validation_set[sample_name][central_or_shift]:
         if len(validation_set[sample_name][central_or_shift][rle]) > 1:
-          if len(validation_set[sample_name][central_or_shift][rle])                               and \
-             '2los_1tau' in validation_set[sample_name][central_or_shift][rle]                     and \
-              validation_set[sample_name][central_or_shift][rle]['2los_1tau']['region'] == 'Tight' and \
-             '2lss_1tau' in validation_set[sample_name][central_or_shift][rle]                     and \
-              validation_set[sample_name][central_or_shift][rle]['2lss_1tau']['region'] == 'Tight_OS_OS':
+          if '2los_1tau' in validation_set[sample_name][central_or_shift][rle]           and \
+              validation_set[sample_name][central_or_shift][rle]['2los_1tau'] == 'Tight' and \
+             '2lss_1tau' in validation_set[sample_name][central_or_shift][rle]           and \
+              validation_set[sample_name][central_or_shift][rle]['2lss_1tau'] == 'Tight_OS_OS':
             continue
           logging.error(
             "Found the same event {} from sample {} in multiple channels: {}".format(
@@ -299,6 +301,10 @@ if __name__ == '__main__':
     type = str, dest = 'blacklist', metavar = 'channel', required = False, nargs = '+', default = [],
     help = 'R|Channels to validate',
   )
+  parser.add_argument('-s', '--all-systematics',
+    dest = 'all_systematics', action = 'store_true', default = False,
+    help = 'R|Consider all systematics',
+  )
   parser.add_argument('-v', '--verbose',
     dest = 'verbose', action = 'store_true', default = False,
     help = 'R|Enable verbose output',
@@ -306,7 +312,7 @@ if __name__ == '__main__':
   args = parser.parse_args()
 
   logging.getLogger().setLevel(logging.DEBUG if args.verbose else logging.INFO)
-  rles, input_errors = get_rles(args.input, args.whitelist, args.blacklist)
+  rles, input_errors = get_rles(args.input, args.whitelist, args.blacklist, args.all_systematics)
 
   data_errors = validate_data(rles)
   region_errors = validate_regions(rles)

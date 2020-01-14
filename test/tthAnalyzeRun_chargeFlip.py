@@ -115,6 +115,7 @@ if __name__ == '__main__':
     dry_run               = dry_run,
     isDebug               = debug,
     use_home              = use_home,
+    submission_cmd        = sys.argv,
   )
 
   job_statistics = analysis.create()

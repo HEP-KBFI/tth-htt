@@ -41,6 +41,13 @@ const std::vector<double> HHWeightInterface::normJHEP = { 0.99997, 0.94266, 0.71
 
 //TODO: understand why it's needed to pass these variables by reference
 HHWeightInterface::HHWeightInterface(const edm::ParameterSet & cfg)
+  : modeldata_(nullptr)
+  , moduleMainString_(nullptr)
+  , moduleMain_(nullptr)
+  , func_Weight_(nullptr)
+  , nof_sumEvt_entries(0)
+  , fileHH(nullptr)
+  , sumEvt(nullptr)
 {
   // AC: limit number of threads running in python to one
   setenv("OMP_NUM_THREADS", "1", 0);
@@ -102,6 +109,8 @@ HHWeightInterface::HHWeightInterface(const edm::ParameterSet & cfg)
       << "The file '" << FileDenominator << "' does not have a TH2 named " << histtitle
     ;
   }
+  nof_sumEvt_entries = static_cast<int>(sumEvt->GetEntries());
+  assert(nof_sumEvt_entries > 0);
 
   // Load a file with an specific scan, that we can decide at later stage on the analysis
   // save the closest shape BM to use this value on the evaluation of a BDT
@@ -221,7 +230,7 @@ HHWeightInterface::getJHEPWeight(double mHH,
       modeldata_
     );
     WeightBM.push_back(
-      PyFloat_AsDouble(PyObject_CallObject(func_Weight_, args_BM_list))
+      PyFloat_AsDouble(PyObject_CallObject(func_Weight_, args_BM_list)) * nof_sumEvt_entries
     );
     Py_XDECREF(args_BM_list);
   }
@@ -261,10 +270,9 @@ HHWeightInterface::getScanWeight(double mHH,
       PyFloat_FromDouble(static_cast<double>(denominator)),
       modeldata_
     );
-    Weight_klScan[values_string[scanIdx]] = PyFloat_AsDouble(PyObject_CallObject(func_Weight_, args_kl_scan_list));
-    //Weight_klScan.push_back(
-    //  PyFloat_AsDouble(PyObject_CallObject(func_Weight_, args_kl_scan_list))
-    //);
+    Weight_klScan[values_string[scanIdx]] =
+      PyFloat_AsDouble(PyObject_CallObject(func_Weight_, args_kl_scan_list)) * nof_sumEvt_entries
+    ;
     Py_XDECREF(args_kl_scan_list);
   }
 

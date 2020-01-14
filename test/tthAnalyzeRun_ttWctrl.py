@@ -134,6 +134,7 @@ if __name__ == '__main__':
     do_sync                   = do_sync,
     use_nonnominal            = use_nonnominal,
     rle_select                = rle_select,
+    submission_cmd            = sys.argv,
   )
 
   job_statistics = analysis.create()

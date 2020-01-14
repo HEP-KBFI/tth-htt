@@ -26,6 +26,7 @@ class addMEMConfig_3l(addMEMConfig):
         use_nonnominal,
         use_home,
         rle_filter_file,
+        submission_cmd = None,
         pool_id = '',
       ):
     addMEMConfig.__init__(self,
@@ -50,6 +51,7 @@ class addMEMConfig_3l(addMEMConfig):
       use_home                 = use_home,
       channel                  = "3l",
       rle_filter_file          = rle_filter_file,
+      submission_cmd           = submission_cmd,
       pool_id                  = pool_id,
     )
 
