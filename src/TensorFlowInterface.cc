@@ -31,7 +31,7 @@ TensorFlowInterface::TensorFlowInterface(const std::string & mvaFileName_odd,
   , mvaInputVariables_(mvaInputVariables)
   , fitFunctionFileName_(fitFunctionFileName)
   , Transform_Ptr_(nullptr)
-  , isDEBUG_(true)
+  , isDEBUG_(false)
 {
 
   if(! fitFunctionFileName_.empty())
