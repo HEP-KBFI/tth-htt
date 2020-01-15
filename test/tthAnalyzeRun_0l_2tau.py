@@ -133,6 +133,7 @@ for sample_name, sample_info in samples.items():
     sample_info["use_it"] = sample_name.startswith("/Tau/") and mode == "default"
   elif re.match("/DY(\d)?Jets", sample_name):
     sample_info["sample_category"] = "DY"
+    sample_info["use_it"] = mode == "default"
   elif sample_name.startswith('/TTJets'):
     sample_info["use_it"] = mode == "forBDTtraining"
     sample_info["sample_category"] = "TT"
