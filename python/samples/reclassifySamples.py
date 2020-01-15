@@ -44,6 +44,7 @@ def reclassifySamples(samples_era_base, samples_era_hh_multilepton = None, sampl
       # https://gitlab.cern.ch/ttH_leptons/doc/blob/53e8220a045118cdecd03c85a677736417e0ea74/Legacy/datacards_and_systematics.md#12-bkg-collective-names
       if re.match("/DY(\d)?Jets", sample_name):
         sample_info["sample_category"] = "ZZ"
+        sample_info["use_it"] = False
       elif re.match("/W(\d)?Jets", sample_name):
         sample_info["sample_category"] = "WZ"
         sample_info["use_it"] = False
