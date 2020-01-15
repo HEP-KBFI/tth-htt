@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2020-01-11 19:21:15 with the following command:
+# file generated at 2020-01-15 11:44:41 with the following command:
 # create_dictionary.py -m python/samples/metaDict_2018.py -p python/samples/sampleLocations_2018_nanoAOD.txt -N samples_2018 -E 2018 -o python/samples -g tthAnalyzeSamples_2018_nanoAOD.py -M
 
 samples_2018 = OD()
@@ -16069,9 +16069,9 @@ samples_2018["/GluGluHToBB_M125_13TeV_amcatnloFXFX_pythia8/RunIIAutumn18MiniAOD-
   ("nof_db_files",                    320),
   ("nof_events",                      {
   }),
-  ("nof_tree_events",                 15034579),
+  ("nof_tree_events",                 14934589),
   ("nof_db_events",                   15034579),
-  ("fsize_local",                     20098589166), # 20.10GB, avg file size 133.10MB
+  ("fsize_local",                     19964878725), # 19.96GB, avg file size 132.22MB
   ("fsize_db",                        654781502160), # 654.78GB, avg file size 2.05GB
   ("use_it",                          True),
   ("xsection",                        28.293),
@@ -16085,7 +16085,7 @@ samples_2018["/GluGluHToBB_M125_13TeV_amcatnloFXFX_pythia8/RunIIAutumn18MiniAOD-
       OD([
         ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/GluGluHToBB_M125_13TeV_amcatnloFXFX_pythia8/2018_2019Sep29_GluGluHToBB_M125_13TeV_amcatnloFXFX_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_205508"),
         ("selection", "*"),
-        ("blacklist", []),
+        ("blacklist", [75]),
       ]),
     ]
   ),
