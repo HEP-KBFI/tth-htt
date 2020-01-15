@@ -127,7 +127,7 @@ class tthAnalyzeParser(argparse.ArgumentParser):
 
   def add_files_per_job(self, files_per_job = 20):
     self.add_argument('-j', '--files-per-job',
-      type = positive_int_type, dest = 'files_per_job', metavar = 'number', default = files_per_job,
+      type = str, dest = 'files_per_job', metavar = 'number', default = str(files_per_job),
       help = 'R|Number of input files per job',
     )
 
@@ -238,13 +238,19 @@ class tthAnalyzeParser(argparse.ArgumentParser):
       help = 'R|Enable regrouped JEC',
     )
 
-  def add_stitched(self, use_dy = False, use_wj = False):
-    choices = [ 'dy', 'wjets' ]
+  def add_stitched(self, use_dy = False, use_wj = False, disable_dy_incl = False, disable_wj_incl = False):
+    choices = [ 'dy', 'wjets', 'dy_noincl', 'wjets_noincl' ]
     default = []
     if use_dy:
-      default.append('dy')
+      if disable_dy_incl:
+        default.append('dy_noincl')
+      else:
+        default.append('dy')
     if use_wj:
-      default.append('wjets')
+      if disable_wj_incl:
+        default.append('wjets_noincl')
+      else:
+        default.append('wjets')
     self.add_argument('-u', '--use-stitched',
       type = str, dest = 'use_stitched', metavar = 'process', default = default, required = False, choices = choices,
       help = 'R|Load stitched samples (choices: %s)' % tthAnalyzeParser.cat(choices),

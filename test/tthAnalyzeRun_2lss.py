@@ -9,7 +9,6 @@ from tthAnalysis.HiggsToTauTau.common import logging, load_samples, load_samples
 import os
 import sys
 import getpass
-import re
 
 # E.g. to run: ./test/tthAnalyzeRun_2lss.py -v 2017Dec13 -m default -e 2017
 
@@ -101,7 +100,10 @@ else:
   raise ValueError("Invalid mode: %s" % mode)
 
 if use_stitched:
-  samples = load_samples_stitched(samples, era, load_dy = 'dy' in use_stitched, load_wjets = 'wjets' in use_stitched)
+  samples = load_samples_stitched(
+    samples, era, load_dy = 'dy' in use_stitched, load_wjets = 'wjets' in use_stitched,
+    disable_dy_inclusive = 'dy_noincl' in use_stitched, disable_wjets_inclusive = 'wjets_noincl' in use_stitched,
+  )
 
 if __name__ == '__main__':
   logging.info(
@@ -175,6 +177,7 @@ if __name__ == '__main__':
     use_nonnominal            = use_nonnominal,
     hlt_filter                = hlt_filter,
     use_home                  = use_home,
+    submission_cmd            = sys.argv,
   )
 
   if mode.find("forBDTtraining") != -1:

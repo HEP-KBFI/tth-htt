@@ -40,6 +40,14 @@ private:
 
   std::map<std::string, TH1 *> histograms_m_ee_SS_mllAbove100_; //
   std::map<std::string, TH1 *> histograms_m_ee_OS_mllAbove100_; //
+
+  std::map<std::string, TH1 *> histograms_m_ee_SS_ePtThrsh15_; 
+  std::map<std::string, TH1 *> histograms_m_ee_OS_ePtThrsh15_; 
+  
+  std::map<std::string, TH1 *> histograms_pT_eLead_SS_;
+  std::map<std::string, TH1 *> histograms_pT_eLead_OS_; 
+  std::map<std::string, TH1 *> histograms_pT_eSublead_SS_;
+  std::map<std::string, TH1 *> histograms_pT_eSublead_OS_; 
   
   TH1 * histogram_EventCounter_;
 };

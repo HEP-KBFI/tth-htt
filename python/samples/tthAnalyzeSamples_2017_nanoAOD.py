@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2019-12-02 20:03:57 with the following command:
+# file generated at 2020-01-11 18:57:45 with the following command:
 # create_dictionary.py -m python/samples/metaDict_2017.py -p python/samples/sampleLocations_2017_nanoAOD.txt -N samples_2017 -E 2017 -o python/samples -g tthAnalyzeSamples_2017_nanoAOD.py -M
 
 samples_2017 = OD()
@@ -19482,7 +19482,7 @@ samples_2017["/WGToLNuG_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAODv2-P
   ("nof_db_events",                   6283083),
   ("fsize_local",                     7058981296), # 7.06GB, avg file size 110.30MB
   ("fsize_db",                        259323657535), # 259.32GB, avg file size 1.94GB
-  ("use_it",                          True),
+  ("use_it",                          False),
   ("xsection",                        464.8),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
@@ -19495,6 +19495,48 @@ samples_2017["/WGToLNuG_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAODv2-P
         ("path",      "/hdfs/cms/store/user/kaehatah/2017v2_2019Sep28/WGToLNuG_TuneCP5_13TeV-madgraphMLM-pythia8/2017v2_2019Sep28_WGToLNuG_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/190928_184955"),
         ("selection", "*"),
         ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
+samples_2017["/WGToLNuG_01J_5f_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v3/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "Rares"),
+  ("process_name_specific",           "WGToLNuG_01J"),
+  ("nof_files",                       524),
+  ("nof_db_files",                    418),
+  ("nof_events",                      {
+  }),
+  ("nof_tree_events",                 22896074),
+  ("nof_db_events",                   25918966),
+  ("fsize_local",                     27268005528), # 27.27GB, avg file size 52.04MB
+  ("fsize_db",                        1050306523358), # 1.05TB, avg file size 2.51GB
+  ("use_it",                          True),
+  ("xsection",                        191.6),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("LHE_set",                         ""),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/kaehatah/2017v2_2020Jan10/WGToLNuG_01J_5f_TuneCP5_13TeV-amcatnloFXFX-pythia8/2017v2_2020Jan10_WGToLNuG_01J_5f_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v3/200110_145832"),
+        ("selection", "*"),
+        ("blacklist", [1, 2, 10, 11, 24, 25, 38, 39, 40, 64, 65, 66, 69, 70, 117, 118, 126, 150, 151, 177, 199, 200, 208, 209, 224, 225, 227, 231, 232, 233, 234, 235, 276, 277, 313, 314, 315, 352, 353, 356, 357, 368, 369, 371, 372, 373, 379, 380, 386, 387, 394, 395, 396, 414, 415, 435, 436, 437, 444, 445, 494]),
       ]),
     ]
   ),

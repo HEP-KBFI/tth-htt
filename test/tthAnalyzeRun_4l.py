@@ -9,7 +9,6 @@ from tthAnalysis.HiggsToTauTau.common import logging, load_samples
 import os
 import sys
 import getpass
-import re
 
 # E.g.: ./test/tthAnalyzeRun_4l.py -v 2017Dec13 -m default -e 2017
 
@@ -164,6 +163,7 @@ if __name__ == '__main__':
     use_nonnominal                        = use_nonnominal,
     hlt_filter                            = hlt_filter,
     use_home                              = use_home,
+    submission_cmd                        = sys.argv,
   )
 
   job_statistics = analysis.create()

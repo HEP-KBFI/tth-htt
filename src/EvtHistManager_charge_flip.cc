@@ -17,7 +17,7 @@ EvtHistManager_charge_flip::bookHistograms(TFileDirectory & dir)
     "BE_LL", "BE_ML", "BE_MM", "BE_HL", "BE_HM", "BE_HH",
              "EB_ML",          "EB_HL", "EB_HM",
     "total"
-  };
+  };  
 
   for(const std::string & category_eta_and_pT: categories_eta_and_pT)
   {
@@ -30,7 +30,10 @@ EvtHistManager_charge_flip::bookHistograms(TFileDirectory & dir)
     histograms_m_ee_SS_[category_eta_and_pT]             = book1D(subdir_SS, "mass_ll", "m_{ll}", 60,  60., 120.);
     histograms_m_ee_SS_mllBelow100_[category_eta_and_pT] = book1D(subdir_SS, "mass_ll_Below100", "m_{ll}", 40,  60., 100.);
     histograms_m_ee_SS_mllAbove100_[category_eta_and_pT] = book1D(subdir_SS, "mass_ll_Above100", "m_{ll}", 20,  100., 120.);
-
+    histograms_m_ee_SS_ePtThrsh15_[category_eta_and_pT]  = book1D(subdir_SS, "mass_ll_ePtThrsh15", "m_{ll}", 60,  60., 120.);
+    histograms_pT_eLead_SS_[category_eta_and_pT]         = book1D(subdir_SS, "pT_eLead", "pT (Lead electron) [GeV]", 300,  0., 300.);
+    histograms_pT_eSublead_SS_[category_eta_and_pT]      = book1D(subdir_SS, "pT_eSublead", "pT (Lead electron) [GeV]", 300,  0., 300.);
+    
     std::string subdirName_OS = Form("OS/%s/%s", category_eta_and_pT.data(), process_.data());
     if(! category_.empty())
     {
@@ -40,6 +43,9 @@ EvtHistManager_charge_flip::bookHistograms(TFileDirectory & dir)
     histograms_m_ee_OS_[category_eta_and_pT]             = book1D(subdir_OS, "mass_ll", "m_{ll}", 60,  60., 120.);
     histograms_m_ee_OS_mllBelow100_[category_eta_and_pT] = book1D(subdir_OS, "mass_ll_Below100", "m_{ll}", 40,  60., 100.);
     histograms_m_ee_OS_mllAbove100_[category_eta_and_pT] = book1D(subdir_OS, "mass_ll_Above100", "m_{ll}", 20,  100., 120.);
+    histograms_m_ee_OS_ePtThrsh15_[category_eta_and_pT]  = book1D(subdir_OS, "mass_ll_ePtThrsh15", "m_{ll}", 60,  60., 120.);
+    histograms_pT_eLead_OS_[category_eta_and_pT]         = book1D(subdir_OS, "pT_eLead", "pT (Lead electron) [GeV]", 300,  0., 300.);
+    histograms_pT_eSublead_OS_[category_eta_and_pT]      = book1D(subdir_OS, "pT_eSublead", "pT (Lead electron) [GeV]", 300,  0., 300.);
   }
 
   histogram_EventCounter_ = book1D(dir, "EventCounter", "EventCounter", 1, -0.5, +0.5);
@@ -124,15 +130,57 @@ EvtHistManager_charge_flip::fillHistograms(const math::PtEtaPhiMLorentzVector & 
 
   fillWithOverFlow(histogram_EventCounter_, 0., evtWeight, evtWeightErr);
 
+
+  
   const std::map<std::string, TH1 *> & histograms_m_ee_mllBelow100 = isCharge_SS ? histograms_m_ee_SS_mllBelow100_ : histograms_m_ee_OS_mllBelow100_;
   const std::map<std::string, TH1 *> & histograms_m_ee_mllAbove100 = isCharge_SS ? histograms_m_ee_SS_mllAbove100_ : histograms_m_ee_OS_mllAbove100_;
-  if (m_ee < 100) {
-    histograms_m_ee_category = histograms_m_ee_mllBelow100.at(category);
-    assert(histograms_m_ee_category);
-    fillWithOverFlow(histograms_m_ee_category, m_ee, evtWeight, evtWeightErr);
+  if (m_ee < 100.0) {
+    TH1 * histograms_m_ee_mllBelow100_category = histograms_m_ee_mllBelow100.at(category);
+    assert(histograms_m_ee_mllBelow100_category);
+    fillWithOverFlow(histograms_m_ee_mllBelow100_category, m_ee, evtWeight, evtWeightErr);
+
+    TH1 * histograms_m_ee_mllBelow100_total = histograms_m_ee_mllBelow100.at("total");
+    assert(histograms_m_ee_mllBelow100_total);
+    fillWithOverFlow(histograms_m_ee_mllBelow100_total, m_ee, evtWeight, evtWeightErr);    
   } else {
-    histograms_m_ee_category = histograms_m_ee_mllAbove100.at(category);
-    assert(histograms_m_ee_category);
-    fillWithOverFlow(histograms_m_ee_category, m_ee, evtWeight, evtWeightErr);
+    TH1 * histograms_m_ee_mllAbove100_category = histograms_m_ee_mllAbove100.at(category);
+    assert(histograms_m_ee_mllAbove100_category);
+    fillWithOverFlow(histograms_m_ee_mllAbove100_category, m_ee, evtWeight, evtWeightErr);
+
+    TH1 * histograms_m_ee_mllAbove100_total = histograms_m_ee_mllAbove100.at("total");
+    assert(histograms_m_ee_mllAbove100_total);
+    fillWithOverFlow(histograms_m_ee_mllAbove100_total, m_ee, evtWeight, evtWeightErr);    
   }
+
+  
+  const std::map<std::string, TH1 *> & histograms_m_ee_ePtThrsh15 = isCharge_SS ? histograms_m_ee_SS_ePtThrsh15_ : histograms_m_ee_OS_ePtThrsh15_;
+  if (selElectron_lead_p4.pt() >= 15.0 && selElectron_sublead_p4.pt() >= 15.0) {
+    TH1 * histograms_m_ee_ePtThrsh15_category = histograms_m_ee_ePtThrsh15.at(category);
+    assert(histograms_m_ee_ePtThrsh15_category);
+    fillWithOverFlow(histograms_m_ee_ePtThrsh15_category, m_ee, evtWeight, evtWeightErr);
+
+    TH1 * histograms_m_ee_ePtThrsh15_total = histograms_m_ee_ePtThrsh15.at("total");
+    assert(histograms_m_ee_ePtThrsh15_total);
+    fillWithOverFlow(histograms_m_ee_ePtThrsh15_total, m_ee, evtWeight, evtWeightErr);    
+  }
+
+  const std::map<std::string, TH1 *> & histograms_pT_eLead = isCharge_SS ? histograms_pT_eLead_SS_ : histograms_pT_eLead_OS_;
+  TH1 * histograms_pT_eLead_category = histograms_pT_eLead.at(category);
+  assert(histograms_pT_eLead_category);
+  fillWithOverFlow(histograms_pT_eLead_category, selElectron_lead_p4.pt(), evtWeight, evtWeightErr);
+
+  TH1 * histograms_pT_eLead_total = histograms_pT_eLead.at("total");
+  assert(histograms_pT_eLead_total);
+  fillWithOverFlow(histograms_pT_eLead_total, selElectron_lead_p4.pt(), evtWeight, evtWeightErr);
+  
+  const std::map<std::string, TH1 *> & histograms_pT_eSublead = isCharge_SS ? histograms_pT_eSublead_SS_ : histograms_pT_eSublead_OS_;
+  TH1 * histograms_pT_eSublead_category = histograms_pT_eSublead.at(category);
+  assert(histograms_pT_eSublead_category);
+  fillWithOverFlow(histograms_pT_eSublead_category, selElectron_sublead_p4.pt(), evtWeight, evtWeightErr);
+
+  TH1 * histograms_pT_eSublead_total = histograms_pT_eSublead.at("total");
+  assert(histograms_pT_eSublead_total);
+  fillWithOverFlow(histograms_pT_eSublead_total, selElectron_sublead_p4.pt(), evtWeight, evtWeightErr);
 }
+
+

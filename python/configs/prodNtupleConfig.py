@@ -1,9 +1,9 @@
-from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, get_log_version, record_software_state
+from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, get_log_version, check_submission_cmd, record_software_state
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, generateInputFileList
 from tthAnalysis.HiggsToTauTau.analysisTools import createMakefile as tools_createMakefile
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch as tools_createScript_sbatch
 from tthAnalysis.HiggsToTauTau.safe_root import ROOT
-from tthAnalysis.HiggsToTauTau.common import logging
+from tthAnalysis.HiggsToTauTau.common import logging, DEPENDENCIES
 
 from tthAnalysis.NanoAOD.triggers import Triggers
 
@@ -15,14 +15,6 @@ DKEY_CFGS       = "cfgs"
 DKEY_NTUPLES    = "ntuples"
 DKEY_LOGS       = "logs"
 MAKEFILE_TARGET = "sbatch_prodNtuple"
-
-DEPENDENCIES = [
-    "", # CMSSW_BASE/src
-    "tthAnalysis/HiggsToTauTau",
-    "PhysicsTools/NanoAODTools",
-    "tthAnalysis/NanoAODTools",
-    "tthAnalysis/NanoAOD",
-]
 
 def get_pileup_histograms(pileup_filename):
     pileup_file = ROOT.TFile.Open(pileup_filename, 'read')
@@ -72,6 +64,7 @@ class prodNtupleConfig:
              do_sync,
              verbose = False,
              pool_id        = '',
+            submission_cmd = None,
           ):
 
         self.configDir             = configDir
@@ -127,9 +120,11 @@ class prodNtupleConfig:
         self.stderr_file_path = os.path.join(self.configDir, "stderr_prodNtuple.log")
         self.sw_ver_file_cfg  = os.path.join(self.configDir, "VERSION_prodNtuple.log")
         self.sw_ver_file_out  = os.path.join(self.outputDir, "VERSION_prodNtuple.log")
-        self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out = get_log_version((
-            self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out
+        self.submission_out   = os.path.join(self.configDir, "SUBMISSION.log")
+        self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out, self.submission_out = get_log_version((
+            self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out, self.submission_out
         ))
+        check_submission_cmd(self.submission_out, submission_cmd)
 
         self.cfgFile_prodNtuple_original = os.path.join(self.template_dir, cfgFile_prodNtuple)
         self.sbatchFile_prodNtuple       = os.path.join(self.configDir, "sbatch_prodNtuple.py")
@@ -208,6 +203,7 @@ class prodNtupleConfig:
             "skip_tools_step     = %s" % self.skip_tools_step,
             "remove_intermediate = %s" % (not self.do_sync),
             "compTopRwgt         = %s" % jobOptions['compTopRwgt'],
+            "isTuneCP5           = %s" % jobOptions['isTuneCP5'],
         ]
         create_cfg(self.cfgFile_prodNtuple_original, jobOptions['cfgFile_modified'], lines)
 
@@ -339,6 +335,7 @@ class prodNtupleConfig:
                     'triggers'         : hlt_paths,
                     'HLTcuts'          : hlt_cuts,
                     'compTopRwgt'      : sample_name.startswith('/TTTo'),
+                    'isTuneCP5'        : (self.era == "2016" and 'TuneCP5' in sample_name),
                 }
                 self.createCfg_prodNtuple(jobOptions)
 

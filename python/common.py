@@ -1,6 +1,28 @@
 import sys
 import logging
 
+DEPENDENCIES = [
+  "",  # CMSSW_BASE/src
+  "PhysicsTools/NanoAODTools",
+  "tthAnalysis/NanoAODTools",
+  "tthAnalysis/NanoAOD",
+  "tthAnalysis/HiggsToTauTau",
+  "tthAnalysis/tthMEM",
+  "tthAnalysis/MEMmultilepton",
+  "ttH_Htautau_MEM_Analysis",
+  "TauPOG/TauIDSFs",
+  "TauAnalysisTools/TauTriggerSFs",
+  "TauAnalysis/ClassicSVfit4tau",
+  "TauAnalysis/ClassicSVfit",
+  "TauAnalysis/SVfitTF",
+  "hhAnalysis/multilepton",
+  "hhAnalysis/bbww",
+  "hhAnalysis/bbwwMEM",
+  "hhAnalysis/Heavymassestimator",
+  "HHStatAnalysis",
+  "Support",
+]
+
 logging.basicConfig(
   stream = sys.stdout,
   level  = logging.INFO,
@@ -59,7 +81,7 @@ def load_samples_hh_multilepton(era, is_postproc = True, suffix = ''):
 def load_samples_hh_bbww(era, is_postproc = True, suffix = ''):
   return load_samples(era, is_postproc, "hh_bbww", suffix)
 
-def load_samples_stitched(samples, era, load_dy = True, load_wjets = True):
+def load_samples_stitched(samples, era, load_dy = True, load_wjets = True, disable_dy_inclusive = False, disable_wjets_inclusive = False):
   sample_module = importlib.import_module('tthAnalysis.HiggsToTauTau.samples.stitch')
 
   if load_dy and load_wjets:
@@ -72,10 +94,12 @@ def load_samples_stitched(samples, era, load_dy = True, load_wjets = True):
     raise ValueError("Must load binned DY, binned W+jets or both")
 
   sample_names = []
+  sample_names_inclusive = []
   for sample_set in samples_binned:
     for sample_key, sample_value in sample_set.items():
       if sample_key == 'inclusive':
         sample_names.extend(sample_value['samples'])
+        sample_names_inclusive.extend(sample_value['samples'])
       else:
         for sample_binned_value in sample_value:
           sample_names.extend(sample_binned_value['samples'])
@@ -84,10 +108,12 @@ def load_samples_stitched(samples, era, load_dy = True, load_wjets = True):
     if sample_key == 'sum_events':
       continue
     if load_dy and sample_info['process_name_specific'].startswith('DY'):
-      sample_info['use_it'] = sample_info['process_name_specific'] in sample_names
+      sample_info['use_it'] = sample_info['process_name_specific'] in sample_names and \
+                              not (disable_dy_inclusive and sample_info['process_name_specific'] in sample_names_inclusive)
     if load_wjets and sample_info['process_name_specific'].startswith(
           ('WJetsToLNu', 'W1JetsToLNu', 'W2JetsToLNu', 'W3JetsToLNu', 'W4JetsToLNu')
         ):
-      sample_info['use_it'] = sample_info['process_name_specific'] in sample_names
+      sample_info['use_it'] = sample_info['process_name_specific'] in sample_names and \
+                              not (disable_wjets_inclusive and sample_info['process_name_specific'] in sample_names_inclusive)
 
   return samples

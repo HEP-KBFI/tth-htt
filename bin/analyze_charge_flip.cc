@@ -98,7 +98,7 @@ int getBinIdx_pT_and_absEta(double pT, double absEta)
     "EH": 6*/
   int idxBin = 0;
   if ( absEta > 1.479 ) idxBin += 3;
-  if      ( pT >= 15. && pT < 25. ) idxBin += 1;
+  if      ( pT >= 10. && pT < 25. ) idxBin += 1;
   else if ( pT >= 25. && pT < 50. ) idxBin += 2;
   else if ( pT >= 50.             ) idxBin += 3;        
   else idxBin = 0;
@@ -420,7 +420,7 @@ int main(int argc, char* argv[])
     evtHistManager_DY_recCategory = new EvtHistManager_charge_flip(makeHistManager_cfg("DY",
       "gen_rec", era_string, central_or_shift));
     evtHistManager_DY_recCategory->bookHistograms(fs);
-  }
+  } 
 
   const int numBins_absEta = 2;
   Double_t binning_absEta[numBins_absEta + 1] = { 0., 1.479, 2.5 };
@@ -489,6 +489,7 @@ int main(int argc, char* argv[])
     }
   }
 
+
   int analyzedEntries = 0;
   int selectedEntries = 0;
   double selectedEntries_weighted = 0.;
@@ -510,7 +511,7 @@ int main(int argc, char* argv[])
     "= 0 presel muons",
     "= 2 sel electrons",
     "sel electron trigger match",
-    "lead electron pT > 25 GeV && sublead electron pT > 15 GeV",
+    "lead electron pT > 25 GeV && sublead electron pT > 10 GeV",
     "tight electron charge",
     "60 < m(ee) < 120 GeV",
     "selectedEvt_1eTrig",
@@ -843,7 +844,7 @@ int main(int argc, char* argv[])
     if ( selElectron_lead->genLepton() && abs(selElectron_lead->genLepton()->pdgId()) == 11 ) {
       genElectron_lead = selElectron_lead->genLepton();
     }
-    double selElectron_lead_pT = selElectron_lead->cone_pt();
+    double selElectron_lead_pT = selElectron_lead->pt();
     double selElectron_lead_eta = selElectron_lead->eta();
     double selElectron_lead_absEta = std::fabs(selElectron_lead_eta);
     double selElectron_lead_phi = selElectron_lead->phi();
@@ -854,7 +855,7 @@ int main(int argc, char* argv[])
     if ( selElectron_sublead->genLepton() && abs(selElectron_sublead->genLepton()->pdgId()) == 11 ) {
       genElectron_sublead = selElectron_sublead->genLepton();
     }
-    double selElectron_sublead_pT = selElectron_sublead->cone_pt();
+    double selElectron_sublead_pT = selElectron_sublead->pt();
     double selElectron_sublead_eta = selElectron_sublead->eta();
     double selElectron_sublead_absEta = std::fabs(selElectron_sublead_eta);
     double selElectron_sublead_phi = selElectron_sublead->phi();
@@ -925,7 +926,8 @@ int main(int argc, char* argv[])
     double m_ee = (selElectron_lead_p4 + selElectron_sublead_p4).mass();
     
     double minPt_lead = 20.;
-    double minPt_sublead = 15.;
+    //double minPt_sublead = 15.;
+    double minPt_sublead = 10.;
     if ( !(selElectron_lead_pT > minPt_lead && selElectron_sublead_pT > minPt_sublead) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS lepton pT selection." << std::endl;
@@ -934,8 +936,8 @@ int main(int argc, char* argv[])
       }
       continue;
     }
-    cutFlowTable.update("lead electron pT > 25 GeV && sublead electron pT > 15 GeV", evtWeightRecorder.get(central_or_shift));
-    cutFlowHistManager->fillHistograms("lead electron pT > 25 GeV && sublead electron pT > 15 GeV", evtWeightRecorder.get(central_or_shift));
+    cutFlowTable.update("lead electron pT > 25 GeV && sublead electron pT > 10 GeV", evtWeightRecorder.get(central_or_shift));
+    cutFlowHistManager->fillHistograms("lead electron pT > 25 GeV && sublead electron pT > 10 GeV", evtWeightRecorder.get(central_or_shift));
     
     bool failsTightChargeCut = false;
     for ( std::vector<const RecoElectron*>::const_iterator electron = selElectrons.begin();
@@ -1119,7 +1121,7 @@ int main(int argc, char* argv[])
             << " selected = " << selectedEntries << " (weighted = " << selectedEntries_weighted << ")\n\n";
   cutFlowTable.print(std::cout);
   std::cout << std::endl;
-
+ 
 //--- manually write histograms to output file
   fs.file().cd();
   //histogram_analyzedEntries->Write();

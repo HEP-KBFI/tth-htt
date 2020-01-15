@@ -32,6 +32,7 @@ class analyzeConfig_charge_flip_mu(analyzeConfig_charge_flip):
         dry_run           = False,
         isDebug           = False,
         use_home          = False,
+        submission_cmd    = None,
       ):
     analyzeConfig.__init__(self,
       configDir             = configDir,
@@ -55,6 +56,7 @@ class analyzeConfig_charge_flip_mu(analyzeConfig_charge_flip):
       dry_run               = dry_run,
       isDebug               = isDebug,
       use_home              = use_home,
+      submission_cmd        = submission_cmd,
     )
 
     self.prep_dcard_processesToCopy = ["data_obs", "DY", "DY_fake", "WJets", "TTbar", "Singletop", "Diboson"]

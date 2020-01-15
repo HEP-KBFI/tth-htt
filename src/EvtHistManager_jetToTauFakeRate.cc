@@ -44,7 +44,7 @@ EvtHistManager_jetToTauFakeRate::bookHistograms(TFileDirectory & dir)
   histogram_numBJets_loose_  = book1D(dir, "numBJets_loose",  "numBJets_loose",  10, -0.5,   +9.5);
   histogram_numBJets_medium_ = book1D(dir, "numBJets_medium", "numBJets_medium", 10, -0.5,   +9.5);
 
-  histogram_numJets_for_numBJets_mediumGe2_              = book1D(dir, "numJets_for_numBJets_mediumEq2",              "numJets", 10, -0.5, +9.5);
+  histogram_numJets_for_numBJets_mediumGe2_              = book1D(dir, "numJets_for_numBJets_mediumGe2",              "numJets", 10, -0.5, +9.5);
   histogram_numJets_for_numBJets_mediumEq1_and_looseGe2_ = book1D(dir, "numJets_for_numBJets_mediumEq1_and_looseGe2", "numJets", 10, -0.5, +9.5);
   histogram_numJets_for_numBJets_mediumEq1_and_looseEq1_ = book1D(dir, "numJets_for_numBJets_mediumEq1_and_looseEq1", "numJets", 10, -0.5, +9.5); 
   histogram_numJets_for_numBJets_mediumEq0_and_looseGe2_ = book1D(dir, "numJets_for_numBJets_mediumEq0_and_looseGe2", "numJets", 10, -0.5, +9.5);

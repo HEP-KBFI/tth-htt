@@ -32,7 +32,8 @@ class analyzeConfig_hadTopTagger(analyzeConfig):
         verbose  = False,
         dry_run  = False,
         isDebug  = False,
-        use_home = False
+        use_home = False,
+        submission_cmd = None,
       ):
     analyzeConfig.__init__(self,
       configDir             = configDir,
@@ -56,6 +57,7 @@ class analyzeConfig_hadTopTagger(analyzeConfig):
       dry_run               = dry_run,
       isDebug               = isDebug,
       use_home              = use_home,
+      submission_cmd        = submission_cmd,
     )
 
     self.hadTau_selection = hadTau_selection
