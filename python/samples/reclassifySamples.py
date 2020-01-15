@@ -55,6 +55,9 @@ def reclassifySamples(samples_era_base, samples_era_hh_multilepton = None, sampl
       elif sample_name.startswith('/WGToLNuG_Tune'):
         sample_info["use_it"] = False
 
+      if sample_name.startswith(('/TGJets', '/TTGJets', '/WGTo', '/ZGTo')):
+        sample_info["sample_category"] = "XGamma"
+
     if sample_info["process_name_specific"].startswith('signal') and 'hh' in sample_info["process_name_specific"]:
       if is_nonresonant(sample_info["sample_category"]) and not sample_info["process_name_specific"].endswith('2b2v_sl'):
         # HH->bbWW single-leptonic samples are disabled because we decided to process these samples too late in ttH analysis

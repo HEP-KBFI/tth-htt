@@ -597,7 +597,7 @@ class analyzeConfig_ttWctrl(analyzeConfig):
           sample_categories.extend(self.nonfake_backgrounds)
           sample_categories.extend(self.ttHProcs)
           processes_input = []
-          for sample_category in sample_categories:
+          for sample_category in self.convs_backgrounds:
             processes_input.append("%s_Convs" % sample_category)
           self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_Convs] = {
             'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job],
