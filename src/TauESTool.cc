@@ -23,7 +23,7 @@ TauESTool::TauESTool(int era,
       default: throw cmsException(this, __func__, __LINE__) << "Invalid era: " << era;
     }
   }();
-  const std::string input_name = Form("TauPOG/TauIDSFs/data/TauES_dm_%s.root", era_str.data());
+  const std::string input_name = Form("TauPOG/TauIDSFs/data/TauES_dm_MVAoldDM2017v2_%s.root", era_str.data());
   const std::string input_name_full = LocalFileInPath(input_name).fullPath();
   TFile * input = TFile::Open(input_name_full.data(), "read");
   if(! input || input -> IsZombie())
