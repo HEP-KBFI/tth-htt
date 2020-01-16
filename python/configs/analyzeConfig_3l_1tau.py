@@ -538,7 +538,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
           addBackgrounds_job_Convs_tuple = ("Convs", lepton_and_hadTau_selection_and_frWeight, chargeSumSelection)
           key_addBackgrounds_job_Convs = getKey(*addBackgrounds_job_Convs_tuple)
           processes_input = []
-          for process_input_base in processes_input_base:
+          for process_input_base in self.convs_backgrounds:
             if "HH" in process_input_base:
               continue
             processes_input.append("%s_Convs" % process_input_base)

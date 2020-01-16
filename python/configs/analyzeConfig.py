@@ -437,6 +437,7 @@ class analyzeConfig(object):
         ] + [
           "HH_{}".format(decMode)  for decMode in self.decayModes_HH + [ 'fake' ]
         ]
+        self.convs_backgrounds = [ "XGamma" ]
         self.make_plots_backgrounds = [ ]
         self.make_plots_signal = "ttH"
         self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_cfg.py")
@@ -1043,7 +1044,7 @@ class analyzeConfig(object):
         processesToSubtract = []
         processesToSubtract.extend(nonfake_backgrounds)
         if '0l' not in self.channel:
-            processesToSubtract.extend([ "%s_Convs" % nonfake_background for nonfake_background in nonfake_backgrounds])
+            processesToSubtract.extend([ "%s_Convs" % conv_background for conv_background in self.convs_backgrounds])
         lines.append("process.addBackgroundLeptonFakes.processesToSubtract = cms.vstring(%s)" % processesToSubtract)
         lines.append("process.addBackgroundLeptonFakes.sysShifts = cms.vstring(%s)" % self.central_or_shifts)
         create_cfg(self.cfgFile_addFakes, jobOptions['cfgFile_modified'], lines)
@@ -1065,8 +1066,7 @@ class analyzeConfig(object):
         lines.append("    )")
         lines.append(")")
         processesToSubtract = [ "data_fakes" ]
-        nonfake_backgrounds = [category for category in self.nonfake_backgrounds if category not in [ "WH", "ZH" ]]
-        processesToSubtract.extend([ "%s_Convs" % nonfake_background for nonfake_background in nonfake_backgrounds ])
+        processesToSubtract.extend([ "%s_Convs" % conv_background for conv_background in self.convs_backgrounds ])
         lines.append("process.addBackgroundLeptonFlips.processesToSubtract = cms.vstring(%s)" % processesToSubtract)
         lines.append("process.addBackgroundLeptonFlips.sysShifts = cms.vstring(%s)" % self.central_or_shifts)
         create_cfg(self.cfgFile_addFlips, jobOptions['cfgFile_modified'], lines)
