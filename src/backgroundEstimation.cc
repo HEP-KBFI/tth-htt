@@ -43,15 +43,15 @@ prob_chargeMisId(int era,
     {
       if(abs_lepton_eta >= 0. && abs_lepton_eta < 1.479)
       {
-        if     (lepton_pt >= 10. && lepton_pt < 25) prob = 1.50000e-5;
-        else if(lepton_pt >= 25. && lepton_pt < 50) prob = 5.24244e-5;
-        else if(lepton_pt >= 50.                  ) prob = 1.28031e-4;
+        if     (lepton_pt >= 10. && lepton_pt < 25) prob = 1.29248e-4;
+        else if(lepton_pt >= 25. && lepton_pt < 50) prob = 5.29988e-5;
+        else if(lepton_pt >= 50.                  ) prob = 1.11898e-4;
       }
       else if(abs_lepton_eta >= 1.479 && abs_lepton_eta < 2.5)
       {
-        if     (lepton_pt >= 10. && lepton_pt < 25) prob = 3.49806e-4;
-        else if(lepton_pt >= 25. && lepton_pt < 50) prob = 4.93725e-4;
-        else if(lepton_pt >= 50.                  ) prob = 6.97318e-4;
+        if     (lepton_pt >= 10. && lepton_pt < 25) prob = 4.08034e-4;
+        else if(lepton_pt >= 25. && lepton_pt < 50) prob = 5.00129e-4;
+        else if(lepton_pt >= 50.                  ) prob = 8.85938e-4;
       }
     }
     else if(era == kEra_2018)
