@@ -66,6 +66,7 @@ class analyzeConfig_ttZctrl(analyzeConfig):
         do_sync                   = False,
         rle_select                = '',
         use_nonnominal            = False,
+        submission_cmd            = None,
       ):
     analyzeConfig.__init__(self,
       configDir                 = configDir,
@@ -93,6 +94,7 @@ class analyzeConfig_ttZctrl(analyzeConfig):
       isDebug                   = isDebug,
       use_home                  = use_home,
       do_sync                   = do_sync,
+      submission_cmd            = submission_cmd,
     )
 
     self.lepton_selections = [ "Tight", "Fakeable" ]
@@ -529,7 +531,7 @@ class analyzeConfig_ttZctrl(analyzeConfig):
         sample_categories.extend(self.nonfake_backgrounds)
         sample_categories.extend(self.ttHProcs)
         processes_input = []
-        for sample_category in sample_categories:
+        for sample_category in self.convs_backgrounds:
           processes_input.append("%s_Convs" % sample_category)
         self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_Convs] = {
           'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job],

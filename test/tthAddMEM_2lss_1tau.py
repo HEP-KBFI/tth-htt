@@ -175,6 +175,7 @@ if __name__ == '__main__':
     use_nonnominal           = use_nonnominal,
     use_home                 = use_home,
     rle_filter_file          = rle_filter_file,
+    submission_cmd           = sys.argv,
   )
 
   goodToGo = addMEMProduction.create()

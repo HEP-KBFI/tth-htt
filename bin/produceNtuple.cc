@@ -259,15 +259,8 @@ main(int argc,
   const RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era, -1, isDEBUG);
   const RecoElectronCollectionSelectorTight tightElectronSelector(era, -1, isDEBUG);
 
-  double minPt_ele = -1.;
-  double minPt_mu  = -1.;
-  switch(era)
-  {
-    case kEra_2016:
-    case kEra_2017:
-    case kEra_2018: minPt_ele = 23.; minPt_mu = 18.; break;
-    default:        throw cmsException("produceNtuple", __LINE__) << "Unsupported era = " << era;
-  }
+  const double minPt_ele = 18.;
+  const double minPt_mu  =  9.;
 
   RecoHadTauReader * const hadTauReader = new RecoHadTauReader(era, branchName_hadTaus, isMC, readGenObjects);
   hadTauReader->setHadTauPt_central_or_shift(kHadTauPt_uncorrected);
@@ -794,14 +787,15 @@ main(int argc,
       //     with respect to thresholds applied on analysis level
       //     to allow for e-ES and mu-ES uncertainties to be estimated
       const double minPt_lead = selLepton_lead -> is_electron() ? minPt_ele : minPt_mu;
-      if(! (selLepton_lead->cone_pt() > minPt_lead))
+      if(! (std::min(selLepton_lead->cone_pt(), selLepton_lead->pt()) > minPt_lead))
       {
         if(run_lumi_eventSelector || isDEBUG)
         {
           std::cout << "event FAILS lepton pT selection.\n"
                        "( leading selLepton "
-                       "pT = "         << selLepton_lead->cone_pt() << ", "
-                       "minPt_lead = " << minPt_lead << ")\n"
+                       "reco-pT = "    << selLepton_lead->pt()      << ", "
+                       "cone-pT = "    << selLepton_lead->cone_pt() << ", "
+                       "minPt_lead = " << minPt_lead                << ")\n"
           ;
         }
         continue;

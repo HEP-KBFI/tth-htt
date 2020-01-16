@@ -44,6 +44,7 @@ def reclassifySamples(samples_era_base, samples_era_hh_multilepton = None, sampl
       # https://gitlab.cern.ch/ttH_leptons/doc/blob/53e8220a045118cdecd03c85a677736417e0ea74/Legacy/datacards_and_systematics.md#12-bkg-collective-names
       if re.match("/DY(\d)?Jets", sample_name):
         sample_info["sample_category"] = "ZZ"
+        sample_info["use_it"] = False
       elif re.match("/W(\d)?Jets", sample_name):
         sample_info["sample_category"] = "WZ"
         sample_info["use_it"] = False
@@ -51,6 +52,11 @@ def reclassifySamples(samples_era_base, samples_era_hh_multilepton = None, sampl
         sample_info["sample_category"] = "TTZ"
       elif sample_name.startswith("/ST_"):
         sample_info["sample_category"] = "Rares"
+      elif sample_name.startswith('/WGToLNuG_Tune'):
+        sample_info["use_it"] = False
+
+      if sample_name.startswith(('/TGJets', '/TTGJets', '/WGTo', '/ZGTo')):
+        sample_info["sample_category"] = "XGamma"
 
     if sample_info["process_name_specific"].startswith('signal') and 'hh' in sample_info["process_name_specific"]:
       if is_nonresonant(sample_info["sample_category"]) and not sample_info["process_name_specific"].endswith('2b2v_sl'):

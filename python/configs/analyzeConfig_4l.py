@@ -71,6 +71,7 @@ class analyzeConfig_4l(analyzeConfig):
         use_nonnominal            = False,
         hlt_filter                = False,
         use_home                  = False,
+        submission_cmd            = None,
       ):
     analyzeConfig.__init__(self,
       configDir                 = configDir,
@@ -97,6 +98,7 @@ class analyzeConfig_4l(analyzeConfig):
       dry_run                   = dry_run,
       isDebug                   = isDebug,
       use_home                  = use_home,
+      submission_cmd            = submission_cmd,
     )
 
     self.lepton_selections = [ "Tight", "Fakeable" ]
@@ -478,7 +480,7 @@ class analyzeConfig_4l(analyzeConfig):
           addBackgrounds_job_Convs_tuple = ("Convs", lepton_selection_and_frWeight, chargeSumSelection)
           key_addBackgrounds_job_Convs = getKey(*addBackgrounds_job_Convs_tuple)
           processes_input = []
-          for process_input_base in processes_input_base:
+          for process_input_base in self.convs_backgrounds:
             if "HH" in process_input_base:
               continue
             processes_input.append("%s_Convs" % process_input_base)

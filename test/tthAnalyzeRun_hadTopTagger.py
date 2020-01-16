@@ -81,7 +81,8 @@ if __name__ == '__main__':
     verbose               = False,
     dry_run               = dry_run,
     isDebug               = debug,
-    use_home              = use_home
+    use_home              = use_home,
+  submission_cmd          = sys.argv,
   )
 
   job_statistics = analysis.create()

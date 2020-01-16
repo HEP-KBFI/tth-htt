@@ -109,11 +109,13 @@ if __name__ == '__main__':
     num_parallel_jobs     = num_parallel_jobs,
     histograms_to_fit     = {
       "mass_ll" : {},
+      "mass_ll_ePtThrsh15" : {},
     },
     select_rle_output     = True,
     dry_run               = dry_run,
     isDebug               = debug,
     use_home              = use_home,
+    submission_cmd        = sys.argv,
   )
 
   job_statistics = analysis.create()

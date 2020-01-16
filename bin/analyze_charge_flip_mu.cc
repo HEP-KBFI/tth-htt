@@ -997,8 +997,8 @@ int main(int argc, char* argv[])
     
     double pt0, pt1;
     //std::cout << "Before " << selLepton_lead->pt() << ", " << selLepton_sublead->pt() << "   " << central_or_shift << std::endl;
-    pt0 = selLepton_lead->cone_pt();
-    pt1 = selLepton_sublead->cone_pt();
+    pt0 = selLepton_lead->pt();
+    pt1 = selLepton_sublead->pt();
     if(muon_option == kMuon_ESBarrel1Up)
     {
       if (etaL0 < 0.9) pt0 *= 1.02;

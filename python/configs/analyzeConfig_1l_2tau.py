@@ -73,6 +73,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
         use_nonnominal    = False,
         hlt_filter        = False,
         use_home          = False,
+        submission_cmd    = None,
       ):
     analyzeConfig.__init__(self,
       configDir             = configDir,
@@ -97,6 +98,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
       dry_run               = dry_run,
       isDebug               = isDebug,
       use_home              = use_home,
+      submission_cmd        = submission_cmd,
     )
 
     self.lepton_and_hadTau_selections = [ "Tight", "Fakeable" ]
@@ -514,7 +516,7 @@ class analyzeConfig_1l_2tau(analyzeConfig):
           addBackgrounds_job_Convs_tuple = ("Convs", lepton_and_hadTau_selection_and_frWeight, hadTau_charge_selection)
           key_addBackgrounds_job_Convs = getKey(*addBackgrounds_job_Convs_tuple)
           processes_input = []
-          for process_input_base in processes_input_base:
+          for process_input_base in self.convs_backgrounds:
             if "HH" in process_input_base:
               continue
             processes_input.append("%s_Convs" % process_input_base)

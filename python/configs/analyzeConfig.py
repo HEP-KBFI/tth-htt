@@ -1,10 +1,10 @@
-from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, generate_file_ids, get_log_version, record_software_state
+from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, generate_file_ids, get_log_version, check_submission_cmd, record_software_state
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile, is_dymc_reweighting, is_dymc_normalization
 from tthAnalysis.HiggsToTauTau.analysisTools import createMakefile as tools_createMakefile, get_tH_weight_str, get_tH_SM_str
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch as tools_createScript_sbatch
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch_hadd_nonBlocking as tools_createScript_sbatch_hadd_nonBlocking
 from tthAnalysis.HiggsToTauTau.analysisSettings import Triggers, systematics
-from tthAnalysis.HiggsToTauTau.common import logging
+from tthAnalysis.HiggsToTauTau.common import logging, DEPENDENCIES
 from tthAnalysis.HiggsToTauTau.samples.stitch import get_branch_type
 
 from tthAnalysis.NanoAODTools.tHweights_cfi import tHweights, thIdxsNoCP, find_tHweight
@@ -21,17 +21,6 @@ LEP_MVA_WPS = {
   'default' : 'mu=0.85;e=0.80',
   'ttZctrl' : 'mu=0.85;e=0.50',
 }
-
-DEPENDENCIES = [
-    "",  # CMSSW_BASE/src
-    "tthAnalysis/NanoAOD",
-    "tthAnalysis/HiggsToTauTau",
-    "TauAnalysisTools/TauTriggerSFs",
-    "TauAnalysis/ClassicSVfit",
-    "TauAnalysis/SVfitTF",
-    "ttH_Htautau_MEM_Analysis",
-    "tthAnalysis/tthMEM",
-]
 
 DKEY_CFGS    = "cfgs"        # dir for python configuration and batch script files for each analysis job
 DKEY_HIST    = "histograms"  # dir for ROOT files containing histograms = output of the anaysis jobs
@@ -117,6 +106,7 @@ class analyzeConfig(object):
           use_home                        = False,
           isDebug                         = False,
           template_dir                    = None,
+          submission_cmd                  = None,
       ):
 
         self.configDir = configDir
@@ -378,9 +368,14 @@ class analyzeConfig(object):
         self.stderr_file_path = os.path.join(self.configDir, "stderr_%s.log" % self.channel)
         self.sw_ver_file_cfg  = os.path.join(self.configDir, "VERSION_%s.log" % self.channel)
         self.sw_ver_file_out  = os.path.join(self.outputDir, "VERSION_%s.log" % self.channel)
-        self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out = get_log_version((
-            self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out
+        self.validation_out   = os.path.join(self.configDir, "VALIDATION_%s.log" % self.channel)
+        self.submission_out   = os.path.join(self.configDir, "SUBMISSION_%s.log" % self.channel)
+        self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out, \
+        self.validation_out, self.submission_out = get_log_version((
+            self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out,
+            self.validation_out, self.submission_out,
         ))
+        check_submission_cmd(self.submission_out, submission_cmd)
 
         self.dirs = {}
 
@@ -442,6 +437,7 @@ class analyzeConfig(object):
         ] + [
           "HH_{}".format(decMode)  for decMode in self.decayModes_HH + [ 'fake' ]
         ]
+        self.convs_backgrounds = [ "XGamma" ]
         self.make_plots_backgrounds = [ ]
         self.make_plots_signal = "ttH"
         self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_cfg.py")
@@ -710,7 +706,7 @@ class analyzeConfig(object):
             assert('skipEvery' not in jobOptions)
             jobOptions['skipEvery'] = sample_info['skipEvery']
         if 'useObjectMultiplicity' not in jobOptions:
-            jobOptions['useObjectMultiplicity'] = False
+            jobOptions['useObjectMultiplicity'] = self.do_sync
 
         jobOptions_local = [
             'process',
@@ -1048,7 +1044,7 @@ class analyzeConfig(object):
         processesToSubtract = []
         processesToSubtract.extend(nonfake_backgrounds)
         if '0l' not in self.channel:
-            processesToSubtract.extend([ "%s_Convs" % nonfake_background for nonfake_background in nonfake_backgrounds])
+            processesToSubtract.extend([ "%s_Convs" % conv_background for conv_background in self.convs_backgrounds])
         lines.append("process.addBackgroundLeptonFakes.processesToSubtract = cms.vstring(%s)" % processesToSubtract)
         lines.append("process.addBackgroundLeptonFakes.sysShifts = cms.vstring(%s)" % self.central_or_shifts)
         create_cfg(self.cfgFile_addFakes, jobOptions['cfgFile_modified'], lines)
@@ -1070,8 +1066,7 @@ class analyzeConfig(object):
         lines.append("    )")
         lines.append(")")
         processesToSubtract = [ "data_fakes" ]
-        nonfake_backgrounds = [category for category in self.nonfake_backgrounds if category not in [ "WH", "ZH" ]]
-        processesToSubtract.extend([ "%s_Convs" % nonfake_background for nonfake_background in nonfake_backgrounds ])
+        processesToSubtract.extend([ "%s_Convs" % conv_background for conv_background in self.convs_backgrounds ])
         lines.append("process.addBackgroundLeptonFlips.processesToSubtract = cms.vstring(%s)" % processesToSubtract)
         lines.append("process.addBackgroundLeptonFlips.sysShifts = cms.vstring(%s)" % self.central_or_shifts)
         create_cfg(self.cfgFile_addFlips, jobOptions['cfgFile_modified'], lines)
@@ -1414,11 +1409,10 @@ class analyzeConfig(object):
                     idxBatch = idxBatch + 1
                     if make_target_batch not in self.phoniesToAdd:
                         self.phoniesToAdd.append(make_target_batch)
-                else:
-                    outputFile_base = os.path.basename(outputFiles[key])
-                    lines_makefile.append("\thadd -f %s %s" % (outputFile_base, ' '.join(inputFiles[key])))
-                    if outputFile_base != outputFiles[key]:
-                        lines_makefile.append("\tmv %s %s" % (outputFile_base, outputFiles[key]))
+                outputFile_base = os.path.basename(outputFiles[key])
+                lines_makefile.append("\thadd -f %s %s" % (outputFile_base, ' '.join(inputFiles[key])))
+                if outputFile_base != outputFiles[key]:
+                    lines_makefile.append("\tmv %s %s" % (outputFile_base, outputFiles[key]))
             lines_makefile.append("")
             lines_makefile.append("%s: %s" % (make_target, " ".join(make_target_batches)))
         lines_makefile.append("")
@@ -1585,7 +1579,7 @@ class analyzeConfig(object):
         make_target_validate = "phony_validate"
         lines_makefile.append("%s: %s" % (make_target_validate, make_dependency))
         inspect_argument = '-w {}'.format(self.channel) if single_channel else ''
-        lines_makefile.append("\tinspect_rle_numbers.py -i %s %s" % (self.outputDir, inspect_argument))
+        lines_makefile.append("\tinspect_rle_numbers.py -v -i %s %s &> %s" % (self.outputDir, inspect_argument, self.validation_out))
         lines_makefile.append("")
         if make_target_validate not in self.phoniesToAdd:
             self.phoniesToAdd.append(make_target_validate)

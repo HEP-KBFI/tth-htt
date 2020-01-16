@@ -694,7 +694,7 @@ int main(int argc, char* argv[])
      {"mass_2L_mm_lj_neg", {}},
      {"mass_2L_mm_hj_pos", {}},
      {"mass_2L_mm_hj_neg", {}},
-     {"mass_2L_cr",        {0,1}},
+     {"mass_2L_cr",        {}},
      {"mass_2L_rest",        {0,1}}
    };
 
@@ -1352,8 +1352,8 @@ int main(int argc, char* argv[])
       }
       continue;
     }
-    cutFlowTable.update(">= 2 sel leptons", 1.);
-    cutFlowHistManager->fillHistograms(">= 2 sel leptons", 1.);
+    cutFlowTable.update(">= 2 sel leptons", evtWeightRecorder.get(central_or_shift_main));
+    cutFlowHistManager->fillHistograms(">= 2 sel leptons", evtWeightRecorder.get(central_or_shift_main));
     const RecoLepton* selLepton_lead = selLeptons[0];
     int selLepton_lead_type = getLeptonType(selLepton_lead->pdgId());
     const RecoLepton* selLepton_sublead = selLeptons[1];
@@ -1483,7 +1483,7 @@ int main(int argc, char* argv[])
       }
       continue;
     }
-    cutFlowTable.update("sel tau veto");
+    cutFlowTable.update("sel tau veto", evtWeightRecorder.get(central_or_shift_main));
     cutFlowHistManager->fillHistograms("sel tau veto", evtWeightRecorder.get(central_or_shift_main));
 
     const bool failsLowMassVeto = isfailsLowMassVeto(preselLeptonsFullUncleaned);
@@ -2385,10 +2385,10 @@ int main(int argc, char* argv[])
 
     //---------------------------------------------------------------------------
     // CV: fill a few extra histogram for the HIG-19-008 paper
-    if ( genMatches.size() > 0 ) 
+    if ( genMatches.size() > 0 )
     {
       bool isFake = false;
-      for ( auto genMatch : genMatches ) 
+      for ( auto genMatch : genMatches )
       {
         if ( genMatch->getName() == "_fake" ) isFake = true;
       }
@@ -2397,7 +2397,7 @@ int main(int argc, char* argv[])
       TH1* histogram_numGenBJets = nullptr;
       TH1* histogram_numRecBJets_loose = nullptr;
       TH1* histogram_numRecBJets_medium = nullptr;
-      if ( isFake ) 
+      if ( isFake )
       {
         histogram_genBJetPt = histogram_genBJetPt_fake;
         histogram_genBJetEta = histogram_genBJetEta_fake;

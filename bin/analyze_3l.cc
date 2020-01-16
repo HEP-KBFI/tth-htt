@@ -919,7 +919,6 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     }
     ++analyzedEntries;
     histogram_analyzedEntries->Fill(0.);
-    //if(eventInfo.event != 987370) continue;
 
     if (run_lumi_eventSelector && !(*run_lumi_eventSelector)(eventInfo))
     {
@@ -1400,8 +1399,8 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
       }
       continue;
     }
-    cutFlowTable.update(">= 3 sel leptons", 1.);
-    cutFlowHistManager->fillHistograms(">= 3 sel leptons", 1.);
+    cutFlowTable.update(">= 3 sel leptons", evtWeightRecorder.get(central_or_shift_main));
+    cutFlowHistManager->fillHistograms(">= 3 sel leptons", evtWeightRecorder.get(central_or_shift_main));
     const RecoLepton* selLepton_lead = selLeptons[0];
     int selLepton_lead_type = getLeptonType(selLepton_lead->pdgId());
     const RecoLepton* selLepton_sublead = selLeptons[1];

@@ -1,23 +1,14 @@
-from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, get_log_version, record_software_state
+from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, get_log_version, check_submission_cmd, record_software_state
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, generateInputFileList
 from tthAnalysis.HiggsToTauTau.analysisTools import createMakefile as tools_createMakefile
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch as tools_createScript_sbatch
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch_hadd as tools_createScript_sbatch_hadd
 from tthAnalysis.HiggsToTauTau.safe_root import ROOT
-from tthAnalysis.HiggsToTauTau.common import logging
+from tthAnalysis.HiggsToTauTau.common import logging, DEPENDENCIES
 
 import os
 import array
 import uuid
-
-DEPENDENCIES = [
-    "",  # CMSSW_BASE/src
-    "tthAnalysis/HiggsToTauTau",
-    "TauAnalysis/ClassicSVfit",
-    "TauAnalysis/SVfitTF",
-    "ttH_Htautau_MEM_Analysis",
-    "tthAnalysis/tthMEM",
-]
 
 DKEY_CFGS          = "cfgs"
 DKEY_NTUPLES       = "ntuples"
@@ -61,8 +52,9 @@ class addMEMConfig:
             use_home,
             channel,
             rle_filter_file = '',
+            submission_cmd = None,
             pool_id = '',
-            max_jobs_per_sample = -1 
+            max_jobs_per_sample = -1,
           ):
 
         self.treeName = treeName
@@ -119,9 +111,11 @@ class addMEMConfig:
         self.stderr_file_path = os.path.join(self.cfgDir, "stderr_%s.log" % self.channel)
         self.sw_ver_file_cfg  = os.path.join(self.cfgDir, "VERSION_%s.log" % self.channel)
         self.sw_ver_file_out  = os.path.join(self.outputDir, "VERSION_%s.log" % self.channel)
-        self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out = get_log_version((
-            self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out
+        self.submission_out   = os.path.join(self.cfgDir, "SUBMISSION_%s.log" % self.channel)
+        self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out, self.submission_out = get_log_version((
+            self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out, self.submission_out
         ))
+        check_submission_cmd(self.submission_out, submission_cmd)
 
         self.dirs = {}
         self.samples = samples

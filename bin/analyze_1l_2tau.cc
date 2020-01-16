@@ -902,7 +902,6 @@ int main(int argc, char* argv[])
     }
     ++analyzedEntries;
     histogram_analyzedEntries->Fill(0.);
-    //if(eventInfo.event != 2554209) continue;
 
     if (run_lumi_eventSelector && !(*run_lumi_eventSelector)(eventInfo))
     {
@@ -1717,8 +1716,6 @@ int main(int argc, char* argv[])
     };
     const double mvaOutput_legacy = mva_legacy(mvaInputs_legacy);
     if ( isDebugTF ) {
-      std::cout<< "met_pt = "<< met.pt() << "; met_phi =  " << met.phi() << "\n";
-
       std::cout << "event " << eventInfo.str() << "\n";
       std::cout << "variables ";
       for (auto elem :mvaInputs_legacy) std::cout << elem.first << " " << elem.second << "\n";
@@ -1726,8 +1723,6 @@ int main(int argc, char* argv[])
       std::cout << "result  " << mvaOutput_legacy;
       std::cout << std::endl;
       std::cout << std::endl;
-
-      printCollection("selJets", selJets);
     }
 
 //--- retrieve gen-matching flags

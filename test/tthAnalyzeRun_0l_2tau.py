@@ -97,11 +97,6 @@ else:
 
 if mode == "default":
   samples = load_samples(era, suffix = "preselected" if use_preselected else "")
-  for sample_name, sample_info in samples.items():
-    if sample_name == 'sum_events':
-      continue
-    #if sample_info["process_name_specific"].startswith("DYBBJetsToLL_M-50"):
-    #sample_info["use_it"] = True
 elif mode == "forBDTtraining":
   if use_preselected:
     raise ValueError("Makes no sense to use preselected samples w/ BDT training mode")
@@ -138,6 +133,7 @@ for sample_name, sample_info in samples.items():
     sample_info["use_it"] = sample_name.startswith("/Tau/") and mode == "default"
   elif re.match("/DY(\d)?Jets", sample_name):
     sample_info["sample_category"] = "DY"
+    sample_info["use_it"] = mode == "default"
   elif sample_name.startswith('/TTJets'):
     sample_info["use_it"] = mode == "forBDTtraining"
     sample_info["sample_category"] = "TT"
@@ -202,6 +198,7 @@ if __name__ == '__main__':
     use_nonnominal                        = use_nonnominal,
     hlt_filter                            = hlt_filter,
     use_home                              = use_home,
+    submission_cmd                        = sys.argv,
   )
 
   if mode == "forBDTtraining" :
