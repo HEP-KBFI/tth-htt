@@ -13,6 +13,7 @@ Data_to_MC_CorrectionInterface_2017::Data_to_MC_CorrectionInterface_2017(const e
 {
   // Reconstruction efficiencies of electrons with pT < 20 GeV, measured by EGamma POG
   // https://twiki.cern.ch/twiki/pub/CMS/Egamma2017DataRecommendations/egammaEffi.txt_EGM2D_runBCDEF_passingRECO_lowEt.root
+  // Downloaded from: https://twiki.cern.ch/twiki/bin/view/CMS/EgammaIDRecipesRun2?rev=104#94X_series_Fall17V2_Scale_factor
   sfElectronID_and_Iso_loose_.push_back(new lutWrapperTH2(
     inputFiles_,
     "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/el_scaleFactors_gsf_ptLt20.root",
@@ -21,6 +22,7 @@ Data_to_MC_CorrectionInterface_2017::Data_to_MC_CorrectionInterface_2017(const e
   ));
   // Reconstruction efficiencies of electrons with pT > 20 GeV, measured by EGamma POG
   // https://twiki.cern.ch/twiki/pub/CMS/Egamma2017DataRecommendations/egammaEffi.txt_EGM2D_runBCDEF_passingRECO.root
+  // Downloaded from: https://twiki.cern.ch/twiki/bin/view/CMS/EgammaIDRecipesRun2?rev=104#94X_series_Fall17V2_Scale_factor
   sfElectronID_and_Iso_loose_.push_back(new lutWrapperTH2(
     inputFiles_,
     "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/el_scaleFactors_gsf_ptGt20.root",
@@ -80,6 +82,7 @@ Data_to_MC_CorrectionInterface_2017::Data_to_MC_CorrectionInterface_2017(const e
 
   // Identification efficiencies of loose muons with pT < 20 GeV, measured by Muon POG
   // https://twiki.cern.ch/twiki/pub/CMS/MuonReferenceEffs2017/RunBCDEF_SF_ID_JPsi.root
+  // Downloaded from: https://twiki.cern.ch/twiki/bin/view/CMS/MuonReferenceEffs2017?rev=30#Scale_Factors_with_statistical_e ("ID SF for low-pT")
   sfMuonID_and_Iso_loose_.push_back(new lutWrapperTH2(
     inputFiles_,
     "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/mu_scaleFactors_ptLt20.root",
@@ -88,6 +91,7 @@ Data_to_MC_CorrectionInterface_2017::Data_to_MC_CorrectionInterface_2017(const e
   ));
   // Identification efficiencies of loose muons with pT > 20 GeV, measured by Muon POG
   // https://twiki.cern.ch/twiki/pub/CMS/MuonReferenceEffs2017/RunBCDEF_SF_ID.root
+  // Downloaded from: https://twiki.cern.ch/twiki/bin/view/CMS/MuonReferenceEffs2017?rev=30#Scale_Factors_with_statistical_e ("Lepton ID: BCDEF")
   sfMuonID_and_Iso_loose_.push_back(new lutWrapperTH2(
     inputFiles_,
     "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/mu_scaleFactors_ptGt20.root",

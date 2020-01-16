@@ -12,7 +12,7 @@ Data_to_MC_CorrectionInterface_2016::Data_to_MC_CorrectionInterface_2016(const e
   : Data_to_MC_CorrectionInterface_Base(cfg)
 {
   // http://tomc.web.cern.ch/tomc/tagAndProbe/Moriond2017/output/scaleFactors.root
-  // (downloaded from https://twiki.cern.ch/twiki/bin/viewauth/CMS/SUSLeptonSF#Data_leading_order_FullSim_MC_co)
+  // Downloaded from: https://twiki.cern.ch/twiki/bin/viewauth/CMS/SUSLeptonSF?rev=270#Data_leading_order_FullSim_MC_co
   sfElectronID_and_Iso_loose_.push_back(new lutWrapperTH2(
     inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/el_scaleFactors_Moriond17.root", "GsfElectronToMVAVLooseFOIDEmuTightIP2D",
      lut::kXptYabsEta
@@ -27,6 +27,7 @@ Data_to_MC_CorrectionInterface_2016::Data_to_MC_CorrectionInterface_2016(const e
   ));
   // Reconstruction efficiencies of electrons with pT < 20 GeV, measured by EGamma POG
   // https://twiki.cern.ch/twiki/pub/CMS/EgammaIDRecipesRun2/EGM2D_BtoH_low_RecoSF_Legacy2016.root
+  // Downloaded from: https://twiki.cern.ch/twiki/bin/view/CMS/EgammaIDRecipesRun2?rev=104#80X_series_80X_Scale_factors_for
   sfElectronID_and_Iso_loose_.push_back(new lutWrapperTH2(
     inputFiles_,
     "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/el_scaleFactors_gsf_ptLt20.root",
@@ -65,10 +66,11 @@ Data_to_MC_CorrectionInterface_2016::Data_to_MC_CorrectionInterface_2016(const e
 
   // original file:
   // https://twiki.cern.ch/twiki/pub/CMS/SUSLeptonSF/TnP_NUM_LooseID_DENOM_generalTracks_VAR_map_pt_eta.root
-  // (downloaded from https://twiki.cern.ch/twiki/bin/viewauth/CMS/SUSLeptonSF#Data_leading_order_FullSim_M_AN1, "Loose ID")
+  // Downloaded from: https://twiki.cern.ch/twiki/bin/viewauth/CMS/SUSLeptonSF?rev=270#Data_leading_order_FullSim_M_AN1 ("Loose ID")
   // replacement combination of the following:
   // https://gitlab.cern.ch/cms-muonPOG/MuonReferenceEfficiencies/raw/513f1017b1b216a4d3e9f5f0cf858ea7569a134b/EfficienciesStudies/2016_legacy_rereco/rootfiles/RunBCDEF_SF_ID.root
   // https://gitlab.cern.ch/cms-muonPOG/MuonReferenceEfficiencies/raw/513f1017b1b216a4d3e9f5f0cf858ea7569a134b/EfficienciesStudies/2016_legacy_rereco/rootfiles/RunGH_SF_ID.root
+  // Downloaded from: https://twiki.cern.ch/twiki/bin/view/CMS/MuonReferenceEffs2016LegacyRereco?rev=10#Efficiencies ("Lepton ID: BCDEF", "Lepton ID: GH")
   sfMuonID_and_Iso_loose_.push_back(new lutWrapperTH2(
     inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/RunBCDEFGH_SF_ID_ptGt20.root", "NUM_LooseID_DEN_genTracks_eta_pt",
     lut::kXetaYpt, -2.4, +2.4, lut::kLimit, 20., -1., lut::kLimit_and_Cut
@@ -76,18 +78,19 @@ Data_to_MC_CorrectionInterface_2016::Data_to_MC_CorrectionInterface_2016(const e
   // combination of the following:
   // https://gitlab.cern.ch/cms-muonPOG/MuonReferenceEfficiencies/raw/513f1017b1b216a4d3e9f5f0cf858ea7569a134b/EfficienciesStudies/2016_legacy_rereco/Jpsi/rootfiles/RunBCDEF_SF_ID.root
   // https://gitlab.cern.ch/cms-muonPOG/MuonReferenceEfficiencies/raw/513f1017b1b216a4d3e9f5f0cf858ea7569a134b/EfficienciesStudies/2016_legacy_rereco/Jpsi/rootfiles/RunGH_SF_ID.root
+  // Downloaded from: https://twiki.cern.ch/twiki/bin/view/CMS/MuonReferenceEffs2016LegacyRereco?rev=10#Efficiencies ("Lepton ID: BCDEF for low-pT")
   sfMuonID_and_Iso_loose_.push_back(new lutWrapperTH2(
     inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/RunBCDEFGH_SF_ID_ptLt20.root", "NUM_LooseID_DEN_genTracks_pt_abseta",
     lut::kXptYabsEta, -1., 20., lut::kLimit_and_Cut, 0., +2.4, lut::kLimit
   ));
   // https://twiki.cern.ch/twiki/pub/CMS/SUSLeptonSF/TnP_NUM_MiniIsoLoose_DENOM_LooseID_VAR_map_pt_eta.root
-  // (downloaded from https://twiki.cern.ch/twiki/bin/viewauth/CMS/SUSLeptonSF#Data_leading_order_FullSim_M_AN1, "miniIso0.4 vs Loose ID")
+  // Downloaded from: https://twiki.cern.ch/twiki/bin/viewauth/CMS/SUSLeptonSF?rev=270#Data_leading_order_FullSim_M_AN1 ("miniIso0.4 vs Loose ID")
   sfMuonID_and_Iso_loose_.push_back(new lutWrapperTH2(
     inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/TnP_NUM_MiniIsoLoose_DENOM_LooseID_VAR_map_pt_eta.root", "SF",
     lut::kXptYabsEta
   ));
   // https://twiki.cern.ch/twiki/pub/CMS/SUSLeptonSF/TnP_NUM_TightIP2D_DENOM_MediumID_VAR_map_pt_eta.root
-  // (downloaded from https://twiki.cern.ch/twiki/bin/viewauth/CMS/SUSLeptonSF#Data_leading_order_FullSim_M_AN1, "dxy0.05, dz0.1 vs Medium ID")
+  // Downloaded from: https://twiki.cern.ch/twiki/bin/viewauth/CMS/SUSLeptonSF?rev=270#Data_leading_order_FullSim_M_AN1 ("dxy0.05, dz0.1 vs Medium ID")
   sfMuonID_and_Iso_loose_.push_back(new lutWrapperTH2(
     inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2016/TnP_NUM_TightIP2D_DENOM_MediumID_VAR_map_pt_eta.root", "SF",
     lut::kXptYabsEta
