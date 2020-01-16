@@ -224,6 +224,7 @@ TensorFlowInterface::operator()(const std::map<std::string, double> & mvaInputs,
     }
   }
 
+  tensorflow::Session * session   = (event_number % 2 || event_number == -1) ? session_odd_ : session_even_;
   tensorflow::GraphDef * graphDef = (event_number % 2 || event_number == -1) ? graphDef_odd_ : graphDef_even_;
 
   const int node_count = graphDef->node_size();
@@ -247,11 +248,12 @@ TensorFlowInterface::operator()(const std::map<std::string, double> & mvaInputs,
           << '\n';
   }
   tensorflow::run(
-    session_odd_,
+    session,
     { { graphDef->node(n_input_layer).name(), inputs } },
     { graphDef->node(n_output_layer).name() },
     &outputs
   );
+  
 
   // store the output
   std::map<std::string, double> mvaOutputs;
