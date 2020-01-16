@@ -17845,7 +17845,7 @@ samples_2017["/TTZToLLNuNu_M-10_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAO
   ("fsize_local",                     21437522801), # 21.44GB, avg file size 267.97MB
   ("fsize_db",                        479409585023), # 479.41GB, avg file size 3.20GB
   ("use_it",                          True),
-  ("xsection",                        0.2072),
+  ("xsection",                        0.273),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -17887,7 +17887,7 @@ samples_2017["/TTZToLLNuNu_M-10_TuneCP5_PSweights_13TeV-amcatnlo-pythia8/RunIIFa
   ("fsize_local",                     29979369881), # 29.98GB, avg file size 270.08MB
   ("fsize_db",                        673564862733), # 673.56GB, avg file size 2.25GB
   ("use_it",                          True),
-  ("xsection",                        0.2072),
+  ("xsection",                        0.273),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -17971,7 +17971,7 @@ samples_2017["/ttZJets_TuneCP5_13TeV_madgraphMLM_pythia8/RunIIFall17MiniAODv2-PU
   ("fsize_local",                     25691369196), # 25.69GB, avg file size 262.16MB
   ("fsize_db",                        591860866458), # 591.86GB, avg file size 3.00GB
   ("use_it",                          False),
-  ("xsection",                        0.8393),
+  ("xsection",                        0.8596),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -18013,7 +18013,7 @@ samples_2017["/ttZJets_TuneCP5_13TeV_madgraphMLM_pythia8/RunIIFall17MiniAODv2-PU
   ("fsize_local",                     22612663316), # 22.61GB, avg file size 262.94MB
   ("fsize_db",                        522473916483), # 522.47GB, avg file size 2.63GB
   ("use_it",                          False),
-  ("xsection",                        0.8393),
+  ("xsection",                        0.8596),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -19520,9 +19520,9 @@ samples_2017["/WGToLNuG_01J_5f_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17Min
   ("nof_db_files",                    418),
   ("nof_events",                      {
   }),
-  ("nof_tree_events",                 22896074),
+  ("nof_tree_events",                 23887173),
   ("nof_db_events",                   25918966),
-  ("fsize_local",                     27268005528), # 27.27GB, avg file size 52.04MB
+  ("fsize_local",                     28447764326), # 28.45GB, avg file size 54.29MB
   ("fsize_db",                        1050306523358), # 1.05TB, avg file size 2.51GB
   ("use_it",                          True),
   ("xsection",                        191.6),
@@ -19536,7 +19536,7 @@ samples_2017["/WGToLNuG_01J_5f_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17Min
       OD([
         ("path",      "/hdfs/cms/store/user/kaehatah/2017v2_2020Jan10/WGToLNuG_01J_5f_TuneCP5_13TeV-amcatnloFXFX-pythia8/2017v2_2020Jan10_WGToLNuG_01J_5f_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v3/200110_145832"),
         ("selection", "*"),
-        ("blacklist", [1, 2, 10, 11, 24, 25, 38, 39, 40, 64, 65, 66, 69, 70, 117, 118, 126, 150, 151, 177, 199, 200, 208, 209, 224, 225, 227, 231, 232, 233, 234, 235, 276, 277, 313, 314, 315, 352, 353, 356, 357, 368, 369, 371, 372, 373, 379, 380, 386, 387, 394, 395, 396, 414, 415, 435, 436, 437, 444, 445, 494]),
+        ("blacklist", [1, 2, 24, 25, 38, 40, 64, 117, 118, 126, 209, 225, 227, 231, 232, 233, 234, 235, 276, 277, 313, 314, 315, 352, 353, 356, 357, 368, 369, 371, 372, 379, 380, 386, 387, 395, 396, 436, 437, 444, 494]),
       ]),
     ]
   ),

@@ -105,6 +105,15 @@ if use_stitched:
     disable_dy_inclusive = 'dy_noincl' in use_stitched, disable_wjets_inclusive = 'wjets_noincl' in use_stitched,
   )
 
+#--------------------------------------------------------------------------------
+# CV: add ttbar MC samples to make a few extra plots for the HIG-19-008 paper
+#for sample_name, sample_info in samples.items():
+#  if sample_name == 'sum_events':
+#    continue
+#  if sample_name.startswith(('/TTTo2L2Nu', '/TTToSemiLeptonic')):
+#    sample_info["use_it"] = True
+#--------------------------------------------------------------------------------
+
 if __name__ == '__main__':
   logging.info(
     "Running the jobs with the following systematic uncertainties enabled: %s" % \
