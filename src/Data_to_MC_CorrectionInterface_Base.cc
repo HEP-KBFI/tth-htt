@@ -24,12 +24,15 @@ Data_to_MC_CorrectionInterface_Base::Data_to_MC_CorrectionInterface_Base(const e
   , numLeptons_(0)
   , lepton_type_(4)
   , lepton_pt_(4)
+  , lepton_cone_pt_(4)
   , lepton_eta_(4)
   , numElectrons_(0)
   , electron_pt_(4)
+  , electron_cone_pt_(4)
   , electron_eta_(4)
   , numMuons_(0)
   , muon_pt_(4)
+  , muon_cone_pt_(4)
   , muon_eta_(4)
   , numHadTaus_(0)
   , hadTau_genPdgId_(4)
@@ -128,33 +131,37 @@ Data_to_MC_CorrectionInterface_Base::setHadTauSelection(const std::string & hadT
 }
 
 void
-Data_to_MC_CorrectionInterface_Base::setLeptons(int lepton1_type, double lepton1_pt, double lepton1_eta,
-                                                int lepton2_type, double lepton2_pt, double lepton2_eta,
-                                                int lepton3_type, double lepton3_pt, double lepton3_eta,
-                                                int lepton4_type, double lepton4_pt, double lepton4_eta)
+Data_to_MC_CorrectionInterface_Base::setLeptons(int lepton1_type, double lepton1_pt, double lepton1_cone_pt, double lepton1_eta,
+                                                int lepton2_type, double lepton2_pt, double lepton2_cone_pt, double lepton2_eta,
+                                                int lepton3_type, double lepton3_pt, double lepton3_cone_pt, double lepton3_eta,
+                                                int lepton4_type, double lepton4_pt, double lepton4_cone_pt, double lepton4_eta)
 {
   numElectrons_ = 0;
   if(lepton1_type == kElectron)
   {
     electron_pt_[numElectrons_] = lepton1_pt;
+    electron_cone_pt_[numElectrons_] = lepton1_cone_pt;
     electron_eta_[numElectrons_] = lepton1_eta;
     ++numElectrons_;
   }
   if(lepton2_type == kElectron)
   {
     electron_pt_[numElectrons_] = lepton2_pt;
+    electron_cone_pt_[numElectrons_] = lepton2_cone_pt;
     electron_eta_[numElectrons_] = lepton2_eta;
     ++numElectrons_;
   }
   if(lepton3_type == kElectron)
   {
     electron_pt_[numElectrons_] = lepton3_pt;
+    electron_cone_pt_[numElectrons_] = lepton3_cone_pt;
     electron_eta_[numElectrons_] = lepton3_eta;
     ++numElectrons_;
   }
   if(lepton4_type == kElectron)
   {
     electron_pt_[numElectrons_] = lepton4_pt;
+    electron_cone_pt_[numElectrons_] = lepton4_cone_pt;
     electron_eta_[numElectrons_] = lepton4_eta;
     ++numElectrons_;
   }
@@ -163,24 +170,28 @@ Data_to_MC_CorrectionInterface_Base::setLeptons(int lepton1_type, double lepton1
   if(lepton1_type == kMuon)
   {
     muon_pt_[numMuons_] = lepton1_pt;
+    muon_cone_pt_[numMuons_] = lepton1_cone_pt;
     muon_eta_[numMuons_] = lepton1_eta;
     ++numMuons_;
   }
   if(lepton2_type == kMuon)
   {
     muon_pt_[numMuons_] = lepton2_pt;
+    muon_cone_pt_[numMuons_] = lepton2_cone_pt;
     muon_eta_[numMuons_] = lepton2_eta;
     ++numMuons_;
   }
   if(lepton3_type == kMuon)
   {
     muon_pt_[numMuons_] = lepton3_pt;
+    muon_cone_pt_[numMuons_] = lepton3_cone_pt;
     muon_eta_[numMuons_] = lepton3_eta;
     ++numMuons_;
   }
   if(lepton4_type == kMuon)
   {
     muon_pt_[numMuons_] = lepton4_pt;
+    muon_cone_pt_[numMuons_] = lepton4_cone_pt;
     muon_eta_[numMuons_] = lepton4_eta;
     ++numMuons_;
   }
@@ -190,6 +201,7 @@ Data_to_MC_CorrectionInterface_Base::setLeptons(int lepton1_type, double lepton1
   {
     lepton_type_[numLeptons_] = kElectron;
     lepton_pt_[numLeptons_] = electron_pt_[idxElectron];
+    lepton_cone_pt_[numLeptons_] = electron_cone_pt_[idxElectron];
     lepton_eta_[numLeptons_] = electron_eta_[idxElectron];
     ++numLeptons_;
   }
@@ -197,6 +209,7 @@ Data_to_MC_CorrectionInterface_Base::setLeptons(int lepton1_type, double lepton1
   {
     lepton_type_[numLeptons_] = kMuon;
     lepton_pt_[numLeptons_] = muon_pt_[idxMuon];
+    lepton_cone_pt_[numLeptons_] = muon_cone_pt_[idxMuon];
     lepton_eta_[numLeptons_] = muon_eta_[idxMuon];
     ++numLeptons_;
   }
