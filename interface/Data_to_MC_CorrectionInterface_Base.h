@@ -40,12 +40,6 @@ public:
   //-----------------------------------------------------------------------------
 
   //-----------------------------------------------------------------------------
-  // trigger efficiency turn-on curves for Spring16 non-reHLT MC
-  virtual double
-  getWeight_leptonTriggerEff() const;
-  //-----------------------------------------------------------------------------
-
-  //-----------------------------------------------------------------------------
   // data/MC correction for electron and muon trigger efficiency
   virtual double
   getSF_leptonTriggerEff(TriggerSFsys central_or_shift) const;

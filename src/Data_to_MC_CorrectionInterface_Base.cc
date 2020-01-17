@@ -253,14 +253,6 @@ Data_to_MC_CorrectionInterface_Base::setHadTaus(int hadTau1_genPdgId, double had
 }
 
 double
-Data_to_MC_CorrectionInterface_Base::getWeight_leptonTriggerEff() const
-{
-  throw cmsException(this, __func__, __LINE__)
-    << "Cannot call from base class"
-  ;
-}
-
-double
 Data_to_MC_CorrectionInterface_Base::getSF_leptonTriggerEff(TriggerSFsys central_or_shift) const
 {
   throw cmsException(this, __func__, __LINE__)

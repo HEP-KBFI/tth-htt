@@ -11,12 +11,6 @@ public:
   ~Data_to_MC_CorrectionInterface_2017() override;
 
   //-----------------------------------------------------------------------------
-  // trigger efficiency turn-on curves for Spring16 non-reHLT MC
-  double
-  getWeight_leptonTriggerEff() const override;
-  //-----------------------------------------------------------------------------
-
-  //-----------------------------------------------------------------------------
   // data/MC correction for electron and muon trigger efficiency
   double
   getSF_leptonTriggerEff(TriggerSFsys central_or_shift) const override;

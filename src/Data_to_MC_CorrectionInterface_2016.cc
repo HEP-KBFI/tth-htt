@@ -96,23 +96,6 @@ Data_to_MC_CorrectionInterface_2016::Data_to_MC_CorrectionInterface_2016(const e
     lut::kXabsEtaYpt
   ));
 
-  effTrigger_ee_ = new lutWrapperTH2Poly(
-    inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2016RunBCD/trig_eff_map_v4.root", "SSee2DPt__effic",
-    lut::kXptYpt // X=pt1, Y=pt2
-  );
-  effTrigger_em_ = new lutWrapperTH2Poly(
-    inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2016RunBCD/trig_eff_map_v4.root", "SSeu2DPt_effic",
-    lut::kXptYpt // X=pt1, Y=pt2
-  );
-  effTrigger_mm_ = new lutWrapperTH2Poly(
-    inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2016RunBCD/trig_eff_map_v4.root", "SSuu2DPt_effic",
-    lut::kXptYpt // X=pt1, Y=pt2
-  );
-  effTrigger_3l_ = new lutWrapperTH2Poly(
-    inputFiles_, "tthAnalysis/HiggsToTauTau/data/triggerSF/2016RunBCD/trig_eff_map_v4.root", "__3l2DPt_effic",
-    lut::kXptYpt // X=pt1, Y=pt2
-  );
-
   const std::vector<double> etaBinEdges_1e = { -1., 1.48, 2.1 };
   assert(etaBinEdges_1e.size() > 0);
   const std::size_t numEtaBins_1e = etaBinEdges_1e.size() - 1;
@@ -172,37 +155,6 @@ Data_to_MC_CorrectionInterface_2016::Data_to_MC_CorrectionInterface_2016(const e
 
 Data_to_MC_CorrectionInterface_2016::~Data_to_MC_CorrectionInterface_2016()
 {}
-
-double
-Data_to_MC_CorrectionInterface_2016::getWeight_leptonTriggerEff() const
-{
-  double weight = 1.;
-  if(numLeptons_ >= 2)
-  {
-    std::vector<double> lepton_pt_sorted;
-    for(std::size_t idxLepton = 0; idxLepton < numLeptons_; ++idxLepton)
-    {
-      lepton_pt_sorted.push_back(lepton_pt_[idxLepton]);
-    }
-    std::sort(lepton_pt_sorted.begin(), lepton_pt_sorted.end(), std::greater<int>());
-    const double pt1 = lepton_pt_sorted[0];
-    const double pt2 = lepton_pt_sorted[1];
-    if     (numElectrons_ == 2 && numMuons_ == 0) weight = effTrigger_ee_->getSF(pt1, pt2);
-    else if(numElectrons_ == 1 && numMuons_ == 1) weight = effTrigger_em_->getSF(pt1, pt2);
-    else if(numElectrons_ == 0 && numMuons_ == 2) weight = effTrigger_mm_->getSF(pt1, pt2);
-    else if(numLeptons_   >= 3                  ) weight = effTrigger_3l_->getSF(pt1, pt2);
-    else assert(0);
-  }
-  else if(numElectrons_ == 1 && numMuons_ == 0)
-  {
-    weight = get_from_lut(effTrigger_1e_mc_, electron_pt_[0], electron_eta_[0]);
-  }
-  else if(numElectrons_ == 0 && numMuons_ == 1)
-  {
-    weight = get_from_lut(effTrigger_1m_mc_, muon_pt_[0], muon_eta_[0]);
-  }
-  return weight;
-}
 
 double
 Data_to_MC_CorrectionInterface_2016::getSF_leptonTriggerEff(TriggerSFsys central_or_shift) const

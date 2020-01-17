@@ -120,14 +120,6 @@ Data_to_MC_CorrectionInterface_2017::~Data_to_MC_CorrectionInterface_2017()
 {}
 
 double
-Data_to_MC_CorrectionInterface_2017::getWeight_leptonTriggerEff() const
-{
-  throw cmsException(this, __func__, __LINE__)
-    << "Not available for 2017 era"
-  ;
-}
-
-double
 Data_to_MC_CorrectionInterface_2017::getSF_leptonTriggerEff(TriggerSFsys central_or_shift) const
 {
   // see https://cernbox.cern.ch/index.php/s/lW2BiTli5tJR0MN
