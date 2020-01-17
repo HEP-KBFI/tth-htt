@@ -29,13 +29,20 @@ Data_to_MC_CorrectionInterface_2017::Data_to_MC_CorrectionInterface_2017(const e
     "EGamma_SF2D",
     lut::kXetaYpt, -2.5, +2.5, lut::kLimit, 20., -1., lut::kLimit_and_Cut
   ));
-
-  // Efficiency of electron isolation (and track vertex cuts)?
+  // Loose electron SFs, measured by the CERN group
+  // /afs/cern.ch/user/b/balvarez/work/public/ttHAnalysis/TnP_loose_ele_2017.root
   sfElectronID_and_Iso_loose_.push_back(new lutWrapperTH2(
     inputFiles_,
-    "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/el_scaleFactors_trkVtxCut_and_isoEff.root",
+    "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/TnP_loose_ele_2017.root",
     "EGamma_SF2D",
-    lut::kXetaYpt, -2.5, +2.5, lut::kLimit, 10., 500., lut::kLimit
+    lut::kXabsEtaYpt
+  ));
+  // /afs/cern.ch/user/b/balvarez/work/public/ttHAnalysis/TnP_loosettH_ele_2017.root
+  sfElectronID_and_Iso_loose_.push_back(new lutWrapperTH2(
+    inputFiles_,
+    "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/TnP_loosettH_ele_2017.root",
+    "EGamma_SF2D",
+    lut::kXabsEtaYpt
   ));
 
   // Loose-to-tight electron ID SFs, measured by the CERN group
@@ -65,46 +72,12 @@ Data_to_MC_CorrectionInterface_2017::Data_to_MC_CorrectionInterface_2017(const e
     lut::kXabsEtaYpt
   ));
 
-  // Tracking efficiency for muons with pT < 10 GeV, measured by Muon POG (?)
-  sfMuonID_and_Iso_loose_.push_back(new lutWrapperTGraph(
-    inputFiles_,
-    "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/mu_scaleFactors_trkEff_ptLt10.root",
-    "ratio_eff_eta3_tk0_dr030e030_corr",
-    lut::kXetaYpt, -2.4, +2.4, lut::kLimit, -1., 10., lut::kCut
-  ));
-  // Tracking efficiency for muons with pT > 10 GeV, measured by Muon POG (?)
-  sfMuonID_and_Iso_loose_.push_back(new lutWrapperTGraph(
-    inputFiles_,
-    "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/mu_scaleFactors_trkEff_ptGt10.root",
-    "ratio_eff_eta3_dr030e030_corr",
-    lut::kXetaYpt, -2.4, +2.4, lut::kLimit, 10., -1., lut::kCut
-  ));
-
-  // Identification efficiencies of loose muons with pT < 20 GeV, measured by Muon POG
-  // https://twiki.cern.ch/twiki/pub/CMS/MuonReferenceEffs2017/RunBCDEF_SF_ID_JPsi.root
-  // Downloaded from: https://twiki.cern.ch/twiki/bin/view/CMS/MuonReferenceEffs2017?rev=30#Scale_Factors_with_statistical_e ("ID SF for low-pT")
+  // Loose muon SFs, measured by the CERN group
   sfMuonID_and_Iso_loose_.push_back(new lutWrapperTH2(
     inputFiles_,
-    "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/mu_scaleFactors_ptLt20.root",
-    "NUM_LooseID_DEN_genTracks_pt_abseta",
-    lut::kXptYabsEta, -1., 20., lut::kLimit_and_Cut, 0., 2.4, lut::kLimit
-  ));
-  // Identification efficiencies of loose muons with pT > 20 GeV, measured by Muon POG
-  // https://twiki.cern.ch/twiki/pub/CMS/MuonReferenceEffs2017/RunBCDEF_SF_ID.root
-  // Downloaded from: https://twiki.cern.ch/twiki/bin/view/CMS/MuonReferenceEffs2017?rev=30#Scale_Factors_with_statistical_e ("Lepton ID: BCDEF")
-  sfMuonID_and_Iso_loose_.push_back(new lutWrapperTH2(
-    inputFiles_,
-    "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/mu_scaleFactors_ptGt20.root",
-    "NUM_LooseID_DEN_genTracks_pt_abseta",
-    lut::kXptYabsEta, 20., -1., lut::kLimit_and_Cut, 0., 2.4, lut::kLimit
-  ));
-
-  // Efficiency of muon isolation (and track vertex cuts)
-  sfMuonID_and_Iso_loose_.push_back(new lutWrapperTH2(
-    inputFiles_,
-    "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/mu_scaleFactors_trkVtxCut_and_isoEff.root",
-    "NUM_ttHLoo_DEN_LooseID",
-    lut::kXptYabsEta, 10., 120., lut::kLimit, 0., 2.4, lut::kLimit
+    "tthAnalysis/HiggsToTauTau/data/leptonSF/2017/TnP_loose_muon_2017.root",
+    "EGamma_SF2D",
+    lut::kXabsEtaYpt
   ));
 
   // Loose-to-tight muon ID SFs, measured by the CERN group
