@@ -1,6 +1,8 @@
 
 from tthAnalysis.HiggsToTauTau.jobTools import generate_file_ids, generate_input_list
 
+import re
+
 def initDict(dictionary, keys):
     """Auxiliary function to initialize dictionary for access with multiple keys
     """
@@ -106,10 +108,10 @@ def generateInputFileList(sample_info, max_files_per_job):
                 raise RuntimeError("Invalid option: %s" % max_files_per_job)
         max_files_per_job_int = max_files_per_job_default
         for cat, value in max_files_per_job_by_cat.items():
-            if cat == sample_info['sample_category']:
+            if re.match(cat, sample_info['sample_category']):
                 max_files_per_job_int = value
         for name, value in max_files_per_job_by_sample.items():
-            if name == sample_info['process_name_specific']:
+            if re.match(name, sample_info['process_name_specific']):
                 max_files_per_job_int = value
     assert(max_files_per_job_int > 0)
     ( inputFileIds, secondary_files, primary_store, secondary_store ) = initializeInputFileIds(sample_info, max_files_per_job_int)
