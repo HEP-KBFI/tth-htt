@@ -111,6 +111,47 @@ Data_to_MC_CorrectionInterface_2018::getWeight_leptonTriggerEff() const
 double
 Data_to_MC_CorrectionInterface_2018::getSF_leptonTriggerEff(TriggerSFsys central_or_shift) const
 {
-#pragma message "Setting lepton trigger SFs to 1 in 2018"
-  return 1.;
+  // see https://cernbox.cern.ch/index.php/s/lW2BiTli5tJR0MN
+  double sf = 1.;
+  double sfErr = 0.;
+
+  const double lepton_cone_pt_lead    = std::max(lepton_cone_pt_[0], lepton_cone_pt_[1]);
+  const double lepton_cone_pt_sublead = std::min(lepton_cone_pt_[0], lepton_cone_pt_[1]);
+  if(numElectrons_ == 2 && numMuons_ == 0)
+  {
+    if  (lepton_cone_pt_sublead >= 25.) { sf = 1.000; }
+    else                                { sf = 0.980; }
+    sfErr = 1.;
+  }
+  else if(numElectrons_ == 1 && numMuons_ == 1)
+  {
+    if     (lepton_cone_pt_sublead >= 25.) { sf = 1.000; }
+    else                                   { sf = 0.980; }
+    sfErr = 1.;
+  }
+  else if(numElectrons_ == 0 && numMuons_ == 2)
+  {
+    if     (lepton_cone_pt_lead >= 70.) { sf = 0.980; }
+    else if(lepton_cone_pt_lead >= 40.) { sf = 0.995; }
+    else if(lepton_cone_pt_lead >= 15.) { sf = 1.010; }
+    sfErr = 1.;
+  }
+  else if((numElectrons_ + numMuons_) >= 3)
+  {
+    sf = 1.;
+    sfErr = 1.;
+  }
+
+  sfErr /= 100.;
+  switch(central_or_shift)
+  {
+    case TriggerSFsys::central:   return sf;
+    case TriggerSFsys::shiftUp:   return sf * (1. + sfErr);
+    case TriggerSFsys::shiftDown: return sf * (1. - sfErr);
+    default: throw cmsException(this, __func__, __LINE__)
+                     << "Invalid option: " << static_cast<int>(central_or_shift)
+                   ;
+  }
+
+  return sf;
 }

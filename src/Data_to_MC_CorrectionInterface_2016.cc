@@ -207,48 +207,39 @@ Data_to_MC_CorrectionInterface_2016::getWeight_leptonTriggerEff() const
 double
 Data_to_MC_CorrectionInterface_2016::getSF_leptonTriggerEff(TriggerSFsys central_or_shift) const
 {
-  // see Table 4 in AN2017/029v5
+  // see https://cernbox.cern.ch/index.php/s/lW2BiTli5tJR0MN
   double sf = 1.;
   double sfErr = 0.;
 
-  if(numElectrons_ == 1 && numMuons_ == 0)
+  const double lepton_cone_pt_sublead = std::min(lepton_cone_pt_[0], lepton_cone_pt_[1]);
+  if(numElectrons_ == 2 && numMuons_ == 0)
   {
-    const double eff_data = get_from_lut(effTrigger_1e_data_, lepton_pt_[0], lepton_eta_[0]);
-    const double eff_mc   = get_from_lut(effTrigger_1e_mc_,   lepton_pt_[0], lepton_eta_[0]);
-    sf = aux::compSF(eff_data, eff_mc);
-  }
-  else if(numElectrons_ == 0 && numMuons_ == 1)
-  {
-    const double eff_data = get_from_lut(effTrigger_1m_data_, lepton_pt_[0], lepton_eta_[0]);
-    const double eff_mc   = get_from_lut(effTrigger_1m_mc_,   lepton_pt_[0], lepton_eta_[0]);
-    sf = aux::compSF(eff_data, eff_mc);
-  }
-  else if(numElectrons_ == 2 && numMuons_ == 0)
-  {
-    sf = 1.01;
-    sfErr = 0.02;
+    if  (lepton_cone_pt_sublead >= 25.) { sf = 1.000; }
+    else                                { sf = 0.980; }
+    sfErr = 2.;
   }
   else if(numElectrons_ == 1 && numMuons_ == 1)
   {
-    sf = 1.01;
-    sfErr = 0.01;
+    sf = 1.000;
+    sfErr = 1.;
   }
   else if(numElectrons_ == 0 && numMuons_ == 2)
   {
-    sf = 1.;
-    sfErr = 0.01;
+    sf = 0.990;
+    sfErr = 1.;
   }
-  else
+  else if((numElectrons_ + numMuons_) >= 3)
   {
     sf = 1.;
-    sfErr = 0.03;
+    sfErr = 1.;
   }
 
+  sfErr /= 100.;
   switch(central_or_shift)
   {
     case TriggerSFsys::central:   return sf;
-    case TriggerSFsys::shiftUp:   return sf + sfErr;
-    case TriggerSFsys::shiftDown: return sf - sfErr;
+    case TriggerSFsys::shiftUp:   return sf * (1. + sfErr);
+    case TriggerSFsys::shiftDown: return sf * (1. - sfErr);
     default: throw cmsException(this, __func__, __LINE__)
                      << "Invalid option: " << static_cast<int>(central_or_shift)
                    ;

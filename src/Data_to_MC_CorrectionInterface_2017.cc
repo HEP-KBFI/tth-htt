@@ -130,38 +130,43 @@ Data_to_MC_CorrectionInterface_2017::getWeight_leptonTriggerEff() const
 double
 Data_to_MC_CorrectionInterface_2017::getSF_leptonTriggerEff(TriggerSFsys central_or_shift) const
 {
-  // see Table 12 in AN2018/098v18
+  // see https://cernbox.cern.ch/index.php/s/lW2BiTli5tJR0MN
   double sf = 1.;
   double sfErr = 0.;
 
-  const double lepton_pt_lead = std::max(lepton_pt_[0], lepton_pt_[1]);
+  const double lepton_cone_pt_sublead = std::min(lepton_cone_pt_[0], lepton_cone_pt_[1]);
   if(numElectrons_ == 2 && numMuons_ == 0)
   {
-    if  (lepton_pt_lead >= 30.) { sf = 0.991; sfErr = 0.002; }
-    else                        { sf = 0.937; sfErr = 0.027; }
+    if  (lepton_cone_pt_sublead >= 40.) { sf = 1.000; }
+    else                                { sf = 0.980; }
+    sfErr = 1.;
   }
   else if(numElectrons_ == 1 && numMuons_ == 1)
   {
-    if     (lepton_pt_lead >= 50.) { sf = 1.000; sfErr = 0.001; }
-    else if(lepton_pt_lead >= 35.) { sf = 0.983; sfErr = 0.003; }
-    else                           { sf = 0.952; sfErr = 0.008; }
+    if     (lepton_cone_pt_sublead >= 40.) { sf = 0.990; }
+    else                                   { sf = 0.980; }
+    sfErr = 1.;
   }
   else if(numElectrons_ == 0 && numMuons_ == 2)
   {
-    if  (lepton_pt_lead >= 35.) { sf = 0.994; sfErr = 0.001; }
-    else                        { sf = 0.972; sfErr = 0.006; }
+    if     (lepton_cone_pt_sublead >= 70.) { sf = 0.940; }
+    else if(lepton_cone_pt_sublead >= 55.) { sf = 0.960; }
+    else if(lepton_cone_pt_sublead >= 40.) { sf = 0.995; }
+    else if(lepton_cone_pt_sublead >= 15.) { sf = 0.970; }
+    sfErr = 2.;
   }
   else if((numElectrons_ + numMuons_) >= 3)
   {
     sf = 1.;
-    sfErr = 0.050;
+    sfErr = 1.;
   }
 
+  sfErr /= 100.;
   switch(central_or_shift)
   {
     case TriggerSFsys::central:   return sf;
-    case TriggerSFsys::shiftUp:   return sf + sfErr;
-    case TriggerSFsys::shiftDown: return sf - sfErr;
+    case TriggerSFsys::shiftUp:   return sf * (1. + sfErr);
+    case TriggerSFsys::shiftDown: return sf * (1. - sfErr);
     default: throw cmsException(this, __func__, __LINE__)
                      << "Invalid option: " << static_cast<int>(central_or_shift)
                    ;
