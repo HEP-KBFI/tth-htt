@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2020-01-18 16:17:45 with the following command:
+# file generated at 2020-01-18 17:58:40 with the following command:
 # create_dictionary.py -m python/samples/metaDict_2018.py -p /hdfs/local/karl/ttHNtupleProduction/2018/2020Jan17_wPresel_nom_all/ntuples -N samples_2018 -E 2018 -o python/samples -g tthAnalyzeSamples_2018_preselected_base.py -M
 
 samples_2018 = OD()
@@ -19650,16 +19650,16 @@ samples_2018["/ZZTo4L_TuneCP5_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102X_upg
   ("type",                            "mc"),
   ("sample_category",                 "ZZ"),
   ("process_name_specific",           "ZZTo4L_ext1"),
-  ("nof_files",                       1),
+  ("nof_files",                       4),
   ("nof_db_files",                    138),
   ("nof_events",                      {
     'Count'                                                      : [      6689900, ],
     'CountWeighted'                                              : [      6621834,      6622600,      6621457, ],
-    'CountWeightedLHEWeightScale'                                : [      6352882,      6762201,      6988229,      6174378,      6621834,      6906894,      6032586,      6510963,      6842085, ],
+    'CountWeightedLHEWeightScale'                                : [      6352882,      6762200,      6988228,      6174378,      6621834,      6906893,      6032585,      6510963,      6842085, ],
   }),
   ("nof_tree_events",                 1648898),
   ("nof_db_events",                   6689900),
-  ("fsize_local",                     4507729728), # 4.51GB, avg file size 4.51GB
+  ("fsize_local",                     4512629248), # 4.51GB, avg file size 1.13GB
   ("fsize_db",                        278854571525), # 278.85GB, avg file size 2.02GB
   ("use_it",                          True),
   ("xsection",                        1.256),
@@ -19695,16 +19695,16 @@ samples_2018["/ZZTo4L_TuneCP5_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102X_upg
   ("type",                            "mc"),
   ("sample_category",                 "ZZ"),
   ("process_name_specific",           "ZZTo4L_ext2"),
-  ("nof_files",                       10),
+  ("nof_files",                       50),
   ("nof_db_files",                    1473),
   ("nof_events",                      {
     'Count'                                                      : [     99009000, ],
-    'CountWeighted'                                              : [     98023693,     98008182,     97990970, ],
-    'CountWeightedLHEWeightScale'                                : [     94017717,    100076988,    103425173,     91376042,     98023693,    102221213,     89276889,     96358755,    101262070, ],
+    'CountWeighted'                                              : [     98023694,     98008181,     97990970, ],
+    'CountWeightedLHEWeightScale'                                : [     94017722,    100076988,    103425169,     91376042,     98023694,    102221215,     89276886,     96358756,    101262070, ],
   }),
   ("nof_tree_events",                 24395786),
   ("nof_db_events",                   99009000),
-  ("fsize_local",                     66663777622), # 66.66GB, avg file size 6.67GB
+  ("fsize_local",                     66731198307), # 66.73GB, avg file size 1.33GB
   ("fsize_db",                        4120965640479), # 4.12TB, avg file size 2.80GB
   ("use_it",                          True),
   ("xsection",                        1.256),
@@ -19740,16 +19740,16 @@ samples_2018["/ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102X_
   ("type",                            "mc"),
   ("sample_category",                 "ZZ"),
   ("process_name_specific",           "ZZTo2L2Nu_ext1"),
-  ("nof_files",                       1),
+  ("nof_files",                       5),
   ("nof_db_files",                    171),
   ("nof_events",                      {
     'Count'                                                      : [      8382600, ],
-    'CountWeighted'                                              : [      8370585,      8368900,      8368647, ],
-    'CountWeightedLHEWeightScale'                                : [      8420251,      8525662,      8618185,      8253151,      8370585,      8473898,      8113639,      8243083,      8353373, ],
+    'CountWeighted'                                              : [      8370585,      8368899,      8368646, ],
+    'CountWeightedLHEWeightScale'                                : [      8420251,      8525661,      8618185,      8253151,      8370585,      8473898,      8113638,      8243084,      8353373, ],
   }),
   ("nof_tree_events",                 2736749),
   ("nof_db_events",                   8382600),
-  ("fsize_local",                     6772347047), # 6.77GB, avg file size 6.77GB
+  ("fsize_local",                     6779235497), # 6.78GB, avg file size 1.36GB
   ("fsize_db",                        362146384399), # 362.15GB, avg file size 2.12GB
   ("use_it",                          False),
   ("xsection",                        0.564),
@@ -19785,16 +19785,16 @@ samples_2018["/ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102X_
   ("type",                            "mc"),
   ("sample_category",                 "ZZ"),
   ("process_name_specific",           "ZZTo2L2Nu_ext2"),
-  ("nof_files",                       5),
+  ("nof_files",                       25),
   ("nof_db_files",                    842),
   ("nof_events",                      {
     'Count'                                                      : [     48046000, ],
-    'CountWeighted'                                              : [     47991108,     47993065,     47977964, ],
-    'CountWeightedLHEWeightScale'                                : [     48262183,     48867407,     49398277,     47304144,     47991108,     48570648,     46504368,     47246760,     47879242, ],
+    'CountWeighted'                                              : [     47991107,     47993064,     47977962, ],
+    'CountWeightedLHEWeightScale'                                : [     48262183,     48867408,     49398275,     47304146,     47991107,     48570644,     46504367,     47246759,     47879240, ],
   }),
   ("nof_tree_events",                 15691547),
   ("nof_db_events",                   48046000),
-  ("fsize_local",                     38839863436), # 38.84GB, avg file size 7.77GB
+  ("fsize_local",                     38878469548), # 38.88GB, avg file size 1.56GB
   ("fsize_db",                        2074512868169), # 2.07TB, avg file size 2.46GB
   ("use_it",                          False),
   ("xsection",                        0.564),
@@ -19830,16 +19830,16 @@ samples_2018["/ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIIAutumn18MiniAOD-
   ("type",                            "mc"),
   ("sample_category",                 "ZZ"),
   ("process_name_specific",           "ZZTo2L2Q"),
-  ("nof_files",                       3),
+  ("nof_files",                       15),
   ("nof_db_files",                    457),
   ("nof_events",                      {
     'Count'                                                      : [     27900469, ],
-    'CountWeighted'                                              : [     17813289,     17813421,     17812108, ],
-    'CountWeightedLHEWeightScale'                                : [     18181870,     18483518,     18706457,     17436307,     17813028,     18089805,     16802489,     17234918,     17553176, ],
+    'CountWeighted'                                              : [     17813290,     17813421,     17812109, ],
+    'CountWeightedLHEWeightScale'                                : [     18181869,     18483518,     18706457,     17436306,     17813027,     18089805,     16802489,     17234918,     17553175, ],
   }),
   ("nof_tree_events",                 6793209),
   ("nof_db_events",                   27900469),
-  ("fsize_local",                     22112417078), # 22.11GB, avg file size 7.37GB
+  ("fsize_local",                     22130999302), # 22.13GB, avg file size 1.48GB
   ("fsize_db",                        1289685740970), # 1.29TB, avg file size 2.82GB
   ("use_it",                          False),
   ("xsection",                        5.52),

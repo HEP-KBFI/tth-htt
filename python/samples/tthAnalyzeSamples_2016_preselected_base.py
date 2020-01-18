@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2020-01-18 14:06:26 with the following command:
+# file generated at 2020-01-18 17:57:41 with the following command:
 # create_dictionary.py -m python/samples/metaDict_2016.py -p /hdfs/local/karl/ttHNtupleProduction/2016/2020Jan17_wPresel_nom_all/ntuples -N samples_2016 -E 2016 -o python/samples -g tthAnalyzeSamples_2016_preselected_base.py -M
 
 samples_2016 = OD()
@@ -33518,19 +33518,19 @@ samples_2016["/ZZTo4L_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94
   ("type",                            "mc"),
   ("sample_category",                 "ZZ"),
   ("process_name_specific",           "ZZTo4L"),
-  ("nof_files",                       1),
+  ("nof_files",                       4),
   ("nof_db_files",                    50),
   ("nof_events",                      {
     'Count'                                                      : [      6669988, ],
-    'CountWeighted'                                              : [      6670022,      6671614,      6669607, ],
-    'CountWeightedLHEWeightScale'                                : [      6382064,      6826927,      7110275,      6189162,      6670022,      7001469,      6037353,      6547696,      6919571, ],
-    'CountWeightedL1PrefireNom'                                  : [      6608284,      6609343,      6608139, ],
-    'CountWeightedL1Prefire'                                     : [      6608284,      6591553,      6624928, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [      6320937,      6763913,      7045972,      6129561,      6608284,      6938244,      5978992,      6487047,      6857225, ],
+    'CountWeighted'                                              : [      6670022,      6671613,      6669608, ],
+    'CountWeightedLHEWeightScale'                                : [      6382064,      6826926,      7110275,      6189161,      6670022,      7001469,      6037353,      6547696,      6919571, ],
+    'CountWeightedL1PrefireNom'                                  : [      6608283,      6609343,      6608139, ],
+    'CountWeightedL1Prefire'                                     : [      6608283,      6591553,      6624928, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [      6320936,      6763913,      7045972,      6129561,      6608283,      6938244,      5978992,      6487047,      6857225, ],
   }),
   ("nof_tree_events",                 1633899),
   ("nof_db_events",                   6669988),
-  ("fsize_local",                     4702567431), # 4.70GB, avg file size 4.70GB
+  ("fsize_local",                     4706522275), # 4.71GB, avg file size 1.18GB
   ("fsize_db",                        206407053220), # 206.41GB, avg file size 4.13GB
   ("use_it",                          True),
   ("xsection",                        1.256),
@@ -33566,19 +33566,19 @@ samples_2016["/ZZTo4L_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv3-PUMorion
   ("type",                            "mc"),
   ("sample_category",                 "ZZ"),
   ("process_name_specific",           "ZZTo4L_amcatnloFXFX_ext1"),
-  ("nof_files",                       2),
+  ("nof_files",                       6),
   ("nof_db_files",                    76),
   ("nof_events",                      {
     'Count'                                                      : [     10610210, ],
-    'CountWeighted'                                              : [      7321788,      7320693,      7320996, ],
-    'CountWeightedLHEWeightScale'                                : [      7002186,      7605097,      7980889,      6682423,      7321518,      7756375,      6430289,      7095812,      7577185, ],
-    'CountWeightedL1PrefireNom'                                  : [      7246424,      7245429,      7245999, ],
-    'CountWeightedL1Prefire'                                     : [      7246424,      7226150,      7266535, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [      6925396,      7526237,      7900607,      6609643,      7246190,      7679423,      6360820,      7023616,      7503046, ],
+    'CountWeighted'                                              : [      7321788,      7320694,      7320997, ],
+    'CountWeightedLHEWeightScale'                                : [      7002185,      7605096,      7980889,      6682423,      7321517,      7756375,      6430288,      7095812,      7577185, ],
+    'CountWeightedL1PrefireNom'                                  : [      7246424,      7245428,      7245998, ],
+    'CountWeightedL1Prefire'                                     : [      7246424,      7226151,      7266535, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [      6925396,      7526237,      7900607,      6609643,      7246190,      7679422,      6360820,      7023616,      7503046, ],
   }),
   ("nof_tree_events",                 2985178),
   ("nof_db_events",                   10711278),
-  ("fsize_local",                     9143823924), # 9.14GB, avg file size 4.57GB
+  ("fsize_local",                     9149957019), # 9.15GB, avg file size 1.52GB
   ("fsize_db",                        328957846220), # 328.96GB, avg file size 4.33GB
   ("use_it",                          False),
   ("xsection",                        1.256),
@@ -33614,19 +33614,19 @@ samples_2016["/ZZTo2L2Nu_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17
   ("type",                            "mc"),
   ("sample_category",                 "ZZ"),
   ("process_name_specific",           "ZZTo2L2Nu"),
-  ("nof_files",                       1),
+  ("nof_files",                       5),
   ("nof_db_files",                    74),
   ("nof_events",                      {
     'Count'                                                      : [      8431925, ],
-    'CountWeighted'                                              : [      8433283,      8431061,      8432561, ],
-    'CountWeightedLHEWeightScale'                                : [      8466894,      8589194,      8696033,      8294350,      8433283,      8550149,      8150579,      8301017,      8428763, ],
-    'CountWeightedL1PrefireNom'                                  : [      8301369,      8299629,      8301150, ],
+    'CountWeighted'                                              : [      8433283,      8431062,      8432562, ],
+    'CountWeightedLHEWeightScale'                                : [      8466894,      8589194,      8696032,      8294349,      8433283,      8550149,      8150579,      8301017,      8428763, ],
+    'CountWeightedL1PrefireNom'                                  : [      8301369,      8299630,      8301150, ],
     'CountWeightedL1Prefire'                                     : [      8301369,      8267861,      8334848, ],
     'CountWeightedLHEWeightScaleL1PrefireNom'                    : [      8334264,      8455018,      8560430,      8164530,      8301369,      8417147,      8023111,      8171738,      8297920, ],
   }),
   ("nof_tree_events",                 2708328),
   ("nof_db_events",                   8931750),
-  ("fsize_local",                     7152291669), # 7.15GB, avg file size 7.15GB
+  ("fsize_local",                     7159972439), # 7.16GB, avg file size 1.43GB
   ("fsize_db",                        286633172052), # 286.63GB, avg file size 3.87GB
   ("use_it",                          False),
   ("xsection",                        0.564),
@@ -33662,19 +33662,19 @@ samples_2016["/ZZTo2L2Nu_13TeV_powheg_pythia8_ext1/RunIISummer16MiniAODv3-PUMori
   ("type",                            "mc"),
   ("sample_category",                 "ZZ"),
   ("process_name_specific",           "ZZTo2L2Nu_ext1"),
-  ("nof_files",                       5),
+  ("nof_files",                       25),
   ("nof_db_files",                    362),
   ("nof_events",                      {
     'Count'                                                      : [     48056232, ],
-    'CountWeighted'                                              : [     48056852,     48057030,     48046438, ],
-    'CountWeightedLHEWeightScale'                                : [     48256659,     48953209,     49561253,     47272847,     48056852,     48729448,     46452986,     47310327,     48037269, ],
-    'CountWeightedL1PrefireNom'                                  : [     47307006,     47305658,     47300545, ],
-    'CountWeightedL1Prefire'                                     : [     47307006,     47115147,     47497722, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [     47500177,     48187875,     48787903,     46532406,     47307006,     47970856,     45725976,     46572751,     47290979, ],
+    'CountWeighted'                                              : [     48056850,     48057031,     48046438, ],
+    'CountWeightedLHEWeightScale'                                : [     48256659,     48953207,     49561251,     47272845,     48056850,     48729449,     46452988,     47310326,     48037270, ],
+    'CountWeightedL1PrefireNom'                                  : [     47307008,     47305658,     47300544, ],
+    'CountWeightedL1Prefire'                                     : [     47307008,     47115146,     47497721, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [     47500178,     48187875,     48787899,     46532408,     47307008,     47970855,     45725977,     46572749,     47290980, ],
   }),
   ("nof_tree_events",                 15440377),
   ("nof_db_events",                   48655100),
-  ("fsize_local",                     40753976110), # 40.75GB, avg file size 8.15GB
+  ("fsize_local",                     40786269083), # 40.79GB, avg file size 1.63GB
   ("fsize_db",                        1556906583517), # 1.56TB, avg file size 4.30GB
   ("use_it",                          False),
   ("xsection",                        0.564),
@@ -33710,19 +33710,19 @@ samples_2016["/ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIISummer16MiniAODv
   ("type",                            "mc"),
   ("sample_category",                 "ZZ"),
   ("process_name_specific",           "ZZTo2L2Q"),
-  ("nof_files",                       2),
+  ("nof_files",                       8),
   ("nof_db_files",                    128),
   ("nof_events",                      {
     'Count'                                                      : [     14263269, ],
     'CountWeighted'                                              : [      9005203,      9007482,      9005549, ],
-    'CountWeightedLHEWeightScale'                                : [      9062499,      9395102,      9627068,      8634365,      9005361,      9270398,      8275056,      8672951,      8961332, ],
-    'CountWeightedL1PrefireNom'                                  : [      8846935,      8848075,      8847193, ],
-    'CountWeightedL1Prefire'                                     : [      8846935,      8805321,      8888406, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [      8897191,      9228661,      9459503,      8477451,      8847197,      9110403,      8125276,      8521071,      8807893, ],
+    'CountWeightedLHEWeightScale'                                : [      9062499,      9395102,      9627068,      8634366,      9005360,      9270398,      8275056,      8672951,      8961332, ],
+    'CountWeightedL1PrefireNom'                                  : [      8846936,      8848074,      8847193, ],
+    'CountWeightedL1Prefire'                                     : [      8846936,      8805322,      8888406, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [      8897190,      9228661,      9459502,      8477452,      8847196,      9110403,      8125276,      8521071,      8807892, ],
   }),
   ("nof_tree_events",                 3535586),
   ("nof_db_events",                   15462693),
-  ("fsize_local",                     12143220370), # 12.14GB, avg file size 6.07GB
+  ("fsize_local",                     12151515726), # 12.15GB, avg file size 1.52GB
   ("fsize_db",                        536411748052), # 536.41GB, avg file size 4.19GB
   ("use_it",                          False),
   ("xsection",                        5.52),
