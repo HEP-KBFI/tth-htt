@@ -15,6 +15,15 @@
 
 #include <cassert> // assert()
 
+namespace
+{
+  constexpr double
+  square(double x)
+  {
+    return x * x;
+  }
+}
+
 Data_to_MC_CorrectionInterface_Base::Data_to_MC_CorrectionInterface_Base(const edm::ParameterSet & cfg)
   : hadTauSelection_(-1)
   , hadTauId_(TauID::DeepTau2017v2VSjet)
@@ -448,11 +457,20 @@ Data_to_MC_CorrectionInterface_Base::getSF_hadTauID_and_Iso(TauIDSFsys central_o
     {
       if(hadTau_genPdgId_[idxHadTau] == 15)
       {
+        // because we use looser anti-e/mu DeepTau ID WPs compared to the WPs used in the tau ID SF measurement,
+        // we have to add additional 3% or 15% uncertainty to the tau ID SF depending on the tau pT, as explained here:
+        // https://indico.cern.ch/event/880308/contributions/3708888/attachments/1972379/3281439/NewsRun2SFsRecommendation.pdf
+        const double sf_central = tauIdSFs_->getSFvsPT(hadTau_pt_[idxHadTau]);
+        const double sf_up      = tauIdSFs_->getSFvsPT(hadTau_pt_[idxHadTau], "Up");
+        const double sf_down    = tauIdSFs_->getSFvsPT(hadTau_pt_[idxHadTau], "Down");
+        const double sf_unc = hadTau_pt_[idxHadTau] > 100. ? 0.15 : 0.03;
+        const double sf_unc_up   = std::sqrt(square(sf_up   / sf_central - 1.) + square(sf_unc));
+        const double sf_unc_down = std::sqrt(square(sf_down / sf_central - 1.) + square(sf_unc));
         switch(central_or_shift)
         {
-          case TauIDSFsys::central:   sf *= tauIdSFs_->getSFvsPT(hadTau_pt_[idxHadTau]);         break;
-          case TauIDSFsys::shiftUp:   sf *= tauIdSFs_->getSFvsPT(hadTau_pt_[idxHadTau], "Up");   break;
-          case TauIDSFsys::shiftDown: sf *= tauIdSFs_->getSFvsPT(hadTau_pt_[idxHadTau], "Down"); break;
+          case TauIDSFsys::central:   sf *= sf_central;                      break;
+          case TauIDSFsys::shiftUp:   sf *= sf_central * (1. + sf_unc_up);   break;
+          case TauIDSFsys::shiftDown: sf *= sf_central * (1. - sf_unc_down); break;
         }
       }
     }
