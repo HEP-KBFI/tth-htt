@@ -57,7 +57,7 @@ EvtHistManager_4l::bookHistograms(TFileDirectory & dir)
   histogram_EventCounter_ = book1D(dir, "EventCounter", "EventCounter", 1, -0.5, +0.5);
   Float_t bins_mass_4L[4] = { 70.,200.0,300.0,1000. };
   histogram_mass_4L_ = book1D(dir, "mass_4L", "mass_4L", 3, bins_mass_4L);
-  Float_t binsx[3] = { 0.0, 0.31, 1.0 };
+  Float_t binsx[3] = { 0.0, 0.55, 1.0 };
   histogram_mva_4l_ = book1D(dir, "mva_4l", "mva_4l", 2, binsx);
 
   histogram_ctrl_ = book1D(dir, "control", "control", 4, -0.5,  +3.5);
