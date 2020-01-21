@@ -1,5 +1,5 @@
 
-from tthAnalysis.HiggsToTauTau.jobTools import generate_file_ids, generate_input_list
+from tthAnalysis.HiggsToTauTau.jobTools import generate_file_ids, generate_input_list, logging
 
 import re
 
@@ -161,6 +161,31 @@ def is_dymc_normalization(dbs_name):
   return dbs_name.startswith('/DY')       and \
          'M-50' in dbs_name               and \
          'amcatnloFXFX' in dbs_name
+
+def check_sample_pairs(samples):
+    retValue = True
+    for sample_name_outer, sample_info_outer in samples.items():
+        if sample_name_outer == "sum_events":
+            continue
+        for sample_name_inner, sample_info_inner in samples.items():
+            if sample_name_inner == "sum_events":
+                continue
+            if (sample_name_inner.startswith('/TTTo')          and sample_name_outer.startswith('/TTJets')) or \
+               (sample_name_inner.startswith('/WGToLNuG_Tune') and sample_name_outer.startswith('/WGToLNuG_01J')) or \
+               (sample_name_inner.startswith('/WWTo1L1Nu2Q')   and sample_name_outer.startswith('/WWToLNuQQ')) or \
+               (sample_name_inner.startswith('/TTWJetsToLNu')  and sample_name_outer.startswith('/ttWJets')) or \
+               (sample_name_inner.startswith('/TTZToLL')       and sample_name_outer.startswith('/ttZJets')) or \
+               (sample_name_inner.startswith('/TTJets_Tune')   and sample_name_outer.startswith(('/TTJets_DiLept', '/TTJets_SingleLeptFromT'))) or \
+               (sample_name_inner.startswith('/DY') and 'M-50' in sample_name_inner and 'amcatnloFXFX'     in sample_name_inner and
+                sample_name_outer.startswith('/DY') and 'M-50' in sample_name_outer and 'amcatnloFXFX' not in sample_name_outer) or \
+               (sample_name_inner.startswith('/WZTo3LNu')    and 'amcatnloFXFX'     in sample_name_inner and
+                sample_name_outer.startswith('/WZTo3LNu')    and 'amcatnloFXFX' not in sample_name_outer) or \
+               (sample_name_inner.startswith('/WZTo3LNu') and 'Jets_MLL'     in sample_name_inner and # no stitching weights, yet
+                sample_name_outer.startswith('/WZTo3LNu') and 'Jets_MLL' not in sample_name_outer):
+                if sample_info_outer["use_it"] and sample_info_inner["use_it"]:
+                    retValue = False
+                    logging.error("Samples {} and {} enabled simultaneously".format(sample_name_outer, sample_name_inner))
+    return retValue
 
 def split_stitched(samples_to_stitch, startstring):
     assert(startstring in [ 'DY', 'W' ])
