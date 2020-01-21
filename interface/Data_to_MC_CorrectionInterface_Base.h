@@ -27,22 +27,16 @@ public:
   // set lepton type, pT and eta
   // (to be called once per event, before calling any of the getSF.. functions)
   void
-  setLeptons(int lepton1_type,      double lepton1_pt,      double lepton1_eta,
-             int lepton2_type = -1, double lepton2_pt = 0., double lepton2_eta = 0.,
-             int lepton3_type = -1, double lepton3_pt = 0., double lepton3_eta = 0.,
-             int lepton4_type = -1, double lepton4_pt = 0., double lepton4_eta = 0.);
+  setLeptons(int lepton1_type,      double lepton1_pt,      double lepton1_cone_pt,      double lepton1_eta,
+             int lepton2_type = -1, double lepton2_pt = 0., double lepton2_cone_pt = 0., double lepton2_eta = 0.,
+             int lepton3_type = -1, double lepton3_pt = 0., double lepton3_cone_pt = 0., double lepton3_eta = 0.,
+             int lepton4_type = -1, double lepton4_pt = 0., double lepton4_cone_pt = 0., double lepton4_eta = 0.);
 
   void
   setHadTaus(int hadTau1_genPdgId,      double hadTau1_pt,      double hadTau1_eta,
              int hadTau2_genPdgId = -1, double hadTau2_pt = 0., double hadTau2_eta = 0.,
              int hadTau3_genPdgId = -1, double hadTau3_pt = 0., double hadTau3_eta = 0.,
              int hadTau4_genPdgId = -1, double hadTau4_pt = 0., double hadTau4_eta = 0.);
-  //-----------------------------------------------------------------------------
-
-  //-----------------------------------------------------------------------------
-  // trigger efficiency turn-on curves for Spring16 non-reHLT MC
-  virtual double
-  getWeight_leptonTriggerEff() const;
   //-----------------------------------------------------------------------------
 
   //-----------------------------------------------------------------------------
@@ -143,12 +137,15 @@ protected:
   std::size_t numLeptons_;
   std::vector<int> lepton_type_;
   std::vector<double> lepton_pt_;
+  std::vector<double> lepton_cone_pt_;
   std::vector<double> lepton_eta_;
   std::size_t numElectrons_;
   std::vector<double> electron_pt_;
+  std::vector<double> electron_cone_pt_;
   std::vector<double> electron_eta_;
   std::size_t numMuons_;
   std::vector<double> muon_pt_;
+  std::vector<double> muon_cone_pt_;
   std::vector<double> muon_eta_;
   std::size_t numHadTaus_;
   std::vector<int> hadTau_genPdgId_;

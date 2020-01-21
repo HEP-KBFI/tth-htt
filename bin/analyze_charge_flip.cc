@@ -993,8 +993,8 @@ int main(int argc, char* argv[])
       evtWeightRecorder.record_btagWeight(selJets);
 
       dataToMCcorrectionInterface->setLeptons(
-        kElectron, selElectron_lead_p4.pt(), selElectron_lead_p4.eta(), 
-	kElectron, selElectron_sublead_p4.pt(), selElectron_sublead_p4.eta());
+        kElectron, selElectron_lead_p4.pt(), selElectron_lead->cone_pt(), selElectron_lead_p4.eta(),
+        kElectron, selElectron_sublead_p4.pt(), selElectron_sublead->cone_pt(), selElectron_sublead_p4.eta());
 
 //--- apply data/MC corrections for trigger efficiency,
 //    and efficiencies for lepton to pass loose identification and isolation criteria

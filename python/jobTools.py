@@ -169,6 +169,7 @@ def find_earlier_version(log_file):
 def check_submission_cmd(submission_out, submission_cmd):
   earlier_submission_out = find_earlier_version(submission_out)
   current_submission = ' '.join(submission_cmd) if submission_cmd else str(submission_cmd)
+  current_submission_stripped = current_submission.replace(' -A', '').replace(' -E', '')
   if earlier_submission_out:
     with open(earlier_submission_out, 'r') as earlier_submission_file:
       lines = []
@@ -176,7 +177,8 @@ def check_submission_cmd(submission_out, submission_cmd):
         lines.append(line.rstrip('\n'))
       assert (len(lines) == 1)
       previous_submission = lines[0]
-    if previous_submission != current_submission:
+      previous_submission_stripped = previous_submission.replace(' -A', '').replace(' -E', '')
+    if previous_submission_stripped != current_submission_stripped:
       logging.warning(
         "Current command ('{}') does not match to the previously run command ('{}')".format(
           current_submission, previous_submission

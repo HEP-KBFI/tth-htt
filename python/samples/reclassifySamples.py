@@ -52,7 +52,7 @@ def reclassifySamples(samples_era_base, samples_era_hh_multilepton = None, sampl
         sample_info["sample_category"] = "TTZ"
       elif sample_name.startswith("/ST_"):
         sample_info["sample_category"] = "Rares"
-      elif sample_name.startswith('/WGToLNuG_Tune'):
+      elif sample_name.startswith(('/TTTJ', '/TTTW', '/TTWZ', '/TTZZ')):
         sample_info["use_it"] = False
 
       if sample_name.startswith(('/TGJets', '/TTGJets', '/WGTo', '/ZGTo')):

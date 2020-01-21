@@ -12,12 +12,6 @@ public:
   ~Data_to_MC_CorrectionInterface_2016() override;
 
   //-----------------------------------------------------------------------------
-  // trigger efficiency turn-on curves for Spring16 non-reHLT MC
-  double
-  getWeight_leptonTriggerEff() const override;
-  //-----------------------------------------------------------------------------
-
-  //-----------------------------------------------------------------------------
   // data/MC correction for electron and muon trigger efficiency
   double
   getSF_leptonTriggerEff(TriggerSFsys central_or_shift) const override;
@@ -25,11 +19,6 @@ public:
 
 protected:
   // data/MC corrections for trigger efficiencies in 2016 data
-  lutWrapperBase * effTrigger_ee_;
-  lutWrapperBase * effTrigger_em_;
-  lutWrapperBase * effTrigger_mm_;
-  lutWrapperBase * effTrigger_3l_;
-
   vLutWrapperBase effTrigger_1e_data_;
   vLutWrapperBase effTrigger_1e_mc_;
   vLutWrapperBase effTrigger_1m_data_;

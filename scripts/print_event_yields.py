@@ -201,13 +201,17 @@ def get_table(input_file_names, allowed_decay_modes = None, show_gen_matching = 
   assert(channel)
 
   header = []
+  allowed_decay_mode_processes = []
+  has_decay_modes = not (len(allowed_decay_modes) == 1 and '' in allowed_decay_modes)
   if len(results) > 1:
     header.append('Event subcategory')
   header.append('Process')
   if show_by_sample:
     header.append('Sample')
-  if allowed_decay_modes:
+  if has_decay_modes:
     header.append('Decay mode')
+    for allowed_decay_mode in allowed_decay_modes:
+      allowed_decay_mode_processes.extend(DECAY_MODE_PROCESSES[allowed_decay_mode])
   if show_gen_matching:
     header.append('Gen matching')
   if allowed_systematics == 'all':
@@ -229,8 +233,8 @@ def get_table(input_file_names, allowed_decay_modes = None, show_gen_matching = 
         if not show_by_sample and sample:
           continue
         for decay_mode in results[subcategory][process][sample]:
-          if (not allowed_decay_modes and decay_mode                                       ) or \
-             (    allowed_decay_modes and decay_mode and process not in allowed_decay_modes):
+          if (not has_decay_modes and decay_mode                                                ) or \
+             (    has_decay_modes and decay_mode and process not in allowed_decay_mode_processes):
             continue
           for gen_matching in results[subcategory][process][sample][decay_mode]:
             if not show_gen_matching and gen_matching != 'prompt':
@@ -262,7 +266,7 @@ def get_table(input_file_names, allowed_decay_modes = None, show_gen_matching = 
                   line.append(process)
                   if show_by_sample:
                     line.append(sample)
-                  if allowed_decay_modes:
+                  if has_decay_modes:
                     line.append(decay_mode)
                   if show_gen_matching:
                     line.append(gen_matching)
@@ -302,7 +306,7 @@ def get_table(input_file_names, allowed_decay_modes = None, show_gen_matching = 
           line.append('SM expectation')
           if show_by_sample:
             line.append('')
-          if allowed_decay_modes:
+          if has_decay_modes:
             line.append('')
           if show_gen_matching:
             line.append('prompt')
