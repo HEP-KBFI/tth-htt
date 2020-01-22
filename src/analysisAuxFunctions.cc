@@ -253,7 +253,6 @@ comp_Smin(const Particle::LorentzVector & visP4,
   return Smin;
 }
 
-
 std::vector<const RecoLepton *>
 mergeLeptonCollectionsNoSort(const std::vector<const RecoElectron *> & electrons,
                              const std::vector<const RecoMuon *> & muons)
@@ -690,4 +689,15 @@ get_prefix(const std::string & process_string,
     decayMode_and_genMatch = process_string + "_";
   }
   return decayMode_and_genMatch;
+}
+
+std::vector<const RecoJetBase*>
+convert_to_RecoJetBase(const std::vector<const RecoJet*>& jets_derived)
+{
+  std::vector<const RecoJetBase*> jets_base;
+  for ( std::vector<const RecoJet*>::const_iterator jet = jets_derived.begin(); jet != jets_derived.end(); ++jet )
+  {
+    jets_base.push_back(*jet);
+  }
+  return jets_base;
 }

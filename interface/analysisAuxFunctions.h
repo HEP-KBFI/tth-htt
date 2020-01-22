@@ -6,6 +6,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/Particle.h" // Particle::LorentzVector
 #include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h" // RecoHadTau
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJetBase.h" // RecoJetBase
 #include "tthAnalysis/HiggsToTauTau/interface/TrigObj.h" // TrigObj
 #include "tthAnalysis/HiggsToTauTau/interface/EventInfo.h" // EventInfo
 
@@ -280,6 +282,14 @@ HighestEtaFwdJet(std::vector<const RecoJet *> selJetsForward);
 bool
 isHigherPt(const Particle * particle1,
            const Particle * particle2);
+
+template <typename T>
+bool
+isHigherPtT(const T & particle1,
+            const T & particle2)
+{
+  return particle1.pt() > particle2.pt();
+}
 
 /**
  * @brief Auxiliary function used for sorting leptons by decreasing cone pT
@@ -651,7 +661,7 @@ get_prefix(const std::string & process_string,
  */
 template<typename T>
 std::pair<const T *, const T *>
-findGenJetsFromWBoson(const GenParticle * genWBoson,
+findGenJetsFromWBoson(const GenParticle& genWBoson,
                       const std::vector<T> & genJets)
 {
   const T * genJet1FromWBoson = nullptr;
@@ -663,8 +673,8 @@ findGenJetsFromWBoson(const GenParticle * genWBoson,
     for(typename std::vector<T>::const_iterator genJet2 = genJet1 + 1; genJet2 != genJets.end(); ++genJet2)
     {
       const Particle::LorentzVector genDijetP4 = genJet1->p4() + genJet2->p4();
-      const double deltaMass = TMath::Abs(genDijetP4.mass() - genWBoson->mass());
-      const double dR = deltaR(genDijetP4, genWBoson->p4());
+      const double deltaMass = TMath::Abs(genDijetP4.mass() - genWBoson.mass());
+      const double dR = deltaR(genDijetP4, genWBoson.p4());
       if(deltaMass < 5. && deltaMass < minDeltaMass && dR < 1.)
       {
         genJet1FromWBoson = &(*genJet1);
@@ -675,5 +685,30 @@ findGenJetsFromWBoson(const GenParticle * genWBoson,
   }
   return std::pair<const T*, const T*>(genJet1FromWBoson, genJet2FromWBoson);
 }
+
+/**
+ * @brief Convert collection of GenLepton, GenHadTau, or GenPhoton objects to collection of GenParticle base-class
+ *
+ * This function is used to write collections of GenLepton, GenHadTau, or GenPhoton objects to an Ntuple file
+ *
+ */
+template<typename T>
+std::vector<GenParticle>
+convert_to_genParticles(const std::vector<T>& genParticles_derived)
+{
+  std::vector<GenParticle> genParticles_base;
+  for ( typename std::vector<T>::const_iterator genParticle = genParticles_derived.begin(); genParticle != genParticles_derived.end(); ++genParticle )
+  {
+    genParticles_base.push_back(*genParticle);
+  }
+  return genParticles_base;
+}
+
+/**
+ * @brief Convert collection of RecoJet pointers to collection of pointers to RecoJetBase base-class
+ *
+ */
+std::vector<const RecoJetBase*>
+convert_to_RecoJetBase(const std::vector<const RecoJet*>& jets_derived);
 
 #endif
