@@ -700,7 +700,7 @@ main(int argc,
   TH1 * histogram_analyzedEntries = fs.make<TH1D>("analyzedEntries", "analyzedEntries", 1, -0.5, +0.5);
   TH1 * histogram_selectedEntries = fs.make<TH1D>("selectedEntries", "selectedEntries", 1, -0.5, +0.5);
 
-  cutFlowTableType cutFlowTable_e(isDEBUG);
+  cutFlowTableType cutFlowTable_e({}, isDEBUG);
   initializeCutFlowTable(cutFlowTable_e, ">= 1 presel/Loose electron");
   if(apply_met_filters)
   {
@@ -714,7 +714,7 @@ main(int argc,
   initializeCutFlowTable(cutFlowTable_e, histograms_e_numerator_binned_afterCuts);
   initializeCutFlowTable(cutFlowTable_e, histograms_e_denominator_binned_afterCuts);
 
-  cutFlowTableType cutFlowTable_mu(isDEBUG);
+  cutFlowTableType cutFlowTable_mu({}, isDEBUG);
   initializeCutFlowTable(cutFlowTable_mu, ">= 1 presel/Loose muon");
   if(apply_met_filters)
   {
