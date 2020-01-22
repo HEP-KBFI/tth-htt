@@ -2,14 +2,15 @@
 
 #include <iostream> // std::cerr, std::fixed
 #include <iomanip> // std::setprecision(), std::setw()
+#include <sstream> // std::ostringstream
 #include <vector> // std::vector<>
 #include <algorithm> // std::sort
-#include <cassert> // assert()
 
 using namespace cutFlowTable_namespace;
 
-cutFlowTableType::cutFlowTableType(bool isDEBUG)
-  : isDEBUG_(isDEBUG)
+cutFlowTableType::cutFlowTableType(const std::vector<std::string> & columns, bool isDEBUG)
+  : columns_(columns)
+  , isDEBUG_(isDEBUG)
   , row_idx_(0)
 {}
  
@@ -25,21 +26,29 @@ void
 cutFlowTableType::update(const std::string & cut,
                          double evtWeight)
 {
+  this->update(cut, "", evtWeight);
+}
+
+void
+cutFlowTableType::update(const std::string & cut, const std::string & column,
+                         double evtWeight)
+{
   if(! rows_.count(cut))
   {
-    rows_[cut] = new rowType(cut, row_idx_);
+    rows_[cut] = new rowType(cut, row_idx_, columns_);
     ++row_idx_;
   }
   rowType * const row = rows_[cut];
 
   if(isDEBUG_)
   {
-    std::cout << "<cutFlowTableType::update>: cut = " << cut << ", evtWeight = " << evtWeight << '\n';
+    std::cout << "<cutFlowTableType::update>: cut = " << cut << ",";
+    if ( column != "" ) std::cout << " (column = " << column << ")";
+    std::cout << " evtWeight = " << evtWeight << '\n';
   }
   if(evtWeight != -1.)
   {
-    ++row->selEvents_;
-    row->selEvents_weighted_ += evtWeight;
+    row->update(column, evtWeight);
   }
 }
 
@@ -53,10 +62,34 @@ cutFlowTableType::print(std::ostream & stream) const
   }
   std::sort(row_ptrs.begin(), row_ptrs.end(), cutFlowTable_namespace::isLowerIdx);
 
+  size_t max_cut_length = 0;
   for(const rowType * row_ptr: row_ptrs)
   {
-    stream << ' ' << row_ptr->cut_ << " = " << row_ptr->selEvents_
-           << " (weighted = " << row_ptr->selEvents_weighted_ << ")\n";
+    if ( row_ptr->cut_.length() > max_cut_length ) max_cut_length = row_ptr->cut_.length();
+  }
+
+  if ( columns_.size() > 0 )
+  {
+    stream << " " << std::left << std::setw(max_cut_length + 1) << " ";
+    for ( auto column : columns_ )
+    {
+      stream << std::right << std::setw(25) << column;
+    }
+    stream << "\n";
+  }
+  for(const rowType * row_ptr: row_ptrs)
+  {
+    stream << " " << std::left << std::setw(max_cut_length + 1) << row_ptr->cut_;
+    for ( auto column : columns_ )
+    {
+      std::map<std::string, size_t>::const_iterator idxColumn_iter = row_ptr->columns_.find(column);
+      assert(idxColumn_iter != row_ptr->columns_.end());
+      size_t idxColumn = idxColumn_iter->second;
+      std::ostringstream evtYield;
+      evtYield << row_ptr->selEvents_[idxColumn];
+      stream << " (weighted = " << row_ptr->selEvents_weighted_[idxColumn] << ")";
+      stream << std::right << std::setw(25) << evtYield.str() << "\n";
+    }
   }
 }
 
