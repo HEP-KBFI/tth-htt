@@ -12,7 +12,12 @@ cutFlowTableType::cutFlowTableType(const std::vector<std::string> & columns, boo
   : columns_(columns)
   , isDEBUG_(isDEBUG)
   , row_idx_(0)
-{}
+{
+  if (columns_.size() == 0)
+  { 
+    columns_.push_back("");
+  }
+}
  
 cutFlowTableType::~cutFlowTableType()
 {
@@ -68,28 +73,29 @@ cutFlowTableType::print(std::ostream & stream) const
     if ( row_ptr->cut_.length() > max_cut_length ) max_cut_length = row_ptr->cut_.length();
   }
 
-  if ( columns_.size() > 0 )
+  if (columns_.size() > 0 && columns_[0] != "")
   {
     stream << " " << std::left << std::setw(max_cut_length + 1) << " ";
-    for ( auto column : columns_ )
+    for(auto column : columns_)
     {
-      stream << std::right << std::setw(25) << column;
+      stream << std::right << std::setw(32) << column;
     }
     stream << "\n";
   }
   for(const rowType * row_ptr: row_ptrs)
   {
     stream << " " << std::left << std::setw(max_cut_length + 1) << row_ptr->cut_;
-    for ( auto column : columns_ )
+    for(auto column : columns_)
     {
       std::map<std::string, size_t>::const_iterator idxColumn_iter = row_ptr->columns_.find(column);
       assert(idxColumn_iter != row_ptr->columns_.end());
       size_t idxColumn = idxColumn_iter->second;
       std::ostringstream evtYield;
-      evtYield << row_ptr->selEvents_[idxColumn];
-      stream << " (weighted = " << row_ptr->selEvents_weighted_[idxColumn] << ")";
-      stream << std::right << std::setw(25) << evtYield.str() << "\n";
+      evtYield << std::right << std::setw(10) << row_ptr->selEvents_[idxColumn];
+      evtYield << std::left << " (weighted = " << row_ptr->selEvents_weighted_[idxColumn] << ")";
+      stream << std::left << std::setw(32) << evtYield.str();
     }
+    stream << "\n";
   }
 }
 

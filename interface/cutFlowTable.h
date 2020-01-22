@@ -27,16 +27,9 @@ namespace cutFlowTable_namespace
       , selEvents_weighted_(selEvents_weighted)
       , cut_(cut)
     {
-      if ( columns.size() > 0 )
+      for ( size_t idxColumn = 0; idxColumn < columns.size(); ++idxColumn )
       {
-        for ( size_t idxColumn = 0; idxColumn < columns.size(); ++idxColumn )
-        {
-          columns_[columns[idxColumn]] = idxColumn;
-        }
-      }
-      else
-      {
-        columns_[""] = 0;
+        columns_[columns[idxColumn]] = idxColumn;
       }
       assert(columns_.size() >= 1);
       selEvents_.resize(columns_.size());
