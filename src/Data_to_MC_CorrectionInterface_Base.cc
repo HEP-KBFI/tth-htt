@@ -15,6 +15,15 @@
 
 #include <cassert> // assert()
 
+namespace
+{
+  constexpr double
+  square(double x)
+  {
+    return x * x;
+  }
+}
+
 Data_to_MC_CorrectionInterface_Base::Data_to_MC_CorrectionInterface_Base(const edm::ParameterSet & cfg)
   : hadTauSelection_(-1)
   , hadTauId_(TauID::DeepTau2017v2VSjet)
@@ -24,12 +33,15 @@ Data_to_MC_CorrectionInterface_Base::Data_to_MC_CorrectionInterface_Base(const e
   , numLeptons_(0)
   , lepton_type_(4)
   , lepton_pt_(4)
+  , lepton_cone_pt_(4)
   , lepton_eta_(4)
   , numElectrons_(0)
   , electron_pt_(4)
+  , electron_cone_pt_(4)
   , electron_eta_(4)
   , numMuons_(0)
   , muon_pt_(4)
+  , muon_cone_pt_(4)
   , muon_eta_(4)
   , numHadTaus_(0)
   , hadTau_genPdgId_(4)
@@ -128,33 +140,37 @@ Data_to_MC_CorrectionInterface_Base::setHadTauSelection(const std::string & hadT
 }
 
 void
-Data_to_MC_CorrectionInterface_Base::setLeptons(int lepton1_type, double lepton1_pt, double lepton1_eta,
-                                                int lepton2_type, double lepton2_pt, double lepton2_eta,
-                                                int lepton3_type, double lepton3_pt, double lepton3_eta,
-                                                int lepton4_type, double lepton4_pt, double lepton4_eta)
+Data_to_MC_CorrectionInterface_Base::setLeptons(int lepton1_type, double lepton1_pt, double lepton1_cone_pt, double lepton1_eta,
+                                                int lepton2_type, double lepton2_pt, double lepton2_cone_pt, double lepton2_eta,
+                                                int lepton3_type, double lepton3_pt, double lepton3_cone_pt, double lepton3_eta,
+                                                int lepton4_type, double lepton4_pt, double lepton4_cone_pt, double lepton4_eta)
 {
   numElectrons_ = 0;
   if(lepton1_type == kElectron)
   {
     electron_pt_[numElectrons_] = lepton1_pt;
+    electron_cone_pt_[numElectrons_] = lepton1_cone_pt;
     electron_eta_[numElectrons_] = lepton1_eta;
     ++numElectrons_;
   }
   if(lepton2_type == kElectron)
   {
     electron_pt_[numElectrons_] = lepton2_pt;
+    electron_cone_pt_[numElectrons_] = lepton2_cone_pt;
     electron_eta_[numElectrons_] = lepton2_eta;
     ++numElectrons_;
   }
   if(lepton3_type == kElectron)
   {
     electron_pt_[numElectrons_] = lepton3_pt;
+    electron_cone_pt_[numElectrons_] = lepton3_cone_pt;
     electron_eta_[numElectrons_] = lepton3_eta;
     ++numElectrons_;
   }
   if(lepton4_type == kElectron)
   {
     electron_pt_[numElectrons_] = lepton4_pt;
+    electron_cone_pt_[numElectrons_] = lepton4_cone_pt;
     electron_eta_[numElectrons_] = lepton4_eta;
     ++numElectrons_;
   }
@@ -163,24 +179,28 @@ Data_to_MC_CorrectionInterface_Base::setLeptons(int lepton1_type, double lepton1
   if(lepton1_type == kMuon)
   {
     muon_pt_[numMuons_] = lepton1_pt;
+    muon_cone_pt_[numMuons_] = lepton1_cone_pt;
     muon_eta_[numMuons_] = lepton1_eta;
     ++numMuons_;
   }
   if(lepton2_type == kMuon)
   {
     muon_pt_[numMuons_] = lepton2_pt;
+    muon_cone_pt_[numMuons_] = lepton2_cone_pt;
     muon_eta_[numMuons_] = lepton2_eta;
     ++numMuons_;
   }
   if(lepton3_type == kMuon)
   {
     muon_pt_[numMuons_] = lepton3_pt;
+    muon_cone_pt_[numMuons_] = lepton3_cone_pt;
     muon_eta_[numMuons_] = lepton3_eta;
     ++numMuons_;
   }
   if(lepton4_type == kMuon)
   {
     muon_pt_[numMuons_] = lepton4_pt;
+    muon_cone_pt_[numMuons_] = lepton4_cone_pt;
     muon_eta_[numMuons_] = lepton4_eta;
     ++numMuons_;
   }
@@ -190,6 +210,7 @@ Data_to_MC_CorrectionInterface_Base::setLeptons(int lepton1_type, double lepton1
   {
     lepton_type_[numLeptons_] = kElectron;
     lepton_pt_[numLeptons_] = electron_pt_[idxElectron];
+    lepton_cone_pt_[numLeptons_] = electron_cone_pt_[idxElectron];
     lepton_eta_[numLeptons_] = electron_eta_[idxElectron];
     ++numLeptons_;
   }
@@ -197,6 +218,7 @@ Data_to_MC_CorrectionInterface_Base::setLeptons(int lepton1_type, double lepton1
   {
     lepton_type_[numLeptons_] = kMuon;
     lepton_pt_[numLeptons_] = muon_pt_[idxMuon];
+    lepton_cone_pt_[numLeptons_] = muon_cone_pt_[idxMuon];
     lepton_eta_[numLeptons_] = muon_eta_[idxMuon];
     ++numLeptons_;
   }
@@ -237,14 +259,6 @@ Data_to_MC_CorrectionInterface_Base::setHadTaus(int hadTau1_genPdgId, double had
     hadTau_eta_[numHadTaus_] = hadTau4_eta;
     ++numHadTaus_;
   }
-}
-
-double
-Data_to_MC_CorrectionInterface_Base::getWeight_leptonTriggerEff() const
-{
-  throw cmsException(this, __func__, __LINE__)
-    << "Cannot call from base class"
-  ;
 }
 
 double
@@ -443,11 +457,20 @@ Data_to_MC_CorrectionInterface_Base::getSF_hadTauID_and_Iso(TauIDSFsys central_o
     {
       if(hadTau_genPdgId_[idxHadTau] == 15)
       {
+        // because we use looser anti-e/mu DeepTau ID WPs compared to the WPs used in the tau ID SF measurement,
+        // we have to add additional 3% or 15% uncertainty to the tau ID SF depending on the tau pT, as explained here:
+        // https://indico.cern.ch/event/880308/contributions/3708888/attachments/1972379/3281439/NewsRun2SFsRecommendation.pdf
+        const double sf_central = tauIdSFs_->getSFvsPT(hadTau_pt_[idxHadTau]);
+        const double sf_up      = tauIdSFs_->getSFvsPT(hadTau_pt_[idxHadTau], "Up");
+        const double sf_down    = tauIdSFs_->getSFvsPT(hadTau_pt_[idxHadTau], "Down");
+        const double sf_unc = hadTau_pt_[idxHadTau] > 100. ? 0.15 : 0.03;
+        const double sf_unc_up   = std::sqrt(square(sf_up   / sf_central - 1.) + square(sf_unc));
+        const double sf_unc_down = std::sqrt(square(sf_down / sf_central - 1.) + square(sf_unc));
         switch(central_or_shift)
         {
-          case TauIDSFsys::central:   sf *= tauIdSFs_->getSFvsPT(hadTau_pt_[idxHadTau]);         break;
-          case TauIDSFsys::shiftUp:   sf *= tauIdSFs_->getSFvsPT(hadTau_pt_[idxHadTau], "Up");   break;
-          case TauIDSFsys::shiftDown: sf *= tauIdSFs_->getSFvsPT(hadTau_pt_[idxHadTau], "Down"); break;
+          case TauIDSFsys::central:   sf *= sf_central;                      break;
+          case TauIDSFsys::shiftUp:   sf *= sf_central * (1. + sf_unc_up);   break;
+          case TauIDSFsys::shiftDown: sf *= sf_central * (1. - sf_unc_down); break;
         }
       }
     }

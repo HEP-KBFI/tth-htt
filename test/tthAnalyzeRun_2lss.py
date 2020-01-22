@@ -99,6 +99,13 @@ elif mode == "sync":
 else:
   raise ValueError("Invalid mode: %s" % mode)
 
+if not mode.startswith("sync"):
+  for sample_name, sample_info in samples.items():
+    if sample_name == 'sum_events':
+      continue
+    if era == "2018" and sample_info["sample_category"] == "tHq" and sample_info["use_it"]:
+      sample_info["skipEvery"] = 3
+
 if use_stitched:
   samples = load_samples_stitched(
     samples, era, load_dy = 'dy' in use_stitched, load_wjets = 'wjets' in use_stitched,

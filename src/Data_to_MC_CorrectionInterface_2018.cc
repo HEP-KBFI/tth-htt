@@ -13,11 +13,27 @@ Data_to_MC_CorrectionInterface_2018::Data_to_MC_CorrectionInterface_2018(const e
 {
   // Reconstruction efficiencies of electrons, measured by EGamma POG
   // https://twiki.cern.ch/twiki/pub/CMS/EgammaIDRecipesRun2/egammaEffi.txt_EGM2D_updatedAll.root
+  // Downloaded from: https://twiki.cern.ch/twiki/bin/view/CMS/EgammaIDRecipesRun2?rev=104#102X_series_Dataset_2018_Autumn
   sfElectronID_and_Iso_loose_.push_back(new lutWrapperTH2(
     inputFiles_,
     "tthAnalysis/HiggsToTauTau/data/leptonSF/2018/el_scaleFactors_gsf.root",
     "EGamma_SF2D",
     lut::kXetaYpt, -2.5, +2.5, lut::kLimit, 10., -1., lut::kLimit_and_Cut
+  ));
+  // Loose electron SFs, measured by the CERN group
+  // /afs/cern.ch/user/b/balvarez/work/public/ttHAnalysis/TnP_loose_ele_2018.root
+  sfElectronID_and_Iso_loose_.push_back(new lutWrapperTH2(
+    inputFiles_,
+    "tthAnalysis/HiggsToTauTau/data/leptonSF/2018/TnP_loose_ele_2018.root",
+    "EGamma_SF2D",
+    lut::kXabsEtaYpt
+  ));
+  // /afs/cern.ch/user/b/balvarez/work/public/ttHAnalysis/TnP_loosettH_ele_2018.root
+  sfElectronID_and_Iso_loose_.push_back(new lutWrapperTH2(
+    inputFiles_,
+    "tthAnalysis/HiggsToTauTau/data/leptonSF/2018/TnP_loosettH_ele_2018.root",
+    "EGamma_SF2D",
+    lut::kXabsEtaYpt
   ));
 
   // /afs/cern.ch/user/b/balvarez/work/public/ttHAnalysis/TnP_ttH_ele_2018_3l/passttH/egammaEffi.txt_EGM2D.root
@@ -42,15 +58,12 @@ Data_to_MC_CorrectionInterface_2018::Data_to_MC_CorrectionInterface_2018(const e
     lut::kXabsEtaYpt
   ));
 
-  // https://gitlab.cern.ch/cms-muonPOG/MuonReferenceEfficiencies/raw/513f1017b1b216a4d3e9f5f0cf858ea7569a134b/EfficienciesStudies/2018/rootfiles/RunABCD_SF_ID.root
+  // Loose muon SFs, measured by the CERN group
   sfMuonID_and_Iso_loose_.push_back(new lutWrapperTH2(
-    inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2018/RunABCD_SF_ID_ptGt20.root", "NUM_LooseID_DEN_TrackerMuons_pt_abseta",
-    lut::kXptYabsEta, 20., -1., lut::kLimit_and_Cut, 0., 2.4, lut::kLimit
-  ));
-  // https://gitlab.cern.ch/cms-muonPOG/MuonReferenceEfficiencies/raw/513f1017b1b216a4d3e9f5f0cf858ea7569a134b/EfficienciesStudies/2018/Jpsi/rootfiles/RunABCD_SF_ID.root
-  sfMuonID_and_Iso_loose_.push_back(new lutWrapperTH2(
-    inputFiles_, "tthAnalysis/HiggsToTauTau/data/leptonSF/2018/RunABCD_SF_ID_ptLt20.root", "NUM_LooseID_DEN_genTracks_pt_abseta",
-    lut::kXptYabsEta, -1., 20., lut::kLimit_and_Cut, 0., 2.4, lut::kLimit
+    inputFiles_,
+    "tthAnalysis/HiggsToTauTau/data/leptonSF/2018/TnP_loose_muon_2018.root",
+    "EGamma_SF2D",
+    lut::kXabsEtaYpt
   ));
 
   // /afs/cern.ch/user/b/balvarez/work/public/ttHAnalysis/TnP_ttH_muon_2018_3l/passttH/egammaEffi.txt_EGM2D.root
@@ -88,16 +101,49 @@ Data_to_MC_CorrectionInterface_2018::~Data_to_MC_CorrectionInterface_2018()
 {}
 
 double
-Data_to_MC_CorrectionInterface_2018::getWeight_leptonTriggerEff() const
-{
-  throw cmsException(this, __func__, __LINE__)
-    << "Not available in 2018 era"
-  ;
-}
-
-double
 Data_to_MC_CorrectionInterface_2018::getSF_leptonTriggerEff(TriggerSFsys central_or_shift) const
 {
-#pragma message "Setting lepton trigger SFs to 1 in 2018"
-  return 1.;
+  // see https://cernbox.cern.ch/index.php/s/lW2BiTli5tJR0MN
+  double sf = 1.;
+  double sfErr = 0.;
+
+  const double lepton_cone_pt_lead    = std::max(lepton_cone_pt_[0], lepton_cone_pt_[1]);
+  const double lepton_cone_pt_sublead = std::min(lepton_cone_pt_[0], lepton_cone_pt_[1]);
+  if(numElectrons_ == 2 && numMuons_ == 0)
+  {
+    if  (lepton_cone_pt_sublead >= 25.) { sf = 1.000; }
+    else                                { sf = 0.980; }
+    sfErr = 1.;
+  }
+  else if(numElectrons_ == 1 && numMuons_ == 1)
+  {
+    if     (lepton_cone_pt_sublead >= 25.) { sf = 1.000; }
+    else                                   { sf = 0.980; }
+    sfErr = 1.;
+  }
+  else if(numElectrons_ == 0 && numMuons_ == 2)
+  {
+    if     (lepton_cone_pt_lead >= 70.) { sf = 0.980; }
+    else if(lepton_cone_pt_lead >= 40.) { sf = 0.995; }
+    else if(lepton_cone_pt_lead >= 15.) { sf = 1.010; }
+    sfErr = 1.;
+  }
+  else if((numElectrons_ + numMuons_) >= 3)
+  {
+    sf = 1.;
+    sfErr = 1.;
+  }
+
+  sfErr /= 100.;
+  switch(central_or_shift)
+  {
+    case TriggerSFsys::central:   return sf;
+    case TriggerSFsys::shiftUp:   return sf * (1. + sfErr);
+    case TriggerSFsys::shiftDown: return sf * (1. - sfErr);
+    default: throw cmsException(this, __func__, __LINE__)
+                     << "Invalid option: " << static_cast<int>(central_or_shift)
+                   ;
+  }
+
+  return sf;
 }
