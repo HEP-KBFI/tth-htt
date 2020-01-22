@@ -374,8 +374,9 @@ protected:
 
 typedef ParticleCollectionGenMatcher<RecoElectron> RecoElectronCollectionGenMatcher;
 typedef ParticleCollectionGenMatcher<RecoMuon> RecoMuonCollectionGenMatcher;
+typedef ParticleCollectionGenMatcher<RecoLepton> RecoLeptonCollectionGenMatcher; // CV: matching for lepton base-class (works for electrons as well as for muons)
 typedef ParticleCollectionGenMatcher<RecoHadTau> RecoHadTauCollectionGenMatcher;
 typedef ParticleCollectionGenMatcher<RecoJet> RecoJetCollectionGenMatcher;
-typedef ParticleCollectionGenMatcher<RecoJetBase> RecoJetBaseCollectionGenMatcher;
+typedef ParticleCollectionGenMatcher<RecoJetBase> RecoJetBaseCollectionGenMatcher; // CV: matching for jet base-class (works for AK4 jets as well as for subjets of AK8 or AK12 jets)
 
 #endif // tthAnalysis_HiggsToTauTau_ParticleCollectionGenMatcher_h
