@@ -235,7 +235,7 @@ void makeBJetPlots_for_HIG_19_008()
 
   TH1::AddDirectory(false);
 
-  std::string inputFilePath  = "/hdfs/local/veelken/ttHAnalysis/2017/2020Jan09/histograms/2lss/Tight_SS/";
+  std::string inputFilePath  = "/hdfs/local/veelken/ttHAnalysis/2017/2020Jan10/histograms/2lss/Tight_SS/";
   std::string inputFileName_signal = "ttHJetToNonbb_M125_amcatnlo/hadd_stage1_ttHJetToNonbb_M125_amcatnlo_Tight_SS.root";
   TFile* inputFile_signal = openFile(inputFilePath, inputFileName_signal);
   std::string inputFileName_background = "hadd/hadd_stage1_sumTT_Tight_SS.root";
@@ -262,7 +262,7 @@ void makeBJetPlots_for_HIG_19_008()
   xMin["numRecBJetsMedium"]            =  -0.5;
 
   std::map<std::string, double> xMax; // key = plot
-  xMax["genBJetPt"]                    = 100.;
+  xMax["genBJetPt"]                    = 250.;
   xMax["genBJetEta"]                   =  +3.0;
   xMax["numRecBJetsMedium"]            =  +4.5;
 
