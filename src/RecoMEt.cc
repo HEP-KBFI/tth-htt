@@ -7,6 +7,8 @@ RecoMEt::RecoMEt()
   , covYY_(0.)
   , p4_{default_.pt_, 0., default_.phi_, 0.}
   , cov_(2,2)
+  , genPt_(0.)
+  , genPhi_(0.)
 {
   update_cov();
 }
@@ -23,6 +25,8 @@ RecoMEt::RecoMEt(Float_t pt,
   , p4_{default_.pt_, 0., default_.phi_, 0.}
   , sumEt_(0.)
   , cov_(2,2)
+  , genPt_(0.)
+  , genPhi_(0.)
 {
   update_cov();
 }
@@ -36,6 +40,8 @@ RecoMEt::RecoMEt(const math::PtEtaPhiMLorentzVector & p4,
   , p4_(p4)
   , sumEt_(0.)
   , cov_(cov)
+  , genPt_(0.)
+  , genPhi_(0.)
 {}
 
 RecoMEt &
@@ -121,6 +127,30 @@ const TMatrixD &
 RecoMEt::cov() const
 {
   return cov_;
+}
+
+void 
+RecoMEt::set_genPt(double genPt)
+{
+  genPt_ = genPt;
+}
+
+void 
+RecoMEt::set_genPhi(double genPhi)
+{
+  genPhi_ = genPhi;
+}
+
+Double_t 
+RecoMEt::genPt() const
+{
+  return genPt_;
+}
+
+Double_t 
+RecoMEt::genPhi() const
+{
+  return genPhi_;
 }
 
 std::ostream& operator<<(std::ostream& stream,

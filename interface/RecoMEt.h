@@ -38,6 +38,15 @@ public:
   const Particle::LorentzVector & p4() const;
   const TMatrixD & cov() const;
 
+  /**
+   * @brief Set generator level missing transverse momentum
+   */
+  void set_genPt(double genPt);
+  void set_genPhi(double genPhi);
+
+  Double_t genPt() const;
+  Double_t genPhi() const;
+
   friend class RecoMEtReader;
   friend class RecoMEtWriter;
 
@@ -70,6 +79,9 @@ protected:
   Float_t sumEt_; ///< sum of transverse energies of all particles in the event
 
   TMatrixD cov_; ///< MET resolution matrix
+
+  Float_t genPt_;  ///< pT of generator level missing transverse momentum vector
+  Float_t genPhi_;
 
   ///< Update cov and p4 (needed by RecoMEtReader)
   void update();
