@@ -68,7 +68,7 @@ class addMEMConfig_2lss_1tau(addMEMConfig):
     self.isDebug = isDebug
     self.central_or_shift = central_or_shift
 
-  def createCfg_addMEM(self, inputFiles, startRange, endRange, outputFile, era, isMC, cfgFile_modified, whitelist = []):
+  def createCfg_addMEM(self, inputFiles, startRange, endRange, outputFile, era, process, isMC, cfgFile_modified, whitelist = []):
     """Create python configuration file for the addMEM_2lss_1tau executable (MEM code)
 
     Args:

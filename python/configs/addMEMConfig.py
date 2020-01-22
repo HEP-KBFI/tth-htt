@@ -143,7 +143,7 @@ class addMEMConfig:
 
         self.cvmfs_error_log = {}
 
-    def createCfg_addMEM(self, inputFiles, startRange, endRange, outputFile, era, isMC, cfgFile_modified, whitelist = []):
+    def createCfg_addMEM(self, inputFiles, startRange, endRange, outputFile, era, process, isMC, cfgFile_modified, whitelist = []):
         raise ValueError(
             "Function 'createCfg_addMEM' not implemented in derrived class !!")
 
@@ -502,6 +502,7 @@ class addMEMConfig:
                     memEvtRangeDict[jobId]['event_range'][1],
                     self.outputFiles[key_file],
                     self.era,
+                    sample_info["sample_category"],
                     is_mc,
                     self.cfgFiles_addMEM_modified[key_file],
                     memEvtRangeDict[jobId]['whitelist'],
