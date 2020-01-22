@@ -6,6 +6,7 @@
 #include <string> // std::string
 #include <vector> // std::vector<>
 #include <map> // std::map<>
+#include <iostream> // std::cout, std::endl
 #include <ostream> // ostream
 #include <cassert> // assert()
 
@@ -37,6 +38,9 @@ namespace cutFlowTable_namespace
       {
         columns_[""] = 0;
       }
+      assert(columns_.size() >= 1);
+      selEvents_.resize(columns_.size());
+      selEvents_weighted_.resize(columns_.size());
     }
     ~rowType() {}
 
