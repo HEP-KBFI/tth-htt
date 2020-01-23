@@ -157,5 +157,11 @@ EvtHistManager_2lss::fillHistograms(int numElectrons,
   }
   fillWithOverFlow(histograms_by_category_[category], mvaOutput_category, evtWeight, evtWeightErr);
 
+  if(! histograms_by_category_SVA_.count(category_SVA))
+  {
+    throw cmsException(this, __func__, __LINE__) << "Histogram of the name '" << category_SVA << "' was never booked";
+  }
+  fillWithOverFlow(histograms_by_category_SVA_[category_SVA], mass_2L, evtWeight, evtWeightErr);
+
   fillWithOverFlow(histogram_EventCounter_, 0., evtWeight, evtWeightErr);
 }
