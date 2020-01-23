@@ -13,7 +13,8 @@ import argparse
 import re
 
 OUTPUT_NN = 'output_NN'
-OUTPUT_NN_RE = re.compile('{}_(?P<node>\w+)_(?P<category>\w+)'.format(OUTPUT_NN))
+OUTPUT_NN_RE     = re.compile('{}_(?P<node>\w+)'.format(OUTPUT_NN))
+OUTPUT_NN_RE_CAT = re.compile('{}_(?P<node>\w+)_(?P<category>\w+)'.format(OUTPUT_NN))
 EVENTCOUNTER = 'EventCounter'
 SYS_HISTOGRAM_PREFIX = 'CMS_ttHl_'
 GEN_MATCHES = [ 'prompt', 'fake', 'flip', 'Convs', 'gentau', 'faketau' ]
@@ -53,7 +54,11 @@ def get_keys(dir_ptr, include = None, exclude = None):
   return keys
 
 def get_systematics(histogram_name):
-  assert(histogram_name.endswith(EVENTCOUNTER) or OUTPUT_NN_RE.match(histogram_name))
+  assert(
+      histogram_name.endswith(EVENTCOUNTER) or
+      OUTPUT_NN_RE.match(histogram_name)    or
+      OUTPUT_NN_RE_CAT.match(histogram_name)
+  )
   if histogram_name.startswith(SYS_HISTOGRAM_PREFIX):
     if EVENTCOUNTER in histogram_name:
       histogram_name_prefix = histogram_name.replace('_{}'.format(EVENTCOUNTER), '').replace(SYS_HISTOGRAM_PREFIX, '')
@@ -66,10 +71,14 @@ def get_systematics(histogram_name):
 
 def get_node_subcategory(histogram_name):
   output_nn_match = OUTPUT_NN_RE.match(histogram_name)
-  if output_nn_match:
+  output_nn_match_cat = OUTPUT_NN_RE_CAT.match(histogram_name)
+  if output_nn_match_cat:
     node = output_nn_match.group('node')
     category = output_nn_match.group('category')
     return node, category
+  elif output_nn_match:
+    node = output_nn_match.group('node')
+    return node, ''
   else:
     return '', ''
 
@@ -139,7 +148,12 @@ def get_evt_yields(input_file_name, results = None):
       process_path = os.path.join(evt_directory_path, process)
       process_dir_ptr = get_dir(input_file, process_path)
       process_name, decay_mode, gen_match = parse_process(process)
-      histogram_names = get_keys(process_dir_ptr, include = lambda key: EVENTCOUNTER in key or OUTPUT_NN_RE.match(key))
+      histogram_names = get_keys(
+        process_dir_ptr,
+        include = lambda key: EVENTCOUNTER in key or \
+                              OUTPUT_NN_RE_CAT.match(key) or \
+                              OUTPUT_NN_RE.match(key)
+        )
       for histogram_name in histogram_names:
         histogram_path = os.path.join(process_path, histogram_name)
         histogram = input_file.Get(histogram_path)
