@@ -121,8 +121,8 @@ then
       1> $FIT_RESULTS                                        \
       2> "${FIT_RESULTS%.*}_errors.log"
 
-    PREFIT_VALUES=`grep "Pre-fit QCD" $FIT_RESULTS | awk '{print $4" "$6}'`
-    POSTFIT_VALUES=`grep "Post-fit QCD" $FIT_RESULTS | awk '{print $4" "$6}'`
+    PREFIT_VALUES=`grep "Pre-fit {{ grep_value }}" $FIT_RESULTS | awk '{print $4" "$6}'`
+    POSTFIT_VALUES=`grep "Post-fit {{ grep_value }}" $FIT_RESULTS | awk '{print $4" "$6}'`
 else
     echo "$MLFIT_FILE does not exist."
 fi
