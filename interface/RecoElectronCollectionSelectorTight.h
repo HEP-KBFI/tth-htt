@@ -25,10 +25,20 @@ public:
   void enable_conversionVeto();
   void disable_conversionVeto();
 
+  void set_min_pt(double min_pt);
+  void set_max_absEta(double max_absEta);
+
   void set_min_mvaTTH(double min_mvaTTH);
-  double get_min_mvaTTH() const;
 
   void set_selection_flags(bool selection_flag);
+
+  /**
+   * @brief Get cut thresholds
+   */
+  double get_min_pt() const;
+  double get_max_absEta() const;
+
+  double get_min_mvaTTH() const;
 
   /**
    * @brief Check if electron given as function argument passes "tight" electron selection, defined in Table 13 of AN-2015/321
@@ -42,9 +52,9 @@ protected:
   bool apply_offline_e_trigger_cuts_;
   bool debug_;
 
-  const Double_t min_pt_;                    ///< lower cut threshold on pT
-  const Double_t min_cone_pt_;              ///< lower cut threshold on cone pT
-  const Double_t max_absEta_;                ///< upper cut threshold on absolute value of eta
+  Double_t min_pt_;                          ///< lower cut threshold on pT
+  const Double_t min_cone_pt_;               ///< lower cut threshold on cone pT
+  Double_t max_absEta_;                      ///< upper cut threshold on absolute value of eta
   const Double_t max_dxy_;                   ///< upper cut threshold on d_{xy}, distance in the transverse plane w.r.t PV
   const Double_t max_dz_;                    ///< upper cut threshold on d_{z}, distance on the z axis w.r.t PV
   const Double_t max_relIso_;                ///< upper cut threshold on relative isolation

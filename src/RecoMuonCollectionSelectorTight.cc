@@ -132,13 +132,38 @@ RecoMuonSelectorTight::operator()(const RecoMuon & muon) const
   return true;
 }
 
+void
+RecoMuonSelectorTight::set_min_pt(double min_pt)
+{
+  min_pt_ = min_pt;
+}
+
+void
+RecoMuonSelectorTight::set_max_absEta(double max_absEta)
+{
+  max_absEta_ = max_absEta;
+}
+
 void RecoMuonSelectorTight::set_min_mvaTTH(double min_mvaTTH)
 {
   std::cout << "setting cut on prompt-lepton MVA for tight muons: " << min_mvaTTH << '\n';
   min_mvaTTH_ = min_mvaTTH;
 }
+
+double
+RecoMuonSelectorTight::get_min_pt() const
+{
+  return min_pt_;
+}
+
+double
+RecoMuonSelectorTight::get_max_absEta() const
+{
+  return max_absEta_;
+}
  
-double RecoMuonSelectorTight::get_min_mvaTTH() const
+double 
+RecoMuonSelectorTight::get_min_mvaTTH() const
 {
   return min_mvaTTH_;
 }

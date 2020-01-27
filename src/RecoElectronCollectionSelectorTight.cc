@@ -58,13 +58,38 @@ RecoElectronSelectorTight::disable_conversionVeto()
   apply_conversionVeto_ = false;
 }
 
+void
+RecoElectronSelectorTight::set_min_pt(double min_pt)
+{
+  min_pt_ = min_pt;
+}
+
+void
+RecoElectronSelectorTight::set_max_absEta(double max_absEta)
+{
+  max_absEta_ = max_absEta;
+}
+
 void RecoElectronSelectorTight::set_min_mvaTTH(double min_mvaTTH)
 {
   std::cout << "setting cut on prompt-lepton MVA for tight electrons: " << min_mvaTTH << '\n';
   min_mvaTTH_ = min_mvaTTH;
 }
  
-double RecoElectronSelectorTight::get_min_mvaTTH() const
+double
+RecoElectronSelectorTight::get_min_pt() const
+{
+  return min_pt_;
+}
+
+double
+RecoElectronSelectorTight::get_max_absEta() const
+{
+  return max_absEta_;
+}
+
+double 
+RecoElectronSelectorTight::get_min_mvaTTH() const
 {
   return min_mvaTTH_;
 }
