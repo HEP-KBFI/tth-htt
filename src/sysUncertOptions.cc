@@ -195,6 +195,8 @@ getLHEscale_option(const std::string & central_or_shift)
     else if(boost::ends_with(central_or_shift, "x1Up")  ) central_or_shift_int = kLHE_scale_xUp;
     else if(boost::ends_with(central_or_shift, "y1Down")) central_or_shift_int = kLHE_scale_yDown;
     else if(boost::ends_with(central_or_shift, "y1Up")  ) central_or_shift_int = kLHE_scale_yUp;
+    else if(boost::ends_with(central_or_shift, "_Down") ) central_or_shift_int = kLHE_scale_Down;
+    else if(boost::ends_with(central_or_shift, "_Up")   ) central_or_shift_int = kLHE_scale_Up;
     else throw cmsException(__func__, __LINE__)
            << "Invalid option to LHE systematics: " << central_or_shift;
   }
