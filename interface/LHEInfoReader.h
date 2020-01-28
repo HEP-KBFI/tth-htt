@@ -71,8 +71,8 @@ protected:
   mutable double weight_scale_xDown_;
   mutable double weight_scale_yUp_;
   mutable double weight_scale_yDown_;
-  mutable double weight_scale_Up_;
-  mutable double weight_scale_Down_;
+  mutable Float_t weight_scale_Up_;
+  mutable Float_t weight_scale_Down_;
 
   bool has_LHE_weights_;
 
