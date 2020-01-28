@@ -229,7 +229,7 @@ class analyzeConfig_3l(analyzeConfig):
                   continue
 
                 key_dir = getKey(process_name_or_dummy, lepton_selection_and_frWeight, chargeSumSelection, central_or_shift_or_dummy)
-                for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_ROOT, DKEY_RLES, DKEY_SYNC ]:
+                for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_RLES, DKEY_SYNC ]:
                   initDict(self.dirs, [ key_dir, dir_type ])
                   if dir_type in [ DKEY_CFGS, DKEY_LOGS ]:
                     self.dirs[key_dir][dir_type] = os.path.join(self.configDir, dir_type, self.channel,
@@ -239,7 +239,7 @@ class analyzeConfig_3l(analyzeConfig):
                       "_".join([ lepton_selection_and_frWeight, chargeSumSelection ]), process_name_or_dummy, central_or_shift_or_dummy)
     for subdirectory in [ "addBackgrounds", "addBackgroundLeptonFakes", "prepareDatacards", "addSystFakeRates", "makePlots" ]:
       key_dir = getKey(subdirectory)
-      for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_ROOT, DKEY_DCRD, DKEY_PLOT ]:
+      for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT ]:
         initDict(self.dirs, [ key_dir, dir_type ])
         if dir_type in [ DKEY_CFGS, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT ]:
           self.dirs[key_dir][dir_type] = os.path.join(self.configDir, dir_type, self.channel, subdirectory)
@@ -347,14 +347,6 @@ class analyzeConfig_3l(analyzeConfig):
                 if len(ntupleFiles) == 0:
                   logging.warning("No input ntuples for %s --> skipping job !!" % (key_analyze_job))
                   continue
-                rootOutputFile = ""
-                if self.select_root_output:
-                  rootOutputFile = os.path.join(self.dirs[key_analyze_dir][DKEY_ROOT], "out_%s_%s_%s_%s_%s_%i.root" % \
-                    (self.channel, process_name, lepton_selection_and_frWeight, chargeSumSelection, central_or_shift, jobId))
-                  key_file_woJobId = getKey(process_name, lepton_selection_and_frWeight, chargeSumSelection, central_or_shift)
-                  if key_file_woJobId not in self.rootOutputAux:
-                    self.rootOutputAux[key_file_woJobId] = [ re.sub('_\d+\.root', '.root', rootOutputFile),
-                                                             re.sub('\d+\.root', '*.root', rootOutputFile) ]
 
                 syncOutput = ''
                 syncTree = ''
@@ -399,7 +391,6 @@ class analyzeConfig_3l(analyzeConfig):
                   'histogramFile'            : histogramFile_path,
                   'logFile'                  : logFile_path,
                   'selEventsFileName_output' : rleOutputFile_path,
-                  'selEventsTFileName'       : rootOutputFile,
                   'electronSelection'        : electron_selection,
                   'muonSelection'            : muon_selection,
                   'apply_leptonGenMatching'  : self.apply_leptonGenMatching,

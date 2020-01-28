@@ -86,7 +86,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/lutAuxFunctions.h" // loadTH2, get_sf_from_TH2
 #include "tthAnalysis/HiggsToTauTau/interface/L1PreFiringWeightReader.h" // L1PreFiringWeightReader
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
-#include "tthAnalysis/HiggsToTauTau/interface/NtupleFillerMEM.h" // NtupleFillerMEM
 #include "tthAnalysis/HiggsToTauTau/interface/NtupleFillerBDT.h" // NtupleFillerBDT
 #include "tthAnalysis/HiggsToTauTau/interface/TTreeWrapper.h" // TTreeWrapper
 #include "tthAnalysis/HiggsToTauTau/interface/SyncNtupleManager.h" // SyncNtupleManager
@@ -381,9 +380,6 @@ int main(int argc, char* argv[])
   std::string selEventsFileName_output = cfg_analyze.getParameter<std::string>("selEventsFileName_output");
   std::cout << "selEventsFileName_output = " << selEventsFileName_output << std::endl;
 
-  std::string selEventsTFileName = cfg_analyze.getParameter<std::string>("selEventsTFileName");
-  const bool writeSelEventsFile = selEventsTFileName != "";
-
   fwlite::InputSource inputFiles(cfg);
   int maxEvents = inputFiles.maxEvents();
   std::cout << " maxEvents = " << maxEvents << std::endl;
@@ -406,13 +402,6 @@ int main(int argc, char* argv[])
       triggers_1e, triggers_1mu, triggers_2e, triggers_1e1mu, triggers_2mu,
       triggers_3e, triggers_2e1mu, triggers_1e2mu, triggers_3mu
     });
-  }
-
-//--- create output root file from selected events if needed
-  NtupleFillerMEM mem;
-  if ( writeSelEventsFile ) {
-    mem.isSignal(isSignal);
-    mem.setFileName(selEventsTFileName);
   }
 
 //--- declare event-level variables
@@ -2127,34 +2116,6 @@ int main(int argc, char* argv[])
     if(isDEBUG)
     {
       std::cout << evtWeightRecorder << '\n';
-    }
-
-    if ( writeSelEventsFile ) {
-      const RLEUnit rleUnit{ eventInfo.run, eventInfo.lumi, eventInfo.event };
-      mem.add(rleUnit);
-      const METUnit<double> metUnit{
-        met.pt(), met.phi(), met.covXX(), met.covXY(), met.covYY(), true
-      };
-      mem.add(metUnit);
-      //mem.add(mvaInputs_3l, mvaOutput_3l_ttV, mvaOutput_3l_ttbar);
-      mem.add(selBJets_loose, selBJets_medium, selJets);
-      mem.add(selHadTau);
-      mem.add(selLeptons);
-      if ( isMC ) {
-        if ( isSignal ) {
-          mem.add(eventInfo.genHiggsDecayMode);
-        }
-        //-----------------------------------------------------------------------
-        // CV: functionality temporarily disabled,
-        //     as all generator level information is stored in RecoLepton, RecoHadTau and RecoJet branches in case tthProdNtuple workflow is used
-        //if ( era == kEra_2016 || era == kEra_2017 ) {
-        //  mem.add(genHadTaus, genBQuarkFromTop, genLepFromTau,
-        //          genNuFromTau, genTau, genLepFromTop, genNuFromTop,
-        //          genTop, genVbosons);
-        //}
-        //-----------------------------------------------------------------------
-      }
-      mem.fill(false);
     }
   }
 
