@@ -1,7 +1,7 @@
 from collections import OrderedDict as OD
 
-# file generated at 2020-01-12 18:10:18 with the following command:
-# create_dictionary.py -m python/samples/metaDict_2016_sync.py -p /hdfs/local/karl/ttHNtupleProduction/2016/2020Jan12_woPresel_nonNom_sync/ntuples -N samples_2016 -E 2016 -o python/samples -g tthAnalyzeSamples_2016_sync.py -M
+# file generated at 2020-01-28 21:04:38 with the following command:
+# create_dictionary.py -m python/samples/metaDict_2016_sync.py -p /hdfs/local/karl/ttHNtupleProduction/2016/2020Jan28_woPresel_nonNom_sync/ntuples -N samples_2016 -E 2016 -o python/samples -g tthAnalyzeSamples_2016_sync.py -M
 
 samples_2016 = OD()
 samples_2016["/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
@@ -14,13 +14,15 @@ samples_2016["/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/Run
     'Count'                                                      : [        77700, ],
     'CountWeighted'                                              : [        76222,        76224,        76201, ],
     'CountWeightedLHEWeightScale'                                : [        80750,        79880,        79560,        78178,        76222,        74779,        73739,        71182,        69162, ],
+    'CountWeightedLHEEnvelope'                                   : [        88399,        63494, ],
     'CountWeightedL1PrefireNom'                                  : [        74520,        74527,        74503, ],
     'CountWeightedL1Prefire'                                     : [        74520,        74083,        74956, ],
     'CountWeightedLHEWeightScaleL1PrefireNom'                    : [        78888,        78065,        77776,        76415,        74520,        73137,        72099,        69621,        67664, ],
+    'CountWeightedLHEEnvelopeL1PrefireNom'                       : [        86380,        62114, ],
   }),
   ("nof_tree_events",                 77700),
   ("nof_db_events",                   3981250),
-  ("fsize_local",                     394016083), # 394.02MB, avg file size 394.02MB
+  ("fsize_local",                     394397191), # 394.40MB, avg file size 394.40MB
   ("fsize_db",                        208884155497), # 208.88GB, avg file size 5.97GB
   ("use_it",                          True),
   ("xsection",                        0.2118),
@@ -32,7 +34,7 @@ samples_2016["/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/Run
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2020Jan12_woPresel_nonNom_sync/ntuples/ttHToNonbb_M125_powheg"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2020Jan28_woPresel_nonNom_sync/ntuples/ttHToNonbb_M125_powheg"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
