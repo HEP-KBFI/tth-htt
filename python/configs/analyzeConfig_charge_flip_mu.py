@@ -13,6 +13,7 @@ class analyzeConfig_charge_flip_mu(analyzeConfig_charge_flip):
   def __init__(self,
         configDir,
         outputDir,
+        cmssw_base_dir_combine,
         executable_analyze,
         samples,
         lepton_selections,
@@ -59,6 +60,11 @@ class analyzeConfig_charge_flip_mu(analyzeConfig_charge_flip):
       submission_cmd        = submission_cmd,
     )
 
+    if not os.path.isdir(os.path.join(cmssw_base_dir_combine, 'src', 'CombineHarvester')) or \
+       not os.path.isdir(os.path.join(cmssw_base_dir_combine, 'src', 'HiggsAnalysis', 'CombinedLimit')) or \
+       not os.path.isdir(os.path.join(cmssw_base_dir_combine, 'src', 'tthAnalysis', 'ChargeFlipEstimation')):
+      raise ValueError('CMSSW path for combine not valid: %s' % cmssw_base_dir_combine)
+
     self.prep_dcard_processesToCopy = ["data_obs", "DY", "DY_fake", "WJets", "TTbar", "Singletop", "Diboson"]
     self.prep_dcard_signals = [ "DY" ]
 
@@ -66,8 +72,17 @@ class analyzeConfig_charge_flip_mu(analyzeConfig_charge_flip):
 
     self.cfgFile_analyze_original = os.path.join(self.template_dir, "analyze_charge_flip_mu_cfg.py")
     self.cfgFile_prep_dcard_original = os.path.join(self.template_dir, "prepareDatacards_cfg.py")
-    #self.histogramDir_prep_dcard = "charge_flip_SS_Tight"
     self.select_rle_output = select_rle_output
+
+    self.jobOptions_postFit = {
+      'signals'                : [ "data_obs", "DY" ],
+      'backgrounds'            : [ "DY_fake", "Singletop", "Diboson", "TTbar" ],
+      'lepton_type'            : 'muon',
+      'era'                    : self.era,
+      'cmssw_base_dir_combine' : cmssw_base_dir_combine,
+      'target'                 : 'fit_result_data_exclusions.root',
+    }
+    self.subMake_targets = []
 
   def createCfg_prep_dcard(self, jobOptions):
     """Fills the template of python configuration file for datacard preparation

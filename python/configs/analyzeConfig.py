@@ -32,6 +32,8 @@ DKEY_RLES    = "output_rle"  # dir for the selected run:lumi:event numbers
 DKEY_HADD_RT = "hadd_cfg_rt" # dir for hadd cfg files generated during the runtime
 DKEY_SYNC    = 'sync_ntuple' # dir for storing sync Ntuples
 
+DKEY_COMBINE_OUTPUT = "combine_output" # dir for storing post-fit results (of auxiliary analyses)
+
 DIRLIST = [
     DKEY_CFGS, DKEY_DCRD, DKEY_HIST, DKEY_PLOT, DKEY_SCRIPTS, DKEY_LOGS, DKEY_RLES,
     DKEY_HADD_RT, DKEY_SYNC
