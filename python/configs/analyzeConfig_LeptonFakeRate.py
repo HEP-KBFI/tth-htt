@@ -9,8 +9,6 @@ import codecs
 jinja_template_dir = os.path.join(
   os.getenv('CMSSW_BASE'), 'src', 'tthAnalysis', 'HiggsToTauTau', 'python', 'templates', 'LeptonFakeRate'
 )
-DKEY_COMBINE_OUTPUT="combine_output"
-
 jinja2.filters.FILTERS['os.path.basename'] = os.path.basename
 
 def getBinName(label, minValue, maxValue):
@@ -188,8 +186,8 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     )
 
     self.cmssw_base_dir_combine = cmssw_base_dir_combine
-    if not os.path.isdir(os.path.join(cmssw_base_dir_combine, 'src', 'CombineHarvester')) or \
-       not os.path.isdir(os.path.join(cmssw_base_dir_combine, 'src', 'HiggsAnalysis', 'CombinedLimit')):
+    if not os.path.isdir(os.path.join(self.cmssw_base_dir_combine, 'src', 'CombineHarvester')) or \
+       not os.path.isdir(os.path.join(self.cmssw_base_dir_combine, 'src', 'HiggsAnalysis', 'CombinedLimit')):
       raise ValueError('CMSSW path for combine not valid: %s' % self.cmssw_base_dir_combine)
 
     self.use_QCD_fromMC = use_QCD_fromMC

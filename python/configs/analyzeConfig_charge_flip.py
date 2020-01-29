@@ -3,6 +3,13 @@ from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, generateInputFileList
 from tthAnalysis.HiggsToTauTau.common import logging
 
+import jinja2
+import copy
+
+jinja_template_dir = os.path.join(
+  os.getenv('CMSSW_BASE'), 'src', 'tthAnalysis', 'HiggsToTauTau', 'python', 'templates', 'charge_flip'
+)
+
 class analyzeConfig_charge_flip(analyzeConfig):
   """Configuration metadata needed to run analysis in a single go.
 
@@ -15,6 +22,7 @@ class analyzeConfig_charge_flip(analyzeConfig):
   def __init__(self,
                configDir,
                outputDir,
+               cmssw_base_dir_combine,
                executable_analyze,
                samples,
                lepton_selections,
@@ -61,15 +69,47 @@ class analyzeConfig_charge_flip(analyzeConfig):
       submission_cmd        = submission_cmd,
     )
 
-    self.prep_dcard_processesToCopy = ["data_obs", "DY", "DY_fake", "WJets", "TTbar", "Singletop", "Diboson"]
+    if not os.path.isdir(os.path.join(cmssw_base_dir_combine, 'src', 'CombineHarvester')) or \
+       not os.path.isdir(os.path.join(cmssw_base_dir_combine, 'src', 'HiggsAnalysis', 'CombinedLimit')) or \
+       not os.path.isdir(os.path.join(cmssw_base_dir_combine, 'src', 'tthAnalysis', 'ChargeFlipEstimation')):
+      raise ValueError('CMSSW path for combine not valid: %s' % cmssw_base_dir_combine)
+
+    self.prep_dcard_processesToCopy = [ "data_obs", "DY", "DY_fake", "WJets", "TTbar", "Singletop", "Diboson" ]
     self.prep_dcard_signals = [ "DY" ]
 
     self.lepton_selections = lepton_selections
 
     self.cfgFile_analyze_original = os.path.join(self.template_dir, "analyze_charge_flip_cfg.py")
     self.cfgFile_prep_dcard_original = os.path.join(self.template_dir, "prepareDatacards_cfg.py")
-    #self.histogramDir_prep_dcard = "charge_flip_SS_Tight"
     self.select_rle_output = select_rle_output
+
+    self.jobOptions_postFit = {
+      'signals'                : [ "data_obs", "DY" ],
+      'backgrounds'            : [ "DY_fake", "Singletop", "Diboson", "TTbar" ],
+      'lepton_type'            : 'electron',
+      'era'                    : self.era,
+      'cmssw_base_dir_combine' : cmssw_base_dir_combine,
+      'target'                 : 'fit_result_data_exclusions.root',
+    }
+    self.subMake_targets = []
+
+  def createCfg_postFit(self, jobOptions):
+    makefile_template_filename = os.path.join(jinja_template_dir, 'Makefile_postFit.template')
+    with open(makefile_template_filename, 'r') as makefile_template_file:
+      makefile_template = makefile_template_file.read()
+    makefile_contents = jinja2.Template(makefile_template).render(**jobOptions)
+    makefile_location = jobOptions['makefile']
+    with open(makefile_location, 'w') as makefile:
+      makefile.write(makefile_contents)
+    self.subMake_targets.append(jobOptions)
+
+  def addToMakefile_postFit(self, lines_makefile):
+    for jobOptions in self.subMake_targets:
+      self.targets.append(jobOptions['fit_result'])
+      lines_makefile.append("{fit_result}: {prepare_datacard}".format(**jobOptions))
+      lines_makefile.append("\tmake -f {makefile} clean".format(**jobOptions))
+      lines_makefile.append("\tmake -f {makefile} &> {stdout}".format(**jobOptions))
+      lines_makefile.append("")
 
   def createCfg_analyze(self, jobOptions, sample_info):
     """Create python configuration file for the analyze_charge_flip executable (analysis code)
@@ -124,7 +164,6 @@ class analyzeConfig_charge_flip(analyzeConfig):
         continue
 
       process_name = sample_info["process_name_specific"]
-      sample_category = sample_info["sample_category"]
       is_mc = (sample_info["type"] == "mc")
 
       logging.info("Building dictionaries for sample %s..." % process_name)
@@ -159,9 +198,9 @@ class analyzeConfig_charge_flip(analyzeConfig):
           self.dirs[key_dir][dir_type] = os.path.join(self.configDir, dir_type, self.channel, subdirectory)
         else:
           self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel, subdirectory)
-    for dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT ]:
+    for dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT, DKEY_COMBINE_OUTPUT ]:
       initDict(self.dirs, [ dir_type ])
-      if dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT ]:
+      if dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT, DKEY_COMBINE_OUTPUT ]:
         self.dirs[dir_type] = os.path.join(self.configDir, dir_type, self.channel)
       else:
         self.dirs[dir_type] = os.path.join(self.outputDir, dir_type, self.channel)
@@ -271,15 +310,36 @@ class analyzeConfig_charge_flip(analyzeConfig):
       key_prep_dcard_dir = getKey("prepareDatacards")
       prep_dcard_job_tuple = (self.channel, histogramToFit)
       key_prep_dcard_job = getKey(histogramToFit)
+      datacardFile = os.path.join(self.dirs[key_prep_dcard_dir][DKEY_DCRD], "prepareDatacards_%s_%s.root" % prep_dcard_job_tuple)
       self.jobOptions_prep_dcard[key_prep_dcard_job] = {
         'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2_job],
         'cfgFile_modified' : os.path.join(self.dirs[key_prep_dcard_dir][DKEY_CFGS], "prepareDatacards_%s_%s_cfg.py" % prep_dcard_job_tuple),
-        'datacardFile' : os.path.join(self.dirs[key_prep_dcard_dir][DKEY_DCRD], "prepareDatacards_%s_%s.root" % prep_dcard_job_tuple),
+        'datacardFile' : datacardFile,
         'histogramDir' : self.histogramDir_prep_dcard,
         'histogramToFit' : histogramToFit,
         'label' : None
       }
       self.createCfg_prep_dcard(self.jobOptions_prep_dcard[key_prep_dcard_job])
+
+      jobOptions_makefile = copy.deepcopy(self.jobOptions_postFit)
+      jobOptions_makefile['fit_result'] = os.path.join(
+        self.dirs[DKEY_COMBINE_OUTPUT], 'fit_{}'.format(histogramToFit), jobOptions_makefile['target']
+      )
+      jobOptions_makefile['hadd_stage2'] = self.outputFile_hadd_stage2[key_hadd_stage2_job]
+      jobOptions_makefile['prepare_datacard'] = datacardFile
+      jobOptions_makefile['data_datacard'] = os.path.join(
+        self.dirs[key_prep_dcard_dir][DKEY_DCRD], "prepareDatacards_data_%s_%s.root" % prep_dcard_job_tuple
+      )
+      jobOptions_makefile['pseudodata_datacard'] = os.path.join(
+        self.dirs[key_prep_dcard_dir][DKEY_DCRD], "prepareDatacards_pseudodata_%s_%s.root" % prep_dcard_job_tuple
+      )
+      jobOptions_makefile['makefile'] = os.path.join(
+        self.dirs[DKEY_COMBINE_OUTPUT], 'Makefile_{}'.format(histogramToFit)
+      )
+      jobOptions_makefile['stdout'] = os.path.join(
+        self.dirs[DKEY_COMBINE_OUTPUT], 'stdout_{}.log'.format(histogramToFit)
+      )
+      self.createCfg_postFit(jobOptions_makefile)
 
     self.sbatchFile_analyze = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_analyze_%s.py" % self.channel)
     if self.is_sbatch:
@@ -292,6 +352,7 @@ class analyzeConfig_charge_flip(analyzeConfig):
     self.addToMakefile_hadd_stage1(lines_makefile)
     self.addToMakefile_hadd_stage2(lines_makefile, make_dependency = "phony_hadd_stage1")
     self.addToMakefile_prep_dcard(lines_makefile)
+    self.addToMakefile_postFit(lines_makefile)
     self.createMakefile(lines_makefile)
 
     logging.info("Done.")

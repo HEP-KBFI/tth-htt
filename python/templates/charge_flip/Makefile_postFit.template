@@ -1,0 +1,124 @@
+.DEFAULT_GOAL := all
+SHELL := /bin/bash
+
+CMSSW_BASE = {{ cmssw_base_dir_combine }}
+INPUT_DATACARD = {{ prepare_datacard }}
+HADD_STAGE2 = {{ hadd_stage2 }}
+
+FIT_RESULT = {{ fit_result }}
+DATACARD_ROOT_DATA = {{ data_datacard }}
+DATACARD_ROOT_PSEUDODATA = {{ pseudodata_datacard }}
+
+ERA = {{ era }}
+LEPTON_TYPE = {{ lepton_type }}
+SIGNALS = {{ signals|join(" ") }}
+BACKGROUNDS = {{ backgrounds|join(" ") }}
+
+all: $(DATACARD_ROOT_DATA) $(DATACARD_ROOT_PSEUDODATA) $(FIT_RESULT) plots
+
+OUTPUT_DIR = $(dir $(FIT_RESULT))
+OUTPUT_DIR_DATA = $(OUTPUT_DIR)/data
+OUTPUT_DIR_PSEUDODATA = $(OUTPUT_DIR)/pseuddata
+OUTPUT_DATA = $(OUTPUT_DIR_DATA)/results.txt
+OUTPUT_PSEUDODATA = $(OUTPUT_DIR_PSEUDODATA)/results.txt
+
+SCRIPT_DIR=$(OUTPUT_DIR)/scripts
+LOG_DIR=$(OUTPUT_DIR)/logs
+
+CREATE_DATACARD_SCRIPT=$(SCRIPT_DIR)/create_datacard.sh
+CREATE_DATACARD_LOG=$(LOG_DIR)/create_datacard.log
+
+MAKE_FITS_DATA_SCRIPT=$(SCRIPT_DIR)/make_fits_data.sh
+MAKE_FITS_DATA_LOG=$(LOG_DIR)/make_fits_data.log
+
+MAKE_FITS_PSEUDODATA_SCRIPT=$(SCRIPT_DIR)/make_fits_pseudodata.sh
+MAKE_FITS_PSEUDODATA_LOG=$(LOG_DIR)/make_fits_pseudodata.log
+
+MAKE_FIT_PLOTS_DATA_SCRIPT=$(SCRIPT_DIR)/make_fits_data.sh
+MAKE_FIT_PLOTS_DATA_LOG=$(LOG_DIR)/make_fits_data.log
+
+MAKE_FIT_PLOTS_PSEUDODATA_SCRIPT=$(SCRIPT_DIR)/make_fits_data.sh
+MAKE_FIT_PLOTS_PSEUDODATA_LOG=$(LOG_DIR)/make_fits_data.log
+
+PLOT_PULLS_SCRIPT = $(SCRIPT_DIR)/plot_pulls.sh
+PLOT_PULLS_LOG = $(LOG_DIR)/plot_pulls.log
+
+.PHONY: create_datacards plots plots_data plots_pseudodata clean
+
+clean:
+	rm -rf $(OUTPUT_DIR)/*
+	rm -f $(DATACARD_ROOT_DATA)
+	rm -f $(DATACARD_ROOT_PSEUDODATA)
+
+create_datacards:
+	mkdir -p $(dir $(CREATE_DATACARD_SCRIPT))
+	printf -- '#!$(SHELL)\n' > $(CREATE_DATACARD_SCRIPT)
+	printf -- 'cd $(CMSSW_BASE)\n' >>  $(CREATE_DATACARD_SCRIPT)
+	printf -- 'eval $$(scramv1 runtime -sh)\n' >> $(CREATE_DATACARD_SCRIPT)
+	printf -- 'mkdir -p $$(dirname $(DATACARD_ROOT_DATA))\n' >> $(CREATE_DATACARD_SCRIPT)
+	printf -- 'mkdir -p $$($(DATACARD_ROOT_PSEUDODATA))\n' >> $(CREATE_DATACARD_SCRIPT)
+	printf -- 'create_pseudodata_datacard.py -i $(INPUT_DATACARD) -o $(DATACARD_ROOT_DATA) ' >> $(CREATE_DATACARD_SCRIPT)
+	printf -- '-O $(DATACARD_ROOT_PSEUDODATA) -t $(LEPTON_TYPE) -s $(SIGNALS) $(BACKGROUNDS)\n' >> $(CREATE_DATACARD_SCRIPT)
+	printf -- 'ChargeFlipDC -i $(DATACARD_ROOT_DATA) -b $(BACKGROUNDS) ' >> $(CREATE_DATACARD_SCRIPT)
+	printf -- '-o $(OUTPUT_DIR_DATA) -y $(ERA) --is-$(LEPTON_TYPE) -f\n' >> $(CREATE_DATACARD_SCRIPT)
+	printf -- 'ChargeFlipDC -i $(DATACARD_ROOT_PSEUDODATA) -b $(BACKGROUNDS) ' >> $(CREATE_DATACARD_SCRIPT)
+	printf -- '-o $(OUTPUT_DIR_PSEUDODATA) -y $(ERA) --is-$(LEPTON_TYPE) -f\n' >> $(CREATE_DATACARD_SCRIPT)
+	chmod +x $(CREATE_DATACARD_SCRIPT)
+	mkdir -p $(dir $(CREATE_DATACARD_LOG))
+	$(CREATE_DATACARD_SCRIPT) &> $(CREATE_DATACARD_LOG)
+
+$(DATACARD_ROOT_DATA): create_datacards
+
+$(DATACARD_ROOT_PSEUDODATA): create_datacards
+
+$(OUTPUT_DATA): $(DATACARD_ROOT_DATA)
+	mkdir -p $(dir $(MAKE_FITS_DATA_SCRIPT))
+	printf -- '#!$(SHELL)\n' > $(MAKE_FITS_DATA_SCRIPT)
+	printf -- 'cd $(CMSSW_BASE)\n' >>  $(MAKE_FITS_DATA_SCRIPT)
+	printf -- 'eval $$(scramv1 runtime -sh)\n' >> $(MAKE_FITS_DATA_SCRIPT)
+	printf -- 'make_fits.py -i $(OUTPUT_DIR_DATA) -o $(OUTPUT_DATA)\n' >> $(MAKE_FITS_DATA_SCRIPT)
+	chmod +x $(MAKE_FITS_DATA_SCRIPT)
+	mkdir -p $(dir $(MAKE_FITS_DATA_LOG))
+	$(MAKE_FITS_DATA_SCRIPT) &> $(MAKE_FITS_DATA_LOG)
+
+$(OUTPUT_PSEUDODATA): $(DATACARD_ROOT_PSEUDODATA)
+	mkdir -p $(dir $(MAKE_FITS_PSEUDODATA_SCRIPT))
+	printf -- '#!$(SHELL)\n' > $(MAKE_FITS_PSEUDODATA_SCRIPT)
+	printf -- 'cd $(CMSSW_BASE)\n' >>  $(MAKE_FITS_PSEUDODATA_SCRIPT)
+	printf -- 'eval $$(scramv1 runtime -sh)\n' >> $(MAKE_FITS_PSEUDODATA_SCRIPT)
+	printf -- 'make_fits.py -i $(OUTPUT_DIR_PSEUDODATA) -o $(OUTPUT_PSEUDODATA)\n' >> $(MAKE_FITS_PSEUDODATA_SCRIPT)
+	chmod +x $(MAKE_FITS_PSEUDODATA_SCRIPT)
+	mkdir -p $(dir $(MAKE_FITS_PSEUDODATA_LOG))
+	$(MAKE_FITS_PSEUDODATA_SCRIPT) &> $(MAKE_FITS_PSEUDODATA_LOG)
+
+plots_data: $(OUTPUT_DATA)
+	mkdir -p $(dir $(MAKE_FIT_PLOTS_DATA_SCRIPT))
+	printf -- '#!$(SHELL)\n' > $(MAKE_FIT_PLOTS_DATA_SCRIPT)
+	printf -- 'cd $(CMSSW_BASE)\n' >>  $(MAKE_FIT_PLOTS_DATA_SCRIPT)
+	printf -- 'eval $$(scramv1 runtime -sh)\n' >> $(MAKE_FIT_PLOTS_DATA_SCRIPT)
+	printf -- 'make_fit_plots.py -i $(OUTPUT_DIR_DATA)\n' >> $(MAKE_FIT_PLOTS_DATA_SCRIPT)
+	chmod +x $(MAKE_FIT_PLOTS_DATA_SCRIPT)
+	mkdir -p $(dir $(MAKE_FIT_PLOTS_DATA_LOG))
+	$(MAKE_FIT_PLOTS_DATA_SCRIPT) &> $(MAKE_FIT_PLOTS_DATA_LOG)
+
+plots_pseudodata: $(OUTPUT_PSEUDODATA)
+	mkdir -p $(dir $(MAKE_FIT_PLOTS_PSEUDODATA_SCRIPT))
+	printf -- '#!$(SHELL)\n' > $(MAKE_FIT_PLOTS_PSEUDODATA_SCRIPT)
+	printf -- 'cd $(CMSSW_BASE)\n' >>  $(MAKE_FIT_PLOTS_PSEUDODATA_SCRIPT)
+	printf -- 'eval $$(scramv1 runtime -sh)\n' >> $(MAKE_FIT_PLOTS_PSEUDODATA_SCRIPT)
+	printf -- 'make_fit_plots.py -i $(OUTPUT_DIR_PSEUDODATA)\n' >> $(MAKE_FIT_PLOTS_PSEUDODATA_SCRIPT)
+	chmod +x $(MAKE_FIT_PLOTS_PSEUDODATA_SCRIPT)
+	mkdir -p $(dir $(MAKE_FIT_PLOTS_PSEUDODATA_LOG))
+	$(MAKE_FIT_PLOTS_PSEUDODATA_SCRIPT) &> $(MAKE_FIT_PLOTS_PSEUDODATA_LOG)
+
+plots: plots_data plots_pseudodata
+
+$(FIT_RESULT): $(OUTPUT_DATA) $(OUTPUT_PSEUDODATA)
+	mkdir -p $(dir $(PLOT_PULLS_SCRIPT))
+	printf -- '#!$(SHELL)\n' > $(PLOT_PULLS_SCRIPT)
+	printf -- 'cd $(CMSSW_BASE)\n' >>  $(PLOT_PULLS_SCRIPT)
+	printf -- 'eval $$(scramv1 runtime -sh)\n' >> $(PLOT_PULLS_SCRIPT)
+	printf -- 'plot_pulls.py -f $(OUTPUT_DATA) -F $(OUTPUT_PSEUDODATA) -i $(HADD_STAGE2) -o $(OUTPUT_DIR) -l\n' >> $(PLOT_PULLS_SCRIPT)
+	chmod +x $(PLOT_PULLS_SCRIPT)
+	mkdir -p $(dir $(PLOT_PULLS_LOG))
+	$(PLOT_PULLS_SCRIPT) &> $(PLOT_PULLS_LOG)
