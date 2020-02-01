@@ -84,8 +84,6 @@ LHEInfoReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(pdf_nWeights_, branchName_pdf_nWeights_);
     bai.setLenVar(max_scale_nWeights_).setBranchAddress(scale_weights_, branchName_scale_weights_);
     bai.setLenVar(max_pdf_nWeights_).setBranchAddress(pdf_weights_, branchName_pdf_weights_);
-    // TODO remove the next line
-    bai.ignoreErrors(true);
     bai.setBranchAddress(weight_scale_Up_, branchName_envelope_weight_up_, 1.);
     bai.setBranchAddress(weight_scale_Down_, branchName_envelope_weight_down_, 1.);
   }
