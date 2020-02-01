@@ -85,7 +85,7 @@ class analyzeConfig_ttZctrl(analyzeConfig):
       running_method            = running_method,
       num_parallel_jobs         = num_parallel_jobs,
       histograms_to_fit         = histograms_to_fit,
-      triggers                  = [ '1e', '1mu', '2e', '2mu', '1e1mu' ],
+      triggers                  = [ '1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '1e2mu', '2e1mu' ],
       lep_mva_wp                = lep_mva_wp,
       executable_prep_dcard     = executable_prep_dcard,
       executable_add_syst_dcard = executable_add_syst_dcard,
