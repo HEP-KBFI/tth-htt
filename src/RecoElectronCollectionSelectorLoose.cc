@@ -21,6 +21,12 @@ RecoElectronSelectorLoose::RecoElectronSelectorLoose(int era,
   , max_nLostHits_(1)
 {}
 
+void
+RecoElectronSelectorLoose::set_min_pt(double min_pt)
+{
+  min_pt_ = min_pt;
+}
+
 bool
 RecoElectronSelectorLoose::operator()(const RecoElectron & electron) const
 {

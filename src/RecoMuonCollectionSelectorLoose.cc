@@ -20,6 +20,12 @@ RecoMuonSelectorLoose::RecoMuonSelectorLoose(int era,
   , apply_tightCharge_(false)
 {}
 
+void
+RecoMuonSelectorLoose::set_min_pt(double min_pt)
+{
+  min_pt_ = min_pt;
+}
+
 bool
 RecoMuonSelectorLoose::operator()(const RecoMuon & muon) const
 {
