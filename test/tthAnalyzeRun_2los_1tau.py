@@ -31,6 +31,7 @@ parser.add_jet_cleaning()
 parser.add_gen_matching()
 parser.do_MC_only()
 parser.enable_regrouped_jec()
+parser.add_split_trigger_sys()
 args = parser.parse_args()
 
 # Common arguments
@@ -59,11 +60,19 @@ gen_matching      = args.gen_matching
 tau_id            = args.tau_id
 MC_only           = args.MC_only
 regroup_jec       = args.enable_regrouped_jec
+split_trigger_sys = args.split_trigger_sys
 
 if regroup_jec:
   if 'full' not in systematics_label:
     raise RuntimeError("Regrouped JEC was enabled but not running with full systematics")
   systematics.full.extend(systematics.JEC_regrouped)
+if split_trigger_sys == 'yes':
+  for trigger_sys in systematics.triggerSF:
+    del systematics.internal[systematics.internal.index(trigger_sys)]
+    del systematics.full[systematics.full.index(trigger_sys)]
+if split_trigger_sys in [ 'yes', 'both' ]:
+  systematics.internal.extend(systematics.triggerSF_2lss)
+  systematics.full.extend(systematics.triggerSF_2lss)
 
 # Use the arguments
 central_or_shifts = []

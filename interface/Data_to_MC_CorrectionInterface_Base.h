@@ -93,6 +93,9 @@ protected:
                 const std::string & tauID_str,
                 int nof_levels);
 
+  bool
+  check_triggerSFsys_opt(TriggerSFsys central_or_shift) const;
+
   //-----------------------------------------------------------------------------
   // data/MC corrections for electron and muon identification and isolation efficiency,
   // including the cut on the ttH multilepton MVA

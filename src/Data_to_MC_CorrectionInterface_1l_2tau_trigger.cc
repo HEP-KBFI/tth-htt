@@ -4,7 +4,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2017
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 #include "tthAnalysis/HiggsToTauTau/interface/data_to_MC_corrections_auxFunctions.h" // aux::
-#include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // TriggerSFsys, getTriggerSF_option()
+#include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // TriggerSFsys
 
 #include "TauAnalysisTools/TauTriggerSFs/interface/TauTriggerSFs2017.h" // TauTriggerSFs2017
 
@@ -118,18 +118,13 @@ Data_to_MC_CorrectionInterface_1l_2tau_trigger::setHadTaus(double hadTau1_pt, do
 }
 
 double
-Data_to_MC_CorrectionInterface_1l_2tau_trigger::getWeight_triggerEff(TriggerSFsys central_or_shift) const
-{
-  assert(0);
-}
-
-double
 Data_to_MC_CorrectionInterface_1l_2tau_trigger::getSF_triggerEff(TriggerSFsys central_or_shift) const
 {
   if(isDEBUG_)
   {
     std::cout << get_human_line(this, __func__, __LINE__) << '\n';
   }
+  assert(check_triggerSFsys_opt(central_or_shift));
 
   double eff_1l_data             = 0.;
   double eff_1l_mc               = 0.;
@@ -282,4 +277,16 @@ Data_to_MC_CorrectionInterface_1l_2tau_trigger::getSF_triggerEff(TriggerSFsys ce
   } // isTriggered_*
 
   return sf;
+}
+
+bool
+Data_to_MC_CorrectionInterface_1l_2tau_trigger::check_triggerSFsys_opt(TriggerSFsys central_or_shift) const
+{
+  return
+    central_or_shift == TriggerSFsys::central          ||
+    central_or_shift == TriggerSFsys::shiftUp          ||
+    central_or_shift == TriggerSFsys::shiftDown        ||
+    central_or_shift == TriggerSFsys::shift_1l1tauUp   ||
+    central_or_shift == TriggerSFsys::shift_1l1tauDown
+  ;
 }

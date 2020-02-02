@@ -35,6 +35,7 @@ parser.add_sideband()
 parser.add_tau_id()
 parser.add_control_region()
 parser.enable_regrouped_jec()
+parser.add_split_trigger_sys()
 args = parser.parse_args()
 
 # Common arguments
@@ -64,11 +65,19 @@ sideband          = args.sideband
 tau_id            = args.tau_id
 control_region    = args.control_region
 regroup_jec       = args.enable_regrouped_jec
+split_trigger_sys = args.split_trigger_sys
 
 if regroup_jec:
   if 'full' not in systematics_label:
     raise RuntimeError("Regrouped JEC was enabled but not running with full systematics")
   systematics.full.extend(systematics.JEC_regrouped)
+if split_trigger_sys == 'yes':
+  for trigger_sys in systematics.triggerSF:
+    del systematics.internal[systematics.internal.index(trigger_sys)]
+    del systematics.full[systematics.full.index(trigger_sys)]
+if split_trigger_sys in [ 'yes', 'both' ]:
+  systematics.internal.extend(systematics.triggerSF_3l)
+  systematics.full.extend(systematics.triggerSF_3l)
 
 # Use the arguments
 if "MEM" in mode:

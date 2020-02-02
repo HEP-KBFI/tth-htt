@@ -33,18 +33,15 @@ public:
   //-----------------------------------------------------------------------------
 
   //-----------------------------------------------------------------------------
-  // trigger efficiency turn-on curves for MC
-  double
-  getWeight_triggerEff(TriggerSFsys central_or_shift) const;
-  //-----------------------------------------------------------------------------
-
-  //-----------------------------------------------------------------------------
   // data/MC correction for trigger efficiency 
   double
   getSF_triggerEff(TriggerSFsys central_or_shift) const;
   //-----------------------------------------------------------------------------
 
 protected:
+  bool
+  check_triggerSFsys_opt(TriggerSFsys central_or_shift) const;
+
   std::map<std::string, TFile *> inputFiles_;
 
   std::string era_str_;
