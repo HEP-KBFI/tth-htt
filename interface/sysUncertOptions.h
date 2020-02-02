@@ -96,7 +96,18 @@ enum class TauIDSFsys
 enum class TriggerSFsys
 {
   central,
-  shiftUp, shiftDown,
+  shiftUp,        shiftDown,
+  shift_2lssUp,   shift_2lssDown,
+  shift_3lUp,     shift_3lDown,
+  shift_1l1tauUp, shift_1l1tauDown,
+  shift_0l2tauUp, shift_0l2tauDown,
+};
+
+enum class TriggerSFsysChoice
+{
+  any,
+  leptonOnly,
+  hadTauOnly,
 };
 
 enum
@@ -211,7 +222,8 @@ TauIDSFsys
 getTauIDSFsys_option(const std::string & central_or_shift);
 
 TriggerSFsys
-getTriggerSF_option(const std::string & central_or_shift);
+getTriggerSF_option(const std::string & central_or_shift,
+                    TriggerSFsysChoice choice);
 
 int
 getLHEscale_option(const std::string & central_or_shift);
