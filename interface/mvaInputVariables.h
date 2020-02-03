@@ -50,4 +50,6 @@ double comp_max_dr_jet(const std::vector<const RecoJet *> & jets_cleaned);
 
 double comp_cosThetaStar(const Particle::LorentzVector & daughterP4_lead, const Particle::LorentzVector & daughterP4_sublead);
 
+double deltaPhi_rf(const Particle::LorentzVector & daughter1P4, const Particle::LorentzVector & daughter2P4, const Particle::LorentzVector & motherP4);
+
 #endif // mvaInputVariables_h

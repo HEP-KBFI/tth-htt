@@ -262,3 +262,18 @@ comp_cosThetaStar(const Particle::LorentzVector & daughterP4_lead,
   daughterBoost.Boost(-motherP4.BoostVector());
   return std::fabs(daughterBoost.CosTheta());
 }
+
+double deltaPhi_rf(const Particle::LorentzVector & daughter1P4, const Particle::LorentzVector & daughter2P4, const Particle::LorentzVector & motherP4)
+{
+  // CV: compute angle in transverse plane between daughter particles;
+  //     the mother particle may "contain" additional particles besides daughter1 and daughter2, e.g. H->WW->lep1 + lep2 + MET
+  TLorentzVector daughter1P4_rf;
+  daughter1P4_rf.SetPtEtaPhiM(daughter1P4.pt(), daughter1P4.eta(), daughter1P4.phi(), daughter1P4.mass());
+  TLorentzVector daughter2P4_rf;
+  daughter2P4_rf.SetPtEtaPhiM(daughter2P4.pt(), daughter2P4.eta(), daughter2P4.phi(), daughter2P4.mass());
+  TLorentzVector motherP4tlv;
+  motherP4tlv.SetPtEtaPhiM(motherP4.pt(), motherP4.eta(), motherP4.phi(), motherP4.mass());
+  daughter1P4_rf.Boost(-motherP4tlv.BoostVector());
+  daughter2P4_rf.Boost(-motherP4tlv.BoostVector());
+  return deltaPhi(daughter1P4_rf.Phi(), daughter2P4_rf.Phi());
+}
