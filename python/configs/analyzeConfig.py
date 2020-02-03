@@ -168,6 +168,7 @@ class analyzeConfig(object):
         for sample_key, sample_info in self.samples.items():
           if sample_key == 'sum_events': continue
           sample_info["dbs_name"] = sample_key
+          sample_info["apply_toppt_rwgt"] = sample_key.startswith('/TTTo')
 
         self.lep_mva_wp = lep_mva_wp
         self.central_or_shifts = central_or_shifts
