@@ -177,11 +177,23 @@ getTauIDSFsys_option(const std::string & central_or_shift)
 }
 
 TriggerSFsys
-getTriggerSF_option(const std::string & central_or_shift)
+getTriggerSF_option(const std::string & central_or_shift,
+                    TriggerSFsysChoice choice)
 {
+  const bool isLeptonCompatible = choice == TriggerSFsysChoice::any || choice == TriggerSFsysChoice::leptonOnly;
+  const bool isHadTauCompatible = choice == TriggerSFsysChoice::any || choice == TriggerSFsysChoice::hadTauOnly;
+  const bool isAnyCompatible = isLeptonCompatible || isHadTauCompatible;
   TriggerSFsys central_or_shift_int = TriggerSFsys::central;
-  if     (central_or_shift == "CMS_ttHl_triggerUp"  ) central_or_shift_int = TriggerSFsys::shiftUp;
-  else if(central_or_shift == "CMS_ttHl_triggerDown") central_or_shift_int = TriggerSFsys::shiftDown;
+  if     (central_or_shift == "CMS_ttHl_triggerUp"          && isAnyCompatible   ) central_or_shift_int = TriggerSFsys::shiftUp;
+  else if(central_or_shift == "CMS_ttHl_triggerDown"        && isAnyCompatible   ) central_or_shift_int = TriggerSFsys::shiftDown;
+  else if(central_or_shift == "CMS_ttHl_trigger_2lssUp"     && isLeptonCompatible) central_or_shift_int = TriggerSFsys::shift_2lssUp;
+  else if(central_or_shift == "CMS_ttHl_trigger_2lssDown"   && isLeptonCompatible) central_or_shift_int = TriggerSFsys::shift_2lssDown;
+  else if(central_or_shift == "CMS_ttHl_trigger_3lUp"       && isLeptonCompatible) central_or_shift_int = TriggerSFsys::shift_3lUp;
+  else if(central_or_shift == "CMS_ttHl_trigger_3lDown"     && isLeptonCompatible) central_or_shift_int = TriggerSFsys::shift_3lDown;
+  else if(central_or_shift == "CMS_ttHl_trigger_1l1tauUp"   && isHadTauCompatible) central_or_shift_int = TriggerSFsys::shift_1l1tauUp;
+  else if(central_or_shift == "CMS_ttHl_trigger_1l1tauDown" && isHadTauCompatible) central_or_shift_int = TriggerSFsys::shift_1l1tauDown;
+  else if(central_or_shift == "CMS_ttHl_trigger_0l2tauUp"   && isHadTauCompatible) central_or_shift_int = TriggerSFsys::shift_0l2tauUp;
+  else if(central_or_shift == "CMS_ttHl_trigger_0l2tauDown" && isHadTauCompatible) central_or_shift_int = TriggerSFsys::shift_0l2tauDown;
   return central_or_shift_int;
 }
 

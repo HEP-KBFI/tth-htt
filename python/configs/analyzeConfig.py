@@ -633,17 +633,9 @@ class analyzeConfig(object):
               elif central_or_shift in systematics.LHE().env_up:
                 nof_events_label = 'CountWeightedLHEEnvelope{}'.format(count_suffix)
                 nof_events_idx = 0
-                # TODO remove the following three lines
-                if nof_events_label not in sample_info["nof_events"]:
-                  nof_events_label = 'CountWeighted{}'.format(count_suffix)
-                  nof_events_idx = 0  # central
               elif central_or_shift in systematics.LHE().env_down:
                 nof_events_label = 'CountWeightedLHEEnvelope{}'.format(count_suffix)
                 nof_events_idx = 1
-                # TODO remove the following three lines
-                if nof_events_label not in sample_info["nof_events"]:
-                  nof_events_label = 'CountWeighted{}'.format(count_suffix)
-                  nof_events_idx = 0  # central
               elif central_or_shift in systematics.L1PreFiring_().up:
                 nof_events_label = 'CountWeightedL1Prefire'
                 nof_events_idx = 1  # L1 prefiring weight up

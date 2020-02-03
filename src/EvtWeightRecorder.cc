@@ -214,14 +214,15 @@ EvtWeightRecorder::get_sf_triggerEff(const std::string & central_or_shift) const
   double sf_triggerEff = 1.;
   if(isMC_ && (! weights_leptonTriggerEff_.empty() || ! weights_tauTriggerEff_.empty()))
   {
-    const TriggerSFsys triggerSF_option = getTriggerSF_option(central_or_shift);
-    if(weights_leptonTriggerEff_.count(triggerSF_option))
+    const TriggerSFsys triggerSF_lepton_option = getTriggerSF_option(central_or_shift, TriggerSFsysChoice::leptonOnly);
+    if(weights_leptonTriggerEff_.count(triggerSF_lepton_option))
     {
-      sf_triggerEff *= weights_leptonTriggerEff_.at(triggerSF_option);
+      sf_triggerEff *= weights_leptonTriggerEff_.at(triggerSF_lepton_option);
     }
-    if(weights_tauTriggerEff_.count(triggerSF_option))
+    const TriggerSFsys triggerSF_hadTau_option = getTriggerSF_option(central_or_shift, TriggerSFsysChoice::hadTauOnly);
+    if(weights_tauTriggerEff_.count(triggerSF_hadTau_option))
     {
-      sf_triggerEff *= weights_tauTriggerEff_.at(triggerSF_option);
+      sf_triggerEff *= weights_tauTriggerEff_.at(triggerSF_hadTau_option);
     }
   }
   return sf_triggerEff;
@@ -560,7 +561,7 @@ EvtWeightRecorder::record_leptonTriggerEff(const Data_to_MC_CorrectionInterface_
   weights_leptonTriggerEff_.clear();
   for(const std::string & central_or_shift: central_or_shifts_)
   {
-    const TriggerSFsys triggerSF_option = getTriggerSF_option(central_or_shift);
+    const TriggerSFsys triggerSF_option = getTriggerSF_option(central_or_shift, TriggerSFsysChoice::leptonOnly);
     if(weights_leptonTriggerEff_.count(triggerSF_option))
     {
       continue;
@@ -576,7 +577,7 @@ EvtWeightRecorder::record_tauTriggerEff(const Data_to_MC_CorrectionInterface_0l_
   weights_tauTriggerEff_.clear();
   for(const std::string & central_or_shift: central_or_shifts_)
   {
-    const TriggerSFsys triggerSF_option = getTriggerSF_option(central_or_shift);
+    const TriggerSFsys triggerSF_option = getTriggerSF_option(central_or_shift, TriggerSFsysChoice::hadTauOnly);
     if(weights_tauTriggerEff_.count(triggerSF_option))
     {
       continue;
@@ -592,7 +593,7 @@ EvtWeightRecorder::record_tauTriggerEff(const Data_to_MC_CorrectionInterface_1l_
   weights_tauTriggerEff_.clear();
   for(const std::string & central_or_shift: central_or_shifts_)
   {
-    const TriggerSFsys triggerSF_option = getTriggerSF_option(central_or_shift);
+    const TriggerSFsys triggerSF_option = getTriggerSF_option(central_or_shift, TriggerSFsysChoice::hadTauOnly);
     if(weights_tauTriggerEff_.count(triggerSF_option))
     {
       continue;
@@ -608,7 +609,7 @@ EvtWeightRecorder::record_tauTriggerEff(const Data_to_MC_CorrectionInterface_1l_
   weights_tauTriggerEff_.clear();
   for(const std::string & central_or_shift: central_or_shifts_)
   {
-    const TriggerSFsys triggerSF_option = getTriggerSF_option(central_or_shift);
+    const TriggerSFsys triggerSF_option = getTriggerSF_option(central_or_shift, TriggerSFsysChoice::hadTauOnly);
     if(weights_tauTriggerEff_.count(triggerSF_option))
     {
       continue;
