@@ -21,6 +21,7 @@ RecoSubjetWriterAK8::RecoSubjetWriterAK8(int era,
   , max_nJets_(88)
   , branchName_num_(branchName_num)
   , branchName_obj_(branchName_obj)
+  , nJets_(0)
   , jet_pt_(nullptr)
   , jet_eta_(nullptr)
   , jet_phi_(nullptr)

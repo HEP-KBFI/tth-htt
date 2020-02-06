@@ -30,6 +30,7 @@ RecoJetWriter::RecoJetWriter(int era,
   , genLeptonWriter_(nullptr)
   , genHadTauWriter_(nullptr)
   , genJetWriter_(nullptr)
+  , nJets_(0)
   , jet_eta_(nullptr)
   , jet_phi_(nullptr)
   , jet_QGDiscr_(nullptr)

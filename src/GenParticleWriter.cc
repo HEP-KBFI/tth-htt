@@ -13,6 +13,7 @@ GenParticleWriter::GenParticleWriter(const std::string & branchName_num,
   : max_nParticles_(max_nParticles)
   , branchName_num_(branchName_num)
   , branchName_obj_(branchName_obj)
+  , nParticles_(0)
   , particle_pt_(nullptr)
   , particle_eta_(nullptr)
   , particle_phi_(nullptr)
