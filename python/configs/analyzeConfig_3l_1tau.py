@@ -172,8 +172,7 @@ class analyzeConfig_3l_1tau(analyzeConfig):
   def accept_systematics(self, central_or_shift, is_mc, lepton_and_hadTau_selection, chargeSumSelection, sample_info):
     if central_or_shift != "central":
       isFR_shape_shift = (central_or_shift in self.central_or_shifts_fr)
-      if not ((lepton_and_hadTau_selection == "Fakeable" and chargeSumSelection == "OS" and isFR_shape_shift) or
-              (lepton_and_hadTau_selection == "Tight" and chargeSumSelection == "OS")):
+      if not ((lepton_and_hadTau_selection == "Fakeable" and isFR_shape_shift) or lepton_and_hadTau_selection == "Tight"):
         return False
       if isFR_shape_shift and lepton_and_hadTau_selection == "Tight" and \
           not (self.applyFakeRateWeights == "3lepton" and central_or_shift in systematics.FR_t and is_mc):

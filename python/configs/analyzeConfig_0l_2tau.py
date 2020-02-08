@@ -154,8 +154,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
   def accept_systematics(self, central_or_shift, is_mc, hadTau_selection, hadTau_charge_selection, sample_info):
     if central_or_shift != "central":
       isFR_shape_shift = (central_or_shift in self.central_or_shifts_fr)
-      if not ((hadTau_selection == "Fakeable" and hadTau_charge_selection == "OS" and isFR_shape_shift) or
-              (hadTau_selection == "Tight"    and hadTau_charge_selection == "OS")):
+      if not ((hadTau_selection == "Fakeable" and isFR_shape_shift) or hadTau_selection == "Tight"):
         return False
       if isFR_shape_shift and hadTau_selection == "Tight":
         return False
