@@ -1457,7 +1457,7 @@ int main(int argc, char* argv[])
       evtWeightRecorder.record_tauTriggerEff(dataToMCcorrectionInterface_1l_1tau_trigger);
 
 //--- apply data/MC corrections for efficiencies for lepton to pass loose identification and isolation criteria
-      evtWeightRecorder.record_leptonSF(dataToMCcorrectionInterface->getSF_leptonID_and_Iso_loose());
+      evtWeightRecorder.record_leptonIDSF_recoToLoose(dataToMCcorrectionInterface);
 
 //--- apply data/MC corrections for efficiencies of leptons passing the loose identification and isolation criteria
 //    to also pass the tight identification and isolation criteria
@@ -1472,7 +1472,7 @@ int main(int argc, char* argv[])
         // 2) electron selection is relaxed to fakeable and muon selection is kept as tight -> corresponds to MC closure w/ relaxed e selection
         // 3) muon selection is relaxed to fakeable and electron selection is kept as tight -> corresponds to MC closure w/ relaxed mu selection
         // we allow (2) and (3) so that the MC closure regions would more compatible w/ the SR (1) in comparison
-        evtWeightRecorder.record_leptonIDSF(dataToMCcorrectionInterface);
+        evtWeightRecorder.record_leptonIDSF_looseToTight(dataToMCcorrectionInterface);
       }
 
 //--- apply data/MC corrections for hadronic tau identification efficiency

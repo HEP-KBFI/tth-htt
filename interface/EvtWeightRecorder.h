@@ -76,6 +76,12 @@ public:
   get_leptonSF() const;
 
   double
+  get_leptonIDSF_recoToLoose(const std::string & central_or_shift) const;
+
+  double
+  get_leptonIDSF_looseToTight(const std::string & central_or_shift) const;
+
+  double
   get_leptonIDSF(const std::string & central_or_shift) const;
 
   double
@@ -138,8 +144,11 @@ public:
   record_leptonSF(double weight);
 
   void
-  record_leptonIDSF(const Data_to_MC_CorrectionInterface_Base * const dataToMCcorrectionInterface,
-                    bool woTightCharge = true);
+  record_leptonIDSF_recoToLoose(const Data_to_MC_CorrectionInterface_Base * const dataToMCcorrectionInterface);
+
+  void
+  record_leptonIDSF_looseToTight(const Data_to_MC_CorrectionInterface_Base * const dataToMCcorrectionInterface,
+                                 bool woTightCharge = true);
 
   void
   record_chargeMisIdProb(double weight);
@@ -313,7 +322,8 @@ protected:
   std::map<int, double> weights_btag_;
   std::map<TriggerSFsys, double> weights_leptonTriggerEff_;
   std::map<TriggerSFsys, double> weights_tauTriggerEff_;
-  std::map<LeptonIDSFsys, double> weights_leptonID_and_Iso_;
+  std::map<LeptonIDSFsys, double> weights_leptonID_and_Iso_recoToLoose_;
+  std::map<LeptonIDSFsys, double> weights_leptonID_and_Iso_looseToTight_;
   std::map<TauIDSFsys, double> weights_hadTauID_and_Iso_;
   std::map<FRet, double> weights_eToTauFakeRate_;
   std::map<FRmt, double> weights_muToTauFakeRate_;

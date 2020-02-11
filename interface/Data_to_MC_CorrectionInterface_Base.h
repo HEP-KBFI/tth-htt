@@ -49,7 +49,7 @@ public:
   // data/MC corrections for electron and muon identification and isolation efficiency,
   // including the cut on the ttH multilepton MVA
   double
-  getSF_leptonID_and_Iso_loose() const;
+  getSF_leptonID_and_Iso_loose(LeptonIDSFsys central_or_shift) const;
 
   double
   getSF_leptonID_and_Iso_fakeable_to_loose() const;

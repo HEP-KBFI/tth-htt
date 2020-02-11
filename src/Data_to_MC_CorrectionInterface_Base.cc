@@ -333,7 +333,7 @@ Data_to_MC_CorrectionInterface_Base::check_triggerSFsys_opt(TriggerSFsys central
 }
 
 double
-Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_loose() const
+Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_loose(LeptonIDSFsys central_or_shift) const
 {
   if(isDEBUG_)
   {

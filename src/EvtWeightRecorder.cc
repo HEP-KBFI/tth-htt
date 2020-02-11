@@ -427,41 +427,77 @@ EvtWeightRecorder::record_leptonSF(double weight)
 }
 
 void
-EvtWeightRecorder::record_leptonIDSF(const Data_to_MC_CorrectionInterface_Base * const dataToMCcorrectionInterface,
-                                     bool woTightCharge)
+EvtWeightRecorder::record_leptonIDSF_recoToLoose(const Data_to_MC_CorrectionInterface_Base * const dataToMCcorrectionInterface)
 {
   assert(isMC_);
-  weights_leptonID_and_Iso_.clear();
+  weights_leptonID_and_Iso_recoToLoose_.clear();
   for(const std::string & central_or_shift: central_or_shifts_)
   {
     const LeptonIDSFsys leptonIDSF_option = getLeptonIDSFsys_option(central_or_shift);
-    if(weights_leptonID_and_Iso_.count(leptonIDSF_option))
+    if(weights_leptonID_and_Iso_recoToLoose_.count(leptonIDSF_option))
+    {
+      continue;
+    }
+    weights_leptonID_and_Iso_recoToLoose_[leptonIDSF_option] = dataToMCcorrectionInterface->getSF_leptonID_and_Iso_loose(leptonIDSF_option);
+  }
+}
+
+void
+EvtWeightRecorder::record_leptonIDSF_looseToTight(const Data_to_MC_CorrectionInterface_Base * const dataToMCcorrectionInterface,
+                                                  bool woTightCharge)
+{
+  assert(isMC_);
+  weights_leptonID_and_Iso_looseToTight_.clear();
+  for(const std::string & central_or_shift: central_or_shifts_)
+  {
+    const LeptonIDSFsys leptonIDSF_option = getLeptonIDSFsys_option(central_or_shift);
+    if(weights_leptonID_and_Iso_looseToTight_.count(leptonIDSF_option))
     {
       continue;
     }
     if(woTightCharge)
     {
-      weights_leptonID_and_Iso_[leptonIDSF_option] = dataToMCcorrectionInterface->getSF_leptonID_and_Iso_tight_to_loose_woTightCharge(leptonIDSF_option);
+      weights_leptonID_and_Iso_looseToTight_[leptonIDSF_option] = dataToMCcorrectionInterface->getSF_leptonID_and_Iso_tight_to_loose_woTightCharge(leptonIDSF_option);
     }
     else
     {
-      weights_leptonID_and_Iso_[leptonIDSF_option] = dataToMCcorrectionInterface->getSF_leptonID_and_Iso_tight_to_loose_wTightCharge(leptonIDSF_option);
+      weights_leptonID_and_Iso_looseToTight_[leptonIDSF_option] = dataToMCcorrectionInterface->getSF_leptonID_and_Iso_tight_to_loose_wTightCharge(leptonIDSF_option);
     }
   }
 }
 
 double
-EvtWeightRecorder::get_leptonIDSF(const std::string & central_or_shift) const
+EvtWeightRecorder::get_leptonIDSF_recoToLoose(const std::string & central_or_shift) const
 {
-  if(isMC_ && ! weights_leptonID_and_Iso_.empty())
+  if(isMC_ && ! weights_leptonID_and_Iso_recoToLoose_.empty())
   {
     const LeptonIDSFsys leptonIDSF_option = getLeptonIDSFsys_option(central_or_shift);
-    if(weights_leptonID_and_Iso_.count(leptonIDSF_option))
+    if(weights_leptonID_and_Iso_recoToLoose_.count(leptonIDSF_option))
     {
-      return weights_leptonID_and_Iso_.at(leptonIDSF_option);
+      return weights_leptonID_and_Iso_recoToLoose_.at(leptonIDSF_option);
     }
   }
   return 1.;
+}
+
+double
+EvtWeightRecorder::get_leptonIDSF_looseToTight(const std::string & central_or_shift) const
+{
+  if(isMC_ && ! weights_leptonID_and_Iso_looseToTight_.empty())
+  {
+    const LeptonIDSFsys leptonIDSF_option = getLeptonIDSFsys_option(central_or_shift);
+    if(weights_leptonID_and_Iso_looseToTight_.count(leptonIDSF_option))
+    {
+      return weights_leptonID_and_Iso_looseToTight_.at(leptonIDSF_option);
+    }
+  }
+  return 1.;
+}
+
+double
+EvtWeightRecorder::get_leptonIDSF(const std::string & central_or_shift) const
+{
+  return get_leptonIDSF_recoToLoose(central_or_shift) * get_leptonIDSF_looseToTight(central_or_shift);
 }
 
 void
@@ -1162,27 +1198,29 @@ operator<<(std::ostream & os,
 {
   for(const std::string & central_or_shift: evtWeightRecorder.central_or_shifts_)
   {
-    os << "central_or_shift = " << central_or_shift                                                     << "\n"
-          "  genWeight             = " << evtWeightRecorder.get_genWeight()                             << "\n"
-          "  BM weight             = " << evtWeightRecorder.get_bmWeight()                              << "\n"
-          "  stitching weight      = " << evtWeightRecorder.get_auxWeight(central_or_shift)             << "\n"
-          "  lumiScale             = " << evtWeightRecorder.get_lumiScale(central_or_shift)             << "\n"
-          "  nominal tH weight     = " << evtWeightRecorder.get_nom_tH_weight(central_or_shift)         << "\n"
-          "  PU weight             = " << evtWeightRecorder.get_puWeight(central_or_shift)              << "\n"
-          "  L1 prefiring weight   = " << evtWeightRecorder.get_l1PreFiringWeight(central_or_shift)     << "\n"
-          "  LHE scale weight      = " << evtWeightRecorder.get_lheScaleWeight(central_or_shift)        << "\n"
-          "  DY reweighting weight = " << evtWeightRecorder.get_dy_rwgt(central_or_shift)               << "\n"
-          "  inclusive weight      = " << evtWeightRecorder.get_inclusive(central_or_shift)             << "\n"
-          "  trigger eff SF        = " << evtWeightRecorder.get_sf_triggerEff(central_or_shift)         << "\n"
-          "  lepton SF             = " << evtWeightRecorder.get_leptonSF()                              << "\n"
-          "  lepton ID SF          = " << evtWeightRecorder.get_leptonIDSF(central_or_shift)            << "\n"
-          "  tau SF                = " << evtWeightRecorder.get_tauSF(central_or_shift)                 << "\n"
-          "  DY norm weight        = " << evtWeightRecorder.get_dy_norm(central_or_shift)               << "\n"
-          "  btag weight           = " << evtWeightRecorder.get_btag(central_or_shift)                  << "\n"
-          "  data/MC correction    = " << evtWeightRecorder.get_data_to_MC_correction(central_or_shift) << "\n"
-          "  FR weight             = " << evtWeightRecorder.get_FR(central_or_shift)                    << "\n"
-          "  charge mis-ID prob    = " << evtWeightRecorder.get_chargeMisIdProb()                       << "\n"
-          "  final weight          = " << evtWeightRecorder.get(central_or_shift)                       << '\n'
+    os << "central_or_shift = " << central_or_shift                                                       << "\n"
+          "  genWeight             = " << evtWeightRecorder.get_genWeight()                               << "\n"
+          "  BM weight             = " << evtWeightRecorder.get_bmWeight()                                << "\n"
+          "  stitching weight      = " << evtWeightRecorder.get_auxWeight(central_or_shift)               << "\n"
+          "  lumiScale             = " << evtWeightRecorder.get_lumiScale(central_or_shift)               << "\n"
+          "  nominal tH weight     = " << evtWeightRecorder.get_nom_tH_weight(central_or_shift)           << "\n"
+          "  PU weight             = " << evtWeightRecorder.get_puWeight(central_or_shift)                << "\n"
+          "  L1 prefiring weight   = " << evtWeightRecorder.get_l1PreFiringWeight(central_or_shift)       << "\n"
+          "  LHE scale weight      = " << evtWeightRecorder.get_lheScaleWeight(central_or_shift)          << "\n"
+          "  DY reweighting weight = " << evtWeightRecorder.get_dy_rwgt(central_or_shift)                 << "\n"
+          "  inclusive weight      = " << evtWeightRecorder.get_inclusive(central_or_shift)               << "\n"
+          "  trigger eff SF        = " << evtWeightRecorder.get_sf_triggerEff(central_or_shift)           << "\n"
+          "  lepton SF             = " << evtWeightRecorder.get_leptonSF()                                << "\n"
+          "  lepton ID SF (loose)  = " << evtWeightRecorder.get_leptonIDSF_recoToLoose(central_or_shift)  << "\n"
+          "  lepton ID SF (tight)  = " << evtWeightRecorder.get_leptonIDSF_looseToTight(central_or_shift) << "\n"
+          "  lepton ID SF          = " << evtWeightRecorder.get_leptonIDSF(central_or_shift)              << "\n"
+          "  tau SF                = " << evtWeightRecorder.get_tauSF(central_or_shift)                   << "\n"
+          "  DY norm weight        = " << evtWeightRecorder.get_dy_norm(central_or_shift)                 << "\n"
+          "  btag weight           = " << evtWeightRecorder.get_btag(central_or_shift)                    << "\n"
+          "  data/MC correction    = " << evtWeightRecorder.get_data_to_MC_correction(central_or_shift)   << "\n"
+          "  FR weight             = " << evtWeightRecorder.get_FR(central_or_shift)                      << "\n"
+          "  charge mis-ID prob    = " << evtWeightRecorder.get_chargeMisIdProb()                         << "\n"
+          "  final weight          = " << evtWeightRecorder.get(central_or_shift)                         << '\n'
    ;
   }
   return os;
