@@ -250,6 +250,44 @@ class systematics(object):
 
       full = x1_().full + y1_().full + env_().full
 
+    class WZ(object):
+      class x1_(object):
+
+        up   = "CMS_ttHl_thu_shape_WZ_x1Up"
+        down = "CMS_ttHl_thu_shape_WZ_x1Down"
+        full = [ up, down ]
+
+      class y1_(object):
+        up   = "CMS_ttHl_thu_shape_WZ_y1Up"
+        down = "CMS_ttHl_thu_shape_WZ_y1Down"
+        full = [ up, down ]
+
+      class env_(object):
+        up   = "CMS_ttHl_thu_shape_WZ_Up"
+        down = "CMS_ttHl_thu_shape_WZ_Down"
+        full = [ up, down ]
+
+      full = x1_().full + y1_().full + env_().full
+    
+    class ZZ(object):
+      class x1_(object):
+
+        up   = "CMS_ttHl_thu_shape_ZZ_x1Up"
+        down = "CMS_ttHl_thu_shape_ZZ_x1Down"
+        full = [ up, down ]
+
+      class y1_(object):
+        up   = "CMS_ttHl_thu_shape_ZZ_y1Up"
+        down = "CMS_ttHl_thu_shape_ZZ_y1Down"
+        full = [ up, down ]
+
+      class env_(object):
+        up   = "CMS_ttHl_thu_shape_ZZ_Up"
+        down = "CMS_ttHl_thu_shape_ZZ_Down"
+        full = [ up, down ]
+
+      full = x1_().full + y1_().full + env_().full
+
     ttH   = TTH().full
     tHq   = THQ().full
     tHW   = THW().full
@@ -258,15 +296,19 @@ class systematics(object):
     hh    = HH().full
     dy    = DY().full
     ttbar = TT().full
+    wz    = WZ().full
+    zz    = ZZ().full
 
-    x1_up    = [ TTH().x1_().up,    THQ().x1_().up,    THW().x1_().up,    TTW().x1_().up,    TTZ().x1_().up,    HH().x1_().up,    DY().x1_().up,    TT().x1_().up    ]
-    y1_up    = [ TTH().y1_().up,    THQ().y1_().up,    THW().y1_().up,    TTW().y1_().up,    TTZ().y1_().up,    HH().y1_().up,    DY().y1_().up,    TT().y1_().up    ]
-    x1_down  = [ TTH().x1_().down,  THQ().x1_().down,  THW().x1_().down,  TTW().x1_().down,  TTZ().x1_().down,  HH().x1_().down,  DY().x1_().down,  TT().x1_().down  ]
-    y1_down  = [ TTH().y1_().down,  THQ().y1_().down,  THW().y1_().down,  TTW().y1_().down,  TTZ().y1_().down,  HH().y1_().down,  DY().y1_().down,  TT().y1_().down  ]
-    env_up   = [ TTH().env_().up,   THQ().env_().up,   THW().env_().up,   TTW().env_().up,   TTZ().env_().up,   HH().env_().up,   DY().env_().up,   TT().env_().up   ]
-    env_down = [ TTH().env_().down, THQ().env_().down, THW().env_().down, TTW().env_().down, TTZ().env_().down, HH().env_().down, DY().env_().down, TT().env_().down ]
+    procs = [ TTH, THQ, THW, TTW, TTZ, HH, DY, TT, WZ, ZZ ]
 
-    full = ttH + tHq + tHW + ttW + ttZ + dy + hh + ttbar
+    x1_up    = [ proc.x1_().up    for proc in procs ]
+    x1_down  = [ proc.x1_().down  for proc in procs ]
+    y1_down  = [ proc.y1_().down  for proc in procs ]
+    y1_up    = [ proc.y1_().up    for proc in procs ]
+    env_up   = [ proc.env_().up   for proc in procs ]
+    env_down = [ proc.env_().down for proc in procs ]
+
+    full = ttH + tHq + tHW + ttW + ttZ + dy + hh + ttbar + wz + zz
 
   class Btag(object):
 
