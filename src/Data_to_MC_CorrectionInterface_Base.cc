@@ -273,14 +273,15 @@ double
 Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso(std::size_t numLeptons,
                                                             const std::vector<double> & lepton_pt,
                                                             const std::vector<double> & lepton_eta,
-                                                            const std::vector<lutWrapperBase *> & corrections) const
+                                                            const std::vector<lutWrapperBase *> & corrections,
+                                                            int error_shift) const
 {
   double sf = 1.;
   for(std::size_t idxLepton = 0; idxLepton < numLeptons; ++idxLepton)
   {
     const double pt = lepton_pt[idxLepton];
     const double eta = lepton_eta[idxLepton];
-    sf *= get_from_lut(corrections, pt, eta, isDEBUG_);
+    sf *= get_from_lut_err(corrections, pt, eta, error_shift, isDEBUG_);
   }
   return sf;
 }
@@ -339,7 +340,16 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_loose(LeptonIDSFsys 
   {
     std::cout << get_human_line(this, __func__, __LINE__) << "Computing SF for electrons\n";
   }
-  const double sf_el = getSF_leptonID_and_Iso(numElectrons_, electron_pt_, electron_eta_, sfElectronID_and_Iso_loose_);
+  int sf_el_error = 0;
+  if(central_or_shift == LeptonIDSFsys::elLooseUp)
+  {
+    sf_el_error = +1;
+  }
+  else if(central_or_shift == LeptonIDSFsys::elLooseDown)
+  {
+    sf_el_error = -1;
+  }
+  const double sf_el = getSF_leptonID_and_Iso(numElectrons_, electron_pt_, electron_eta_, sfElectronID_and_Iso_loose_, sf_el_error);
   if(isDEBUG_)
   {
     std::cout
@@ -347,7 +357,17 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_loose(LeptonIDSFsys 
       << get_human_line(this, __func__, __LINE__) << "Computing SF for muons\n"
     ;
   }
-  const double sf_mu = getSF_leptonID_and_Iso(numMuons_,     muon_pt_,     muon_eta_,     sfMuonID_and_Iso_loose_);
+
+  int sf_mu_error = 0;
+  if(central_or_shift == LeptonIDSFsys::muLooseUp)
+  {
+    sf_mu_error = +1;
+  }
+  else if(central_or_shift == LeptonIDSFsys::muLooseDown)
+  {
+    sf_mu_error = -1;
+  }
+  const double sf_mu = getSF_leptonID_and_Iso(numMuons_,     muon_pt_,     muon_eta_,     sfMuonID_and_Iso_loose_, sf_mu_error);
   const double sf = sf_el * sf_mu;
   if(isDEBUG_)
   {
@@ -372,18 +392,18 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_tight_to_loose_woTig
   {
     std::cout << get_human_line(this, __func__, __LINE__) << "Computing SF for electrons\n";
   }
-  double sf_el = getSF_leptonID_and_Iso(numElectrons_, electron_pt_, electron_eta_, sfElectronID_and_Iso_tight_to_loose_woTightCharge_);
+  double sf_el = getSF_leptonID_and_Iso(numElectrons_, electron_pt_, electron_eta_, sfElectronID_and_Iso_tight_to_loose_woTightCharge_, 0);
   if(isDEBUG_)
   {
     std::cout << get_human_line(this, __func__, __LINE__) << "Computing SF errors for electrons\n";
   }
   if(central_or_shift == LeptonIDSFsys::elTightUp)
   {
-    sf_el *= getSF_leptonID_and_Iso(numElectrons_, electron_pt_, electron_eta_, sfElectronID_and_Iso_tight_to_loose_errors_up_);
+    sf_el *= getSF_leptonID_and_Iso(numElectrons_, electron_pt_, electron_eta_, sfElectronID_and_Iso_tight_to_loose_errors_up_, 0);
   }
   else if(central_or_shift == LeptonIDSFsys::elTightDown)
   {
-    sf_el *= getSF_leptonID_and_Iso(numElectrons_, electron_pt_, electron_eta_, sfElectronID_and_Iso_tight_to_loose_errors_down_);
+    sf_el *= getSF_leptonID_and_Iso(numElectrons_, electron_pt_, electron_eta_, sfElectronID_and_Iso_tight_to_loose_errors_down_, 0);
   }
   if(isDEBUG_)
   {
@@ -393,18 +413,18 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_tight_to_loose_woTig
     ;
   }
 
-  double sf_mu = getSF_leptonID_and_Iso(numMuons_, muon_pt_, muon_eta_, sfMuonID_and_Iso_tight_to_loose_woTightCharge_);
+  double sf_mu = getSF_leptonID_and_Iso(numMuons_, muon_pt_, muon_eta_, sfMuonID_and_Iso_tight_to_loose_woTightCharge_, 0);
   if(isDEBUG_)
   {
     std::cout << get_human_line(this, __func__, __LINE__) << "Computing SF errors for muons\n";
   }
   if(central_or_shift == LeptonIDSFsys::muTightUp)
   {
-    sf_mu *= getSF_leptonID_and_Iso(numMuons_, muon_pt_, muon_eta_, sfMuonID_and_Iso_tight_to_loose_errors_up_);
+    sf_mu *= getSF_leptonID_and_Iso(numMuons_, muon_pt_, muon_eta_, sfMuonID_and_Iso_tight_to_loose_errors_up_, 0);
   }
   else if(central_or_shift == LeptonIDSFsys::muTightDown)
   {
-    sf_mu *= getSF_leptonID_and_Iso(numMuons_, muon_pt_, muon_eta_, sfMuonID_and_Iso_tight_to_loose_errors_down_);
+    sf_mu *= getSF_leptonID_and_Iso(numMuons_, muon_pt_, muon_eta_, sfMuonID_and_Iso_tight_to_loose_errors_down_, 0);
   }
   const double sf = sf_el * sf_mu;
   if(isDEBUG_)
@@ -424,18 +444,18 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_tight_to_loose_wTigh
   {
     std::cout << get_human_line(this, __func__, __LINE__) << "Computing SF for electrons\n";
   }
-  double sf_el = getSF_leptonID_and_Iso(numElectrons_, electron_pt_, electron_eta_, sfElectronID_and_Iso_tight_to_loose_wTightCharge_);
+  double sf_el = getSF_leptonID_and_Iso(numElectrons_, electron_pt_, electron_eta_, sfElectronID_and_Iso_tight_to_loose_wTightCharge_, 0);
   if(isDEBUG_)
   {
     std::cout << get_human_line(this, __func__, __LINE__) << "Computing SF errors for electrons\n";
   }
   if(central_or_shift == LeptonIDSFsys::elTightUp)
   {
-    sf_el *= getSF_leptonID_and_Iso(numElectrons_, electron_pt_, electron_eta_, sfElectronID_and_Iso_tight_to_loose_errors_up_);
+    sf_el *= getSF_leptonID_and_Iso(numElectrons_, electron_pt_, electron_eta_, sfElectronID_and_Iso_tight_to_loose_errors_up_, 0);
   }
   else if(central_or_shift == LeptonIDSFsys::elTightDown)
   {
-    sf_el *= getSF_leptonID_and_Iso(numElectrons_, electron_pt_, electron_eta_, sfElectronID_and_Iso_tight_to_loose_errors_down_);
+    sf_el *= getSF_leptonID_and_Iso(numElectrons_, electron_pt_, electron_eta_, sfElectronID_and_Iso_tight_to_loose_errors_down_, 0);
   }
   if(isDEBUG_)
   {
@@ -445,18 +465,18 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_tight_to_loose_wTigh
     ;
   }
 
-  double sf_mu = getSF_leptonID_and_Iso(numMuons_, muon_pt_, muon_eta_, sfMuonID_and_Iso_tight_to_loose_wTightCharge_);
+  double sf_mu = getSF_leptonID_and_Iso(numMuons_, muon_pt_, muon_eta_, sfMuonID_and_Iso_tight_to_loose_wTightCharge_, 0);
   if(isDEBUG_)
   {
     std::cout << get_human_line(this, __func__, __LINE__) << "Computing SF errors for muons\n";
   }
   if(central_or_shift == LeptonIDSFsys::muTightUp)
   {
-    sf_mu *= getSF_leptonID_and_Iso(numMuons_, muon_pt_, muon_eta_, sfMuonID_and_Iso_tight_to_loose_errors_up_);
+    sf_mu *= getSF_leptonID_and_Iso(numMuons_, muon_pt_, muon_eta_, sfMuonID_and_Iso_tight_to_loose_errors_up_, 0);
   }
   else if(central_or_shift == LeptonIDSFsys::muTightDown)
   {
-    sf_mu *= getSF_leptonID_and_Iso(numMuons_, muon_pt_, muon_eta_, sfMuonID_and_Iso_tight_to_loose_errors_down_);
+    sf_mu *= getSF_leptonID_and_Iso(numMuons_, muon_pt_, muon_eta_, sfMuonID_and_Iso_tight_to_loose_errors_down_, 0);
   }
   const double sf = sf_el * sf_mu;
   if(isDEBUG_)

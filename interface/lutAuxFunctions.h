@@ -42,21 +42,25 @@ loadTF1(TFile * inputFile,
 
 double
 getSF_from_TH1(TH1 * lut,
-               double x);
+               double x,
+               int error_shift);
 
 double
 getSF_from_TH2(TH2 * lut,
                double x,
-               double y);
+               double y,
+               int error_shift);
 
 double
 getSF_from_TH2Poly(TH2 * lut,
                    double x,
-                   double y);
+                   double y,
+                   int error_shift);
 
 double
 getSF_from_TGraph(TGraph * lut,
-                  double x);
+                  double x,
+                  int error_shift);
 
 class lutWrapperBase
 {
@@ -84,7 +88,8 @@ public:
 
   double
   getSF(double pt,
-        double eta);
+        double eta,
+        int error_shift = 0);
 
   const std::string & inputFileName() const;
   const std::string & lutName() const;
@@ -106,10 +111,19 @@ protected:
   int yAction_;
 private:
   virtual double getSF_private(double x,
-                               double y) = 0;
+                               double y,
+                               int error_shift) = 0;
 };
 
 typedef std::vector<lutWrapperBase *> vLutWrapperBase;
+
+double
+get_from_lut_err(const vLutWrapperBase & corrections,
+                 double pt,
+                 double eta,
+                 int error_shift,
+                 bool isDEBUG = false);
+
 double
 get_from_lut(const vLutWrapperBase & corrections,
              double pt,
@@ -140,7 +154,8 @@ public:
 		int yAction = lut::kCut);
 private:
   double getSF_private(double x,
-                       double y) override;
+                       double y,
+                       int error_shift) override;
   TH1 * lut_;
 };
 
@@ -160,7 +175,8 @@ public:
 		int yAction = lut::kLimit);
 private:
   double getSF_private(double x,
-                       double y) override;
+                       double y,
+                       int error_shift) override;
   TH2 * lut_;
 };
 
@@ -180,7 +196,8 @@ public:
 		    int yAction = lut::kLimit);
 private:
   double getSF_private(double x,
-                       double y) override;
+                       double y,
+                       int error_shift) override;
   TH2 * lut_;
 };
 
@@ -200,7 +217,8 @@ public:
                    int yAction = lut::kCut);
  private:
   double getSF_private(double x,
-                       double y) override;
+                       double y,
+                       int error_shift) override;
   TGraph * lut_;
 };
 
@@ -219,7 +237,8 @@ public:
 			int yAction = lut::kCut);
 private:
   double getSF_private(double x,
-                       double y) override;
+                       double y,
+                       int error_shift) override;
   double m0_;
   double sigma_;
   double alpha_;
@@ -236,7 +255,8 @@ public:
   ~lutWrapperData_to_MC();
 private:
   double getSF_private(double x,
-                       double y) override;
+                       double y,
+                       int error_shift) override;
   lutWrapperBase * lutData_;
   lutWrapperBase * lutMC_;
 };

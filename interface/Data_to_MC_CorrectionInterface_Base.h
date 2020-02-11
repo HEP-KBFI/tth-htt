@@ -79,7 +79,8 @@ protected:
   getSF_leptonID_and_Iso(std::size_t numLeptons,
                          const std::vector<double> & lepton_pt,
                          const std::vector<double> & lepton_eta,
-                         const std::vector<lutWrapperBase *> & corrections) const;
+                         const std::vector<lutWrapperBase *> & corrections,
+                         int error_shift) const;
 
   void
   initAntiEle_tauIDSFs(const std::string & era_str);

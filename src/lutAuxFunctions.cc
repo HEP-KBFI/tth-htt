@@ -134,48 +134,59 @@ loadTF1(TFile * inputFile,
 
 /**
  * @brief Retrieve data/MC scale-factor for given pT or eta value from one-dimensional histogram
- * @param lut: pointer to histogram storing data/MC scale-factors as function of pT or eta
- * @param x:   transverse momentum respectively pseudo-rapidity of lepton
+ * @param lut:         pointer to histogram storing data/MC scale-factors as function of pT or eta
+ * @param x:           transverse momentum respectively pseudo-rapidity of lepton
+ * @param error_shift: number of sigmas to shift the sf
  * @return data/MC scale-factor
  */
 double
 getSF_from_TH1(TH1 * lut,
-               double x)
+               double x,
+               int error_shift)
 {
   const TAxis * const xAxis = lut->GetXaxis();
   const int idxBin_x = constrainValue(xAxis->FindBin(x), 1, xAxis->GetNbins());
-  return lut->GetBinContent(idxBin_x);
+  const double sf = lut->GetBinContent(idxBin_x);
+  const double sf_err = lut->GetBinError(idxBin_x);
+  return sf + error_shift * sf_err;
 }
 
 /**
  * @brief Retrieve data/MC scale-factor for given pT and eta value from two-dimensional histogram
- * @param lut:  pointer to histogram storing data/MC scale-factors as function of pT and eta
- * @param x, y: transverse momentum respectively pseudo-rapidity of lepton
+ * @param lut:         pointer to histogram storing data/MC scale-factors as function of pT and eta
+ * @param x, y:        transverse momentum respectively pseudo-rapidity of lepton
+ * @param error_shift: number of sigmas to shift the sf
  * @return data/MC scale-factor
  */
 double
 getSF_from_TH2(TH2 * lut,
                double x,
-               double y)
+               double y,
+               int error_shift)
 {
   const TAxis * const xAxis = lut->GetXaxis();
   const TAxis * const yAxis = lut->GetYaxis();
   const int idxBin_x = constrainValue(xAxis->FindBin(x), 1, xAxis->GetNbins());
   const int idxBin_y = constrainValue(yAxis->FindBin(y), 1, yAxis->GetNbins());
-  return lut->GetBinContent(idxBin_x, idxBin_y);
+  const double sf = lut->GetBinContent(idxBin_x, idxBin_y);
+  const double sf_err = lut->GetBinError(idxBin_x, idxBin_y);
+  return sf + error_shift * sf_err;
 }
 
 double
 getSF_from_TH2Poly(TH2 * lut,
                    double x,
-                   double y)
+                   double y,
+                   int error_shift)
 {
   const TAxis * const xAxis = lut->GetXaxis();
   const TAxis * const yAxis = lut->GetYaxis();
   x = constrainValue(x, xAxis->GetXmin() + epsilon, xAxis->GetXmax() - epsilon);
   y = constrainValue(y, yAxis->GetXmin() + epsilon, yAxis->GetXmax() - epsilon);
   const int idxBin = lut->FindBin(x, y);
-  return lut->GetBinContent(idxBin);
+  const double sf = lut->GetBinContent(idxBin);
+  const double sf_err = lut->GetBinError(idxBin);
+  return sf + error_shift * sf_err;
 }
 
 /**
@@ -186,7 +197,8 @@ getSF_from_TH2Poly(TH2 * lut,
  */
 double
 getSF_from_TGraph(TGraph * lut,
-                  double x)
+                  double x,
+                  int __attribute__((unused)) error_shift)
 {
   const TAxis * xAxis = lut->GetXaxis();
   x = constrainValue(x, xAxis->GetXmin(), xAxis->GetXmax());
@@ -287,7 +299,8 @@ lutWrapperBase::initialize(int lutType)
 
 double
 lutWrapperBase::getSF(double pt,
-                      double eta)
+                      double eta,
+                      int error_shift)
 {
   double x = 0.;
   switch(lutTypeX_)
@@ -315,7 +328,7 @@ lutWrapperBase::getSF(double pt,
     if(yMin_ != -1. && y < yMin_) return 1.;
     if(yMax_ != -1. && y > yMax_) return 1.;
   }
-  return getSF_private(x, y);
+  return getSF_private(x, y, error_shift);
 }
 
 const std::string &
@@ -331,30 +344,41 @@ lutWrapperBase::lutName() const
 }
 
 double
-get_from_lut(const vLutWrapperBase & corrections,
-             double pt,
-             double eta,
-             bool isDEBUG)
+get_from_lut_err(const vLutWrapperBase & corrections,
+                 double pt,
+                 double eta,
+                 int error_shift,
+                 bool isDEBUG)
 {
   if(isDEBUG)
   {
-    std::cout << "<get_from_lut>:\n";
+    std::cout << "<get_from_lut_err>:\n";
   }
   double sf = 1.;
   for (lutWrapperBase * correction: corrections)
   {
-    sf *= correction->getSF(pt, eta);
+    sf *= correction->getSF(pt, eta, error_shift);
     if(isDEBUG)
     {
       std::cout << "pT = "  << pt  << ", "
                    "eta = " << eta << "\n"
                    "LUT: "
-                   "inputFileName = " << correction->inputFileName() << ", "
-                   "lutName = "       << correction->lutName()       << " --> "
-                   "SF = "            << correction->getSF(pt, eta)  << '\n';
+                   "shift by = "      << error_shift                              << ", "
+                   "inputFileName = " << correction->inputFileName()              << ", "
+                   "lutName = "       << correction->lutName()                    << " --> "
+                   "SF = "            << correction->getSF(pt, eta, error_shift)  << '\n';
     }
   }
   return sf;
+}
+
+double
+get_from_lut(const vLutWrapperBase & corrections,
+             double pt,
+             double eta,
+             bool isDEBUG)
+{
+  return get_from_lut_err(corrections, pt, eta, 0, isDEBUG);
 }
 
 double
@@ -405,14 +429,15 @@ lutWrapperTH1::lutWrapperTH1(std::map<std::string, TFile *> & inputFiles,
 
 double
 lutWrapperTH1::getSF_private(double x,
-                             double y)
+                             double y,
+                             int error_shift)
 {
   double sf = 1.;
   if((y >= yMin_ || yMin_ == -1.) && (y < yMax_ || yMax_ == -1.))
   {
     if(xMin_ != -1. && x < xMin_) x = xMin_;
     if(xMax_ != -1. && x > xMax_) x = xMax_;
-    sf = getSF_from_TH1(lut_, x);
+    sf = getSF_from_TH1(lut_, x, error_shift);
   }
   return sf;
 }
@@ -437,13 +462,14 @@ lutWrapperTH2::lutWrapperTH2(std::map<std::string, TFile *> & inputFiles,
 
 double
 lutWrapperTH2::getSF_private(double x,
-                             double y)
+                             double y,
+                             int error_shift)
 {
   if(xMin_ != -1. && x < xMin_) x = xMin_;
   if(xMax_ != -1. && x > xMax_) x = xMax_;
   if(yMin_ != -1. && y < yMin_) y = yMin_;
   if(yMax_ != -1. && y > yMax_) y = yMax_;
-  double sf = getSF_from_TH2(lut_, x, y);
+  double sf = getSF_from_TH2(lut_, x, y, error_shift);
   return sf;
 }
 //-------------------------------------------------------------------------------
@@ -467,13 +493,14 @@ lutWrapperTH2Poly::lutWrapperTH2Poly(std::map<std::string, TFile *> & inputFiles
 
 double
 lutWrapperTH2Poly::getSF_private(double x,
-                                 double y)
+                                 double y,
+                                 int error_shift)
 {
   if(xMin_ != -1. && x < xMin_) x = xMin_;
   if(xMax_ != -1. && x > xMax_) x = xMax_;
   if(yMin_ != -1. && y < yMin_) y = yMin_;
   if(yMax_ != -1. && y > yMax_) y = yMax_;
-  double sf = getSF_from_TH2Poly(lut_, x, y);
+  double sf = getSF_from_TH2Poly(lut_, x, y, error_shift);
   return sf;
 }
 //-------------------------------------------------------------------------------
@@ -503,14 +530,15 @@ lutWrapperTGraph::lutWrapperTGraph(std::map<std::string, TFile *> & inputFiles,
 
 double
 lutWrapperTGraph::getSF_private(double x,
-                                double y)
+                                double y,
+                                int error_shift)
 {
   double sf = 1.;
   if((y >= yMin_ || yMin_ == -1.) && (y < yMax_ || yMax_ == -1.))
   {
     if(xMin_ != -1. && x < xMin_) x = xMin_;
     if(xMax_ != -1. && x > xMax_) x = xMax_;
-    sf = getSF_from_TGraph(lut_, x);
+    sf = getSF_from_TGraph(lut_, x, error_shift);
   }
   return sf;
 }
@@ -543,7 +571,8 @@ lutWrapperCrystalBall::lutWrapperCrystalBall(const std::string & lutName,
 
 double
 lutWrapperCrystalBall::getSF_private(double x,
-                                     double y)
+                                     double y,
+                                     int __attribute__((unused)) error_shift)
 {
   double sf = 1.;
   if((y >= yMin_ || yMin_ == -1.) && (y < yMax_ || yMax_ == -1.))
@@ -579,10 +608,11 @@ lutWrapperData_to_MC::~lutWrapperData_to_MC()
 
 double
 lutWrapperData_to_MC::getSF_private(double x,
-                                    double y)
+                                    double y,
+                                    int error_shift)
 {
-  const double effData = lutData_->getSF(x, y);
-  const double effMC   = lutMC_->getSF(x, y);
+  const double effData = lutData_->getSF(x, y, error_shift);
+  const double effMC   = lutMC_->getSF(x, y, error_shift);
   double sf = effMC > 0. ? effData / effMC : 1.;
   sf = std::min(sf, 1.e+1);
   return sf;
