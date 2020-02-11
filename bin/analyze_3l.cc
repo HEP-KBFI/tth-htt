@@ -578,7 +578,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
 
 
   std::vector<std::string> mvaInputVariables_NN = {
-    "lep1_conePt", "lep1_eta", "lep1_phi", "mT_lep1",
+    /*"lep1_conePt", "lep1_eta", "lep1_phi", "mT_lep1",
     "lep2_conePt", "lep2_eta", "lep2_phi", "mT_lep2",
     "lep3_conePt", "lep3_eta", "lep3_phi", "mT_lep3",
     "mindr_lep1_jet", "mindr_lep2_jet", "mindr_lep3_jet", "min_dr_Lep",
@@ -589,10 +589,36 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     "jet3_pt", "jet3_eta", "jet3_phi",
     "sum_Lep_charge", "HadTop_pt",
     "res_HTT", "massL3", "nJet",
+    "nBJetLoose", "nBJetMedium", "nJetForward", "nElectron", "has_SFOS"*/
+    /*
+    'lep1_conePt', 'lep1_eta', 'lep1_phi',
+    'lep2_conePt', 'lep2_eta', 'lep2_phi',
+    'lep3_conePt', 'lep3_eta', 'lep3_phi',
+    'mindr_lep1_jet', 'mindr_lep2_jet', 'mindr_lep3_jet', 'min_dr_Lep',
+    'avg_dr_jet', 'met_LD', 'mbb_loose',
+    'leadFwdJet_eta', 'leadFwdJet_pt', 'min_Deta_leadfwdJet_jet',
+    'jet1_pt', 'jet1_eta', 'jet1_phi',
+    'jet2_pt', 'jet2_eta', 'jet2_phi',
+    'jet3_pt', 'jet3_eta', 'jet3_phi',
+    'sum_Lep_charge', 'HadTop_pt',
+    'res_HTT', 'nJet',
+    'nBJetLoose', 'nBJetMedium', 'nJetForward', 'nElectron', 'has_SFOS'
+    */
+    "lep1_conePt", "lep1_eta", "lep1_phi",
+    "lep2_conePt", "lep2_eta", "lep2_phi",
+    "lep3_conePt", "lep3_eta", "lep3_phi",
+    "mindr_lep1_jet", "mindr_lep2_jet", "mindr_lep3_jet", "min_dr_Lep",
+    "avg_dr_jet", "met_LD", "mbb_loose",
+    "leadFwdJet_eta", "leadFwdJet_pt", "min_Deta_leadfwdJet_jet",
+    "jet1_pt", "jet1_eta", "jet1_phi",
+    "jet2_pt", "jet2_eta", "jet2_phi",
+    "jet3_pt", "jet3_eta", "jet3_phi",
+    "sum_Lep_charge", "HadTop_pt",
+    "res_HTT", "nJet",
     "nBJetLoose", "nBJetMedium", "nJetForward", "nElectron", "has_SFOS"
   };
   std::vector<std::string> classes_NN = {"predictions_ttH",  "predictions_rest", "predictions_tH"};
-  std::string mvaFileName_NN = "tthAnalysis/HiggsToTauTau/data/NN_for_legacy_opt/3l_0tau_DNN_legacy.pb";
+  std::string mvaFileName_NN = "tthAnalysis/HiggsToTauTau/data/NN_for_legacy_opt/test_3l_0tau_legacy.pb";
   TensorFlowInterface mva_3l_0tau_NN_TF(
     mvaFileName_NN,
     mvaInputVariables_NN,
@@ -646,6 +672,19 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
   };
   const std::map<std::string, std::vector<double>> categories_list_NN =
   {
+   {"output_NN_ttH_bl",      {0.0, 0.45, 0.51, 0.57, 0.66, 1.0}},
+   {"output_NN_ttH_bt",      {0.0, 0.51, 0.60, 0.70, 1.0}},
+   {"output_NN_tH_bl",       {0.0, 0.43, 0.47, 0.50, 0.55, 0.61, 0.71, 1.0}},
+   {"output_NN_tH_bt",       {0.0, 0.46, 0.58, 1.0}},
+   {"output_NN_rest_eee",    {0, 1}},
+   {"output_NN_rest_eem_bl", {0.0, 0.48, 0.52, 0.59, 1.0}},
+   {"output_NN_rest_eem_bt", {0, 1}},
+   {"output_NN_rest_emm_bl", {0.0, 0.47, 0.53, 0.58, 1.0}},
+   {"output_NN_rest_emm_bt", {0, 1}},
+   {"output_NN_rest_mmm_bl", {0.0, 0.50, 0.58, 1.0}},
+   {"output_NN_rest_mmm_bt", {0, 1}},
+   {"output_NN_cr",          {0, 1}}
+    /*
     {"output_NN_ttH_bl",      {0.0, 0.47, 0.54, 0.60, 0.70, 0.80, 1.0}},
     {"output_NN_ttH_bt",      {0.0, 0.54, 0.62, 0.71, 0.79, 0.85, 0.91, 1.0}},
     {"output_NN_tH_bl",       {0.0, 0.47, 0.52, 0.58, 0.66, 1.0}},
@@ -654,7 +693,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     {"output_NN_rest_eem", {0.0, 0.49, 0.57, 0.66, 1.0}},
     {"output_NN_rest_emm", {0.0, 0.51, 0.60, 0.69, 1.0}},
     {"output_NN_rest_mmm", {0.0, 0.52, 0.59, 0.70, 1.0}},
-    {"output_NN_cr",       {0, 1}}
+    {"output_NN_cr",       {0, 1}}*/
   };
   const std::map<std::string, std::vector<double>> categories_list_tobook = isControlRegion ? categories_list_CR : categories_list_NN;
 
@@ -1914,17 +1953,17 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
       {"lep1_conePt",     lep1_conePt},
       {"lep1_eta",        selLepton_lead -> eta()},
       {"lep1_phi",        selLepton_lead -> phi()},
-      {"mT_lep1",         mT_lep1}, //
+      //{"mT_lep1",         mT_lep1}, //
       {"mindr_lep1_jet",  mindr_lep1_jet},
       {"lep2_conePt",     lep2_conePt},
       {"lep2_eta",        selLepton_sublead -> eta()},
       {"lep2_phi",        selLepton_sublead -> phi()},
-      {"mT_lep2",         mT_lep2}, //
+      //{"mT_lep2",         mT_lep2}, //
       {"mindr_lep2_jet",  mindr_lep2_jet},
       {"lep3_conePt",     lep3_conePt},
       {"lep3_eta",        selLepton_third -> eta()},
       {"lep3_phi",        selLepton_third -> phi()},
-      {"mT_lep3",         mT_lep3}, //
+      //{"mT_lep3",         mT_lep3}, //
       {"mindr_lep3_jet",  mindr_lep3_jet},
       {"avg_dr_jet",      avg_dr_jet},
       {"met_LD",          met_LD},
@@ -1934,7 +1973,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
       {"leadFwdJet_pt",   selJetsForward.size() > 0 ? selJetsForward[0] -> pt()     : 0.},
       {"min_Deta_leadfwdJet_jet", min_Deta_leadfwdJet_jet},
       {"jet1_pt",         selJets[0]->pt()},
-      {"jet1_eta",        selJets[0]->absEta()},
+      {"jet1_eta",        selJets[0]->eta()},
       {"jet1_phi",        selJets[0]->phi()},
       {"jet2_pt",         selJets.size() > 1 ?  selJets[1]->pt()  : 0.},
       {"jet2_eta",        selJets.size() > 1 ?  selJets[1]->eta() : 0.},
@@ -1945,7 +1984,7 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
       {"sum_Lep_charge",  sum_Lep_charge},
       {"HadTop_pt",       HadTop_pt_CSVsort4rd},
       {"res_HTT",         max_mvaOutput_HTT_CSVsort4rd},
-      {"massL3",          comp_massL3(selLeptons[0], selLeptons[1], selLeptons[2], met.pt(), met.phi())},
+      //{"massL3",          comp_massL3(selLeptons[0], selLeptons[1], selLeptons[2], met.pt(), met.phi())},
       {"nJet",            selJets.size()},
       {"nBJetLoose",      selBJets_loose.size()},
       {"nBJetMedium",     selBJets_medium.size()},
@@ -2003,11 +2042,23 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
         (selLepton_sublead_type == kElectron && selLepton_third_type == kElectron) ||
         (selLepton_lead_type == kElectron &&  selLepton_third_type == kElectron) ||
         (selLepton_lead_type == kElectron && selLepton_sublead_type == kElectron)
-      ) category_NN += "_eem";
+      ) {
+        category_NN += "_eem";
+        if (selBJets_medium.size() >= 2) category_NN += "_bt";
+        else category_NN += "_bl";
+      }
       else if (
         selLepton_lead_type == kElectron || selLepton_sublead_type == kElectron || selLepton_third_type == kElectron
-      ) category_NN += "_emm";
-      else category_NN += "_mmm";
+      ) {
+        category_NN += "_emm";
+        if (selBJets_medium.size() >= 2) category_NN += "_bt";
+        else category_NN += "_bl";
+      }
+      else {
+        category_NN += "_mmm";
+        if (selBJets_medium.size() >= 2) category_NN += "_bt";
+        else category_NN += "_bl";
+      }
       }
   } else {
     category_NN += "cr";
