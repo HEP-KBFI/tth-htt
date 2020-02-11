@@ -84,7 +84,10 @@ enum class FRmt
 enum class LeptonIDSFsys
 {
   central,
-  shiftUp, shiftDown,
+  elTightUp, elTightDown,
+  muTightUp, muTightDown,
+  elLooseUp, elLooseDown,
+  muLooseUp, muLooseDown,
 };
 
 enum class TauIDSFsys

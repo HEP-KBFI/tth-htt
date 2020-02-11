@@ -42,7 +42,6 @@ class systematics(object):
   JER                  = [ "CMS_ttHl_JERUp",                  "CMS_ttHl_JERDown"                  ]
   UnclusteredEn        = [ "CMS_ttHl_UnclusteredEnUp",        "CMS_ttHl_UnclusteredEnDown"        ]
   tauES                = [ "CMS_ttHl_tauESUp",                "CMS_ttHl_tauESDown"                ]
-  leptonIDSF           = [ "CMS_ttHl_leptonIDSFUp",           "CMS_ttHl_leptonIDSFDown"           ]
   tauIDSF              = [ "CMS_ttHl_tauIDSFUp",              "CMS_ttHl_tauIDSFDown"              ]
   triggerSF            = [ "CMS_ttHl_triggerUp",              "CMS_ttHl_triggerDown"              ]
   DYMCReweighting      = [ "CMS_ttHl_DYMCReweightingUp",      "CMS_ttHl_DYMCReweightingDown"      ]
@@ -310,6 +309,14 @@ class systematics(object):
 
     full = ttH + tHq + tHW + ttW + ttZ + dy + hh + ttbar + wz + zz
 
+  class LeptonIDSF(object):
+    el_tight = [ "CMS_ttHl_lepEff_eltightUp", "CMS_ttHl_lepEff_eltightDown" ]
+    mu_tight = [ "CMS_ttHl_lepEff_mutightUp", "CMS_ttHl_lepEff_mutightDown" ]
+    el_loose = [ "CMS_ttHl_lepEff_ellooseUp", "CMS_ttHl_lepEff_ellooseDown" ]
+    mu_loose = [ "CMS_ttHl_lepEff_mulooseUp", "CMS_ttHl_lepEff_mulooseDown" ]
+
+    full = el_tight + mu_tight + el_loose + mu_loose
+
   class Btag(object):
 
     HF       = [ "CMS_ttHl_btag_HFUp",       "CMS_ttHl_btag_HFDown"       ]
@@ -366,6 +373,7 @@ class systematics(object):
 
   lhe        = LHE().full
   btag       = Btag().full
+  leptonIDSF = LeptonIDSF().full
   FRe_shape  = FakeRate_e_shape().full
   FRm_shape  = FakeRate_m_shape().full
   FR_t       = FakeRate_t().full
