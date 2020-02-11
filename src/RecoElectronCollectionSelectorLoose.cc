@@ -21,6 +21,30 @@ RecoElectronSelectorLoose::RecoElectronSelectorLoose(int era,
   , max_nLostHits_(1)
 {}
 
+void
+RecoElectronSelectorLoose::set_min_pt(double min_pt)
+{
+  min_pt_ = min_pt;
+}
+
+void
+RecoElectronSelectorLoose::set_max_absEta(double max_absEta)
+{
+  max_absEta_ = max_absEta;
+}
+
+double
+RecoElectronSelectorLoose::get_min_pt() const
+{
+  return min_pt_;
+}
+
+double
+RecoElectronSelectorLoose::get_max_absEta() const
+{
+  return max_absEta_;
+}
+
 bool
 RecoElectronSelectorLoose::operator()(const RecoElectron & electron) const
 {

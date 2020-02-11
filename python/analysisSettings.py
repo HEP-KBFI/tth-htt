@@ -50,6 +50,12 @@ class systematics(object):
   MET_ResponseSyst     = [ "MET_RespUp",                      "MET_RespDown"                      ]
   MET_ResolutionSyst   = [ "MET_ResolUp",                     "MET_ResolDown"                     ]
 
+  triggerSF_2lss   = [ "CMS_ttHl_trigger_2lssUp",   "CMS_ttHl_trigger_2lssDown"   ]
+  triggerSF_3l     = [ "CMS_ttHl_trigger_3lUp",     "CMS_ttHl_trigger_3lDown"     ]
+  triggerSF_1l1tau = [ "CMS_ttHl_trigger_1l1tauUp", "CMS_ttHl_trigger_1l1tauDown" ]
+  triggerSF_0l2tau = [ "CMS_ttHl_trigger_0l2tauUp", "CMS_ttHl_trigger_0l2tauDown" ]
+  triggerSF_split = triggerSF_2lss + triggerSF_3l + triggerSF_1l1tau + triggerSF_0l2tau
+
   JEC_regrouped = [
     "CMS_ttHl_JESAbsoluteUp",           "CMS_ttHl_JESAbsoluteDown",
     "CMS_ttHl_JESAbsolute_EraUp",       "CMS_ttHl_JESAbsolute_EraDown",
@@ -104,7 +110,12 @@ class systematics(object):
         down = "CMS_ttHl_thu_shape_ttH_y1Down"
         full = [ up, down ]
 
-      full = x1_().full + y1_().full
+      class env_(object):
+        up   = "CMS_ttHl_thu_shape_ttH_Up"
+        down = "CMS_ttHl_thu_shape_ttH_Down"
+        full = [ up, down ]
+
+      full = x1_().full + y1_().full + env_().full
 
     class THQ(object):
 
@@ -118,7 +129,12 @@ class systematics(object):
         down = "CMS_ttHl_thu_shape_tHq_y1Down"
         full = [ up, down ]
 
-      full = x1_().full + y1_().full
+      class env_(object):
+        up   = "CMS_ttHl_thu_shape_tHq_Up"
+        down = "CMS_ttHl_thu_shape_tHq_Down"
+        full = [ up, down ]
+
+      full = x1_().full + y1_().full + env_().full
 
     class THW(object):
 
@@ -132,7 +148,12 @@ class systematics(object):
         down = "CMS_ttHl_thu_shape_tHW_y1Down"
         full = [ up, down ]
 
-      full = x1_().full + y1_().full
+      class env_(object):
+        up   = "CMS_ttHl_thu_shape_tHW_Up"
+        down = "CMS_ttHl_thu_shape_tHW_Down"
+        full = [ up, down ]
+
+      full = x1_().full + y1_().full + env_().full
 
     class TTW(object):
 
@@ -146,7 +167,12 @@ class systematics(object):
         down = "CMS_ttHl_thu_shape_ttW_y1Down"
         full = [ up, down ]
 
-      full = x1_().full + y1_().full
+      class env_(object):
+        up   = "CMS_ttHl_thu_shape_ttW_Up"
+        down = "CMS_ttHl_thu_shape_ttW_Down"
+        full = [ up, down ]
+
+      full = x1_().full + y1_().full + env_().full
 
     class TTZ(object):
 
@@ -160,7 +186,12 @@ class systematics(object):
         down = "CMS_ttHl_thu_shape_ttZ_y1Down"
         full = [ up, down ]
 
-      full = x1_().full + y1_().full
+      class env_(object):
+        up   = "CMS_ttHl_thu_shape_ttZ_Up"
+        down = "CMS_ttHl_thu_shape_ttZ_Down"
+        full = [ up, down ]
+
+      full = x1_().full + y1_().full + env_().full
 
     class HH(object):
       class x1_(object):
@@ -174,7 +205,12 @@ class systematics(object):
         down = "CMS_ttHl_thu_shape_HH_y1Down"
         full = [ up, down ]
 
-      full = x1_().full + y1_().full
+      class env_(object):
+        up   = "CMS_ttHl_thu_shape_HH_Up"
+        down = "CMS_ttHl_thu_shape_HH_Down"
+        full = [ up, down ]
+
+      full = x1_().full + y1_().full + env_().full
 
     class DY(object):
       class x1_(object):
@@ -188,7 +224,12 @@ class systematics(object):
         down = "CMS_ttHl_thu_shape_DY_y1Down"
         full = [ up, down ]
 
-      full = x1_().full + y1_().full
+      class env_(object):
+        up   = "CMS_ttHl_thu_shape_DY_Up"
+        down = "CMS_ttHl_thu_shape_DY_Down"
+        full = [ up, down ]
+
+      full = x1_().full + y1_().full + env_().full
 
     class TT(object):
       class x1_(object):
@@ -202,7 +243,12 @@ class systematics(object):
         down = "CMS_ttHl_thu_shape_TT_y1Down"
         full = [ up, down ]
 
-      full = x1_().full + y1_().full
+      class env_(object):
+        up   = "CMS_ttHl_thu_shape_TT_Up"
+        down = "CMS_ttHl_thu_shape_TT_Down"
+        full = [ up, down ]
+
+      full = x1_().full + y1_().full + env_().full
 
     ttH   = TTH().full
     tHq   = THQ().full
@@ -213,10 +259,12 @@ class systematics(object):
     dy    = DY().full
     ttbar = TT().full
 
-    x1_up   = [ TTH().x1_().up,   THQ().x1_().up,   THW().x1_().up,   TTW().x1_().up,   TTZ().x1_().up,   HH().x1_().up,   DY().x1_().up,   TT().x1_().up   ]
-    y1_up   = [ TTH().y1_().up,   THQ().y1_().up,   THW().y1_().up,   TTW().y1_().up,   TTZ().y1_().up,   HH().y1_().up,   DY().y1_().up,   TT().y1_().up   ]
-    x1_down = [ TTH().x1_().down, THQ().x1_().down, THW().x1_().down, TTW().x1_().down, TTZ().x1_().down, HH().x1_().down, DY().x1_().down, TT().x1_().down ]
-    y1_down = [ TTH().y1_().down, THQ().y1_().down, THW().y1_().down, TTW().y1_().down, TTZ().y1_().down, HH().y1_().down, DY().y1_().down, TT().y1_().down ]
+    x1_up    = [ TTH().x1_().up,    THQ().x1_().up,    THW().x1_().up,    TTW().x1_().up,    TTZ().x1_().up,    HH().x1_().up,    DY().x1_().up,    TT().x1_().up    ]
+    y1_up    = [ TTH().y1_().up,    THQ().y1_().up,    THW().y1_().up,    TTW().y1_().up,    TTZ().y1_().up,    HH().y1_().up,    DY().y1_().up,    TT().y1_().up    ]
+    x1_down  = [ TTH().x1_().down,  THQ().x1_().down,  THW().x1_().down,  TTW().x1_().down,  TTZ().x1_().down,  HH().x1_().down,  DY().x1_().down,  TT().x1_().down  ]
+    y1_down  = [ TTH().y1_().down,  THQ().y1_().down,  THW().y1_().down,  TTW().y1_().down,  TTZ().y1_().down,  HH().y1_().down,  DY().y1_().down,  TT().y1_().down  ]
+    env_up   = [ TTH().env_().up,   THQ().env_().up,   THW().env_().up,   TTW().env_().up,   TTZ().env_().up,   HH().env_().up,   DY().env_().up,   TT().env_().up   ]
+    env_down = [ TTH().env_().down, THQ().env_().down, THW().env_().down, TTW().env_().down, TTZ().env_().down, HH().env_().down, DY().env_().down, TT().env_().down ]
 
     full = ttH + tHq + tHW + ttW + ttZ + dy + hh + ttbar
 
@@ -296,8 +344,10 @@ class systematics(object):
   an_chargeFlip_mu      =    central +  muon_E
   an_chargeFlip_mu_opts = [ "central", "muon_E" ]
 
-  an_common      =    central +  JES +  JER +  tauES +  leptonIDSF +  tauIDSF +  UnclusteredEn +  btag +  FR_t +  lhe +  triggerSF +  PU +  DYMCReweighting +  DYMCNormScaleFactors  + L1PreFiring
-  an_common_opts = [ "central", "JES", "JER", "tauES", "leptonIDSF", "tauIDSF", "UnclusteredEn", "btag", "FR_t", "lhe", "triggerSF", "PU", "DYMCReweighting", "DYMCNormScaleFactors", "L1PreFiring"]
+  an_common      =    central +  JES +  JER +  tauES +  leptonIDSF +  tauIDSF +  UnclusteredEn +  btag +  FR_t +  lhe +  \
+                      triggerSF +  PU +  DYMCReweighting +  DYMCNormScaleFactors  + L1PreFiring
+  an_common_opts = [ "central", "JES", "JER", "tauES", "leptonIDSF", "tauIDSF", "UnclusteredEn", "btag", "FR_t", "lhe",
+                     "triggerSF", "PU", "DYMCReweighting", "DYMCNormScaleFactors", "L1PreFiring"]
   # CV: enable the CMS_ttHl_FRe_shape and CMS_ttHl_FRm_shape only if you plan to run compShapeSyst 1!
   an_extended      = an_common      +    FRe_shape +  FRm_shape
   an_extended_opts = an_common_opts + [ "FRe_shape", "FRm_shape" ]
@@ -311,8 +361,6 @@ class systematics(object):
   an_extended_hh      = an_extended
   an_extended_opts_hh = an_extended_opts
 
-  an_internal_no_mem      =    central +  leptonIDSF +  tauIDSF +  btag +  FR_t +  lhe +  triggerSF +  PU +  L1PreFiring +  FRe_shape +  FRm_shape +  DYMCReweighting  + DYMCNormScaleFactors  + topPtReweighting
-  an_internal_opts_no_mem = [ "central", "leptonIDSF", "tauIDSF", "btag", "FR_t", "lhe", "triggerSF", "PU", "L1PreFiring", "FRe_shape", "FRm_shape", "DYMCReweighting", "DYMCNormScaleFactors", "topPtReweighting" ]
-
-  an_internal      = an_internal_no_mem      +    MEM
-  an_internal_opts = an_internal_opts_no_mem + [ "MEM" ]
+  an_internal_no_mem = central + leptonIDSF + tauIDSF + btag + FR_t + lhe + triggerSF + PU + L1PreFiring + \
+                       FRe_shape + FRm_shape + DYMCReweighting + DYMCNormScaleFactors + topPtReweighting
+  an_internal = an_internal_no_mem + MEM + triggerSF_split

@@ -46,15 +46,52 @@ RecoElectronSelectorFakeable::disable_offline_e_trigger_cuts()
 }
 
 void
+RecoElectronSelectorFakeable::set_min_lepton_pt(double min_lepton_pt)
+{
+  min_lepton_pt_ = min_lepton_pt;
+}
+
+void
+RecoElectronSelectorFakeable::set_min_cone_pt(double min_cone_pt)
+{
+  min_cone_pt_ = min_cone_pt;
+}
+
+void
+RecoElectronSelectorFakeable::set_max_absEta(double max_absEta)
+{
+  max_absEta_ = max_absEta;
+}
+
+void 
+RecoElectronSelectorFakeable::set_mvaTTH_wp(double wp_mvaTTH)
+{
+  std::cout << "setting cut on prompt-lepton MVA for fakeable electrons: " << wp_mvaTTH_ << '\n';
+  wp_mvaTTH_ = wp_mvaTTH;
+}
+
+void
 RecoElectronSelectorFakeable::set_selection_flags(bool selection_flags)
 {
   set_selection_flags_ = selection_flags;
 }
 
-void RecoElectronSelectorFakeable::set_mvaTTH_wp(double wp_mvaTTH)
+double
+RecoElectronSelectorFakeable::get_min_lepton_pt() const
 {
-  std::cout << "setting cut on prompt-lepton MVA for fakeable electrons: " << wp_mvaTTH_ << '\n';
-  wp_mvaTTH_ = wp_mvaTTH;
+  return min_lepton_pt_;
+}
+
+double
+RecoElectronSelectorFakeable::get_min_cone_pt() const
+{
+  return min_cone_pt_;
+}
+
+double
+RecoElectronSelectorFakeable::get_max_absEta() const
+{
+  return max_absEta_;
 }
 
 double RecoElectronSelectorFakeable::get_mvaTTH_wp() const

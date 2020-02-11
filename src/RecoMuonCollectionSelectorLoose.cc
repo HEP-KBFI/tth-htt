@@ -20,6 +20,30 @@ RecoMuonSelectorLoose::RecoMuonSelectorLoose(int era,
   , apply_tightCharge_(false)
 {}
 
+void
+RecoMuonSelectorLoose::set_min_pt(double min_pt)
+{
+  min_pt_ = min_pt;
+}
+
+void
+RecoMuonSelectorLoose::set_max_absEta(double max_absEta)
+{
+  max_absEta_ = max_absEta;
+}
+
+double
+RecoMuonSelectorLoose::get_min_pt() const
+{
+  return min_pt_;
+}
+
+double
+RecoMuonSelectorLoose::get_max_absEta() const
+{
+  return max_absEta_;
+}
+
 bool
 RecoMuonSelectorLoose::operator()(const RecoMuon & muon) const
 {

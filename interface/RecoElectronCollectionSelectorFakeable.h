@@ -18,10 +18,22 @@ public:
   void enable_offline_e_trigger_cuts();
   void disable_offline_e_trigger_cuts();
 
+  void set_min_lepton_pt(double min_lepton_pt);
+  void set_min_cone_pt(double min_cone_pt);
+  void set_max_absEta(double max_absEta);
+
   void set_mvaTTH_wp(double mvaTTH_wp);
-  double get_mvaTTH_wp() const;
 
   void set_selection_flags(bool selection_flags);
+
+  /**
+   * @brief Get cut thresholds
+   */
+  double get_min_lepton_pt() const;
+  double get_min_cone_pt() const;
+  double get_max_absEta() const;
+
+  double get_mvaTTH_wp() const;
 
   /**
    * @brief Check if electron given as function argument passes "tight" electron selection, defined in Table 13 of AN-2015/321
@@ -35,9 +47,9 @@ protected:
   bool set_selection_flags_;
   bool apply_offline_e_trigger_cuts_;
 
-  const Double_t min_cone_pt_;              ///< lower cut threshold on cone pT
-  const Double_t min_lepton_pt_;            ///< lower cut threshold on "raw" lepton pT
-  const Double_t max_absEta_;               ///< upper cut threshold on absolute value of eta
+  Double_t min_lepton_pt_;                  ///< lower cut threshold on reco::GSFElectron pT
+  Double_t min_cone_pt_;                    ///< lower cut threshold on cone pT
+  Double_t max_absEta_;                     ///< upper cut threshold on absolute value of eta
   const Double_t max_dxy_;                  ///< upper cut threshold on d_{xy}, distance in the transverse plane w.r.t PV
   const Double_t max_dz_;                   ///< upper cut threshold on d_{z}, distance on the z axis w.r.t PV
   const Double_t max_relIso_;               ///< upper cut threshold on relative isolation

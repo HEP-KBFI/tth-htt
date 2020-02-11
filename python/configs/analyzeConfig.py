@@ -29,12 +29,13 @@ DKEY_SCRIPTS = "scripts"  # dir for sbatchManagers scripts that submit analysis 
 DKEY_LOGS    = "logs"        # dir for log files (stdout/stderr of jobs)
 DKEY_DCRD    = "datacards"   # dir for the datacard
 DKEY_RLES    = "output_rle"  # dir for the selected run:lumi:event numbers
-DKEY_ROOT    = "output_root" # dir for the selected events dumped into a root file
 DKEY_HADD_RT = "hadd_cfg_rt" # dir for hadd cfg files generated during the runtime
 DKEY_SYNC    = 'sync_ntuple' # dir for storing sync Ntuples
 
+DKEY_COMBINE_OUTPUT = "combine_output" # dir for storing post-fit results (of auxiliary analyses)
+
 DIRLIST = [
-    DKEY_CFGS, DKEY_DCRD, DKEY_HIST, DKEY_PLOT, DKEY_SCRIPTS, DKEY_LOGS, DKEY_RLES, DKEY_ROOT,
+    DKEY_CFGS, DKEY_DCRD, DKEY_HIST, DKEY_PLOT, DKEY_SCRIPTS, DKEY_LOGS, DKEY_RLES,
     DKEY_HADD_RT, DKEY_SYNC
 ]
 
@@ -167,6 +168,7 @@ class analyzeConfig(object):
         for sample_key, sample_info in self.samples.items():
           if sample_key == 'sum_events': continue
           sample_info["dbs_name"] = sample_key
+          sample_info["apply_toppt_rwgt"] = sample_key.startswith('/TTTo')
 
         self.lep_mva_wp = lep_mva_wp
         self.central_or_shifts = central_or_shifts
@@ -446,8 +448,6 @@ class analyzeConfig(object):
         self.filesToClean = []
         self.phoniesToAdd = []
         self.rleOutputFiles = {}
-        self.rootOutputFiles = {}
-        self.rootOutputAux = {}
 
         self.inputFiles_sync = {}
         self.outputFile_sync = {}
@@ -479,7 +479,7 @@ class analyzeConfig(object):
 
         self.hadTau_selection_relaxed = None
         if self.era in [ '2016', '2017', '2018' ]:
-            self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_deeptau_{}_v3.root".format(era)
+            self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_deeptau_{}_v4.root".format(era)
         else:
             raise ValueError('Invalid era: %s' % self.era)
         assert(os.path.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', self.hadTauFakeRateWeight_inputFile)))
@@ -631,6 +631,12 @@ class analyzeConfig(object):
               elif central_or_shift in systematics.LHE().y1_down:
                 nof_events_label = 'CountWeightedLHEWeightScale{}'.format(count_suffix)
                 nof_events_idx = 1 # muR=0.5 muF=1
+              elif central_or_shift in systematics.LHE().env_up:
+                nof_events_label = 'CountWeightedLHEEnvelope{}'.format(count_suffix)
+                nof_events_idx = 0
+              elif central_or_shift in systematics.LHE().env_down:
+                nof_events_label = 'CountWeightedLHEEnvelope{}'.format(count_suffix)
+                nof_events_idx = 1
               elif central_or_shift in systematics.L1PreFiring_().up:
                 nof_events_label = 'CountWeightedL1Prefire'
                 nof_events_idx = 1  # L1 prefiring weight up
@@ -740,7 +746,6 @@ class analyzeConfig(object):
             'selEventsFileName_output',
             'fillGenEvtHistograms',
             'selectBDT',
-            'selEventsTFileName',
             'useNonNominal',
             'apply_hlt_filter',
             'branchName_memOutput',
@@ -1587,35 +1592,17 @@ class analyzeConfig(object):
         if make_target_validate not in self.targets:
             self.targets.append(make_target_validate)
 
-    def addToMakefile_outRoot(self, lines_makefile):
-        """Adds the commands to Makefile that are necessary for building the final condensed *.root output file
-           containing a TTree of all selected event variables specific to a given channel.
-        """
-        if not self.rootOutputAux:
-            return
-        lines_makefile.append("selEventTree_hadd: %s\n" % ' '.join(
-            map(lambda x: x[0], self.rootOutputAux.values())))
-        for rootOutput in self.rootOutputAux.values():
-            lines_makefile.append("%s: %s" % (rootOutput[0], rootOutput[2]))
-            lines_makefile.append(
-                "\thadd -f %s $(shell for f in `ls %s`; do echo -ne $$f\" \"; done)\n" % (rootOutput[0], rootOutput[1]))
-        lines_makefile.append("")
-
     def createMakefile(self, lines_makefile):
         """Creates Makefile that runs the complete analysis workfow.
         """
         self.targets.extend([ jobOptions['datacardFile'] for jobOptions in self.jobOptions_prep_dcard.values() ])
         self.targets.extend([ jobOptions['outputFile'] for jobOptions in self.jobOptions_add_syst_dcard.values() ])
         self.targets.extend([ jobOptions['outputFile'] for jobOptions in self.jobOptions_add_syst_fakerate.values() ])
-        if self.rootOutputAux:
-            self.targets.append("selEventTree_hadd")
         for idxJob, jobOptions in enumerate(self.jobOptions_make_plots.values()):
             make_target_plot = "phony_makePlots%i" % idxJob
             self.targets.append(make_target_plot)
             if make_target_plot not in self.phoniesToAdd:
                   self.phoniesToAdd.append(make_target_plot)
-        for rootOutput in self.rootOutputAux.values():
-            self.filesToClean.append(rootOutput[0])
         if len(self.targets) == 0:
             self.targets.append("phony_analyze")
         tools_createMakefile(self.makefile, self.targets, lines_makefile, self.filesToClean, self.is_sbatch, self.phoniesToAdd)

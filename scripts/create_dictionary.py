@@ -42,6 +42,9 @@ HISTOGRAM_COUNTWEIGHTED_LHESCALE_L1PREFIRE_NOM          = 'CountWeightedLHEWeigh
 # HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_L1PREFIRE_NOM      = 'CountFullWeightedLHEWeightScaleL1PrefireNom'
 # HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_NOPU               = 'CountFullWeightedLHEWeightScaleNoPU'
 # HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_NOPU_L1PREFIRE_NOM = 'CountFullWeightedLHEWeightScaleNoPUL1PrefireNom'
+HISTOGRAM_COUNTWEIGHTED_LHEENVELOPE                     = 'CountWeightedLHEEnvelope'
+HISTOGRAM_COUNTWEIGHTED_LHEENVELOPE_L1PREFIRE_NOM       = 'CountWeightedLHEEnvelopeL1PrefireNom'
+
 EVENTS_TREE = 'Events'
 BRANCH_LHEPDFWEIGHT = 'LHEPdfWeight'
 BRANCH_NLHEREWEIGHTINGWEIGHT = 'nLHEReweightingWeight'
@@ -63,6 +66,7 @@ HISTOGRAM_COUNT_COMMON_MC = [
   # HISTOGRAM_COUNTWEIGHTED_LHESCALE_NOPU,
   # HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE,
   # HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_NOPU,
+  HISTOGRAM_COUNTWEIGHTED_LHEENVELOPE,
 ]
 HISTOGRAM_COUNT_EXTENDED_MC = [
   HISTOGRAM_COUNTWEIGHTED_L1PREFIRE_NOM,
@@ -75,6 +79,7 @@ HISTOGRAM_COUNT_EXTENDED_MC = [
   # HISTOGRAM_COUNTWEIGHTED_LHESCALE_NOPU_L1PREFIRE_NOM,
   # HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_L1PREFIRE_NOM,
   # HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_NOPU_L1PREFIRE_NOM,
+  HISTOGRAM_COUNTWEIGHTED_LHEENVELOPE_L1PREFIRE_NOM,
 ]
 LHESCALEARR = [
   HISTOGRAM_COUNTWEIGHTED_LHESCALE,
@@ -341,9 +346,19 @@ def process_paths(meta_dict, key):
       reverse = True,
     ))
 
-    if nof_files == len(local_paths_sorted[0].indices):
-      # the path with the largest coverage already spans all possible files
-      local_paths_sorted = [local_paths_sorted[0]]
+    local_path_cand_idxs = []
+    for local_path_cand_idx, local_path_sorted in enumerate(local_paths_sorted):
+      if nof_files == len(local_paths_sorted[local_path_cand_idx].indices):
+        # the path with the largest coverage already spans all possible files
+        local_path_cand_idxs.append(local_path_cand_idx)
+    assert(local_path_cand_idxs)
+    # if there are multiple paths with the same coverage, pick the later one
+    local_paths_sorted_by_date = sorted(
+      local_path_cand_idxs,
+      key = lambda local_path_cand_idx: hdfs.getmtime(local_paths_sorted[local_path_cand_idx].path),
+      reverse = True
+    )
+    local_paths_sorted = [ local_paths_sorted[local_paths_sorted_by_date[0]] ]
   elif len(local_paths) == 1:
     local_paths_sorted = local_paths
 
@@ -357,7 +372,8 @@ def process_paths(meta_dict, key):
       nof_events[histogram_name] = []
       for idxBin in range(nBins):
         nof_events_sum = math.fsum(
-          index_entry[HISTOGRAM_COUNT_KEY][histogram_name][idxBin] for index_entry in local_paths_sorted[0].indices.values()
+          index_entry[HISTOGRAM_COUNT_KEY][histogram_name][idxBin] for index_entry in local_paths_sorted[0].indices.values() \
+          if histogram_name in index_entry[HISTOGRAM_COUNT_KEY]
         )
         nof_events[histogram_name].append(int(round(nof_events_sum)))
 

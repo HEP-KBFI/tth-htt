@@ -86,7 +86,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/lutAuxFunctions.h" // loadTH2, get_sf_from_TH2
 #include "tthAnalysis/HiggsToTauTau/interface/L1PreFiringWeightReader.h" // L1PreFiringWeightReader
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
-#include "tthAnalysis/HiggsToTauTau/interface/NtupleFillerMEM.h" // NtupleFillerMEM
 #include "tthAnalysis/HiggsToTauTau/interface/NtupleFillerBDT.h" // NtupleFillerBDT
 #include "tthAnalysis/HiggsToTauTau/interface/TTreeWrapper.h" // TTreeWrapper
 #include "tthAnalysis/HiggsToTauTau/interface/SyncNtupleManager.h" // SyncNtupleManager
@@ -254,6 +253,7 @@ int main(int argc, char* argv[])
   std::vector<std::string> central_or_shifts_local = cfg_analyze.getParameter<std::vector<std::string>>("central_or_shifts_local");
   edm::VParameterSet lumiScale = cfg_analyze.getParameter<edm::VParameterSet>("lumiScale");
   bool apply_genWeight = cfg_analyze.getParameter<bool>("apply_genWeight");
+  bool apply_topPtReweighting = cfg_analyze.getParameter<bool>("apply_topPtReweighting");
   bool apply_l1PreFireWeight = cfg_analyze.getParameter<bool>("apply_l1PreFireWeight");
   bool apply_hlt_filter = cfg_analyze.getParameter<bool>("apply_hlt_filter");
   bool apply_met_filters = cfg_analyze.getParameter<bool>("apply_met_filters");
@@ -381,9 +381,6 @@ int main(int argc, char* argv[])
   std::string selEventsFileName_output = cfg_analyze.getParameter<std::string>("selEventsFileName_output");
   std::cout << "selEventsFileName_output = " << selEventsFileName_output << std::endl;
 
-  std::string selEventsTFileName = cfg_analyze.getParameter<std::string>("selEventsTFileName");
-  const bool writeSelEventsFile = selEventsTFileName != "";
-
   fwlite::InputSource inputFiles(cfg);
   int maxEvents = inputFiles.maxEvents();
   std::cout << " maxEvents = " << maxEvents << std::endl;
@@ -408,15 +405,8 @@ int main(int argc, char* argv[])
     });
   }
 
-//--- create output root file from selected events if needed
-  NtupleFillerMEM mem;
-  if ( writeSelEventsFile ) {
-    mem.isSignal(isSignal);
-    mem.setFileName(selEventsTFileName);
-  }
-
 //--- declare event-level variables
-  EventInfo eventInfo(isMC, isSignal, isMC_HH);
+  EventInfo eventInfo(isMC, isSignal, isMC_HH, apply_topPtReweighting);
   const std::string default_cat_str = "default";
   std::vector<std::string> evt_cat_strs = { default_cat_str };
 
@@ -938,6 +928,7 @@ int main(int argc, char* argv[])
       if(apply_genWeight)         evtWeightRecorder.record_genWeight(boost::math::sign(eventInfo.genWeight));
       if(eventWeightManager)      evtWeightRecorder.record_auxWeight(eventWeightManager);
       if(l1PreFiringWeightReader) evtWeightRecorder.record_l1PrefireWeight(l1PreFiringWeightReader);
+      if(apply_topPtReweighting)  evtWeightRecorder.record_toppt_rwgt(eventInfo.topPtRwgtSF);
       lheInfoReader->read();
       evtWeightRecorder.record_lheScaleWeight(lheInfoReader);
       evtWeightRecorder.record_puWeight(&eventInfo);
@@ -2127,34 +2118,6 @@ int main(int argc, char* argv[])
     if(isDEBUG)
     {
       std::cout << evtWeightRecorder << '\n';
-    }
-
-    if ( writeSelEventsFile ) {
-      const RLEUnit rleUnit{ eventInfo.run, eventInfo.lumi, eventInfo.event };
-      mem.add(rleUnit);
-      const METUnit<double> metUnit{
-        met.pt(), met.phi(), met.covXX(), met.covXY(), met.covYY(), true
-      };
-      mem.add(metUnit);
-      //mem.add(mvaInputs_3l, mvaOutput_3l_ttV, mvaOutput_3l_ttbar);
-      mem.add(selBJets_loose, selBJets_medium, selJets);
-      mem.add(selHadTau);
-      mem.add(selLeptons);
-      if ( isMC ) {
-        if ( isSignal ) {
-          mem.add(eventInfo.genHiggsDecayMode);
-        }
-        //-----------------------------------------------------------------------
-        // CV: functionality temporarily disabled,
-        //     as all generator level information is stored in RecoLepton, RecoHadTau and RecoJet branches in case tthProdNtuple workflow is used
-        //if ( era == kEra_2016 || era == kEra_2017 ) {
-        //  mem.add(genHadTaus, genBQuarkFromTop, genLepFromTau,
-        //          genNuFromTau, genTau, genLepFromTop, genNuFromTop,
-        //          genTop, genVbosons);
-        //}
-        //-----------------------------------------------------------------------
-      }
-      mem.fill(false);
     }
   }
 

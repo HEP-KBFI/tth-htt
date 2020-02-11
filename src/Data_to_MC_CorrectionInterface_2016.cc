@@ -159,6 +159,7 @@ Data_to_MC_CorrectionInterface_2016::~Data_to_MC_CorrectionInterface_2016()
 double
 Data_to_MC_CorrectionInterface_2016::getSF_leptonTriggerEff(TriggerSFsys central_or_shift) const
 {
+  assert(check_triggerSFsys_opt(central_or_shift));
   // see https://cernbox.cern.ch/index.php/s/lW2BiTli5tJR0MN
   double sf = 1.;
   double sfErr = 0.;
@@ -187,15 +188,21 @@ Data_to_MC_CorrectionInterface_2016::getSF_leptonTriggerEff(TriggerSFsys central
   }
 
   sfErr /= 100.;
-  switch(central_or_shift)
+  if(central_or_shift == TriggerSFsys::central)
   {
-    case TriggerSFsys::central:   return sf;
-    case TriggerSFsys::shiftUp:   return sf * (1. + sfErr);
-    case TriggerSFsys::shiftDown: return sf * (1. - sfErr);
-    default: throw cmsException(this, __func__, __LINE__)
-                     << "Invalid option: " << static_cast<int>(central_or_shift)
-                   ;
+    return sf;
   }
-
-  return sf;
+  else if(central_or_shift == TriggerSFsys::shiftUp      ||
+          central_or_shift == TriggerSFsys::shift_2lssUp ||
+          central_or_shift == TriggerSFsys::shift_3lUp)
+  {
+    return sf * (1. + sfErr);
+  }
+  else if(central_or_shift == TriggerSFsys::shiftDown      ||
+          central_or_shift == TriggerSFsys::shift_2lssDown ||
+          central_or_shift == TriggerSFsys::shift_3lDown)
+  {
+    return sf * (1. - sfErr);
+  }
+  throw cmsException(this, __func__, __LINE__) << "Invalid option: " << static_cast<int>(central_or_shift);
 }

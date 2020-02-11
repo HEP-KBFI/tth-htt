@@ -11,7 +11,7 @@ RecoElectronSelectorTight::RecoElectronSelectorTight(int era,
   , set_selection_flags_(set_selection_flags)
   , apply_offline_e_trigger_cuts_(true)
   , debug_(debug)
-  , min_pt_(7.) // L
+  , min_lepton_pt_(7.) // L
   , min_cone_pt_(10) // F
   , max_absEta_(2.5) // F
   , max_dxy_(0.05) // F
@@ -58,13 +58,50 @@ RecoElectronSelectorTight::disable_conversionVeto()
   apply_conversionVeto_ = false;
 }
 
+void
+RecoElectronSelectorTight::set_min_lepton_pt(double min_lepton_pt)
+{
+  min_lepton_pt_ = min_lepton_pt;
+}
+
+void
+RecoElectronSelectorTight::set_min_cone_pt(double min_cone_pt)
+{
+  min_cone_pt_ = min_cone_pt;
+}
+
+void
+RecoElectronSelectorTight::set_max_absEta(double max_absEta)
+{
+  max_absEta_ = max_absEta;
+}
+
 void RecoElectronSelectorTight::set_min_mvaTTH(double min_mvaTTH)
 {
   std::cout << "setting cut on prompt-lepton MVA for tight electrons: " << min_mvaTTH << '\n';
   min_mvaTTH_ = min_mvaTTH;
 }
  
-double RecoElectronSelectorTight::get_min_mvaTTH() const
+double
+RecoElectronSelectorTight::get_min_lepton_pt() const
+{
+  return min_lepton_pt_;
+}
+
+double
+RecoElectronSelectorTight::get_min_cone_pt() const
+{
+  return min_cone_pt_;
+}
+
+double
+RecoElectronSelectorTight::get_max_absEta() const
+{
+  return max_absEta_;
+}
+
+double 
+RecoElectronSelectorTight::get_min_mvaTTH() const
 {
   return min_mvaTTH_;
 }
@@ -91,11 +128,11 @@ RecoElectronSelectorTight::operator()(const RecoElectron & electron) const
     }
     return false;
   }
-  if(electron.pt() < min_pt_)
+  if(electron.pt() < min_lepton_pt_)
   {
     if(debug_)
     {
-      std::cout << "FAILS pT = " << electron.pt() << " >= " << min_pt_ << " tight cut\n";
+      std::cout << "FAILS pT = " << electron.pt() << " >= " << min_lepton_pt_ << " tight cut\n";
     }
     return false;
   }

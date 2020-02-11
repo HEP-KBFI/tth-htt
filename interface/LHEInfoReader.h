@@ -33,6 +33,8 @@ public:
   double getWeight_scale_xDown() const;
   double getWeight_scale_yUp() const;
   double getWeight_scale_yDown() const;
+  double getWeight_scale_Up() const;
+  double getWeight_scale_Down() const;
 
   double getWeight_scale(int central_or_shift) const;
 
@@ -57,6 +59,8 @@ protected:
   const unsigned int max_pdf_nWeights_;
   std::string branchName_pdf_nWeights_;
   std::string branchName_pdf_weights_;
+  std::string branchName_envelope_weight_up_;
+  std::string branchName_envelope_weight_down_;
 
   UInt_t scale_nWeights_;
   Float_t * scale_weights_;
@@ -67,6 +71,8 @@ protected:
   mutable double weight_scale_xDown_;
   mutable double weight_scale_yUp_;
   mutable double weight_scale_yDown_;
+  mutable Float_t weight_scale_Up_;
+  mutable Float_t weight_scale_Down_;
 
   bool has_LHE_weights_;
 

@@ -25,6 +25,7 @@ RecoHadTauWriter::RecoHadTauWriter(int era,
   , max_nHadTaus_(36)
   , branchName_num_(branchName_num)
   , branchName_obj_(branchName_obj)
+  , nHadTaus_(0)
   , genLeptonWriter_(nullptr)
   , genHadTauWriter_(nullptr)
   , genJetWriter_(nullptr)

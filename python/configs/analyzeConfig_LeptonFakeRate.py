@@ -7,10 +7,8 @@ import jinja2
 import codecs
 
 jinja_template_dir = os.path.join(
-  os.getenv('CMSSW_BASE'), 'src', 'tthAnalysis', 'HiggsToTauTau', 'python', 'templates'
+  os.getenv('CMSSW_BASE'), 'src', 'tthAnalysis', 'HiggsToTauTau', 'python', 'templates', 'LeptonFakeRate'
 )
-DKEY_COMBINE_OUTPUT="combine_output"
-
 jinja2.filters.FILTERS['os.path.basename'] = os.path.basename
 
 def getBinName(label, minValue, maxValue):
@@ -188,8 +186,8 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     )
 
     self.cmssw_base_dir_combine = cmssw_base_dir_combine
-    if not os.path.isdir(os.path.join(cmssw_base_dir_combine, 'src', 'CombineHarvester')) or \
-       not os.path.isdir(os.path.join(cmssw_base_dir_combine, 'src', 'HiggsAnalysis', 'CombinedLimit')):
+    if not os.path.isdir(os.path.join(self.cmssw_base_dir_combine, 'src', 'CombineHarvester')) or \
+       not os.path.isdir(os.path.join(self.cmssw_base_dir_combine, 'src', 'HiggsAnalysis', 'CombinedLimit')):
       raise ValueError('CMSSW path for combine not valid: %s' % self.cmssw_base_dir_combine)
 
     self.use_QCD_fromMC = use_QCD_fromMC
@@ -399,10 +397,10 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
             if dir_type in [ DKEY_CFGS, DKEY_LOGS ]:
               self.dirs[key_dir][dir_type] = os.path.join(self.configDir, dir_type, self.channel, process_name_or_dummy, central_or_shift_or_dummy)
             else:
-              self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel, process_name_or_dummy, central_or_shift_or_dummy)
+              self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel, process_name_or_dummy)
     for subdirectory in [ "addBackgrounds", "prepareDatacards" ]:
       key_dir = getKey(subdirectory)
-      for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_ROOT, DKEY_DCRD, DKEY_PLOT ]:
+      for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT ]:
         initDict(self.dirs, [ key_dir, dir_type ])
         if dir_type in [ DKEY_CFGS, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT ]:
           self.dirs[key_dir][dir_type] = os.path.join(self.configDir, dir_type, self.channel, subdirectory)
@@ -688,14 +686,13 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
         systematic_name = systematic.replace('Up', '').replace('Down', '')
         if systematic_name not in systematics_leptonFR:
           systematics_leptonFR.append(systematic_name)
-      if self.use_QCD_fromMC:
-        setup_dcards_template_file = os.path.join(jinja_template_dir, 'setupDatacards_LeptonFakeRate_fakes_from_mc.py.template')
-      else:
-        setup_dcards_template_file = os.path.join(jinja_template_dir, 'setupDatacards_LeptonFakeRate_fakes_from_data.py.template')
-      setup_dcards_template = open(setup_dcards_template_file, 'r').read()
+      setup_dcards_template_file = os.path.join(jinja_template_dir, 'setupDatacards_LeptonFakeRate.py.template')
+      with open(setup_dcards_template_file, 'r') as setup_dcards_template_file_ptr:
+        setup_dcards_template = setup_dcards_template_file_ptr.read()
       setup_dcards_script = jinja2.Template(setup_dcards_template).render(
         leptons           = lepton_bins_merged,
         central_or_shifts = systematics_leptonFR,
+        signal_process    = "QCD" if self.use_QCD_fromMC else "data_fakes",
       )
       setup_dcards_script_path = os.path.join(self.dirs[DKEY_SCRIPTS], 'setupDatacards_LeptonFakeRate.py')
       logging.debug("writing setupDatacards_LeptonFakeRate script file = '%s'" % setup_dcards_script_path)
@@ -714,11 +711,9 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
 
       # Create run_postFit.sh script from the template
       combine_output_dir = os.path.join(self.dirs[DKEY_COMBINE_OUTPUT], 'output')
-      if self.use_QCD_fromMC:
-        postfit_template_file = os.path.join(jinja_template_dir, 'run_postFit_fakes_from_mc.sh.template')
-      else:
-        postfit_template_file = os.path.join(jinja_template_dir, 'run_postFit_fakes_from_data.sh.template')
-      postfit_template = open(postfit_template_file, 'r').read()
+      postfit_template_file = os.path.join(jinja_template_dir, 'run_postFit.sh.template')
+      with open(postfit_template_file, 'r') as postfit_template_file_ptr:
+        postfit_template = postfit_template_file_ptr.read()
       for lepton in ['electron', 'muon']:
         for selection in ['fakeable', 'tight']:
           is_num = selection == 'tight'
@@ -746,6 +741,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
               denominator_output_dir = os.path.join(combine_output_dir, 'mlfit_LeptonFakeRate_%s' % self.denominator_histogram),
               selection              = selection,
               lepton_letter          = 'e' if lepton == 'electron' else 'mu',
+              grep_value             = "QCD" if self.use_QCD_fromMC else "data_fakes",
             )
             postfit_script_path = os.path.join(
               self.dirs[DKEY_SCRIPTS],

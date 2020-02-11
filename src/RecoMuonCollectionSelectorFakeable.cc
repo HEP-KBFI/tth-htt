@@ -31,10 +31,53 @@ RecoMuonSelectorFakeable::RecoMuonSelectorFakeable(int era,
   // F -- additional fakeable cut not applied in the preselection
 }
 
-void RecoMuonSelectorFakeable::set_mvaTTH_wp(double wp_mvaTTH)
+void
+RecoMuonSelectorFakeable::set_min_lepton_pt(double min_lepton_pt)
+{
+  min_lepton_pt_ = min_lepton_pt;
+}
+
+void
+RecoMuonSelectorFakeable::set_min_cone_pt(double min_cone_pt)
+{
+  min_cone_pt_ = min_cone_pt;
+}
+
+void
+RecoMuonSelectorFakeable::set_max_absEta(double max_absEta)
+{
+  max_absEta_ = max_absEta;
+}
+
+void 
+RecoMuonSelectorFakeable::set_mvaTTH_wp(double wp_mvaTTH)
 {
   std::cout << "setting cut on prompt-lepton MVA for fakeable muons: " << wp_mvaTTH_ << '\n';
   wp_mvaTTH_ = wp_mvaTTH;
+}
+
+void
+RecoMuonSelectorFakeable::set_selection_flags(bool selection_flags)
+{
+  set_selection_flags_ = selection_flags;
+}
+
+double
+RecoMuonSelectorFakeable::get_min_lepton_pt() const
+{
+  return min_lepton_pt_;
+}
+
+double
+RecoMuonSelectorFakeable::get_min_cone_pt() const
+{
+  return min_cone_pt_;
+}
+
+double
+RecoMuonSelectorFakeable::get_max_absEta() const
+{
+  return max_absEta_;
 }
 
 double RecoMuonSelectorFakeable::get_mvaTTH_wp() const
@@ -177,12 +220,6 @@ RecoMuonSelectorFakeable::smoothBtagCut(double assocJet_pt) const
 {
   const double ptInterp = std::min(1., std::max(0., assocJet_pt - smoothBtagCut_minPt_) / smoothBtagCut_ptDiff_);
   return ptInterp * min_jetBtagCSV_ + (1. - ptInterp) * max_jetBtagCSV_;
-}
-
-void
-RecoMuonSelectorFakeable::set_selection_flags(bool selection_flags)
-{
-  set_selection_flags_ = selection_flags;
 }
 
 RecoMuonCollectionSelectorFakeable::RecoMuonCollectionSelectorFakeable(int era,

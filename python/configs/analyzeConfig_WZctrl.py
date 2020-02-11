@@ -84,7 +84,7 @@ class analyzeConfig_WZctrl(analyzeConfig):
       running_method            = running_method,
       num_parallel_jobs         = num_parallel_jobs,
       histograms_to_fit         = histograms_to_fit,
-      triggers                  = [ '1e', '1mu', '2e', '2mu', '1e1mu' ],
+      triggers                  = [ '1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '1e2mu', '2e1mu' ],
       executable_prep_dcard     = executable_prep_dcard,
       executable_add_syst_dcard = executable_add_syst_dcard,
       verbose                   = verbose,
@@ -213,23 +213,27 @@ class analyzeConfig_WZctrl(analyzeConfig):
                 continue
 
               key_dir = getKey(process_name_or_dummy, lepton_selection_and_frWeight, central_or_shift_or_dummy)
-              for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_ROOT, DKEY_RLES, DKEY_SYNC ]:
+              for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_RLES, DKEY_SYNC ]:
+                if dir_type == DKEY_SYNC and not self.do_sync:
+                  continue
                 initDict(self.dirs, [ key_dir, dir_type ])
                 if dir_type in [ DKEY_CFGS, DKEY_LOGS ]:
                   self.dirs[key_dir][dir_type] = os.path.join(self.configDir, dir_type, self.channel,
                     "_".join([ lepton_selection_and_frWeight ]), process_name_or_dummy, central_or_shift_or_dummy)
                 else:
                   self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
-                    "_".join([ lepton_selection_and_frWeight ]), process_name_or_dummy, central_or_shift_or_dummy)
+                    "_".join([ lepton_selection_and_frWeight ]), process_name_or_dummy)
     for subdirectory in [ "addBackgrounds", "addBackgroundLeptonFakes", "prepareDatacards", "addSystFakeRates", "makePlots" ]:
       key_dir = getKey(subdirectory)
-      for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_ROOT, DKEY_DCRD, DKEY_PLOT ]:
+      for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT ]:
         initDict(self.dirs, [ key_dir, dir_type ])
         if dir_type in [ DKEY_CFGS, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT ]:
           self.dirs[key_dir][dir_type] = os.path.join(self.configDir, dir_type, self.channel, subdirectory)
         else:
           self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel, subdirectory)
     for dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT, DKEY_SYNC ]:
+      if dir_type == DKEY_SYNC and not self.do_sync:
+        continue
       initDict(self.dirs, [ dir_type ])
       if dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT ]:
         self.dirs[dir_type] = os.path.join(self.configDir, dir_type, self.channel)

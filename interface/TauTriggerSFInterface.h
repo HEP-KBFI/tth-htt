@@ -13,13 +13,13 @@ enum class TriggerSFsys;
 
 enum class TauTriggerType
 {
-  DiTau, ETau, MuTau
+  None, DiTau, ETau, MuTau
 };
 
 class TauTriggerSFInterface
 {
 public:
-  TauTriggerSFInterface();
+  TauTriggerSFInterface(TauTriggerType triggerType = TauTriggerType::None);
   TauTriggerSFInterface(const std::string & era_str,
                         const std::string & hadTauSelection,
                         TauTriggerType triggerType);
@@ -43,8 +43,12 @@ protected:
   static std::string
   tauTriggerType_toStr(TauTriggerType triggerType);
 
+  TriggerSFsys
+  getGenericTriggerSFsys(TriggerSFsys central_or_shift) const;
+
   TauTriggerSFs2017 * eff_mvav2_;
   tau_trigger::SFProvider * eff_deep_;
+  TauTriggerType triggerType_;
 };
 
 #endif

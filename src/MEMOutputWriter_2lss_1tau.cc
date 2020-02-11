@@ -7,6 +7,7 @@ MEMOutputWriter_2lss_1tau::MEMOutputWriter_2lss_1tau(const std::string & branchN
   : max_nMEMOutputs_(100)
   , branchName_num_(branchName_num)
   , branchName_obj_(branchName_obj)
+  , nMEMOutputs_(0)
   , run_(nullptr)
   , lumi_(nullptr)
   , evt_(nullptr)

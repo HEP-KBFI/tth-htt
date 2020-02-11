@@ -19,6 +19,7 @@ RecoLeptonWriter::RecoLeptonWriter(bool isMC,
   , genHadTauWriter_(nullptr)
   , genPhotonWriter_(nullptr)
   , genJetWriter_(nullptr)
+  , nLeptons_(0)
   , pt_(nullptr)
   , eta_(nullptr)
   , phi_(nullptr)

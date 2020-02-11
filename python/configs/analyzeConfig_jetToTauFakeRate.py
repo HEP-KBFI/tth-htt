@@ -208,10 +208,10 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
                   "_".join([ charge_selection ]), process_name_or_dummy, central_or_shift_or_dummy)
               else:
                 self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
-                  "_".join([ charge_selection ]), process_name_or_dummy, central_or_shift_or_dummy)
+                  "_".join([ charge_selection ]), process_name_or_dummy)
     for subdirectory in [ "comp_jetToTauFakeRate", "makePlots" ]:
       key_dir = getKey(subdirectory)
-      for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_ROOT, DKEY_DCRD, DKEY_PLOT ]:
+      for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT ]:
         initDict(self.dirs, [ key_dir, dir_type ])
         if dir_type in [ DKEY_CFGS, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT ]:
           self.dirs[key_dir][dir_type] = os.path.join(self.configDir, dir_type, self.channel, subdirectory)

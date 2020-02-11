@@ -238,6 +238,14 @@ class tthAnalyzeParser(argparse.ArgumentParser):
       help = 'R|Enable regrouped JEC',
     )
 
+  def add_split_trigger_sys(self, default = 'no'):
+    choices = [ 'yes', 'no', 'both' ]
+    assert(default in choices)
+    self.add_argument('-T', '--split-trigger-sys',
+      type = str, dest = 'split_trigger_sys', metavar = 'choice', default = default, required = False, choices = choices,
+      help = 'R|Split trigger systematic uncertainties (choices: %s)' % tthAnalyzeParser.cat(choices),
+    )
+
   def add_stitched(self, use_dy = False, use_wj = False, disable_dy_incl = False, disable_wj_incl = False):
     choices = [ 'dy', 'wjets', 'dy_noincl', 'wjets_noincl' ]
     default = []

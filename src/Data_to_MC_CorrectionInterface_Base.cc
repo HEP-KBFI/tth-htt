@@ -310,6 +310,28 @@ Data_to_MC_CorrectionInterface_Base::init_tauIDSFs(const std::string & era_str,
   }
 }
 
+bool
+Data_to_MC_CorrectionInterface_Base::check_triggerSFsys_opt(TriggerSFsys central_or_shift) const
+{
+  if(central_or_shift == TriggerSFsys::central ||
+     central_or_shift == TriggerSFsys::shiftUp ||
+     central_or_shift == TriggerSFsys::shiftDown)
+  {
+    return true;
+  }
+  if(central_or_shift == TriggerSFsys::shift_2lssUp ||
+     central_or_shift == TriggerSFsys::shift_2lssDown)
+  {
+    return numLeptons_ <= 2 && numHadTaus_ <= 2;
+  }
+  if(central_or_shift == TriggerSFsys::shift_3lUp ||
+     central_or_shift == TriggerSFsys::shift_3lDown)
+  {
+    return numLeptons_ >= 3 && numHadTaus_ <= 1;
+  }
+  return false;
+}
+
 double
 Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_loose() const
 {

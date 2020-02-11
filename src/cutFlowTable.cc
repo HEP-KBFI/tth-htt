@@ -78,7 +78,7 @@ cutFlowTableType::print(std::ostream & stream) const
     stream << " " << std::left << std::setw(max_cut_length + 1) << " ";
     for(auto column : columns_)
     {
-      stream << std::right << std::setw(32) << column;
+      stream << std::left << std::setw(8) << "" << std::left << std::setw(24) << column;
     }
     stream << "\n";
   }

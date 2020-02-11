@@ -24,6 +24,7 @@ RecoJetWriterAK8::RecoJetWriterAK8(int era,
   , branchName_num_(branchName_num_jets)
   , branchName_obj_(branchName_jet)
   , subjetWriter_(nullptr)
+  , nJets_(0)
   , jet_pt_(nullptr)
   , jet_eta_(nullptr)
   , jet_phi_(nullptr)

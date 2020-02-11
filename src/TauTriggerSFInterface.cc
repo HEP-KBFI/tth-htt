@@ -16,19 +16,21 @@ TauTriggerSFInterface::tauTriggerType_toStr(TauTriggerType triggerType)
     case TauTriggerType::DiTau: return "ditau";
     case TauTriggerType::ETau:  return "etau";
     case TauTriggerType::MuTau: return "mutau";
+    case TauTriggerType::None: __attribute__((fallthrough));
     default: throw cmsException(__func__, __LINE__) << "Invalid trigger type: " << as_integer(triggerType);
   }
 }
 
-TauTriggerSFInterface::TauTriggerSFInterface()
+TauTriggerSFInterface::TauTriggerSFInterface(TauTriggerType triggerType)
   : eff_mvav2_(nullptr)
   , eff_deep_(nullptr)
+  , triggerType_(triggerType)
 {}
 
 TauTriggerSFInterface::TauTriggerSFInterface(const std::string & era_str,
                                              const std::string & hadTauSelection,
                                              TauTriggerType triggerType)
-  : TauTriggerSFInterface()
+  : TauTriggerSFInterface(triggerType)
 {
   const int __attribute__((unused)) era = get_era(era_str);
   const TauID tauId = get_tau_id_enum(hadTauSelection);
@@ -67,20 +69,38 @@ TauTriggerSFInterface::getTauTriggerEvalData(TriggerSFsys central_or_shift,
 {
   if(eff_mvav2_)
   {
-    switch(central_or_shift)
+    switch(getGenericTriggerSFsys(central_or_shift))
     {
-      case TriggerSFsys::central:   return eff_mvav2_->getTriggerEfficiencyData          (pt, eta, phi, dm);
-      case TriggerSFsys::shiftUp:   return eff_mvav2_->getTriggerEfficiencyDataUncertUp  (pt, eta, phi, dm);
-      case TriggerSFsys::shiftDown: return eff_mvav2_->getTriggerEfficiencyDataUncertDown(pt, eta, phi, dm);
+      case TriggerSFsys::central:          return eff_mvav2_->getTriggerEfficiencyData          (pt, eta, phi, dm);
+      case TriggerSFsys::shiftUp:          return eff_mvav2_->getTriggerEfficiencyDataUncertUp  (pt, eta, phi, dm);
+      case TriggerSFsys::shiftDown:        return eff_mvav2_->getTriggerEfficiencyDataUncertDown(pt, eta, phi, dm);
+      case TriggerSFsys::shift_2lssUp:     __attribute__((fallthrough));
+      case TriggerSFsys::shift_2lssDown:   __attribute__((fallthrough));
+      case TriggerSFsys::shift_3lUp:       __attribute__((fallthrough));
+      case TriggerSFsys::shift_3lDown:     __attribute__((fallthrough));
+      case TriggerSFsys::shift_1l1tauUp:   __attribute__((fallthrough));
+      case TriggerSFsys::shift_1l1tauDown: __attribute__((fallthrough));
+      case TriggerSFsys::shift_0l2tauUp:   __attribute__((fallthrough));
+      case TriggerSFsys::shift_0l2tauDown: __attribute__((fallthrough));
+      default: assert(false);
     }
   }
   else if(eff_deep_)
   {
-    switch(central_or_shift)
+    switch(getGenericTriggerSFsys(central_or_shift))
     {
-      case TriggerSFsys::central:   return eff_deep_->getEfficiencyData(pt, dm,  0);
-      case TriggerSFsys::shiftUp:   return eff_deep_->getEfficiencyData(pt, dm, +1);
-      case TriggerSFsys::shiftDown: return eff_deep_->getEfficiencyData(pt, dm, -1);
+      case TriggerSFsys::central:          return eff_deep_->getEfficiencyData(pt, dm,  0);
+      case TriggerSFsys::shiftUp:          return eff_deep_->getEfficiencyData(pt, dm, +1);
+      case TriggerSFsys::shiftDown:        return eff_deep_->getEfficiencyData(pt, dm, -1);
+      case TriggerSFsys::shift_2lssUp:     __attribute__((fallthrough));
+      case TriggerSFsys::shift_2lssDown:   __attribute__((fallthrough));
+      case TriggerSFsys::shift_3lUp:       __attribute__((fallthrough));
+      case TriggerSFsys::shift_3lDown:     __attribute__((fallthrough));
+      case TriggerSFsys::shift_1l1tauUp:   __attribute__((fallthrough));
+      case TriggerSFsys::shift_1l1tauDown: __attribute__((fallthrough));
+      case TriggerSFsys::shift_0l2tauUp:   __attribute__((fallthrough));
+      case TriggerSFsys::shift_0l2tauDown: __attribute__((fallthrough));
+      default: assert(false);
     }
   }
   throw cmsException(this, __func__, __LINE__) << "Class not initialized properly";
@@ -96,25 +116,81 @@ TauTriggerSFInterface::getTauTriggerEvalMC(TriggerSFsys central_or_shift,
 {
   if(eff_mvav2_)
   {
-    switch(central_or_shift)
+    switch(getGenericTriggerSFsys(central_or_shift))
     {
-      case TriggerSFsys::central:   return eff_mvav2_->getTriggerEfficiencyMC          (pt, eta, phi, dm);
-      case TriggerSFsys::shiftUp:   return flip ?
+      case TriggerSFsys::central:          return eff_mvav2_->getTriggerEfficiencyMC   (pt, eta, phi, dm);
+      case TriggerSFsys::shiftUp:          return flip ?
                                            eff_mvav2_->getTriggerEfficiencyMCUncertDown(pt, eta, phi, dm) :
                                            eff_mvav2_->getTriggerEfficiencyMCUncertUp  (pt, eta, phi, dm);
-      case TriggerSFsys::shiftDown: return flip ?
+      case TriggerSFsys::shiftDown:        return flip ?
                                            eff_mvav2_->getTriggerEfficiencyMCUncertUp  (pt, eta, phi, dm) :
                                            eff_mvav2_->getTriggerEfficiencyMCUncertDown(pt, eta, phi, dm);
+      case TriggerSFsys::shift_2lssUp:     __attribute__((fallthrough));
+      case TriggerSFsys::shift_2lssDown:   __attribute__((fallthrough));
+      case TriggerSFsys::shift_3lUp:       __attribute__((fallthrough));
+      case TriggerSFsys::shift_3lDown:     __attribute__((fallthrough));
+      case TriggerSFsys::shift_1l1tauUp:   __attribute__((fallthrough));
+      case TriggerSFsys::shift_1l1tauDown: __attribute__((fallthrough));
+      case TriggerSFsys::shift_0l2tauUp:   __attribute__((fallthrough));
+      case TriggerSFsys::shift_0l2tauDown: __attribute__((fallthrough));
+      default: assert(false);
     }
   }
   else if(eff_deep_)
   {
-    switch(central_or_shift)
+    switch(getGenericTriggerSFsys(central_or_shift))
     {
-      case TriggerSFsys::central:   return eff_deep_->getEfficiencyMC(pt, dm,  0);
-      case TriggerSFsys::shiftUp:   return eff_deep_->getEfficiencyMC(pt, dm, flip ? -1 : +1);
-      case TriggerSFsys::shiftDown: return eff_deep_->getEfficiencyMC(pt, dm, flip ? +1 : -1);
+      case TriggerSFsys::central:          return eff_deep_->getEfficiencyMC(pt, dm,  0);
+      case TriggerSFsys::shiftUp:          return eff_deep_->getEfficiencyMC(pt, dm, flip ? -1 : +1);
+      case TriggerSFsys::shiftDown:        return eff_deep_->getEfficiencyMC(pt, dm, flip ? +1 : -1);
+      case TriggerSFsys::shift_2lssUp:     __attribute__((fallthrough));
+      case TriggerSFsys::shift_2lssDown:   __attribute__((fallthrough));
+      case TriggerSFsys::shift_3lUp:       __attribute__((fallthrough));
+      case TriggerSFsys::shift_3lDown:     __attribute__((fallthrough));
+      case TriggerSFsys::shift_1l1tauUp:   __attribute__((fallthrough));
+      case TriggerSFsys::shift_1l1tauDown: __attribute__((fallthrough));
+      case TriggerSFsys::shift_0l2tauUp:   __attribute__((fallthrough));
+      case TriggerSFsys::shift_0l2tauDown: __attribute__((fallthrough));
+      default: assert(false);
     }
   }
   throw cmsException(this, __func__, __LINE__) << "Class not initialized properly";
+}
+
+TriggerSFsys
+TauTriggerSFInterface::getGenericTriggerSFsys(TriggerSFsys central_or_shift) const
+{
+  if(central_or_shift == TriggerSFsys::central ||
+     central_or_shift == TriggerSFsys::shiftUp ||
+     central_or_shift == TriggerSFsys::shiftDown)
+  {
+    return central_or_shift;
+  }
+  else if(central_or_shift == TriggerSFsys::shift_0l2tauUp ||
+          central_or_shift == TriggerSFsys::shift_0l2tauDown)
+  {
+    if(triggerType_ != TauTriggerType::DiTau)
+    {
+      throw cmsException(this, __func__, __LINE__)
+        << "Invalid choice of systematic uncertatinty (" << as_integer(central_or_shift) << ") "
+           "for the trigger type " << as_integer(triggerType_)
+      ;
+    }
+    return central_or_shift == TriggerSFsys::shift_0l2tauUp ? TriggerSFsys::shiftUp : TriggerSFsys::shiftDown;
+  }
+  else if(central_or_shift == TriggerSFsys::shift_1l1tauUp ||
+          central_or_shift == TriggerSFsys::shift_1l1tauDown)
+  {
+    if(triggerType_ != TauTriggerType::ETau && triggerType_ != TauTriggerType::MuTau)
+    {
+      throw cmsException(this, __func__, __LINE__)
+        << "Invalid choice of systematic uncertatinty (" << as_integer(central_or_shift) << ") "
+           "for the trigger type " << as_integer(triggerType_)
+      ;
+    }
+    return central_or_shift == TriggerSFsys::shift_1l1tauUp ? TriggerSFsys::shiftUp : TriggerSFsys::shiftDown;
+  }
+  throw cmsException(this, __func__, __LINE__)
+      << "Invalid choice of systematic uncertainty:" << as_integer(central_or_shift)
+  ;
 }
