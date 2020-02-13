@@ -34,11 +34,11 @@ MAKE_FITS_DATA_LOG=$(LOG_DIR)/make_fits_data.log
 MAKE_FITS_PSEUDODATA_SCRIPT=$(SCRIPT_DIR)/make_fits_pseudodata.sh
 MAKE_FITS_PSEUDODATA_LOG=$(LOG_DIR)/make_fits_pseudodata.log
 
-MAKE_FIT_PLOTS_DATA_SCRIPT=$(SCRIPT_DIR)/make_fits_data.sh
-MAKE_FIT_PLOTS_DATA_LOG=$(LOG_DIR)/make_fits_data.log
+MAKE_FIT_PLOTS_DATA_SCRIPT=$(SCRIPT_DIR)/make_fit_plots_data.sh
+MAKE_FIT_PLOTS_DATA_LOG=$(LOG_DIR)/make_fit_plots_data.log
 
-MAKE_FIT_PLOTS_PSEUDODATA_SCRIPT=$(SCRIPT_DIR)/make_fits_data.sh
-MAKE_FIT_PLOTS_PSEUDODATA_LOG=$(LOG_DIR)/make_fits_data.log
+MAKE_FIT_PLOTS_PSEUDODATA_SCRIPT=$(SCRIPT_DIR)/make_fit_plots_data.sh
+MAKE_FIT_PLOTS_PSEUDODATA_LOG=$(LOG_DIR)/make_fit_plots_data.log
 
 PLOT_PULLS_SCRIPT = $(SCRIPT_DIR)/plot_pulls.sh
 PLOT_PULLS_LOG = $(LOG_DIR)/plot_pulls.log
