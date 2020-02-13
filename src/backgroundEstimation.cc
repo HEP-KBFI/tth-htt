@@ -28,45 +28,45 @@ prob_chargeMisId(int era,
     {
       if(abs_lepton_eta >= 0. && abs_lepton_eta < 1.479)
       {
-        if     (lepton_pt >= 10. && lepton_pt < 25) prob = 5.82117e-4;
-        else if(lepton_pt >= 25. && lepton_pt < 50) prob = 9.16626e-5;
-        else if(lepton_pt >= 50.                  ) prob = 1.53866e-4;
+        if     (lepton_pt >= 10. && lepton_pt < 25.) prob = 5.56576e-4;
+        else if(lepton_pt >= 25. && lepton_pt < 50.) prob = 9.15632e-5;
+        else if(lepton_pt >= 50.                   ) prob = 1.51503e-4;
       }
       else if(abs_lepton_eta >= 1.479 && abs_lepton_eta < 2.5)
       {
-        if     (lepton_pt >= 10. && lepton_pt < 25) prob = 6.04459e-4;
-        else if(lepton_pt >= 25. && lepton_pt < 50) prob = 1.02072e-3;
-        else if(lepton_pt >= 50.                  ) prob = 1.61979e-3;
+        if     (lepton_pt >= 10. && lepton_pt < 25.) prob = 6.08021e-4;
+        else if(lepton_pt >= 25. && lepton_pt < 50.) prob = 1.01904e-3;
+        else if(lepton_pt >= 50.                   ) prob = 1.62015e-3;
       }
     }
     else if(era == kEra_2017)
     {
       if(abs_lepton_eta >= 0. && abs_lepton_eta < 1.479)
       {
-        if     (lepton_pt >= 10. && lepton_pt < 25) prob = 1.29248e-4;
-        else if(lepton_pt >= 25. && lepton_pt < 50) prob = 5.29988e-5;
-        else if(lepton_pt >= 50.                  ) prob = 1.11898e-4;
+        if     (lepton_pt >= 10. && lepton_pt < 25.) prob = 1.18082e-4;
+        else if(lepton_pt >= 25. && lepton_pt < 50.) prob = 5.25915e-5;
+        else if(lepton_pt >= 50.                   ) prob = 1.04939e-4;
       }
       else if(abs_lepton_eta >= 1.479 && abs_lepton_eta < 2.5)
       {
-        if     (lepton_pt >= 10. && lepton_pt < 25) prob = 4.08034e-4;
-        else if(lepton_pt >= 25. && lepton_pt < 50) prob = 5.00129e-4;
-        else if(lepton_pt >= 50.                  ) prob = 8.85938e-4;
+        if     (lepton_pt >= 10. && lepton_pt < 25.) prob = 4.26689e-4;
+        else if(lepton_pt >= 25. && lepton_pt < 50.) prob = 4.99121e-4;
+        else if(lepton_pt >= 50.                   ) prob = 8.84194e-4;
       }
     }
     else if(era == kEra_2018)
     {
       if(abs_lepton_eta >= 0. && abs_lepton_eta < 1.479)
       {
-        if     (lepton_pt >= 10. && lepton_pt < 25) prob = 3.50000e-5;
-        else if(lepton_pt >= 25. && lepton_pt < 50) prob = 6.09854e-5;
-        else if(lepton_pt >= 50.                  ) prob = 2.99421e-5;
+        if     (lepton_pt >= 10. && lepton_pt < 25.) prob = 3.50000e-5;
+        else if(lepton_pt >= 25. && lepton_pt < 50.) prob = 6.00118e-5;
+        else if(lepton_pt >= 50.                   ) prob = 1.08467e-4;
       }
       else if(abs_lepton_eta >= 1.479 && abs_lepton_eta < 2.5)
       {
-        if     (lepton_pt >= 10. && lepton_pt < 25) prob = 4.49484e-4;
-        else if(lepton_pt >= 25. && lepton_pt < 50) prob = 5.07696e-4;
-        else if(lepton_pt >= 50.                  ) prob = 9.50909e-4;
+        if     (lepton_pt >= 10. && lepton_pt < 25.) prob = 3.56487e-4;
+        else if(lepton_pt >= 25. && lepton_pt < 50.) prob = 5.08117e-4;
+        else if(lepton_pt >= 50.                   ) prob = 9.65946e-4;
       }
     }
   }
