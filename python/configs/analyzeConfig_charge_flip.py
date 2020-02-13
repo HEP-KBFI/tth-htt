@@ -90,6 +90,7 @@ class analyzeConfig_charge_flip(analyzeConfig):
       'era'                    : self.era,
       'cmssw_base_dir_combine' : cmssw_base_dir_combine,
       'target'                 : 'fit_result_data_exclusions.root',
+      'int_lumi'               : '{:.2f}'.format(self.lumi / 1e3),
     }
     self.subMake_targets = []
 
