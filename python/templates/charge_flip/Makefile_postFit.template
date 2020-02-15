@@ -9,6 +9,7 @@ FIT_RESULT = {{ fit_result }}
 DATACARD_ROOT_DATA = {{ data_datacard }}
 DATACARD_ROOT_PSEUDODATA = {{ pseudodata_datacard }}
 
+INT_LUMI = {{ int_lumi }}
 ERA = {{ era }}
 LEPTON_TYPE = {{ lepton_type }}
 SIGNALS = {{ signals|join(" ") }}
@@ -18,7 +19,7 @@ all: $(DATACARD_ROOT_DATA) $(DATACARD_ROOT_PSEUDODATA) $(FIT_RESULT) plots
 
 OUTPUT_DIR = $(dir $(FIT_RESULT))
 OUTPUT_DIR_DATA = $(OUTPUT_DIR)/data
-OUTPUT_DIR_PSEUDODATA = $(OUTPUT_DIR)/pseuddata
+OUTPUT_DIR_PSEUDODATA = $(OUTPUT_DIR)/pseudodata
 OUTPUT_DATA = $(OUTPUT_DIR_DATA)/results.txt
 OUTPUT_PSEUDODATA = $(OUTPUT_DIR_PSEUDODATA)/results.txt
 
@@ -34,11 +35,11 @@ MAKE_FITS_DATA_LOG=$(LOG_DIR)/make_fits_data.log
 MAKE_FITS_PSEUDODATA_SCRIPT=$(SCRIPT_DIR)/make_fits_pseudodata.sh
 MAKE_FITS_PSEUDODATA_LOG=$(LOG_DIR)/make_fits_pseudodata.log
 
-MAKE_FIT_PLOTS_DATA_SCRIPT=$(SCRIPT_DIR)/make_fits_data.sh
-MAKE_FIT_PLOTS_DATA_LOG=$(LOG_DIR)/make_fits_data.log
+MAKE_FIT_PLOTS_DATA_SCRIPT=$(SCRIPT_DIR)/make_fit_plots_data.sh
+MAKE_FIT_PLOTS_DATA_LOG=$(LOG_DIR)/make_fit_plots_data.log
 
-MAKE_FIT_PLOTS_PSEUDODATA_SCRIPT=$(SCRIPT_DIR)/make_fits_data.sh
-MAKE_FIT_PLOTS_PSEUDODATA_LOG=$(LOG_DIR)/make_fits_data.log
+MAKE_FIT_PLOTS_PSEUDODATA_SCRIPT=$(SCRIPT_DIR)/make_fit_plots_pseudodata.sh
+MAKE_FIT_PLOTS_PSEUDODATA_LOG=$(LOG_DIR)/make_fit_plots_pseudodata.log
 
 PLOT_PULLS_SCRIPT = $(SCRIPT_DIR)/plot_pulls.sh
 PLOT_PULLS_LOG = $(LOG_DIR)/plot_pulls.log
@@ -96,7 +97,7 @@ plots_data: $(OUTPUT_DATA)
 	printf -- '#!$(SHELL)\n' > $(MAKE_FIT_PLOTS_DATA_SCRIPT)
 	printf -- 'cd $(CMSSW_BASE)\n' >>  $(MAKE_FIT_PLOTS_DATA_SCRIPT)
 	printf -- 'eval $$(scramv1 runtime -sh)\n' >> $(MAKE_FIT_PLOTS_DATA_SCRIPT)
-	printf -- 'make_fit_plots.py -i $(OUTPUT_DIR_DATA)\n' >> $(MAKE_FIT_PLOTS_DATA_SCRIPT)
+	printf -- 'make_fit_plots.py -i $(OUTPUT_DIR_DATA) -I $(INT_LUMI)\n' >> $(MAKE_FIT_PLOTS_DATA_SCRIPT)
 	chmod +x $(MAKE_FIT_PLOTS_DATA_SCRIPT)
 	mkdir -p $(dir $(MAKE_FIT_PLOTS_DATA_LOG))
 	$(MAKE_FIT_PLOTS_DATA_SCRIPT) &> $(MAKE_FIT_PLOTS_DATA_LOG)
@@ -106,7 +107,7 @@ plots_pseudodata: $(OUTPUT_PSEUDODATA)
 	printf -- '#!$(SHELL)\n' > $(MAKE_FIT_PLOTS_PSEUDODATA_SCRIPT)
 	printf -- 'cd $(CMSSW_BASE)\n' >>  $(MAKE_FIT_PLOTS_PSEUDODATA_SCRIPT)
 	printf -- 'eval $$(scramv1 runtime -sh)\n' >> $(MAKE_FIT_PLOTS_PSEUDODATA_SCRIPT)
-	printf -- 'make_fit_plots.py -i $(OUTPUT_DIR_PSEUDODATA)\n' >> $(MAKE_FIT_PLOTS_PSEUDODATA_SCRIPT)
+	printf -- 'make_fit_plots.py -i $(OUTPUT_DIR_PSEUDODATA) -I $(INT_LUMI)\n' >> $(MAKE_FIT_PLOTS_PSEUDODATA_SCRIPT)
 	chmod +x $(MAKE_FIT_PLOTS_PSEUDODATA_SCRIPT)
 	mkdir -p $(dir $(MAKE_FIT_PLOTS_PSEUDODATA_LOG))
 	$(MAKE_FIT_PLOTS_PSEUDODATA_SCRIPT) &> $(MAKE_FIT_PLOTS_PSEUDODATA_LOG)
