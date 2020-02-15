@@ -19,6 +19,8 @@ EvtHistManager_1l_2tau::EvtHistManager_1l_2tau(const edm::ParameterSet & cfg)
   };
   const std::vector<std::string> sysOpts_all = {
     "mvaOutput_legacy",
+    "HTT",
+    "mTauTauVis",
     "EventCounter",
   };
   for(const std::string & sysOpt: sysOpts_central)
@@ -48,6 +50,7 @@ EvtHistManager_1l_2tau::bookHistograms(TFileDirectory & dir)
   histogram_numBJets_medium_ = book1D(dir, "numBJets_medium", "numBJets_medium", 10, -0.5,  +9.5);
 
   histogram_mvaOutput_legacy_ = book1D(dir, "mvaOutput_legacy", "mvaOutput_legacy", 10, 0., 1. );
+  histogram_HTT_ = book1D(dir, "HTT", "HTT", 10, 0., 1. );
 
   histogram_mTauTauVis_   = book1D(dir, "mTauTauVis",   "mTauTauVis",  20,  0., 200.);
   histogram_EventCounter_ = book1D(dir, "EventCounter", "EventCounter", 1, -0.5, +0.5);
@@ -62,6 +65,7 @@ EvtHistManager_1l_2tau::fillHistograms(int numElectrons,
                                        int numBJets_medium,
                                        double mTauTauVis,
                                        double mvaOutput_legacy,
+                                       double HTT,
                                        double evtWeight)
 {
   const double evtWeightErr = 0.;
@@ -74,6 +78,7 @@ EvtHistManager_1l_2tau::fillHistograms(int numElectrons,
   fillWithOverFlow(histogram_numBJets_medium_, numBJets_medium, evtWeight, evtWeightErr);
 
   fillWithOverFlow(histogram_mvaOutput_legacy_,                  mvaOutput_legacy,      evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_HTT_,                  HTT,      evtWeight, evtWeightErr);
 
   fillWithOverFlow(histogram_mTauTauVis_,   mTauTauVis, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_EventCounter_, 0.,         evtWeight, evtWeightErr);

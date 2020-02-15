@@ -182,6 +182,7 @@ if __name__ == '__main__':
       "numJets"                           : {},
       "mTauTauVis"                        : {},
       "mvaOutput_legacy"                  : {},
+      "HTT"                               : {},
     },
     select_rle_output                     = True,
     dry_run                               = dry_run,

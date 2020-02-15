@@ -1796,6 +1796,7 @@ int main(int argc, char* argv[])
             selBJets_medium.size(),
             mTauTauVis,
             mvaOutput_legacy,
+            HTT,
             kv.second);
           }
         }
@@ -1818,6 +1819,7 @@ int main(int argc, char* argv[])
                 selBJets_medium.size(),
                 mTauTauVis,
                 mvaOutput_legacy,
+                HTT,
                 kv.second
               );
               }
@@ -1857,6 +1859,7 @@ int main(int argc, char* argv[])
             selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
             mTauTauVis,
             mvaOutput_legacy,
+            HTT,
             evtWeight
           );
         }

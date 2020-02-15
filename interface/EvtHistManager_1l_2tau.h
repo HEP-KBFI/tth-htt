@@ -32,6 +32,7 @@ public:
                  int numBJets_medium,
                  double mTauTauVis,
                  double mvaOutput_legacy,
+                 double HTT, 
                  double evtWeight);
 
   const TH1 *
@@ -53,6 +54,7 @@ public:
 
   TH1 * histogram_final_;
   TH1 * histogram_mvaOutput_legacy_;
+  TH1 * histogram_HTT_;
 
   TH1 * histogram_mTauTauVis_;
   TH1 * histogram_EventCounter_;
