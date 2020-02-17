@@ -541,6 +541,7 @@ class analyzeConfig(object):
       if central_or_shift in systematics.leptonIDSF           and '0l' in self.channel.lower():             return False
       if central_or_shift in systematics.topPtReweighting     and not enable_toppt_rwgt:                    return False
       if central_or_shift in systematics.LHE().hh             and not is_HHmc:                              return False
+      if central_or_shift in systematics.EWK_jet              and sample_category not in [ "WZ", "ZZ" ]:    return False
       return True
 
     def createCfg_analyze(self, jobOptions, sample_info, additionalJobOptions = [], isLeptonFR = False, isHTT = False, dropCtrl = False):

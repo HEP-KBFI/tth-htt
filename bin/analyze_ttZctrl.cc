@@ -140,6 +140,7 @@ int main(int argc, char* argv[])
   const bool isMC_tH = process_string == "tHq" || process_string == "tHW";
   const bool isMC_VH = process_string == "VH";
   const bool isMC_HH = process_string == "HH";
+  const bool isMC_EWK = process_string == "WZ" || process_string == "ZZ";
   const bool isMC_signal = process_string == "ttH" || process_string == "ttH_ctcvcp";
   const bool isSignal = isMC_signal || isMC_tH || isMC_VH;
 
@@ -1141,6 +1142,11 @@ int main(int argc, char* argv[])
 //   (using the method "Event reweighting using scale factors calculated with a tag and probe method",
 //    described on the BTV POG twiki https://twiki.cern.ch/twiki/bin/view/CMS/BTagShapeCalibration )
       evtWeightRecorder.record_btagWeight(selJets);
+
+      if(isMC_EWK)
+      {
+        evtWeightRecorder.record_ewk_jet(selJets);
+      }
 
       dataToMCcorrectionInterface->setLeptons(
         selLepton_lead_type, selLepton_lead->pt(), selLepton_lead->cone_pt(), selLepton_lead->eta(),

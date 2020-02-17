@@ -184,6 +184,12 @@ enum class MEMsys
   nominal, up, down
 };
 
+enum class EWKJetSys
+{
+  central,
+  up, down,
+};
+
 bool
 isValidJESsource(int era,
                  int central_or_shift);
@@ -257,6 +263,9 @@ getTopPtReweighting_option(const std::string & central_or_shift);
 
 MEMsys
 getMEMsys_option(const std::string & central_or_shift);
+
+EWKJetSys
+getEWKJetSys_option(const std::string & central_or_shift);
 
 void
 checkOptionValidity(const std::string & central_or_shift,

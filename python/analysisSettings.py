@@ -46,6 +46,7 @@ class systematics(object):
   triggerSF            = [ "CMS_ttHl_triggerUp",              "CMS_ttHl_triggerDown"              ]
   DYMCReweighting      = [ "CMS_ttHl_DYMCReweightingUp",      "CMS_ttHl_DYMCReweightingDown"      ]
   DYMCNormScaleFactors = [ "CMS_ttHl_DYMCNormScaleFactorsUp", "CMS_ttHl_DYMCNormScaleFactorsDown" ]
+  EWK_jet              = [ "CMS_ttHl_EWK_jetUp",              "CMS_ttHl_EWK_jetDown"              ]
   MET_ResponseSyst     = [ "MET_RespUp",                      "MET_RespDown"                      ]
   MET_ResolutionSyst   = [ "MET_ResolUp",                     "MET_ResolDown"                     ]
 
@@ -395,9 +396,9 @@ class systematics(object):
   an_chargeFlip_mu_opts = [ "central", "muon_E" ]
 
   an_common      =    central +  JES +  JER +  tauES +  leptonIDSF +  tauIDSF +  UnclusteredEn +  btag +  FR_t +  lhe +  \
-                      triggerSF +  PU +  DYMCReweighting +  DYMCNormScaleFactors  + L1PreFiring
+                      triggerSF +  PU +  DYMCReweighting +  DYMCNormScaleFactors  + L1PreFiring + EWK_jet
   an_common_opts = [ "central", "JES", "JER", "tauES", "leptonIDSF", "tauIDSF", "UnclusteredEn", "btag", "FR_t", "lhe",
-                     "triggerSF", "PU", "DYMCReweighting", "DYMCNormScaleFactors", "L1PreFiring"]
+                     "triggerSF", "PU", "DYMCReweighting", "DYMCNormScaleFactors", "L1PreFiring", "EWK_jet" ]
   # CV: enable the CMS_ttHl_FRe_shape and CMS_ttHl_FRm_shape only if you plan to run compShapeSyst 1!
   an_extended      = an_common      +    FRe_shape +  FRm_shape
   an_extended_opts = an_common_opts + [ "FRe_shape", "FRm_shape" ]
@@ -412,5 +413,6 @@ class systematics(object):
   an_extended_opts_hh = an_extended_opts
 
   an_internal_no_mem = central + leptonIDSF + tauIDSF + btag + FR_t + lhe + triggerSF + PU + L1PreFiring + \
-                       FRe_shape + FRm_shape + DYMCReweighting + DYMCNormScaleFactors + topPtReweighting
+                       FRe_shape + FRm_shape + DYMCReweighting + DYMCNormScaleFactors + topPtReweighting + \
+                       EWK_jet
   an_internal = an_internal_no_mem + MEM + triggerSF_split

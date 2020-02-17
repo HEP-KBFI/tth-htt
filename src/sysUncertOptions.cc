@@ -328,6 +328,15 @@ getMEMsys_option(const std::string & central_or_shift)
   return central_or_shift_int;
 }
 
+EWKJetSys
+getEWKJetSys_option(const std::string & central_or_shift)
+{
+  EWKJetSys central_or_shift_int = EWKJetSys::central;
+  if     (central_or_shift == "CMS_ttHl_EWK_jetUp"  ) central_or_shift_int = EWKJetSys::up;
+  else if(central_or_shift == "CMS_ttHl_EWK_jetDown") central_or_shift_int = EWKJetSys::down;
+  return central_or_shift_int;
+}
+
 void
 checkOptionValidity(const std::string & central_or_shift,
                     bool isMC)

@@ -183,6 +183,7 @@ int main(int argc, char* argv[])
   const bool isMC_VH = process_string == "VH";
   const bool isMC_H  = process_string == "ggH" || process_string == "qqH" || process_string == "TTWH" || process_string == "TTZH";
   const bool isMC_HH = process_string == "HH";
+  const bool isMC_EWK = process_string == "WZ" || process_string == "ZZ";
   const bool isMC_signal = process_string == "ttH" || process_string == "ttH_ctcvcp";
   const bool isSignal = isMC_signal || isMC_tH || isMC_VH || isMC_HH || isMC_H;
 
@@ -1444,6 +1445,11 @@ int main(int argc, char* argv[])
 //   (using the method "Event reweighting using scale factors calculated with a tag and probe method",
 //    described on the BTV POG twiki https://twiki.cern.ch/twiki/bin/view/CMS/BTagShapeCalibration )
       evtWeightRecorder.record_btagWeight(selJets);
+
+      if(isMC_EWK)
+      {
+        evtWeightRecorder.record_ewk_jet(selJets);
+      }
 
       int selHadTau_genPdgId = getHadTau_genPdgId(selHadTau);
 
