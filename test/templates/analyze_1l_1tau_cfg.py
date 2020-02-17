@@ -54,6 +54,7 @@ process.analyze_1l_1tau = cms.PSet(
         inputFileName = cms.string(""),
         histogramName_e = cms.string(""),
         histogramName_mu = cms.string(""),
+        era = cms.string(""),
     ),
     hadTauFakeRateWeight = cms.PSet(
         inputFileName = cms.string(""),

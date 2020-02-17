@@ -1,17 +1,28 @@
 #include "tthAnalysis/HiggsToTauTau/interface/LeptonFakeRateInterface.h"
 
 #include "tthAnalysis/HiggsToTauTau/interface/lutAuxFunctions.h" // lutWrapperTH2
-#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // get_era, kEra_*, cmsException()
 
 #include <TFile.h> // TFile
 
 #include <iostream> // std::cout
 
 LeptonFakeRateInterface::LeptonFakeRateInterface(const edm::ParameterSet & cfg)
+  : jetToEleFakeRateCorr(1.)
 {
   const std::string inputFileName    = cfg.getParameter<std::string>("inputFileName");
   const std::string histogramName_e  = cfg.getParameter<std::string>("histogramName_e");
   const std::string histogramName_mu = cfg.getParameter<std::string>("histogramName_mu");
+
+  const int era = get_era(cfg.getParameter<std::string>("era"));
+  switch(era)
+  {
+    // Slide 3 in https://cernbox.cern.ch/index.php/s/u8bcCuU4WM2wzFY
+    case kEra_2016: jetToEleFakeRateCorr = 1.4; break;
+    case kEra_2017: jetToEleFakeRateCorr = 1.2; break;
+    case kEra_2018: jetToEleFakeRateCorr = 1.3; break;
+  }
+
   for(int FR_option = kFRl_central; FR_option <= kFRm_shape_eta_barrelDown; ++FR_option)
   {
     std::string suffix = "";
@@ -73,7 +84,8 @@ LeptonFakeRateInterface::getWeight_e(double electronPt,
   {
     throw cmsException(this, __func__, __LINE__) << "Invalid option: " << central_or_shift;
   }
-  return lutFakeRate_e_.at(central_or_shift)->getSF(electronPt, electronAbsEta);
+  const double jetToEleFakeRate = lutFakeRate_e_.at(central_or_shift)->getSF(electronPt, electronAbsEta);
+  return jetToEleFakeRate * jetToEleFakeRateCorr;
 }
 
 double
