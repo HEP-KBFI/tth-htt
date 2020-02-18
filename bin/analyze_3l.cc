@@ -2096,7 +2096,8 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
     else if (
       selLepton_lead_type == kElectron || selLepton_sublead_type == kElectron || selLepton_third_type == kElectron
     ) category_NN += "emm";
-    else if ( selElectrons.size() == 0) category_NN += "mmm";
+    else if ( selLepton_lead_type == kMuon && selLepton_sublead_type == kMuon && selLepton_third_type == kMuon ) category_NN += "mmm";
+    else assert(0);
 
     output_NN = -10.0;
     if ( selBJets_medium.size() == 0 )
