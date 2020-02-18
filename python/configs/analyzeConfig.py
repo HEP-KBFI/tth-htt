@@ -506,10 +506,9 @@ class analyzeConfig(object):
            for the purpose of preparing event list files for BDT training.
         """
         self.hadTau_selection_relaxed = hadTau_selection_relaxed
-        if self.hadTau_selection_relaxed == "dR03mvaVLoose":
-            pass
-        elif self.hadTau_selection_relaxed == "dR03mvaVVLoose":
-            self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_tau_2017_v2.root"
+        assert(self.hadTau_selection_relaxed.startswith("deepVSj"))
+        if self.hadTau_selection_relaxed == "deepVSjVVVLoose":
+            self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_deeptau_BDT_{}_v4.root".format(self.era)
         assert(os.path.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', self.hadTauFakeRateWeight_inputFile)))
         self.isBDTtraining = True
 
