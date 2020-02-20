@@ -67,7 +67,8 @@ process.analyze_WZctrl = cms.PSet(
         leptonFakeRateWeight = cms.PSet(
         inputFileName = cms.string(""),
         histogramName_e = cms.string(""),
-        histogramName_mu = cms.string("")
+        histogramName_mu = cms.string(""),
+        era = cms.string(""),
     ),
 
     minNumJets = cms.int32(2),

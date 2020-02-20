@@ -29,6 +29,7 @@ enum class LeptonIDSFsys;
 enum class TauIDSFsys;
 enum class FRet;
 enum class FRmt;
+enum class EWKJetSys;
 
 class EvtWeightRecorder
 {
@@ -92,6 +93,9 @@ public:
 
   double
   get_btag(const std::string & central_or_shift) const;
+
+  double
+  get_ewk_jet(const std::string & central_or_shift) const;
 
   double
   get_dy_rwgt(const std::string & central_or_shift) const;
@@ -170,6 +174,9 @@ public:
 
   void
   record_btagWeight(const std::vector<const RecoJet *> & jets);
+
+  void
+  record_ewk_jet(const std::vector<const RecoJet *> & jets);
 
   void
   record_leptonTriggerEff(const Data_to_MC_CorrectionInterface_Base * const dataToMCcorrectionInterface);
@@ -336,6 +343,7 @@ protected:
   std::map<int, double> weights_FR_lepton_third_;
   std::map<int, double> weights_FR_lepton_fourth_;
   std::map<std::string, double> weights_FR_;
+  std::map<EWKJetSys, double> weights_ewk_jet_;
 };
 
 #endif

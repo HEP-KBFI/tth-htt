@@ -167,6 +167,20 @@ EvtWeightRecorder::get_btag(const std::string & central_or_shift) const
 }
 
 double
+EvtWeightRecorder::get_ewk_jet(const std::string & central_or_shift) const
+{
+  if(isMC_ && ! weights_ewk_jet_.empty())
+  {
+    const EWKJetSys ewk_jet_option = getEWKJetSys_option(central_or_shift);
+    if(weights_ewk_jet_.count(ewk_jet_option))
+    {
+      return weights_ewk_jet_.at(ewk_jet_option);
+    }
+  }
+  return 1.;
+}
+
+double
 EvtWeightRecorder::get_dy_rwgt(const std::string & central_or_shift) const
 {
   if(isMC_ && ! weights_dy_rwgt_.empty())
@@ -245,7 +259,7 @@ EvtWeightRecorder::get_data_to_MC_correction(const std::string & central_or_shif
 {
   return isMC_ ? get_sf_triggerEff(central_or_shift) * get_leptonSF() * get_leptonIDSF(central_or_shift) *
                  get_tauSF(central_or_shift) * get_btag(central_or_shift) * get_dy_norm(central_or_shift) *
-                 get_toppt_rwgt(central_or_shift)
+                 get_toppt_rwgt(central_or_shift) * get_ewk_jet(central_or_shift)
                : 1.
   ;
 }
@@ -571,6 +585,22 @@ EvtWeightRecorder::record_puWeight(const EventInfo * const eventInfo)
       case PUsys::down:    weights_pu_[puSys_option] = eventInfo->pileupWeightDown; break;
       default: assert(0);
     }
+  }
+}
+
+void
+EvtWeightRecorder::record_ewk_jet(const std::vector<const RecoJet *> & jets)
+{
+  assert(isMC_);
+  weights_ewk_jet_.clear();
+  for(const std::string & central_or_shift: central_or_shifts_)
+  {
+    const EWKJetSys ewk_jet_option = getEWKJetSys_option(central_or_shift);
+    if(weights_ewk_jet_.count(ewk_jet_option))
+    {
+      continue;
+    }
+    weights_ewk_jet_[ewk_jet_option] = get_EWK_jet_weight(jets, ewk_jet_option);
   }
 }
 
@@ -1217,6 +1247,7 @@ operator<<(std::ostream & os,
           "  tau SF                = " << evtWeightRecorder.get_tauSF(central_or_shift)                   << "\n"
           "  DY norm weight        = " << evtWeightRecorder.get_dy_norm(central_or_shift)                 << "\n"
           "  btag weight           = " << evtWeightRecorder.get_btag(central_or_shift)                    << "\n"
+          "  EWK jet weight        = " << evtWeightRecorder.get_ewk_jet(central_or_shift)                 << "\n"
           "  data/MC correction    = " << evtWeightRecorder.get_data_to_MC_correction(central_or_shift)   << "\n"
           "  FR weight             = " << evtWeightRecorder.get_FR(central_or_shift)                      << "\n"
           "  charge mis-ID prob    = " << evtWeightRecorder.get_chargeMisIdProb()                         << "\n"
