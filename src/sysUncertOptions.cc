@@ -337,6 +337,15 @@ getEWKJetSys_option(const std::string & central_or_shift)
   return central_or_shift_int;
 }
 
+EWKBJetSys
+getEWKBJetSys_option(const std::string & central_or_shift)
+{
+  EWKBJetSys central_or_shift_int = EWKBJetSys::central;
+  if     (central_or_shift == "CMS_ttHl_EWK_btagUp"  ) central_or_shift_int = EWKBJetSys::up;
+  else if(central_or_shift == "CMS_ttHl_EWK_btagDown") central_or_shift_int = EWKBJetSys::down;
+  return central_or_shift_int;
+}
+
 void
 checkOptionValidity(const std::string & central_or_shift,
                     bool isMC)

@@ -190,6 +190,12 @@ enum class EWKJetSys
   up, down,
 };
 
+enum class EWKBJetSys
+{
+  central,
+  up, down,
+};
+
 bool
 isValidJESsource(int era,
                  int central_or_shift);
@@ -266,6 +272,9 @@ getMEMsys_option(const std::string & central_or_shift);
 
 EWKJetSys
 getEWKJetSys_option(const std::string & central_or_shift);
+
+EWKBJetSys
+getEWKBJetSys_option(const std::string & central_or_shift);
 
 void
 checkOptionValidity(const std::string & central_or_shift,

@@ -34,6 +34,7 @@ class RecoMuon;
 class RecoElectron;
 
 enum class EWKJetSys;
+enum class EWKBJetSys;
 
 //--- declare constants
 const double wBosonMass = 80.379; // GeV
@@ -391,6 +392,10 @@ get_BtagWeight(const std::vector<const RecoJet *> & jets,
 double
 get_EWK_jet_weight(const std::vector<const RecoJet *> & jets,
                    EWKJetSys ewk_jet_option);
+
+double
+get_EWK_bjet_weight(const std::vector<const RecoJet *> & bjets,
+                    EWKBJetSys ewk_bjet_option);
 
 /**
  * @brief Compute MHT
