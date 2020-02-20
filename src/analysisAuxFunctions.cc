@@ -230,6 +230,21 @@ get_EWK_jet_weight(const std::vector<const RecoJet *> & jets,
   return ewk_jet_weight;
 }
 
+double
+get_EWK_bjet_weight(const std::vector<const RecoJet *> & bjets,
+                    EWKBJetSys ewk_bjet_option)
+{
+  const double ewk_bjet_weight = 1.;
+  const double ewk_bjet_unc = bjets.size() > 1 ? 0.4 : 0.1;
+  switch(ewk_bjet_option)
+  {
+    case EWKBJetSys::central: return ewk_bjet_weight;
+    case EWKBJetSys::up:      return ewk_bjet_weight + ewk_bjet_unc;
+    case EWKBJetSys::down:    return ewk_bjet_weight - ewk_bjet_unc;
+    default: assert(0);
+  }
+}
+
 Particle::LorentzVector
 compMHT(const std::vector<const RecoLepton *> & leptons,
         const std::vector<const RecoHadTau *> & hadTaus,

@@ -1402,6 +1402,7 @@ int main(int argc, char* argv[])
       if(isMC_EWK)
       {
         evtWeightRecorder.record_ewk_jet(selJets);
+        evtWeightRecorder.record_ewk_bjet(selBJets_medium);
       }
 
       dataToMCcorrectionInterface->setLeptons(
