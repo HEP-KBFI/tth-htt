@@ -127,8 +127,8 @@ RecoJetWriterAK8::write(const std::vector<const RecoJetAK8 *> & jets)
     jet_phi_[idxJet] = jet->phi();
     jet_mass_[idxJet] = jet->mass();
     jet_msoftdrop_[idxJet] = jet->msoftdrop();
-    subjet_idx1_[idxJet] = jet->subJet1() ? jet->subJet1()->idx() : -1;
-    subjet_idx2_[idxJet] = jet->subJet2() ? jet->subJet2()->idx() : -1;
+    subjet_idx1_[idxJet] = -1;
+    subjet_idx2_[idxJet] = -1;
     jet_tau1_[idxJet] = jet->tau1();
     jet_tau2_[idxJet] = jet->tau2();
     jet_tau3_[idxJet] = jet->tau3();
@@ -147,8 +147,16 @@ RecoJetWriterAK8::writeSubjets(const std::vector<const RecoJetAK8 *> & jets)
   {
     const RecoJetAK8 * jet = jets[idxJet];
     assert(jet);
-    if ( jet->subJet1() ) subjets.push_back(jet->subJet1());
-    if ( jet->subJet2() ) subjets.push_back(jet->subJet2());
+    if ( jet->subJet1() ) 
+    { 
+      subjets.push_back(jet->subJet1());
+      subjet_idx1_[idxJet] = subjets.size() - 1;
+    }
+    if ( jet->subJet2() ) 
+    {
+      subjets.push_back(jet->subJet2());
+      subjet_idx2_[idxJet] = subjets.size() - 1;
+    }
   }
   subjetWriter_->write(subjets);
 }
