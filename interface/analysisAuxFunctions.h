@@ -662,6 +662,9 @@ get_prefix(const std::string & process_string,
            bool isMC_H,
            bool isMC_VH);
 
+std::vector<std::pair<std::string, int>>
+get_htxs_binning(bool isMC_ttH);
+
 /**
  * @brief Find generator-level jets produced in W->jj decay
  *

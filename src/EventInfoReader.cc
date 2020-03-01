@@ -25,6 +25,8 @@ EventInfoReader::EventInfoReader(EventInfo * info,
   , branchName_gen_mHH("mHH_lhe")
   , branchName_gen_cosThetaStar("cosThetaStar_lhe")
   , branchName_topPtRwgt("topPtRwgt")
+  , branchName_htxs_pt("HTXS_Higgs_pt")
+  , branchName_htxs_y("HTXS_Higgs_y")
 {}
 
 EventInfoReader::~EventInfoReader()
@@ -43,9 +45,17 @@ EventInfoReader::setBranchAddresses(TTree * tree)
   bai.setBranchAddress(info_ -> lumi, branchName_lumi);
   bai.setBranchAddress(info_ -> event, branchName_event);
   bai.setBranchAddress(info_ -> PV_ndof, branchName_PV_ndof);
-  if(info_ -> is_signal() && read_genHiggsDecayMode_)
+  if(info_ -> is_signal())
   {
-    bai.setBranchAddress(info_ -> genHiggsDecayMode, branchName_genHiggsDecayMode);
+    if(info_ -> read_htxs())
+    {
+      bai.setBranchAddress(info_ -> htxs_.pt_, branchName_htxs_pt);
+      bai.setBranchAddress(info_ -> htxs_.y_, branchName_htxs_y);
+    }
+    if(read_genHiggsDecayMode_)
+    {
+      bai.setBranchAddress(info_ -> genHiggsDecayMode, branchName_genHiggsDecayMode);
+    }
   }
   if(info_ -> is_mc())
   {

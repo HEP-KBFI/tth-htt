@@ -725,6 +725,28 @@ get_prefix(const std::string & process_string,
   return decayMode_and_genMatch;
 }
 
+std::vector<std::pair<std::string, int>>
+get_htxs_binning(bool isMC_ttH)
+{
+  std::vector<std::pair<std::string, int>> binning;
+  if(isMC_ttH)
+  {
+#if 0
+    binning = {
+      { "fwd",        HTXSCategory::kForward    },
+      { "pt0to60",    HTXSCategory::kPt0to60    },
+      { "pt60to120",  HTXSCategory::kPt60to120  },
+      { "pt120to200", HTXSCategory::kPt120to200 },
+      { "pt200to300", HTXSCategory::kPt200to300 },
+      { "ptGt300",    HTXSCategory::kPt300to450 | HTXSCategory::kPtGt450 },
+      { "pt300to450", HTXSCategory::kPt300to450 },
+      { "ptGt450",    HTXSCategory::kPtGt450    },
+    };
+#endif
+  }
+  return binning;
+}
+
 std::vector<const RecoJetBase*>
 convert_to_RecoJetBase(const std::vector<const RecoJet*>& jets_derived)
 {

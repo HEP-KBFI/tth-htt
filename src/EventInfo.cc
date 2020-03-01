@@ -62,6 +62,7 @@ EventInfo::EventInfo(bool is_mc,
   , LHEReweightingWeight(nullptr)
   , LHEReweightingWeight_max(69)
   , is_owner(false)
+  , read_htxs_(false)
 {
   assert(is_mc_ || ! is_signal_);
   assert(is_mc_ || ! is_hh_nonresonant_);
@@ -120,6 +121,8 @@ EventInfo::copy(const EventInfo & eventInfo)
     is_owner = true;
     std::memcpy(LHEReweightingWeight, eventInfo.LHEReweightingWeight, nLHEReweightingWeight);
   }
+
+  htxs_ = eventInfo.htxs_;
 }
 
 EventInfo::~EventInfo()
@@ -246,6 +249,24 @@ bool
 EventInfo::has_central_or_shift(const std::string & central_or_shift) const
 {
   return tH_sf.count(central_or_shift);
+}
+
+bool
+EventInfo::read_htxs() const
+{
+  return read_htxs_;
+}
+
+void
+EventInfo::read_htxs(bool flag)
+{
+  read_htxs_ = flag;
+}
+
+int
+EventInfo::get_htxs_category() const
+{
+  return read_htxs_ ? htxs_.get_category() : HTXSCategory::kUnknown;
 }
 
 bool
