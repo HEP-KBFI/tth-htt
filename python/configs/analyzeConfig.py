@@ -378,7 +378,7 @@ class analyzeConfig(object):
             self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out,
             self.validation_out, self.submission_out,
         ))
-        check_submission_cmd(self.submission_out, submission_cmd)
+        check_submission_cmd(self.submission_out, submission_cmd, self.do_sync)
 
         self.dirs = {}
 
