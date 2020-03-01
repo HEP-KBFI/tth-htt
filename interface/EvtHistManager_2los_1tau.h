@@ -12,6 +12,19 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/HistManagerBase.h" // HistManagerBase
 
+struct EvtHistManager_2los_1tau_Input
+{
+  std::size_t numElectrons;
+  std::size_t numMuons;
+  std::size_t numHadTaus;
+  std::size_t numJets;
+  std::size_t numBJets_loose;
+  std::size_t numBJets_medium;
+  double mTauTauVis;
+  double mvaOutput_legacy;
+  double evtWeight;
+};
+
 class EvtHistManager_2los_1tau
   : public HistManagerBase
 {
@@ -24,15 +37,7 @@ public:
   bookHistograms(TFileDirectory & dir) override;
 
   void
-  fillHistograms(int numElectrons,
-                 int numMuons,
-                 int numHadTaus,
-                 int numJets,
-                 int numBJets_loose,
-                 int numBJets_medium,
-                 double mTauTauVis,
-                 double mvaOutput_legacy,
-                 double evtWeight);
+  fillHistograms(const EvtHistManager_2los_1tau_Input & variables);
 
   const TH1 *
   getHistogram_EventCounter() const;

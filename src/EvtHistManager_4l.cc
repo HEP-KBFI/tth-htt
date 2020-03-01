@@ -64,26 +64,20 @@ EvtHistManager_4l::bookHistograms(TFileDirectory & dir)
 }
 
 void
-EvtHistManager_4l::fillHistograms(int numElectrons,
-                                  int numMuons,
-                                  int numJets,
-                                  int numBJets_loose,
-                                  int numBJets_medium,
-                                  double mass_4L,
-                                  double mva_4l,
-                                  int ctrl_category,
-                                  double evtWeight)
+EvtHistManager_4l::fillHistograms(const EvtHistManager_4l_Input & variables)
 {
   const double evtWeightErr = 0.;
+  const double & evtWeight = variables.evtWeight;
 
-  fillWithOverFlow(histogram_numElectrons_,    numElectrons,    evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numMuons_,        numMuons,        evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numJets_,         numJets,         evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numBJets_loose_,  numBJets_loose,  evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numBJets_medium_, numBJets_medium, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mass_4L_, mass_4L, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mva_4l_, mva_4l, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_ctrl_, ctrl_category, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_numElectrons_,    variables.numElectrons,    evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_numMuons_,        variables.numMuons,        evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_numJets_,         variables.numJets,         evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_numBJets_loose_,  variables.numBJets_loose,  evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_numBJets_medium_, variables.numBJets_medium, evtWeight, evtWeightErr);
+
+  fillWithOverFlow(histogram_mass_4L_, variables.mass_4L,       evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mva_4l_,  variables.mva_4l,        evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_ctrl_,    variables.ctrl_category, evtWeight, evtWeightErr);
 
   fillWithOverFlow(histogram_EventCounter_, 0., evtWeight, evtWeightErr);
 }

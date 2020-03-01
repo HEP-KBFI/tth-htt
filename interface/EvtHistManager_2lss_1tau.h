@@ -14,6 +14,23 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/MEMOutput_2lss_1tau.h" // MEMOutput_2lss_1tau
 
+struct EvtHistManager_2lss_1tau_Input
+{
+  std::size_t numElectrons;
+  std::size_t numMuons;
+  std::size_t numHadTaus;
+  std::size_t numJets;
+  std::size_t numBJets_loose;
+  std::size_t numBJets_medium;
+  double evtWeight;
+  double mvaOutput_2lss_1tau_HTT_SUM_M;
+  double mTauTauVis1;
+  double mTauTauVis2;
+  double memOutput_LR;
+  const std::string & category_NN_TF;
+  double output_NN;
+};
+
 class EvtHistManager_2lss_1tau
   : public HistManagerBase
 {
@@ -26,23 +43,9 @@ class EvtHistManager_2lss_1tau
 
   void
   bookCategories(TFileDirectory & dir,
-                const std::map<std::string, std::vector<double>> & categories_NN
-               );
+                const std::map<std::string, std::vector<double>> & categories_NN);
   void
-  fillHistograms(int numElectrons,
-                 int numMuons,
-                 int numHadTaus,
-                 int numJets,
-                 int numBJets_loose,
-                 int numBJets_medium,
-                 double evtWeight,
-                 double mvaOutput_2lss_1tau_HTT_SUM_M,
-                 double mTauTauVis1,
-                 double mTauTauVis2,
-                 double memOutput_LR,
-                 const std::string & category_NN_TF,
-                 double output_NN
-               );
+  fillHistograms(const EvtHistManager_2lss_1tau_Input & variables);
 
   const TH1 *
   getHistogram_EventCounter() const;

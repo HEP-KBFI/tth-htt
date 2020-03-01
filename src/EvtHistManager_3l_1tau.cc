@@ -79,40 +79,31 @@ EvtHistManager_3l_1tau::bookHistograms(TFileDirectory & dir)
 }
 
 void
-EvtHistManager_3l_1tau::fillHistograms(int numElectrons,
-                                       int numMuons,
-                                       int numHadTaus,
-                                       int numJets,
-                                       int numBJets_loose,
-                                       int numBJets_medium,
-                                       double mvaOutput_legacy,
-                                       double mTauTauVis1,
-                                       double mTauTauVis2,
-                                       const MEMOutput_3l_1tau * memOutput_3l_1tau,
-                                       double evtWeight
-                                     )
+EvtHistManager_3l_1tau::fillHistograms(const EvtHistManager_3l_1tau_Input & variables)
 {
   const double evtWeightErr = 0.;
+  const double & evtWeight = variables.evtWeight;
 
-  fillWithOverFlow(histogram_numElectrons_,    numElectrons,    evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numMuons_,        numMuons,        evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numHadTaus_,      numHadTaus,      evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numJets_,         numJets,         evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numBJets_loose_,  numBJets_loose,  evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numBJets_medium_, numBJets_medium, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_numElectrons_,    variables.numElectrons,    evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_numMuons_,        variables.numMuons,        evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_numHadTaus_,      variables.numHadTaus,      evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_numJets_,         variables.numJets,         evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_numBJets_loose_,  variables.numBJets_loose,  evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_numBJets_medium_, variables.numBJets_medium, evtWeight, evtWeightErr);
 
-  fillWithOverFlow(histogram_mvaOutput_legacy_,   mvaOutput_legacy,   evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaOutput_legacy_, variables.mvaOutput_legacy, evtWeight, evtWeightErr);
 
-  const double mTauTauVisSF = mTauTauVis1 > 0. && mTauTauVis2 > 0. ? 0.5 : 1.;
-  if(mTauTauVis1 > 0.)
+  const double mTauTauVisSF = variables.mTauTauVis1 > 0. && variables.mTauTauVis2 > 0. ? 0.5 : 1.;
+  if(variables.mTauTauVis1 > 0.)
   {
-    fillWithOverFlow(histogram_mTauTauVis_, mTauTauVis1, mTauTauVisSF * evtWeight, mTauTauVisSF * evtWeightErr);
+    fillWithOverFlow(histogram_mTauTauVis_, variables.mTauTauVis1, mTauTauVisSF * evtWeight, mTauTauVisSF * evtWeightErr);
   }
-  if(mTauTauVis2 > 0.)
+  if(variables.mTauTauVis2 > 0.)
   {
-    fillWithOverFlow(histogram_mTauTauVis_, mTauTauVis2, mTauTauVisSF * evtWeight, mTauTauVisSF * evtWeightErr);
+    fillWithOverFlow(histogram_mTauTauVis_, variables.mTauTauVis2, mTauTauVisSF * evtWeight, mTauTauVisSF * evtWeightErr);
   }
 
+  const MEMOutput_3l_1tau * const memOutput_3l_1tau = variables.memOutput_3l_1tau;
   if(memOutput_3l_1tau)
   {
     fillWithOverFlow(histogram_memOutput_isValid_, memOutput_3l_1tau->isValid(), evtWeight, evtWeightErr);
