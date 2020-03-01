@@ -2259,8 +2259,6 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
                 }
               }
             }
-            std::string decayMode_and_genMatch = decayModeStr;
-            if ( apply_leptonGenMatching ) decayMode_and_genMatch += selLepton_genMatch.name_;
           }
         }
         if(! skipFilling)

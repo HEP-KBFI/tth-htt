@@ -2141,12 +2141,9 @@ int main(int argc, char* argv[])
                   selHistManager->evt_htxs_in_decayModes_[kv.first][decayModeStr][kw.first]->fillHistograms(fillVariables);
                 }
               }
-
-              std::string decayMode_and_genMatch = decayModeStr;
-              if ( apply_leptonGenMatching ) decayMode_and_genMatch += selLepton_genMatch.name_;
             }
-	  }
-	}
+          }
+        }
         if(! skipFilling)
         {
           selHistManager->evtYield_->fillHistograms(eventInfo, evtWeight);
