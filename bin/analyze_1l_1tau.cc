@@ -2091,7 +2091,7 @@ int main(int argc, char* argv[])
           }
           for(const auto & kw: evt_htxs_binning)
           {
-            if(htxs_category & kw.second)
+            if((htxs_category & kw.second) && selHistManager->evt_htxs_in_categories_.count(category))
             {
               selHistManager->evt_htxs_in_categories_[category][kw.first]->fillHistograms(fillVariables);
             }

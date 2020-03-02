@@ -1892,10 +1892,13 @@ int main(int argc, char* argv[])
             selHistManager->subleadHadTau_in_categories_[category]->fillHistograms({ selHadTau_sublead }, evtWeight);
           }
           fillVariables.evtWeight = evtWeight;
-          selHistManager->evt_in_categories_[category]->fillHistograms(fillVariables);
+          if(selHistManager->evt_in_categories_.count(category))
+          {
+            selHistManager->evt_in_categories_[category]->fillHistograms(fillVariables);
+          }
           for(const auto & kw: evt_htxs_binning)
           {
-            if(htxs_category & kw.second)
+            if((htxs_category & kw.second) && selHistManager->evt_htxs_in_categories_.count(category))
             {
               selHistManager->evt_htxs_in_categories_[category][kw.first]->fillHistograms(fillVariables);
             }

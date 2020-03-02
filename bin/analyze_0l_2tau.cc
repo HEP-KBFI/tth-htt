@@ -1836,15 +1836,14 @@ int main(int argc, char* argv[])
         else                                 categories.push_back("0l_2tau_0bM_2j");
         for(const std::string & category: categories)
         {
-          EvtHistManager_0l_2tau* selHistManager_evt_category = selHistManager->evt_in_categories_[category];
           fillVariables.evtWeight = evtWeight;
-          if ( selHistManager_evt_category )
+          if(selHistManager->evt_in_categories_.count(category))
           {
-            selHistManager_evt_category->fillHistograms(fillVariables);
+            selHistManager->evt_in_categories_[category]->fillHistograms(fillVariables);
           }
           for(const auto & kw: evt_htxs_binning)
           {
-            if(htxs_category & kw.second)
+            if((htxs_category & kw.second) && (selHistManager->evt_htxs_in_categories_.count(category)))
             {
               selHistManager->evt_htxs_in_categories_[category][kw.first]->fillHistograms(fillVariables);
             }
