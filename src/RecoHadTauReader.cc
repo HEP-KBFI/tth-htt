@@ -40,7 +40,7 @@ RecoHadTauReader::RecoHadTauReader(int era,
   , genJetReader_(nullptr)
   , readGenMatching_(readGenMatching)
   , tauID_(TauID::DeepTau2017v2VSjet)
-  , tauESTool_(isMC_ ? new TauESTool(era_, kHadTauPt_central, false) : nullptr)
+  , tauESTool_(isMC_ ? new TauESTool(era_, tauID_, kHadTauPt_central, false) : nullptr)
   , hadTau_pt_(nullptr)
   , hadTau_eta_(nullptr)
   , hadTau_phi_(nullptr)
@@ -124,6 +124,10 @@ void
 RecoHadTauReader::set_default_tauID(TauID tauId)
 {
   tauID_ = tauId;
+  if(tauESTool_)
+  {
+    tauESTool_->set_tauID(tauID_);
+  }
 }
 
 void
@@ -225,7 +229,9 @@ RecoHadTauReader::read() const
     for(Int_t idxHadTau = 0; idxHadTau < nHadTaus; ++idxHadTau)
     {
       const double corrFactor = tauESTool_ ? tauESTool_->getTES(
-          gInstance->hadTau_decayMode_[idxHadTau], gInstance->hadTau_genPartFlav_[idxHadTau]
+          gInstance->hadTau_pt_[idxHadTau],
+          gInstance->hadTau_decayMode_[idxHadTau],
+          gInstance->hadTau_genPartFlav_[idxHadTau]
         ) : 1.
       ;
       const double hadTau_pt   = gInstance->hadTau_pt_  [idxHadTau] * corrFactor;
