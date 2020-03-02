@@ -48,6 +48,7 @@ HISTOGRAM_COUNTWEIGHTED_LHEENVELOPE_L1PREFIRE_NOM       = 'CountWeightedLHEEnvel
 EVENTS_TREE = 'Events'
 BRANCH_LHEPDFWEIGHT = 'LHEPdfWeight'
 BRANCH_NLHEREWEIGHTINGWEIGHT = 'nLHEReweightingWeight'
+BRANCH_NPSWEIGHTS = 'nPSWeight'
 
 HISTOGRAM_COUNT_KEY = 'histogram_count'
 TREE_COUNT_KEY      = 'tree_count'
@@ -193,6 +194,7 @@ dictionary_entry_str = """{{ dict_name }}["{{ dbs_name }}"] = OD([
   ("genWeight",                       {{ genWeight }}),{% endif %}
   ("triggers",                        {{ triggers }}),
   ("has_LHE",                         {{ has_LHE }}),
+  ("nof_PSweights",                   {{ nof_PSweights }}),
   ("LHE_set",                         "{{ LHE_set }}"),
   ("nof_reweighting",                 {{ nof_reweighting }}),
   ("local_paths",
@@ -574,6 +576,8 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
   lhe_correct_binning = True
   nof_reweighting_weights = 0
   reweighting_tried = not is_rwgt
+  nof_PSweights = 0
+  PS_tried = False
   for entry in entries_valid:
     index_entry = {
       HISTOGRAM_COUNT_KEY : {},
@@ -625,6 +629,14 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
         ))
       index_entry[TREE_COUNT_KEY] = tree.GetEntries()
       index_entry[BRANCH_NAMES_KEY] = [ branch.GetName() for branch in tree.GetListOfBranches() ]
+
+      if not PS_tried and not is_data:
+        if BRANCH_NPSWEIGHTS in index_entry[BRANCH_NAMES_KEY]:
+          nof_psweights_br = array.array('I', [0])
+          tree.SetBranchAddress(BRANCH_NPSWEIGHTS, nof_psweights_br)
+          tree.GetEntry(0)
+          nof_PSweights = nof_psweights_br[0]
+        PS_tried = True
 
       if not reweighting_tried:
         if BRANCH_NLHEREWEIGHTINGWEIGHT in index_entry[BRANCH_NAMES_KEY]:
@@ -743,6 +755,7 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
     meta_dict[key]['reHLT']                           = True
     meta_dict[key]['located']                         = True
     meta_dict[key]['has_LHE']                         = False if is_data else (lhe_correct_binning and has_LHE(indices))
+    meta_dict[key]['nof_PSweights']                   = nof_PSweights
     meta_dict[key]['missing_from_superset']           = missing_from_superset
     meta_dict[key]['missing_completely']              = overlap_with_triggers
     meta_dict[key]['histogram_names']                 = histogram_names
@@ -1173,6 +1186,7 @@ if __name__ == '__main__':
           genWeight                       = meta_dict[key]['genWeight'],
           triggers                        = meta_dict[key]['triggers'],
           has_LHE                         = meta_dict[key]['has_LHE'],
+          nof_PSweights                   = meta_dict[key]['nof_PSweights'],
           LHE_set                         = meta_dict[key]['LHE_set'],
           nof_reweighting                 = meta_dict[key]['nof_reweighting'],
           missing_from_superset           = missing_branches_template_filled,
