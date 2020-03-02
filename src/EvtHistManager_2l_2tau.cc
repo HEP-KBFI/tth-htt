@@ -57,32 +57,23 @@ EvtHistManager_2l_2tau::bookHistograms(TFileDirectory & dir)
 }
 
 void
-EvtHistManager_2l_2tau::fillHistograms(int numElectrons,
-                                       int numMuons,
-                                       int numHadTaus,
-                                       int numJets,
-                                       int numBJets_loose,
-                                       int numBJets_medium,
-                                       double mTauTauVis,
-                                       double leptonPairCharge,
-                                       double hadTauPairCharge,
-                                       double evtWeight,
-                                       double mva_2l_2tau)
+EvtHistManager_2l_2tau::fillHistograms(const EvtHistManager_2l_2tau_Input & variables)
 {
   const double evtWeightErr = 0.;
+  const double & evtWeight = variables.evtWeight;
 
-  fillWithOverFlow(histogram_numElectrons_,    numElectrons,    evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numMuons_,        numMuons,        evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numHadTaus_,      numHadTaus,      evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numJets_,         numJets,         evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numBJets_loose_,  numBJets_loose,  evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numBJets_medium_, numBJets_medium, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_numElectrons_,    variables.numElectrons,    evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_numMuons_,        variables.numMuons,        evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_numHadTaus_,      variables.numHadTaus,      evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_numJets_,         variables.numJets,         evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_numBJets_loose_,  variables.numBJets_loose,  evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_numBJets_medium_, variables.numBJets_medium, evtWeight, evtWeightErr);
 
-  fillWithOverFlow(histogram_leptonPairCharge_, leptonPairCharge, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_hadTauPairCharge_, hadTauPairCharge, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_leptonPairCharge_, variables.leptonPairCharge, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_hadTauPairCharge_, variables.hadTauPairCharge, evtWeight, evtWeightErr);
 
-  fillWithOverFlow(histogram_mTauTauVis_,   mTauTauVis, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_EventCounter_, 0.,         evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mTauTauVis_,   variables.mTauTauVis, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_EventCounter_, 0.,                   evtWeight, evtWeightErr);
 
-  fillWithOverFlow(histogram_final_, mva_2l_2tau, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_final_, variables.mvaOutput_legacy, evtWeight, evtWeightErr);
 }

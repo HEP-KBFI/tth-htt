@@ -49,37 +49,29 @@ EvtHistManager_1l_2tau::bookHistograms(TFileDirectory & dir)
   histogram_numBJets_loose_  = book1D(dir, "numBJets_loose",  "numBJets_loose",  10, -0.5,  +9.5);
   histogram_numBJets_medium_ = book1D(dir, "numBJets_medium", "numBJets_medium", 10, -0.5,  +9.5);
 
-  histogram_mvaOutput_legacy_ = book1D(dir, "mvaOutput_legacy", "mvaOutput_legacy", 10, 0., 1. );
-  histogram_HTT_ = book1D(dir, "HTT", "HTT", 10, 0., 1. );
+  histogram_mvaOutput_legacy_ = book1D(dir, "mvaOutput_legacy", "mvaOutput_legacy", 10, 0., 1.);
+  histogram_HTT_              = book1D(dir, "HTT",              "HTT",              10, 0., 1.);
 
   histogram_mTauTauVis_   = book1D(dir, "mTauTauVis",   "mTauTauVis",  20,  0., 200.);
   histogram_EventCounter_ = book1D(dir, "EventCounter", "EventCounter", 1, -0.5, +0.5);
 }
 
 void
-EvtHistManager_1l_2tau::fillHistograms(int numElectrons,
-                                       int numMuons,
-                                       int numHadTaus,
-                                       int numJets,
-                                       int numBJets_loose,
-                                       int numBJets_medium,
-                                       double mTauTauVis,
-                                       double mvaOutput_legacy,
-                                       double HTT,
-                                       double evtWeight)
+EvtHistManager_1l_2tau::fillHistograms(const EvtHistManager_1l_2tau_Input & variables)
 {
   const double evtWeightErr = 0.;
+  const double & evtWeight = variables.evtWeight;
 
-  fillWithOverFlow(histogram_numElectrons_,    numElectrons,    evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numMuons_,        numMuons,        evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numHadTaus_,      numHadTaus,      evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numJets_,         numJets,         evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numBJets_loose_,  numBJets_loose,  evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numBJets_medium_, numBJets_medium, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_numElectrons_,    variables.numElectrons,    evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_numMuons_,        variables.numMuons,        evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_numHadTaus_,      variables.numHadTaus,      evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_numJets_,         variables.numJets,         evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_numBJets_loose_,  variables.numBJets_loose,  evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_numBJets_medium_, variables.numBJets_medium, evtWeight, evtWeightErr);
 
-  fillWithOverFlow(histogram_mvaOutput_legacy_,                  mvaOutput_legacy,      evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_HTT_,                  HTT,      evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaOutput_legacy_, variables.mvaOutput_legacy, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_HTT_,              variables.HTT,              evtWeight, evtWeightErr);
 
-  fillWithOverFlow(histogram_mTauTauVis_,   mTauTauVis, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_EventCounter_, 0.,         evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mTauTauVis_,   variables.mTauTauVis, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_EventCounter_, 0.,                   evtWeight, evtWeightErr);
 }

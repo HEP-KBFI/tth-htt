@@ -14,6 +14,21 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/MEMOutput_3l_1tau.h" // MEMOutput_3l_1tau
 
+struct EvtHistManager_3l_1tau_Input
+{
+  std::size_t numElectrons;
+  std::size_t numMuons;
+  std::size_t numHadTaus;
+  std::size_t numJets;
+  std::size_t numBJets_loose;
+  std::size_t numBJets_medium;
+  double mvaOutput_legacy;
+  double mTauTauVis1;
+  double mTauTauVis2;
+  const MEMOutput_3l_1tau * memOutput_3l_1tau;
+  double evtWeight;
+};
+
 class EvtHistManager_3l_1tau
   : public HistManagerBase
 {
@@ -26,18 +41,7 @@ class EvtHistManager_3l_1tau
   bookHistograms(TFileDirectory & dir) override;
 
   void
-  fillHistograms(int numElectrons,
-                 int numMuons,
-                 int numHadTaus,
-                 int numJets,
-                 int numBJets_loose,
-                 int numBJets_medium,
-                 double mvaOutput_legacy,
-                 double mTauTauVis1,
-                 double mTauTauVis2,
-                 const MEMOutput_3l_1tau * memOutput_3l_1tau,
-                 double evtWeight
-               );
+  fillHistograms(const EvtHistManager_3l_1tau_Input & variables);
 
   const TH1 *
   getHistogram_EventCounter() const;

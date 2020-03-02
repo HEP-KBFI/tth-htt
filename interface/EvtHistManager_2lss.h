@@ -12,6 +12,25 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/HistManagerBase.h" // HistManagerBase
 
+struct EvtHistManager_2lss_Input
+{
+  std::size_t numElectrons;
+  std::size_t numMuons;
+  std::size_t numHadTaus;
+  std::size_t numJets;
+  std::size_t numBJets_loose;
+  std::size_t numBJets_medium;
+  double evtWeight;
+  double mvaOutput_2lss_ttV;
+  double mvaOutput_2lss_ttbar;
+  double mvaDiscr_2lss;
+  double mvaOutput_Hj_tagger;
+  double mvaOutput_category;
+  const std::string category;
+  double mass_2L;
+  const std::string category_SVA;
+};
+
 class EvtHistManager_2lss
   : public HistManagerBase
 {
@@ -25,25 +44,10 @@ class EvtHistManager_2lss
   void
   bookCategories(TFileDirectory & dir,
                  const std::map<std::string, std::vector<double>> &  categories,
-                 const std::map<std::string, std::vector<double>> &  categories_SVA
-               );
+                 const std::map<std::string, std::vector<double>> &  categories_SVA);
 
   void
-  fillHistograms(int numElectrons,
-                 int numMuons,
-                 int numHadTaus,
-                 int numJets,
-                 int numBJets_loose,
-                 int numBJets_medium,
-                 double evtWeight,
-                 double mvaOutput_2lss_ttV,
-                 double mvaOutput_2lss_ttbar,
-                 double mvaDiscr_2lss,
-                 double mvaOutput_Hj_tagger,
-                 double mvaOutput_category,
-                 const std::string & category,
-                 double mass_2L,
-                 const std::string & category_SVA);
+  fillHistograms(const EvtHistManager_2lss_Input & variables);
 
   const TH1 *
   getHistogram_EventCounter() const;

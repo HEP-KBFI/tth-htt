@@ -425,6 +425,8 @@ int main(int argc, char* argv[])
   EventInfo eventInfo(isMC, isSignal, isMC_HH, apply_topPtReweighting);
   const std::string default_cat_str = "default";
   std::vector<std::string> evt_cat_strs = { default_cat_str };
+  const std::vector<std::pair<std::string, int>> evt_htxs_binning = get_htxs_binning(isMC_signal);
+  eventInfo.read_htxs(! evt_htxs_binning.empty());
 
   //--- HH scan
   const edm::ParameterSet hhWeight_cfg = cfg_analyze.getParameterSet("hhWeight_cfg");
@@ -662,8 +664,9 @@ int main(int argc, char* argv[])
     MEtFilterHistManager* metFilters_;
     MVAInputVarHistManager* mvaInputVariables_2lss_;
     std::map<std::string, EvtHistManager_2lss_1tau*> evt_;
+    std::map<std::string, std::map<std::string, EvtHistManager_2lss_1tau*>> evt_htxs_;
     std::map<std::string, std::map<std::string, EvtHistManager_2lss_1tau*>> evt_in_decayModes_;
-    std::map<std::string, EvtHistManager_2lss_1tau*> evt_in_categories_;
+    std::map<std::string, std::map<std::string, std::map<std::string, EvtHistManager_2lss_1tau*>>> evt_htxs_in_decayModes_;
     EvtYieldHistManager* evtYield_;
     WeightHistManager* weights_;
   };
@@ -751,11 +754,19 @@ int main(int argc, char* argv[])
           process_and_genMatchName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift,
           skipBooking ? "minimalHistograms" : "allHistograms"
         ));
-        selHistManager->evt_[evt_cat_str]->bookCategories(
-          fs,
-          categories_NN
-        );
+        selHistManager->evt_[evt_cat_str]->bookCategories(fs, categories_NN);
         selHistManager->evt_[evt_cat_str]->bookHistograms(fs);
+
+        for(const auto & kv: evt_htxs_binning)
+        {
+          const std::string htxs_process_and_genMatchName = Form("htxs_%s_%s", kv.first.data(), process_and_genMatchName.data());
+          selHistManager->evt_htxs_[evt_cat_str][kv.first] = new EvtHistManager_2lss_1tau(makeHistManager_cfg(
+            htxs_process_and_genMatchName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift,
+            skipBooking ? "minimalHistograms" : "allHistograms"
+          ));
+          selHistManager->evt_htxs_[evt_cat_str][kv.first]->bookCategories(fs, categories_NN);
+          selHistManager->evt_htxs_[evt_cat_str][kv.first]->bookHistograms(fs);
+        }
       }
 
       if(isSignal)
@@ -786,11 +797,19 @@ int main(int argc, char* argv[])
               decayMode_and_genMatchName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift,
               skipBooking ? "minimalHistograms" : "allHistograms"
             ));
-            selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] -> bookCategories(
-              fs,
-              categories_NN
-            );
+            selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] -> bookCategories(fs, categories_NN);
             selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] -> bookHistograms(fs);
+
+            for(const auto & kv: evt_htxs_binning)
+            {
+              const std::string htxs_decayMode_and_genMatchName = Form("htxs_%s_%s", kv.first.data(), decayMode_and_genMatchName.data());
+              selHistManager->evt_htxs_in_decayModes_[evt_cat_str][decayMode_evt][kv.first] = new EvtHistManager_2lss_1tau(makeHistManager_cfg(
+                htxs_decayMode_and_genMatchName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift,
+                skipBooking ? "minimalHistograms" : "allHistograms"
+              ));
+              selHistManager->evt_htxs_in_decayModes_[evt_cat_str][decayMode_evt][kv.first]->bookCategories(fs, categories_NN);
+              selHistManager->evt_htxs_in_decayModes_[evt_cat_str][decayMode_evt][kv.first]->bookHistograms(fs);
+            }
           }
         }
       }
@@ -918,7 +937,6 @@ int main(int argc, char* argv[])
   };
   CutFlowTableHistManager * cutFlowHistManager = new CutFlowTableHistManager(cutFlowTableCfg, cuts);
   cutFlowHistManager->bookHistograms(fs);
-  bool isDebugTF = false;
   while(inputTree -> hasNextEvent() && (! run_lumi_eventSelector || (run_lumi_eventSelector && ! run_lumi_eventSelector -> areWeDone())))
   {
     if(inputTree -> canReport(reportEvery))
@@ -2098,15 +2116,6 @@ int main(int argc, char* argv[])
       {"nElectron",       selElectrons.size()}
       };
     std::map<std::string, double> mvaOutput_NN_TF = mva_NN(mvaInputVariables_NN);
-    if ( isDebugTF ) {
-      std::cout << "variables ";
-      for (auto elem : mvaInputVariables_NN) std::cout << elem.first << " " << elem.second << "\n";
-      std::cout << std::endl;
-      std::cout << std::endl;
-      std::cout << "result sig_1p2_rest_1_th_1p2 ";
-      for (auto elem : classes_NN ) std::cout << elem << " = " << mvaOutput_NN_TF[elem] <<" ";
-      std::cout << std::endl;
-    }
 
     std::string category_NN_TF = "output_NN_";
     double output_NN = -10.0;
@@ -2188,55 +2197,54 @@ int main(int argc, char* argv[])
           }
         }
 
+        const int htxs_category = eventInfo.get_htxs_category();
         for(const auto & kv: tH_weight_map)
         {
-
-          EvtHistManager_2lss_1tau* selHistManager_evt = selHistManager->evt_[kv.first];
-          if ( selHistManager_evt )
-          {
-          selHistManager_evt->fillHistograms(
+          const EvtHistManager_2lss_1tau_Input fillVariables {
             selElectrons.size(),
             selMuons.size(),
-      	    selHadTaus.size(),
-      	    selJets.size(),
-      	    selBJets_loose.size(),
-      	    selBJets_medium.size(),
-      	    kv.second,
-      	    mvaOutput_2lss_1tau_HTT_SUM_M,
-      	    mTauTauVis1_sel,
-      	    mTauTauVis2_sel,
+            selHadTaus.size(),
+            selJets.size(),
+            selBJets_loose.size(),
+            selBJets_medium.size(),
+            kv.second,
+            mvaOutput_2lss_1tau_HTT_SUM_M,
+            mTauTauVis1_sel,
+            mTauTauVis2_sel,
             memOutput_LR.at(mem_option),
             category_NN_TF,
-            output_NN
-         );
-         }
-        }
-        if ( isSignal ) {
-          std::string decayModeStr = get_key_hist(eventInfo, genWBosons, isMC_HH, isMC_VH);
-          if ( ( isMC_tH || isMC_H ) && ( decayModeStr == "hzg" || decayModeStr == "hmm" ) ) continue;
-          if(! decayModeStr.empty())
+            output_NN,
+          };
+          EvtHistManager_2lss_1tau* selHistManager_evt = selHistManager->evt_[kv.first];
+          if(selHistManager_evt)
           {
-            for(const auto & kv: tH_weight_map)
+            selHistManager_evt->fillHistograms(fillVariables);
+          }
+          for(const auto & kw: evt_htxs_binning)
+          {
+            if(htxs_category & kw.second)
+            {
+              selHistManager->evt_htxs_[kv.first][kw.first]->fillHistograms(fillVariables);
+            }
+          }
+
+          if ( isSignal ) {
+            std::string decayModeStr = get_key_hist(eventInfo, genWBosons, isMC_HH, isMC_VH);
+            if ( ( isMC_tH || isMC_H ) && ( decayModeStr == "hzg" || decayModeStr == "hmm" ) ) continue;
+            if(! decayModeStr.empty())
             {
               EvtHistManager_2lss_1tau* selHistManager_evt_category_decayModes = selHistManager->evt_in_decayModes_[kv.first][decayModeStr];
               if ( selHistManager_evt_category_decayModes )
               {
-              selHistManager_evt_category_decayModes->fillHistograms(
-                selElectrons.size(),
-                selMuons.size(),
-                selHadTaus.size(),
-                selJets.size(),
-                selBJets_loose.size(),
-                selBJets_medium.size(),
-                kv.second,
-                mvaOutput_2lss_1tau_HTT_SUM_M,
-                mTauTauVis1_sel,
-                mTauTauVis2_sel,
-                memOutput_LR.at(mem_option),
-                category_NN_TF,
-                output_NN
-              );
-             }
+                selHistManager_evt_category_decayModes->fillHistograms(fillVariables);
+              }
+              for(const auto & kw: evt_htxs_binning)
+              {
+                if(htxs_category & kw.second)
+                {
+                  selHistManager->evt_htxs_in_decayModes_[kv.first][decayModeStr][kw.first]->fillHistograms(fillVariables);
+                }
+              }
             }
           }
         }
