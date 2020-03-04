@@ -3,6 +3,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
 #include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // kLHE_scale_*
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // clip()
 
 #include <cassert> // assert()
 #include <iostream> // std::cerr
@@ -146,37 +147,37 @@ LHEInfoReader::read() const
 double
 LHEInfoReader::getWeight_scale_xUp() const
 { 
-  return LHEInfoReader::clip(weight_scale_xUp_);
+  return clip(weight_scale_xUp_);
 }
 
 double
 LHEInfoReader::getWeight_scale_xDown() const
 { 
-  return LHEInfoReader::clip(weight_scale_xDown_);
+  return clip(weight_scale_xDown_);
 }
 
 double
 LHEInfoReader::getWeight_scale_yUp() const
 {
-  return LHEInfoReader::clip(weight_scale_yUp_);
+  return clip(weight_scale_yUp_);
 }
 
 double
 LHEInfoReader::getWeight_scale_yDown() const
 { 
-  return LHEInfoReader::clip(weight_scale_yDown_);
+  return clip(weight_scale_yDown_);
 }
 
 double
 LHEInfoReader::getWeight_scale_Up() const
 {
-  return LHEInfoReader::clip(weight_scale_Up_);
+  return clip(weight_scale_Up_);
 }
 
 double
 LHEInfoReader::getWeight_scale_Down() const
 {
-  return LHEInfoReader::clip(weight_scale_Down_);
+  return clip(weight_scale_Down_);
 }
 
 double
@@ -185,12 +186,12 @@ LHEInfoReader::getWeight_scale(int central_or_shift) const
   switch(central_or_shift)
   {
     case kLHE_scale_central: return 1.;
-    case kLHE_scale_xDown:   return LHEInfoReader::clip(getWeight_scale_xDown());
-    case kLHE_scale_xUp:     return LHEInfoReader::clip(getWeight_scale_xUp());
-    case kLHE_scale_yDown:   return LHEInfoReader::clip(getWeight_scale_yDown());
-    case kLHE_scale_yUp:     return LHEInfoReader::clip(getWeight_scale_yUp());
-    case kLHE_scale_Down:    return LHEInfoReader::clip(getWeight_scale_Down());
-    case kLHE_scale_Up:      return LHEInfoReader::clip(getWeight_scale_Up());
+    case kLHE_scale_xDown:   return getWeight_scale_xDown();
+    case kLHE_scale_xUp:     return getWeight_scale_xUp();
+    case kLHE_scale_yDown:   return getWeight_scale_yDown();
+    case kLHE_scale_yUp:     return getWeight_scale_yUp();
+    case kLHE_scale_Down:    return getWeight_scale_Down();
+    case kLHE_scale_Up:      return getWeight_scale_Up();
     default: throw cmsException(this, __func__, __LINE__)
                << "Invalid LHE scale systematics option: " << central_or_shift;
   }
@@ -237,13 +238,5 @@ LHEInfoReader::getWeight_pdf(unsigned int idx) const
       << "Given index = " << idx << ", exceeds number of PDF weights stored in Ntuple = "
       << pdf_nWeights_ << " !!\n";
   }
-  return LHEInfoReader::clip(pdf_weights_[idx]);
-}
-
-double
-LHEInfoReader::clip(double value,
-                    double min_value,
-                    double max_value)
-{
-  return std::min(std::max(value, min_value), max_value);
+  return clip(pdf_weights_[idx]);
 }

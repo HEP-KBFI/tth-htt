@@ -123,6 +123,14 @@ enum
 
 enum
 {
+  kPartonShower_central,
+  kPartonShower_ISRUp, kPartonShower_ISRDown, // ISR -- initial state radiation
+  kPartonShower_FSRUp, kPartonShower_FSRDown, // FSR -- final state radiation
+  kPartonShower_Up,    kPartonShower_Down, // envelope from the variations of both ISR and FSR
+};
+
+enum
+{
   kTopPtReweighting_central,
   kTopPtReweighting_shiftUp, kTopPtReweighting_shiftDown,
 };
@@ -242,6 +250,9 @@ getTriggerSF_option(const std::string & central_or_shift,
 
 int
 getLHEscale_option(const std::string & central_or_shift);
+
+int
+getPartonShower_option(const std::string & central_or_shift);
 
 int
 getElectronPt_option(const std::string & central_or_shift);

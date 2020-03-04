@@ -108,6 +108,8 @@ process.analyze_0l_2tau = cms.PSet(
     useNonNominal = cms.bool(False),
     isDEBUG = cms.bool(False),
     hasLHE = cms.bool(True),
+    hasPS = cms.bool(False),
+    apply_LHE_nom = cms.bool(False),
     useObjectMultiplicity = cms.bool(False),
 
     evtWeight = cms.PSet(

@@ -222,6 +222,24 @@ getLHEscale_option(const std::string & central_or_shift)
 }
 
 int
+getPartonShower_option(const std::string & central_or_shift)
+{
+  int central_or_shift_int = kPartonShower_central;
+  if(boost::starts_with(central_or_shift, "CMS_ttHl_PS_"))
+  {
+    if     (boost::ends_with(central_or_shift, "ISRDown")) central_or_shift_int = kPartonShower_ISRDown;
+    else if(boost::ends_with(central_or_shift, "ISRUp")  ) central_or_shift_int = kPartonShower_ISRUp;
+    else if(boost::ends_with(central_or_shift, "FSRDown")) central_or_shift_int = kPartonShower_FSRDown;
+    else if(boost::ends_with(central_or_shift, "FSRUp")  ) central_or_shift_int = kPartonShower_FSRUp;
+    else if(boost::ends_with(central_or_shift, "Down")   ) central_or_shift_int = kPartonShower_Down;
+    else if(boost::ends_with(central_or_shift, "Up")     ) central_or_shift_int = kPartonShower_Up;
+    else throw cmsException(__func__, __LINE__)
+           << "Invalid option to LHE systematics: " << central_or_shift;
+  }
+  return central_or_shift_int;
+}
+
+int
 getElectronPt_option(const std::string & central_or_shift)
 {
   int central_or_shift_int = kElectronPt_central;

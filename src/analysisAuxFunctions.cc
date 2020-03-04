@@ -757,3 +757,11 @@ convert_to_RecoJetBase(const std::vector<const RecoJet*>& jets_derived)
   }
   return jets_base;
 }
+
+double
+clip(double value,
+     double min_value,
+     double max_value)
+{
+  return std::clamp(value, min_value, max_value);
+}

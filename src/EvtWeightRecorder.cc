@@ -2,6 +2,7 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/L1PreFiringWeightReader.h"
 #include "tthAnalysis/HiggsToTauTau/interface/LHEInfoReader.h"
+#include "tthAnalysis/HiggsToTauTau/interface/PSWeightReader.h"
 #include "tthAnalysis/HiggsToTauTau/interface/EventInfo.h"
 #include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface_Base.h"
 #include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface_0l_2tau_trigger.h"
@@ -57,7 +58,7 @@ EvtWeightRecorder::get_inclusive(const std::string & central_or_shift) const
   return isMC_ ? get_genWeight() * get_bmWeight() * get_auxWeight(central_or_shift) * get_lumiScale(central_or_shift) *
                  get_nom_tH_weight(central_or_shift) * get_puWeight(central_or_shift) *
                  get_l1PreFiringWeight(central_or_shift) * get_lheScaleWeight(central_or_shift) *
-                 get_dy_rwgt(central_or_shift) * get_rescaling()
+                 get_dy_rwgt(central_or_shift) * get_rescaling() * get_psWeight(central_or_shift)
                : 1.
   ;
 }
@@ -147,6 +148,20 @@ EvtWeightRecorder::get_lheScaleWeight(const std::string & central_or_shift) cons
     if(weights_lheScale_.count(lheScale_option))
     {
       return weights_lheScale_.at(lheScale_option);
+    }
+  }
+  return 1.;
+}
+
+double
+EvtWeightRecorder::get_psWeight(const std::string & central_or_shift) const
+{
+  if(isMC_ && ! weights_partonShower_.empty())
+  {
+    const int psWeight_option = getPartonShower_option(central_or_shift);
+    if(weights_partonShower_.count(psWeight_option))
+    {
+      return weights_partonShower_.at(psWeight_option);
     }
   }
   return 1.;
@@ -577,6 +592,22 @@ EvtWeightRecorder::record_lheScaleWeight(const LHEInfoReader * const lheInfoRead
       continue;
     }
     weights_lheScale_[lheScale_option] = lheInfoReader->getWeight_scale(lheScale_option);
+  }
+}
+
+void
+EvtWeightRecorder::record_psWeight(const PSWeightReader * const psWeightReader)
+{
+  assert(isMC_);
+  weights_partonShower_.clear();
+  for(const std::string & central_or_shift: central_or_shifts_)
+  {
+    const int psWeight_option = getPartonShower_option(central_or_shift);
+    if(weights_partonShower_.count(psWeight_option))
+    {
+      continue;
+    }
+    weights_partonShower_[psWeight_option] = psWeightReader->getWeight_ps(psWeight_option);
   }
 }
 
@@ -1267,6 +1298,7 @@ operator<<(std::ostream & os,
           "  PU weight             = " << evtWeightRecorder.get_puWeight(central_or_shift)                << "\n"
           "  L1 prefiring weight   = " << evtWeightRecorder.get_l1PreFiringWeight(central_or_shift)       << "\n"
           "  LHE scale weight      = " << evtWeightRecorder.get_lheScaleWeight(central_or_shift)          << "\n"
+          "  parton shower weight  = " << evtWeightRecorder.get_psWeight(central_or_shift)                << "\n"
           "  DY reweighting weight = " << evtWeightRecorder.get_dy_rwgt(central_or_shift)                 << "\n"
           "  inclusive weight      = " << evtWeightRecorder.get_inclusive(central_or_shift)               << "\n"
           "  trigger eff SF        = " << evtWeightRecorder.get_sf_triggerEff(central_or_shift)           << "\n"

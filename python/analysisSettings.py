@@ -97,6 +97,38 @@ class systematics(object):
 
   topPtReweighting = topPtReweighting_().full
 
+  class PartonShower(object):
+
+    class TT(object):
+
+      class ISR_(object):
+        up   = "CMS_ttHl_PS_TT_ISRUp"
+        down = "CMS_ttHl_PS_TT_ISRDown"
+        full = [ up, down ]
+
+      class FSR_(object):
+        up   = "CMS_ttHl_PS_TT_FSRUp"
+        down = "CMS_ttHl_PS_TT_FSRDown"
+        full = [ up, down ]
+
+      class env_(object):
+        up   = "CMS_ttHl_PS_TTUp"
+        down = "CMS_ttHl_PS_TTDown"
+        full = [ up, down ]
+
+      full = ISR_().full + FSR_().full + env_().full
+
+    ttbar = TT().full
+
+    procs = [ TT ]
+
+    isr_up   = [ proc.ISR_().up   for proc in procs ]
+    isr_down = [ proc.ISR_().down for proc in procs ]
+    fsr_up   = [ proc.FSR_().up   for proc in procs ]
+    fsr_down = [ proc.FSR_().down for proc in procs ]
+
+    full = ttbar
+
   class LHE(object):
 
     class TTH(object):
@@ -373,15 +405,16 @@ class systematics(object):
 
     full = ER + ESBarrel1 + ESBarrel2 + ESEndcap1 + ESEndcap2
 
-  lhe        = LHE().full
-  btag       = Btag().full
-  leptonIDSF = LeptonIDSF().full
-  FRe_shape  = FakeRate_e_shape().full
-  FRm_shape  = FakeRate_m_shape().full
-  FR_t       = FakeRate_t().full
-  electron_E = Electron_energy().full
-  muon_E     = Muon_energy().full
-  FR_all     = FRe_shape + FRm_shape + FR_t
+  lhe         = LHE().full
+  btag        = Btag().full
+  leptonIDSF  = LeptonIDSF().full
+  FRe_shape   = FakeRate_e_shape().full
+  FRm_shape   = FakeRate_m_shape().full
+  FR_t        = FakeRate_t().full
+  electron_E  = Electron_energy().full
+  muon_E      = Muon_energy().full
+  FR_all      = FRe_shape + FRm_shape + FR_t
+  partonShower = PartonShower().full
 
   # Analysis-specific definitions
   an_leptonFR        =    central +  JES +  JER          + UnclusteredEn  + MET_ResponseSyst +  MET_ResolutionSyst
@@ -397,9 +430,13 @@ class systematics(object):
   an_chargeFlip_mu_opts = [ "central", "muon_E" ]
 
   an_common      =    central +  JES +  JER +  tauES +  leptonIDSF +  tauIDSF +  UnclusteredEn +  btag +  FR_t +  lhe +  \
-                      triggerSF +  PU +  DYMCReweighting +  DYMCNormScaleFactors  + L1PreFiring + EWK_jet + EWK_bjet
-  an_common_opts = [ "central", "JES", "JER", "tauES", "leptonIDSF", "tauIDSF", "UnclusteredEn", "btag", "FR_t", "lhe",
-                     "triggerSF", "PU", "DYMCReweighting", "DYMCNormScaleFactors", "L1PreFiring", "EWK_jet", "EWK_bjet" ]
+                      triggerSF +  PU +  DYMCReweighting +  DYMCNormScaleFactors  + L1PreFiring + EWK_jet + EWK_bjet + \
+                      partonShower
+  an_common_opts = [
+    "central", "JES", "JER", "tauES", "leptonIDSF", "tauIDSF", "UnclusteredEn", "btag", "FR_t", "lhe",
+    "triggerSF", "PU", "DYMCReweighting", "DYMCNormScaleFactors", "L1PreFiring", "EWK_jet", "EWK_bjet",
+    "partonShower",
+  ]
   # CV: enable the CMS_ttHl_FRe_shape and CMS_ttHl_FRm_shape only if you plan to run compShapeSyst 1!
   an_extended      = an_common      +    FRe_shape +  FRm_shape
   an_extended_opts = an_common_opts + [ "FRe_shape", "FRm_shape" ]
@@ -415,5 +452,5 @@ class systematics(object):
 
   an_internal_no_mem = central + leptonIDSF + tauIDSF + btag + FR_t + lhe + triggerSF + PU + L1PreFiring + \
                        FRe_shape + FRm_shape + DYMCReweighting + DYMCNormScaleFactors + topPtReweighting + \
-                       EWK_jet + EWK_bjet
+                       EWK_jet + EWK_bjet + partonShower
   an_internal = an_internal_no_mem + MEM + triggerSF_split

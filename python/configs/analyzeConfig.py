@@ -522,6 +522,7 @@ class analyzeConfig(object):
       sample_category = sample_info["sample_category"]
       has_LHE = sample_info["has_LHE"]
       enable_toppt_rwgt = sample_info["apply_toppt_rwgt"] if "apply_toppt_rwgt" in sample_info else False
+      run_ps = sample_info["nof_PSweights"] == 4
       is_HHmc = sample_category.startswith("signal") or sample_category == "HH"
 
       if central_or_shift in systematics.LHE().full           and not has_LHE:                              return False
@@ -541,6 +542,7 @@ class analyzeConfig(object):
       if central_or_shift in systematics.topPtReweighting     and not enable_toppt_rwgt:                    return False
       if central_or_shift in systematics.LHE().hh             and not is_HHmc:                              return False
       if central_or_shift in systematics.EWK_jet              and sample_category not in [ "WZ", "ZZ" ]:    return False
+      if central_or_shift in systematics.PartonShower().ttbar and not (sample_category == "TT" and run_ps): return False
       return True
 
     def createCfg_analyze(self, jobOptions, sample_info, additionalJobOptions = [], isLeptonFR = False, isHTT = False, dropCtrl = False):
@@ -716,11 +718,18 @@ class analyzeConfig(object):
             jobOptions['skipEvery'] = sample_info['skipEvery']
         if 'useObjectMultiplicity' not in jobOptions:
             jobOptions['useObjectMultiplicity'] = self.do_sync
+        if 'hasPS' not in jobOptions:
+          jobOptions['hasPS'] = sample_info["nof_PSweights"] == 4 and any(
+            central_or_shift in systematics.PartonShower().full \
+            for central_or_shift in jobOptions['central_or_shifts_local']
+          )
 
         jobOptions_local = [
             'process',
             'isMC',
             'hasLHE',
+            'hasPS',
+            'apply_LHE_nom',
             'central_or_shift',
             'central_or_shifts_local',
             'evtCategories',

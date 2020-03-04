@@ -725,4 +725,9 @@ convert_to_genParticles(const std::vector<T>& genParticles_derived)
 std::vector<const RecoJetBase*>
 convert_to_RecoJetBase(const std::vector<const RecoJet*>& jets_derived);
 
+double
+clip(double value,
+     double min_value = -10.,
+     double max_value = 10.);
+
 #endif
