@@ -657,9 +657,11 @@ class analyzeConfig(object):
                   nof_events_label += "TopPtRwgtSF"
                 elif central_or_shift == systematics.topPtReweighting_().down:
                   # no SF is applied
-                  pass
+                  nof_events_label = "CountWeighted{}".format(count_suffix)
+                  nof_events_idx = 0
                 elif central_or_shift == systematics.topPtReweighting_().up:
-                  nof_events_label += "TopPtRwgtSFSquared"
+                  nof_events_label = "CountWeighted{}TopPtRwgtSFSquared".format(count_suffix)
+                  nof_events_idx = 0
 
               if nof_events_idx >= 0 and nof_events_label:
                 nof_events[central_or_shift] = sample_info["nof_events"][nof_events_label][nof_events_idx]
