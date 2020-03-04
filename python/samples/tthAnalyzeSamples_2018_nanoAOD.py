@@ -15533,13 +15533,13 @@ samples_2018["/ttHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/Run
   ("type",                            "mc"),
   ("sample_category",                 "ttH"),
   ("process_name_specific",           "ttHJetToNonbb_M125_amcatnlo"),
-  ("nof_files",                       98),
+  ("nof_files",                       196),
   ("nof_db_files",                    261),
   ("nof_events",                      {
   }),
-  ("nof_tree_events",                 9588063),
+  ("nof_tree_events",                 9687113),
   ("nof_db_events",                   9687113),
-  ("fsize_local",                     28567312037), # 28.57GB, avg file size 291.50MB
+  ("fsize_local",                     29611350991), # 29.61GB, avg file size 151.08MB
   ("fsize_db",                        614458243265), # 614.46GB, avg file size 2.35GB
   ("use_it",                          True),
   ("xsection",                        0.2118),
@@ -15552,9 +15552,9 @@ samples_2018["/ttHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/Run
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/ttHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/2018_2019Sep29_ttHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_211011"),
+        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Feb29/ttHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/2018_2020Feb29_ttHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/200301_100737"),
         ("selection", "*"),
-        ("blacklist", [48]),
+        ("blacklist", []),
       ]),
     ]
   ),
@@ -15586,7 +15586,7 @@ samples_2018["/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD
   }),
   ("nof_tree_events",                 7475991),
   ("nof_db_events",                   7525991),
-  ("fsize_local",                     21751615107), # 21.75GB, avg file size 144.05MB
+  ("fsize_local",                     22109564261), # 22.11GB, avg file size 146.42MB
   ("fsize_db",                        469867184231), # 469.87GB, avg file size 2.10GB
   ("use_it",                          False),
   ("xsection",                        0.2118),
@@ -15599,9 +15599,9 @@ samples_2018["/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Nov24/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/2018_2019Nov24_ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/191124_211228"),
+        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Feb29/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/2018_2020Feb29_ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/200229_131542"),
         ("selection", "*"),
-        ("blacklist", [65]),
+        ("blacklist", [41]),
       ]),
     ]
   ),
@@ -15627,13 +15627,13 @@ samples_2018["/TTH_4f_ctcvcp_TuneCP5_13TeV_madgraph_pythia8/RunIIAutumn18MiniAOD
   ("type",                            "mc"),
   ("sample_category",                 "ttH_ctcvcp"),
   ("process_name_specific",           "TTH_4f_ctcvcp"),
-  ("nof_files",                       291),
+  ("nof_files",                       582),
   ("nof_db_files",                    720),
   ("nof_events",                      {
   }),
-  ("nof_tree_events",                 28693000),
+  ("nof_tree_events",                 29043000),
   ("nof_db_events",                   29093000),
-  ("fsize_local",                     84279381897), # 84.28GB, avg file size 289.62MB
+  ("fsize_local",                     87566802187), # 87.57GB, avg file size 150.46MB
   ("fsize_db",                        1815791395391), # 1.82TB, avg file size 2.52GB
   ("use_it",                          False),
   ("xsection",                        0.5071),
@@ -15646,9 +15646,9 @@ samples_2018["/TTH_4f_ctcvcp_TuneCP5_13TeV_madgraph_pythia8/RunIIAutumn18MiniAOD
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/rdewanje/2018_2019Oct23/TTH_4f_ctcvcp_TuneCP5_13TeV_madgraph_pythia8/2018_2019Oct23_TTH_4f_ctcvcp_TuneCP5_13TeV_madgraph_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/191023_112012"),
+        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Feb29/TTH_4f_ctcvcp_TuneCP5_13TeV_madgraph_pythia8/2018_2020Feb29_TTH_4f_ctcvcp_TuneCP5_13TeV_madgraph_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/200229_131718"),
         ("selection", "*"),
-        ("blacklist", [133, 140, 145, 221]),
+        ("blacklist", [42]),
       ]),
     ]
   ),

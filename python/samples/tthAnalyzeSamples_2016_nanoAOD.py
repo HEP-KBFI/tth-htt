@@ -25699,13 +25699,13 @@ samples_2016["/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/Ru
   ("type",                            "mc"),
   ("sample_category",                 "ttH"),
   ("process_name_specific",           "ttHJetToNonbb_M125_amcatnlo_ext1"),
-  ("nof_files",                       101),
+  ("nof_files",                       202),
   ("nof_db_files",                    90),
   ("nof_events",                      {
   }),
-  ("nof_tree_events",                 9260260),
+  ("nof_tree_events",                 10058345),
   ("nof_db_events",                   10058345),
-  ("fsize_local",                     29485748894), # 29.49GB, avg file size 291.94MB
+  ("fsize_local",                     32779889930), # 32.78GB, avg file size 162.28MB
   ("fsize_db",                        528505950470), # 528.51GB, avg file size 5.87GB
   ("use_it",                          True),
   ("xsection",                        0.2118),
@@ -25718,9 +25718,9 @@ samples_2016["/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/Ru
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2019Nov25/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/2016v3_2019Nov25_ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/191125_152140"),
+        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2020Feb29/ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix/2016v3_2020Feb29_ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/200229_130453"),
         ("selection", "*"),
-        ("blacklist", [8, 9, 12, 46, 53, 67, 84, 90]),
+        ("blacklist", []),
       ]),
     ]
   ),
@@ -25742,13 +25742,13 @@ samples_2016["/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/Run
   ("type",                            "mc"),
   ("sample_category",                 "ttH"),
   ("process_name_specific",           "ttHToNonbb_M125_powheg"),
-  ("nof_files",                       40),
+  ("nof_files",                       80),
   ("nof_db_files",                    35),
   ("nof_events",                      {
   }),
   ("nof_tree_events",                 3981250),
   ("nof_db_events",                   3981250),
-  ("fsize_local",                     12200009402), # 12.20GB, avg file size 305.00MB
+  ("fsize_local",                     12500939796), # 12.50GB, avg file size 156.26MB
   ("fsize_db",                        208884155497), # 208.88GB, avg file size 5.97GB
   ("use_it",                          False),
   ("xsection",                        0.2118),
@@ -25761,7 +25761,7 @@ samples_2016["/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/Run
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2019Sep30/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/2016v3_2019Sep30_ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190930_180709"),
+        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2020Feb29/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/2016v3_2020Feb29_ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/200229_130559"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -25785,13 +25785,13 @@ samples_2016["/ttH_4f_ctcvcp_TuneCP5_13TeV_madgraph_pythia8/RunIISummer16MiniAOD
   ("type",                            "mc"),
   ("sample_category",                 "ttH_ctcvcp"),
   ("process_name_specific",           "TTH_4f_ctcvcp"),
-  ("nof_files",                       96),
+  ("nof_files",                       190),
   ("nof_db_files",                    149),
   ("nof_events",                      {
   }),
-  ("nof_tree_events",                 9566400),
+  ("nof_tree_events",                 8832900),
   ("nof_db_events",                   9566400),
-  ("fsize_local",                     28610309294), # 28.61GB, avg file size 298.02MB
+  ("fsize_local",                     27078296179), # 27.08GB, avg file size 142.52MB
   ("fsize_db",                        520020669375), # 520.02GB, avg file size 3.49GB
   ("use_it",                          False),
   ("xsection",                        0.5071),
@@ -25804,9 +25804,9 @@ samples_2016["/ttH_4f_ctcvcp_TuneCP5_13TeV_madgraph_pythia8/RunIISummer16MiniAOD
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Oct23/ttH_4f_ctcvcp_TuneCP5_13TeV_madgraph_pythia8/2016v3_2019Oct23_ttH_4f_ctcvcp_TuneCP5_13TeV_madgraph_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/191023_071511"),
+        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2020Feb29/ttH_4f_ctcvcp_TuneCP5_13TeV_madgraph_pythia8/2016v3_2020Feb29_ttH_4f_ctcvcp_TuneCP5_13TeV_madgraph_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/200301_101127"),
         ("selection", "*"),
-        ("blacklist", []),
+        ("blacklist", [1, 2, 4, 82, 143, 145, 146, 154, 158, 159, 161, 173, 189]),
       ]),
     ]
   ),
