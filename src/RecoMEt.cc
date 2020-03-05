@@ -236,6 +236,6 @@ std::ostream &
 operator<<(std::ostream & stream,
            const RecoMEt::MEt & met)
 {
-  stream << " pT = " << met.pt_ << " phi = " << met.phi_;
+  stream << "pT = " << met.pt_ << " phi = " << met.phi_;
   return stream;
 }
