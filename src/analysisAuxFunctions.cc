@@ -731,7 +731,6 @@ get_htxs_binning(bool isMC_ttH)
   std::vector<std::pair<std::string, int>> binning;
   if(isMC_ttH)
   {
-#if 0
     binning = {
       { "fwd",        HTXSCategory::kForward    },
       { "pt0to60",    HTXSCategory::kPt0to60    },
@@ -742,7 +741,6 @@ get_htxs_binning(bool isMC_ttH)
       { "pt300to450", HTXSCategory::kPt300to450 },
       { "ptGt450",    HTXSCategory::kPtGt450    },
     };
-#endif
   }
   return binning;
 }
