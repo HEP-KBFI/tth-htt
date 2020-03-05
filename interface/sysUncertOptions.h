@@ -53,6 +53,7 @@ enum
   kJetMET_jerEndcap2HighPtUp,      kJetMET_jerEndcap2HighPtDown,
   kJetMET_jerForwardLowPtUp,       kJetMET_jerForwardLowPtDown,
   kJetMET_jerForwardHighPtUp,      kJetMET_jerForwardHighPtDown,
+                                   kJetMET_jesHEMDown,
 };
 
 enum class METSyst

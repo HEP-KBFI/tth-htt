@@ -765,49 +765,72 @@ clip(double value,
 }
 
 int
-get_ptMassOption_jet(double jet_pt,
-                     double jet_eta,
-                     double __attribute__((unused)) jet_phi,
-                     int central_or_shift)
+recompute_jet(double & jet_pt,
+              double jet_eta,
+              double jet_phi,
+              double & jet_mass,
+              int jet_id,
+              const std::map<int, Float_t *> & jet_pt_systematics,
+              const std::map<int, Float_t *> & jet_mass_systematics,
+              int central_or_shift,
+              int jet_idx)
 {
   assert(central_or_shift >= kJetMET_jerBarrelUp);
   const double jet_absEta = std::fabs(jet_eta);
   int central_or_shift_mod = kJetMET_central;
-  if(jet_absEta < 1.93)
+
+  if(central_or_shift == kJetMET_jesHEMDown)
   {
-    if     (central_or_shift == kJetMET_jerBarrelUp)   central_or_shift_mod = kJetMET_jerUp;
-    else if(central_or_shift == kJetMET_jerBarrelDown) central_or_shift_mod = kJetMET_jerDown;
-  }
-  else if(jet_absEta < 2.5)
-  {
-    if     (central_or_shift == kJetMET_jerEndcap1Up)   central_or_shift_mod = kJetMET_jerUp;
-    else if(central_or_shift == kJetMET_jerEndcap1Down) central_or_shift_mod = kJetMET_jerDown;
-  }
-  else if(jet_absEta < 3.0)
-  {
-    if(jet_pt < 50.)
+    // see https://hypernews.cern.ch/HyperNews/CMS/get/JetMET/2000.html
+    if(-1.57 < jet_phi && jet_phi < -0.87 && -3.0 < jet_eta && jet_eta < -1.3 && jet_id >= 2)
     {
-      if     (central_or_shift == kJetMET_jerEndcap2LowPtUp)   central_or_shift_mod = kJetMET_jerUp;
-      else if(central_or_shift == kJetMET_jerEndcap2LowPtDown) central_or_shift_mod = kJetMET_jerDown;
-    }
-    else
-    {
-      if     (central_or_shift == kJetMET_jerEndcap2HighPtUp)   central_or_shift_mod = kJetMET_jerUp;
-      else if(central_or_shift == kJetMET_jerEndcap2HighPtDown) central_or_shift_mod = kJetMET_jerDown;
+      const double corrFactor = 1. - (-2.5 < jet_eta ? 0.20 : 0.35);
+      jet_pt   = corrFactor * jet_pt_systematics.at  (central_or_shift_mod)[jet_idx];
+      jet_mass = corrFactor * jet_mass_systematics.at(central_or_shift_mod)[jet_idx];
+      central_or_shift_mod = central_or_shift;
     }
   }
-  else if(jet_absEta < 5.0)
+  else
   {
-    if(jet_pt < 50.)
+    // see https://twiki.cern.ch/twiki/bin/viewauth/CMS/JetResolution?rev=93#Run2_JER_uncertainty_correlation
+    if(jet_absEta < 1.93)
     {
-      if     (central_or_shift == kJetMET_jerForwardLowPtUp)   central_or_shift_mod = kJetMET_jerUp;
-      else if(central_or_shift == kJetMET_jerForwardLowPtDown) central_or_shift_mod = kJetMET_jerDown;
+      if     (central_or_shift == kJetMET_jerBarrelUp)   central_or_shift_mod = kJetMET_jerUp;
+      else if(central_or_shift == kJetMET_jerBarrelDown) central_or_shift_mod = kJetMET_jerDown;
     }
-    else
+    else if(jet_absEta < 2.5)
     {
-      if     (central_or_shift == kJetMET_jerForwardHighPtUp)   central_or_shift_mod = kJetMET_jerUp;
-      else if(central_or_shift == kJetMET_jerForwardHighPtDown) central_or_shift_mod = kJetMET_jerDown;
+      if     (central_or_shift == kJetMET_jerEndcap1Up)   central_or_shift_mod = kJetMET_jerUp;
+      else if(central_or_shift == kJetMET_jerEndcap1Down) central_or_shift_mod = kJetMET_jerDown;
     }
+    else if(jet_absEta < 3.0)
+    {
+      if(jet_pt < 50.)
+      {
+        if     (central_or_shift == kJetMET_jerEndcap2LowPtUp)   central_or_shift_mod = kJetMET_jerUp;
+        else if(central_or_shift == kJetMET_jerEndcap2LowPtDown) central_or_shift_mod = kJetMET_jerDown;
+      }
+      else
+      {
+        if     (central_or_shift == kJetMET_jerEndcap2HighPtUp)   central_or_shift_mod = kJetMET_jerUp;
+        else if(central_or_shift == kJetMET_jerEndcap2HighPtDown) central_or_shift_mod = kJetMET_jerDown;
+      }
+    }
+    else if(jet_absEta < 5.0)
+    {
+      if(jet_pt < 50.)
+      {
+        if     (central_or_shift == kJetMET_jerForwardLowPtUp)   central_or_shift_mod = kJetMET_jerUp;
+        else if(central_or_shift == kJetMET_jerForwardLowPtDown) central_or_shift_mod = kJetMET_jerDown;
+      }
+      else
+      {
+        if     (central_or_shift == kJetMET_jerForwardHighPtUp)   central_or_shift_mod = kJetMET_jerUp;
+        else if(central_or_shift == kJetMET_jerForwardHighPtDown) central_or_shift_mod = kJetMET_jerDown;
+      }
+    }
+    jet_pt   = jet_pt_systematics.at  (central_or_shift_mod)[jet_idx];
+    jet_mass = jet_mass_systematics.at(central_or_shift_mod)[jet_idx];
   }
   return central_or_shift_mod;
 }
@@ -825,6 +848,7 @@ recompute_met(const RecoMEt & met_uncorr,
     const RecoMEt::MEt met_default = met_uncorr.get_systematics(met_uncorr_default);
     double met_px = met_default.px();
     double met_py = met_default.py();
+    bool met_modified = false;
     for(const RecoJet & jet: jets)
     {
       if(jet.get_default_systematics() != met_uncorr_default)
@@ -834,6 +858,7 @@ recompute_met(const RecoMEt & met_uncorr,
         const Particle::LorentzVector jet_p4_central = jet.get_systematics_p4(met_uncorr_default);
         met_px -= (jet_p4_shifted.Px() - jet_p4_central.Px());
         met_py -= (jet_p4_shifted.Py() - jet_p4_central.Py());
+        met_modified = true;
       }
     }
     const double met_pt = std::sqrt(met_px * met_px + met_py * met_py);
@@ -846,7 +871,7 @@ recompute_met(const RecoMEt & met_uncorr,
       std::cout
         << "Changed MET(" << met_default << ") from systematics "             << met_uncorr_default
         << " to new MET(" << met_new     << ") corresponding to systematics " << met_option
-        << '\n'
+        << " (changes" << (met_modified ? "" : " not") << " expected)\n"
       ;
     }
   }

@@ -199,6 +199,10 @@ class analyzeConfig(object):
             for central_or_shift in dymc_sys:
               self.central_or_shifts.remove(central_or_shift)
         # ------------------------------------------------------------------------
+        if self.era != "2018":
+          if systematics.JES_HEM in self.central_or_shifts:
+            logging.warning('Removing systematics {} from {} era'.format(systematics.JES_HEM, self.era))
+            self.central_or_shifts.remove(systematics.JES_HEM)
 
         self.jet_cleaning_by_index = jet_cleaning_by_index
         self.gen_matching_by_index = gen_matching_by_index

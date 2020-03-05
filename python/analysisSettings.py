@@ -57,6 +57,8 @@ class systematics(object):
   triggerSF_0l2tau = [ "CMS_ttHl_trigger_0l2tauUp", "CMS_ttHl_trigger_0l2tauDown" ]
   triggerSF_split = triggerSF_2lss + triggerSF_3l + triggerSF_1l1tau + triggerSF_0l2tau
 
+  JES_HEM = "CMS_ttHl_JESHEMDown" # addresses HEM15/16, see https://hypernews.cern.ch/HyperNews/CMS/get/JetMET/2000.html
+
   JEC_regrouped = [
     "CMS_ttHl_JESAbsoluteUp",           "CMS_ttHl_JESAbsoluteDown",
     "CMS_ttHl_JESAbsolute_EraUp",       "CMS_ttHl_JESAbsolute_EraDown",
@@ -69,6 +71,7 @@ class systematics(object):
     "CMS_ttHl_JESHF_EraUp",             "CMS_ttHl_JESHF_EraDown",
     "CMS_ttHl_JESRelativeBalUp",        "CMS_ttHl_JESRelativeBalDown",
     "CMS_ttHl_JESRelativeSample_EraUp", "CMS_ttHl_JESRelativeSample_EraDown",
+    JES_HEM,
   ]
 
   JER_split = [

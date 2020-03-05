@@ -732,10 +732,15 @@ clip(double value,
      double max_value = 10.);
 
 int
-get_ptMassOption_jet(double jet_pt,
-                     double jet_eta,
-                     double jet_phi,
-                     int central_or_shift);
+recompute_jet(double & jet_pt,
+              double jet_eta,
+              double jet_phi,
+              double & jet_mass,
+              int jet_id,
+              const std::map<int, Float_t *> & jet_pt_systematics,
+              const std::map<int, Float_t *> & jet_mass_systematics,
+              int central_or_shift,
+              int jet_idx);
 
 RecoMEt
 recompute_met(const RecoMEt & met_uncorr,

@@ -7,10 +7,13 @@
 #include <boost/algorithm/string/predicate.hpp> // boost::algorithm::starts_with(), boost::algorithm::ends_with()
 
 bool
-isValidJESsource(int __attribute__((unused)) era,
-                 int __attribute__((unused)) central_or_shift)
+isValidJESsource(int era,
+                 int central_or_shift)
 {
-  // keeping for future compatibility
+  if(central_or_shift == kJetMET_jesHEMDown && era != kEra_2018)
+  {
+    return false;
+  }
   return true;
 }
 
@@ -82,6 +85,7 @@ getJet_option(const std::string & central_or_shift,
   else if(central_or_shift == "CMS_ttHl_JERForwardLowPtDown"      ) central_or_shift_int = kJetMET_jerForwardLowPtDown;
   else if(central_or_shift == "CMS_ttHl_JERForwardHighPtUp"       ) central_or_shift_int = kJetMET_jerForwardHighPtUp;
   else if(central_or_shift == "CMS_ttHl_JERForwardHighPtDown"     ) central_or_shift_int = kJetMET_jerForwardHighPtDown;
+  else if(central_or_shift == "CMS_ttHl_JESHEMDown"               ) central_or_shift_int = kJetMET_jesHEMDown;
   return central_or_shift_int;
 }
 

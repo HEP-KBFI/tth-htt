@@ -348,23 +348,27 @@ RecoJetReader::read() const
         btagCSV = -2.;
       }
 
+      double jet_pt = gInstance->jet_pt_systematics_.at(ptMassOption_branch_)[idxJet];
       const double jet_eta = gInstance->jet_eta_[idxJet];
       const double jet_phi = gInstance->jet_phi_[idxJet];
+      double jet_mass = gInstance->jet_mass_systematics_.at(ptMassOption_branch_)[idxJet];
+      const int jet_id = gInstance->jet_jetId_[idxJet];
       const int ptMassOption = ptMassOption_branch_ != ptMassOption_ ?
-        get_ptMassOption_jet(
-          gInstance->jet_pt_systematics_.at(kJetMET_central)[idxJet],
-          jet_eta,
-          jet_phi,
-          ptMassOption_
-        ) : ptMassOption_branch_
+        recompute_jet(
+          jet_pt, jet_eta, jet_phi, jet_mass, jet_id,
+          gInstance->jet_pt_systematics_,
+          gInstance->jet_mass_systematics_,
+          ptMassOption_, idxJet
+        ) :
+        ptMassOption_branch_
       ;
 
       jets.push_back({
         {
-          gInstance->jet_pt_systematics_.at(ptMassOption)[idxJet],
+          jet_pt,
           jet_eta,
           jet_phi,
-          gInstance->jet_mass_systematics_.at(ptMassOption)[idxJet],
+          jet_mass,
         },
         gInstance->jet_charge_[idxJet],
         btagCSV,
@@ -373,7 +377,7 @@ RecoJetReader::read() const
         gInstance->jet_pullEta_[idxJet],
         gInstance->jet_pullPhi_[idxJet],
         gInstance->jet_pullMag_[idxJet],
-        gInstance->jet_jetId_[idxJet],
+        jet_id,
         gInstance->jet_puId_[idxJet],
         gInstance->jet_genMatchIdx_[idxJet],
         gInstance->jet_jetIdx_[idxJet],
