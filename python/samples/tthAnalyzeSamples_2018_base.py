@@ -14113,17 +14113,17 @@ samples_2018["/ttHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/Run
   ("type",                            "mc"),
   ("sample_category",                 "ttH"),
   ("process_name_specific",           "ttHJetToNonbb_M125_amcatnlo"),
-  ("nof_files",                       20),
+  ("nof_files",                       40),
   ("nof_db_files",                    261),
   ("nof_events",                      {
-    'Count'                                                      : [      9588063, ],
-    'CountWeighted'                                              : [      3339858,      3339691,      3340709, ],
-    'CountWeightedLHEWeightScale'                                : [      3417531,      3478390,      3536219,      3390090,      3339815,      3299842,      3174846,      3072655,      2986842, ],
-    'CountWeightedLHEEnvelope'                                   : [      3952049,      2627474, ],
+    'Count'                                                      : [      9687113, ],
+    'CountWeighted'                                              : [      3373821,      3373261,      3374432, ],
+    'CountWeightedLHEWeightScale'                                : [      3451657,      3513206,      3571710,      3424296,      3373745,      3333247,      3207101,      3103903,      3017232, ],
+    'CountWeightedLHEEnvelope'                                   : [      3991612,      2654211, ],
   }),
-  ("nof_tree_events",                 9588063),
+  ("nof_tree_events",                 9687113),
   ("nof_db_events",                   9687113),
-  ("fsize_local",                     49176581066), # 49.18GB, avg file size 2.46GB
+  ("fsize_local",                     50276675184), # 50.28GB, avg file size 1.26GB
   ("fsize_db",                        614458243265), # 614.46GB, avg file size 2.35GB
   ("use_it",                          True),
   ("xsection",                        0.2118),
@@ -14136,7 +14136,7 @@ samples_2018["/ttHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/Run
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Jan29_woPresel_nom_all/ntuples/ttHJetToNonbb_M125_amcatnlo"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Mar04_woPresel_nom_all/ntuples/ttHJetToNonbb_M125_amcatnlo"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -14168,13 +14168,13 @@ samples_2018["/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD
   ("nof_db_files",                    224),
   ("nof_events",                      {
     'Count'                                                      : [      7475991, ],
-    'CountWeighted'                                              : [      7319757,      7318942,      7318391, ],
-    'CountWeightedLHEWeightScale'                                : [     10648761,     10332459,     10089928,      7503326,      7319757,      7182678,      6144227,      5979880,      5854418, ],
-    'CountWeightedLHEEnvelope'                                   : [     10780920,      5773207, ],
+    'CountWeighted'                                              : [      7320006,      7319133,      7318693, ],
+    'CountWeightedLHEWeightScale'                                : [     10649150,     10332839,     10090310,      7503574,      7320006,      7182938,      6144441,      5980090,      5854635, ],
+    'CountWeightedLHEEnvelope'                                   : [     10781293,      5773426, ],
   }),
   ("nof_tree_events",                 7475991),
   ("nof_db_events",                   7525991),
-  ("fsize_local",                     37118095423), # 37.12GB, avg file size 1.24GB
+  ("fsize_local",                     37523742623), # 37.52GB, avg file size 1.25GB
   ("fsize_db",                        469867184231), # 469.87GB, avg file size 2.10GB
   ("use_it",                          False),
   ("xsection",                        0.2118),
@@ -14187,7 +14187,7 @@ samples_2018["/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Jan29_woPresel_nom_all/ntuples/ttHToNonbb_M125_powheg"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Mar04_woPresel_nom_all/ntuples/ttHToNonbb_M125_powheg"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -14215,17 +14215,17 @@ samples_2018["/TTH_4f_ctcvcp_TuneCP5_13TeV_madgraph_pythia8/RunIIAutumn18MiniAOD
   ("type",                            "mc"),
   ("sample_category",                 "ttH_ctcvcp"),
   ("process_name_specific",           "TTH_4f_ctcvcp"),
-  ("nof_files",                       58),
+  ("nof_files",                       117),
   ("nof_db_files",                    720),
   ("nof_events",                      {
-    'Count'                                                      : [     28693000, ],
-    'CountWeighted'                                              : [     28693596,     28694550,     28682447, ],
-    'CountWeightedLHEWeightScale'                                : [     37783936,     35120175,     32776219,     30869780,     28693557,     26777640,     25695992,     23883275,     22288947, ],
-    'CountWeightedLHEEnvelope'                                   : [     37805217,     22280566, ],
+    'Count'                                                      : [     29043000, ],
+    'CountWeighted'                                              : [     29040617,     29044670,     29043350, ],
+    'CountWeightedLHEWeightScale'                                : [     38244644,     35548322,     33175793,     31246191,     29040546,     27104039,     26009282,     24174621,     22560696, ],
+    'CountWeightedLHEEnvelope'                                   : [     38266154,     22552189, ],
   }),
-  ("nof_tree_events",                 28693000),
+  ("nof_tree_events",                 29043000),
   ("nof_db_events",                   29093000),
-  ("fsize_local",                     142984975145), # 142.98GB, avg file size 2.47GB
+  ("fsize_local",                     146573714548), # 146.57GB, avg file size 1.25GB
   ("fsize_db",                        1815791395391), # 1.82TB, avg file size 2.52GB
   ("use_it",                          False),
   ("xsection",                        0.5071),
@@ -14238,7 +14238,7 @@ samples_2018["/TTH_4f_ctcvcp_TuneCP5_13TeV_madgraph_pythia8/RunIIAutumn18MiniAOD
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Jan29_woPresel_nom_all/ntuples/TTH_4f_ctcvcp"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Mar04_woPresel_nom_all/ntuples/TTH_4f_ctcvcp"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
