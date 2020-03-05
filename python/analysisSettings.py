@@ -71,6 +71,15 @@ class systematics(object):
     "CMS_ttHl_JESRelativeSample_EraUp", "CMS_ttHl_JESRelativeSample_EraDown",
   ]
 
+  JER_split = [
+    "CMS_ttHl_JERBarrelUp",        "CMS_ttHl_JERBarrelDown",
+    "CMS_ttHl_JEREndcap1Up",       "CMS_ttHl_JEREndcap1Down",
+    "CMS_ttHl_JEREndcap2LowPtUp",  "CMS_ttHl_JEREndcap2LowPtDown",
+    "CMS_ttHl_JEREndcap2HighPtUp", "CMS_ttHl_JEREndcap2HighPtDown",
+    "CMS_ttHl_JERForwardLowPtUp",  "CMS_ttHl_JERForwardLowPtDown",
+    "CMS_ttHl_JERForwardHighPtUp", "CMS_ttHl_JERForwardHighPtDown",
+  ]
+
   MEM_3l        = [ "CMS_ttHl_MEM_3l_LRUp",        "CMS_ttHl_MEM_3l_LRDown"        ]
   MEM_2lss_1tau = [ "CMS_ttHl_MEM_2lss_1tau_LRUp", "CMS_ttHl_MEM_2lss_1tau_LRDown" ]
   MEM_3l_1tau   = [ "CMS_ttHl_MEM_3l_1tau_LRUp",   "CMS_ttHl_MEM_3l_1tau_LRDown"   ]

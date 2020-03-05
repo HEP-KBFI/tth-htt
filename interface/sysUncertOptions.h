@@ -46,6 +46,13 @@ enum
   // additional sources
   kJetMET_jerUp,                   kJetMET_jerDown, // total JER
   kJetMET_UnclusteredEnUp,         kJetMET_UnclusteredEnDown, // unclustered energy (only for MET)
+  // JER split
+  kJetMET_jerBarrelUp,             kJetMET_jerBarrelDown,
+  kJetMET_jerEndcap1Up,            kJetMET_jerEndcap1Down,
+  kJetMET_jerEndcap2LowPtUp,       kJetMET_jerEndcap2LowPtDown,
+  kJetMET_jerEndcap2HighPtUp,      kJetMET_jerEndcap2HighPtDown,
+  kJetMET_jerForwardLowPtUp,       kJetMET_jerForwardLowPtDown,
+  kJetMET_jerForwardHighPtUp,      kJetMET_jerForwardHighPtDown,
 };
 
 enum class METSyst

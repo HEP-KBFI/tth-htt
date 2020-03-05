@@ -10,6 +10,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetBase.h" // RecoJetBase
 #include "tthAnalysis/HiggsToTauTau/interface/TrigObj.h" // TrigObj
 #include "tthAnalysis/HiggsToTauTau/interface/EventInfo.h" // EventInfo
+#include "tthAnalysis/HiggsToTauTau/interface/RecoMEt.h" // RecoMEt
 
 #include <DataFormats/Math/interface/deltaR.h> // deltaR()
 #include <DataFormats/Math/interface/LorentzVector.h> // math::PtEtaPhiMLorentzVector
@@ -729,5 +730,17 @@ double
 clip(double value,
      double min_value = -10.,
      double max_value = 10.);
+
+int
+get_ptMassOption_jet(double jet_pt,
+                     double jet_eta,
+                     double jet_phi,
+                     int central_or_shift);
+
+RecoMEt
+recompute_met(const RecoMEt & met_uncorr,
+              const std::vector<RecoJet> & jets,
+              int met_option,
+              bool isDEBUG = false);
 
 #endif

@@ -763,3 +763,96 @@ clip(double value,
 {
   return std::clamp(value, min_value, max_value);
 }
+
+int
+get_ptMassOption_jet(double jet_pt,
+                     double jet_eta,
+                     double __attribute__((unused)) jet_phi,
+                     int central_or_shift)
+{
+  assert(central_or_shift >= kJetMET_jerBarrelUp);
+  const double jet_absEta = std::fabs(jet_eta);
+  int central_or_shift_mod = kJetMET_central;
+  if(jet_absEta < 1.93)
+  {
+    if     (central_or_shift == kJetMET_jerBarrelUp)   central_or_shift_mod = kJetMET_jerUp;
+    else if(central_or_shift == kJetMET_jerBarrelDown) central_or_shift_mod = kJetMET_jerDown;
+  }
+  else if(jet_absEta < 2.5)
+  {
+    if     (central_or_shift == kJetMET_jerEndcap1Up)   central_or_shift_mod = kJetMET_jerUp;
+    else if(central_or_shift == kJetMET_jerEndcap1Down) central_or_shift_mod = kJetMET_jerDown;
+  }
+  else if(jet_absEta < 3.0)
+  {
+    if(jet_pt < 50.)
+    {
+      if     (central_or_shift == kJetMET_jerEndcap2LowPtUp)   central_or_shift_mod = kJetMET_jerUp;
+      else if(central_or_shift == kJetMET_jerEndcap2LowPtDown) central_or_shift_mod = kJetMET_jerDown;
+    }
+    else
+    {
+      if     (central_or_shift == kJetMET_jerEndcap2HighPtUp)   central_or_shift_mod = kJetMET_jerUp;
+      else if(central_or_shift == kJetMET_jerEndcap2HighPtDown) central_or_shift_mod = kJetMET_jerDown;
+    }
+  }
+  else if(jet_absEta < 5.0)
+  {
+    if(jet_pt < 50.)
+    {
+      if     (central_or_shift == kJetMET_jerForwardLowPtUp)   central_or_shift_mod = kJetMET_jerUp;
+      else if(central_or_shift == kJetMET_jerForwardLowPtDown) central_or_shift_mod = kJetMET_jerDown;
+    }
+    else
+    {
+      if     (central_or_shift == kJetMET_jerForwardHighPtUp)   central_or_shift_mod = kJetMET_jerUp;
+      else if(central_or_shift == kJetMET_jerForwardHighPtDown) central_or_shift_mod = kJetMET_jerDown;
+    }
+  }
+  return central_or_shift_mod;
+}
+
+RecoMEt
+recompute_met(const RecoMEt & met_uncorr,
+              const std::vector<RecoJet> & jets,
+              int met_option,
+              bool isDEBUG)
+{
+  RecoMEt met = met_uncorr;
+  const int met_uncorr_default = met_uncorr.get_default_systematics();
+  if(met_uncorr_default >= 0 && met_option != met_uncorr_default)
+  {
+    const RecoMEt::MEt met_default = met_uncorr.get_systematics(met_uncorr_default);
+    double met_px = met_default.px();
+    double met_py = met_default.py();
+    for(const RecoJet & jet: jets)
+    {
+      if(jet.get_default_systematics() != met_uncorr_default)
+      {
+        // update met_px, met_py
+        const Particle::LorentzVector jet_p4_shifted = jet.p4();
+        const Particle::LorentzVector jet_p4_central = jet.get_systematics_p4(met_uncorr_default);
+        met_px -= (jet_p4_shifted.Px() - jet_p4_central.Px());
+        met_py -= (jet_p4_shifted.Py() - jet_p4_central.Py());
+      }
+    }
+    const double met_pt = std::sqrt(met_px * met_px + met_py * met_py);
+    const double met_phi = std::atan2(met_py, met_px);
+    const RecoMEt::MEt met_new(met_pt, met_phi);
+    met.set_systematics(met_new, met_option);
+    met.set_default(met_option);
+    if(isDEBUG)
+    {
+      std::cout
+        << "Changed MET(" << met_default << ") from systematics "             << met_uncorr_default
+        << " to new MET(" << met_new     << ") corresponding to systematics " << met_option
+        << '\n'
+      ;
+    }
+  }
+  else if(isDEBUG)
+  {
+    std::cout << "Keeping MET at " << met_option << '\n';
+  }
+  return met;
+}

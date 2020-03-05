@@ -1,17 +1,10 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMEt.h" // RecoMEt
 
+#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
+
 RecoMEt::RecoMEt()
-  : default_(0., 0.)
-  , covXX_(0.)
-  , covXY_(0.)
-  , covYY_(0.)
-  , p4_{default_.pt_, 0., default_.phi_, 0.}
-  , cov_(2,2)
-  , genPt_(0.)
-  , genPhi_(0.)
-{
-  update_cov();
-}
+  : RecoMEt(0., 0., 0., 0., 0.)
+{}
 
 RecoMEt::RecoMEt(Float_t pt,
                  Float_t phi,
@@ -19,6 +12,7 @@ RecoMEt::RecoMEt(Float_t pt,
                  Float_t covXY,
                  Float_t covYY)
   : default_(pt, phi)
+  , default_systematics_(-1)
   , covXX_(covXX)
   , covXY_(covXY)
   , covYY_(covYY)
@@ -34,6 +28,7 @@ RecoMEt::RecoMEt(Float_t pt,
 RecoMEt::RecoMEt(const math::PtEtaPhiMLorentzVector & p4,
                  const TMatrixD& cov)
   : default_(p4.pt(), p4.phi())
+  , default_systematics_(-1)
   , covXX_(static_cast<Float_t>(cov(0,0)))
   , covXY_(static_cast<Float_t>(cov(0,1)))
   , covYY_(static_cast<Float_t>(cov(1,1)))
@@ -48,6 +43,7 @@ RecoMEt &
 RecoMEt::operator=(const RecoMEt & other)
 {
   default_ = other.default_;
+  default_systematics_ = other.default_systematics_;
   for(const auto & kv: other.systematics_)
   {
     systematics_[kv.first] = kv.second;
@@ -153,8 +149,51 @@ RecoMEt::genPhi() const
   return genPhi_;
 }
 
-std::ostream& operator<<(std::ostream& stream,
-                         const RecoMEt& met)
+void
+RecoMEt::set_default(int central_or_shift)
+{
+  default_systematics_ = central_or_shift;
+  default_ = systematics_.at(default_systematics_);
+  update();
+}
+
+bool
+RecoMEt::has_systematics(int central_or_shift) const
+{
+  return systematics_.count(central_or_shift);
+}
+
+void
+RecoMEt::set_systematics(const RecoMEt::MEt & met,
+                         int central_or_shift,
+                         bool replace)
+{
+  if(! replace && systematics_.count(central_or_shift))
+  {
+    throw cmsException(this, __func__, __LINE__) << "Unable to set MEt for option " << central_or_shift;
+  }
+  systematics_[central_or_shift] = met;
+}
+
+RecoMEt::MEt
+RecoMEt::get_systematics(int central_or_shift) const
+{
+  if(! systematics_.count(central_or_shift))
+  {
+    throw cmsException(this, __func__, __LINE__) << "Unable to retrive MEt for option " << central_or_shift;
+  }
+  return systematics_.at(central_or_shift);
+}
+
+int
+RecoMEt::get_default_systematics() const
+{
+  return default_systematics_;
+}
+
+std::ostream &
+operator<<(std::ostream & stream,
+           const RecoMEt & met)
 {
   stream << " pT = " << met.pt() << ","
             " phi = " << met.phi() << "\n"
@@ -179,4 +218,24 @@ RecoMEt::MEt::operator=(const RecoMEt::MEt & other)
   pt_ = other.pt_;
   phi_ = other.phi_;
   return *this;
+}
+
+double
+RecoMEt::MEt::px() const
+{
+  return pt_ * std::cos(phi_);
+}
+
+double
+RecoMEt::MEt::py() const
+{
+  return pt_ * std::sin(phi_);
+}
+
+std::ostream &
+operator<<(std::ostream & stream,
+           const RecoMEt::MEt & met)
+{
+  stream << " pT = " << met.pt_ << " phi = " << met.phi_;
+  return stream;
 }

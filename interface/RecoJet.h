@@ -33,7 +33,8 @@ public:
           Int_t puId,
           Int_t genMatchIdx,
           Int_t idx,
-          Btag btag);
+          Btag btag,
+          Int_t central_or_shift);
 
   virtual ~RecoJet();
 
@@ -59,6 +60,9 @@ public:
 
   bool hasBtag(Btag btag) const;
 
+  int get_default_systematics() const;
+  const Particle::LorentzVector get_systematics_p4(int central_or_shift) const;
+
   friend class RecoJetReader;
   friend class RecoJetWriter;
 
@@ -81,6 +85,7 @@ protected:
   std::map<Btag, Double_t> BtagCSVs_;
   std::map<int, Double_t> pt_systematics_;
   std::map<int, Double_t> mass_systematics_;
+  int default_systematics_;
   //---------------------------------------------------------
 };
 

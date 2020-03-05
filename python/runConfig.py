@@ -232,10 +232,10 @@ class tthAnalyzeParser(argparse.ArgumentParser):
         help = 'M|do not run data',
     )
 
-  def enable_regrouped_jec(self):
-    self.add_argument('-G', '--enable-regrouped-jec',
-      dest = 'enable_regrouped_jec', action = 'store_true', default = False,
-      help = 'R|Enable regrouped JEC',
+  def enable_regrouped_jerc(self):
+    self.add_argument('-G', '--enable-regrouped-jerc',
+      dest = 'enable_regrouped_jerc', action = 'store_true', default = False,
+      help = 'R|Enable regrouped JEC/JER',
     )
 
   def add_split_trigger_sys(self, default = 'no'):
