@@ -83,7 +83,7 @@ parser.add_use_home()
 parser.add_jet_cleaning()
 parser.add_gen_matching()
 parser.add_sys(sys_choices)
-parser.enable_regrouped_jec()
+parser.enable_regrouped_jerc()
 parser.add_preselect()
 parser.add_argument('-c', '--channels',
   type = str, nargs = '+', dest = 'channels', metavar = 'channel', choices = channel_choices,
@@ -124,7 +124,7 @@ use_preselected   = args.use_preselected
 jet_cleaning      = args.jet_cleaning
 gen_matching      = args.gen_matching
 tau_id            = args.tau_id
-regroup_jec       = args.enable_regrouped_jec
+regroup_jerc      = args.enable_regrouped_jerc
 
 # Custom arguments
 channels = args.channels
@@ -160,7 +160,7 @@ if __name__ == '__main__':
     use_preselected    = use_preselected,
     jet_cleaning       = jet_cleaning,
     gen_matching       = gen_matching,
-    regroup_jec        = regroup_jec,
+    regroup_jerc       = regroup_jerc,
     submission_cmd     = sys.argv,
   )
 

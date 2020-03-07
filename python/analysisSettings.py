@@ -57,6 +57,8 @@ class systematics(object):
   triggerSF_0l2tau = [ "CMS_ttHl_trigger_0l2tauUp", "CMS_ttHl_trigger_0l2tauDown" ]
   triggerSF_split = triggerSF_2lss + triggerSF_3l + triggerSF_1l1tau + triggerSF_0l2tau
 
+  JES_HEM = "CMS_ttHl_JESHEMDown" # addresses HEM15/16, see https://hypernews.cern.ch/HyperNews/CMS/get/JetMET/2000.html
+
   JEC_regrouped = [
     "CMS_ttHl_JESAbsoluteUp",           "CMS_ttHl_JESAbsoluteDown",
     "CMS_ttHl_JESAbsolute_EraUp",       "CMS_ttHl_JESAbsolute_EraDown",
@@ -69,6 +71,16 @@ class systematics(object):
     "CMS_ttHl_JESHF_EraUp",             "CMS_ttHl_JESHF_EraDown",
     "CMS_ttHl_JESRelativeBalUp",        "CMS_ttHl_JESRelativeBalDown",
     "CMS_ttHl_JESRelativeSample_EraUp", "CMS_ttHl_JESRelativeSample_EraDown",
+    JES_HEM,
+  ]
+
+  JER_split = [
+    "CMS_ttHl_JERBarrelUp",        "CMS_ttHl_JERBarrelDown",
+    "CMS_ttHl_JEREndcap1Up",       "CMS_ttHl_JEREndcap1Down",
+    "CMS_ttHl_JEREndcap2LowPtUp",  "CMS_ttHl_JEREndcap2LowPtDown",
+    "CMS_ttHl_JEREndcap2HighPtUp", "CMS_ttHl_JEREndcap2HighPtDown",
+    "CMS_ttHl_JERForwardLowPtUp",  "CMS_ttHl_JERForwardLowPtDown",
+    "CMS_ttHl_JERForwardHighPtUp", "CMS_ttHl_JERForwardHighPtDown",
   ]
 
   MEM_3l        = [ "CMS_ttHl_MEM_3l_LRUp",        "CMS_ttHl_MEM_3l_LRDown"        ]

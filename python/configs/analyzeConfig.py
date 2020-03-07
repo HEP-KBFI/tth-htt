@@ -199,6 +199,10 @@ class analyzeConfig(object):
             for central_or_shift in dymc_sys:
               self.central_or_shifts.remove(central_or_shift)
         # ------------------------------------------------------------------------
+        if self.era != "2018":
+          if systematics.JES_HEM in self.central_or_shifts:
+            logging.warning('Removing systematics {} from {} era'.format(systematics.JES_HEM, self.era))
+            self.central_or_shifts.remove(systematics.JES_HEM)
 
         self.jet_cleaning_by_index = jet_cleaning_by_index
         self.gen_matching_by_index = gen_matching_by_index
@@ -1216,7 +1220,7 @@ class analyzeConfig(object):
     def createCfg_makePlots_addShapes(self, lines):
         central_or_shifts_prefix = []
         for central_or_shift in self.central_or_shifts:
-            if central_or_shift in systematics.JEC_regrouped:
+            if central_or_shift in systematics.JEC_regrouped or central_or_shift in systematics.JER_split:
                 continue
             if central_or_shift.startswith('CMS_ttHl_FR'):
                 continue
