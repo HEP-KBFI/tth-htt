@@ -27462,26 +27462,26 @@ samples_2016["/TTTo2L2Nu_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIISummer16Min
   ("type",                            "mc"),
   ("sample_category",                 "TT"),
   ("process_name_specific",           "TTTo2L2Nu"),
-  ("nof_files",                       680),
+  ("nof_files",                       1358),
   ("nof_db_files",                    778),
   ("nof_events",                      {
   }),
-  ("nof_tree_events",                 67926800),
+  ("nof_tree_events",                 67860400),
   ("nof_db_events",                   67926800),
-  ("fsize_local",                     142685954688), # 142.69GB, avg file size 209.83MB
+  ("fsize_local",                     147897823407), # 147.90GB, avg file size 108.91MB
   ("fsize_db",                        2988515757147), # 2.99TB, avg file size 3.84GB
   ("use_it",                          False),
   ("xsection",                        88.4),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
-  ("nof_PSweights",                   1),
+  ("nof_PSweights",                   4),
   ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
   ("nof_reweighting",                 0),
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2019Nov25/TTTo2L2Nu_TuneCP5_PSweights_13TeV-powheg-pythia8/2016v3_2019Nov25_TTTo2L2Nu_TuneCP5_PSweights_13TeV-powheg-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/191125_161926"),
+        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2020Mar03/TTTo2L2Nu_TuneCP5_PSweights_13TeV-powheg-pythia8/2016v3_2020Mar03_TTTo2L2Nu_TuneCP5_PSweights_13TeV-powheg-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/200303_192702"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -27505,28 +27505,28 @@ samples_2016["/TTToSemiLeptonic_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIISumm
   ("type",                            "mc"),
   ("sample_category",                 "TT"),
   ("process_name_specific",           "TTToSemiLeptonic"),
-  ("nof_files",                       1077),
+  ("nof_files",                       2155),
   ("nof_db_files",                    1105),
   ("nof_events",                      {
   }),
-  ("nof_tree_events",                 100310000),
+  ("nof_tree_events",                 107505300),
   ("nof_db_events",                   107604800),
-  ("fsize_local",                     220883690677), # 220.88GB, avg file size 205.09MB
+  ("fsize_local",                     244852026023), # 244.85GB, avg file size 113.62MB
   ("fsize_db",                        4847363049070), # 4.85TB, avg file size 4.39GB
   ("use_it",                          False),
   ("xsection",                        365.52),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
-  ("nof_PSweights",                   1),
+  ("nof_PSweights",                   4),
   ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
   ("nof_reweighting",                 0),
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2019Nov25/TTToSemiLeptonic_TuneCP5_PSweights_13TeV-powheg-pythia8/2016v3_2019Nov25_TTToSemiLeptonic_TuneCP5_PSweights_13TeV-powheg-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/191125_160021"),
+        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2020Mar03/TTToSemiLeptonic_TuneCP5_PSweights_13TeV-powheg-pythia8/2016v3_2020Mar03_TTToSemiLeptonic_TuneCP5_PSweights_13TeV-powheg-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/200303_192843"),
         ("selection", "*"),
-        ("blacklist", [23, 40, 48, 51, 54, 57, 68, 83, 84, 93, 95, 105, 151, 200, 203, 204, 236, 247, 249, 258, 263, 291, 321, 331, 340, 347, 348, 352, 358, 388, 398, 433, 442, 447, 450, 465, 470, 477, 478, 499, 508, 559, 564, 569, 571, 575, 579, 580, 603, 632, 720, 776, 805, 826, 836, 882, 889, 903, 906, 907, 909, 915, 917, 947, 950, 959, 962, 963, 972, 977, 1016, 1026, 1074]),
+        ("blacklist", [1864, 2053]),
       ]),
     ]
   ),
@@ -27548,26 +27548,26 @@ samples_2016["/TTToHadronic_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIISummer16
   ("type",                            "mc"),
   ("sample_category",                 "TT"),
   ("process_name_specific",           "TTToHadronic"),
-  ("nof_files",                       686),
+  ("nof_files",                       1371),
   ("nof_db_files",                    772),
   ("nof_events",                      {
   }),
   ("nof_tree_events",                 68518800),
   ("nof_db_events",                   68518800),
-  ("fsize_local",                     154290183083), # 154.29GB, avg file size 224.91MB
+  ("fsize_local",                     159363166318), # 159.36GB, avg file size 116.24MB
   ("fsize_db",                        3163848156807), # 3.16TB, avg file size 4.10GB
   ("use_it",                          False),
   ("xsection",                        377.85),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
-  ("nof_PSweights",                   1),
+  ("nof_PSweights",                   4),
   ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
   ("nof_reweighting",                 0),
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2019Sep30/TTToHadronic_TuneCP5_PSweights_13TeV-powheg-pythia8/2016v3_2019Sep30_TTToHadronic_TuneCP5_PSweights_13TeV-powheg-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/190930_190339"),
+        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2020Mar03/TTToHadronic_TuneCP5_PSweights_13TeV-powheg-pythia8/2016v3_2020Mar03_TTToHadronic_TuneCP5_PSweights_13TeV-powheg-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/200303_192949"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
