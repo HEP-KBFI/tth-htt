@@ -642,7 +642,19 @@ class analyzeConfig(object):
             for central_or_shift in jobOptions['central_or_shifts_local']
           )
           if jobOptions['hasPS']:
-            jobOptions['apply_LHE_nom'] = sample_info['apply_lhe_nom']
+            if 'apply_lhe_nom' not in sample_info:
+              logging.warning('Sample {} has parton shower weights, but is not consiered in ISR/FSR variation'.format(
+                sample_info["process_name_specific"]
+              ))
+              jobOptions['hasPS'] = False
+              central_or_shift_to_remove = []
+              for central_or_shift in jobOptions['central_or_shifts_local']:
+                if central_or_shift in systematics.PartonShower().full:
+                  central_or_shift_to_remove.append(central_or_shift)
+              for central_or_shift in central_or_shift_to_remove:
+                jobOptions['central_or_shifts_local'].remove(central_or_shift)
+            else:
+              jobOptions['apply_LHE_nom'] = sample_info['apply_lhe_nom']
         if 'lumiScale' not in jobOptions:
 
           nof_reweighting = sample_info['nof_reweighting']
