@@ -138,6 +138,8 @@ class systematics(object):
     isr_down = [ proc.ISR_().down for proc in procs ]
     fsr_up   = [ proc.FSR_().up   for proc in procs ]
     fsr_down = [ proc.FSR_().down for proc in procs ]
+    env_up   = [ proc.env_().up   for proc in procs ]
+    env_down = [ proc.env_().down for proc in procs ]
 
     full = ttbar
 

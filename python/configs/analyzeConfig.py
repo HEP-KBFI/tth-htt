@@ -152,9 +152,13 @@ class analyzeConfig(object):
             if len(nof_events) == 0:
               nof_events = copy.deepcopy(samples[dbs_key]['nof_events'])
             else:
-              if set(samples[dbs_key]['nof_events']) != set(nof_events.keys()):
+              sample_nof_events_set = set(evt_key for evt_key in samples[dbs_key]['nof_events'] if 'PSWeight' not in evt_key)
+              nof_events_set = set(evt_key for evt_key in nof_events.keys() if 'PSWeight' not in evt_key)
+              if sample_nof_events_set != nof_events_set:
                 raise ValueError('Mismatching event counts for samples: %s' % dbs_list_human)
               for count_type, count_array in samples[dbs_key]['nof_events'].items():
+                if count_type not in nof_events and 'PSWeight' in count_type:
+                  nof_events[count_type] = [ 0 ] * len(count_array)
                 if len(nof_events[count_type]) != len(count_array):
                   raise ValueError(
                     'Mismatching array length of %s for samples: %s' % (count_type, dbs_list_human)
@@ -168,7 +172,27 @@ class analyzeConfig(object):
         for sample_key, sample_info in self.samples.items():
           if sample_key == 'sum_events': continue
           sample_info["dbs_name"] = sample_key
-          sample_info["apply_toppt_rwgt"] = sample_key.startswith('/TTTo')
+          sample_info["apply_toppt_rwgt"] = False #TODO re-enable sample_key.startswith('/TTTo')
+          if any('CountWeightedPSWeight' in event_count for event_count in sample_info['nof_events']):
+            nof_events_default = sample_info['nof_events']['CountWeighted'][0]
+            nof_events_psweight = sample_info['nof_events']['CountWeightedPSWeight'][0]
+            nof_events_psweight_lhenom = sample_info['nof_events']['CountWeightedPSWeightOriginalXWGTUP'][0]
+            apply_lhe_nom = abs(nof_events_default - nof_events_psweight_lhenom) < abs(nof_events_default - nof_events_psweight)
+            if apply_lhe_nom:
+              logging.warning("Applying nominal LHE weight for PS weights in sample {}".format(sample_info["process_name_specific"]))
+            else:
+              logging.warning("Not applying nominal LHE weight for PS weights in sample {}".format(sample_info["process_name_specific"]))
+            sample_info["apply_lhe_nom"] = apply_lhe_nom
+            event_counts_remove = []
+            for event_count in sample_info["nof_events"]:
+              if 'PSWeight' in event_count and (
+                    (apply_lhe_nom and 'PSWeightOriginalXWGTUP' not in event_count) or
+                    (not apply_lhe_nom and 'PSWeightOriginalXWGTUP' in event_count)
+                  ):
+                event_counts_remove.append(event_count)
+            for event_count in event_counts_remove:
+              logging.warning("Removing event yield {} from sample {}".format(event_count, sample_info["process_name_specific"]))
+              del sample_info['nof_events'][event_count]
 
         self.lep_mva_wp = lep_mva_wp
         self.central_or_shifts = central_or_shifts
@@ -610,6 +634,13 @@ class analyzeConfig(object):
           jobOptions['central_or_shift'] = 'central'
         if 'apply_topPtReweighting' not in jobOptions:
           jobOptions['apply_topPtReweighting'] = sample_info['apply_toppt_rwgt'] if 'apply_toppt_rwgt' in sample_info else False
+        if 'hasPS' not in jobOptions:
+          jobOptions['hasPS'] = sample_info["nof_PSweights"] == 4 and any(
+            central_or_shift in systematics.PartonShower().full \
+            for central_or_shift in jobOptions['central_or_shifts_local']
+          )
+          if jobOptions['hasPS']:
+            jobOptions['apply_LHE_nom'] = sample_info['apply_lhe_nom']
         if 'lumiScale' not in jobOptions:
 
           nof_reweighting = sample_info['nof_reweighting']
@@ -663,6 +694,25 @@ class analyzeConfig(object):
               elif central_or_shift == jobOptions['central_or_shift']:
                 nof_events_label = 'CountWeighted{}'.format(count_suffix)
                 nof_events_idx = 0 # central
+
+              if jobOptions['hasPS'] and central_or_shift in systematics.PartonShower().full:
+                assert(is_mc)
+                psWeights_str = 'PSWeight'
+                if jobOptions['apply_LHE_nom']:
+                  psWeights_str += 'OriginalXWGTUP'
+                if central_or_shift in systematics.PartonShower().isr_up:
+                  nof_events_idx = 0
+                elif central_or_shift in systematics.PartonShower().fsr_up:
+                  nof_events_idx = 1
+                elif central_or_shift in systematics.PartonShower().env_up:
+                  nof_events_idx = 2
+                elif central_or_shift in systematics.PartonShower().isr_down:
+                  nof_events_idx = 3
+                elif central_or_shift in systematics.PartonShower().fsr_down:
+                  nof_events_idx = 4
+                elif central_or_shift in systematics.PartonShower().env_down:
+                  nof_events_idx = 5
+                nof_events_label = "CountWeighted{}{}".format(psWeights_str, count_suffix)
 
               if jobOptions['apply_topPtReweighting']:
                 assert(is_mc)
@@ -733,11 +783,6 @@ class analyzeConfig(object):
             jobOptions['skipEvery'] = sample_info['skipEvery']
         if 'useObjectMultiplicity' not in jobOptions:
             jobOptions['useObjectMultiplicity'] = self.do_sync
-        if 'hasPS' not in jobOptions:
-          jobOptions['hasPS'] = sample_info["nof_PSweights"] == 4 and any(
-            central_or_shift in systematics.PartonShower().full \
-            for central_or_shift in jobOptions['central_or_shifts_local']
-          )
 
         jobOptions_local = [
             'process',
