@@ -44,6 +44,10 @@ HISTOGRAM_COUNTWEIGHTED_LHESCALE_L1PREFIRE_NOM          = 'CountWeightedLHEWeigh
 # HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_NOPU_L1PREFIRE_NOM = 'CountFullWeightedLHEWeightScaleNoPUL1PrefireNom'
 HISTOGRAM_COUNTWEIGHTED_LHEENVELOPE                     = 'CountWeightedLHEEnvelope'
 HISTOGRAM_COUNTWEIGHTED_LHEENVELOPE_L1PREFIRE_NOM       = 'CountWeightedLHEEnvelopeL1PrefireNom'
+HISTOGRAM_COUNTWEIGHTED_PSWEIGHT                        = 'CountWeightedPSWeight'
+HISTOGRAM_COUNTWEIGHTED_PSWEIGHT_L1PREFIRE_NOM          = 'CountWeightedPSWeightL1PrefireNom'
+HISTOGRAM_COUNTWEIGHTED_PSWEIGHT_ORIGINAL               = 'CountWeightedPSWeightOriginalXWGTUP'
+HISTOGRAM_COUNTWEIGHTED_PSWEIGHT_ORIGINAL_L1PREFIRE_NOM = 'CountWeightedPSWeightOriginalXWGTUPL1PrefireNom'
 
 EVENTS_TREE = 'Events'
 BRANCH_LHEPDFWEIGHT = 'LHEPdfWeight'
@@ -68,6 +72,8 @@ HISTOGRAM_COUNT_COMMON_MC = [
   # HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE,
   # HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_NOPU,
   HISTOGRAM_COUNTWEIGHTED_LHEENVELOPE,
+  HISTOGRAM_COUNTWEIGHTED_PSWEIGHT,
+  HISTOGRAM_COUNTWEIGHTED_PSWEIGHT_ORIGINAL,
 ]
 HISTOGRAM_COUNT_EXTENDED_MC = [
   HISTOGRAM_COUNTWEIGHTED_L1PREFIRE_NOM,
@@ -81,6 +87,8 @@ HISTOGRAM_COUNT_EXTENDED_MC = [
   # HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_L1PREFIRE_NOM,
   # HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_NOPU_L1PREFIRE_NOM,
   HISTOGRAM_COUNTWEIGHTED_LHEENVELOPE_L1PREFIRE_NOM,
+  HISTOGRAM_COUNTWEIGHTED_PSWEIGHT_L1PREFIRE_NOM,
+  HISTOGRAM_COUNTWEIGHTED_PSWEIGHT_ORIGINAL_L1PREFIRE_NOM,
 ]
 LHESCALEARR = [
   HISTOGRAM_COUNTWEIGHTED_LHESCALE,
@@ -182,7 +190,7 @@ dictionary_entry_str = """{{ dict_name }}["{{ dbs_name }}"] = OD([
   ("nof_files",                       {{ nof_files }}),
   ("nof_db_files",                    {{ nof_db_files }}),
   ("nof_events",                      { {%- for histogram_name, event_counts in nof_events.items() %}
-    {{ "%-60s"|format("'%s'"|format(histogram_name)) }} : [ {% for event_count in event_counts -%}{{ '%12d'|format(event_count) }}, {% endfor %}],
+    {{ "%-65s"|format("'%s'"|format(histogram_name)) }} : [ {% for event_count in event_counts -%}{{ '%12d'|format(event_count) }}, {% endfor %}],
   {%- endfor %}
   }),
   ("nof_tree_events",                 {{ nof_tree_events }}),
@@ -667,44 +675,51 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
           del root_file
           continue
 
-      for histogram_name in histogram_names:
-        if histogram_name not in root_file.GetListOfKeys():
-          logging.warning("Histogram of the name {histogram_name} is not in file {path}".format(
-            histogram_name = histogram_name,
-            path           = subentry_file.name,
-          ))
-        else:
-          histogram = root_file.Get(histogram_name)
-          if not histogram:
-            raise ValueError("Could not find histogram of the name {histogram_name} in file {path}".format(
+      root_file_keys = [ root_file_key.GetName() for root_file_key in root_file.GetListOfKeys() ]
+      has_any_histograms = any(HISTOGRAM_COUNT in histogram_name for histogram_name in histogram_names)
+      if has_any_histograms:
+        for histogram_name in histogram_names:
+          if histogram_name not in root_file_keys:
+            if HISTOGRAM_COUNT not in histogram_name:
+              continue
+            if (HISTOGRAM_COUNTWEIGHTED_PSWEIGHT in histogram_name and nof_PSweights != 4):
+              continue
+            logging.warning("Histogram of the name {histogram_name} is not in file {path}".format(
               histogram_name = histogram_name,
               path           = subentry_file.name,
             ))
-          nBins = histogram.GetNbinsX()
-          if nBins != 9 and histogram_name in lheScaleArr:
-            logging.warning("Expected 9 bins but found {nBins} bins in {histogram_name}".format(
-              nBins          = nBins,
-              histogram_name = histogram_name,
-            ))
-            lhe_correct_binning = False
-            continue
-          index_entry[HISTOGRAM_COUNT_KEY][histogram_name] = [
-            histogram.GetBinContent(idxBin) for idxBin in range(1, nBins + 1)
-          ]
-          if histogram_names[histogram_name] < 0:
-            histogram_names[histogram_name] = nBins
           else:
-            if histogram_names[histogram_name] != nBins:
-              raise RuntimeError(
-                "Expected to find {nBins_expected} bins in histogram {histogram_name} from file {path} "
-                "but got {nBins_actual} bins instead".format(
-                  nBins_expected = histogram_names[histogram_name],
-                  histogram_name = histogram_name,
-                  path           = subentry_file.name,
-                  nBins_actual   = nBins,
+            histogram = root_file.Get(histogram_name)
+            if not histogram:
+              raise ValueError("Could not find histogram of the name {histogram_name} in file {path}".format(
+                histogram_name = histogram_name,
+                path           = subentry_file.name,
+              ))
+            nBins = histogram.GetNbinsX()
+            if nBins != 9 and histogram_name in lheScaleArr:
+              logging.warning("Expected 9 bins but found {nBins} bins in {histogram_name}".format(
+                nBins          = nBins,
+                histogram_name = histogram_name,
+              ))
+              lhe_correct_binning = False
+              continue
+            index_entry[HISTOGRAM_COUNT_KEY][histogram_name] = [
+              histogram.GetBinContent(idxBin) for idxBin in range(1, nBins + 1)
+            ]
+            if histogram_names[histogram_name] < 0:
+              histogram_names[histogram_name] = nBins
+            else:
+              if histogram_names[histogram_name] != nBins:
+                raise RuntimeError(
+                  "Expected to find {nBins_expected} bins in histogram {histogram_name} from file {path} "
+                  "but got {nBins_actual} bins instead".format(
+                    nBins_expected = histogram_names[histogram_name],
+                    histogram_name = histogram_name,
+                    path           = subentry_file.name,
+                    nBins_actual   = nBins,
+                  )
                 )
-              )
-          del histogram
+            del histogram
 
       # this was probably a success: record the results
       indices[matched_idx] = copy.deepcopy(index_entry)
