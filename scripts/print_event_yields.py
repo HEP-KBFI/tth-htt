@@ -13,8 +13,8 @@ import argparse
 import re
 
 OUTPUT_NN = 'output_NN'
-OUTPUT_NN_RE     = re.compile('{}_(?P<node>\w+)'.format(OUTPUT_NN))
-OUTPUT_NN_RE_CAT = re.compile('{}_(?P<node>\w+)_(?P<category>\w+)'.format(OUTPUT_NN))
+OUTPUT_NN_RE     = re.compile('.*_{}_(?P<node>\w+)'.format(OUTPUT_NN))
+OUTPUT_NN_RE_CAT = re.compile('.*_{}_(?P<node>\w+)_(?P<category>\w+)'.format(OUTPUT_NN))
 EVENTCOUNTER = 'EventCounter'
 SYS_HISTOGRAM_PREFIX = 'CMS_ttHl_'
 HTXS = 'htxs'
