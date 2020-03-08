@@ -19110,24 +19110,10 @@ samples_2017["/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAODv2-PU201
     'CountWeightedL1Prefire'                                     : [      8663543,      8598974,      8726550, ],
     'CountWeightedLHEWeightScaleL1PrefireNom'                    : [      9754172,      9586965,      9480289,      8873501,      8663273,      8501556,      8031354,      7803601,      7616333, ],
     'CountWeightedLHEEnvelopeL1PrefireNom'                       : [     10544256,      7099643, ],
-    'CountWeightedTopPtRwgtSF'                                   : [      8933658,      8933653,      8933539, ],
-    'CountWeightedTopPtRwgtSFSquared'                            : [      8952212,      8952275,      8952270, ],
-    'CountWeightedLHEWeightScaleTopPtRwgtSF'                     : [     10067607,      9892692,      9780593,      9152020,      8933381,      8765820,      8278877,      8043313,      7849586, ],
-    'CountWeightedLHEWeightScaleTopPtRwgtSFSquared'              : [     10089683,      9915577,      9804350,      9169410,      8951931,      8785480,      8292613,      8058454,      7865920, ],
-    'CountWeightedLHEEnvelopeTopPtRwgtSF'                        : [     10876415,      7322368, ],
-    'CountWeightedLHEEnvelopeTopPtRwgtSFSquared'                 : [     10896631,      7341310, ],
-    'CountWeightedL1PrefireNomTopPtRwgtSF'                       : [      8671654,      8671278,      8671949, ],
-    'CountWeightedL1PrefireNomTopPtRwgtSFSquared'                : [      8691534,      8691195,      8691965, ],
-    'CountWeightedL1PrefireTopPtRwgtSF'                          : [      8671654,      8607360,      8734357, ],
-    'CountWeightedL1PrefireTopPtRwgtSFSquared'                   : [      8691534,      8627454,      8754006, ],
-    'CountWeightedLHEWeightScaleL1PrefireNomTopPtRwgtSF'         : [      9765115,      9598829,      9493101,      8880616,      8671388,      8511302,      8035635,      7809554,      7623679, ],
-    'CountWeightedLHEWeightScaleL1PrefireNomTopPtRwgtSFSquared'  : [      9788810,      9623202,      9518224,      8899474,      8691264,      8532158,      8050677,      7825877,      7641069, ],
-    'CountWeightedLHEEnvelopeL1PrefireNomTopPtRwgtSF'            : [     10552257,      7110340, ],
-    'CountWeightedLHEEnvelopeL1PrefireNomTopPtRwgtSFSquared'     : [     10574256,      7130206, ],
   }),
   ("nof_tree_events",                 9000000),
   ("nof_db_events",                   9000000),
-  ("fsize_local",                     33258289439), # 33.26GB, avg file size 1.75GB
+  ("fsize_local",                     33306023565), # 33.31GB, avg file size 1.75GB
   ("fsize_db",                        482042390765), # 482.04GB, avg file size 3.15GB
   ("use_it",                          False),
   ("xsection",                        88.4),
@@ -19140,7 +19126,7 @@ samples_2017["/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAODv2-PU201
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2020Jan29_woPresel_nom_all/ntuples/TTTo2L2Nu"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2020Mar07_woPresel_nom_all/ntuples/TTTo2L2Nu"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -19175,24 +19161,10 @@ samples_2017["/TTTo2L2Nu_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall17MiniA
     'CountWeightedL1Prefire'                                     : [     66574475,     66078425,     67057426, ],
     'CountWeightedLHEWeightScaleL1PrefireNom'                    : [     74958056,     73673308,     72854073,     68188667,     66573334,     65331256,     61716152,     59966436,     58527268, ],
     'CountWeightedLHEEnvelopeL1PrefireNom'                       : [     81030251,     54556795, ],
-    'CountWeightedTopPtRwgtSF'                                   : [     68647024,     68646930,     68645988, ],
-    'CountWeightedTopPtRwgtSFSquared'                            : [     68788780,     68789098,     68788996, ],
-    'CountWeightedLHEWeightScaleTopPtRwgtSF'                     : [     77362035,     76018253,     75157400,     70324428,     68644938,     67357846,     63614075,     61804514,     60315853, ],
-    'CountWeightedLHEWeightScaleTopPtRwgtSFSquared'              : [     77530661,     76193233,     75339123,     70457178,     68786718,     67508132,     63718721,     61920003,     60440491, ],
-    'CountWeightedLHEEnvelopeTopPtRwgtSF'                        : [     83577234,     56265453, ],
-    'CountWeightedLHEEnvelopeTopPtRwgtSFSquared'                 : [     83730973,     56410712, ],
-    'CountWeightedL1PrefireNomTopPtRwgtSF'                       : [     66637060,     66634095,     66638965, ],
-    'CountWeightedL1PrefireNomTopPtRwgtSFSquared'                : [     66788990,     66786355,     66791829, ],
-    'CountWeightedL1PrefireTopPtRwgtSF'                          : [     66637060,     66143564,     67118239, ],
-    'CountWeightedL1PrefireTopPtRwgtSFSquared'                   : [     66788990,     66297097,     67268415, ],
-    'CountWeightedLHEWeightScaleL1PrefireNomTopPtRwgtSF'         : [     75041122,     73763576,     72951656,     68242381,     66635035,     65405208,     61748147,     60011313,     58582813, ],
-    'CountWeightedLHEWeightScaleL1PrefireNomTopPtRwgtSFSquared'  : [     75222239,     73949991,     73143858,     68386386,     66786974,     65564703,     61862880,     60135890,     58715641, ],
-    'CountWeightedLHEEnvelopeL1PrefireNomTopPtRwgtSF'            : [     81090112,     54638791, ],
-    'CountWeightedLHEEnvelopeL1PrefireNomTopPtRwgtSFSquared'     : [     81257595,     54791200, ],
   }),
   ("nof_tree_events",                 69155808),
   ("nof_db_events",                   69155808),
-  ("fsize_local",                     255594428648), # 255.59GB, avg file size 1.84GB
+  ("fsize_local",                     255960656380), # 255.96GB, avg file size 1.84GB
   ("fsize_db",                        3693271643807), # 3.69TB, avg file size 3.50GB
   ("use_it",                          False),
   ("xsection",                        88.4),
@@ -19205,7 +19177,7 @@ samples_2017["/TTTo2L2Nu_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall17MiniA
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2020Jan29_woPresel_nom_all/ntuples/TTTo2L2Nu_PSweights"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2020Mar07_woPresel_nom_all/ntuples/TTTo2L2Nu_PSweights"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -19240,24 +19212,10 @@ samples_2017["/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAODv
     'CountWeightedL1Prefire'                                     : [     42078329,     41755612,     42390784, ],
     'CountWeightedLHEWeightScaleL1PrefireNom'                    : [     47377755,     46566109,     46048694,     43098096,     42078329,     41293208,     39006548,     37901226,     36992251, ],
     'CountWeightedLHEEnvelopeL1PrefireNom'                       : [     51215973,     34482327, ],
-    'CountWeightedTopPtRwgtSF'                                   : [     43411169,     43411240,     43410389, ],
-    'CountWeightedTopPtRwgtSFSquared'                            : [     43500568,     43501010,     43500599, ],
-    'CountWeightedLHEWeightScaleTopPtRwgtSF'                     : [     48922962,     48072846,     47528262,     44472201,     43411169,     42595811,     40228516,     39083887,     38142410, ],
-    'CountWeightedLHEWeightScaleTopPtRwgtSFSquared'              : [     49029372,     48183177,     47642749,     44555990,     43500568,     42690518,     40294583,     39156741,     38221019, ],
-    'CountWeightedLHEEnvelopeTopPtRwgtSF'                        : [     52853714,     35580435, ],
-    'CountWeightedLHEEnvelopeTopPtRwgtSFSquared'                 : [     52950652,     35672088, ],
-    'CountWeightedL1PrefireNomTopPtRwgtSF'                       : [     42119574,     42117867,     42120540, ],
-    'CountWeightedL1PrefireNomTopPtRwgtSFSquared'                : [     42217194,     42215799,     42218749, ],
-    'CountWeightedL1PrefireTopPtRwgtSF'                          : [     42119574,     41799000,     42430553, ],
-    'CountWeightedL1PrefireTopPtRwgtSFSquared'                   : [     42217194,     41897974,     42526702, ],
-    'CountWeightedLHEWeightScaleL1PrefireNomTopPtRwgtSF'         : [     47432106,     46624850,     46111958,     43133830,     42119574,     41341451,     39028416,     37931064,     37028723, ],
-    'CountWeightedLHEWeightScaleL1PrefireNomTopPtRwgtSFSquared'  : [     47548423,     46744339,     46235006,     43226563,     42217194,     41443718,     39102548,     38011287,     37114066, ],
-    'CountWeightedLHEEnvelopeL1PrefireNomTopPtRwgtSF'            : [     51255737,     34535444, ],
-    'CountWeightedLHEEnvelopeL1PrefireNomTopPtRwgtSFSquared'     : [     51363527,     34633078, ],
   }),
   ("nof_tree_events",                 43732445),
   ("nof_db_events",                   43732445),
-  ("fsize_local",                     171717344451), # 171.72GB, avg file size 1.95GB
+  ("fsize_local",                     171950846125), # 171.95GB, avg file size 1.95GB
   ("fsize_db",                        2384692629872), # 2.38TB, avg file size 2.88GB
   ("use_it",                          False),
   ("xsection",                        365.52),
@@ -19270,7 +19228,7 @@ samples_2017["/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAODv
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2020Jan29_woPresel_nom_all/ntuples/TTToSemiLeptonic"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2020Mar07_woPresel_nom_all/ntuples/TTToSemiLeptonic"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -19305,24 +19263,10 @@ samples_2017["/TTToSemiLeptonic_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall
     'CountWeightedL1Prefire'                                     : [    105844847,    105033438,    106632058, ],
     'CountWeightedLHEWeightScaleL1PrefireNom'                    : [    119177867,    117136806,    115835398,    108415007,    105844847,    103876255,     98124679,     95344314,     93058165, ],
     'CountWeightedLHEEnvelopeL1PrefireNom'                       : [    128832732,     86744826, ],
-    'CountWeightedTopPtRwgtSF'                                   : [    109206564,    109206568,    109204838, ],
-    'CountWeightedTopPtRwgtSFSquared'                            : [    109432383,    109433109,    109432844, ],
-    'CountWeightedLHEWeightScaleTopPtRwgtSF'                     : [    123068576,    120930884,    119561143,    111874898,    109206564,    107156263,    101201575,     98322298,     95954357, ],
-    'CountWeightedLHEWeightScaleTopPtRwgtSFSquared'              : [    123337347,    121209667,    119850512,    112086598,    109432383,    107395620,    101368476,     98506432,     96152940, ],
-    'CountWeightedLHEEnvelopeTopPtRwgtSF'                        : [    132956306,     89510200, ],
-    'CountWeightedLHEEnvelopeTopPtRwgtSFSquared'                 : [    133201345,     89741618, ],
-    'CountWeightedL1PrefireNomTopPtRwgtSF'                       : [    105955245,    105950562,    105958476, ],
-    'CountWeightedL1PrefireNomTopPtRwgtSFSquared'                : [    106201707,    106197577,    106206584, ],
-    'CountWeightedL1PrefireTopPtRwgtSF'                          : [    105955245,    105148416,    106737981, ],
-    'CountWeightedL1PrefireTopPtRwgtSFSquared'                   : [    106201707,    105398276,    106980745, ],
-    'CountWeightedLHEWeightScaleL1PrefireNomTopPtRwgtSF'         : [    119315697,    117285851,    115995961,    108505814,    105955245,    103998712,     98180518,     95420279,     93150891, ],
-    'CountWeightedLHEWeightScaleL1PrefireNomTopPtRwgtSFSquared'  : [    119609290,    117587664,    116306784,    108739978,    106201707,    104257044,     98367676,     95622918,     93366386, ],
-    'CountWeightedLHEEnvelopeL1PrefireNomTopPtRwgtSF'            : [    128934072,     86879351, ],
-    'CountWeightedLHEEnvelopeL1PrefireNomTopPtRwgtSFSquared'     : [    129206347,     87125741, ],
   }),
   ("nof_tree_events",                 110014744),
   ("nof_db_events",                   110195128),
-  ("fsize_local",                     431984527841), # 431.98GB, avg file size 1.95GB
+  ("fsize_local",                     432572159232), # 432.57GB, avg file size 1.95GB
   ("fsize_db",                        6010271289488), # 6.01TB, avg file size 2.76GB
   ("use_it",                          False),
   ("xsection",                        365.52),
@@ -19335,7 +19279,7 @@ samples_2017["/TTToSemiLeptonic_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2020Jan29_woPresel_nom_all/ntuples/TTToSemiLeptonic_PSweights"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2020Mar07_woPresel_nom_all/ntuples/TTToSemiLeptonic_PSweights"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -19370,24 +19314,10 @@ samples_2017["/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAODv2-PU
     'CountWeightedL1Prefire'                                     : [     40450757,     40129861,     40759520, ],
     'CountWeightedLHEWeightScaleL1PrefireNom'                    : [     45804034,     44943305,     44398125,     41469290,     40450757,     39666537,     37430885,     36348331,     35459596, ],
     'CountWeightedLHEEnvelopeL1PrefireNom'                       : [     49419518,     33121114, ],
-    'CountWeightedTopPtRwgtSF'                                   : [     41756090,     41756036,     41755420, ],
-    'CountWeightedTopPtRwgtSFSquared'                            : [     41838340,     41838532,     41838527, ],
-    'CountWeightedLHEWeightScaleTopPtRwgtSF'                     : [     47324924,     46425918,     45853605,     42817808,     41756090,     40943671,     38627966,     37506205,     36585142, ],
-    'CountWeightedLHEWeightScaleTopPtRwgtSFSquared'              : [     47415846,     46524726,     45959090,     42892482,     41838340,     41032634,     38688499,     37574625,     36660173, ],
-    'CountWeightedLHEEnvelopeTopPtRwgtSF'                        : [     51031234,     34195594, ],
-    'CountWeightedLHEEnvelopeTopPtRwgtSFSquared'                 : [     51115109,     34281163, ],
-    'CountWeightedL1PrefireNomTopPtRwgtSF'                       : [     40486134,     40484208,     40487448, ],
-    'CountWeightedL1PrefireNomTopPtRwgtSFSquared'                : [     40578166,     40576433,     40580061, ],
-    'CountWeightedL1PrefireTopPtRwgtSF'                          : [     40486134,     40168019,     40793436, ],
-    'CountWeightedL1PrefireTopPtRwgtSFSquared'                   : [     40578166,     40261666,     40883649, ],
-    'CountWeightedLHEWeightScaleL1PrefireNomTopPtRwgtSF'         : [     45845927,     44993812,     44455830,     41499085,     40486134,     39712363,     37450429,     36376905,     35495654, ],
-    'CountWeightedLHEWeightScaleL1PrefireNomTopPtRwgtSFSquared'  : [     45948814,     45103650,     44571575,     41584404,     40578166,     39810321,     37520489,     36454013,     35578614, ],
-    'CountWeightedLHEEnvelopeL1PrefireNomTopPtRwgtSF'            : [     49449823,     33170856, ],
-    'CountWeightedLHEEnvelopeL1PrefireNomTopPtRwgtSFSquared'     : [     49546654,     33263597, ],
   }),
   ("nof_tree_events",                 41729120),
   ("nof_db_events",                   41729120),
-  ("fsize_local",                     165838012135), # 165.84GB, avg file size 1.97GB
+  ("fsize_local",                     166062764682), # 166.06GB, avg file size 1.98GB
   ("fsize_db",                        2307611725630), # 2.31TB, avg file size 3.47GB
   ("use_it",                          False),
   ("xsection",                        377.85),
@@ -19400,7 +19330,7 @@ samples_2017["/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAODv2-PU
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2020Jan29_woPresel_nom_all/ntuples/TTToHadronic"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2020Mar07_woPresel_nom_all/ntuples/TTToHadronic"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -19435,24 +19365,10 @@ samples_2017["/TTToHadronic_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall17Mi
     'CountWeightedL1Prefire'                                     : [    125255843,    124268208,    126210282, ],
     'CountWeightedLHEWeightScaleL1PrefireNom'                    : [    141030699,    138616846,    137079378,    128293668,    125255843,    122927100,    116116165,    112828821,    110125372, ],
     'CountWeightedLHEEnvelopeL1PrefireNom'                       : [    152459482,    102651055, ],
-    'CountWeightedTopPtRwgtSF'                                   : [    129308009,    129308221,    129305733, ],
-    'CountWeightedTopPtRwgtSFSquared'                            : [    129575138,    129576235,    129575458, ],
-    'CountWeightedLHEWeightScaleTopPtRwgtSF'                     : [    145720457,    143189053,    141568095,    132467336,    129308009,    126880618,    119830197,    116421423,    113617625, ],
-    'CountWeightedLHEWeightScaleTopPtRwgtSFSquared'              : [    146038520,    143518861,    141910355,    132717824,    129575138,    127163656,    120027649,    116639180,    113852502, ],
-    'CountWeightedLHEEnvelopeTopPtRwgtSF'                        : [    157431793,    105983620, ],
-    'CountWeightedLHEEnvelopeTopPtRwgtSFSquared'                 : [    157721585,    106257534, ],
-    'CountWeightedL1PrefireNomTopPtRwgtSF'                       : [    125390294,    125384883,    125394042, ],
-    'CountWeightedL1PrefireNomTopPtRwgtSFSquared'                : [    125687085,    125682386,    125692609, ],
-    'CountWeightedL1PrefireTopPtRwgtSF'                          : [    125390294,    124408628,    126338406, ],
-    'CountWeightedL1PrefireTopPtRwgtSFSquared'                   : [    125687085,    124710330,    126629715, ],
-    'CountWeightedLHEWeightScaleL1PrefireNomTopPtRwgtSF'         : [    141199815,    138798907,    137274795,    128406607,    125390294,    123076918,    116187234,    112923357,    110239533, ],
-    'CountWeightedLHEWeightScaleL1PrefireNomTopPtRwgtSFSquared'  : [    141553111,    139161627,    137647998,    128689093,    125687085,    123387439,    116413677,    113167728,    110498882, ],
-    'CountWeightedLHEEnvelopeL1PrefireNomTopPtRwgtSF'            : [    152585648,    102814535, ],
-    'CountWeightedLHEEnvelopeL1PrefireNomTopPtRwgtSFSquared'     : [    152913977,    103110324, ],
   }),
   ("nof_tree_events",                 130262440),
   ("nof_db_events",                   130262440),
-  ("fsize_local",                     519215647839), # 519.22GB, avg file size 1.98GB
+  ("fsize_local",                     519914861990), # 519.91GB, avg file size 1.98GB
   ("fsize_db",                        7191138172968), # 7.19TB, avg file size 3.56GB
   ("use_it",                          False),
   ("xsection",                        377.85),
@@ -19465,7 +19381,7 @@ samples_2017["/TTToHadronic_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall17Mi
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2020Jan29_woPresel_nom_all/ntuples/TTToHadronic_PSweights"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2020Mar07_woPresel_nom_all/ntuples/TTToHadronic_PSweights"),
         ("selection", "*"),
         ("blacklist", []),
       ]),

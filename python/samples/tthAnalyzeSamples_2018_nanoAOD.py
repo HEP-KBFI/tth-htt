@@ -17229,9 +17229,9 @@ samples_2018["/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-10
   ("nof_db_files",                    3313),
   ("nof_events",                      {
   }),
-  ("nof_tree_events",                 133712000),
+  ("nof_tree_events",                 133808000),
   ("nof_db_events",                   133808000),
-  ("fsize_local",                     307387627839), # 307.39GB, avg file size 110.21MB
+  ("fsize_local",                     307608436752), # 307.61GB, avg file size 110.29MB
   ("fsize_db",                        7273064972485), # 7.27TB, avg file size 2.20GB
   ("use_it",                          False),
   ("xsection",                        377.85),
@@ -17246,7 +17246,7 @@ samples_2018["/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-10
       OD([
         ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Mar03/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/2018_2020Mar03_TTToHadronic_TuneCP5_13TeV-powheg-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/200303_194456"),
         ("selection", "*"),
-        ("blacklist", [1246, 1859]),
+        ("blacklist", []),
       ]),
     ]
   ),
@@ -19016,7 +19016,7 @@ samples_2018["/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18M
   ("nof_events",                      {
   }),
   ("nof_tree_events",                 193215674),
-  ("nof_db_events",                   193465480),
+  ("nof_db_events",                   193215674),
   ("fsize_local",                     225228037286), # 225.23GB, avg file size 80.38MB
   ("fsize_db",                        7864644678843), # 7.86TB, avg file size 2.80GB
   ("use_it",                          True),
@@ -19721,7 +19721,7 @@ samples_2018["/WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAOD
   ("nof_events",                      {
   }),
   ("nof_tree_events",                 71026861),
-  ("nof_db_events",                   71072199),
+  ("nof_db_events",                   71026861),
   ("fsize_local",                     64087236516), # 64.09GB, avg file size 43.04MB
   ("fsize_db",                        2702061580245), # 2.70TB, avg file size 2.73GB
   ("use_it",                          True),
