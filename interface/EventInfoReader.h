@@ -25,11 +25,19 @@ public:
   void
   setEventInfo(EventInfo * info);
 
+  void
+  setTopPtRwgtBranchName(const std::string & branchName);
+
+  std::string
+  getTopPtRwgtBranchName() const;
+
 protected:
   bool read_genHiggsDecayMode_;
   bool read_puWeight_;
 
   EventInfo * info_;
+
+  std::string branchName_topPtRwgt;
 
 public:
   const std::string branchName_run;
@@ -42,7 +50,6 @@ public:
   const std::string branchName_nLHEReweightingWeight;
   const std::string branchName_gen_mHH;
   const std::string branchName_gen_cosThetaStar;
-  const std::string branchName_topPtRwgt;
   const std::string branchName_htxs_pt;
   const std::string branchName_htxs_y;
 };

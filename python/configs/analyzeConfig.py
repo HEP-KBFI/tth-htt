@@ -172,7 +172,7 @@ class analyzeConfig(object):
         for sample_key, sample_info in self.samples.items():
           if sample_key == 'sum_events': continue
           sample_info["dbs_name"] = sample_key
-          sample_info["apply_toppt_rwgt"] = False #TODO re-enable sample_key.startswith('/TTTo')
+          sample_info["apply_toppt_rwgt"] = sample_key.startswith('/TTTo')
           if any('CountWeightedPSWeight' in event_count for event_count in sample_info['nof_events']):
             nof_events_default = sample_info['nof_events']['CountWeighted'][0]
             nof_events_psweight = sample_info['nof_events']['CountWeightedPSWeight'][0]
@@ -279,6 +279,7 @@ class analyzeConfig(object):
         self.triggers = triggers
         self.triggerTable = Triggers(self.era)
         self.do_sync = do_sync
+        self.topPtRwgtChoice = "Quadratic" # alternatives: "TOP16011", "Linear"
 
         samples_to_stitch = []
         if self.era == '2016':
@@ -635,7 +636,10 @@ class analyzeConfig(object):
         if 'central_or_shift' not in jobOptions:
           jobOptions['central_or_shift'] = 'central'
         if 'apply_topPtReweighting' not in jobOptions:
-          jobOptions['apply_topPtReweighting'] = sample_info['apply_toppt_rwgt'] if 'apply_toppt_rwgt' in sample_info else False
+          if 'apply_toppt_rwgt' in sample_info and sample_info['apply_toppt_rwgt']:
+            jobOptions['apply_topPtReweighting'] = self.topPtRwgtChoice
+          else:
+            jobOptions['apply_topPtReweighting'] = ''
         if 'hasPS' not in jobOptions:
           jobOptions['hasPS'] = sample_info["nof_PSweights"] == 4 and any(
             central_or_shift in systematics.PartonShower().full \
@@ -730,14 +734,15 @@ class analyzeConfig(object):
 
               if jobOptions['apply_topPtReweighting']:
                 assert(is_mc)
+                toppt_str = "{}TopPtRwgtSF".format(jobOptions['apply_topPtReweighting'])
                 if central_or_shift not in systematics.topPtReweighting:
-                  nof_events_label += "TopPtRwgtSF"
+                  nof_events_label += toppt_str
                 elif central_or_shift == systematics.topPtReweighting_().down:
                   # no SF is applied
                   nof_events_label = "CountWeighted{}".format(count_suffix)
                   nof_events_idx = 0
                 elif central_or_shift == systematics.topPtReweighting_().up:
-                  nof_events_label = "CountWeighted{}TopPtRwgtSFSquared".format(count_suffix)
+                  nof_events_label = "CountWeighted{}{}Squared".format(count_suffix, toppt_str)
                   nof_events_idx = 0
 
               if nof_events_idx >= 0 and nof_events_label:

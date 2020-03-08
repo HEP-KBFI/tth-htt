@@ -24,7 +24,6 @@ EventInfoReader::EventInfoReader(EventInfo * info,
   , branchName_nLHEReweightingWeight(Form("n%s", branchName_LHEReweightingWeight.data()))
   , branchName_gen_mHH("mHH_lhe")
   , branchName_gen_cosThetaStar("cosThetaStar_lhe")
-  , branchName_topPtRwgt("topPtRwgt")
   , branchName_htxs_pt("HTXS_Higgs_pt")
   , branchName_htxs_y("HTXS_Higgs_y")
 {}
@@ -88,4 +87,16 @@ void
 EventInfoReader::setEventInfo(EventInfo * info)
 {
   info_ = info;
+}
+
+void
+EventInfoReader::setTopPtRwgtBranchName(const std::string & branchName)
+{
+  branchName_topPtRwgt = Form("topPtRwgt_%s", branchName.data());
+}
+
+std::string
+EventInfoReader::getTopPtRwgtBranchName() const
+{
+  return branchName_topPtRwgt;
 }
