@@ -276,9 +276,14 @@ def get_table(input_file_names, allowed_decay_modes = None, show_gen_matching = 
                   continue
                 if systematics.startswith('thu'):
                   systematics_split = systematics.split('_')
-                  assert(len(systematics_split) == 4)
-                  if systematics_split[2].lower() not in process.lower():
-                    continue
+                  if len(systematics_split) == 4:
+                    if systematics_split[2].lower() not in process.lower():
+                      continue
+                  elif len(systematics_split) == 3:
+                    if systematics_split[2].lower().replace('Up', '').replace('Down', '') not in process.lower():
+                      continue
+                  else:
+                    raise RuntimeError("Invalid systematics: %s" % systematics)
                 for node in results[subcategory][process][sample][decay_mode][gen_matching][htxs][systematics]:
                   if not show_by_nodes and node:
                     continue
