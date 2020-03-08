@@ -581,7 +581,7 @@ class analyzeConfig(object):
       if central_or_shift in systematics.EWK_jet              and sample_category not in [ "WZ", "ZZ" ]:       return False
       if central_or_shift in systematics.PartonShower().ttbar and not (sample_category == "TT" and run_ps):    return False
       if central_or_shift in systematics.PartonShower().dy    and not (sample_category == "DY" and run_ps):    return False
-      if central_or_shift in systematics.PartonShower().wjets and not (sample_category == "WJets" and run_ps): return False
+      if central_or_shift in systematics.PartonShower().wjets and not (sample_category == "W" and run_ps):     return False
       return True
 
     def createCfg_analyze(self, jobOptions, sample_info, additionalJobOptions = [], isLeptonFR = False, isHTT = False, dropCtrl = False):

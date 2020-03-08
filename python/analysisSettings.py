@@ -152,18 +152,18 @@ class systematics(object):
     class WJets(object):
 
       class ISR_(object):
-        up   = "CMS_ttHl_PS_WJets_ISRUp"
-        down = "CMS_ttHl_PS_WJets_ISRDown"
+        up   = "CMS_ttHl_PS_W_ISRUp"
+        down = "CMS_ttHl_PS_W_ISRDown"
         full = [ up, down ]
 
       class FSR_(object):
-        up   = "CMS_ttHl_PS_WJets_FSRUp"
-        down = "CMS_ttHl_PS_WJets_FSRDown"
+        up   = "CMS_ttHl_PS_W_FSRUp"
+        down = "CMS_ttHl_PS_W_FSRDown"
         full = [ up, down ]
 
       class env_(object):
-        up   = "CMS_ttHl_PS_WJetsUp"
-        down = "CMS_ttHl_PS_WJetsDown"
+        up   = "CMS_ttHl_PS_WUp"
+        down = "CMS_ttHl_PS_WDown"
         full = [ up, down ]
 
       full = ISR_().full + FSR_().full + env_().full
