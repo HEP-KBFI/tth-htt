@@ -129,10 +129,50 @@ class systematics(object):
         full = [ up, down ]
 
       full = ISR_().full + FSR_().full + env_().full
+    
+    class DY(object):
+
+      class ISR_(object):
+        up   = "CMS_ttHl_PS_DY_ISRUp"
+        down = "CMS_ttHl_PS_DY_ISRDown"
+        full = [ up, down ]
+
+      class FSR_(object):
+        up   = "CMS_ttHl_PS_DY_FSRUp"
+        down = "CMS_ttHl_PS_DY_FSRDown"
+        full = [ up, down ]
+
+      class env_(object):
+        up   = "CMS_ttHl_PS_DYUp"
+        down = "CMS_ttHl_PS_DYDown"
+        full = [ up, down ]
+
+      full = ISR_().full + FSR_().full + env_().full
+    
+    class WJets(object):
+
+      class ISR_(object):
+        up   = "CMS_ttHl_PS_WJets_ISRUp"
+        down = "CMS_ttHl_PS_WJets_ISRDown"
+        full = [ up, down ]
+
+      class FSR_(object):
+        up   = "CMS_ttHl_PS_WJets_FSRUp"
+        down = "CMS_ttHl_PS_WJets_FSRDown"
+        full = [ up, down ]
+
+      class env_(object):
+        up   = "CMS_ttHl_PS_WJetsUp"
+        down = "CMS_ttHl_PS_WJetsDown"
+        full = [ up, down ]
+
+      full = ISR_().full + FSR_().full + env_().full
 
     ttbar = TT().full
+    dy    = DY().full
+    wjets = WJets().full
 
-    procs = [ TT ]
+    procs = [ TT, DY, WJets ]
 
     isr_up   = [ proc.ISR_().up   for proc in procs ]
     isr_down = [ proc.ISR_().down for proc in procs ]
@@ -141,7 +181,7 @@ class systematics(object):
     env_up   = [ proc.env_().up   for proc in procs ]
     env_down = [ proc.env_().down for proc in procs ]
 
-    full = ttbar
+    full = ttbar + dy + wjets
 
   class LHE(object):
 

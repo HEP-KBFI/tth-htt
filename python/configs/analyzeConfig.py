@@ -562,24 +562,26 @@ class analyzeConfig(object):
       run_ps = sample_info["nof_PSweights"] == 4
       is_HHmc = sample_category.startswith("signal") or sample_category == "HH"
 
-      if central_or_shift in systematics.LHE().full           and not has_LHE:                              return False
-      if central_or_shift in systematics.LHE().ttH            and sample_category not in self.ttHProcs:     return False
-      if central_or_shift in systematics.LHE().tHq            and sample_category not in [ "tHq", "TH" ]:   return False
-      if central_or_shift in systematics.LHE().tHW            and sample_category not in [ "tHW", "TH" ]:   return False
-      if central_or_shift in systematics.LHE().ttW            and sample_category not in [ "TTW", "TTWW" ]: return False
-      if central_or_shift in systematics.LHE().ttZ            and sample_category != "TTZ":                 return False
-      if central_or_shift in systematics.LHE().ttbar          and sample_category != "TT":                  return False
-      if central_or_shift in systematics.LHE().dy             and sample_category != "DY":                  return False
-      if central_or_shift in systematics.LHE().wz             and sample_category != "WZ":                  return False
-      if central_or_shift in systematics.LHE().zz             and sample_category != "ZZ":                  return False
-      if central_or_shift in systematics.DYMCReweighting      and not is_dymc_reweighting(sample_name):     return False
-      if central_or_shift in systematics.DYMCNormScaleFactors and not is_dymc_normalization(sample_name):   return False
-      if central_or_shift in systematics.tauIDSF              and 'tau' not in self.channel.lower():        return False
-      if central_or_shift in systematics.leptonIDSF           and '0l' in self.channel.lower():             return False
-      if central_or_shift in systematics.topPtReweighting     and not enable_toppt_rwgt:                    return False
-      if central_or_shift in systematics.LHE().hh             and not is_HHmc:                              return False
-      if central_or_shift in systematics.EWK_jet              and sample_category not in [ "WZ", "ZZ" ]:    return False
-      if central_or_shift in systematics.PartonShower().ttbar and not (sample_category == "TT" and run_ps): return False
+      if central_or_shift in systematics.LHE().full           and not has_LHE:                                 return False
+      if central_or_shift in systematics.LHE().ttH            and sample_category not in self.ttHProcs:        return False
+      if central_or_shift in systematics.LHE().tHq            and sample_category not in [ "tHq", "TH" ]:      return False
+      if central_or_shift in systematics.LHE().tHW            and sample_category not in [ "tHW", "TH" ]:      return False
+      if central_or_shift in systematics.LHE().ttW            and sample_category not in [ "TTW", "TTWW" ]:    return False
+      if central_or_shift in systematics.LHE().ttZ            and sample_category != "TTZ":                    return False
+      if central_or_shift in systematics.LHE().ttbar          and sample_category != "TT":                     return False
+      if central_or_shift in systematics.LHE().dy             and sample_category != "DY":                     return False
+      if central_or_shift in systematics.LHE().wz             and sample_category != "WZ":                     return False
+      if central_or_shift in systematics.LHE().zz             and sample_category != "ZZ":                     return False
+      if central_or_shift in systematics.DYMCReweighting      and not is_dymc_reweighting(sample_name):        return False
+      if central_or_shift in systematics.DYMCNormScaleFactors and not is_dymc_normalization(sample_name):      return False
+      if central_or_shift in systematics.tauIDSF              and 'tau' not in self.channel.lower():           return False
+      if central_or_shift in systematics.leptonIDSF           and '0l' in self.channel.lower():                return False
+      if central_or_shift in systematics.topPtReweighting     and not enable_toppt_rwgt:                       return False
+      if central_or_shift in systematics.LHE().hh             and not is_HHmc:                                 return False
+      if central_or_shift in systematics.EWK_jet              and sample_category not in [ "WZ", "ZZ" ]:       return False
+      if central_or_shift in systematics.PartonShower().ttbar and not (sample_category == "TT" and run_ps):    return False
+      if central_or_shift in systematics.PartonShower().dy    and not (sample_category == "DY" and run_ps):    return False
+      if central_or_shift in systematics.PartonShower().wjets and not (sample_category == "WJets" and run_ps): return False
       return True
 
     def createCfg_analyze(self, jobOptions, sample_info, additionalJobOptions = [], isLeptonFR = False, isHTT = False, dropCtrl = False):
