@@ -552,8 +552,9 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
     for histogram_name in histogram_names:
       if histogram_name == HISTOGRAM_COUNT:
         continue
-      for topPtSuffix in ['TopPtRwgtSF', 'TopPtRwgtSFSquared']:
-        histogram_names_extend.append('{}{}'.format(histogram_name, topPtSuffix))
+      for topPtPrefix in [ "TOP16011", "Linear", "Quadratic" ]:
+        for topPtSuffix in [ "TopPtRwgtSF", "TopPtRwgtSFSquared" ]:
+          histogram_names_extend.append('{}{}{}'.format(histogram_name, topPtPrefix, topPtSuffix))
     for histogram_name in histogram_names_extend:
         histogram_names[histogram_name] = -1
 
