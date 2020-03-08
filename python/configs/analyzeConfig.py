@@ -192,17 +192,37 @@ class analyzeConfig(object):
           for central_or_shift in systematics.L1PreFiring:
             self.central_or_shifts.remove(central_or_shift)
         # ------------------------------------------------------------------------
-        self.do_dymc_sys = self.channel in [ "0l_2tau", "1l_1tau" ]
-        for dymc_sys in [ systematics.DYMCReweighting, systematics.DYMCNormScaleFactors ]:
-          if (set(dymc_sys) & set(self.central_or_shifts)) == set(dymc_sys) and not self.do_dymc_sys:
-            logging.warning('Removing systematics from {} era: {}'.format(self.era, ', '.join(dymc_sys)))
-            for central_or_shift in dymc_sys:
-              self.central_or_shifts.remove(central_or_shift)
-        # ------------------------------------------------------------------------
         if self.era != "2018":
           if systematics.JES_HEM in self.central_or_shifts:
             logging.warning('Removing systematics {} from {} era'.format(systematics.JES_HEM, self.era))
             self.central_or_shifts.remove(systematics.JES_HEM)
+        # ------------------------------------------------------------------------
+        self.ttHProcs = [ "ttH" ]# , "ttH_ctcvcp" ]
+        self.prep_dcard_processesToCopy = [  ]
+        self.decayModes = [ "htt", "hww", "hzz", "hmm", "hzg" ]
+        self.decayModes_HH = [ "tttt",  "zzzz",  "wwww",  "ttzz",  "ttww",  "zzww", "bbtt", "bbww", "bbzz" ]
+        self.procsWithDecayModes = self.ttHProcs + [ "WH", "ZH", "tHW", "tHq", "ggH", "qqH", "TTWH", "TTZH" ]
+        self.prep_dcard_signals = self.ttHProcs + [
+          "{}_{}".format(proc, decMode) for proc in self.ttHProcs for decMode in self.decayModes + [ 'fake' ]
+        ] + [
+          "HH_{}".format(decMode)  for decMode in self.decayModes_HH + [ 'fake' ]
+        ]
+        self.convs_backgrounds = [ "XGamma" ]
+        # ------------------------------------------------------------------------
+        central_or_shifts_remove = []
+        for central_or_shift in self.central_or_shifts:
+          is_central_or_shift_selected = False
+          for sample_key, sample_info in self.samples.items():
+            if not sample_info["use_it"]:
+              continue
+            if self.accept_central_or_shift(central_or_shift, sample_info):
+              is_central_or_shift_selected = True
+              break
+          if not is_central_or_shift_selected:
+            central_or_shifts_remove.append(central_or_shift)
+        for central_or_shift in central_or_shifts_remove:
+          logging.warning("Removing systematics {} because it's never used".format(central_or_shift))
+          self.central_or_shifts.remove(central_or_shift)
 
         self.jet_cleaning_by_index = jet_cleaning_by_index
         self.gen_matching_by_index = gen_matching_by_index
@@ -434,17 +454,6 @@ class analyzeConfig(object):
         self.jobOptions_add_syst_dcard = {}
         self.cfgFile_add_syst_fakerate = os.path.join(self.template_dir, "addSystFakeRates_cfg.py")
         self.jobOptions_add_syst_fakerate = {}
-        self.ttHProcs = [ "ttH" ]# , "ttH_ctcvcp" ]
-        self.prep_dcard_processesToCopy = [  ]
-        self.decayModes = [ "htt", "hww", "hzz", "hmm", "hzg" ]
-        self.decayModes_HH = [ "tttt",  "zzzz",  "wwww",  "ttzz",  "ttww",  "zzww", "bbtt", "bbww", "bbzz" ]
-        self.procsWithDecayModes = self.ttHProcs + [ "WH", "ZH", "tHW", "tHq", "ggH", "qqH", "TTWH", "TTZH" ]
-        self.prep_dcard_signals = self.ttHProcs + [
-          "{}_{}".format(proc, decMode) for proc in self.ttHProcs for decMode in self.decayModes + [ 'fake' ]
-        ] + [
-          "HH_{}".format(decMode)  for decMode in self.decayModes_HH + [ 'fake' ]
-        ]
-        self.convs_backgrounds = [ "XGamma" ]
         self.make_plots_backgrounds = [ ]
         self.make_plots_signal = "ttH"
         self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_cfg.py")
