@@ -190,7 +190,7 @@ dictionary_entry_str = """{{ dict_name }}["{{ dbs_name }}"] = OD([
   ("nof_files",                       {{ nof_files }}),
   ("nof_db_files",                    {{ nof_db_files }}),
   ("nof_events",                      { {%- for histogram_name, event_counts in nof_events.items() %}
-    {{ "%-75s"|format("'%s'"|format(histogram_name)) }} : [ {% for event_count in event_counts -%}{{ '%12d'|format(event_count) }}, {% endfor %}],
+    {{ "%-80s"|format("'%s'"|format(histogram_name)) }} : [ {% for event_count in event_counts -%}{{ '%12d'|format(event_count) }}, {% endfor %}],
   {%- endfor %}
   }),
   ("nof_tree_events",                 {{ nof_tree_events }}),
