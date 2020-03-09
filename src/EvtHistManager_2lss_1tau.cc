@@ -102,7 +102,10 @@ void EvtHistManager_2lss_1tau::bookHistograms(TFileDirectory & dir)
   histogram_mTauTauVis_   = book1D(dir, "mTauTauVis",   "mTauTauVis",    20,  0., 200.);
   histogram_mTauTauVis1_  = book1D(dir, "mTauTauVis1",  "mTauTauVis1",   20,  0., 200.);
   histogram_mTauTauVis2_  = book1D(dir, "mTauTauVis2",  "mTauTauVis2",   20,  0., 200.);
-  histogram_memOutput_LR_ = book1D(dir, "memOutput_LR", "memOutput_LR", 100,  0.,   1.);
+  if(option_ == kOption_allHistograms)
+  {
+    histogram_memOutput_LR_ = book1D(dir, "memOutput_LR", "memOutput_LR", 100,  0.,   1.);
+  }
 
   histogram_EventCounter_ = book1D(dir, "EventCounter", "EventCounter",   1, -0.5, +0.5);
 }
@@ -128,7 +131,10 @@ EvtHistManager_2lss_1tau::fillHistograms(const EvtHistManager_2lss_1tau_Input & 
   fillWithOverFlow(histogram_mTauTauVis_,   variables.mTauTauVis1,  evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mTauTauVis1_,  variables.mTauTauVis1,  evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mTauTauVis2_,  variables.mTauTauVis2,  evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_memOutput_LR_, variables.memOutput_LR, evtWeight, evtWeightErr);
+  if(option_ == kOption_allHistograms)
+  {
+    fillWithOverFlow(histogram_memOutput_LR_, variables.memOutput_LR, evtWeight, evtWeightErr);
+  }
 
   fillWithOverFlow(histogram_EventCounter_, 0., evtWeight, evtWeightErr);
 

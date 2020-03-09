@@ -7,7 +7,21 @@
 EvtHistManager_2lss::EvtHistManager_2lss(const edm::ParameterSet & cfg)
   : HistManagerBase(cfg)
   , era_(get_era(cfg.getParameter<std::string>("era")))
+  , option_(kOption_undefined)
 {
+  const std::string option_string = cfg.getParameter<std::string>("option");
+  if(option_string == "allHistograms")
+  {
+    option_ = kOption_allHistograms;
+  }
+  else if(option_string == "minimalHistograms")
+  {
+    option_ = kOption_minimalHistograms;
+  }
+  else
+  {
+    throw cmsException(__func__) << "Invalid Configuration parameter 'option' = " << option_string;
+  }
   const std::vector<std::string> sysOpts_central = {
     "numElectrons",
     "numMuons",
@@ -109,12 +123,15 @@ EvtHistManager_2lss::bookCategories(TFileDirectory & dir,
 void
 EvtHistManager_2lss::bookHistograms(TFileDirectory & dir)
 {
-  histogram_numElectrons_    = book1D(dir, "numElectrons",    "numElectrons",     5, -0.5,  +4.5);
-  histogram_numMuons_        = book1D(dir, "numMuons",        "numMuons",         5, -0.5,  +4.5);
-  histogram_numHadTaus_      = book1D(dir, "numHadTaus",      "numHadTaus",       5, -0.5,  +4.5);
-  histogram_numJets_         = book1D(dir, "numJets",         "numJets",         20, -0.5, +19.5);
-  histogram_numBJets_loose_  = book1D(dir, "numBJets_loose",  "numBJets_loose",  10, -0.5,  +9.5);
-  histogram_numBJets_medium_ = book1D(dir, "numBJets_medium", "numBJets_medium", 10, -0.5,  +9.5);
+  if(option_ == kOption_allHistograms)
+  {
+    histogram_numElectrons_    = book1D(dir, "numElectrons",    "numElectrons",     5, -0.5,  +4.5);
+    histogram_numMuons_        = book1D(dir, "numMuons",        "numMuons",         5, -0.5,  +4.5);
+    histogram_numHadTaus_      = book1D(dir, "numHadTaus",      "numHadTaus",       5, -0.5,  +4.5);
+    histogram_numJets_         = book1D(dir, "numJets",         "numJets",         20, -0.5, +19.5);
+    histogram_numBJets_loose_  = book1D(dir, "numBJets_loose",  "numBJets_loose",  10, -0.5,  +9.5);
+    histogram_numBJets_medium_ = book1D(dir, "numBJets_medium", "numBJets_medium", 10, -0.5,  +9.5);
+  }
 
   histogram_mvaOutput_2lss_ttV_   = book1D(dir, "mvaOutput_2lss_ttV",   "mvaOutput_2lss_ttV",   40, -1., +1.);
   histogram_mvaOutput_2lss_ttbar_ = book1D(dir, "mvaOutput_2lss_ttbar", "mvaOutput_2lss_ttbar", 40, -1., +1.);
@@ -130,12 +147,15 @@ EvtHistManager_2lss::fillHistograms(const EvtHistManager_2lss_Input & variables)
   const double evtWeightErr = 0.;
   const double & evtWeight = variables.evtWeight;
 
-  fillWithOverFlow(histogram_numElectrons_,    variables.numElectrons,    evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numMuons_,        variables.numMuons,        evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numHadTaus_,      variables.numHadTaus,      evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numJets_,         variables.numJets,         evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numBJets_loose_,  variables.numBJets_loose,  evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numBJets_medium_, variables.numBJets_medium, evtWeight, evtWeightErr);
+  if(option_ == kOption_allHistograms)
+  {
+    fillWithOverFlow(histogram_numElectrons_,    variables.numElectrons,    evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_numMuons_,        variables.numMuons,        evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_numHadTaus_,      variables.numHadTaus,      evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_numJets_,         variables.numJets,         evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_numBJets_loose_,  variables.numBJets_loose,  evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_numBJets_medium_, variables.numBJets_medium, evtWeight, evtWeightErr);
+  }
 
   fillWithOverFlow(histogram_mvaOutput_2lss_ttV_,   variables.mvaOutput_2lss_ttV,   evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaOutput_2lss_ttbar_, variables.mvaOutput_2lss_ttbar, evtWeight, evtWeightErr);
