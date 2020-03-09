@@ -1186,7 +1186,7 @@ EvtWeightRecorder::compute_FR_1l1tau(bool passesTight_lepton,
 }
 
 void
-EvtWeightRecorder::compute_FR_1lepton(bool passesTight_lepton)
+EvtWeightRecorder::compute_FR_1l(bool passesTight_lepton)
 {
   assert(! weights_FR_lepton_lead_.empty());
   weights_FR_.clear();

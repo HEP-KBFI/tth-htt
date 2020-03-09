@@ -287,7 +287,7 @@ public:
                     bool passesTight_hadTau);
 
   void
-  compute_FR_1lepton(bool passesTight_lepton);
+  compute_FR_1l(bool passesTight_lepton);
 
   void
   compute_FR_1tau(bool passesTight_hadTau);
