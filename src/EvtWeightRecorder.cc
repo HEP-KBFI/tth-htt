@@ -2,6 +2,7 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/L1PreFiringWeightReader.h"
 #include "tthAnalysis/HiggsToTauTau/interface/LHEInfoReader.h"
+#include "tthAnalysis/HiggsToTauTau/interface/PSWeightReader.h"
 #include "tthAnalysis/HiggsToTauTau/interface/EventInfo.h"
 #include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface_Base.h"
 #include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface_0l_2tau_trigger.h"
@@ -57,7 +58,7 @@ EvtWeightRecorder::get_inclusive(const std::string & central_or_shift) const
   return isMC_ ? get_genWeight() * get_bmWeight() * get_auxWeight(central_or_shift) * get_lumiScale(central_or_shift) *
                  get_nom_tH_weight(central_or_shift) * get_puWeight(central_or_shift) *
                  get_l1PreFiringWeight(central_or_shift) * get_lheScaleWeight(central_or_shift) *
-                 get_dy_rwgt(central_or_shift) * get_rescaling()
+                 get_dy_rwgt(central_or_shift) * get_rescaling() * get_psWeight(central_or_shift)
                : 1.
   ;
 }
@@ -147,6 +148,20 @@ EvtWeightRecorder::get_lheScaleWeight(const std::string & central_or_shift) cons
     if(weights_lheScale_.count(lheScale_option))
     {
       return weights_lheScale_.at(lheScale_option);
+    }
+  }
+  return 1.;
+}
+
+double
+EvtWeightRecorder::get_psWeight(const std::string & central_or_shift) const
+{
+  if(isMC_ && ! weights_partonShower_.empty())
+  {
+    const int psWeight_option = getPartonShower_option(central_or_shift);
+    if(weights_partonShower_.count(psWeight_option))
+    {
+      return weights_partonShower_.at(psWeight_option);
     }
   }
   return 1.;
@@ -577,6 +592,22 @@ EvtWeightRecorder::record_lheScaleWeight(const LHEInfoReader * const lheInfoRead
       continue;
     }
     weights_lheScale_[lheScale_option] = lheInfoReader->getWeight_scale(lheScale_option);
+  }
+}
+
+void
+EvtWeightRecorder::record_psWeight(const PSWeightReader * const psWeightReader)
+{
+  assert(isMC_);
+  weights_partonShower_.clear();
+  for(const std::string & central_or_shift: central_or_shifts_)
+  {
+    const int psWeight_option = getPartonShower_option(central_or_shift);
+    if(weights_partonShower_.count(psWeight_option))
+    {
+      continue;
+    }
+    weights_partonShower_[psWeight_option] = psWeightReader->getWeight_ps(psWeight_option);
   }
 }
 
@@ -1155,7 +1186,26 @@ EvtWeightRecorder::compute_FR_1l1tau(bool passesTight_lepton,
 }
 
 void
-EvtWeightRecorder::compute_FR_1tau()
+EvtWeightRecorder::compute_FR_1l(bool passesTight_lepton)
+{
+  assert(! weights_FR_lepton_lead_.empty());
+  weights_FR_.clear();
+  for(const std::string & central_or_shift: central_or_shifts_)
+  {
+    const int jetToLeptonFakeRate_option = getJetToLeptonFR_option(central_or_shift);
+    const int jetToTauFakeRate_option = getJetToTauFR_option(central_or_shift);
+    assert(weights_FR_lepton_lead_.count(jetToLeptonFakeRate_option));
+    const std::string weightKey = jetToLeptonFakeRate_option == kFRl_central && jetToTauFakeRate_option == kFRjt_central ? "central" : central_or_shift;
+    if(weights_FR_.count(weightKey))
+    {
+      continue;
+    }
+    weights_FR_[weightKey] = ! passesTight_lepton ? getWeight_1L(weights_FR_lepton_lead_.at(jetToLeptonFakeRate_option)) : 1.;
+  }
+}
+
+void
+EvtWeightRecorder::compute_FR_1tau(bool passesTight_hadTau)
 {
   assert(! weights_FR_hadTau_lead_.empty());
   weights_FR_.clear();
@@ -1169,7 +1219,7 @@ EvtWeightRecorder::compute_FR_1tau()
     {
       continue;
     }
-    weights_FR_[weightKey] = getWeight_1L(weights_FR_hadTau_lead_.at(jetToTauFakeRate_option));
+    weights_FR_[weightKey] = ! passesTight_hadTau ? getWeight_1L(weights_FR_hadTau_lead_.at(jetToTauFakeRate_option)) : 1.;
   }
 }
 
@@ -1267,6 +1317,7 @@ operator<<(std::ostream & os,
           "  PU weight             = " << evtWeightRecorder.get_puWeight(central_or_shift)                << "\n"
           "  L1 prefiring weight   = " << evtWeightRecorder.get_l1PreFiringWeight(central_or_shift)       << "\n"
           "  LHE scale weight      = " << evtWeightRecorder.get_lheScaleWeight(central_or_shift)          << "\n"
+          "  parton shower weight  = " << evtWeightRecorder.get_psWeight(central_or_shift)                << "\n"
           "  DY reweighting weight = " << evtWeightRecorder.get_dy_rwgt(central_or_shift)                 << "\n"
           "  inclusive weight      = " << evtWeightRecorder.get_inclusive(central_or_shift)               << "\n"
           "  trigger eff SF        = " << evtWeightRecorder.get_sf_triggerEff(central_or_shift)           << "\n"

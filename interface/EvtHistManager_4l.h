@@ -12,6 +12,19 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/HistManagerBase.h" // HistManagerBase
 
+struct EvtHistManager_4l_Input
+{
+  std::size_t numElectrons;
+  std::size_t numMuons;
+  std::size_t numJets;
+  std::size_t numBJets_loose;
+  std::size_t numBJets_medium;
+  double mass_4L;
+  double mva_4l;
+  int ctrl_category;
+  double evtWeight;
+};
+
 class EvtHistManager_4l
   : public HistManagerBase
 {
@@ -24,18 +37,12 @@ class EvtHistManager_4l
   bookHistograms(TFileDirectory & dir) override;
 
   void
-  fillHistograms(int numElectrons,
-                 int numMuons,
-                 int numJets,
-                 int numBJets_loose,
-                 int numBJets_medium,
-                 double mass_4L,
-                 double mva_4l,
-                 int ctrl_category,
-                 double evtWeight);
+  fillHistograms(const EvtHistManager_4l_Input & variables);
 
   const TH1 *
   getHistogram_EventCounter() const;
+
+  enum { kOption_undefined, kOption_allHistograms, kOption_minimalHistograms };
 
  private:
   int era_;
@@ -57,6 +64,7 @@ class EvtHistManager_4l
   TH1 * histogram_ctrl_;
 
   TH1 * histogram_EventCounter_;
+  int option_; // flag to book & fill either full or minimal set of histograms (to reduce memory consumption of hadd jobs)
 };
 
 #endif

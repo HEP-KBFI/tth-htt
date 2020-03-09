@@ -166,7 +166,7 @@ def find_earlier_version(log_file):
     return log_file_candidate
   return ''
 
-def check_submission_cmd(submission_out, submission_cmd):
+def check_submission_cmd(submission_out, submission_cmd, throw = False):
   earlier_submission_out = find_earlier_version(submission_out)
   current_submission = ' '.join(submission_cmd) if submission_cmd else str(submission_cmd)
   current_submission_stripped = current_submission.replace(' -A', '').replace(' -E', '')
@@ -184,6 +184,8 @@ def check_submission_cmd(submission_out, submission_cmd):
           current_submission, previous_submission
         )
       )
+      if throw:
+        sys.exit(1)
       do_run = query_yes_no("Sure you want to resubmit with a different command?", default = "no")
       if not do_run:
         logging.info('Exiting')

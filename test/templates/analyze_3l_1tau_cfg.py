@@ -91,7 +91,7 @@ process.analyze_3l_1tau = cms.PSet(
     lumiScale = cms.VPSet(),
     apply_genWeight = cms.bool(True),
     apply_DYMCReweighting = cms.bool(False),
-    apply_topPtReweighting = cms.bool(False),
+    apply_topPtReweighting = cms.string(''),
     apply_l1PreFireWeight = cms.bool(True),
     apply_hlt_filter = cms.bool(False),
     apply_met_filters = cms.bool(True),
@@ -133,6 +133,8 @@ process.analyze_3l_1tau = cms.PSet(
     useNonNominal = cms.bool(False),
     isDEBUG = cms.bool(False),
     hasLHE = cms.bool(True),
+    hasPS = cms.bool(False),
+    apply_LHE_nom = cms.bool(False),
     useObjectMultiplicity = cms.bool(False),
 
     evtWeight = cms.PSet(

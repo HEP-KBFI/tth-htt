@@ -17,7 +17,8 @@ RecoJet::RecoJet(const GenJet & jet,
                  Int_t puId,
                  Int_t genMatchIdx,
                  Int_t idx,
-                 Btag btag)
+                 Btag btag,
+                 Int_t central_or_shift)
   : RecoJetBase(jet, idx)
   , jetCharge_(charge)
   , BtagCSV_(BtagCSV)
@@ -30,6 +31,7 @@ RecoJet::RecoJet(const GenJet & jet,
   , puId_(puId)
   , genMatchIdx_(genMatchIdx)
   , btag_(btag)
+  , default_systematics_(central_or_shift)
 {}
 
 RecoJet::~RecoJet()
@@ -140,15 +142,32 @@ RecoJet::hasBtag(Btag btag) const
   return BtagCSVs_.count(btag);
 }
 
+int
+RecoJet::get_default_systematics() const
+{
+  return default_systematics_;
+}
+
+const Particle::LorentzVector
+RecoJet::get_systematics_p4(int central_or_shift) const
+{
+  if(! pt_systematics_.count(central_or_shift) && ! mass_systematics_.count(central_or_shift))
+  {
+    throw cmsException(this, __func__, __LINE__) << "No such systematics available: " << central_or_shift;
+  }
+  return { pt_systematics_.at(central_or_shift), eta_, phi_, mass_systematics_.at(central_or_shift) };
+}
+
 std::ostream &
 operator<<(std::ostream & stream,
            const RecoJet & jet)
 {
-  stream << static_cast<const GenJet &>(jet)         << ","
-            " charge = " << jet.charge()             << ","
-            " CSV = "    << jet.BtagCSV()            << ","
-            " jet ID = " << jet.jetId()              << ","
-            " PU ID = "  << jet.puId()               << ","
+  stream << static_cast<const GenJet &>(jet)              << ","
+            " charge = " << jet.charge()                  << ","
+            " CSV = "    << jet.BtagCSV()                 << ","
+            " jet ID = " << jet.jetId()                   << ","
+            " PU ID = "  << jet.puId()                    << ","
+            " sysunc = " << jet.get_default_systematics() << ","
             "\n"
             " gen. matching:";
   stream << ",\n  lepton = " << jet.genLepton();

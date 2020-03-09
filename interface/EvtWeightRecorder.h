@@ -8,6 +8,7 @@
 // forward declarations
 class L1PreFiringWeightReader;
 class LHEInfoReader;
+class PSWeightReader;
 class EventInfo;
 class RecoJet;
 class Data_to_MC_CorrectionInterface_Base;
@@ -73,6 +74,9 @@ public:
 
   double
   get_lheScaleWeight(const std::string & central_or_shift) const;
+
+  double
+  get_psWeight(const std::string & central_or_shift) const;
 
   double
   get_leptonSF() const;
@@ -172,6 +176,9 @@ public:
 
   void
   record_lheScaleWeight(const LHEInfoReader * const lheInfoReader);
+
+  void
+  record_psWeight(const PSWeightReader * const psWeightReader);
 
   void
   record_puWeight(const EventInfo * const eventInfo);
@@ -280,7 +287,10 @@ public:
                     bool passesTight_hadTau);
 
   void
-  compute_FR_1tau();
+  compute_FR_1l(bool passesTight_lepton);
+
+  void
+  compute_FR_1tau(bool passesTight_hadTau);
 
   void
   compute_FR_2tau(bool passesTight_hadTau_lead,
@@ -329,6 +339,7 @@ protected:
 
   std::map<L1PreFiringWeightSys, double> weights_l1PreFiring_;
   std::map<int, double> weights_lheScale_;
+  std::map<int, double> weights_partonShower_;
   std::map<PUsys, double> weights_pu_;
   std::map<int, double> weights_dy_norm_;
   std::map<int, double> weights_dy_rwgt_;

@@ -50,7 +50,9 @@ def comp_weights_1(f, samples, samples_to_stitch, split_var, apply_sf = True):
       if sample_entry['process_name_specific'] in binned_sample['samples']:
         if not nof_events:
           nof_events = copy.deepcopy(sample_entry['nof_events'])
-          assert(set(inclusive_nof_events.keys()) == set(nof_events.keys()))
+          inclusive_nof_events_type = set(event_type for event_type in inclusive_nof_events.keys() if 'PSWeight' not in event_type)
+          nof_events_type = set(event_type for event_type in nof_events.keys() if 'PSWeight' not in event_type)
+          assert(inclusive_nof_events_type == nof_events_type)
         else:
           assert(set(sample_entry['nof_events'].keys()) == set(nof_events.keys()))
           for nof_key, nof_arr in sample_entry['nof_events'].items():
@@ -93,6 +95,8 @@ def comp_weights_1(f, samples, samples_to_stitch, split_var, apply_sf = True):
     histogram_dir.cd()
 
     for nof_key, lumi_arr in inclusive_lumis.items():
+      if 'PSWeight' in nof_key:
+        continue
       for idx, lumi_incl in enumerate(lumi_arr):
         histogram_name = '%s_%d' % (nof_key, idx)
         binning = array.array('f', complete_binning)
@@ -136,6 +140,8 @@ def comp_weights_1(f, samples, samples_to_stitch, split_var, apply_sf = True):
       histogram_dir.cd()
 
       for nof_key, lumi_arr in inclusive_lumis.items():
+        if 'PSWeight' in nof_key:
+          continue
         for idx, lumi_incl in enumerate(lumi_arr):
 
           histogram_name = '%s_%d' % (nof_key, idx)
@@ -215,7 +221,9 @@ def comp_weights_2(f, samples, samples_to_stitch, split_var_1, split_var_2, appl
       if sample_entry['process_name_specific'] in binned_sample['samples']:
         if not nof_events:
           nof_events = copy.deepcopy(sample_entry['nof_events'])
-          assert(set(inclusive_nof_events.keys()) == set(nof_events.keys()))
+          inclusive_nof_events_type = set(event_type for event_type in inclusive_nof_events.keys() if 'PSWeight' not in event_type)
+          nof_events_type = set(event_type for event_type in nof_events.keys() if 'PSWeight' not in event_type)
+          assert(inclusive_nof_events_type == nof_events_type)
         else:
           assert(set(sample_entry['nof_events'].keys()) == set(nof_events.keys()))
           for nof_key, nof_arr in sample_entry['nof_events'].items():
@@ -242,7 +250,9 @@ def comp_weights_2(f, samples, samples_to_stitch, split_var_1, split_var_2, appl
       if sample_entry['process_name_specific'] in binned_sample['samples']:
         if not nof_events:
           nof_events = copy.deepcopy(sample_entry['nof_events'])
-          assert(set(inclusive_nof_events.keys()) == set(nof_events.keys()))
+          inclusive_nof_events_type = set(event_type for event_type in inclusive_nof_events.keys() if 'PSWeight' not in event_type)
+          nof_events_type = set(event_type for event_type in nof_events.keys() if 'PSWeight' not in event_type)
+          assert(inclusive_nof_events_type == nof_events_type)
         else:
           assert(set(sample_entry['nof_events'].keys()) == set(nof_events.keys()))
           for nof_key, nof_arr in sample_entry['nof_events'].items():
@@ -291,6 +301,8 @@ def comp_weights_2(f, samples, samples_to_stitch, split_var_1, split_var_2, appl
     histogram_dir.cd()
 
     for nof_key, lumi_arr in inclusive_lumis.items():
+      if 'PSWeight' in nof_key:
+        continue
       for idx, lumi_incl in enumerate(lumi_arr):
 
         histogram_name = '%s_%d' % (nof_key, idx)
@@ -355,6 +367,8 @@ def comp_weights_2(f, samples, samples_to_stitch, split_var_1, split_var_2, appl
       histogram_dir.cd()
 
       for nof_key, lumi_arr in inclusive_lumis.items():
+        if 'PSWeight' in nof_key:
+          continue
         for idx, lumi_incl in enumerate(lumi_arr):
 
           histogram_name = '%s_%d' % (nof_key, idx)
@@ -428,6 +442,8 @@ def comp_weights_2(f, samples, samples_to_stitch, split_var_1, split_var_2, appl
       histogram_dir.cd()
 
       for nof_key, lumi_arr in inclusive_lumis.items():
+        if 'PSWeight' in nof_key:
+          continue
         for idx, lumi_incl in enumerate(lumi_arr):
 
           histogram_name = '%s_%d' % (nof_key, idx)
@@ -533,7 +549,9 @@ def comp_weights_2_wo_inclusive(f, samples, samples_to_stitch, split_var_1, spli
       if sample_entry['process_name_specific'] in binned_sample['samples']:
         if not nof_events:
           nof_events = copy.deepcopy(sample_entry['nof_events'])
-          assert(set(inclusive_nof_events.keys()) == set(nof_events.keys()))
+          inclusive_nof_events_type = set(event_type for event_type in inclusive_nof_events.keys() if 'PSWeight' not in event_type)
+          nof_events_type = set(event_type for event_type in nof_events.keys() if 'PSWeight' not in event_type)
+          assert(inclusive_nof_events_type == nof_events_type)
         else:
           assert(set(sample_entry['nof_events'].keys()) == set(nof_events.keys()))
           for nof_key, nof_arr in sample_entry['nof_events'].items():
@@ -560,7 +578,9 @@ def comp_weights_2_wo_inclusive(f, samples, samples_to_stitch, split_var_1, spli
       if sample_entry['process_name_specific'] in binned_sample['samples']:
         if not nof_events:
           nof_events = copy.deepcopy(sample_entry['nof_events'])
-          assert(set(inclusive_nof_events.keys()) == set(nof_events.keys()))
+          inclusive_nof_events_type = set(event_type for event_type in inclusive_nof_events.keys() if 'PSWeight' not in event_type)
+          nof_events_type = set(event_type for event_type in nof_events.keys() if 'PSWeight' not in event_type)
+          assert(inclusive_nof_events_type == nof_events_type)
         else:
           assert(set(sample_entry['nof_events'].keys()) == set(nof_events.keys()))
           for nof_key, nof_arr in sample_entry['nof_events'].items():
@@ -610,6 +630,8 @@ def comp_weights_2_wo_inclusive(f, samples, samples_to_stitch, split_var_1, spli
       histogram_dir.cd()
 
       for nof_key, lumi_arr in inclusive_lumis.items():
+        if 'PSWeight' in nof_key:
+          continue
         for idx, lumi_incl in enumerate(lumi_arr):
 
           histogram_name = '%s_%d' % (nof_key, idx)
@@ -677,6 +699,8 @@ def comp_weights_2_wo_inclusive(f, samples, samples_to_stitch, split_var_1, spli
       histogram_dir.cd()
 
       for nof_key, lumi_arr in inclusive_lumis.items():
+        if 'PSWeight' in nof_key:
+          continue
         for idx, lumi_incl in enumerate(lumi_arr):
 
           histogram_name = '%s_%d' % (nof_key, idx)

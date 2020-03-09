@@ -10,6 +10,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetBase.h" // RecoJetBase
 #include "tthAnalysis/HiggsToTauTau/interface/TrigObj.h" // TrigObj
 #include "tthAnalysis/HiggsToTauTau/interface/EventInfo.h" // EventInfo
+#include "tthAnalysis/HiggsToTauTau/interface/RecoMEt.h" // RecoMEt
 
 #include <DataFormats/Math/interface/deltaR.h> // deltaR()
 #include <DataFormats/Math/interface/LorentzVector.h> // math::PtEtaPhiMLorentzVector
@@ -662,6 +663,9 @@ get_prefix(const std::string & process_string,
            bool isMC_H,
            bool isMC_VH);
 
+std::vector<std::pair<std::string, int>>
+get_htxs_binning(bool isMC_ttH);
+
 /**
  * @brief Find generator-level jets produced in W->jj decay
  *
@@ -721,5 +725,27 @@ convert_to_genParticles(const std::vector<T>& genParticles_derived)
  */
 std::vector<const RecoJetBase*>
 convert_to_RecoJetBase(const std::vector<const RecoJet*>& jets_derived);
+
+double
+clip(double value,
+     double min_value = -10.,
+     double max_value = 10.);
+
+int
+recompute_jet(double & jet_pt,
+              double jet_eta,
+              double jet_phi,
+              double & jet_mass,
+              int jet_id,
+              const std::map<int, Float_t *> & jet_pt_systematics,
+              const std::map<int, Float_t *> & jet_mass_systematics,
+              int central_or_shift,
+              int jet_idx);
+
+RecoMEt
+recompute_met(const RecoMEt & met_uncorr,
+              const std::vector<RecoJet> & jets,
+              int met_option,
+              bool isDEBUG = false);
 
 #endif

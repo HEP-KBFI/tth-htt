@@ -65,7 +65,7 @@ class syncNtupleConfig:
         use_preselected,
         jet_cleaning,
         gen_matching,
-        regroup_jec = False,
+        regroup_jerc = False,
         project_dir = os.path.join(os.getenv('CMSSW_BASE'), 'src', 'tthAnalysis', 'HiggsToTauTau'),
         file_pattern = 'tthAnalyzeRun_%s.py',
         suffix = '',
@@ -88,6 +88,13 @@ class syncNtupleConfig:
     self.output_dir = output_dir
     final_output_dir = os.path.join(self.output_dir, DKEY_SYNC)
     self.final_output_file = os.path.join(final_output_dir, output_filename)
+
+    create_if_not_exists(self.config_dir)
+    create_if_not_exists(self.output_dir)
+
+    submission_out = os.path.join(self.config_dir, "SUBMISSION_sync.log")
+    submission_out, = get_log_version((submission_out,))
+    check_submission_cmd(submission_out, submission_cmd)
 
     systematic_labels = ' '.join(systematics_label)
     common_args = "-v %s -e %s -s %s -y %s " % (version, era, systematic_labels, use_home)
@@ -114,7 +121,7 @@ class syncNtupleConfig:
       additional_args += " -w %s" % tau_id_wp
     if self.running_method:
       additional_args += " -R %s" % self.running_method
-    if regroup_jec:
+    if regroup_jerc:
       additional_args += " -G"
 
     mem_channels = [ '2lss_1tau', '3l', 'hh_bb2l' ]
@@ -126,9 +133,6 @@ class syncNtupleConfig:
 
     inclusive_args += additional_args
     common_args    += additional_args
-
-    create_if_not_exists(self.config_dir)
-    create_if_not_exists(self.output_dir)
 
     channels_extended = collections.OrderedDict()
     for channel in channels:
@@ -151,13 +155,11 @@ class syncNtupleConfig:
       channel_makefile = os.path.join(self.config_dir, 'Makefile_%s' % channel)
       channel_outlog   = os.path.join(self.config_dir, 'stdout_sync_%s.log' % channel)
       channel_errlog   = os.path.join(self.config_dir, 'stderr_sync_%s.log' % channel)
-      submission_out   = os.path.join(self.config_dir, "SUBMISSION_%s.log" % channel)
       channel_outlog_create = os.path.join(self.config_dir, 'stdout_sync_create_%s.log' % channel)
       channel_errlog_create = os.path.join(self.config_dir, 'stderr_sync_create_%s.log' % channel)
-      channel_outlog, channel_errlog, channel_outlog_create, channel_errlog_create, submission_out = get_log_version((
-        channel_outlog, channel_errlog, channel_outlog_create, channel_errlog_create, submission_out
+      channel_outlog, channel_errlog, channel_outlog_create, channel_errlog_create = get_log_version((
+        channel_outlog, channel_errlog, channel_outlog_create, channel_errlog_create,
       ))
-      check_submission_cmd(submission_out, submission_cmd)
 
       cmd_args = common_args if 'inclusive' not in channel else inclusive_args
       if 'inclusive' not in channel:

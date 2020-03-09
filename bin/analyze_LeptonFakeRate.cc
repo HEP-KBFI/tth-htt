@@ -178,10 +178,11 @@ main(int argc,
   const bool hasLHE  = cfg_analyze.getParameter<bool>("hasLHE");
   const bool useObjectMultiplicity = cfg_analyze.getParameter<bool>("useObjectMultiplicity");
 
+  const std::string apply_topPtReweighting_str = cfg_analyze.getParameter<std::string>("apply_topPtReweighting");
   const std::string central_or_shift = cfg_analyze.getParameter<std::string>("central_or_shift");
   edm::VParameterSet lumiScale = cfg_analyze.getParameter<edm::VParameterSet>("lumiScale");
   const bool apply_genWeight            = cfg_analyze.getParameter<bool>("apply_genWeight");
-  const bool apply_topPtReweighting     = cfg_analyze.getParameter<bool>("apply_topPtReweighting");
+  const bool apply_topPtReweighting     = ! apply_topPtReweighting_str.empty();
   const bool apply_DYMCReweighting      = cfg_analyze.getParameter<bool>("apply_DYMCReweighting");
   const bool apply_DYMCNormScaleFactors = cfg_analyze.getParameter<bool>("apply_DYMCNormScaleFactors");
   const bool apply_l1PreFireWeight      = cfg_analyze.getParameter<bool>("apply_l1PreFireWeight");
@@ -388,6 +389,10 @@ main(int argc,
     eventInfo.loadWeight_tH(tHweights);
   }
   EventInfoReader eventInfoReader(&eventInfo);
+  if(apply_topPtReweighting)
+  {
+    eventInfoReader.setTopPtRwgtBranchName(apply_topPtReweighting_str);
+  }
   inputTree->registerReader(&eventInfoReader);
 
   ObjectMultiplicity objectMultiplicity;

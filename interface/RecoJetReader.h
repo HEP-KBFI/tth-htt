@@ -101,7 +101,9 @@ protected:
   Btag btag_;
   int btag_central_or_shift_;
   int ptMassOption_;
+  int ptMassOption_branch_;
   bool read_ptMass_systematics_;
+  std::vector<int> read_systematics_whitelist_;
   bool read_btag_systematics_;
 
   UInt_t nJets_;

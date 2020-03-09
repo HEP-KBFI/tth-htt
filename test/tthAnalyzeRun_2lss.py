@@ -29,7 +29,7 @@ parser.add_use_home()
 parser.add_jet_cleaning()
 parser.add_gen_matching()
 parser.add_tau_id()
-parser.enable_regrouped_jec()
+parser.enable_regrouped_jerc()
 parser.add_split_trigger_sys()
 parser.add_stitched()
 args = parser.parse_args()
@@ -58,14 +58,14 @@ use_home          = args.use_home
 jet_cleaning      = args.jet_cleaning
 gen_matching      = args.gen_matching
 tau_id            = args.tau_id
-regroup_jec       = args.enable_regrouped_jec
+regroup_jerc      = args.enable_regrouped_jerc
 use_stitched      = args.use_stitched
 split_trigger_sys = args.split_trigger_sys
 
-if regroup_jec:
+if regroup_jerc:
   if 'full' not in systematics_label:
-    raise RuntimeError("Regrouped JEC was enabled but not running with full systematics")
-  systematics.full.extend(systematics.JEC_regrouped)
+    raise RuntimeError("Regrouped JEC or split JER was enabled but not running with full systematics")
+  systematics.full.extend(systematics.JEC_regrouped + systematics.JER_split)
 if split_trigger_sys == 'yes':
   for trigger_sys in systematics.triggerSF:
     del systematics.internal[systematics.internal.index(trigger_sys)]

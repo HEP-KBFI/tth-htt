@@ -14,6 +14,25 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/MEMOutput_3l.h" // MEMOutput_3l
 
+struct EvtHistManager_3l_Input
+{
+  std::size_t numElectrons;
+  std::size_t numMuons;
+  std::size_t numHadTaus;
+  std::size_t numJets;
+  std::size_t numBJets_loose;
+  std::size_t numBJets_medium;
+  double mvaOutput_3l_ttV;
+  double mvaOutput_3l_ttbar;
+  double mass_3L;
+  std::string category_SVA;
+  double mvaOutput_category_NN;
+  std::string category_NN;
+  const MEMOutput_3l * memOutput_3l;
+  double evtWeight;
+  bool isControlRegion;
+};
+
 class EvtHistManager_3l
   : public HistManagerBase
 {
@@ -29,27 +48,15 @@ class EvtHistManager_3l
   bookCategories(TFileDirectory & dir,
                  const std::map<std::string, std::vector<double>> & categories_list_NN,
                  const std::map<std::string, std::vector<double>> & categories_list_SVA,
-                 bool isControlRegion
-               );
+                 bool isControlRegion);
 
   void
-  fillHistograms(int numElectrons,
-                 int numMuons,
-                 int numHadTaus,
-                 int numJets,
-                 int numBJets_loose,
-                 int numBJets_medium,
-                 double mvaOutput_3l_ttV,
-                 double mvaOutput_3l_ttbar,
-                 double mass_3L, const std::string & category_SVA,
-                 double mvaOutput_category_NN,   const std::string & category_NN,
-                 const MEMOutput_3l * memOutput_3l,
-                 double evtWeight,
-                 bool isControlRegion
-               );
+  fillHistograms(const EvtHistManager_3l_Input & variables);
 
   const TH1 *
   getHistogram_EventCounter() const;
+
+  enum { kOption_undefined, kOption_allHistograms, kOption_minimalHistograms };
 
  private:
   int era_;
@@ -82,6 +89,7 @@ class EvtHistManager_3l
   TH1 * histogram_mem_logRealTime_;
 
   TH1 * histogram_EventCounter_;
+  int option_; // flag to book & fill either full or minimal set of histograms (to reduce memory consumption of hadd jobs)
 };
 
 #endif

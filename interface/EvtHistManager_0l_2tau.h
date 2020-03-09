@@ -14,6 +14,21 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h" // RecoHadTau
 
+struct EvtHistManager_0l_2tau_Input
+{
+  std::size_t numElectrons;
+  std::size_t numMuons;
+  std::size_t numHadTaus;
+  std::size_t numJets;
+  std::size_t numBJets_loose;
+  std::size_t numBJets_medium;
+  double mvaOutput_Legacy;
+  double mva_Updated;
+  double mTauTauVis;
+  double mTauTau;
+  double evtWeight;
+};
+
 class EvtHistManager_0l_2tau
   : public HistManagerBase
 {
@@ -26,20 +41,12 @@ public:
   bookHistograms(TFileDirectory & dir) override;
 
   void
-  fillHistograms(int numElectrons,
-                 int numMuons,
-                 int numHadTaus,
-                 int numJets,
-                 int numBJets_loose,
-                 int numBJets_medium,
-                 double mvaOutput_Legacy,
-                 double mva_Updated,
-                 double mTauTauVis,
-                 double mTauTau,
-                 double evtWeight);
+  fillHistograms(const EvtHistManager_0l_2tau_Input & variables);
 
   const TH1 *
   getHistogram_EventCounter() const;
+
+  enum { kOption_undefined, kOption_allHistograms, kOption_minimalHistograms };
 
 private:
   TH1 * histogram_numElectrons_;
@@ -62,6 +69,7 @@ private:
   TH1 * histogram_mTauTau_;
 
   TH1 * histogram_EventCounter_;
+  int option_; // flag to book & fill either full or minimal set of histograms (to reduce memory consumption of hadd jobs)
 };
 
 #endif

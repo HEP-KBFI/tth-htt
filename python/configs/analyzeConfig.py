@@ -152,9 +152,13 @@ class analyzeConfig(object):
             if len(nof_events) == 0:
               nof_events = copy.deepcopy(samples[dbs_key]['nof_events'])
             else:
-              if set(samples[dbs_key]['nof_events']) != set(nof_events.keys()):
+              sample_nof_events_set = set(evt_key for evt_key in samples[dbs_key]['nof_events'] if 'PSWeight' not in evt_key)
+              nof_events_set = set(evt_key for evt_key in nof_events.keys() if 'PSWeight' not in evt_key)
+              if sample_nof_events_set != nof_events_set:
                 raise ValueError('Mismatching event counts for samples: %s' % dbs_list_human)
               for count_type, count_array in samples[dbs_key]['nof_events'].items():
+                if count_type not in nof_events and 'PSWeight' in count_type:
+                  nof_events[count_type] = [ 0 ] * len(count_array)
                 if len(nof_events[count_type]) != len(count_array):
                   raise ValueError(
                     'Mismatching array length of %s for samples: %s' % (count_type, dbs_list_human)
@@ -169,6 +173,26 @@ class analyzeConfig(object):
           if sample_key == 'sum_events': continue
           sample_info["dbs_name"] = sample_key
           sample_info["apply_toppt_rwgt"] = sample_key.startswith('/TTTo')
+          if any('CountWeightedPSWeight' in event_count for event_count in sample_info['nof_events']):
+            nof_events_default = sample_info['nof_events']['CountWeighted'][0]
+            nof_events_psweight = sample_info['nof_events']['CountWeightedPSWeight'][0]
+            nof_events_psweight_lhenom = sample_info['nof_events']['CountWeightedPSWeightOriginalXWGTUP'][0]
+            apply_lhe_nom = abs(nof_events_default - nof_events_psweight_lhenom) < abs(nof_events_default - nof_events_psweight)
+            if apply_lhe_nom:
+              logging.warning("Applying nominal LHE weight for PS weights in sample {}".format(sample_info["process_name_specific"]))
+            else:
+              logging.warning("Not applying nominal LHE weight for PS weights in sample {}".format(sample_info["process_name_specific"]))
+            sample_info["apply_lhe_nom"] = apply_lhe_nom
+            event_counts_remove = []
+            for event_count in sample_info["nof_events"]:
+              if 'PSWeight' in event_count and (
+                    (apply_lhe_nom and 'PSWeightOriginalXWGTUP' not in event_count) or
+                    (not apply_lhe_nom and 'PSWeightOriginalXWGTUP' in event_count)
+                  ):
+                event_counts_remove.append(event_count)
+            for event_count in event_counts_remove:
+              logging.warning("Removing event yield {} from sample {}".format(event_count, sample_info["process_name_specific"]))
+              del sample_info['nof_events'][event_count]
 
         self.lep_mva_wp = lep_mva_wp
         self.central_or_shifts = central_or_shifts
@@ -192,13 +216,37 @@ class analyzeConfig(object):
           for central_or_shift in systematics.L1PreFiring:
             self.central_or_shifts.remove(central_or_shift)
         # ------------------------------------------------------------------------
-        self.do_dymc_sys = self.channel in [ "0l_2tau", "1l_1tau" ]
-        for dymc_sys in [ systematics.DYMCReweighting, systematics.DYMCNormScaleFactors ]:
-          if (set(dymc_sys) & set(self.central_or_shifts)) == set(dymc_sys) and not self.do_dymc_sys:
-            logging.warning('Removing systematics from {} era: {}'.format(self.era, ', '.join(dymc_sys)))
-            for central_or_shift in dymc_sys:
-              self.central_or_shifts.remove(central_or_shift)
+        if self.era != "2018":
+          if systematics.JES_HEM in self.central_or_shifts:
+            logging.warning('Removing systematics {} from {} era'.format(systematics.JES_HEM, self.era))
+            self.central_or_shifts.remove(systematics.JES_HEM)
         # ------------------------------------------------------------------------
+        self.ttHProcs = [ "ttH" ]# , "ttH_ctcvcp" ]
+        self.prep_dcard_processesToCopy = [  ]
+        self.decayModes = [ "htt", "hww", "hzz", "hmm", "hzg" ]
+        self.decayModes_HH = [ "tttt",  "zzzz",  "wwww",  "ttzz",  "ttww",  "zzww", "bbtt", "bbww", "bbzz" ]
+        self.procsWithDecayModes = self.ttHProcs + [ "WH", "ZH", "tHW", "tHq", "ggH", "qqH", "TTWH", "TTZH" ]
+        self.prep_dcard_signals = self.ttHProcs + [
+          "{}_{}".format(proc, decMode) for proc in self.ttHProcs for decMode in self.decayModes + [ 'fake' ]
+        ] + [
+          "HH_{}".format(decMode)  for decMode in self.decayModes_HH + [ 'fake' ]
+        ]
+        self.convs_backgrounds = [ "XGamma" ]
+        # ------------------------------------------------------------------------
+        central_or_shifts_remove = []
+        for central_or_shift in self.central_or_shifts:
+          is_central_or_shift_selected = False
+          for sample_key, sample_info in self.samples.items():
+            if not sample_info["use_it"]:
+              continue
+            if self.accept_central_or_shift(central_or_shift, sample_info):
+              is_central_or_shift_selected = True
+              break
+          if not is_central_or_shift_selected:
+            central_or_shifts_remove.append(central_or_shift)
+        for central_or_shift in central_or_shifts_remove:
+          logging.warning("Removing systematics {} because it's never used".format(central_or_shift))
+          self.central_or_shifts.remove(central_or_shift)
 
         self.jet_cleaning_by_index = jet_cleaning_by_index
         self.gen_matching_by_index = gen_matching_by_index
@@ -231,6 +279,7 @@ class analyzeConfig(object):
         self.triggers = triggers
         self.triggerTable = Triggers(self.era)
         self.do_sync = do_sync
+        self.topPtRwgtChoice = "Quadratic" # alternatives: "TOP16011", "Linear"
 
         samples_to_stitch = []
         if self.era == '2016':
@@ -378,7 +427,7 @@ class analyzeConfig(object):
             self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out,
             self.validation_out, self.submission_out,
         ))
-        check_submission_cmd(self.submission_out, submission_cmd)
+        check_submission_cmd(self.submission_out, submission_cmd, self.do_sync)
 
         self.dirs = {}
 
@@ -430,17 +479,6 @@ class analyzeConfig(object):
         self.jobOptions_add_syst_dcard = {}
         self.cfgFile_add_syst_fakerate = os.path.join(self.template_dir, "addSystFakeRates_cfg.py")
         self.jobOptions_add_syst_fakerate = {}
-        self.ttHProcs = [ "ttH" ]# , "ttH_ctcvcp" ]
-        self.prep_dcard_processesToCopy = [  ]
-        self.decayModes = [ "htt", "hww", "hzz", "hmm", "hzg" ]
-        self.decayModes_HH = [ "tttt",  "zzzz",  "wwww",  "ttzz",  "ttww",  "zzww", "bbtt", "bbww", "bbzz" ]
-        self.procsWithDecayModes = self.ttHProcs + [ "WH", "ZH", "tHW", "tHq", "ggH", "qqH", "TTWH", "TTZH" ]
-        self.prep_dcard_signals = self.ttHProcs + [
-          "{}_{}".format(proc, decMode) for proc in self.ttHProcs for decMode in self.decayModes + [ 'fake' ]
-        ] + [
-          "HH_{}".format(decMode)  for decMode in self.decayModes_HH + [ 'fake' ]
-        ]
-        self.convs_backgrounds = [ "XGamma" ]
         self.make_plots_backgrounds = [ ]
         self.make_plots_signal = "ttH"
         self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_cfg.py")
@@ -522,25 +560,29 @@ class analyzeConfig(object):
       sample_category = sample_info["sample_category"]
       has_LHE = sample_info["has_LHE"]
       enable_toppt_rwgt = sample_info["apply_toppt_rwgt"] if "apply_toppt_rwgt" in sample_info else False
+      run_ps = sample_info["nof_PSweights"] == 4
       is_HHmc = sample_category.startswith("signal") or sample_category == "HH"
 
-      if central_or_shift in systematics.LHE().full           and not has_LHE:                              return False
-      if central_or_shift in systematics.LHE().ttH            and sample_category not in self.ttHProcs:     return False
-      if central_or_shift in systematics.LHE().tHq            and sample_category not in [ "tHq", "TH" ]:   return False
-      if central_or_shift in systematics.LHE().tHW            and sample_category not in [ "tHW", "TH" ]:   return False
-      if central_or_shift in systematics.LHE().ttW            and sample_category not in [ "TTW", "TTWW" ]: return False
-      if central_or_shift in systematics.LHE().ttZ            and sample_category != "TTZ":                 return False
-      if central_or_shift in systematics.LHE().ttbar          and sample_category != "TT":                  return False
-      if central_or_shift in systematics.LHE().dy             and sample_category != "DY":                  return False
-      if central_or_shift in systematics.LHE().wz             and sample_category != "WZ":                  return False
-      if central_or_shift in systematics.LHE().zz             and sample_category != "ZZ":                  return False
-      if central_or_shift in systematics.DYMCReweighting      and not is_dymc_reweighting(sample_name):     return False
-      if central_or_shift in systematics.DYMCNormScaleFactors and not is_dymc_normalization(sample_name):   return False
-      if central_or_shift in systematics.tauIDSF              and 'tau' not in self.channel.lower():        return False
-      if central_or_shift in systematics.leptonIDSF           and '0l' in self.channel.lower():             return False
-      if central_or_shift in systematics.topPtReweighting     and not enable_toppt_rwgt:                    return False
-      if central_or_shift in systematics.LHE().hh             and not is_HHmc:                              return False
-      if central_or_shift in systematics.EWK_jet              and sample_category not in [ "WZ", "ZZ" ]:    return False
+      if central_or_shift in systematics.LHE().full           and not has_LHE:                                 return False
+      if central_or_shift in systematics.LHE().ttH            and sample_category not in self.ttHProcs:        return False
+      if central_or_shift in systematics.LHE().tHq            and sample_category not in [ "tHq", "TH" ]:      return False
+      if central_or_shift in systematics.LHE().tHW            and sample_category not in [ "tHW", "TH" ]:      return False
+      if central_or_shift in systematics.LHE().ttW            and sample_category not in [ "TTW", "TTWW" ]:    return False
+      if central_or_shift in systematics.LHE().ttZ            and sample_category != "TTZ":                    return False
+      if central_or_shift in systematics.LHE().ttbar          and sample_category != "TT":                     return False
+      if central_or_shift in systematics.LHE().dy             and sample_category != "DY":                     return False
+      if central_or_shift in systematics.LHE().wz             and sample_category != "WZ":                     return False
+      if central_or_shift in systematics.LHE().zz             and sample_category != "ZZ":                     return False
+      if central_or_shift in systematics.DYMCReweighting      and not is_dymc_reweighting(sample_name):        return False
+      if central_or_shift in systematics.DYMCNormScaleFactors and not is_dymc_normalization(sample_name):      return False
+      if central_or_shift in systematics.tauIDSF              and 'tau' not in self.channel.lower():           return False
+      if central_or_shift in systematics.leptonIDSF           and '0l' in self.channel.lower():                return False
+      if central_or_shift in systematics.topPtReweighting     and not enable_toppt_rwgt:                       return False
+      if central_or_shift in systematics.LHE().hh             and not is_HHmc:                                 return False
+      if central_or_shift in systematics.EWK_jet              and sample_category not in [ "WZ", "ZZ" ]:       return False
+      if central_or_shift in systematics.PartonShower().ttbar and not (sample_category == "TT" and run_ps):    return False
+      if central_or_shift in systematics.PartonShower().dy    and not (sample_category == "DY" and run_ps):    return False
+      if central_or_shift in systematics.PartonShower().wjets and not (sample_category == "W" and run_ps):     return False
       return True
 
     def createCfg_analyze(self, jobOptions, sample_info, additionalJobOptions = [], isLeptonFR = False, isHTT = False, dropCtrl = False):
@@ -572,8 +614,8 @@ class analyzeConfig(object):
           #jobOptions['hhWeight_cfg.histtitle'] = sample_info["sample_category_hh"]
           jobOptions['hhWeight_cfg.histtitle'] = sample_info[sample_category_to_check]
           jobOptions['hhWeight_cfg.ktScan_file'] = self.kt_scan_file
-          jobOptions['hhWeight_cfg.do_ktscan'] = True
-          jobOptions['hhWeight_cfg.apply_rwgt'] = True
+          jobOptions['hhWeight_cfg.do_ktscan'] = 'hh' in self.channel
+          jobOptions['hhWeight_cfg.apply_rwgt'] = 'hh' in self.channel
 
         if 'process' not in jobOptions:
           jobOptions['process'] = sample_info["sample_category"]
@@ -594,7 +636,29 @@ class analyzeConfig(object):
         if 'central_or_shift' not in jobOptions:
           jobOptions['central_or_shift'] = 'central'
         if 'apply_topPtReweighting' not in jobOptions:
-          jobOptions['apply_topPtReweighting'] = sample_info['apply_toppt_rwgt'] if 'apply_toppt_rwgt' in sample_info else False
+          if 'apply_toppt_rwgt' in sample_info and sample_info['apply_toppt_rwgt']:
+            jobOptions['apply_topPtReweighting'] = self.topPtRwgtChoice
+          else:
+            jobOptions['apply_topPtReweighting'] = ''
+        if 'hasPS' not in jobOptions:
+          jobOptions['hasPS'] = sample_info["nof_PSweights"] == 4 and any(
+            central_or_shift in systematics.PartonShower().full \
+            for central_or_shift in jobOptions['central_or_shifts_local']
+          )
+          if jobOptions['hasPS']:
+            if 'apply_lhe_nom' not in sample_info:
+              logging.warning('Sample {} has parton shower weights, but is not consiered in ISR/FSR variation'.format(
+                sample_info["process_name_specific"]
+              ))
+              jobOptions['hasPS'] = False
+              central_or_shift_to_remove = []
+              for central_or_shift in jobOptions['central_or_shifts_local']:
+                if central_or_shift in systematics.PartonShower().full:
+                  central_or_shift_to_remove.append(central_or_shift)
+              for central_or_shift in central_or_shift_to_remove:
+                jobOptions['central_or_shifts_local'].remove(central_or_shift)
+            else:
+              jobOptions['apply_LHE_nom'] = sample_info['apply_lhe_nom']
         if 'lumiScale' not in jobOptions:
 
           nof_reweighting = sample_info['nof_reweighting']
@@ -649,15 +713,37 @@ class analyzeConfig(object):
                 nof_events_label = 'CountWeighted{}'.format(count_suffix)
                 nof_events_idx = 0 # central
 
+              if jobOptions['hasPS'] and central_or_shift in systematics.PartonShower().full:
+                assert(is_mc)
+                psWeights_str = 'PSWeight'
+                if jobOptions['apply_LHE_nom']:
+                  psWeights_str += 'OriginalXWGTUP'
+                if central_or_shift in systematics.PartonShower().isr_up:
+                  nof_events_idx = 0
+                elif central_or_shift in systematics.PartonShower().fsr_up:
+                  nof_events_idx = 1
+                elif central_or_shift in systematics.PartonShower().env_up:
+                  nof_events_idx = 2
+                elif central_or_shift in systematics.PartonShower().isr_down:
+                  nof_events_idx = 3
+                elif central_or_shift in systematics.PartonShower().fsr_down:
+                  nof_events_idx = 4
+                elif central_or_shift in systematics.PartonShower().env_down:
+                  nof_events_idx = 5
+                nof_events_label = "CountWeighted{}{}".format(psWeights_str, count_suffix)
+
               if jobOptions['apply_topPtReweighting']:
                 assert(is_mc)
+                toppt_str = "{}TopPtRwgtSF".format(jobOptions['apply_topPtReweighting'])
                 if central_or_shift not in systematics.topPtReweighting:
-                  nof_events_label += "TopPtRwgtSF"
+                  nof_events_label += toppt_str
                 elif central_or_shift == systematics.topPtReweighting_().down:
                   # no SF is applied
-                  pass
+                  nof_events_label = "CountWeighted{}".format(count_suffix)
+                  nof_events_idx = 0
                 elif central_or_shift == systematics.topPtReweighting_().up:
-                  nof_events_label += "TopPtRwgtSFSquared"
+                  nof_events_label = "CountWeighted{}{}Squared".format(count_suffix, toppt_str)
+                  nof_events_idx = 0
 
               if nof_events_idx >= 0 and nof_events_label:
                 nof_events[central_or_shift] = sample_info["nof_events"][nof_events_label][nof_events_idx]
@@ -721,6 +807,8 @@ class analyzeConfig(object):
             'process',
             'isMC',
             'hasLHE',
+            'hasPS',
+            'apply_LHE_nom',
             'central_or_shift',
             'central_or_shifts_local',
             'evtCategories',
@@ -1205,7 +1293,7 @@ class analyzeConfig(object):
     def createCfg_makePlots_addShapes(self, lines):
         central_or_shifts_prefix = []
         for central_or_shift in self.central_or_shifts:
-            if central_or_shift in systematics.JEC_regrouped:
+            if central_or_shift in systematics.JEC_regrouped or central_or_shift in systematics.JER_split:
                 continue
             if central_or_shift.startswith('CMS_ttHl_FR'):
                 continue
@@ -1502,7 +1590,7 @@ class analyzeConfig(object):
             if self.channel in [ '1l_1tau', '2lss' ]:
                 return 2, '4096M'
             else:
-                return 3, ''
+                return 2, ''
         else:
             return 10, ''
 

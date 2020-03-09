@@ -46,6 +46,14 @@ enum
   // additional sources
   kJetMET_jerUp,                   kJetMET_jerDown, // total JER
   kJetMET_UnclusteredEnUp,         kJetMET_UnclusteredEnDown, // unclustered energy (only for MET)
+  // JER split
+  kJetMET_jerBarrelUp,             kJetMET_jerBarrelDown,
+  kJetMET_jerEndcap1Up,            kJetMET_jerEndcap1Down,
+  kJetMET_jerEndcap2LowPtUp,       kJetMET_jerEndcap2LowPtDown,
+  kJetMET_jerEndcap2HighPtUp,      kJetMET_jerEndcap2HighPtDown,
+  kJetMET_jerForwardLowPtUp,       kJetMET_jerForwardLowPtDown,
+  kJetMET_jerForwardHighPtUp,      kJetMET_jerForwardHighPtDown,
+                                   kJetMET_jesHEMDown,
 };
 
 enum class METSyst
@@ -119,6 +127,14 @@ enum
   kLHE_scale_xUp, kLHE_scale_xDown, // factorization scale
   kLHE_scale_yUp, kLHE_scale_yDown, // renormalization scale
   kLHE_scale_Up,  kLHE_scale_Down,  // envelope (Swiss cross + both up + both down)
+};
+
+enum
+{
+  kPartonShower_central,
+  kPartonShower_ISRUp, kPartonShower_ISRDown, // ISR -- initial state radiation
+  kPartonShower_FSRUp, kPartonShower_FSRDown, // FSR -- final state radiation
+  kPartonShower_Up,    kPartonShower_Down, // envelope from the variations of both ISR and FSR
 };
 
 enum
@@ -242,6 +258,9 @@ getTriggerSF_option(const std::string & central_or_shift,
 
 int
 getLHEscale_option(const std::string & central_or_shift);
+
+int
+getPartonShower_option(const std::string & central_or_shift);
 
 int
 getElectronPt_option(const std::string & central_or_shift);

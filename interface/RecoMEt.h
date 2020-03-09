@@ -47,10 +47,9 @@ public:
   Double_t genPt() const;
   Double_t genPhi() const;
 
+
   friend class RecoMEtReader;
   friend class RecoMEtWriter;
-
-protected:
 
   struct MEt
   {
@@ -59,6 +58,12 @@ protected:
     MEt(Float_t pt,
         Float_t phi);
 
+    double
+    px() const;
+
+    double
+    py() const;
+
     MEt &
     operator=(const MEt & other);
 
@@ -66,8 +71,27 @@ protected:
     Float_t phi_; ///< phi of missing transverse momentum vector
   };
 
+  void
+  set_default(int central_or_shift);
+
+  bool
+  has_systematics(int central_or_shift) const;
+
+  void
+  set_systematics(const MEt & met,
+                  int central_or_shift,
+                  bool replace = false);
+
+  MEt
+  get_systematics(int central_or_shift) const;
+
+  int
+  get_default_systematics() const;
+
+protected:
   MEt default_; ///< Default values
   std::map<int, MEt> systematics_; ///< Needed by RecoMEtReader/Writer
+  int default_systematics_;
 
   Float_t covXX_; ///< XX element of MET resolution matrix
   Float_t covXY_; ///< XY element of MET resolution matrix
@@ -89,6 +113,13 @@ protected:
   void update_cov();
 };
 
-std::ostream& operator<<(std::ostream& stream, const RecoMEt& met);
+std::ostream &
+operator<<(std::ostream& stream,
+           const RecoMEt & met);
+
+std::ostream &
+operator<<(std::ostream & stream,
+           const RecoMEt::MEt & met);
+
 
 #endif // tthAnalysis_HiggsToTauTau_RecoMEt_h

@@ -26,27 +26,39 @@ def extend(isCR):
                 ),
             ])
     else:
+        for jetCount in [ "lj", "hj" ]:
+            for chargeSum in [ "pos", "neg" ]:
+                process.makePlots.distributions.extend([
+                    cms.PSet(
+                        histogramName = cms.string('sel/evt/$PROCESS/mass_3L_{}_{}'.format(jetCount, chargeSum)),
+                        xAxisTitle = cms.string('m_{3#ell} (%s, %s)' % (jetCount, chargeSum)),
+                        yAxisTitle = cms.string('dN/dm_{3#ell} [1/GeV]')
+                    ),
+                ])
         process.makePlots.distributions.extend([
             cms.PSet(
-                histogramName = cms.string('sel/evt/$PROCESS/mass_3L'),
-                xAxisTitle = cms.string('m_{3#ell}'),
+                histogramName = cms.string('sel/evt/$PROCESS/mass_3L_rest'),
+                xAxisTitle = cms.string('m_{3#ell} (rest)'),
                 yAxisTitle = cms.string('dN/dm_{3#ell} [1/GeV]')
             ),
         ])
-        for proc in [ 'ttH', 'tH' ]:
-            for bjet in [ 'bl', 'bt' ]:
+        for bjet in [ 'bl', 'bt' ]:
+            for leptonTriplet in [ 'eee', 'eem', 'emm', 'mmm' ]:
+                if bjet == 'bt':
+                    continue
+                suffix = "{}_{}".format(leptonTriplet, bjet) if leptonTriplet != 'eee' else leptonTriplet
                 process.makePlots.distributions.extend([
                     cms.PSet(
-                        histogramName = cms.string('sel/evt/$PROCESS/output_NN_{}_{}'.format(proc, bjet)),
-                        xAxisTitle = cms.string('MVA Discriminant ({}, {})'.format(proc, bjet)),
+                        histogramName = cms.string('sel/evt/$PROCESS/output_NN_rest_{}'.format(suffix)),
+                        xAxisTitle = cms.string('MVA Discriminant (rest, {}, {})'.format(leptonTriplet, bjet)),
                         yAxisTitle = cms.string('dN/dMVA')
                     ),
                 ])
-        for leptonTriplet in [ 'eee', 'eem', 'emm', 'mmm' ]:
-            process.makePlots.distributions.extend([
-                cms.PSet(
-                    histogramName = cms.string('sel/evt/$PROCESS/output_NN_rest_{}'.format(leptonTriplet)),
-                    xAxisTitle = cms.string('MVA discriminant ({})'.format(leptonTriplet)),
-                    yAxisTitle = cms.string('dN/dMVA')
-                ),
-            ])
+            for proc in [ 'ttH', 'tH' ]:
+                process.makePlots.distributions.extend([
+                    cms.PSet(
+                        histogramName = cms.string('sel/evt/$PROCESS/output_NN_{}_{}'.format(proc, bjet)),
+                        xAxisTitle = cms.string('MVA discriminant ({}, {})'.format(proc, bjet)),
+                        yAxisTitle = cms.string('dN/dMVA')
+                    ),
+                ])

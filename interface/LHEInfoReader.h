@@ -48,11 +48,6 @@ protected:
   void
   setBranchNames();
 
-  double static
-  clip(double value,
-       double min_value = -10.,
-       double max_value = 10.);
-
   const unsigned int max_scale_nWeights_;
   std::string branchName_scale_nWeights_;
   std::string branchName_scale_weights_;
@@ -82,5 +77,5 @@ protected:
   static std::map<std::string, LHEInfoReader *> instances_;
 };
 
-#endif // tthAnalysis_HiggsToTauTau_GenLeptonReader_h
+#endif // tthAnalysis_HiggsToTauTau_LHEInfoReader_h
 

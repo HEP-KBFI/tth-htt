@@ -50,7 +50,18 @@ RecoMEtReader::setMEt_central_or_shift(int central_or_shift)
   {
     throw cmsException(this, __func__, __LINE__) << "Invalid option for the era = " << era_ << ": " << central_or_shift;
   }
-  ptPhiOption_ = central_or_shift;
+  if(central_or_shift <= kJetMET_UnclusteredEnDown)
+  {
+    ptPhiOption_ = central_or_shift;
+  }
+  else
+  {
+    std::cout
+        << get_human_line(this, __func__, __LINE__)
+        << "Not setting the systematics option to " << central_or_shift
+        << " but keeping it at " << ptPhiOption_
+    ;
+  }
 }
 
 void
@@ -94,7 +105,6 @@ RecoMEtReader::setBranchAddresses(TTree * tree)
   if(instances_[branchName_obj_] == this)
   {
     BranchAddressInitializer bai(tree);
-    bai.ignoreErrors(true);
     bai.setBranchAddress(met_.systematics_[ptPhiOption_].pt_,  branchName_pt_[ptPhiOption_]);
     bai.setBranchAddress(met_.systematics_[ptPhiOption_].phi_, branchName_phi_[ptPhiOption_]);
     if(read_ptPhi_systematics_)
@@ -114,7 +124,6 @@ RecoMEtReader::setBranchAddresses(TTree * tree)
         bai.setBranchAddress(met_.systematics_[met_option].phi_, branchName_phi_[met_option]);
       }
     }
-    bai.ignoreErrors(false);
     bai.setBranchAddress(met_.sumEt_, branchName_sumEt_);
     bai.setBranchAddress(met_.covXX_, branchName_covXX_);
     bai.setBranchAddress(met_.covXY_, branchName_covXY_);
@@ -128,7 +137,6 @@ RecoMEtReader::read() const
   const RecoMEtReader * const gInstance = instances_[branchName_obj_];
   assert(gInstance);
   RecoMEt met = met_;
-  met.default_ = met.systematics_[ptPhiOption_];
-  met.update(); // update cov and p4
+  met.set_default(ptPhiOption_);
   return met;
 }

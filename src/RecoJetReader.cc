@@ -34,6 +34,7 @@ RecoJetReader::RecoJetReader(int era,
   , btag_(Btag::kDeepJet)
   , btag_central_or_shift_(kBtag_central)
   , ptMassOption_(isMC_ ? kJetMET_central : kJetMET_central_nonNominal)
+  , ptMassOption_branch_(ptMassOption_)
   , read_ptMass_systematics_(false)
   , read_btag_systematics_(false)
   , jet_eta_(nullptr)
@@ -115,6 +116,23 @@ RecoJetReader::setPtMass_central_or_shift(int central_or_shift)
     throw cmsException(this, __func__, __LINE__) << "Invalid option for the era = " << era_ << ": " << central_or_shift;
   }
   ptMassOption_ = central_or_shift;
+  read_systematics_whitelist_.clear();
+
+  if(central_or_shift <= kJetMET_jerDown)
+  {
+    ptMassOption_branch_ = ptMassOption_;
+  }
+  else
+  {
+    // we already know that we don't want to consider all possible jet branches
+    read_ptMass_systematics(true);
+    read_systematics_whitelist_ = { kJetMET_central, kJetMET_jerUp, kJetMET_jerDown };
+    std::cout
+        << get_human_line(this, __func__, __LINE__)
+        << "Not setting the systematics option to " << ptMassOption_
+        << " but keeping it at " << ptMassOption_branch_
+    ;
+  }
 }
 
 void
@@ -230,8 +248,8 @@ RecoJetReader::setBranchAddresses(TTree * tree)
       genHadTauReader_->setBranchAddresses(tree);
       genJetReader_->setBranchAddresses(tree);
     }
-    bai.setBranchAddress(jet_pt_systematics_[ptMassOption_],   branchNames_pt_systematics_[ptMassOption_]);
-    bai.setBranchAddress(jet_mass_systematics_[ptMassOption_], branchNames_mass_systematics_[ptMassOption_]);
+    bai.setBranchAddress(jet_pt_systematics_[ptMassOption_branch_],   branchNames_pt_systematics_[ptMassOption_branch_]);
+    bai.setBranchAddress(jet_mass_systematics_[ptMassOption_branch_], branchNames_mass_systematics_[ptMassOption_branch_]);
     if(isMC_ && read_ptMass_systematics_)
     {
       for(int idxShift = kJetMET_central_nonNominal; idxShift <= kJetMET_jerDown; ++idxShift)
@@ -240,9 +258,18 @@ RecoJetReader::setBranchAddresses(TTree * tree)
         {
           continue;
         }
-        if(idxShift == ptMassOption_)
+        if(idxShift == ptMassOption_branch_)
         {
           continue; // do not bind the same branch twice
+        }
+        if(! read_systematics_whitelist_.empty() &&
+           std::find(
+             read_systematics_whitelist_.cbegin(),
+             read_systematics_whitelist_.cend(),
+             idxShift
+           ) == read_systematics_whitelist_.cend())
+        {
+          continue; // if there's a whitelist, continue
         }
         bai.setBranchAddress(jet_pt_systematics_[idxShift],   branchNames_pt_systematics_[idxShift]);
         bai.setBranchAddress(jet_mass_systematics_[idxShift], branchNames_mass_systematics_[idxShift]);
@@ -321,12 +348,27 @@ RecoJetReader::read() const
         btagCSV = -2.;
       }
 
+      double jet_pt = gInstance->jet_pt_systematics_.at(ptMassOption_branch_)[idxJet];
+      const double jet_eta = gInstance->jet_eta_[idxJet];
+      const double jet_phi = gInstance->jet_phi_[idxJet];
+      double jet_mass = gInstance->jet_mass_systematics_.at(ptMassOption_branch_)[idxJet];
+      const int jet_id = gInstance->jet_jetId_[idxJet];
+      const int ptMassOption = ptMassOption_branch_ != ptMassOption_ ?
+        recompute_jet(
+          jet_pt, jet_eta, jet_phi, jet_mass, jet_id,
+          gInstance->jet_pt_systematics_,
+          gInstance->jet_mass_systematics_,
+          ptMassOption_, idxJet
+        ) :
+        ptMassOption_branch_
+      ;
+
       jets.push_back({
         {
-          gInstance->jet_pt_systematics_.at(ptMassOption_)[idxJet],
-          gInstance->jet_eta_[idxJet],
-          gInstance->jet_phi_[idxJet],
-          gInstance->jet_mass_systematics_.at(ptMassOption_)[idxJet]
+          jet_pt,
+          jet_eta,
+          jet_phi,
+          jet_mass,
         },
         gInstance->jet_charge_[idxJet],
         btagCSV,
@@ -335,11 +377,12 @@ RecoJetReader::read() const
         gInstance->jet_pullEta_[idxJet],
         gInstance->jet_pullPhi_[idxJet],
         gInstance->jet_pullMag_[idxJet],
-        gInstance->jet_jetId_[idxJet],
+        jet_id,
         gInstance->jet_puId_[idxJet],
         gInstance->jet_genMatchIdx_[idxJet],
         gInstance->jet_jetIdx_[idxJet],
         btag_,
+        ptMassOption,
       });
 
       RecoJet & jet = jets.back();
@@ -380,6 +423,15 @@ RecoJetReader::read() const
           {
             continue;
           }
+          if(! read_systematics_whitelist_.empty() &&
+             std::find(
+               read_systematics_whitelist_.cbegin(),
+               read_systematics_whitelist_.cend(),
+               idxShift
+             ) == read_systematics_whitelist_.cend())
+          {
+            continue; // if there's a whitelist, continue
+          }
           // we want to save all pT-s and masses that have been shifted by systematic uncertainties to the maps,
           // including the central nominal and central non-nominal values; crucial for RecoJetWriter
           jet.pt_systematics_[idxShift]   = gInstance->jet_pt_systematics_.at(idxShift)[idxJet];
@@ -389,8 +441,8 @@ RecoJetReader::read() const
       else
       {
         // fill the maps with only the central values (either nominal or non-nominal if data)
-        jet.pt_systematics_[ptMassOption_]   = gInstance->jet_pt_systematics_.at(ptMassOption_)[idxJet];
-        jet.mass_systematics_[ptMassOption_] = gInstance->jet_mass_systematics_.at(ptMassOption_)[idxJet];
+        jet.pt_systematics_[ptMassOption_branch_]   = gInstance->jet_pt_systematics_.at(ptMassOption_branch_)[idxJet];
+        jet.mass_systematics_[ptMassOption_branch_] = gInstance->jet_mass_systematics_.at(ptMassOption_branch_)[idxJet];
       } // isMC_
 
     } // idxJet

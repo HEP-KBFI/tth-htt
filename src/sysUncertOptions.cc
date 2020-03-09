@@ -7,10 +7,13 @@
 #include <boost/algorithm/string/predicate.hpp> // boost::algorithm::starts_with(), boost::algorithm::ends_with()
 
 bool
-isValidJESsource(int __attribute__((unused)) era,
-                 int __attribute__((unused)) central_or_shift)
+isValidJESsource(int era,
+                 int central_or_shift)
 {
-  // keeping for future compatibility
+  if(central_or_shift == kJetMET_jesHEMDown && era != kEra_2018)
+  {
+    return false;
+  }
   return true;
 }
 
@@ -70,6 +73,19 @@ getJet_option(const std::string & central_or_shift,
   else if(central_or_shift == "CMS_ttHl_JESRelativeBalDown"       ) central_or_shift_int = kJetMET_jesRelativeBalDown;
   else if(central_or_shift == "CMS_ttHl_JESRelativeSample_EraUp"  ) central_or_shift_int = kJetMET_jesRelativeSample_EraUp;
   else if(central_or_shift == "CMS_ttHl_JESRelativeSample_EraDown") central_or_shift_int = kJetMET_jesRelativeSample_EraDown;
+  else if(central_or_shift == "CMS_ttHl_JERBarrelUp"              ) central_or_shift_int = kJetMET_jerBarrelUp;
+  else if(central_or_shift == "CMS_ttHl_JERBarrelDown"            ) central_or_shift_int = kJetMET_jerBarrelDown;
+  else if(central_or_shift == "CMS_ttHl_JEREndcap1Up"             ) central_or_shift_int = kJetMET_jerEndcap1Up;
+  else if(central_or_shift == "CMS_ttHl_JEREndcap1Down"           ) central_or_shift_int = kJetMET_jerEndcap1Down;
+  else if(central_or_shift == "CMS_ttHl_JEREndcap2LowPtUp"        ) central_or_shift_int = kJetMET_jerEndcap2LowPtUp;
+  else if(central_or_shift == "CMS_ttHl_JEREndcap2LowPtDown"      ) central_or_shift_int = kJetMET_jerEndcap2LowPtDown;
+  else if(central_or_shift == "CMS_ttHl_JEREndcap2HighPtUp"       ) central_or_shift_int = kJetMET_jerEndcap2HighPtUp;
+  else if(central_or_shift == "CMS_ttHl_JEREndcap2HighPtDown"     ) central_or_shift_int = kJetMET_jerEndcap2HighPtDown;
+  else if(central_or_shift == "CMS_ttHl_JERForwardLowPtUp"        ) central_or_shift_int = kJetMET_jerForwardLowPtUp;
+  else if(central_or_shift == "CMS_ttHl_JERForwardLowPtDown"      ) central_or_shift_int = kJetMET_jerForwardLowPtDown;
+  else if(central_or_shift == "CMS_ttHl_JERForwardHighPtUp"       ) central_or_shift_int = kJetMET_jerForwardHighPtUp;
+  else if(central_or_shift == "CMS_ttHl_JERForwardHighPtDown"     ) central_or_shift_int = kJetMET_jerForwardHighPtDown;
+  else if(central_or_shift == "CMS_ttHl_JESHEMDown"               ) central_or_shift_int = kJetMET_jesHEMDown;
   return central_or_shift_int;
 }
 
@@ -77,35 +93,9 @@ int
 getMET_option(const std::string & central_or_shift,
               bool isMC)
 {
-  int central_or_shift_int = isMC ? kJetMET_central : kJetMET_central_nonNominal;
-  if     (central_or_shift == "CMS_ttHl_JESUp"                    ) central_or_shift_int = kJetMET_jesUp;
-  else if(central_or_shift == "CMS_ttHl_JESDown"                  ) central_or_shift_int = kJetMET_jesDown;
-  else if(central_or_shift == "CMS_ttHl_JERUp"                    ) central_or_shift_int = kJetMET_jerUp;
-  else if(central_or_shift == "CMS_ttHl_JERDown"                  ) central_or_shift_int = kJetMET_jerDown;
-  else if(central_or_shift == "CMS_ttHl_UnclusteredEnUp"          ) central_or_shift_int = kJetMET_UnclusteredEnUp;
-  else if(central_or_shift == "CMS_ttHl_UnclusteredEnDown"        ) central_or_shift_int = kJetMET_UnclusteredEnDown;
-  else if(central_or_shift == "CMS_ttHl_JESAbsoluteUp"            ) central_or_shift_int = kJetMET_jesAbsoluteUp;
-  else if(central_or_shift == "CMS_ttHl_JESAbsoluteDown"          ) central_or_shift_int = kJetMET_jesAbsoluteDown;
-  else if(central_or_shift == "CMS_ttHl_JESAbsolute_EraUp"        ) central_or_shift_int = kJetMET_jesAbsolute_EraUp;
-  else if(central_or_shift == "CMS_ttHl_JESAbsolute_EraDown"      ) central_or_shift_int = kJetMET_jesAbsolute_EraDown;
-  else if(central_or_shift == "CMS_ttHl_JESBBEC1Up"               ) central_or_shift_int = kJetMET_jesBBEC1Up;
-  else if(central_or_shift == "CMS_ttHl_JESBBEC1Down"             ) central_or_shift_int = kJetMET_jesBBEC1Down;
-  else if(central_or_shift == "CMS_ttHl_JESBBEC1_EraUp"           ) central_or_shift_int = kJetMET_jesBBEC1_EraUp;
-  else if(central_or_shift == "CMS_ttHl_JESBBEC1_EraDown"         ) central_or_shift_int = kJetMET_jesBBEC1_EraDown;
-  else if(central_or_shift == "CMS_ttHl_JESEC2Up"                 ) central_or_shift_int = kJetMET_jesEC2Up;
-  else if(central_or_shift == "CMS_ttHl_JESEC2Down"               ) central_or_shift_int = kJetMET_jesEC2Down;
-  else if(central_or_shift == "CMS_ttHl_JESEC2_EraUp"             ) central_or_shift_int = kJetMET_jesEC2_EraUp;
-  else if(central_or_shift == "CMS_ttHl_JESEC2_EraDown"           ) central_or_shift_int = kJetMET_jesEC2_EraDown;
-  else if(central_or_shift == "CMS_ttHl_JESFlavorQCDUp"           ) central_or_shift_int = kJetMET_jesFlavorQCDUp;
-  else if(central_or_shift == "CMS_ttHl_JESFlavorQCDDown"         ) central_or_shift_int = kJetMET_jesFlavorQCDDown;
-  else if(central_or_shift == "CMS_ttHl_JESHFUp"                  ) central_or_shift_int = kJetMET_jesHFUp;
-  else if(central_or_shift == "CMS_ttHl_JESHFDown"                ) central_or_shift_int = kJetMET_jesHFDown;
-  else if(central_or_shift == "CMS_ttHl_JESHF_EraUp"              ) central_or_shift_int = kJetMET_jesHF_EraUp;
-  else if(central_or_shift == "CMS_ttHl_JESHF_EraDown"            ) central_or_shift_int = kJetMET_jesHF_EraDown;
-  else if(central_or_shift == "CMS_ttHl_JESRelativeBalUp"         ) central_or_shift_int = kJetMET_jesRelativeBalUp;
-  else if(central_or_shift == "CMS_ttHl_JESRelativeBalDown"       ) central_or_shift_int = kJetMET_jesRelativeBalDown;
-  else if(central_or_shift == "CMS_ttHl_JESRelativeSample_EraUp"  ) central_or_shift_int = kJetMET_jesRelativeSample_EraUp;
-  else if(central_or_shift == "CMS_ttHl_JESRelativeSample_EraDown") central_or_shift_int = kJetMET_jesRelativeSample_EraDown;
+  int central_or_shift_int = isMC ? getJet_option(central_or_shift, isMC) : kJetMET_central_nonNominal;
+  if     (central_or_shift == "CMS_ttHl_UnclusteredEnUp"  ) central_or_shift_int = kJetMET_UnclusteredEnUp;
+  else if(central_or_shift == "CMS_ttHl_UnclusteredEnDown") central_or_shift_int = kJetMET_UnclusteredEnDown;
   return central_or_shift_int;
 }
 
@@ -215,6 +205,24 @@ getLHEscale_option(const std::string & central_or_shift)
     else if(boost::ends_with(central_or_shift, "y1Up")  ) central_or_shift_int = kLHE_scale_yUp;
     else if(boost::ends_with(central_or_shift, "Down")  ) central_or_shift_int = kLHE_scale_Down;
     else if(boost::ends_with(central_or_shift, "Up")    ) central_or_shift_int = kLHE_scale_Up;
+    else throw cmsException(__func__, __LINE__)
+           << "Invalid option to LHE systematics: " << central_or_shift;
+  }
+  return central_or_shift_int;
+}
+
+int
+getPartonShower_option(const std::string & central_or_shift)
+{
+  int central_or_shift_int = kPartonShower_central;
+  if(boost::starts_with(central_or_shift, "CMS_ttHl_PS_"))
+  {
+    if     (boost::ends_with(central_or_shift, "ISRDown")) central_or_shift_int = kPartonShower_ISRDown;
+    else if(boost::ends_with(central_or_shift, "ISRUp")  ) central_or_shift_int = kPartonShower_ISRUp;
+    else if(boost::ends_with(central_or_shift, "FSRDown")) central_or_shift_int = kPartonShower_FSRDown;
+    else if(boost::ends_with(central_or_shift, "FSRUp")  ) central_or_shift_int = kPartonShower_FSRUp;
+    else if(boost::ends_with(central_or_shift, "Down")   ) central_or_shift_int = kPartonShower_Down;
+    else if(boost::ends_with(central_or_shift, "Up")     ) central_or_shift_int = kPartonShower_Up;
     else throw cmsException(__func__, __LINE__)
            << "Invalid option to LHE systematics: " << central_or_shift;
   }

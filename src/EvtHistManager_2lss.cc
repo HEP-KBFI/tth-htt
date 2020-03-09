@@ -7,7 +7,21 @@
 EvtHistManager_2lss::EvtHistManager_2lss(const edm::ParameterSet & cfg)
   : HistManagerBase(cfg)
   , era_(get_era(cfg.getParameter<std::string>("era")))
+  , option_(kOption_undefined)
 {
+  const std::string option_string = cfg.getParameter<std::string>("option");
+  if(option_string == "allHistograms")
+  {
+    option_ = kOption_allHistograms;
+  }
+  else if(option_string == "minimalHistograms")
+  {
+    option_ = kOption_minimalHistograms;
+  }
+  else
+  {
+    throw cmsException(__func__) << "Invalid Configuration parameter 'option' = " << option_string;
+  }
   const std::vector<std::string> sysOpts_central = {
     "numElectrons",
     "numMuons",
@@ -74,27 +88,31 @@ EvtHistManager_2lss::bookCategories(TFileDirectory & dir,
 {
   for(auto category: categories)
   {
-    if ( category.second.size() > 0 )
+    if(! category.second.empty())
     {
-      int npoints = category.second.size();
+      const int npoints = category.second.size();
       Float_t binsx[npoints];
       std::copy(category.second.begin(), category.second.end(), binsx);
       histograms_by_category_[category.first] = book1D(dir, category.first, category.first, npoints - 1, binsx);
-    } else {
+    }
+    else
+    {
       histograms_by_category_[category.first] = book1D(dir, category.first, category.first, 100,  0., +1.);
     }
     central_or_shiftOptions_[category.first] = { "*" };
   }
-  ///////
+
   for(auto category: categories_SVA)
   {
-    if ( category.second.size() > 0 ) // the CR should have only one bin
+    if(! category.second.empty()) // the CR should have only one bin
     {
-      int npoints = category.second.size();
+      const int npoints = category.second.size();
       Float_t binsx[npoints];
       std::copy(category.second.begin(), category.second.end(), binsx);
       histograms_by_category_SVA_[category.first] = book1D(dir, category.first, category.first, npoints - 1, binsx);
-    } else {
+    }
+    else
+    {
       Float_t bins_mass_2L[10] = {10.,40.0,55.0,70.0,80.0,95.0,110.0,140.0,180.,800.0};
       histograms_by_category_SVA_[category.first] = book1D(dir, category.first, category.first, 9,  bins_mass_2L);
     }
@@ -105,12 +123,15 @@ EvtHistManager_2lss::bookCategories(TFileDirectory & dir,
 void
 EvtHistManager_2lss::bookHistograms(TFileDirectory & dir)
 {
-  histogram_numElectrons_    = book1D(dir, "numElectrons",    "numElectrons",     5, -0.5,  +4.5);
-  histogram_numMuons_        = book1D(dir, "numMuons",        "numMuons",         5, -0.5,  +4.5);
-  histogram_numHadTaus_      = book1D(dir, "numHadTaus",      "numHadTaus",       5, -0.5,  +4.5);
-  histogram_numJets_         = book1D(dir, "numJets",         "numJets",         20, -0.5, +19.5);
-  histogram_numBJets_loose_  = book1D(dir, "numBJets_loose",  "numBJets_loose",  10, -0.5,  +9.5);
-  histogram_numBJets_medium_ = book1D(dir, "numBJets_medium", "numBJets_medium", 10, -0.5,  +9.5);
+  if(option_ == kOption_allHistograms)
+  {
+    histogram_numElectrons_    = book1D(dir, "numElectrons",    "numElectrons",     5, -0.5,  +4.5);
+    histogram_numMuons_        = book1D(dir, "numMuons",        "numMuons",         5, -0.5,  +4.5);
+    histogram_numHadTaus_      = book1D(dir, "numHadTaus",      "numHadTaus",       5, -0.5,  +4.5);
+    histogram_numJets_         = book1D(dir, "numJets",         "numJets",         20, -0.5, +19.5);
+    histogram_numBJets_loose_  = book1D(dir, "numBJets_loose",  "numBJets_loose",  10, -0.5,  +9.5);
+    histogram_numBJets_medium_ = book1D(dir, "numBJets_medium", "numBJets_medium", 10, -0.5,  +9.5);
+  }
 
   histogram_mvaOutput_2lss_ttV_   = book1D(dir, "mvaOutput_2lss_ttV",   "mvaOutput_2lss_ttV",   40, -1., +1.);
   histogram_mvaOutput_2lss_ttbar_ = book1D(dir, "mvaOutput_2lss_ttbar", "mvaOutput_2lss_ttbar", 40, -1., +1.);
@@ -121,47 +142,37 @@ EvtHistManager_2lss::bookHistograms(TFileDirectory & dir)
 }
 
 void
-EvtHistManager_2lss::fillHistograms(int numElectrons,
-                                    int numMuons,
-                                    int numHadTaus,
-                                    int numJets,
-                                    int numBJets_loose,
-                                    int numBJets_medium,
-                                    double evtWeight,
-                                    double mvaOutput_2lss_ttV,
-                                    double mvaOutput_2lss_ttbar,
-                                    double mvaDiscr_2lss,
-                                    double mvaOutput_Hj_tagger,
-                                    double mvaOutput_category,
-                                    const std::string & category,
-                                    double mass_2L,
-                                    const std::string & category_SVA)
+EvtHistManager_2lss::fillHistograms(const EvtHistManager_2lss_Input & variables)
 {
   const double evtWeightErr = 0.;
+  const double & evtWeight = variables.evtWeight;
 
-  fillWithOverFlow(histogram_numElectrons_,    numElectrons,    evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numMuons_,        numMuons,        evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numHadTaus_,      numHadTaus,      evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numJets_,         numJets,         evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numBJets_loose_,  numBJets_loose,  evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numBJets_medium_, numBJets_medium, evtWeight, evtWeightErr);
-
-  fillWithOverFlow(histogram_mvaOutput_2lss_ttV_,   mvaOutput_2lss_ttV,   evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaOutput_2lss_ttbar_, mvaOutput_2lss_ttbar, evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaDiscr_2lss_,        mvaDiscr_2lss,        evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_mvaOutput_Hj_tagger_,   mvaOutput_Hj_tagger, evtWeight, evtWeightErr);
-
-  if(! histograms_by_category_.count(category))
+  if(option_ == kOption_allHistograms)
   {
-    throw cmsException(this, __func__, __LINE__) << "Histogram of the name '" << category << "' was never booked";
+    fillWithOverFlow(histogram_numElectrons_,    variables.numElectrons,    evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_numMuons_,        variables.numMuons,        evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_numHadTaus_,      variables.numHadTaus,      evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_numJets_,         variables.numJets,         evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_numBJets_loose_,  variables.numBJets_loose,  evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_numBJets_medium_, variables.numBJets_medium, evtWeight, evtWeightErr);
   }
-  fillWithOverFlow(histograms_by_category_[category], mvaOutput_category, evtWeight, evtWeightErr);
 
-  if(! histograms_by_category_SVA_.count(category_SVA))
+  fillWithOverFlow(histogram_mvaOutput_2lss_ttV_,   variables.mvaOutput_2lss_ttV,   evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaOutput_2lss_ttbar_, variables.mvaOutput_2lss_ttbar, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaDiscr_2lss_,        variables.mvaDiscr_2lss,        evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_mvaOutput_Hj_tagger_,  variables.mvaOutput_Hj_tagger,  evtWeight, evtWeightErr);
+
+  if(! histograms_by_category_.count(variables.category))
   {
-    throw cmsException(this, __func__, __LINE__) << "Histogram of the name '" << category_SVA << "' was never booked";
+    throw cmsException(this, __func__, __LINE__) << "Histogram of the name '" << variables.category << "' was never booked";
   }
-  fillWithOverFlow(histograms_by_category_SVA_[category_SVA], mass_2L, evtWeight, evtWeightErr);
+  fillWithOverFlow(histograms_by_category_[variables.category], variables.mvaOutput_category, evtWeight, evtWeightErr);
+
+  if(! histograms_by_category_SVA_.count(variables.category_SVA))
+  {
+    throw cmsException(this, __func__, __LINE__) << "Histogram of the name '" << variables.category_SVA << "' was never booked";
+  }
+  fillWithOverFlow(histograms_by_category_SVA_[variables.category_SVA], variables.mass_2L, evtWeight, evtWeightErr);
 
   fillWithOverFlow(histogram_EventCounter_, 0., evtWeight, evtWeightErr);
 }

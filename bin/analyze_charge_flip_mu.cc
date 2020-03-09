@@ -156,7 +156,8 @@ int main(int argc, char* argv[])
   bool apply_genWeight = cfg_analyze.getParameter<bool>("apply_genWeight");
   bool apply_DYMCReweighting = cfg_analyze.getParameter<bool>("apply_DYMCReweighting");
   bool apply_DYMCNormScaleFactors = cfg_analyze.getParameter<bool>("apply_DYMCNormScaleFactors");
-  bool apply_topPtReweighting = cfg_analyze.getParameter<bool>("apply_topPtReweighting");
+  std::string apply_topPtReweighting_str = cfg_analyze.getParameter<std::string>("apply_topPtReweighting");
+  bool apply_topPtReweighting = ! apply_topPtReweighting_str.empty();
   bool apply_l1PreFireWeight = cfg_analyze.getParameter<bool>("apply_l1PreFireWeight");
 
   const edm::ParameterSet additionalEvtWeight = cfg_analyze.getParameter<edm::ParameterSet>("evtWeight");
@@ -262,6 +263,10 @@ int main(int argc, char* argv[])
     eventInfo.loadWeight_tH(tHweights);
   }
   EventInfoReader eventInfoReader(&eventInfo);
+  if(apply_topPtReweighting)
+  {
+    eventInfoReader.setTopPtRwgtBranchName(apply_topPtReweighting_str);
+  }
   inputTree->registerReader(&eventInfoReader);
 
   ObjectMultiplicity objectMultiplicity;

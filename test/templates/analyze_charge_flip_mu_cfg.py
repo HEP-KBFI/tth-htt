@@ -58,7 +58,7 @@ process.analyze_charge_flip_mu = cms.PSet(
     apply_genWeight = cms.bool(True),
     apply_DYMCReweighting = cms.bool(False),
     apply_DYMCNormScaleFactors = cms.bool(False),
-    apply_topPtReweighting = cms.bool(False),
+    apply_topPtReweighting = cms.string(''),
 
     cfgMEtFilter = cms.PSet(),
     cfgEvtYieldHistManager = cms.PSet(),

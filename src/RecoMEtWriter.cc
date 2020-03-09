@@ -54,7 +54,18 @@ RecoMEtWriter::setPtPhi_central_or_shift(int central_or_shift)
   {
     throw cmsException(this, __func__, __LINE__) << "Invalid option for the era = " << era_ << ": " << central_or_shift;
   }
-  ptPhiOption_ = central_or_shift;
+  if(central_or_shift <= kJetMET_UnclusteredEnDown)
+  {
+    ptPhiOption_ = central_or_shift;
+  }
+  else
+  {
+    std::cout
+        << get_human_line(this, __func__, __LINE__)
+        << "Not setting the systematics option to " << central_or_shift
+        << " but keeping it at " << ptPhiOption_
+    ;
+  }
 }
 
 void
