@@ -1590,7 +1590,7 @@ class analyzeConfig(object):
             if self.channel in [ '1l_1tau', '2lss' ]:
                 return 2, '4096M'
             else:
-                return 3, ''
+                return 2, ''
         else:
             return 10, ''
 
