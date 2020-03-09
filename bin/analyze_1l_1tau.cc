@@ -1547,20 +1547,20 @@ int main(int argc, char* argv[])
 
     if(! selectBDT)
     {
+      const bool passesTight_hadTau = isMatched(*selHadTau, tightHadTausFull);
       if(applyFakeRateWeights == kFR_2L)
       {
         evtWeightRecorder.record_jetToLepton_FR_lead(leptonFakeRateInterface, selLepton);
         evtWeightRecorder.record_jetToTau_FR_lead(jetToTauFakeRateInterface, selHadTau);
 
         const bool passesTight_lepton = isMatched(*selLepton, tightElectrons) || isMatched(*selLepton, tightMuons);
-        const bool passesTight_hadTau = isMatched(*selHadTau, tightHadTausFull);
 
         evtWeightRecorder.compute_FR_1l1tau(passesTight_lepton, passesTight_hadTau);
       }
       else if( applyFakeRateWeights == kFR_1tau)
       {
         evtWeightRecorder.record_jetToTau_FR_lead(jetToTauFakeRateInterface, selHadTau);
-        evtWeightRecorder.compute_FR_1tau();
+        evtWeightRecorder.compute_FR_1tau(passesTight_hadTau);
       }
 
       // CV: apply data/MC ratio for jet->tau fake-rates in case data-driven "fake" background estimation is applied to leptons only

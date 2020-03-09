@@ -1452,7 +1452,7 @@ int main(int argc, char* argv[])
       }
       else if(applyFakeRateWeights == kFR_1tau)
       {
-        evtWeightRecorder.compute_FR_1tau();
+        evtWeightRecorder.compute_FR_1tau(passesTight_hadTau);
       }
     }
 

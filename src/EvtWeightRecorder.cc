@@ -1186,7 +1186,26 @@ EvtWeightRecorder::compute_FR_1l1tau(bool passesTight_lepton,
 }
 
 void
-EvtWeightRecorder::compute_FR_1tau()
+EvtWeightRecorder::compute_FR_1lepton(bool passesTight_lepton)
+{
+  assert(! weights_FR_lepton_lead_.empty());
+  weights_FR_.clear();
+  for(const std::string & central_or_shift: central_or_shifts_)
+  {
+    const int jetToLeptonFakeRate_option = getJetToLeptonFR_option(central_or_shift);
+    const int jetToTauFakeRate_option = getJetToTauFR_option(central_or_shift);
+    assert(weights_FR_lepton_lead_.count(jetToLeptonFakeRate_option));
+    const std::string weightKey = jetToLeptonFakeRate_option == kFRl_central && jetToTauFakeRate_option == kFRjt_central ? "central" : central_or_shift;
+    if(weights_FR_.count(weightKey))
+    {
+      continue;
+    }
+    weights_FR_[weightKey] = ! passesTight_lepton ? getWeight_1L(weights_FR_lepton_lead_.at(jetToLeptonFakeRate_option)) : 1.;
+  }
+}
+
+void
+EvtWeightRecorder::compute_FR_1tau(bool passesTight_hadTau)
 {
   assert(! weights_FR_hadTau_lead_.empty());
   weights_FR_.clear();
@@ -1200,7 +1219,7 @@ EvtWeightRecorder::compute_FR_1tau()
     {
       continue;
     }
-    weights_FR_[weightKey] = getWeight_1L(weights_FR_hadTau_lead_.at(jetToTauFakeRate_option));
+    weights_FR_[weightKey] = ! passesTight_hadTau ? getWeight_1L(weights_FR_hadTau_lead_.at(jetToTauFakeRate_option)) : 1.;
   }
 }
 

@@ -287,7 +287,10 @@ public:
                     bool passesTight_hadTau);
 
   void
-  compute_FR_1tau();
+  compute_FR_1lepton(bool passesTight_lepton);
+
+  void
+  compute_FR_1tau(bool passesTight_hadTau);
 
   void
   compute_FR_2tau(bool passesTight_hadTau_lead,
