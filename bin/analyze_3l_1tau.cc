@@ -1860,13 +1860,17 @@ int main(int argc, char* argv[])
             if ( ( isMC_tH || isMC_H ) && ( decayModeStr == "hzg" || decayModeStr == "hmm" ) ) continue;
             if(! decayModeStr.empty())
             {
-              selHistManager -> evt_in_decayModes_[kv.first][decayModeStr] -> fillHistograms(fillVariables);
-            }
-            for(const auto & kw: evt_htxs_binning)
-            {
-              if(htxs_category & kw.second)
+              EvtHistManager_3l_1tau* selHistManager_evt_decay = selHistManager -> evt_in_decayModes_[kv.first][decayModeStr];
+              if(selHistManager_evt_decay)
               {
-                selHistManager->evt_htxs_in_decayModes_[kv.first][decayModeStr][kw.first]->fillHistograms(fillVariables);
+                 selHistManager_evt_decay -> fillHistograms(fillVariables);
+              }
+              for(const auto & kw: evt_htxs_binning)
+              {
+                if(htxs_category & kw.second)
+                {
+                  selHistManager->evt_htxs_in_decayModes_[kv.first][decayModeStr][kw.first]->fillHistograms(fillVariables);
+                }
               }
             }
           }
