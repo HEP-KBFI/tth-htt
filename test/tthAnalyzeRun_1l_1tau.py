@@ -130,7 +130,7 @@ for sample_name, sample_info in samples.items():
   if re.match("/DY(\d)?Jets", sample_name):
     sample_info["sample_category"] = "DY"
     sample_info["use_it"] = mode == "default" and "amcatnloFXFX" in sample_name
-  elif sample_name.startswith('/TTJets'):
+  elif sample_name.startswith('/TTJets') and not sample_name.startswith('/TTJets_Tune'):
     sample_info["use_it"] = mode == "forBDTtraining"
     sample_info["sample_category"] = "TT"
   elif sample_name.startswith('/TTTo'):
