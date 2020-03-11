@@ -885,7 +885,7 @@ int main(int argc, char* argv[])
                 selHistManager->evt_htxs_in_categories_and_decayModes_[category][decayMode_evt][evt_cat_str][kv.first] = new EvtHistManager_1l_1tau(
                   makeHistManager_cfg(
                     htxs_decayMode_and_genMatchName, Form("%s/sel/evt", histogramDir_category.Data()), era_string,
-                    "minimalHistograms"
+                    central_or_shift, "minimalHistograms"
                   )
                 );
                 selHistManager->evt_htxs_in_categories_and_decayModes_[category][decayMode_evt][evt_cat_str][kv.first]->bookHistograms(fs);
