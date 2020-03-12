@@ -10,7 +10,9 @@ RecoMuon::RecoMuon(const RecoLepton & lepton,
   , passesMediumIdPOG_(passesMediumIdPOG)
   , segmentCompatibility_(segmentCompatibility)
   , ptErr_(ptErr)
-{}
+{
+  set_mvaRawTTH_cut(0.85);
+}
 
 Bool_t
 RecoMuon::passesLooseIdPOG() const
@@ -57,13 +59,13 @@ RecoMuon::is_muon() const
 Double_t
 RecoMuon::cone_pt() const
 {
-  return passesMediumIdPOG() && mvaRawTTH() >= 0.90 ? pt() : assocJet_pt();
+  return passesMediumIdPOG() ? RecoLepton::cone_pt() : assocJet_pt();
 }
 
 const Particle::LorentzVector &
 RecoMuon::cone_p4() const
 {
-  return passesMediumIdPOG() && mvaRawTTH() >= 0.90 ? p4() : assocJet_p4();
+  return passesMediumIdPOG() ? RecoLepton::cone_p4() : assocJet_p4();
 }
 
 std::ostream &

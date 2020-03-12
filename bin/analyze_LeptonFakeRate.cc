@@ -431,8 +431,7 @@ main(int argc,
   RecoMuonCollectionSelectorLoose preselMuonSelector(era);
   RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era);
   RecoMuonCollectionSelectorTight tightMuonSelector(era);
-  fakeableMuonSelector.getSelector().set_mvaTTH_wp(lep_mva_cut_mu);
-  tightMuonSelector.getSelector().set_min_mvaTTH(lep_mva_cut_mu);
+  muonReader->set_mvaTTH_wp(lep_mva_cut_mu);
 
   RecoElectronReader * electronReader = new RecoElectronReader(era, branchName_electrons, isMC, readGenObjects);
   inputTree->registerReader(electronReader);
@@ -442,10 +441,9 @@ main(int argc,
   RecoElectronCollectionSelectorLoose preselElectronSelector(era);
   RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era);
   RecoElectronCollectionSelectorTight tightElectronSelector(era);
-  fakeableElectronSelector.getSelector().set_mvaTTH_wp(lep_mva_cut_e);
+  electronReader->set_mvaTTH_wp(lep_mva_cut_e);
   fakeableElectronSelector.enable_offline_e_trigger_cuts();
   tightElectronSelector.enable_offline_e_trigger_cuts();
-  tightElectronSelector.getSelector().set_min_mvaTTH(lep_mva_cut_e);
 
   RecoJetReader * jetReader = new RecoJetReader(era, isMC, branchName_jets, readGenObjects);
   jetReader->setPtMass_central_or_shift(jetPt_option);

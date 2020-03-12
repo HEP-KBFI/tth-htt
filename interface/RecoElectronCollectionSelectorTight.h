@@ -29,8 +29,6 @@ public:
   void set_min_cone_pt(double min_cone_pt);
   void set_max_absEta(double max_absEta);
 
-  void set_min_mvaTTH(double min_mvaTTH);
-
   void set_selection_flags(bool selection_flag);
 
   /**
@@ -39,8 +37,6 @@ public:
   double get_min_lepton_pt() const;
   double get_min_cone_pt() const;
   double get_max_absEta() const;
-
-  double get_min_mvaTTH() const;
 
   /**
    * @brief Check if electron given as function argument passes "tight" electron selection, defined in Table 13 of AN-2015/321
@@ -72,7 +68,6 @@ protected:
   const Double_t max_jetBtagCSV_;            ///< upper cut threshold on CSV b-tagging discriminator value of nearby jet
   const Int_t max_nLostHits_;                ///< upper cut threshold on lost hits in the innermost layer of the tracker (electrons with lost_hits equal to cut threshold pass)
   bool apply_conversionVeto_;                ///< apply (True) or do not apply (False) conversion veto
-  Double_t min_mvaTTH_;                      ///< lower cut threshold on lepton MVA of ttH multilepton analysis
 };
 
 class RecoElectronCollectionSelectorTight

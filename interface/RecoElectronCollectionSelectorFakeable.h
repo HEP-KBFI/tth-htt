@@ -22,8 +22,6 @@ public:
   void set_min_cone_pt(double min_cone_pt);
   void set_max_absEta(double max_absEta);
 
-  void set_mvaTTH_wp(double mvaTTH_wp);
-
   void set_selection_flags(bool selection_flags);
 
   /**
@@ -64,7 +62,6 @@ protected:
 //-------------------------------------------------------------------------------
 //--- define cuts that dependent on lepton MVA of ttH multilepton analysis 
 //    format: electron fails / passes loose cut on lepton MVA value
-  Double_t wp_mvaTTH_;                ///< lepton MVA threshold
   const Double_t min_jetPtRatio_;           ///< lower cut on ratio of lepton pT to pT of nearby jet
   const Double_t max_jetBtagCSV_;           ///< upper cut threshold on CSV b-tagging discriminator value of nearby jet
 //-------------------------------------------------------------------------------
