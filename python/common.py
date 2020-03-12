@@ -21,6 +21,7 @@ DEPENDENCIES = [
   "hhAnalysis/Heavymassestimator",
   "HHStatAnalysis",
   "Support",
+  "TopAnalysis/KinematicReconstruction",
 ]
 
 logging.basicConfig(
