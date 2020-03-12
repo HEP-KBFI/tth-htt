@@ -1,7 +1,7 @@
 from collections import OrderedDict as OD
 
-# file generated at 2020-03-02 21:31:37 with the following command:
-# create_dictionary.py -m python/samples/metaDict_2017_sync.py -p /hdfs/local/karl/ttHNtupleProduction/2017/2020Mar01_woPresel_nonNom_sync/ntuples -N samples_2017 -E 2017 -o python/samples -g tthAnalyzeSamples_2017_sync.py -M
+# file generated at 2020-03-12 18:20:46 with the following command:
+# create_dictionary.py -m python/samples/metaDict_2017_sync.py -p /hdfs/local/karl/ttHNtupleProduction/2017/2020Mar12_woPresel_nonNom_sync/ntuples -N samples_2017 -E 2017 -o python/samples -g tthAnalyzeSamples_2017_sync.py -M
 
 samples_2017 = OD()
 samples_2017["/ttHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1/MINIAODSIM"] = OD([
@@ -11,18 +11,18 @@ samples_2017["/ttHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/Run
   ("nof_files",                       1),
   ("nof_db_files",                    208),
   ("nof_events",                      {
-    'Count'                                                      : [        65452, ],
-    'CountWeighted'                                              : [        22405,        22406,        22410, ],
-    'CountWeightedLHEWeightScale'                                : [        22858,        23259,        23648,        22757,        22404,        22127,        21346,        20642,        20060, ],
-    'CountWeightedLHEEnvelope'                                   : [        26425,        17661, ],
-    'CountWeightedL1PrefireNom'                                  : [        21611,        21612,        21611, ],
-    'CountWeightedL1Prefire'                                     : [        21611,        21419,        21798, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom'                    : [        22007,        22415,        22810,        21933,        21611,        21359,        20586,        19922,        19375, ],
-    'CountWeightedLHEEnvelopeL1PrefireNom'                       : [        25460,        17051, ],
+    'Count'                                                                          : [        65452, ],
+    'CountWeighted'                                                                  : [        22405,        22406,        22410, ],
+    'CountWeightedLHEWeightScale'                                                    : [        22858,        23259,        23648,        22757,        22404,        22127,        21346,        20642,        20060, ],
+    'CountWeightedLHEEnvelope'                                                       : [        26425,        17661, ],
+    'CountWeightedL1PrefireNom'                                                      : [        21611,        21612,        21611, ],
+    'CountWeightedL1Prefire'                                                         : [        21611,        21419,        21798, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom'                                        : [        22007,        22415,        22810,        21933,        21611,        21359,        20586,        19922,        19375, ],
+    'CountWeightedLHEEnvelopeL1PrefireNom'                                           : [        25460,        17051, ],
   }),
   ("nof_tree_events",                 65452),
   ("nof_db_events",                   9779592),
-  ("fsize_local",                     338130748), # 338.13MB, avg file size 338.13MB
+  ("fsize_local",                     338130845), # 338.13MB, avg file size 338.13MB
   ("fsize_db",                        625507074411), # 625.51GB, avg file size 3.01GB
   ("use_it",                          True),
   ("xsection",                        0.2118),
@@ -35,7 +35,7 @@ samples_2017["/ttHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/Run
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2020Mar01_woPresel_nonNom_sync/ntuples/ttHJetToNonbb_M125_amcatnlo"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2020Mar12_woPresel_nonNom_sync/ntuples/ttHJetToNonbb_M125_amcatnlo"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
