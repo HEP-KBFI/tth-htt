@@ -18,7 +18,7 @@ class TH2;
 
 class HistManagerBase
 {
-public:
+ public:
   HistManagerBase(const edm::ParameterSet & cfg);
   virtual ~HistManagerBase() {}
 
@@ -30,7 +30,6 @@ public:
   static void
   writeHistograms();
 
-protected:
   TH1 *
   book1D(TDirectory * dir,
          const std::string & distribution,
@@ -56,24 +55,24 @@ protected:
          const std::string & distribution,
          const std::string & title,
          int numBins,
-         float * binning);
+         const float * binning);
   TH1 *
   book1D(TFileDirectory & dir,
          const std::string & distribution,
          int numBins,
-         float * binning);
+         const float * binning);
 
   TH1 *
   book1D(TFileDirectory & dir,
          const std::string & distribution,
          const std::string & title,
          int numBins,
-         double * binning);
+         const double * binning);
   TH1 *
   book1D(TFileDirectory & dir,
          const std::string & distribution,
          int numBins,
-         double * binning);
+         const double * binning);
 
   TH2 *
   book2D(TFileDirectory & dir,
@@ -100,33 +99,33 @@ protected:
          const std::string & distribution,
          const std::string & title,
          int numBinsX,
-         float * binningX,
+         const float * binningX,
          int numBinsY,
-         float * binningY);
+         const float * binningY);
   TH2 *
   book2D(TFileDirectory & dir,
          const std::string & distribution,
          int numBinsX,
-         float * binningX,
+         const float * binningX,
          int numBinsY,
-         float * binningY);
-
+         const float * binningY);
   TH2 *
   book2D(TFileDirectory & dir,
          const std::string & distribution,
          const std::string & title,
          int numBinsX,
-         double * binningX,
+         const double * binningX,
          int numBinsY,
-         double * binningY);
+         const double * binningY);
   TH2 *
   book2D(TFileDirectory & dir,
          const std::string & distribution,
          int numBinsX,
-         double * binningX,
+         const double * binningX,
          int numBinsY,
-         double * binningY);
+         const double * binningY);
 
+ protected:
   bool 
   checkOptionIsSelected(const std::string &) const;
 
