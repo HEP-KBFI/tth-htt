@@ -42,6 +42,8 @@ public:
   const TH1 *
   getHistogram_EventCounter() const;
 
+  enum { kOption_undefined, kOption_allHistograms, kOption_minimalHistograms };
+
 private:
   TH1 * histogram_numElectrons_;
   TH1 * histogram_numMuons_;
@@ -53,7 +55,7 @@ private:
   TH1 * histogram_mTauTauVis_;
   TH1 * histogram_EventCounter_;
   TH1 * histogram_mvaOutput_legacy_;
-
+  int option_; // flag to book & fill either full or minimal set of histograms (to reduce memory consumption of hadd jobs)
 };
 
 #endif

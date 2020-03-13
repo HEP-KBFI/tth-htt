@@ -19,7 +19,6 @@ RecoMuonSelectorFakeable::RecoMuonSelectorFakeable(int era,
   , max_sip3d_(8.) // L
   , apply_looseIdPOG_(true) // L
   , apply_mediumIdPOG_(false) // L
-  , wp_mvaTTH_(0.85) // F
   , min_jetPtRatio_(2. / 3) // F
   , min_jetBtagCSV_(get_BtagWP(era_, Btag::kDeepJet, BtagWP::kLoose)) // F
   , max_jetBtagCSV_(get_BtagWP(era_, Btag::kDeepJet, BtagWP::kMedium)) // F
@@ -49,13 +48,6 @@ RecoMuonSelectorFakeable::set_max_absEta(double max_absEta)
   max_absEta_ = max_absEta;
 }
 
-void 
-RecoMuonSelectorFakeable::set_mvaTTH_wp(double wp_mvaTTH)
-{
-  std::cout << "setting cut on prompt-lepton MVA for fakeable muons: " << wp_mvaTTH_ << '\n';
-  wp_mvaTTH_ = wp_mvaTTH;
-}
-
 void
 RecoMuonSelectorFakeable::set_selection_flags(bool selection_flags)
 {
@@ -78,11 +70,6 @@ double
 RecoMuonSelectorFakeable::get_max_absEta() const
 {
   return max_absEta_;
-}
-
-double RecoMuonSelectorFakeable::get_mvaTTH_wp() const
-{
-  return wp_mvaTTH_;
 }
 
 bool
@@ -181,7 +168,7 @@ RecoMuonSelectorFakeable::operator()(const RecoMuon & muon) const
     return false;
   }
 
-  if(muon.mvaRawTTH() <= wp_mvaTTH_)
+  if(muon.mvaRawTTH() <= muon.mvaRawTTH_cut())
   {
     if(muon.jetPtRatio() < min_jetPtRatio_)
     {

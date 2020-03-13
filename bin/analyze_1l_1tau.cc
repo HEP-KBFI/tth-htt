@@ -759,7 +759,8 @@ int main(int argc, char* argv[])
         );
 
         selHistManager->evt_[evt_cat_str] = new EvtHistManager_1l_1tau(makeHistManager_cfg(
-          process_and_genMatchName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift
+          process_and_genMatchName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift,
+          skipBooking ? "minimalHistograms" : "allHistograms"
         ));
         selHistManager->evt_[evt_cat_str]->bookHistograms(fs);
 
@@ -767,7 +768,8 @@ int main(int argc, char* argv[])
         {
           const std::string htxs_process_and_genMatchName = Form("htxs_%s_%s", kv.first.data(), process_and_genMatchName.data());
           selHistManager->evt_htxs_[evt_cat_str][kv.first] = new EvtHistManager_1l_1tau(makeHistManager_cfg(
-            htxs_process_and_genMatchName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift
+            htxs_process_and_genMatchName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift,
+            "minimalHistograms"
           ));
           selHistManager->evt_htxs_[evt_cat_str][kv.first]->bookHistograms(fs);
         }
@@ -798,7 +800,8 @@ int main(int argc, char* argv[])
             );
 
             selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] = new EvtHistManager_1l_1tau(makeHistManager_cfg(
-              decayMode_and_genMatchName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift
+              decayMode_and_genMatchName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift,
+              skipBooking ? "minimalHistograms" : "allHistograms"
             ));
             selHistManager -> evt_in_decayModes_[evt_cat_str][decayMode_evt] -> bookHistograms(fs);
 
@@ -806,7 +809,8 @@ int main(int argc, char* argv[])
             {
               const std::string htxs_decayMode_and_genMatchName = Form("htxs_%s_%s", kv.first.data(), decayMode_and_genMatchName.data());
               selHistManager->evt_htxs_in_decayModes_[evt_cat_str][decayMode_evt][kv.first] = new EvtHistManager_1l_1tau(makeHistManager_cfg(
-                htxs_decayMode_and_genMatchName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift
+                htxs_decayMode_and_genMatchName, Form("%s/sel/evt", histogramDir.data()), era_string, central_or_shift,
+                "minimalHistograms"
               ));
               selHistManager->evt_htxs_in_decayModes_[evt_cat_str][decayMode_evt][kv.first]->bookHistograms(fs);
             }
@@ -825,14 +829,18 @@ int main(int argc, char* argv[])
         histogramDir_category.ReplaceAll("1l_1tau", category.data());
 
         selHistManager->evt_in_categories_[category] = new EvtHistManager_1l_1tau(makeHistManager_cfg(process_and_genMatch,
-          Form("%s/sel/evt", histogramDir_category.Data()), era_string, central_or_shift));
+          Form("%s/sel/evt", histogramDir_category.Data()), era_string, central_or_shift,
+          skipBooking ? "minimalHistograms" : "allHistograms"
+        ));
         selHistManager->evt_in_categories_[category]->bookHistograms(fs);
 
         for(const auto & kv: evt_htxs_binning)
         {
           const std::string htxs_process_and_genMatch = Form("htxs_%s_%s", kv.first.data(), process_and_genMatch.data());
           selHistManager->evt_htxs_in_categories_[category][kv.first] = new EvtHistManager_1l_1tau(makeHistManager_cfg(htxs_process_and_genMatch,
-            Form("%s/sel/evt", histogramDir_category.Data()), era_string, central_or_shift));
+            Form("%s/sel/evt", histogramDir_category.Data()), era_string, central_or_shift,
+            "minimalHistograms"
+          ));
           selHistManager->evt_htxs_in_categories_[category][kv.first]->bookHistograms(fs);
         }
 
@@ -864,7 +872,10 @@ int main(int argc, char* argv[])
               );
 
               selHistManager->evt_in_categories_and_decayModes_[category][decayMode_evt][evt_cat_str] = new EvtHistManager_1l_1tau(
-                makeHistManager_cfg(decayMode_and_genMatchName, Form("%s/sel/evt", histogramDir_category.Data()), era_string, central_or_shift)
+                makeHistManager_cfg(
+                  decayMode_and_genMatchName, Form("%s/sel/evt", histogramDir_category.Data()), era_string,
+                  central_or_shift, skipBooking ? "minimalHistograms" : "allHistograms"
+                )
               );
               selHistManager->evt_in_categories_and_decayModes_[category][decayMode_evt][evt_cat_str]->bookHistograms(fs);
 
@@ -872,7 +883,10 @@ int main(int argc, char* argv[])
               {
                 const std::string htxs_decayMode_and_genMatchName = Form("htxs_%s_%s", kv.first.data(), decayMode_and_genMatchName.data());
                 selHistManager->evt_htxs_in_categories_and_decayModes_[category][decayMode_evt][evt_cat_str][kv.first] = new EvtHistManager_1l_1tau(
-                  makeHistManager_cfg(htxs_decayMode_and_genMatchName, Form("%s/sel/evt", histogramDir_category.Data()), era_string, central_or_shift)
+                  makeHistManager_cfg(
+                    htxs_decayMode_and_genMatchName, Form("%s/sel/evt", histogramDir_category.Data()), era_string,
+                    central_or_shift, "minimalHistograms"
+                  )
                 );
                 selHistManager->evt_htxs_in_categories_and_decayModes_[category][decayMode_evt][evt_cat_str][kv.first]->bookHistograms(fs);
               }

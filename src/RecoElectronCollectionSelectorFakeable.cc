@@ -23,7 +23,6 @@ RecoElectronSelectorFakeable::RecoElectronSelectorFakeable(int era,
   , max_sigmaEtaEta_trig_(0.019) // F
   , max_HoE_trig_(0.10) // F
   , min_OoEminusOoP_trig_(-0.04) // F
-  , wp_mvaTTH_ (0.80) // F
   , min_jetPtRatio_(1. / 1.7) // F
   , max_jetBtagCSV_(get_BtagWP(era_, Btag::kDeepJet, BtagWP::kMedium)) // F
   , apply_conversionVeto_(true) // F
@@ -63,13 +62,6 @@ RecoElectronSelectorFakeable::set_max_absEta(double max_absEta)
   max_absEta_ = max_absEta;
 }
 
-void 
-RecoElectronSelectorFakeable::set_mvaTTH_wp(double wp_mvaTTH)
-{
-  std::cout << "setting cut on prompt-lepton MVA for fakeable electrons: " << wp_mvaTTH_ << '\n';
-  wp_mvaTTH_ = wp_mvaTTH;
-}
-
 void
 RecoElectronSelectorFakeable::set_selection_flags(bool selection_flags)
 {
@@ -92,11 +84,6 @@ double
 RecoElectronSelectorFakeable::get_max_absEta() const
 {
   return max_absEta_;
-}
-
-double RecoElectronSelectorFakeable::get_mvaTTH_wp() const
-{
-  return wp_mvaTTH_;
 }
 
 bool
@@ -205,7 +192,7 @@ RecoElectronSelectorFakeable::operator()(const RecoElectron & electron) const
     return false;
   }
 
-  if(electron.mvaRawTTH() <= wp_mvaTTH_)
+  if(electron.mvaRawTTH() <= electron.mvaRawTTH_cut())
   {
     if(electron.jetPtRatio() < min_jetPtRatio_)
     {

@@ -109,6 +109,7 @@ class HistManagerBase
          const float * binningX,
          int numBinsY,
          const float * binningY);
+         float * binningY);
   TH2 *
   book2D(TFileDirectory & dir,
          const std::string & distribution,

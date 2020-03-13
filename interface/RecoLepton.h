@@ -131,6 +131,7 @@ public:
   Double_t miniRelIsoNeutral() const;
   Double_t sip3d() const;
   Double_t mvaRawTTH() const;
+  Double_t mvaRawTTH_cut() const;
   Double_t jetPtRatio() const;
   Double_t jetRelIso() const;
   Double_t jetPtRel() const;
@@ -157,6 +158,8 @@ public:
   bool isFakeable() const;
   bool isTight() const;
 
+  void set_mvaRawTTH_cut(Double_t mvaRawTTH_cut);
+
   friend class RecoMuonReader;
   friend class RecoElectronReader;
 
@@ -178,6 +181,7 @@ protected:
   Int_t jetIdx_;                ///< index of jet from initial jet collection that the lepton is constituent of (-1 if no match)
   UChar_t genPartFlav_;         ///< generator-level parton flavor
   Int_t genMatchIdx_;           ///< index to matched gen particle (-1 if no match)
+  Double_t mvaRawTTH_cut_;      ///< cut on prompt lepton MVA score
 
   std::map<Btag, Double_t> jetBtagCSVs_; ///< CSV b-tagging discriminator values of nearby jet
 

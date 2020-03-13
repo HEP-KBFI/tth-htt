@@ -138,7 +138,7 @@ namespace
       const double b = histogramBackgroundSum->GetBinContent(iBin);
       if((s / std::sqrt(b + std::pow(0.09 * b, 2))) >= 0.5)
       {
-        const double xmin = x - 0.5 * w;
+	const double xmin = x - 0.5 * w;
         const double xmax = x + 0.5 * w;
         range.push_back(pdouble(xmin, xmax));
       }

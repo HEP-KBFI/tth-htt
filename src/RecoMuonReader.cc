@@ -24,6 +24,7 @@ RecoMuonReader::RecoMuonReader(int era,
   , mediumIdPOG_(nullptr)
   , segmentCompatibility_(nullptr)
   , ptErr_(nullptr)
+  , mvaTTH_wp_(-1.)
 {
   setBranchNames();
 }
@@ -150,9 +151,19 @@ RecoMuonReader::read() const
           const double val = kv.second[idxLepton];
           muon.jetBtagCSVs_[kv.first] = std::isnan(val) ? -2. : val;
         }
+        if(mvaTTH_wp_ > 0.)
+        {
+          muon.set_mvaRawTTH_cut(mvaTTH_wp_);
+        }
       }
     }
     gLeptonReader->readGenMatching(muons);
   }
   return muons;
+}
+
+void
+RecoMuonReader::set_mvaTTH_wp(double mvaTTH_wp)
+{
+  mvaTTH_wp_ = mvaTTH_wp;
 }

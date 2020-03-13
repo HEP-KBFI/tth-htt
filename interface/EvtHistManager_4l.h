@@ -42,6 +42,8 @@ class EvtHistManager_4l
   const TH1 *
   getHistogram_EventCounter() const;
 
+  enum { kOption_undefined, kOption_allHistograms, kOption_minimalHistograms };
+
  private:
   int era_;
   std::vector<std::string> ctrl_cateories_;
@@ -62,6 +64,7 @@ class EvtHistManager_4l
   TH1 * histogram_ctrl_;
 
   TH1 * histogram_EventCounter_;
+  int option_; // flag to book & fill either full or minimal set of histograms (to reduce memory consumption of hadd jobs)
 };
 
 #endif

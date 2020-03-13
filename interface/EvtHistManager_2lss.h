@@ -52,6 +52,8 @@ class EvtHistManager_2lss
   const TH1 *
   getHistogram_EventCounter() const;
 
+  enum { kOption_undefined, kOption_allHistograms, kOption_minimalHistograms };
+
  private:
   int era_;
 
@@ -77,6 +79,7 @@ class EvtHistManager_2lss
   std::map<std::string, TH1 *> histograms_by_category_SVA_;
 
   TH1 * histogram_EventCounter_;
+  int option_; // flag to book & fill either full or minimal set of histograms (to reduce memory consumption of hadd jobs)
 };
 
 #endif

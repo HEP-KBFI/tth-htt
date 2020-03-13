@@ -614,8 +614,8 @@ class analyzeConfig(object):
           #jobOptions['hhWeight_cfg.histtitle'] = sample_info["sample_category_hh"]
           jobOptions['hhWeight_cfg.histtitle'] = sample_info[sample_category_to_check]
           jobOptions['hhWeight_cfg.ktScan_file'] = self.kt_scan_file
-          jobOptions['hhWeight_cfg.do_ktscan'] = True
-          jobOptions['hhWeight_cfg.apply_rwgt'] = True
+          jobOptions['hhWeight_cfg.do_ktscan'] = 'hh' in self.channel
+          jobOptions['hhWeight_cfg.apply_rwgt'] = 'hh' in self.channel
 
         if 'process' not in jobOptions:
           jobOptions['process'] = sample_info["sample_category"]
@@ -1590,7 +1590,7 @@ class analyzeConfig(object):
             if self.channel in [ '1l_1tau', '2lss' ]:
                 return 2, '4096M'
             else:
-                return 3, ''
+                return 2, ''
         else:
             return 10, ''
 

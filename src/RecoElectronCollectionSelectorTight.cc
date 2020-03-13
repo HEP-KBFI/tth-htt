@@ -26,7 +26,6 @@ RecoElectronSelectorTight::RecoElectronSelectorTight(int era,
   , max_jetBtagCSV_(get_BtagWP(era_, Btag::kDeepJet, BtagWP::kMedium)) // F
   , max_nLostHits_(0) // F
   , apply_conversionVeto_(true) // F
-  , min_mvaTTH_(0.80) // T
 {
   // L -- inherited from the preselection (loose cut)
   // F -- inherited from the fakeable selection
@@ -75,12 +74,6 @@ RecoElectronSelectorTight::set_max_absEta(double max_absEta)
 {
   max_absEta_ = max_absEta;
 }
-
-void RecoElectronSelectorTight::set_min_mvaTTH(double min_mvaTTH)
-{
-  std::cout << "setting cut on prompt-lepton MVA for tight electrons: " << min_mvaTTH << '\n';
-  min_mvaTTH_ = min_mvaTTH;
-}
  
 double
 RecoElectronSelectorTight::get_min_lepton_pt() const
@@ -98,12 +91,6 @@ double
 RecoElectronSelectorTight::get_max_absEta() const
 {
   return max_absEta_;
-}
-
-double 
-RecoElectronSelectorTight::get_min_mvaTTH() const
-{
-  return min_mvaTTH_;
 }
 
 void
@@ -200,11 +187,11 @@ RecoElectronSelectorTight::operator()(const RecoElectron & electron) const
     }
     return false;
   }
-  if(electron.mvaRawTTH() < min_mvaTTH_)
+  if(electron.mvaRawTTH() < electron.mvaRawTTH_cut())
   {
     if(debug_)
     {
-      std::cout << "FAILS mvaTTH = " << electron.mvaRawTTH() << " >= " << min_mvaTTH_ << " tight cut\n";
+      std::cout << "FAILS mvaTTH = " << electron.mvaRawTTH() << " >= " << electron.mvaRawTTH_cut() << " tight cut\n";
     }
     return false;
   }

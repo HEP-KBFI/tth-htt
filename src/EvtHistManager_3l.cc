@@ -7,7 +7,21 @@
 EvtHistManager_3l::EvtHistManager_3l(const edm::ParameterSet & cfg, bool isControlRegion)
   : HistManagerBase(cfg)
   , era_(get_era(cfg.getParameter<std::string>("era")))
+  , option_(kOption_undefined)
 {
+  const std::string option_string = cfg.getParameter<std::string>("option");
+  if(option_string == "allHistograms")
+  {
+    option_ = kOption_allHistograms;
+  }
+  else if(option_string == "minimalHistograms")
+  {
+    option_ = kOption_minimalHistograms;
+  }
+  else
+  {
+    throw cmsException(__func__) << "Invalid Configuration parameter 'option' = " << option_string;
+  }
   const std::vector<std::string> sysOpts_central = {
     "numElectrons",
     "numMuons",
@@ -110,23 +124,29 @@ EvtHistManager_3l::bookCategories(TFileDirectory & dir,
 void
 EvtHistManager_3l::bookHistograms(TFileDirectory & dir)
 {
-  histogram_numElectrons_    = book1D(dir, "numElectrons",    "numElectrons",     5, -0.5,  +4.5);
-  histogram_numMuons_        = book1D(dir, "numMuons",        "numMuons",         5, -0.5,  +4.5);
-  histogram_numHadTaus_      = book1D(dir, "numHadTaus",      "numHadTaus",       5, -0.5,  +4.5);
-  histogram_numJets_         = book1D(dir, "numJets",         "numJets",         20, -0.5, +19.5);
-  histogram_numBJets_loose_  = book1D(dir, "numBJets_loose",  "numBJets_loose",  10, -0.5,  +9.5);
-  histogram_numBJets_medium_ = book1D(dir, "numBJets_medium", "numBJets_medium", 10, -0.5,  +9.5);
+  if(option_ == kOption_allHistograms)
+  {
+    histogram_numElectrons_    = book1D(dir, "numElectrons",    "numElectrons",     5, -0.5,  +4.5);
+    histogram_numMuons_        = book1D(dir, "numMuons",        "numMuons",         5, -0.5,  +4.5);
+    histogram_numHadTaus_      = book1D(dir, "numHadTaus",      "numHadTaus",       5, -0.5,  +4.5);
+    histogram_numJets_         = book1D(dir, "numJets",         "numJets",         20, -0.5, +19.5);
+    histogram_numBJets_loose_  = book1D(dir, "numBJets_loose",  "numBJets_loose",  10, -0.5,  +9.5);
+    histogram_numBJets_medium_ = book1D(dir, "numBJets_medium", "numBJets_medium", 10, -0.5,  +9.5);
+  }
 
   histogram_mvaOutput_3l_ttV_   = book1D(dir, "mvaOutput_3l_ttV",   "mvaOutput_3l_ttV",   40, -1., +1.);
   histogram_mvaOutput_3l_ttbar_ = book1D(dir, "mvaOutput_3l_ttbar", "mvaOutput_3l_ttbar", 40, -1., +1.);
 
-  histogram_memOutput_isValid_       = book1D(dir, "memOutput_isValid",       "memOutput_isValid",         3,  -1.5, +1.5);
-  histogram_memOutput_errorFlag_     = book1D(dir, "memOutput_errorFlag",     "memOutput_errorFlag",       2,  -0.5, +1.5);
-  histogram_memOutput_logWeight_ttH_ = book1D(dir, "memOutput_logWeight_ttH", "memOutput_logWeight_ttH", 100, -20., +20.);
-  histogram_memOutput_logWeight_tt_  = book1D(dir, "memOutput_logWeight_tt",  "memOutput_logWeight_tt",  100, -20., +20.);
-  histogram_memOutput_LR_            = book1D(dir, "memOutput_LR",            "memOutput_LR",             40,   0.,   1.);
-  histogram_mem_logCPUTime_          = book1D(dir, "mem_logCPUTime",          "mem_logCPUTime",          400, -20., +20.);
-  histogram_mem_logRealTime_         = book1D(dir, "mem_logRealTime",         "mem_logRealTime",         400, -20., +20.);
+  if(option_ == kOption_allHistograms)
+  {
+    histogram_memOutput_isValid_       = book1D(dir, "memOutput_isValid",       "memOutput_isValid",         3,  -1.5, +1.5);
+    histogram_memOutput_errorFlag_     = book1D(dir, "memOutput_errorFlag",     "memOutput_errorFlag",       2,  -0.5, +1.5);
+    histogram_memOutput_logWeight_ttH_ = book1D(dir, "memOutput_logWeight_ttH", "memOutput_logWeight_ttH", 100, -20., +20.);
+    histogram_memOutput_logWeight_tt_  = book1D(dir, "memOutput_logWeight_tt",  "memOutput_logWeight_tt",  100, -20., +20.);
+    histogram_memOutput_LR_            = book1D(dir, "memOutput_LR",            "memOutput_LR",             40,   0.,   1.);
+    histogram_mem_logCPUTime_          = book1D(dir, "mem_logCPUTime",          "mem_logCPUTime",          400, -20., +20.);
+    histogram_mem_logRealTime_         = book1D(dir, "mem_logRealTime",         "mem_logRealTime",         400, -20., +20.);
+  }
 
   histogram_EventCounter_ = book1D(dir, "EventCounter", "EventCounter", 1, -0.5, +0.5);
 }
@@ -137,12 +157,15 @@ EvtHistManager_3l::fillHistograms(const EvtHistManager_3l_Input & variables)
   const double evtWeightErr = 0.;
   const double & evtWeight = variables.evtWeight;
 
-  fillWithOverFlow(histogram_numElectrons_,    variables.numElectrons,    evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numMuons_,        variables.numMuons,        evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numHadTaus_,      variables.numHadTaus,      evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numJets_,         variables.numJets,         evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numBJets_loose_,  variables.numBJets_loose,  evtWeight, evtWeightErr);
-  fillWithOverFlow(histogram_numBJets_medium_, variables.numBJets_medium, evtWeight, evtWeightErr);
+  if(option_ == kOption_allHistograms)
+  {
+    fillWithOverFlow(histogram_numElectrons_,    variables.numElectrons,    evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_numMuons_,        variables.numMuons,        evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_numHadTaus_,      variables.numHadTaus,      evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_numJets_,         variables.numJets,         evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_numBJets_loose_,  variables.numBJets_loose,  evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_numBJets_medium_, variables.numBJets_medium, evtWeight, evtWeightErr);
+  }
 
   fillWithOverFlow(histogram_mvaOutput_3l_ttV_,   variables.mvaOutput_3l_ttV,   evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mvaOutput_3l_ttbar_, variables.mvaOutput_3l_ttbar, evtWeight, evtWeightErr);
@@ -162,30 +185,32 @@ EvtHistManager_3l::fillHistograms(const EvtHistManager_3l_Input & variables)
     fillWithOverFlow(histograms_by_category_SVA_[variables.category_SVA], variables.mass_3L, evtWeight, evtWeightErr);
   }
 
-  const MEMOutput_3l * const memOutput_3l = variables.memOutput_3l;
-  if(memOutput_3l)
+  if(option_ == kOption_allHistograms)
   {
-    fillWithOverFlow(histogram_memOutput_isValid_, memOutput_3l->isValid(), evtWeight, evtWeightErr);
-
-    if(memOutput_3l->isValid())
+    const MEMOutput_3l * const memOutput_3l = variables.memOutput_3l;
+    if(memOutput_3l)
     {
-      fillWithOverFlow(histogram_memOutput_errorFlag_, memOutput_3l->errorFlag(), evtWeight, evtWeightErr);
+      fillWithOverFlow(histogram_memOutput_isValid_, memOutput_3l->isValid(), evtWeight, evtWeightErr);
 
-      if(memOutput_3l->errorFlag() == 0)
+      if(memOutput_3l->isValid())
       {
-        fillWithOverFlow(histogram_memOutput_logWeight_ttH_, getLogWeight(memOutput_3l->weight_ttH()), evtWeight, evtWeightErr);
-        fillWithOverFlow(histogram_memOutput_logWeight_tt_,  getLogWeight(memOutput_3l->weight_tt()),  evtWeight, evtWeightErr);
-        fillWithOverFlow(histogram_memOutput_LR_,            memOutput_3l->LR(),                       evtWeight, evtWeightErr);
+        fillWithOverFlow(histogram_memOutput_errorFlag_, memOutput_3l->errorFlag(), evtWeight, evtWeightErr);
 
-        fillWithOverFlow(histogram_mem_logCPUTime_,  std::log(std::max(1.e-21f, memOutput_3l->cpuTime())),  evtWeight, evtWeightErr);
-        fillWithOverFlow(histogram_mem_logRealTime_, std::log(std::max(1.e-21f, memOutput_3l->realTime())), evtWeight, evtWeightErr);
+        if(memOutput_3l->errorFlag() == 0)
+        {
+          fillWithOverFlow(histogram_memOutput_logWeight_ttH_, getLogWeight(memOutput_3l->weight_ttH()), evtWeight, evtWeightErr);
+          fillWithOverFlow(histogram_memOutput_logWeight_tt_,  getLogWeight(memOutput_3l->weight_tt()),  evtWeight, evtWeightErr);
+          fillWithOverFlow(histogram_memOutput_LR_,            memOutput_3l->LR(),                       evtWeight, evtWeightErr);
+
+          fillWithOverFlow(histogram_mem_logCPUTime_,  std::log(std::max(1.e-21f, memOutput_3l->cpuTime())),  evtWeight, evtWeightErr);
+          fillWithOverFlow(histogram_mem_logRealTime_, std::log(std::max(1.e-21f, memOutput_3l->realTime())), evtWeight, evtWeightErr);
+        }
       }
     }
+    else
+    {
+      fillWithOverFlow(histogram_memOutput_isValid_, -1, evtWeight, evtWeightErr);
+    }
   }
-  else
-  {
-    fillWithOverFlow(histogram_memOutput_isValid_, -1, evtWeight, evtWeightErr);
-  }
-
   fillWithOverFlow(histogram_EventCounter_, 0., evtWeight, evtWeightErr);
 }

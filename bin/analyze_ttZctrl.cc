@@ -414,8 +414,7 @@ int main(int argc, char* argv[])
   RecoMuonCollectionSelectorLoose preselMuonSelector(era);
   RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era);
   RecoMuonCollectionSelectorTight tightMuonSelector(era);
-  fakeableMuonSelector.getSelector().set_mvaTTH_wp(lep_mva_cut_mu);
-  tightMuonSelector.getSelector().set_min_mvaTTH(lep_mva_cut_mu);
+  muonReader->set_mvaTTH_wp(lep_mva_cut_mu);
 
   RecoElectronReader* electronReader = new RecoElectronReader(era, branchName_electrons, isMC, readGenObjects);
   inputTree -> registerReader(electronReader);
@@ -424,8 +423,7 @@ int main(int argc, char* argv[])
   RecoElectronCollectionSelectorLoose preselElectronSelector(era);
   RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era);
   RecoElectronCollectionSelectorTight tightElectronSelector(era);
-  fakeableElectronSelector.getSelector().set_mvaTTH_wp(lep_mva_cut_e);
-  tightElectronSelector.getSelector().set_min_mvaTTH(lep_mva_cut_e);
+  electronReader->set_mvaTTH_wp(lep_mva_cut_e);
 
   RecoHadTauReader* hadTauReader = new RecoHadTauReader(era, branchName_hadTaus, isMC, readGenObjects);
   hadTauReader->setHadTauPt_central_or_shift(hadTauPt_option);

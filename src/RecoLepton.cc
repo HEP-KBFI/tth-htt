@@ -39,6 +39,7 @@ RecoLepton::RecoLepton(const ChargedParticle & lepton,
   , jetIdx_(jetIdx)
   , genPartFlav_(genPartFlav)
   , genMatchIdx_(genMatchIdx)
+  , mvaRawTTH_cut_(-1.)
   , assocJet_pt_(jetPtRatio_ > 1.e-3 ? 0.90 * pt_ / jetPtRatio_ : pt_)
   , assocJet_p4_(assocJet_pt_, eta_, phi_, mass_)
   , genLepton_(nullptr)
@@ -133,13 +134,15 @@ RecoLepton::p4() const
 Double_t
 RecoLepton::cone_pt() const
 {
-  return mvaRawTTH() >= 0.90 ? pt_ : assocJet_pt_;
+  assert(mvaRawTTH_cut_ > 0.);
+  return mvaRawTTH_ >= mvaRawTTH_cut_ ? pt_ : assocJet_pt_;
 }
 
 const Particle::LorentzVector &
 RecoLepton::cone_p4() const
 {
-  return mvaRawTTH() >= 0.90 ? p4_ : assocJet_p4_;
+  assert(mvaRawTTH_cut_ > 0.);
+  return mvaRawTTH_ >= mvaRawTTH_cut_ ? p4_ : assocJet_p4_;
 }
 
 Double_t
@@ -200,6 +203,13 @@ Double_t
 RecoLepton::mvaRawTTH() const
 {
   return mvaRawTTH_;
+}
+
+Double_t
+RecoLepton::mvaRawTTH_cut() const
+{
+  assert(mvaRawTTH_cut_ > 0.);
+  return mvaRawTTH_cut_;
 }
 
 Double_t
@@ -334,6 +344,12 @@ RecoLepton::isTight() const
   return isTight_;
 }
 
+void
+RecoLepton::set_mvaRawTTH_cut(Double_t mvaRawTTH_cut)
+{
+  mvaRawTTH_cut_ = mvaRawTTH_cut;
+}
+
 std::ostream &
 operator<<(std::ostream & stream,
            const RecoLepton & lepton)
@@ -354,7 +370,8 @@ operator<<(std::ostream & stream,
             " jetBtagCSV(DeepJet) = " << lepton.jetBtagCSV(Btag::kDeepJet)      << ","
             " jetBtagCSV(DeepCSV) = " << lepton.jetBtagCSV(Btag::kDeepCSV)      << ","
             " jetBtagCSV(CSVv2) = "   << lepton.jetBtagCSV(Btag::kCSVv2)        << ",\n"
-            " mvaRawTTH = "           << lepton.mvaRawTTH()                     << ",\n"
+            " mvaRawTTH = "           << lepton.mvaRawTTH()                     << ","
+            " mvaRawTTH_cut = "       << lepton.mvaRawTTH_cut()                 << ",\n"
             " is loose/fakeable/tight = " << lepton.isLoose()    << '/'
                                           << lepton.isFakeable() << '/'
                                           << lepton.isTight()    << ",\n"
