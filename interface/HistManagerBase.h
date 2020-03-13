@@ -30,7 +30,6 @@ public:
   static void
   writeHistograms();
 
-protected:
   TH1 *
   book1D(TDirectory * dir,
          const std::string & distribution,
@@ -110,7 +109,6 @@ protected:
          float * binningX,
          int numBinsY,
          float * binningY);
-
   TH2 *
   book2D(TFileDirectory & dir,
          const std::string & distribution,
@@ -127,6 +125,7 @@ protected:
          int numBinsY,
          double * binningY);
 
+protected:
   bool 
   checkOptionIsSelected(const std::string &) const;
 
