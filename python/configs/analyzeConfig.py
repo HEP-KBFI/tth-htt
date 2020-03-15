@@ -221,6 +221,15 @@ class analyzeConfig(object):
             logging.warning('Removing systematics {} from {} era'.format(systematics.JES_HEM, self.era))
             self.central_or_shifts.remove(systematics.JES_HEM)
         # ------------------------------------------------------------------------
+        for central_or_shift in self.central_or_shifts:
+          if central_or_shift in systematics.TTbar().full:
+            for sample_key, sample_info in self.samples.items():
+              if sample_info["sample_category"] == central_or_shift:
+                logging.info("Enabling sample {} because systematics {} was requested".format(
+                  sample_info["process_name_specific"], central_or_shift,
+                ))
+                sample_info["use_it"] = True
+        # ------------------------------------------------------------------------
         self.ttHProcs = [ "ttH" ]# , "ttH_ctcvcp" ]
         self.prep_dcard_processesToCopy = [  ]
         self.decayModes = [ "htt", "hww", "hzz", "hmm", "hzg" ]
@@ -562,6 +571,7 @@ class analyzeConfig(object):
       enable_toppt_rwgt = sample_info["apply_toppt_rwgt"] if "apply_toppt_rwgt" in sample_info else False
       run_ps = sample_info["nof_PSweights"] == 4
       is_HHmc = sample_category.startswith("signal") or sample_category == "HH"
+      is_ttbar_sys = sample_info["sample_category"] in systematics.TTbar().full
 
       if central_or_shift in systematics.LHE().full           and not has_LHE:                                 return False
       if central_or_shift in systematics.LHE().ttH            and sample_category not in self.ttHProcs:        return False
@@ -583,6 +593,7 @@ class analyzeConfig(object):
       if central_or_shift in systematics.PartonShower().ttbar and not (sample_category == "TT" and run_ps):    return False
       if central_or_shift in systematics.PartonShower().dy    and not (sample_category == "DY" and run_ps):    return False
       if central_or_shift in systematics.PartonShower().wjets and not (sample_category == "W" and run_ps):     return False
+      if central_or_shift != "central"                        and is_ttbar_sys:                                return False
       return True
 
     def createCfg_analyze(self, jobOptions, sample_info, additionalJobOptions = [], isLeptonFR = False, isHTT = False, dropCtrl = False):
