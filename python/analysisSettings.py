@@ -436,15 +436,17 @@ class systematics(object):
     pt         = [ "CMS_ttHl_FRe_shape_ptUp",         "CMS_ttHl_FRe_shape_ptDown"         ]
     norm       = [ "CMS_ttHl_FRe_shape_normUp",       "CMS_ttHl_FRe_shape_normDown"       ]
     eta_barrel = [ "CMS_ttHl_FRe_shape_eta_barrelUp", "CMS_ttHl_FRe_shape_eta_barrelDown" ]
+    corr       = [ "CMS_ttHl_FRe_shape_corrUp",       "CMS_ttHl_FRe_shape_corrDown"       ]
 
-    full = pt + norm + eta_barrel
+    full = pt + norm + eta_barrel + corr
 
   class FakeRate_m_shape(object):
     pt         = [ "CMS_ttHl_FRm_shape_ptUp",         "CMS_ttHl_FRm_shape_ptDown"         ]
     norm       = [ "CMS_ttHl_FRm_shape_normUp",       "CMS_ttHl_FRm_shape_normDown"       ]
     eta_barrel = [ "CMS_ttHl_FRm_shape_eta_barrelUp", "CMS_ttHl_FRm_shape_eta_barrelDown" ]
+    corr       = [ "CMS_ttHl_FRm_shape_corrUp",       "CMS_ttHl_FRm_shape_corrDown"       ]
 
-    full = pt + norm + eta_barrel
+    full = pt + norm + eta_barrel + corr
 
   class FakeRate_t(object):
     jt_norm  = [ "CMS_ttHl_FRjt_normUp",  "CMS_ttHl_FRjt_normDown"  ]

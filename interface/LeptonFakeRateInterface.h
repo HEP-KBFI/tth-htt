@@ -27,7 +27,8 @@ public:
                int central_or_shift) const;
 
 private:
-  double jetToEleFakeRateCorr;
+  double jetToEleFakeRateCorr_;
+  double jetToMuFakeRateCorr_;
   std::map<std::string, TFile *> inputFiles_;
 
   std::map<int, lutWrapperBase *> lutFakeRate_e_;

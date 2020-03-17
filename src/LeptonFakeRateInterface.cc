@@ -8,7 +8,8 @@
 #include <iostream> // std::cout
 
 LeptonFakeRateInterface::LeptonFakeRateInterface(const edm::ParameterSet & cfg)
-  : jetToEleFakeRateCorr(1.)
+  : jetToEleFakeRateCorr_(1.)
+  , jetToMuFakeRateCorr_(1.)
 {
   const std::string inputFileName    = cfg.getParameter<std::string>("inputFileName");
   const std::string histogramName_e  = cfg.getParameter<std::string>("histogramName_e");
@@ -17,10 +18,10 @@ LeptonFakeRateInterface::LeptonFakeRateInterface(const edm::ParameterSet & cfg)
   const int era = get_era(cfg.getParameter<std::string>("era"));
   switch(era)
   {
-    // Slide 3 in https://cernbox.cern.ch/index.php/s/u8bcCuU4WM2wzFY
-    case kEra_2016: jetToEleFakeRateCorr = 1.4; break;
-    case kEra_2017: jetToEleFakeRateCorr = 1.2; break;
-    case kEra_2018: jetToEleFakeRateCorr = 1.3; break;
+    // Slide 16 in https://indico.cern.ch/event/885279/contributions/3789360/attachments/2004535/3347458/mar15.pdf
+    case kEra_2016: jetToEleFakeRateCorr_ = 1.376; jetToMuFakeRateCorr_ = 1.050; break;
+    case kEra_2017: jetToEleFakeRateCorr_ = 1.252; jetToMuFakeRateCorr_ = 1.157; break;
+    case kEra_2018: jetToEleFakeRateCorr_ = 1.325; jetToMuFakeRateCorr_ = 1.067; break;
   }
 
   for(int FR_option = kFRl_central; FR_option <= kFRm_shape_eta_barrelDown; ++FR_option)
@@ -80,12 +81,25 @@ LeptonFakeRateInterface::getWeight_e(double electronPt,
                                      double electronAbsEta,
                                      int central_or_shift) const
 {
-  if(! lutFakeRate_e_.count(central_or_shift))
+  int central_or_shift_e = central_or_shift;
+  if(central_or_shift_e == kFRe_shape_corrUp || central_or_shift_e == kFRe_shape_corrDown)
   {
-    throw cmsException(this, __func__, __LINE__) << "Invalid option: " << central_or_shift;
+    central_or_shift_e = kFRl_central;
   }
-  const double jetToEleFakeRate = lutFakeRate_e_.at(central_or_shift)->getSF(electronPt, electronAbsEta);
-  return jetToEleFakeRate * jetToEleFakeRateCorr;
+  if(! lutFakeRate_e_.count(central_or_shift_e))
+  {
+    throw cmsException(this, __func__, __LINE__) << "Invalid option: " << central_or_shift_e;
+  }
+  const double jetToEleFakeRate = lutFakeRate_e_.at(central_or_shift_e)->getSF(electronPt, electronAbsEta);
+  if(central_or_shift == kFRe_shape_corrUp)
+  {
+    return jetToEleFakeRate * jetToEleFakeRateCorr_ * jetToEleFakeRateCorr_;
+  }
+  else if(central_or_shift == kFRe_shape_corrDown)
+  {
+    return jetToEleFakeRate;
+  }
+  return jetToEleFakeRate * jetToEleFakeRateCorr_;
 }
 
 double
@@ -93,9 +107,23 @@ LeptonFakeRateInterface::getWeight_mu(double muonPt,
                                       double muonAbsEta,
                                       int central_or_shift) const
 {
-  if(! lutFakeRate_mu_.count(central_or_shift))
+  int central_or_shift_m = central_or_shift;
+  if(central_or_shift_m == kFRm_shape_corrUp || central_or_shift_m == kFRm_shape_corrDown)
   {
-    throw cmsException(this, __func__, __LINE__) << "Invalid option: " << central_or_shift;
+    central_or_shift_m = kFRl_central;
   }
-  return lutFakeRate_mu_.at(central_or_shift)->getSF(muonPt, muonAbsEta);
+  if(! lutFakeRate_mu_.count(central_or_shift_m))
+  {
+    throw cmsException(this, __func__, __LINE__) << "Invalid option: " << central_or_shift_m;
+  }
+  const double jetToMuFakeRate = lutFakeRate_mu_.at(central_or_shift_m)->getSF(muonPt, muonAbsEta);
+  if(central_or_shift == kFRm_shape_corrUp)
+  {
+    return jetToMuFakeRate * jetToMuFakeRateCorr_ * jetToMuFakeRateCorr_;
+  }
+  else if(central_or_shift == kFRm_shape_corrDown)
+  {
+    return jetToMuFakeRate;
+  }
+  return jetToMuFakeRate * jetToMuFakeRateCorr_;
 }

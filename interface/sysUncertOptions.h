@@ -167,9 +167,11 @@ enum
   kFRe_shape_ptUp,         kFRe_shape_ptDown,
   kFRe_shape_normUp,       kFRe_shape_normDown,
   kFRe_shape_eta_barrelUp, kFRe_shape_eta_barrelDown,
+  kFRe_shape_corrUp,       kFRe_shape_corrDown,
   kFRm_shape_ptUp,         kFRm_shape_ptDown,
   kFRm_shape_normUp,       kFRm_shape_normDown,
   kFRm_shape_eta_barrelUp, kFRm_shape_eta_barrelDown,
+  kFRm_shape_corrUp,       kFRm_shape_corrDown,
 };
 
 enum class PUsys

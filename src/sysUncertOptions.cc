@@ -269,12 +269,16 @@ getJetToLeptonFR_option(const std::string & central_or_shift)
   else if(central_or_shift == "CMS_ttHl_FRe_shape_normDown"      ) central_or_shift_int = kFRe_shape_normDown;
   else if(central_or_shift == "CMS_ttHl_FRe_shape_eta_barrelUp"  ) central_or_shift_int = kFRe_shape_eta_barrelUp;
   else if(central_or_shift == "CMS_ttHl_FRe_shape_eta_barrelDown") central_or_shift_int = kFRe_shape_eta_barrelDown;
+  else if(central_or_shift == "CMS_ttHl_FRe_shape_corrUp"        ) central_or_shift_int = kFRe_shape_corrUp;
+  else if(central_or_shift == "CMS_ttHl_FRe_shape_corrDown"      ) central_or_shift_int = kFRe_shape_corrDown;
   else if(central_or_shift == "CMS_ttHl_FRm_shape_ptUp"          ) central_or_shift_int = kFRm_shape_ptUp;
   else if(central_or_shift == "CMS_ttHl_FRm_shape_ptDown"        ) central_or_shift_int = kFRm_shape_ptDown;
   else if(central_or_shift == "CMS_ttHl_FRm_shape_normUp"        ) central_or_shift_int = kFRm_shape_normUp;
   else if(central_or_shift == "CMS_ttHl_FRm_shape_normDown"      ) central_or_shift_int = kFRm_shape_normDown;
   else if(central_or_shift == "CMS_ttHl_FRm_shape_eta_barrelUp"  ) central_or_shift_int = kFRm_shape_eta_barrelUp;
   else if(central_or_shift == "CMS_ttHl_FRm_shape_eta_barrelDown") central_or_shift_int = kFRm_shape_eta_barrelDown;
+  else if(central_or_shift == "CMS_ttHl_FRm_shape_corrUp"        ) central_or_shift_int = kFRm_shape_corrUp;
+  else if(central_or_shift == "CMS_ttHl_FRm_shape_corrDown"      ) central_or_shift_int = kFRm_shape_corrDown;
   return central_or_shift_int;
 }
 

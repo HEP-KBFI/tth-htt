@@ -895,7 +895,7 @@ EvtWeightRecorder::record_jetToLepton_FR(const LeptonFakeRateInterface * const l
     if(leptonPdgId == 11)
     {
       int jetToLeptonFakeRate_option_e = jetToLeptonFakeRate_option;
-      if(jetToLeptonFakeRate_option_e >= kFRm_shape_ptUp && jetToLeptonFakeRate_option_e <= kFRm_shape_eta_barrelDown)
+      if(jetToLeptonFakeRate_option_e >= kFRm_shape_ptUp && jetToLeptonFakeRate_option_e <= kFRm_shape_corrDown)
       {
         jetToLeptonFakeRate_option_e = kFRl_central;
       }
@@ -906,7 +906,7 @@ EvtWeightRecorder::record_jetToLepton_FR(const LeptonFakeRateInterface * const l
     else if(leptonPdgId == 13)
     {
       int jetToLeptonFakeRate_option_m = jetToLeptonFakeRate_option;
-      if(jetToLeptonFakeRate_option_m >= kFRe_shape_ptUp && jetToLeptonFakeRate_option_m <= kFRe_shape_eta_barrelDown)
+      if(jetToLeptonFakeRate_option_m >= kFRe_shape_ptUp && jetToLeptonFakeRate_option_m <= kFRe_shape_corrDown)
       {
         jetToLeptonFakeRate_option_m = kFRl_central;
       }
