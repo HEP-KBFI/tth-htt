@@ -166,17 +166,27 @@ public:
   }
 
   NtupleFillerBDT &
-  operator()(std::map<std::string, double> & tH_weight_map)
+  operator()(std::map<std::string, double> & tH_weight_map, std::string typeDict = "none")
   {
     for(const auto & kv: tH_weight_map)
     {
-      if(float_map_.count(kv.first))
+      std::string typeDictLocal = "";
+      if (typeDict == "none")
       {
-          float_map_[kv.first].setValue(
+        typeDictLocal = kv.first.c_str();
+      }
+      else
+      {
+        typeDictLocal = Form("%s_%s", typeDict.c_str(), kv.first.c_str());
+      }
+
+      if(float_map_.count(typeDictLocal))
+      {
+          float_map_[typeDictLocal].setValue(
           kv.second
         );
       }
-      else   throw std::invalid_argument(std::string("No such key: ") + kv.first);
+      else   throw std::invalid_argument(std::string("No such key: ") + typeDictLocal);
     }
 
     return *this;
