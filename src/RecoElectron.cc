@@ -12,7 +12,7 @@ RecoElectron::RecoElectron(const RecoLepton & lepton,
                            Double_t OoEminusOoP,
                            Int_t    nLostHits,
                            Bool_t   passesConversionVeto,
-                           Int_t cutbasedID_HLT)
+                           Int_t    cutbasedID_HLT)
   : RecoLepton(lepton)
   , eCorr_(eCorr)
   , sigmaEtaEta_(sigmaEtaEta)
@@ -23,7 +23,9 @@ RecoElectron::RecoElectron(const RecoLepton & lepton,
   , nLostHits_(nLostHits)
   , passesConversionVeto_(passesConversionVeto)
   , cutbasedID_HLT_(cutbasedID_HLT)
-{}
+{
+  set_mvaRawTTH_cut(0.80);
+}
 
 Double_t
 RecoElectron::eCorr() const

@@ -41,6 +41,9 @@ public:
   void
   readUncorrected(bool flag);
 
+  void
+  set_mvaTTH_wp(double mvaTTH_wp);
+
 protected:
  /**
    * @brief Initialize names of branches to be read from tree
@@ -79,6 +82,8 @@ protected:
   UChar_t * lostHits_;
   Bool_t * conversionVeto_;
   Int_t * cutbasedID_HLT_;
+
+  double mvaTTH_wp_;
 
   std::map<EGammaID, Float_t *> rawMVAs_POG_;
   std::map<EGammaID, std::map<EGammaWP, Bool_t *>> mvaIDs_POG_;

@@ -33,6 +33,7 @@ RecoElectronReader::RecoElectronReader(int era,
   , lostHits_(nullptr)
   , conversionVeto_(nullptr)
   , cutbasedID_HLT_(nullptr)
+  , mvaTTH_wp_(-1.)
 {
   setBranchNames();
 }
@@ -239,9 +240,19 @@ RecoElectronReader::read() const
             electron.egammaID_ids_[EGammaID_choice.first][EGammaWP_choice.first] = EGammaWP_choice.second[idxLepton];
           }
         }
+        if(mvaTTH_wp_ > 0.)
+        {
+          electron.set_mvaRawTTH_cut(mvaTTH_wp_);
+        }
       }
     }
     gLeptonReader->readGenMatching(electrons);
   }
   return electrons;
+}
+
+void
+RecoElectronReader::set_mvaTTH_wp(double mvaTTH_wp)
+{
+  mvaTTH_wp_ = mvaTTH_wp;
 }

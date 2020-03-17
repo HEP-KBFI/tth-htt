@@ -88,6 +88,18 @@ class systematics(object):
   MEM_3l_1tau   = [ "CMS_ttHl_MEM_3l_1tau_LRUp",   "CMS_ttHl_MEM_3l_1tau_LRDown"   ]
   MEM = MEM_3l + MEM_2lss_1tau + MEM_3l_1tau
 
+  class TTbar(object):
+    hdamp = [ "TT_hdampUp", "TT_hdampDown" ]
+    ue    = [ "TT_ueUp",    "TT_ueDown"    ]
+    cr    = [ "TT_QCDbased", "TT_GluonMove", "TT_erdON" ]
+    mtop  = [
+      "TT_mtop166p5", "TT_mtop169p5", "TT_mtop171p5", "TT_mtop173p5", "TT_mtop175p5", "TT_mtop178p5",
+    ]
+    width = [
+      "TT_widthx0p7", "TT_widthx0p85", "TT_widthx1p15", "TT_widthx1p3",
+    ]
+    full = hdamp + ue + cr + mtop + width
+
   class L1PreFiring_(object):
     up   = "CMS_ttHl_l1PreFireUp"
     down = "CMS_ttHl_l1PreFireDown"
@@ -459,16 +471,17 @@ class systematics(object):
 
     full = ER + ESBarrel1 + ESBarrel2 + ESEndcap1 + ESEndcap2
 
-  lhe         = LHE().full
-  btag        = Btag().full
-  leptonIDSF  = LeptonIDSF().full
-  FRe_shape   = FakeRate_e_shape().full
-  FRm_shape   = FakeRate_m_shape().full
-  FR_t        = FakeRate_t().full
-  electron_E  = Electron_energy().full
-  muon_E      = Muon_energy().full
-  FR_all      = FRe_shape + FRm_shape + FR_t
+  lhe          = LHE().full
+  btag         = Btag().full
+  leptonIDSF   = LeptonIDSF().full
+  FRe_shape    = FakeRate_e_shape().full
+  FRm_shape    = FakeRate_m_shape().full
+  FR_t         = FakeRate_t().full
+  electron_E   = Electron_energy().full
+  muon_E       = Muon_energy().full
+  FR_all       = FRe_shape + FRm_shape + FR_t
   partonShower = PartonShower().full
+  ttbar        = TTbar().full
 
   # Analysis-specific definitions
   an_leptonFR        =    central +  JES +  JER          + UnclusteredEn  + MET_ResponseSyst +  MET_ResolutionSyst
@@ -499,6 +512,7 @@ class systematics(object):
   an_inclusive_opts = [ "central", "JES", "JER", "tauES", "UnclusteredEn", "btag" ]
 
   # Karl: for HH analysis only
+  #TODO add ttbar one the Ntuples are ready
   an_common_hh      = an_common
   an_common_opts_hh = an_common_opts
   an_extended_hh      = an_extended

@@ -20,8 +20,6 @@ public:
   void set_min_cone_pt(double min_cone_pt);
   void set_max_absEta(double max_absEta);
 
-  void set_mvaTTH_wp(double mvaTTH_wp);
-
   void
   set_selection_flags(bool selection_flags);
 
@@ -56,7 +54,6 @@ protected:
   const bool apply_looseIdPOG_;   ///< apply (True) or do not apply (False) loose PFMuon id selection
   const bool apply_mediumIdPOG_;  ///< apply (True) or do not apply (False) medium PFMuon id selection
 
-  Double_t wp_mvaTTH_;      ///< lepton MVA threshold
   const Double_t min_jetPtRatio_; ///< lower cut on ratio of lepton pT to pT of nearby jet
   const Double_t min_jetBtagCSV_; ///< lower cut threshold on b-tagging discriminator value of nearby jet
   const Double_t max_jetBtagCSV_; ///< upper cut threshold on b-tagging discriminator value of nearby jet

@@ -35,6 +35,9 @@ public:
   std::vector<RecoMuon>
   read() const;
 
+  void
+  set_mvaTTH_wp(double mvaTTH_wp);
+
 protected:
  /**
    * @brief Initialize names of branches to be read from tree
@@ -55,6 +58,8 @@ protected:
   Bool_t  * mediumIdPOG_;
   Float_t * segmentCompatibility_;
   Float_t * ptErr_;
+
+  double mvaTTH_wp_;
 
   // CV: make sure that only one RecoMuonReader instance exists for a given branchName,
   //     as ROOT cannot handle multiple TTree::SetBranchAddress calls for the same branch.

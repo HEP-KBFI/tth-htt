@@ -75,7 +75,7 @@ HistManagerBase::book1D(TFileDirectory & dir,
                         const std::string & distribution,
                         const std::string & title,
                         int numBins,
-                        float * binning)
+                        const float * binning)
 {
   TDirectory * const subdir = createHistogramSubdirectory(dir);
   subdir->cd();
@@ -93,7 +93,7 @@ TH1 *
 HistManagerBase::book1D(TFileDirectory & dir,
                         const std::string & distribution,
                         int numBins,
-                        float * binning)
+                        const float * binning)
 {
   return this->book1D(dir, distribution, distribution, numBins, binning);
 }
@@ -103,7 +103,7 @@ HistManagerBase::book1D(TFileDirectory & dir,
                         const std::string & distribution,
                         const std::string & title,
                         int numBins,
-                        double * binning)
+                        const double * binning)
 {
   TH1 * retVal = nullptr;
   const bool doBookHistogram = checkOptionIsSelected(distribution);
@@ -126,7 +126,7 @@ TH1 *
 HistManagerBase::book1D(TFileDirectory & dir,
                         const std::string & distribution,
                         int numBins,
-                        double * binning)
+                        const double * binning)
 {
   return this->book1D(dir, distribution, distribution, numBins, binning);
 }
@@ -177,9 +177,9 @@ HistManagerBase::book2D(TFileDirectory & dir,
                         const std::string & distribution,
                         const std::string & title,
                         int numBinsX,
-                        float * binningX,
+                        const float * binningX,
                         int numBinsY,
-                        float * binningY)
+                        const float * binningY)
 {
   TH2 * retVal = nullptr;
   const bool doBookHistogram = checkOptionIsSelected(distribution);
@@ -202,11 +202,11 @@ TH2 *
 HistManagerBase::book2D(TFileDirectory & dir,
                         const std::string & distribution,
                         int numBinsX,
-                        float * binningX,
+                        const float * binningX,
                         int numBinsY,
-                        float * binningY)
+                        const float * binningY)
 {
-  return this->book2D(dir, distribution, numBinsX, binningX, numBinsY, binningY);
+  return this->book2D(dir, distribution, distribution, numBinsX, binningX, numBinsY, binningY);
 }
 
 TH2 *
@@ -214,9 +214,9 @@ HistManagerBase::book2D(TFileDirectory & dir,
                         const std::string & distribution,
                         const std::string & title,
                         int numBinsX,
-                        double * binningX,
+                        const double * binningX,
                         int numBinsY,
-                        double * binningY)
+                        const double * binningY)
 {
   TH2 * retVal = nullptr;
   const bool doBookHistogram = checkOptionIsSelected(distribution);
@@ -239,11 +239,11 @@ TH2 *
 HistManagerBase::book2D(TFileDirectory & dir,
                         const std::string & distribution,
                         int numBinsX,
-                        double * binningX,
+                        const double * binningX,
                         int numBinsY,
-                        double * binningY)
+                        const double * binningY)
 {
-  return this->book2D(dir, distribution, numBinsX, binningX, numBinsY, binningY);
+  return this->book2D(dir, distribution, distribution, numBinsX, binningX, numBinsY, binningY);
 }
 
 bool 
