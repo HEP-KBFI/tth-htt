@@ -10,6 +10,8 @@ RecoJet::RecoJet(const GenJet & jet,
                  Double_t BtagCSV,
                  Double_t BtagWeight,
                  Double_t QGDiscr,
+                 Double_t bRegCorr,
+                 Double_t bRegRes,
                  Double_t pullEta,
                  Double_t pullPhi,
                  Double_t pullMag,
@@ -24,6 +26,8 @@ RecoJet::RecoJet(const GenJet & jet,
   , BtagCSV_(BtagCSV)
   , BtagWeight_(BtagWeight)
   , QGDiscr_(QGDiscr)
+  , bRegCorr_(bRegCorr)
+  , bRegRes_(bRegRes)
   , pullEta_(pullEta)
   , pullPhi_(pullPhi)
   , pullMag_(pullMag)
@@ -84,6 +88,18 @@ Double_t
 RecoJet::QGDiscr() const
 {
   return QGDiscr_;
+}
+
+Double_t
+RecoJet::bRegCorr() const
+{
+  return bRegCorr_;
+}
+
+Double_t
+RecoJet::bRegRes() const
+{
+  return bRegRes_;
 }
 
 Double_t
@@ -162,12 +178,14 @@ std::ostream &
 operator<<(std::ostream & stream,
            const RecoJet & jet)
 {
-  stream << static_cast<const GenJet &>(jet)              << ","
-            " charge = " << jet.charge()                  << ","
-            " CSV = "    << jet.BtagCSV()                 << ","
-            " jet ID = " << jet.jetId()                   << ","
-            " PU ID = "  << jet.puId()                    << ","
-            " sysunc = " << jet.get_default_systematics() << ","
+  stream << static_cast<const GenJet &>(jet)                                 << ","
+            " charge = "          << jet.charge()                            << ","
+            " CSV = "             << jet.BtagCSV()                           << ","
+            " jet ID = "          << jet.jetId()                             << ","
+            " PU ID = "           << jet.puId()                              << ","
+            " QGL = "             << jet.QGDiscr()                           << ","
+            " bReg corr (res) = " << jet.bRegCorr() << " (" << jet.bRegRes() << "),"
+            " sysunc = "          << jet.get_default_systematics()           << ","
             "\n"
             " gen. matching:";
   stream << ",\n  lepton = " << jet.genLepton();

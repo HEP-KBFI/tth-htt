@@ -41,6 +41,8 @@ RecoJetReader::RecoJetReader(int era,
   , jet_phi_(nullptr)
   , jet_charge_(nullptr)
   , jet_QGDiscr_(nullptr)
+  , jet_bRegCorr_(nullptr)
+  , jet_bRegRes_(nullptr)
   , jet_pullEta_(nullptr)
   , jet_pullPhi_(nullptr)
   , jet_pullMag_(nullptr)
@@ -74,6 +76,8 @@ RecoJetReader::~RecoJetReader()
     delete[] gInstance->jet_phi_;
     delete[] gInstance->jet_charge_;
     delete[] gInstance->jet_QGDiscr_;
+    delete[] gInstance->jet_bRegCorr_;
+    delete[] gInstance->jet_bRegRes_;
     delete[] gInstance->jet_pullEta_;
     delete[] gInstance->jet_pullPhi_;
     delete[] gInstance->jet_pullMag_;
@@ -199,6 +203,8 @@ RecoJetReader::setBranchNames()
     assert(! branchNames_btag_.empty());
 
     branchName_QGDiscr_ = Form("%s_%s", branchName_obj_.data(), "qgl");
+    branchName_bRegCorr_ = Form("%s_%s", branchName_obj_.data(), "bRegCorr");
+    branchName_bRegRes_ = Form("%s_%s", branchName_obj_.data(), "bRegRes");
     for(auto & kv: BtagWP_map.at(era_))
     {
       if(kv.first != Btag::kDeepJet)
@@ -298,6 +304,10 @@ RecoJetReader::setBranchAddresses(TTree * tree)
     }
 
     bai.setBranchAddress(jet_QGDiscr_, branchName_QGDiscr_, 1.);
+    bai.ignoreErrors(true);
+    bai.setBranchAddress(jet_bRegCorr_, branchName_bRegCorr_, 1.);
+    bai.setBranchAddress(jet_bRegRes_, branchName_bRegRes_, 0.);
+    bai.ignoreErrors(false);
     bai.setBranchAddress(jet_pullEta_, branchName_pullEta_);
     bai.setBranchAddress(jet_pullPhi_, branchName_pullPhi_);
     bai.setBranchAddress(jet_pullMag_, branchName_pullMag_);
@@ -374,6 +384,8 @@ RecoJetReader::read() const
         btagCSV,
         gInstance->jet_BtagWeights_systematics_.at(btag_).at(btag_central_or_shift_)[idxJet],
         qgl,
+        gInstance->jet_bRegCorr_[idxJet],
+        gInstance->jet_bRegRes_[idxJet],
         gInstance->jet_pullEta_[idxJet],
         gInstance->jet_pullPhi_[idxJet],
         gInstance->jet_pullMag_[idxJet],

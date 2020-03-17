@@ -75,6 +75,8 @@ protected:
   std::string branchName_phi_;
   std::string branchName_jetCharge_;
   std::string branchName_QGDiscr_;
+  std::string branchName_bRegCorr_;
+  std::string branchName_bRegRes_;
   std::string branchName_pullEta_;
   std::string branchName_pullPhi_;
   std::string branchName_pullMag_;
@@ -91,6 +93,8 @@ protected:
   Float_t * jet_phi_;
   Float_t * jet_charge_;
   Float_t * jet_QGDiscr_;
+  Float_t * jet_bRegCorr_;
+  Float_t * jet_bRegRes_;
   Float_t * jet_pullEta_;
   Float_t * jet_pullPhi_;
   Float_t * jet_pullMag_;

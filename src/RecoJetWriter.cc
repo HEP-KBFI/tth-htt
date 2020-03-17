@@ -34,6 +34,8 @@ RecoJetWriter::RecoJetWriter(int era,
   , jet_eta_(nullptr)
   , jet_phi_(nullptr)
   , jet_QGDiscr_(nullptr)
+  , jet_bRegCorr_(nullptr)
+  , jet_bRegRes_(nullptr)
   , jet_jetId_(nullptr)
   , jet_puId_(nullptr)
   , jet_jetIdx_(nullptr)
@@ -57,6 +59,8 @@ RecoJetWriter::~RecoJetWriter()
   delete[] jet_phi_;
   delete[] jet_charge_;
   delete[] jet_QGDiscr_;
+  delete[] jet_bRegCorr_;
+  delete[] jet_bRegRes_;
   delete[] jet_pullEta_;
   delete[] jet_pullPhi_;
   delete[] jet_pullMag_;
@@ -114,6 +118,8 @@ RecoJetWriter::setBranchNames()
   }
   assert(! branchNames_btag_.empty());
   branchName_QGDiscr_ = Form("%s_%s", branchName_obj_.data(), "qgl");
+  branchName_bRegCorr_ = Form("%s_%s", branchName_obj_.data(), "bRegCorr");
+  branchName_bRegRes_ = Form("%s_%s", branchName_obj_.data(), "bRegRes");
   branchName_pullEta_ = Form("%s_%s", branchName_obj_.data(), "pullEta");
   branchName_pullPhi_ = Form("%s_%s", branchName_obj_.data(), "pullPhi");
   branchName_pullMag_ = Form("%s_%s", branchName_obj_.data(), "pullMag");
@@ -221,6 +227,8 @@ RecoJetWriter::setBranches(TTree * tree)
     }
   }
   bai.setBranch(jet_QGDiscr_, branchName_QGDiscr_);
+  bai.setBranch(jet_bRegCorr_, branchName_bRegCorr_);
+  bai.setBranch(jet_bRegRes_, branchName_bRegRes_);
 }
 
 void
@@ -321,6 +329,8 @@ RecoJetWriter::write(const std::vector<const RecoJet *> & jets)
       }
     }
     jet_QGDiscr_[idxJet] = jet->QGDiscr();
+    jet_bRegCorr_[idxJet] = jet->bRegCorr();
+    jet_bRegRes_[idxJet] = jet->bRegRes();
   }
   if(isMC_)
   {
