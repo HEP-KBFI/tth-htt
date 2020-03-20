@@ -955,7 +955,7 @@ class analyzeConfig(object):
               jobOptions_val = jobOptions_expr % str(jobOptions_val)
             lines.append("{}.{:<{len}} = {}".format(process_string, jobOptions_key, jobOptions_val, len = max_option_len))
 
-        blacklist = set(sample_info["missing_hlt_paths"]) | set(sample_info["missing_from_superset"])
+        blacklist = set()#set(sample_info["missing_hlt_paths"]) | set(sample_info["missing_from_superset"])
         for trigger in self.triggers:
             trigger_string     = '%s.triggers_%s'     % (process_string, trigger)
             trigger_use_string = '%s.use_triggers_%s' % (process_string, trigger)
