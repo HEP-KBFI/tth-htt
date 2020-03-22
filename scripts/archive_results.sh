@@ -80,8 +80,10 @@ for CHANNEL in $CHANNELS; do
 
   HDFS_SUBDIRS=$(hdfs dfs -ls $INPUT_DIR_HDFS 2>/dev/null | grep ^d | awk '{print $NF}' | tr '/' ' ' | awk '{print $NF}');
   for HDFS_SUBDIR in $HDFS_SUBDIRS; do
-    SYMLINK_SRC=/hdfs${INPUT_DIR_HDFS}/${HDFS_SUBDIR};
-    SYMLINK_DST=${INPUT_DIR}/${HDFS_SUBDIR};
+    SYMLINK_SRC=/hdfs${INPUT_DIR_HDFS}/${HDFS_SUBDIR}/${CHANNEL};
+    SYMLINK_DST_DIR=${INPUT_DIR}/${HDFS_SUBDIR}_hdfs;
+    mkdir -p $SYMLINK_DST_DIR;
+    SYMLINK_DST=${SYMLINK_DST_DIR}/${CHANNEL};
     echo "Creating symlink: $SYMLINK_DST -> $SYMLINK_SRC";
     if [ $DRYRUN = false ]; then
       rm -f $SYMLINK_DST;
@@ -118,7 +120,7 @@ for CHANNEL in $CHANNELS; do
   echo "Created archive: $OUTPUT_FILE_PATH";
 
   for HDFS_SUBDIR in $HDFS_SUBDIRS; do
-    SYMLINK_DST=${INPUT_DIR}/${HDFS_SUBDIR};
+    SYMLINK_DST=${INPUT_DIR}/${HDFS_SUBDIR}_hdfs/${CHANNEL};
     echo "Removing symlink: $SYMLINK_DST";
     if [ $DRYRUN = false ]; then
       rm -f $SYMLINK_DST;
