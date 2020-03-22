@@ -97,7 +97,7 @@ echo "Current working directory: $PWD";
 echo "Current time: `date`";
 echo "Creating archive: $OUTPUT_FILE_TMP";
 if [ $DRYRUN = false ]; then
-  tar $TAR_OPTS - $(basename $INPUT_DIR) | lz4 -9f - $OUTPUT_FILE_TMP;
+  tar $TAR_OPTS - $(basename $INPUT_DIR) | lz4 -f - $OUTPUT_FILE_TMP;
 fi
 echo "Finished at: `date`";
 
