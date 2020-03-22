@@ -77,7 +77,7 @@ def get_node_subcategory(histogram_name):
   output_nn_match_cat = OUTPUT_NN_RE_CAT.match(histogram_name)
   if output_nn_match_cat:
     node = output_nn_match.group('node')
-    category = output_nn_match.group('category')
+    category = output_nn_match_cat.group('category')
     return node, category
   elif output_nn_match:
     node = output_nn_match.group('node')
