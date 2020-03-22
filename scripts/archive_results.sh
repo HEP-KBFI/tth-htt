@@ -68,56 +68,62 @@ fi
 INPUT_SPLIT_LV2=$(echo $INPUT_SPLIT | awk '{print $3}')
 INPUT_SPLIT_LV3=$(echo $INPUT_SPLIT | awk '{print $4}')
 INPUT_SPLIT_LV4=$(echo $INPUT_SPLIT | awk '{print $5}')
+CHANNELS=$(ls $INPUT_DIR/datacards)
 
-OUTPUT_FILE_NAME=${INPUT_SPLIT_LV2}_${INPUT_SPLIT_LV3}_${INPUT_SPLIT_LV4}.tar.lz4
-OUTPUT_FILE_PATH=${OUTPUT_DIR}/${OUTPUT_FILE_NAME}
-if [ -f $OUTPUT_FILE_PATH ] && [ $OVERWRITE_OUTPUT_FILE = false ]; then
-  echo "File $OUTPUT_FILE_PATH already exists. Use -f to enable overwriting. Aborting.";
-  exit 1;
-fi
+for CHANNEL in $CHANNELS; do
+  OUTPUT_FILE_NAME=${INPUT_SPLIT_LV2}_${INPUT_SPLIT_LV3}_${INPUT_SPLIT_LV4}_${CHANNEL}.tar.lz4
+  OUTPUT_FILE_PATH=${OUTPUT_DIR}/${OUTPUT_FILE_NAME}
+  if [ -f $OUTPUT_FILE_PATH ] && [ $OVERWRITE_OUTPUT_FILE = false ]; then
+    echo "File $OUTPUT_FILE_PATH already exists. Use -f to enable overwriting. Aborting.";
+    exit 1;
+  fi
 
-HDFS_SUBDIRS=$(hdfs dfs -ls $INPUT_DIR_HDFS 2>/dev/null | grep ^d | awk '{print $NF}' | tr '/' ' ' | awk '{print $NF}');
-for HDFS_SUBDIR in $HDFS_SUBDIRS; do
-  SYMLINK_SRC=/hdfs${INPUT_DIR_HDFS}/${HDFS_SUBDIR};
-  SYMLINK_DST=${INPUT_DIR}/${HDFS_SUBDIR};
-  echo "Creating symlink: $SYMLINK_DST -> $SYMLINK_SRC";
+  HDFS_SUBDIRS=$(hdfs dfs -ls $INPUT_DIR_HDFS 2>/dev/null | grep ^d | awk '{print $NF}' | tr '/' ' ' | awk '{print $NF}');
+  for HDFS_SUBDIR in $HDFS_SUBDIRS; do
+    SYMLINK_SRC=/hdfs${INPUT_DIR_HDFS}/${HDFS_SUBDIR};
+    SYMLINK_DST=${INPUT_DIR}/${HDFS_SUBDIR};
+    echo "Creating symlink: $SYMLINK_DST -> $SYMLINK_SRC";
+    if [ $DRYRUN = false ]; then
+      rm -f $SYMLINK_DST;
+      ln -s $SYMLINK_SRC $SYMLINK_DST;
+    fi
+  done
+
+  OUTPUT_FILE_TMP=${TMP_DIR}/${OUTPUT_FILE_NAME};
+  TAR_OPTS=cfh
+  if [ $VERBOSE = true ]; then
+    TAR_OPTS=${TAR_OPTS}v;
+  fi
+  cd $INPUT_DIR/..;
+  echo "Current working directory: $PWD";
+  echo "Current time: `date`";
+  echo "Creating archive: $OUTPUT_FILE_TMP";
+  INPUT_DIR_BASE=$(basename $INPUT_DIR);
+  INPUT_FILES="${INPUT_DIR_BASE}/*${CHANNEL} ${INPUT_DIR_BASE}/*${CHANNEL}.log* ${INPUT_DIR_BASE}/*/${CHANNEL}";
+  echo "Input files: $INPUT_FILES";
   if [ $DRYRUN = false ]; then
-    rm -f $SYMLINK_DST;
-    ln -s $SYMLINK_SRC $SYMLINK_DST;
+    tar $TAR_OPTS - $INPUT_FILES | lz4 -f - $OUTPUT_FILE_TMP;
   fi
-done
+  echo "Finished at: `date`";
 
-OUTPUT_FILE_TMP=${TMP_DIR}/${OUTPUT_FILE_NAME};
-TAR_OPTS=cfh
-if [ $VERBOSE = true ]; then
-  TAR_OPTS=${TAR_OPTS}v;
-fi
-cd $INPUT_DIR/..;
-echo "Current working directory: $PWD";
-echo "Current time: `date`";
-echo "Creating archive: $OUTPUT_FILE_TMP";
-if [ $DRYRUN = false ]; then
-  tar $TAR_OPTS - $(basename $INPUT_DIR) | lz4 -f - $OUTPUT_FILE_TMP;
-fi
-echo "Finished at: `date`";
-
-if [ $DRYRUN = false ]; then
-  if [[ $OUTPUT_FILE_PATH =~ ^/hdfs/ ]]; then
-    OUTPUT_FILE_PATH_NOHDFS=$(echo $OUTPUT_DIR | sed 's/^\/hdfs\//\//g');
-    hdfs dfs -copyFromLocal -f $OUTPUT_FILE_TMP $OUTPUT_FILE_PATH_NOHDFS 2>/dev/null;
-    rm -f $OUTPUT_FILE_TMP;
-  else
-    mv $OUTPUT_FILE_TMP $OUTPUT_FILE_PATH;
-  fi
-fi
-echo "Created archive: $OUTPUT_FILE_PATH";
-
-for HDFS_SUBDIR in $HDFS_SUBDIRS; do
-  SYMLINK_DST=${INPUT_DIR}/${HDFS_SUBDIR};
-  echo "Removing symlink: $SYMLINK_DST";
   if [ $DRYRUN = false ]; then
-    rm -f $SYMLINK_DST;
+    if [[ $OUTPUT_FILE_PATH =~ ^/hdfs/ ]]; then
+      OUTPUT_FILE_PATH_NOHDFS=$(echo $OUTPUT_DIR | sed 's/^\/hdfs\//\//g');
+      hdfs dfs -copyFromLocal -f $OUTPUT_FILE_TMP $OUTPUT_FILE_PATH_NOHDFS 2>/dev/null;
+      rm -f $OUTPUT_FILE_TMP;
+    else
+      mv $OUTPUT_FILE_TMP $OUTPUT_FILE_PATH;
+    fi
   fi
+  echo "Created archive: $OUTPUT_FILE_PATH";
+
+  for HDFS_SUBDIR in $HDFS_SUBDIRS; do
+    SYMLINK_DST=${INPUT_DIR}/${HDFS_SUBDIR};
+    echo "Removing symlink: $SYMLINK_DST";
+    if [ $DRYRUN = false ]; then
+      rm -f $SYMLINK_DST;
+    fi
+  done
 done
 
 echo "If you want to delete the archived files, run:";
