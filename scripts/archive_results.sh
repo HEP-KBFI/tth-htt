@@ -2,7 +2,7 @@
 
 # Example usage:
 # archive_results.sh -i ~/ttHAnalysis/2017/2020Mar22 -o /hdfs/local/$USER/archives -f
-# for d in ~/ttHAnalysis/2017/*; do archive_results.sh -i $d -o /hdfs/local/$USER/archives -f; done
+# for d in ~/ttHAnalysis/201*/*; do archive_results.sh -i $d -o /hdfs/local/$USER/archives -f; done
 
 check_if_exists() {
   if [ ! -z "$1" ] && [ ! -d "$1" ]; then
@@ -13,14 +13,14 @@ check_if_exists() {
 
 TMP_DIR=/scratch/1/$USER;
 OUTPUT_DIR=$PWD;
-DELETE_INPUT_DIR=false;
+DRYRUN=false;
 OVERWRITE_OUTPUT_FILE=false;
 VERBOSE=false;
 
 show_help() {
   THIS_SCRIPT=$0;
   echo -ne "Usage: $(basename $THIS_SCRIPT) -i <input dir> [ -o <output dir> = $OUTPUT_DIR ] " 1>&2;
-  echo     " [ -t <tmp dir> = $TMP_DIR ] [ -f ] [ -v ]" 1>&2;
+  echo     " [ -t <tmp dir> = $TMP_DIR ] [ -d ] [ -f ] [ -v ]" 1>&2;
   exit 0;
 }
 
@@ -28,7 +28,7 @@ while getopts "h?dfvi:o:t:" opt; do
   case "${opt}" in
   h|\?) show_help
         ;;
-  d) DELETE_INPUT_DIR=true;
+  d) DRYRUN=true;
         ;;
   f) OVERWRITE_OUTPUT_FILE=true;
         ;;
@@ -81,8 +81,10 @@ for HDFS_SUBDIR in $HDFS_SUBDIRS; do
   SYMLINK_SRC=/hdfs${INPUT_DIR_HDFS}/${HDFS_SUBDIR};
   SYMLINK_DST=${INPUT_DIR}/${HDFS_SUBDIR};
   echo "Creating symlink: $SYMLINK_DST -> $SYMLINK_SRC";
-  rm -f $SYMLINK_DST;
-  ln -s $SYMLINK_SRC $SYMLINK_DST;
+  if [ $DRYRUN = false ]; then
+    rm -f $SYMLINK_DST;
+    ln -s $SYMLINK_SRC $SYMLINK_DST;
+  fi
 done
 
 OUTPUT_FILE_TMP=${TMP_DIR}/${OUTPUT_FILE_NAME};
@@ -94,24 +96,30 @@ cd $INPUT_DIR/..;
 echo "Current working directory: $PWD";
 echo "Current time: `date`";
 echo "Creating archive: $OUTPUT_FILE_TMP";
-tar $TAR_OPTS - $(basename $INPUT_DIR) | lz4 -9f - $OUTPUT_FILE_TMP;
+if [ $DRYRUN = false ]; then
+  tar $TAR_OPTS - $(basename $INPUT_DIR) | lz4 -9f - $OUTPUT_FILE_TMP;
+fi
 echo "Finished at: `date`";
 
-if [[ $OUTPUT_FILE_PATH =~ ^/hdfs/ ]]; then
-  OUTPUT_FILE_PATH_NOHDFS=$(echo $OUTPUT_DIR | sed 's/^\/hdfs\//\//g');
-  hdfs dfs -copyFromLocal -f $OUTPUT_FILE_TMP $OUTPUT_FILE_PATH_NOHDFS 2>/dev/null;
-  rm -f $OUTPUT_FILE_TMP;
-else
-  mv $OUTPUT_FILE_TMP $OUTPUT_FILE_PATH;
+if [ $DRYRUN = false ]; then
+  if [[ $OUTPUT_FILE_PATH =~ ^/hdfs/ ]]; then
+    OUTPUT_FILE_PATH_NOHDFS=$(echo $OUTPUT_DIR | sed 's/^\/hdfs\//\//g');
+    hdfs dfs -copyFromLocal -f $OUTPUT_FILE_TMP $OUTPUT_FILE_PATH_NOHDFS 2>/dev/null;
+    rm -f $OUTPUT_FILE_TMP;
+  else
+    mv $OUTPUT_FILE_TMP $OUTPUT_FILE_PATH;
+  fi
 fi
+echo "Created archive: $OUTPUT_FILE_PATH";
 
 for HDFS_SUBDIR in $HDFS_SUBDIRS; do
   SYMLINK_DST=${INPUT_DIR}/${HDFS_SUBDIR};
   echo "Removing symlink: $SYMLINK_DST";
-  rm -f $SYMLINK_DST;
+  if [ $DRYRUN = false ]; then
+    rm -f $SYMLINK_DST;
+  fi
 done
 
-echo "Created archive: $OUTPUT_FILE_PATH";
 echo "If you want to delete the archived files, run:";
 echo "hdfs -rm -r $INPUT_DIR_HDFS";
 echo "mkdir -p ~/empty_dir && rm -rf ~/empty_dir/*";
