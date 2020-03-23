@@ -55,7 +55,8 @@ fi
 
 NANO_MODULES_DATA="absIso,tauIDLog,trigObjMatcher,jetIdx"
 NANO_MODULES_MC="$NANO_MODULES_DATA,genHiggsDecayMode,genAll,genMatchCollection,\
-puWeight${ERA}($PILEUP;$PROCESS_NAME),jetmetUncertainties${ERA}All"
+puWeight${ERA}($PILEUP;$PROCESS_NAME),jetmetUncertainties${ERA}All,fatjetUncertainties${ERA}Total,\
+fatjetAK8LSLooseUncertainties${ERA}Total"
 
 NANO_BTAGGING_SF_MODULE="btagSF_deepFlav_${ERA}"
 if [ "$IS_TUNECP5" == "True" ]; then
