@@ -314,7 +314,7 @@ RecoJetReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(jet_jetId_, branchName_jetId_);
     bai.setBranchAddress(jet_puId_, branchName_puId_);
     bai.setBranchAddress(jet_jetIdx_, branchName_jetIdx_);
-    bai.setBranchAddress(jet_genMatchIdx_, isMC_ ? branchName_genMatchIdx_ : "");
+    bai.setBranchAddress(jet_genMatchIdx_, isMC_ && branchName_obj_ == "Jet" ? branchName_genMatchIdx_ : "", -1);
   }
 }
 

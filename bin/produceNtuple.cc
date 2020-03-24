@@ -536,6 +536,7 @@ main(int argc,
     Form("drop %s_*", branchName_jets.data()),
     Form("drop %s_*", branchName_met.data()),
     Form("drop maxPermutations_*"),
+    Form("keep *JetAK*"),
   };
   for(const std::string & drop_branch: drop_branches)
   {
