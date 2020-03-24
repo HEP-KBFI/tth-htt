@@ -252,8 +252,8 @@ void makeBJetPlots_for_HIG_19_008()
   outputFileNames["numRecBJetsMedium"] = "numRecBJets_medium.pdf";
 
   std::map<std::string, int> rebin; // key = plot
-  rebin["genBJetPt"]                   =   5;
-  rebin["genBJetEta"]                  =   2;
+  rebin["genBJetPt"]                   =  10;
+  rebin["genBJetEta"]                  =   4;
   rebin["numRecBJetsMedium"]           =   1;
 
   std::map<std::string, double> xMin; // key = plot
@@ -287,8 +287,8 @@ void makeBJetPlots_for_HIG_19_008()
   yMin["numRecBJetsMedium"]            =   1.01e-3;
 
   std::map<std::string, double> yMax; // key = plot
-  yMax["genBJetPt"]                    =   0.12;
-  yMax["genBJetEta"]                   =   0.09;
+  yMax["genBJetPt"]                    =   0.24;
+  yMax["genBJetEta"]                   =   0.18;
   yMax["numRecBJetsMedium"]            =   9.99e0;
 
   for ( std::vector<std::string>::const_iterator plot = plots.begin();
