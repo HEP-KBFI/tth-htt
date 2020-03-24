@@ -2,7 +2,7 @@
 #include <TAxis.h>
 #include <TCanvas.h>
 #include <TFile.h>
-#include <TGraph.h>
+#include <TGraphAsymmErrors.h>
 #include <TH1.h>
 #include <TH2.h>
 #include <TF1.h>
@@ -56,7 +56,7 @@ void process(const std::string& era, TH1* histogram, TH1* histogram_fine_binning
     sum_xSections += xSections[idxBin];
   }
 
-  TGraph* graph = new TGraph(numBins);
+  TGraphAsymmErrors* graph = new TGraphAsymmErrors(numBins);
   for ( int idxBin = 0; idxBin < numBins; ++idxBin ) 
   {
     double xMin_idxBin = binning[idxBin];
@@ -67,6 +67,12 @@ void process(const std::string& era, TH1* histogram, TH1* histogram_fine_binning
     double graph_x = histogram_fine_binning->GetMean();
     double graph_y = (xSections[idxBin]/sum_xSections)/(histogram->GetBinContent(idxBin + 1)/sum_histogram);
     graph->SetPoint(idxBin, graph_x, graph_y);
+    double graphErrLo_x = graph_x - xMin_idxBin;
+    double graphErrHi_x = xMax_idxBin - graph_x;
+    double graphErrLo_y = graph_y*(histogram->GetBinError(idxBin + 1)/histogram->GetBinContent(idxBin + 1));
+    //std::cout << "bin #" << idxBin + 1 << ": binContent = " << histogram->GetBinContent(idxBin + 1) << ", binError = " << histogram->GetBinError(idxBin + 1) << std::endl;
+    double graphErrHi_y = graphErrLo_y;
+    graph->SetPointError(idxBin, graphErrLo_x, graphErrHi_x, graphErrLo_y, graphErrHi_y);
   }
 
   double xMin = binning[0];
@@ -103,13 +109,13 @@ void process(const std::string& era, TH1* histogram, TH1* histogram_fine_binning
   fitFunction->SetLineWidth(2);
   fitFunction->Draw("same");
 
-  TF1* fitFunction_TOP_16_011 = new TF1("fitFunction_TOP_16_011", "TMath::Exp([0] - [1]*x)", xMin, xMax); 
-  fitFunction_TOP_16_011->SetParameter(0, 0.0615);
-  fitFunction_TOP_16_011->SetParameter(1, 0.0005);
+  TF1* fitFunction_Top_PAG = new TF1("fitFunction_Top_PAG", "TMath::Exp([0] - [1]*x)", xMin, xMax); 
+  fitFunction_Top_PAG->SetParameter(0, 0.0615);
+  fitFunction_Top_PAG->SetParameter(1, 0.0005);
   
-  fitFunction_TOP_16_011->SetLineColor(4);
-  fitFunction_TOP_16_011->SetLineWidth(2);
-  fitFunction_TOP_16_011->Draw("same");
+  fitFunction_Top_PAG->SetLineColor(4);
+  fitFunction_Top_PAG->SetLineWidth(2);
+  fitFunction_Top_PAG->Draw("same");
 
   graph->SetMarkerColor(1);
   graph->SetMarkerStyle(20);
@@ -119,13 +125,13 @@ void process(const std::string& era, TH1* histogram, TH1* histogram_fine_binning
   graph->SetLineWidth(1);
   graph->Draw("P");
 
-  TLegend* legend = new TLegend(0.63, 0.71, 0.89, 0.89, "", "brNDC"); 
+  TLegend* legend = new TLegend(0.61, 0.71, 0.89, 0.89, "", "brNDC"); 
   legend->SetBorderSize(0);
   legend->SetFillColor(0);
   legend->SetTextSize(0.045);
   legend->AddEntry(graph, "Our ratio", "p");
   legend->AddEntry(fitFunction, "Our fit", "l");
-  legend->AddEntry(fitFunction_TOP_16_011, "TOP-16-011 fit", "l");
+  legend->AddEntry(fitFunction_Top_PAG, "Fit by Top PAG", "l");
   legend->Draw();
 
   canvas->Update();
@@ -139,7 +145,7 @@ void process(const std::string& era, TH1* histogram, TH1* histogram_fine_binning
   delete graph;
   delete dummyHistogram;
   delete fitFunction;
-  delete fitFunction_TOP_16_011;
+  delete fitFunction_Top_PAG;
   delete legend;
   delete canvas;
 }
