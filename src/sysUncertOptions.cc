@@ -418,7 +418,8 @@ getBranchName_jetMET(const std::string & default_branchName,
                         bool isPt)
 {
   static std::map<int, std::string> branchNames_sys;
-  const bool isJet = default_branchName == "Jet";
+  //const bool isJet = default_branchName == "Jet";
+  const bool isJet = default_branchName.find("Jet") == 0;
   const bool isMET = default_branchName == "MET";
   const std::string era_str = [era]() -> std::string {
     switch(era)
