@@ -9,6 +9,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuon.h"
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h"
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h"
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJetAK8.h"
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJetBase.h"
 
 #include <DataFormats/Math/interface/deltaR.h> // deltaR()
 
@@ -377,6 +379,7 @@ typedef ParticleCollectionGenMatcher<RecoMuon> RecoMuonCollectionGenMatcher;
 typedef ParticleCollectionGenMatcher<RecoLepton> RecoLeptonCollectionGenMatcher; // CV: matching for lepton base-class (works for electrons as well as for muons)
 typedef ParticleCollectionGenMatcher<RecoHadTau> RecoHadTauCollectionGenMatcher;
 typedef ParticleCollectionGenMatcher<RecoJet> RecoJetCollectionGenMatcher;
+typedef ParticleCollectionGenMatcher<RecoJetAK8> RecoJetAK8CollectionGenMatcher;
 typedef ParticleCollectionGenMatcher<RecoJetBase> RecoJetBaseCollectionGenMatcher; // CV: matching for jet base-class (works for AK4 jets as well as for subjets of AK8 or AK12 jets)
 
 #endif // tthAnalysis_HiggsToTauTau_ParticleCollectionGenMatcher_h
