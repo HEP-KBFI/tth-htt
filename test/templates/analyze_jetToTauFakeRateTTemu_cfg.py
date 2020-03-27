@@ -45,6 +45,7 @@ process.analyze_jetToTauFakeRate = cms.PSet(
     hadTau_selection_tight = cms.string(''),
     hadTauSelection_denominator = cms.string(''),
     hadTauSelections_numerator = cms.vstring(),
+    trigMatchingOptions = cms.vstring(),
 
     absEtaBins = cms.vdouble(),
     decayModes = cms.vint32(),
@@ -68,6 +69,7 @@ process.analyze_jetToTauFakeRate = cms.PSet(
     branchName_hadTaus = cms.string('Tau'),
     branchName_jets = cms.string('Jet'),
     branchName_met = cms.string('MET'),
+    branchName_triggerObjects = cms.string('TrigObj'),
 
     branchName_genLeptons = cms.string('GenLep'),
     branchName_genHadTaus = cms.string('GenVisTau'),

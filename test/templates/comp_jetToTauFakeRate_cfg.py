@@ -25,6 +25,7 @@ process.comp_jetToTauFakeRate = cms.PSet(
     processMC = cms.string("TTj"),
 
     hadTauSelections = cms.vstring(),
+    trigMatchingOption = cms.string("woTriggerMatching"),
 
     absEtaBins = cms.vdouble(),
     ptBins = cms.vdouble(),

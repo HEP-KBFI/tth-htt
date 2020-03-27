@@ -20,7 +20,8 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
   def __init__(self,
         configDir,
         outputDir,
-        executable_analyze,
+        executable_analyze,  
+        event_selection,
         samples,
         charge_selections,
         jet_minPt,
@@ -52,11 +53,19 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
         use_home          = False,
         submission_cmd    = None,
       ):
+    self.event_selection = event_selection
+    triggers = None
+    if event_selection == "TTemu":
+      triggers = [ '1e', '1mu', '1e1mu' ]
+    elif event_selection == "DYmumu":
+      triggers = [ '1mu', '2mu' ] 
+    else:
+      raise ValueError("Invalid event selection: %s" % self.event_selection)
     analyzeConfig.__init__(self,
       configDir             = configDir,
       outputDir             = outputDir,
       executable_analyze    = executable_analyze,
-      channel               = "jetToTauFakeRate",
+      channel               = "jetToTauFakeRate%s" % self.event_selection,
       samples               = samples,
       jet_cleaning_by_index = jet_cleaning_by_index,
       gen_matching_by_index = gen_matching_by_index,
@@ -69,7 +78,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
       running_method        = running_method,
       num_parallel_jobs     = num_parallel_jobs,
       histograms_to_fit     = [],
-      triggers              = [ '1e', '1mu', '1e1mu' ],
+      triggers              = triggers,
       verbose               = verbose,
       dry_run               = dry_run,
       isDebug               = isDebug,
@@ -88,6 +97,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
     self.hadTau_selection_tight = hadTau_selection_tight
     self.hadTau_selection_denominator = hadTau_selection_denominator
     self.hadTau_selections_numerator = hadTau_selections_numerator
+    self.trigMatchingOptions = [ "woTriggerMatching", "wTriggerMatchingMediumChargedIso", "wTriggerMatchingTightChargedIso" ]
 
     self.absEtaBins = absEtaBins
     self.ptBins = ptBins
@@ -95,11 +105,11 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
 
     self.executable_comp_jetToTauFakeRate = executable_comp_jetToTauFakeRate
 
-    self.cfgFile_analyze = os.path.join(self.template_dir, "analyze_jetToTauFakeRate_cfg.py")
+    self.cfgFile_analyze = os.path.join(self.template_dir, "analyze_jetToTauFakeRate%s_cfg.py" % self.event_selection)
     self.cfgFile_comp_jetToTauFakeRate = os.path.join(self.template_dir, "comp_jetToTauFakeRate_cfg.py")
     self.jobOptions_comp_jetToTauFakeRate = {}
-    self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_jetToTauFakeRate_cfg.py")
-    self.cfgFile_make_plots_denominator = os.path.join(self.template_dir, "makePlots_jetToTauFakeRate_denominator_cfg.py")
+    self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_jetToTauFakeRate%s_cfg.py" % self.event_selection)
+    self.cfgFile_make_plots_denominator = os.path.join(self.template_dir, "makePlots_jetToTauFakeRate%s_denominator_cfg.py" % self.event_selection)
 
     self.make_plots_backgrounds = [ "TT", "TTW", "TTWW", "TTZ", "EWK", "Rares" ]
     self.processes_to_comp = self.make_plots_backgrounds + [ "ttH" ]
@@ -126,6 +136,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
       'hadTau_selection_tight',
       'hadTauSelection_denominator',
       'hadTauSelections_numerator',
+      'trigMatchingOptions',
       'absEtaBins',
       'decayModes'
     ]
@@ -150,11 +161,17 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
     for process in self.processes_to_comp:
       lines.append("    '{process}t', '{process}l',".format(process = process))
     lines.append(")")
-    lines.append("process.comp_jetToTauFakeRate.processMC = cms.string('TTj')")
+    if event_selection == "TTemu":
+      lines.append("process.comp_jetToTauFakeRate.processMC = cms.string('TTj')")
+    elif event_selection == "DYmumu":
+      lines.append("process.comp_jetToTauFakeRate.processMC = cms.string('EWKj')")
+    else:
+      raise ValueError("Invalid event selection: %s" % self.event_selection)
     lines.append("process.comp_jetToTauFakeRate.absEtaBins = cms.vdouble(%s)" % jobOptions['absEtaBins'])
     lines.append("process.comp_jetToTauFakeRate.ptBins = cms.vdouble(%s)" % jobOptions['ptBins'])
     lines.append("process.comp_jetToTauFakeRate.decayModes = cms.vint32(%s)" % jobOptions['decayModes'])
     lines.append("process.comp_jetToTauFakeRate.hadTauSelections = cms.vstring(%s)" % jobOptions['hadTauSelections'])
+    lines.append("process.comp_jetToTauFakeRate.trigMatchingOption = cms.string('%s')" % jobOptions['trigMatchingOption']) 
     lines.append("process.comp_jetToTauFakeRate.outputFileName = cms.string('%s')" % jobOptions['plots_outputFileName'])
     create_cfg(self.cfgFile_comp_jetToTauFakeRate, jobOptions['cfgFile_modified'], lines)
 
@@ -305,6 +322,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
               'hadTau_selection_tight'      : self.hadTau_selection_tight,
               'hadTauSelection_denominator' : self.hadTau_selection_denominator,
               'hadTauSelections_numerator'  : self.hadTau_selections_numerator,
+              'trigMatchingOptions'         : self.trigMatchingOptions,
               'selEventsFileName_output'    : rleOutputFile_path,
               'absEtaBins'                  : self.absEtaBins,
               'decayModes'                  : self.decayModes,
@@ -335,27 +353,29 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
 
     logging.info("Creating configuration files for executing 'comp_jetToTauFakeRate'")
     for charge_selection in self.charge_selections:
-      key_hadd_stage2_job = getKey(charge_selection)
-      key_comp_jetToTauFakeRate_dir = getKey("comp_jetToTauFakeRate")
-      key_comp_jetToTauFakeRate_job = getKey(charge_selection)
-      self.jobOptions_comp_jetToTauFakeRate[key_comp_jetToTauFakeRate_job] = {
-        'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2_job],
-        'cfgFile_modified' : os.path.join(
-          self.dirs[DKEY_CFGS], "comp_jetToTauFakeRate_%s_cfg.py" % charge_selection),
-        'outputFile' : os.path.join(
-          self.dirs[DKEY_HIST], "comp_jetToTauFakeRate_%s.root" % charge_selection),
-        'logFile' : os.path.join(
-          self.dirs[DKEY_LOGS], "comp_jetToTauFakeRate_%s.log" % charge_selection),
-        'looseRegion' : "jetToTauFakeRate_%s/denominator/" % charge_selection,
-        'tightRegion' : "jetToTauFakeRate_%s/numerator/" % charge_selection,
-        'absEtaBins' : self.absEtaBins,
-        'ptBins' : self.ptBins,
-        'decayModes' : self.decayModes,
-        'hadTauSelections' : self.hadTau_selections_numerator,
-        'plots_outputFileName' : os.path.join(self.dirs[key_comp_jetToTauFakeRate_dir][DKEY_PLOT], "comp_jetToTauFakeRate.png")
-      }
-      self.createCfg_comp_jetToTauFakeRate(self.jobOptions_comp_jetToTauFakeRate[key_comp_jetToTauFakeRate_job])
-      self.targets.append(self.jobOptions_comp_jetToTauFakeRate[key_comp_jetToTauFakeRate_job]['outputFile'])
+      for trigMatchingOption in self.trigMatchingOptions:
+        key_hadd_stage2_job = getKey(charge_selection)
+        key_comp_jetToTauFakeRate_dir = getKey("comp_jetToTauFakeRate")
+        key_comp_jetToTauFakeRate_job = getKey(charge_selection, trigMatching)
+        self.jobOptions_comp_jetToTauFakeRate[key_comp_jetToTauFakeRate_job] = {
+          'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2_job],
+          'cfgFile_modified' : os.path.join(
+            self.dirs[DKEY_CFGS], "comp_jetToTauFakeRate_%s_%s_cfg.py" % (charge_selection, trigMatchingOption)),
+          'outputFile' : os.path.join(
+            self.dirs[DKEY_HIST], "comp_jetToTauFakeRate_%s_%s.root" % (charge_selection, trigMatchingOption)),
+          'logFile' : os.path.join(
+            self.dirs[DKEY_LOGS], "comp_jetToTauFakeRate_%s_%s.log" % (charge_selection, trigMatchingOption)),
+          'looseRegion' : "jetToTauFakeRate_%s_%s/denominator/" % (charge_selection, trigMatchingOption),
+          'tightRegion' : "jetToTauFakeRate_%s_%s/numerator/" % (charge_selection, trigMatchingOption),
+          'absEtaBins' : self.absEtaBins,
+          'ptBins' : self.ptBins,
+          'decayModes' : self.decayModes,
+          'hadTauSelections' : self.hadTau_selections_numerator,
+          'trigMatchingOption' : trigMatchingOption,
+          'plots_outputFileName' : os.path.join(self.dirs[key_comp_jetToTauFakeRate_dir][DKEY_PLOT], "comp_jetToTauFakeRate_%s.png" % trigMatchingOption)
+        }
+        self.createCfg_comp_jetToTauFakeRate(self.jobOptions_comp_jetToTauFakeRate[key_comp_jetToTauFakeRate_job])
+        self.targets.append(self.jobOptions_comp_jetToTauFakeRate[key_comp_jetToTauFakeRate_job]['outputFile'])
 
     logging.info("Creating configuration files to run 'makePlots'")
     for charge_selection in self.charge_selections:

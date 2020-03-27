@@ -10,12 +10,16 @@ import os
 import sys
 import getpass
 
-# E.g.: ./test/tthAnalyzeRun_jetToTauFakeRate.py -v 2017Dec13 -e 2017
+# E.g.: ./test/tthAnalyzeRun_jetToTauFakeRate.py -m TTemu -v 2017Dec13 -e 2017
 
+mode_choices         = [
+  'TTemu', 'DYmumu'
+]
 sys_choices      = [ 'full' ] + systematics.an_jetToTauFR_opts
 systematics.full = systematics.an_jetToTauFR
 
 parser = tthAnalyzeParser()
+parser.add_modes(mode_choices)
 parser.add_sys(sys_choices)
 parser.add_tau_id_wp(required = True, choices = [ 'dR03mvaVVLoose', 'dR03mvaVLoose', 'deepVSjVVVLoose', 'deepVSjVVLoose' ])
 parser.add_files_per_job()
@@ -38,6 +42,7 @@ num_parallel_jobs  = args.num_parallel_jobs
 running_method     = args.running_method
 
 # Additional arguments
+mode              = args.mode
 systematics_label = args.systematics
 tau_id_wp         = args.tau_id_wp
 files_per_job     = args.files_per_job
@@ -100,7 +105,8 @@ if __name__ == '__main__':
   analysis = analyzeConfig_jetToTauFakeRate(
     configDir = os.path.join("/home",       getpass.getuser(), "ttHAnalysis", era, version),
     outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis", era, version),
-    executable_analyze               = "analyze_jetToTauFakeRate",
+    executable_analyze               = "analyze_jetToTauFakeRate%s" % mode,
+    event_selection                  = mode,
     samples                          = samples,
     charge_selections                = [ "OS" ],
     jet_minPt                        = 20.,

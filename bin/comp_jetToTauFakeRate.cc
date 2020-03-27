@@ -231,6 +231,9 @@ int main(int argc, char* argv[])
 
   vstring hadTauSelections = cfg_comp.getParameter<vstring>("hadTauSelections");
 
+  std::string trigMatchingOption = cfg_comp.getParameter<std::string>("trigMatchingOption");
+  std::cout << "trigMatchingOption = " << trigMatchingOption << std::endl;
+
   vdouble absEtaBins = cfg_comp.getParameter<vdouble>("absEtaBins");
   if ( absEtaBins.size() < 2 ) throw cms::Exception("comp_jetToTauFakeRate") 
     << "Invalid Configuration parameter 'absEtaBins' !!\n";  
@@ -293,10 +296,10 @@ int main(int argc, char* argv[])
         std::string etaBin = getEtaBin(minAbsEta, maxAbsEta);
         for ( vint::const_iterator decayMode = decayModes.begin();
 	      decayMode != decayModes.end(); ++decayMode ) {
-	  std::string etaBin_and_decayMode = etaBin;
+  	  std::string etaBin_and_decayMode = etaBin;
 	  if ( (*decayMode) != -1 ) etaBin_and_decayMode.append(Form("_dm%i", *decayMode));
 
-   	  std::string outputDirName = Form("jetToTauFakeRate/%s/%s", hadTauSelection->data(), etaBin_and_decayMode.data());
+   	  std::string outputDirName = Form("jetToTauFakeRate_%s/%s/%s", trigMatchingOption.data(), hadTauSelection->data(), etaBin_and_decayMode.data());
 	  TDirectory* outputDir = createSubdirectory_recursively(fs, outputDirName.data());
 	  outputDir->cd();
 
@@ -387,8 +390,8 @@ int main(int argc, char* argv[])
 	    assert(eigenVectors_and_Values.size() == dimension);
 	    int idxPar = 1;
 	    for ( std::vector<EigenVector_and_Value>::const_iterator eigenVector_and_Value = eigenVectors_and_Values.begin();
-		  eigenVector_and_Value != eigenVectors_and_Values.end(); ++eigenVector_and_Value ) {
-	      assert(eigenVector_and_Value->eigenVector_.GetNrows() == (int)dimension);
+  		  eigenVector_and_Value != eigenVectors_and_Values.end(); ++eigenVector_and_Value ) {
+  	      assert(eigenVector_and_Value->eigenVector_.GetNrows() == (int)dimension);
 	      std::cout << "EigenVector #" << idxPar << ":" << std::endl;
 	      eigenVector_and_Value->eigenVector_.Print();
 	      std::cout << "EigenValue #" << idxPar << " = " << eigenVector_and_Value->eigenValue_ << std::endl;
@@ -396,7 +399,7 @@ int main(int argc, char* argv[])
 	      std::string fitFunctionParUpName = Form("%s_par%iUp", fitFunctionName.data(), idxPar);
 	      TF1* fitFunctionParUp = new TF1(fitFunctionParUpName.data(), fitFunction_formula_wrt_x0.data(), xMin, xMax);
 	      for ( size_t idxComponent = 0; idxComponent < dimension; ++idxComponent ) {    
-		fitFunctionParUp->SetParameter(
+  		fitFunctionParUp->SetParameter(
 		  idxComponent, 
 		  fitFunction->GetParameter(idxComponent) + TMath::Sqrt(eigenVector_and_Value->eigenValue_)*eigenVector_and_Value->eigenVector_(idxComponent));
 	      }
