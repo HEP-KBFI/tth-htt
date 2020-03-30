@@ -61,7 +61,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/JetHistManager.h" // JetHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/MEtHistManager.h" // MEtHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/MEtFilterHistManager.h" // MEtFilterHistManager
-#include "tthAnalysis/HiggsToTauTau/interface/EvtHistManager_jetToTauFakeRateTTemu.h" // EvtHistManager_jetToTauFakeRateTTemu
+#include "tthAnalysis/HiggsToTauTau/interface/EvtHistManager_jetToTauFakeRateDYmumu.h" // EvtHistManager_jetToTauFakeRateDYmumu
 #include "tthAnalysis/HiggsToTauTau/interface/EvtYieldHistManager.h" // EvtYieldHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/GenEvtHistManager.h" // GenEvtHistManager
 #include "tthAnalysis/HiggsToTauTau/interface/LHEInfoHistManager.h" // LHEInfoHistManager
@@ -116,11 +116,11 @@ int main(int argc, char* argv[])
     return EXIT_FAILURE;
   }
 
-  std::cout << "<analyze_jetToTauFakeRateTTemu>:" << std::endl;
+  std::cout << "<analyze_jetToTauFakeRateDYmumu>:" << std::endl;
 
 //--- keep track of time it takes the macro to execute
   TBenchmark clock;
-  clock.Start("analyze_jetToTauFakeRateTTemu");
+  clock.Start("analyze_jetToTauFakeRateDYmumu");
 
 //--- read python configuration parameters
   if ( !edm::readPSetsFrom(argv[1])->existsAs<edm::ParameterSet>("process") ) 
@@ -142,19 +142,15 @@ int main(int argc, char* argv[])
   std::string era_string = cfg_analyze.getParameter<std::string>("era");
   const int era = get_era(era_string);
 
-  vstring triggerNames_1e = cfg_analyze.getParameter<vstring>("triggers_1e");
-  std::vector<hltPath*> triggers_1e = create_hltPaths(triggerNames_1e);
-  bool use_triggers_1e = cfg_analyze.getParameter<bool>("use_triggers_1e");
   vstring triggerNames_1mu = cfg_analyze.getParameter<vstring>("triggers_1mu");
   std::vector<hltPath*> triggers_1mu = create_hltPaths(triggerNames_1mu);
   bool use_triggers_1mu = cfg_analyze.getParameter<bool>("use_triggers_1mu");
-  vstring triggerNames_1e1mu = cfg_analyze.getParameter<vstring>("triggers_1e1mu");
-  std::vector<hltPath*> triggers_1e1mu = create_hltPaths(triggerNames_1e1mu);
-  bool use_triggers_1e1mu = cfg_analyze.getParameter<bool>("use_triggers_1e1mu");
+  vstring triggerNames_2mu = cfg_analyze.getParameter<vstring>("triggers_2mu");
+  std::vector<hltPath*> triggers_2mu = create_hltPaths(triggerNames_2mu);
+  bool use_triggers_2mu = cfg_analyze.getParameter<bool>("use_triggers_2mu");
 
-  bool apply_offline_e_trigger_cuts_1e = cfg_analyze.getParameter<bool>("apply_offline_e_trigger_cuts_1e");
   bool apply_offline_e_trigger_cuts_1mu = cfg_analyze.getParameter<bool>("apply_offline_e_trigger_cuts_1mu");
-  bool apply_offline_e_trigger_cuts_1e1mu = cfg_analyze.getParameter<bool>("apply_offline_e_trigger_cuts_1e1mu");
+  bool apply_offline_e_trigger_cuts_2mu = cfg_analyze.getParameter<bool>("apply_offline_e_trigger_cuts_2mu");
 
   enum { kOS, kSS };
   std::string chargeSelection_string = cfg_analyze.getParameter<std::string>("chargeSelection");
@@ -178,10 +174,10 @@ int main(int argc, char* argv[])
   vstring trigMatchingOptions = cfg_analyze.getParameter<vstring>("trigMatchingOptions");
 
   vdouble absEtaBins = cfg_analyze.getParameter<vdouble>("absEtaBins");
-  if ( absEtaBins.size() < 2 ) throw cms::Exception("analyze_jetToTauFakeRateTTemu") 
+  if ( absEtaBins.size() < 2 ) throw cms::Exception("analyze_jetToTauFakeRateDYmumu") 
     << "Invalid Configuration parameter 'absEtaBins' !!\n";
   vint decayModes = cfg_analyze.getParameter<vint>("decayModes");
-  if ( decayModes.size() < 1 ) throw cms::Exception("analyze_jetToTauFakeRateTTemu") 
+  if ( decayModes.size() < 1 ) throw cms::Exception("analyze_jetToTauFakeRateDYmumu") 
     << "Invalid Configuration parameter 'decayModes' !!\n";
   
   bool isMC = cfg_analyze.getParameter<bool>("isMC"); 
@@ -303,7 +299,7 @@ int main(int argc, char* argv[])
     inputTree -> registerReader(&objectMultiplicityReader);
   }
 
-  hltPathReader hltPathReader_instance({ triggers_1e, triggers_1mu, triggers_1e1mu });
+  hltPathReader hltPathReader_instance({ triggers_1mu, triggers_2mu });
   inputTree -> registerReader(&hltPathReader_instance);
 
   if(eventWeightManager)
@@ -428,6 +424,12 @@ int main(int argc, char* argv[])
   MuonHistManager selMuonHistManager(makeHistManager_cfg(process_string, 
     Form("jetToTauFakeRate_%s/muons", chargeSelection_string.data()), era_string, central_or_shift, "minimalHistograms"));
   selMuonHistManager.bookHistograms(fs);
+  MuonHistManager leadMuonHistManager(makeHistManager_cfg(process_string, 
+    Form("jetToTauFakeRate_%s/leadMuons", chargeSelection_string.data()), era_string, central_or_shift, "minimalHistograms", 0));
+  leadMuonHistManager.bookHistograms(fs);
+  MuonHistManager subleadMuonHistManager(makeHistManager_cfg(process_string, 
+    Form("jetToTauFakeRate_%s/leadMuons", chargeSelection_string.data()), era_string, central_or_shift, "minimalHistograms", 1));
+  subleadMuonHistManager.bookHistograms(fs);
 
   HadTauHistManager selHadTauHistManager(makeHistManager_cfg(process_string, 
     Form("jetToTauFakeRate_%s/hadTaus", chargeSelection_string.data()), era_string, central_or_shift, "minimalHistograms"));
@@ -533,7 +535,7 @@ int main(int argc, char* argv[])
     Form("jetToTauFakeRate_%s/metFilters", chargeSelection_string.data()), era_string, central_or_shift));
   selMEtFilterHistManager.bookHistograms(fs);
 
-  EvtHistManager_jetToTauFakeRateTTemu selEvtHistManager(makeHistManager_cfg(process_string, 
+  EvtHistManager_jetToTauFakeRateDYmumu selEvtHistManager(makeHistManager_cfg(process_string, 
     Form("jetToTauFakeRate_%s/evt", chargeSelection_string.data()), era_string, central_or_shift));
   selEvtHistManager.bookHistograms(fs);
   edm::ParameterSet cfg_EvtYieldHistManager_sel = makeHistManager_cfg(process_string, 
@@ -583,9 +585,7 @@ int main(int argc, char* argv[])
 
     if(useObjectMultiplicity)
     {
-      if(objectMultiplicity.getNRecoLepton(kTight)   != 2 ||
-         objectMultiplicity.getNRecoElectron(kTight) != 1 ||
-         objectMultiplicity.getNRecoMuon(kTight)     != 1  )
+      if(objectMultiplicity.getNRecoMuon(kTight) != 2 )
       {
         if(isDEBUG)
         {
@@ -657,14 +657,12 @@ int main(int argc, char* argv[])
       }
     }
 
-    bool isTriggered_1e = hltPaths_isTriggered(triggers_1e, triggerWhiteList, eventInfo, isMC);
     bool isTriggered_1mu = hltPaths_isTriggered(triggers_1mu, triggerWhiteList, eventInfo, isMC);
-    bool isTriggered_1e1mu = hltPaths_isTriggered(triggers_1e1mu, triggerWhiteList, eventInfo, isMC);
+    bool isTriggered_2mu = hltPaths_isTriggered(triggers_2mu, triggerWhiteList, eventInfo, isMC);
 
-    bool selTrigger_1e = use_triggers_1e && isTriggered_1e;
     bool selTrigger_1mu = use_triggers_1mu && isTriggered_1mu;
-    bool selTrigger_1e1mu = use_triggers_1e1mu && isTriggered_1e1mu;
-    if ( !(selTrigger_1e || selTrigger_1mu || selTrigger_1e1mu) ) {
+    bool selTrigger_2mu = use_triggers_2mu && isTriggered_2mu;
+    if ( !(selTrigger_1mu || selTrigger_2mu) ) {
       continue;
     }
     
@@ -672,18 +670,14 @@ int main(int argc, char* argv[])
 //    the ranking of the triggers is as follows: 1e1mu, 1mu, 1e
 // CV: this logic is necessary to avoid that the same event is selected multiple times when processing different primary datasets
     if ( !isMC ) {
-      if ( selTrigger_1e && (isTriggered_1mu || isTriggered_1e1mu) ) {
-        continue;
-      }
-      if ( selTrigger_1mu && isTriggered_1e1mu ) {
+      if ( selTrigger_1mu && isTriggered_2mu ) {
         continue;
       }
     }
     cutFlowTable.update("trigger", evtWeightRecorder.get(central_or_shift));
 
-    if ( (selTrigger_1mu   && !apply_offline_e_trigger_cuts_1mu)   ||
-         (selTrigger_1e1mu && !apply_offline_e_trigger_cuts_1e1mu) ||
-         (selTrigger_1e    && !apply_offline_e_trigger_cuts_1e)    ) {
+    if ( (selTrigger_1mu && !apply_offline_e_trigger_cuts_1mu) ||
+         (selTrigger_2mu && !apply_offline_e_trigger_cuts_2mu) ) {
       tightElectronSelector.disable_offline_e_trigger_cuts();
     } else {
       tightElectronSelector.enable_offline_e_trigger_cuts();
@@ -717,7 +711,7 @@ int main(int argc, char* argv[])
     const std::vector<const RecoLepton*> fakeableLeptons = pickFirstNobjects(fakeableLeptonsFull, 2);
     const std::vector<const RecoLepton*> tightLeptons = getIntersection(fakeableLeptons, tightLeptonsFull, isHigherConePt);
     const std::vector<const RecoLepton*> selLeptons = tightLeptons;
-
+    
     const std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     const std::vector<const RecoHadTau*> hadTau_ptrs = convert_to_ptrs(hadTaus);
     const std::vector<const RecoHadTau*> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, preselMuons, preselElectrons);
@@ -824,23 +818,15 @@ int main(int argc, char* argv[])
     }
 
 //--- apply preselection
-    // require two leptons passing loose preselection criteria 
-    if ( !(preselLeptons.size() >= 2) ) {
+    // require two muons passing loose preselection criteria 
+    if ( !(preselMuons.size() >= 2) ) {
       continue;
     }
-    cutFlowTable.update(">= 2 presel leptons", evtWeightRecorder.get(central_or_shift));
-    const RecoLepton* preselLepton_lead = preselLeptons[0];
-    int preselLepton_lead_type = getLeptonType(preselLepton_lead->pdgId());
-    const RecoLepton* preselLepton_sublead = preselLeptons[1];
-    int preselLepton_sublead_type = getLeptonType(preselLepton_sublead->pdgId());
-
-    // require that trigger paths match event category (with event category based on preselLeptons)
-    if ( !((preselElectrons.size() >= 2 &&                             selTrigger_1e                                       ) ||
-           (preselElectrons.size() >= 1 && preselMuons.size() >= 1 && (selTrigger_1e1mu || selTrigger_1mu || selTrigger_1e)) ||
-           (                               preselMuons.size() >= 2 &&  selTrigger_1mu                                      )) ) {
-      continue;
-    } 
-    cutFlowTable.update("presel lepton trigger match", evtWeightRecorder.get(central_or_shift));
+    cutFlowTable.update(">= 2 presel muons", evtWeightRecorder.get(central_or_shift));
+    const RecoMuon* preselMuon_lead = preselMuons[0];
+    int preselMuon_lead_type = getLeptonType(preselMuon_lead->pdgId());
+    const RecoMuon* preselMuon_sublead = preselMuons[1];
+    int preselMuon_sublead_type = getLeptonType(preselMuon_sublead->pdgId());
     
 //--- compute MHT and linear MET discriminant (met_LD)
     const RecoMEt met = metReader->read();
@@ -855,8 +841,8 @@ int main(int argc, char* argv[])
       evtWeightRecorder.record_btagWeight(selJets);
 
       dataToMCcorrectionInterface->setLeptons(
-        preselLepton_lead_type, preselLepton_lead->pt(), preselLepton_lead->cone_pt(), preselLepton_lead->eta(),
-        preselLepton_sublead_type, preselLepton_sublead->pt(), preselLepton_sublead->cone_pt(), preselLepton_sublead->eta()
+        preselMuon_lead_type, preselMuon_lead->pt(), preselMuon_lead->cone_pt(), preselMuon_lead->eta(),
+        preselMuon_sublead_type, preselMuon_sublead->pt(), preselMuon_sublead->cone_pt(), preselMuon_sublead->eta()
       );
 
 //--- apply data/MC corrections for trigger efficiency,
@@ -871,52 +857,23 @@ int main(int argc, char* argv[])
     }
 
 //--- apply final event selection 
-    // require exactly two leptons passing tight selection criteria
-    if ( !(selLeptons.size() == 2) ) {
+    // require exactly two muons passing tight selection criteria
+    if ( !(selMuons.size() == 2) ) {
       continue;
     }
-    cutFlowTable.update("2 sel leptons", evtWeightRecorder.get(central_or_shift));
+    cutFlowTable.update("2 sel muons", evtWeightRecorder.get(central_or_shift));
 
-    const RecoLepton* selLepton_lead = selLeptons[0];
-    const RecoLepton* selLepton_sublead = selLeptons[1];
+    const RecoLepton* selMuon_lead = selMuons[0];
+    const RecoLepton* selMuon_sublead = selMuons[1];
 
-    const RecoLepton* selLepton_e = 0;
-    const RecoLepton* selLepton_mu = 0;
-    if      ( selLepton_lead->is_electron()    ) selLepton_e  = selLepton_lead;
-    else if ( selLepton_lead->is_muon()        ) selLepton_mu = selLepton_lead;
-    if      ( selLepton_sublead->is_electron() ) selLepton_e  = selLepton_sublead;
-    else if ( selLepton_sublead->is_muon()     ) selLepton_mu = selLepton_sublead;
-    if ( !(selLepton_e && selLepton_mu) ) {
-      continue;
-    }
-    cutFlowTable.update("1 sel electron + 1 sel muon", evtWeightRecorder.get(central_or_shift));
-
-    double m_ll = (selLepton_lead->p4() + selLepton_sublead->p4()).mass();
-    double m_bb = -1.;
-    if ( selJets.size() >= 2 ) {
-      std::vector<const RecoJet*> selJets_sortedByBtag = selJets;
-      std::sort(selJets_sortedByBtag.begin(), selJets_sortedByBtag.end(), isHigherCSV);
-      assert(selJets_sortedByBtag.size() >= 2);
-      m_bb = (selJets_sortedByBtag[0]->p4() + selJets_sortedByBtag[1]->p4()).mass();
-    }
-    double mT_e = ( selLepton_e ) ? comp_MT_met(selLepton_e, met.pt(), met.phi()) : -1.;
-    double mT_mu = ( selLepton_e ) ? comp_MT_met(selLepton_mu, met.pt(), met.phi()) : -1.;
-
-    // require that trigger paths match event category (with event category based on selLeptons)
-    if ( !((fakeableElectrons.size() >= 2 &&                               selTrigger_1e                                       ) ||
-           (fakeableElectrons.size() >= 1 && fakeableMuons.size() >= 1 && (selTrigger_1e1mu || selTrigger_1mu || selTrigger_1e)) ||
-           (                                 fakeableMuons.size() >= 2 &&  selTrigger_1mu                                      )) ) {
-      continue;
-    } 
-    cutFlowTable.update("fakeable lepton trigger match", evtWeightRecorder.get(central_or_shift));
+    double m_ll = (selMuon_lead->p4() + selMuon_sublead->p4()).mass();
 
 //--- apply HLT filter
     if(apply_hlt_filter)
     {
       const std::map<hltPathsE, bool> trigger_bits = {
-        { hltPathsE::trigger_1e,    selTrigger_1e    },
-        { hltPathsE::trigger_1mu,   selTrigger_1mu   },
-        { hltPathsE::trigger_1e1mu, selTrigger_1e1mu },
+        { hltPathsE::trigger_1mu, selTrigger_1mu },
+        { hltPathsE::trigger_2mu, selTrigger_2mu },
       };
       if(! hltFilter(trigger_bits, fakeableLeptons, {}))
       {
@@ -926,14 +883,14 @@ int main(int argc, char* argv[])
     cutFlowTable.update("HLT filter matching", evtWeightRecorder.get(central_or_shift));
 
     // apply requirement on jets (incl. b-tagged jets) 
-    if ( !(selJets.size() >= 2) ) {
+    if ( !(selJets.size() >= 1) ) {
       continue;
     }
-    cutFlowTable.update(">= 2 jets", evtWeightRecorder.get(central_or_shift));
-    if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) ) {
+    cutFlowTable.update(">= 1 jet", evtWeightRecorder.get(central_or_shift));
+    if ( !(selBJets_loose.size() <= 1 || selBJets_medium.size() == 0) ) {
       continue;
     }
-    cutFlowTable.update(">= 2 loose b-jets || 1 medium b-jet", evtWeightRecorder.get(central_or_shift));
+    cutFlowTable.update("<= 1 loose b-jets && 0 medium b-jet", evtWeightRecorder.get(central_or_shift));
 
     const bool failsLowMassVeto = isfailsLowMassVeto(preselLeptonsFullUncleaned);
     if(failsLowMassVeto)
@@ -942,35 +899,34 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update("m(ll) > 12 GeV", evtWeightRecorder.get(central_or_shift));
 
-    const double minPt_lead = 25.;
-    const double minPt_sublead = 15.;
-    if ( !(selLepton_lead->pt() > minPt_lead && selLepton_sublead->pt() > minPt_sublead) ) {
+    bool passesZbosonMass = m_ll > 60. && m_ll < 120.;
+    if ( !passesZbosonMass ) {
       continue;
     }
-    cutFlowTable.update("lead lepton pT > 25 GeV && sublead lepton pT > 15 GeV", evtWeightRecorder.get(central_or_shift));
+    cutFlowTable.update("Z-boson mass", evtWeightRecorder.get(central_or_shift));
 
-    bool isCharge_SS = selLepton_lead->charge()*selLepton_sublead->charge() > 0;
-    bool isCharge_OS = selLepton_lead->charge()*selLepton_sublead->charge() < 0;
+    const double minPt_lead = 25.;
+    const double minPt_sublead = 15.;
+    if ( !(selMuon_lead->pt() > minPt_lead && selMuon_sublead->pt() > minPt_sublead) ) {
+      continue;
+    }
+    cutFlowTable.update("lead muon pT > 25 GeV && sublead muon pT > 15 GeV", evtWeightRecorder.get(central_or_shift));
+
+    bool isCharge_SS = selMuon_lead->charge()*selMuon_sublead->charge() > 0;
+    bool isCharge_OS = selMuon_lead->charge()*selMuon_sublead->charge() < 0;
     if ( chargeSelection == kOS && isCharge_SS ) {
       continue;
     }
     if ( chargeSelection == kSS && isCharge_OS ) {
       continue;
     }
-    cutFlowTable.update(Form("lepton-pair %s charge", chargeSelection_string.data()), evtWeightRecorder.get(central_or_shift));
+    cutFlowTable.update(Form("muon-pair %s charge", chargeSelection_string.data()), evtWeightRecorder.get(central_or_shift));
 
     // require exactly two leptons passing tight selection criteria
     if ( !(tightLeptonsFull.size() <= 2) ) {
       continue;
     }
     cutFlowTable.update("<= 2 tight leptons", evtWeightRecorder.get(central_or_shift));
-
-    if ( selLepton_lead->is_electron() && selLepton_sublead->is_electron() ) {
-      if ( met_LD < 30. ) {
-        continue;
-      }
-    }
-    cutFlowTable.update("met LD > 30 GeV", evtWeightRecorder.get(central_or_shift));
 
     if ( apply_met_filters ) {
       if ( !metFilterSelector(metFilters) ) {
@@ -982,6 +938,8 @@ int main(int argc, char* argv[])
 //--- fill histograms with events passing final selection 
     const double evtWeight = evtWeightRecorder.get(central_or_shift);
     selMuonHistManager.fillHistograms(selMuons, evtWeight);
+    leadMuonHistManager.fillHistograms(selMuons, evtWeight);
+    subleadMuonHistManager.fillHistograms(selMuons, evtWeight);
     selElectronHistManager.fillHistograms(selElectrons, evtWeight);
     selHadTauHistManager.fillHistograms(selHadTaus, evtWeight);
     selHadTauHistManager_genHadTau.fillHistograms(selHadTaus_genHadTau, evtWeight);
@@ -999,7 +957,7 @@ int main(int argc, char* argv[])
     selMEtFilterHistManager.fillHistograms(metFilters, evtWeight);
     selEvtHistManager.fillHistograms(selElectrons.size(), selMuons.size(), selHadTaus.size(), 
       selJets.size(), selBJets_loose.size(), selBJets_medium.size(), 
-      m_ll, m_bb, mT_e, mT_mu, 
+      m_ll, 
       evtWeight);
     selEvtYieldHistManager.fillHistograms(eventInfo, evtWeight);
 
@@ -1122,13 +1080,12 @@ int main(int argc, char* argv[])
   delete l1PreFiringWeightReader;
   delete eventWeightManager;
 
-  hltPaths_delete(triggers_1e);
   hltPaths_delete(triggers_1mu);
-  hltPaths_delete(triggers_1e1mu);
+  hltPaths_delete(triggers_2mu);
 
   delete inputTree;
 
-  clock.Show("analyze_jetToTauFakeRateTTemu");
+  clock.Show("analyze_jetToTauFakeRateDYmumu");
 
   return EXIT_SUCCESS;
 }

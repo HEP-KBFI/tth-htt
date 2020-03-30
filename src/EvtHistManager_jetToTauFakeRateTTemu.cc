@@ -1,8 +1,8 @@
-#include "tthAnalysis/HiggsToTauTau/interface/EvtHistManager_jetToTauFakeRate.h"
+#include "tthAnalysis/HiggsToTauTau/interface/EvtHistManager_jetToTauFakeRateTTemu.h"
 
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // fillWithOverFlow()
 
-EvtHistManager_jetToTauFakeRate::EvtHistManager_jetToTauFakeRate(const edm::ParameterSet & cfg)
+EvtHistManager_jetToTauFakeRateTTemu::EvtHistManager_jetToTauFakeRateTTemu(const edm::ParameterSet & cfg)
   : HistManagerBase(cfg)
 {
   const std::vector<std::string> sysOpts_central = {
@@ -35,7 +35,7 @@ EvtHistManager_jetToTauFakeRate::EvtHistManager_jetToTauFakeRate(const edm::Para
 }
 
 void
-EvtHistManager_jetToTauFakeRate::bookHistograms(TFileDirectory & dir)
+EvtHistManager_jetToTauFakeRateTTemu::bookHistograms(TFileDirectory & dir)
 {
   histogram_numElectrons_    = book1D(dir, "numElectrons",    "numElectrons",     5, -0.5,   +4.5);
   histogram_numMuons_        = book1D(dir, "numMuons",        "numMuons",         5, -0.5,   +4.5);
@@ -58,17 +58,17 @@ EvtHistManager_jetToTauFakeRate::bookHistograms(TFileDirectory & dir)
 }
 
 void
-EvtHistManager_jetToTauFakeRate::fillHistograms(int numElectrons,
-                                                int numMuons,
-                                                int numHadTaus,
-                                                int numJets,
-                                                int numBJets_loose,
-                                                int numBJets_medium,
-                                                double m_ll,
-						double m_bb,
-                                                double mT_e,
-                                                double mT_mu,
-                                                double evtWeight)
+EvtHistManager_jetToTauFakeRateTTemu::fillHistograms(int numElectrons,
+                                                     int numMuons,
+                                                     int numHadTaus,
+                                                     int numJets,
+                                                     int numBJets_loose,
+                                                     int numBJets_medium,
+                                                     double m_ll,
+						     double m_bb,
+                                                     double mT_e,
+                                                     double mT_mu,
+                                                     double evtWeight)
 {
   const double evtWeightErr = 0.;
 

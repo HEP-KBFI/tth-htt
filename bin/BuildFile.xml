@@ -353,6 +353,20 @@
   <use   name="boost"/>
   <Flags CXXFLAGS="-g -Wshadow -Werror"/>
 </bin>
+<bin file="analyze_jetToTauFakeRateDYmumu.cc" name="analyze_jetToTauFakeRateDYmumu">
+  <use   name="FWCore/FWLite"/>
+  <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/PythonParameterSet"/>
+  <use   name="FWCore/Utilities"/>
+  <use   name="DataFormats/FWLite"/>
+  <use   name="DataFormats/Math"/>
+  <use   name="PhysicsTools/FWLite"/>
+  <use   name="tthAnalysis/HiggsToTauTau"/>
+  <use   name="root"/>
+  <use   name="roottmva"/>
+  <use   name="boost"/>
+  <Flags CXXFLAGS="-g -Wshadow -Werror"/>
+</bin>
 <bin file="comp_jetToTauFakeRate.cc" name="comp_jetToTauFakeRate">
   <use   name="libpng"/>
   <use   name="FWCore/FWLite"/>
@@ -521,6 +535,20 @@
   <Flags CXXFLAGS="-g -Wshadow -Werror"/>
 </bin>
 <bin file="analyze_genTopPt.cc" name="analyze_genTopPt">
+  <use   name="FWCore/FWLite"/>
+  <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/PythonParameterSet"/>
+  <use   name="FWCore/Utilities"/>
+  <use   name="DataFormats/FWLite"/>
+  <use   name="DataFormats/Math"/>
+  <use   name="PhysicsTools/FWLite"/>
+  <use   name="tthAnalysis/HiggsToTauTau"/>
+  <use   name="root"/>
+  <use   name="roottmva"/>
+  <use   name="boost"/>
+  <Flags CXXFLAGS="-g -Wshadow -Werror"/>
+</bin>
+<bin file="analyze_jetResolution.cc" name="analyze_jetResolution">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
   <use   name="FWCore/PythonParameterSet"/>
