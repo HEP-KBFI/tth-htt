@@ -485,31 +485,34 @@ int main(int argc, char* argv[])
         }
       }
 
-      std::vector<std::string> genJet_flavors = { "uds", "c", "b", "gluon" };
-      for ( std::vector<std::string>::const_iterator genJet_flavor = genJet_flavors.begin();
-            genJet_flavor != genJet_flavors.end(); ++genJet_flavor ) {
-        std::vector<int> genJet_pdgIds;
-        if      ( (*genJet_flavor) == "uds"   ) genJet_pdgIds = { 1, 2, 3 };
-        else if ( (*genJet_flavor) ==  "c"    ) genJet_pdgIds = {    4    };
-        else if ( (*genJet_flavor) ==  "b"    ) genJet_pdgIds = {    5    };
-        else if ( (*genJet_flavor) == "gluon" ) genJet_pdgIds = {   21    };
-        else assert(0);
+      if ( isMC )
+      {
+        std::vector<std::string> genJet_flavors = { "uds", "c", "b", "gluon" };
+        for ( std::vector<std::string>::const_iterator genJet_flavor = genJet_flavors.begin();
+              genJet_flavor != genJet_flavors.end(); ++genJet_flavor ) {
+          std::vector<int> genJet_pdgIds;
+          if      ( (*genJet_flavor) == "uds"   ) genJet_pdgIds = { 1, 2, 3 };
+          else if ( (*genJet_flavor) ==  "c"    ) genJet_pdgIds = {    4    };
+          else if ( (*genJet_flavor) ==  "b"    ) genJet_pdgIds = {    5    };
+          else if ( (*genJet_flavor) == "gluon" ) genJet_pdgIds = {   21    };
+          else assert(0);
 
-        denominatorHistManagers* denominator = new denominatorHistManagers(
-          process_string, era_string, isMC, chargeSelection_string, 
-          hadTauSelection_denominator, trigMatchingOption,
-          minAbsEta, maxAbsEta, -1, genJet_pdgIds, central_or_shift);
-        denominator->bookHistograms(fs);
-        denominators.push_back(denominator);
-
-        for ( vstring::const_iterator hadTauSelection_numerator = hadTauSelections_numerator.begin();
-              hadTauSelection_numerator != hadTauSelections_numerator.end(); ++hadTauSelection_numerator ) {
-          numeratorSelector_and_HistManagers* numerator = new numeratorSelector_and_HistManagers(
+          denominatorHistManagers* denominator = new denominatorHistManagers(
             process_string, era_string, isMC, chargeSelection_string, 
-            hadTauSelection_denominator, trigMatchingOption, *hadTauSelection_numerator,
+            hadTauSelection_denominator, trigMatchingOption,
             minAbsEta, maxAbsEta, -1, genJet_pdgIds, central_or_shift);
-          numerator->bookHistograms(fs);
-          numerators.push_back(numerator);
+          denominator->bookHistograms(fs);
+          denominators.push_back(denominator);
+
+          for ( vstring::const_iterator hadTauSelection_numerator = hadTauSelections_numerator.begin();
+                hadTauSelection_numerator != hadTauSelections_numerator.end(); ++hadTauSelection_numerator ) {
+            numeratorSelector_and_HistManagers* numerator = new numeratorSelector_and_HistManagers(
+              process_string, era_string, isMC, chargeSelection_string, 
+              hadTauSelection_denominator, trigMatchingOption, *hadTauSelection_numerator,
+              minAbsEta, maxAbsEta, -1, genJet_pdgIds, central_or_shift);
+            numerator->bookHistograms(fs);
+            numerators.push_back(numerator);
+          }
         }
       }
     }
