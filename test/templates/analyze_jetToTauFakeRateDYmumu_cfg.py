@@ -17,7 +17,7 @@ process.fwliteOutput = cms.PSet(
     fileName = cms.string('')
 )
 
-process.analyze_jetToTauFakeRate = cms.PSet(
+process.analyze_jetToTauFakeRateDYmumu = cms.PSet(
     treeName = cms.string('Events'),
 
     process = cms.string(''),

@@ -55,9 +55,9 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
       ):
     self.event_selection = event_selection
     triggers = None
-    if event_selection == "TTemu":
+    if self.event_selection == "TTemu":
       triggers = [ '1e', '1mu', '1e1mu' ]
-    elif event_selection == "DYmumu":
+    elif self.event_selection == "DYmumu":
       triggers = [ '1mu', '2mu' ] 
     else:
       raise ValueError("Invalid event selection: %s" % self.event_selection)
@@ -97,7 +97,12 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
     self.hadTau_selection_tight = hadTau_selection_tight
     self.hadTau_selection_denominator = hadTau_selection_denominator
     self.hadTau_selections_numerator = hadTau_selections_numerator
-    self.trigMatchingOptions = [ "woTriggerMatching", "wTriggerMatchingMediumChargedIso", "wTriggerMatchingTightChargedIso" ]
+    self.trigMatchingOptions = [ 
+      "woTriggerMatching", 
+      "wTriggerMatchingLooseChargedIso", 
+      "wTriggerMatchingMediumChargedIso", 
+      "wTriggerMatchingTightChargedIso" 
+    ]
 
     self.absEtaBins = absEtaBins
     self.ptBins = ptBins
@@ -161,9 +166,9 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
     for process in self.processes_to_comp:
       lines.append("    '{process}t', '{process}l',".format(process = process))
     lines.append(")")
-    if event_selection == "TTemu":
+    if self.event_selection == "TTemu":
       lines.append("process.comp_jetToTauFakeRate.processMC = cms.string('TTj')")
-    elif event_selection == "DYmumu":
+    elif self.event_selection == "DYmumu":
       lines.append("process.comp_jetToTauFakeRate.processMC = cms.string('EWKj')")
     else:
       raise ValueError("Invalid event selection: %s" % self.event_selection)
@@ -327,6 +332,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
               'absEtaBins'                  : self.absEtaBins,
               'decayModes'                  : self.decayModes,
               'central_or_shift'            : central_or_shift,
+              'central_or_shifts_local'     : [],
               'apply_hlt_filter'            : self.hlt_filter,
             }
             self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info)
@@ -356,7 +362,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
       for trigMatchingOption in self.trigMatchingOptions:
         key_hadd_stage2_job = getKey(charge_selection)
         key_comp_jetToTauFakeRate_dir = getKey("comp_jetToTauFakeRate")
-        key_comp_jetToTauFakeRate_job = getKey(charge_selection, trigMatching)
+        key_comp_jetToTauFakeRate_job = getKey(charge_selection, trigMatchingOption)
         self.jobOptions_comp_jetToTauFakeRate[key_comp_jetToTauFakeRate_job] = {
           'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2_job],
           'cfgFile_modified' : os.path.join(
