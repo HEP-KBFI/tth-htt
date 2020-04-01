@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2020-01-11 14:51:48 with the following command:
+# file generated at 2020-04-01 16:27:51 with the following command:
 # find_samples.py -V -i ../NanoAOD/test/datasets/txt/datasets_mc_2018_RunIIAutumn18MiniAOD.txt -m python/samples/metaDict_2018_mc.py -s ../NanoAOD/test/datasets/txt/sum_datasets_2018_RunIIAutumn18MiniAOD.txt -c python/samples/sampleLocations_2018_nanoAOD.txt
 
 meta_dictionary = OD()
@@ -17,6 +17,8 @@ sum_events = {
   ("WZTo3LNu", "WZTo3LNu_ext1"),
   ("ZZTo4L_ext1", "ZZTo4L_ext2"),
   ("ZZTo2L2Nu_ext1", "ZZTo2L2Nu_ext2"),
+  ("ggZZTo4mu", "ggZZTo4mu_ext1"),
+  ("ggZZTo4e", "ggZZTo4e_ext1"),
   ("QCD_Pt80to120_Mu5", "QCD_Pt80to120_Mu5_ext1"),
   ("QCD_Pt120to170_Mu5", "QCD_Pt120to170_Mu5_ext1"),
   ("QCD_Pt300to470_Mu5", "QCD_Pt300to470_Mu5_ext3"),
@@ -990,7 +992,7 @@ meta_dictionary["/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn
   ("crab_string",           "2018_2020Mar03_DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext2-v1"),
   ("sample_category",       "EWK"),
   ("process_name_specific", "DYJetsToLL_M-50_amcatnloFXFX_ext2"),
-  ("nof_db_events",         193215674),
+  ("nof_db_events",         193465480),
   ("nof_db_files",          2805),
   ("fsize_db",              7864644678843),
   ("xsection",              6077.22),
@@ -1185,7 +1187,7 @@ meta_dictionary["/WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18Mini
   ("crab_string",           "2018_2020Mar03_WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2"),
   ("sample_category",       "EWK"),
   ("process_name_specific", "WJetsToLNu_madgraphMLM"),
-  ("nof_db_events",         71026861),
+  ("nof_db_events",         71072199),
   ("nof_db_files",          991),
   ("fsize_db",              2702061580245),
   ("xsection",              61526.7),
@@ -1636,6 +1638,110 @@ meta_dictionary["/ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIIAutumn18MiniA
   ("comment",               "100.0%; status: VALID; size: 1.29TB; nevents: 27.90M; release: 10_2_5; last modified: 2019-02-25 18:47:59"),
 ])
 
+meta_dictionary["/GluGluToContinToZZTo4tau_13TeV_MCFM701_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/MINIAODSIM"] =  OD([
+  ("crab_string",           ""),
+  ("sample_category",       "ZZ"),
+  ("process_name_specific", "ggZZTo4tau"),
+  ("nof_db_events",         482400),
+  ("nof_db_files",          65),
+  ("fsize_db",              21683296777),
+  ("xsection",              0.00159),
+  ("use_it",                True),
+  ("genWeight",             True),
+  ("comment",               "status: VALID; size: 21.68GB; nevents: 482.40k; release: 10_2_5; last modified: 2019-10-25 14:46:14"),
+])
+
+meta_dictionary["/GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/MINIAODSIM"] =  OD([
+  ("crab_string",           ""),
+  ("sample_category",       "ZZ"),
+  ("process_name_specific", "ggZZTo4mu"),
+  ("nof_db_events",         911500),
+  ("nof_db_files",          50),
+  ("fsize_db",              45292352281),
+  ("xsection",              0.00159),
+  ("use_it",                True),
+  ("genWeight",             True),
+  ("comment",               "status: VALID; size: 45.29GB; nevents: 911.50k; release: 10_2_5; last modified: 2019-10-15 00:24:06"),
+])
+
+meta_dictionary["/GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1/MINIAODSIM"] =  OD([
+  ("crab_string",           ""),
+  ("sample_category",       "ZZ"),
+  ("process_name_specific", "ggZZTo4mu_ext1"),
+  ("nof_db_events",         982548),
+  ("nof_db_files",          52),
+  ("fsize_db",              47038473062),
+  ("xsection",              0.00159),
+  ("use_it",                True),
+  ("genWeight",             True),
+  ("comment",               "status: VALID; size: 47.04GB; nevents: 982.55k; release: 10_2_5; last modified: 2019-11-01 17:28:02"),
+])
+
+meta_dictionary["/GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/MINIAODSIM"] =  OD([
+  ("crab_string",           ""),
+  ("sample_category",       "ZZ"),
+  ("process_name_specific", "ggZZTo4e"),
+  ("nof_db_events",         913200),
+  ("nof_db_files",          63),
+  ("fsize_db",              48500006880),
+  ("xsection",              0.00159),
+  ("use_it",                True),
+  ("genWeight",             True),
+  ("comment",               "status: VALID; size: 48.50GB; nevents: 913.20k; release: 10_2_5; last modified: 2019-10-14 23:37:03"),
+])
+
+meta_dictionary["/GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1/MINIAODSIM"] =  OD([
+  ("crab_string",           ""),
+  ("sample_category",       "ZZ"),
+  ("process_name_specific", "ggZZTo4e_ext1"),
+  ("nof_db_events",         610000),
+  ("nof_db_files",          23),
+  ("fsize_db",              31351488856),
+  ("xsection",              0.00159),
+  ("use_it",                True),
+  ("genWeight",             True),
+  ("comment",               "status: VALID; size: 31.35GB; nevents: 610.00k; release: 10_2_5; last modified: 2019-08-20 16:28:42"),
+])
+
+meta_dictionary["/GluGluToContinToZZTo2e2tau_13TeV_MCFM701_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v3/MINIAODSIM"] =  OD([
+  ("crab_string",           ""),
+  ("sample_category",       "ZZ"),
+  ("process_name_specific", "ggZZTo2e2tau"),
+  ("nof_db_events",         492000),
+  ("nof_db_files",          7),
+  ("fsize_db",              23139138901),
+  ("xsection",              0.00319),
+  ("use_it",                True),
+  ("genWeight",             True),
+  ("comment",               "status: VALID; size: 23.14GB; nevents: 492.00k; release: 10_2_5; last modified: 2019-08-06 13:47:30"),
+])
+
+meta_dictionary["/GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v3/MINIAODSIM"] =  OD([
+  ("crab_string",           ""),
+  ("sample_category",       "ZZ"),
+  ("process_name_specific", "ggZZTo2e2mu"),
+  ("nof_db_events",         494000),
+  ("nof_db_files",          7),
+  ("fsize_db",              24817178115),
+  ("xsection",              0.00319),
+  ("use_it",                True),
+  ("genWeight",             True),
+  ("comment",               "status: VALID; size: 24.82GB; nevents: 494.00k; release: 10_2_5; last modified: 2019-08-04 12:26:51"),
+])
+
+meta_dictionary["/GluGluToContinToZZTo2mu2tau_13TeV_MCFM701_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v4/MINIAODSIM"] =  OD([
+  ("crab_string",           ""),
+  ("sample_category",       "ZZ"),
+  ("process_name_specific", "ggZZTo2mu2tau"),
+  ("nof_db_events",         500000),
+  ("nof_db_files",          24),
+  ("fsize_db",              22889816959),
+  ("xsection",              0.00319),
+  ("use_it",                True),
+  ("genWeight",             True),
+  ("comment",               "status: VALID; size: 22.89GB; nevents: 500.00k; release: 10_2_5; last modified: 2019-09-12 01:16:13"),
+])
+
 meta_dictionary["/QCD_Pt_15to20_bcToE_TuneCP5_13TeV_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/MINIAODSIM"] =  OD([
   ("crab_string",           "2018_2019Sep29_QCD_Pt_15to20_bcToE_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2"),
   ("sample_category",       "QCD"),
@@ -2045,6 +2151,6 @@ meta_dictionary["/QCD_Pt-1000toInf_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutu
 # EWK:        824.03M
 # WW:         35.45M
 # WZ:         80.39M
-# ZZ:         190.03M
+# ZZ:         195.41M
 # QCD:        408.14M
 

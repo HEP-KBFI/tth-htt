@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2020-01-11 16:52:26 with the following command:
+# file generated at 2020-04-01 12:53:20 with the following command:
 # find_samples.py -V -i ../NanoAOD/test/datasets/txt/datasets_mc_2016_RunIISummer16MiniAODv3.txt -m python/samples/metaDict_2016_mc.py -s ../NanoAOD/test/datasets/txt/sum_datasets_2016_RunIISummer16MiniAODv3.txt -c python/samples/sampleLocations_2016_nanoAOD.txt
 
 meta_dictionary = OD()
@@ -97,7 +97,7 @@ meta_dictionary["/ttH_4f_ctcvcp_TuneCP5_13TeV_madgraph_pythia8/RunIISummer16Mini
   ("xsection",              0.5071),
   ("use_it",                False),
   ("genWeight",             True),
-  ("comment",               "92.19%%; status: VALID; size: 520.02GB; nevents: 9.57M; release: 9_4_9; last modified: 2019-07-29 22:47:43"),
+  ("comment",               "92.19%; status: VALID; size: 520.02GB; nevents: 9.57M; release: 9_4_9; last modified: 2019-07-29 22:47:43"),
 ])
 
 meta_dictionary["/THQ_Hincl_13TeV-madgraph-pythia8_TuneCUETP8M1/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] =  OD([
@@ -598,7 +598,7 @@ meta_dictionary["/TTTo2L2Nu_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIISummer16
   ("crab_string",           "2016v3_2020Mar03_TTTo2L2Nu_TuneCP5_PSweights_13TeV-powheg-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1"),
   ("sample_category",       "TT"),
   ("process_name_specific", "TTTo2L2Nu"),
-  ("nof_db_events",         67860400),
+  ("nof_db_events",         67926800),
   ("nof_db_files",          778),
   ("fsize_db",              2988515757147),
   ("xsection",              88.4),
@@ -2167,6 +2167,84 @@ meta_dictionary["/ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIISummer16MiniA
   ("comment",               "92.26%; status: VALID; size: 536.41GB; nevents: 15.46M; release: 9_4_9; last modified: 2019-02-02 00:27:00"),
 ])
 
+meta_dictionary["/GluGluToContinToZZTo4tau_13TeV_MCFM701_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] =  OD([
+  ("crab_string",           ""),
+  ("sample_category",       "ZZ"),
+  ("process_name_specific", "ggZZTo4tau"),
+  ("nof_db_events",         495800),
+  ("nof_db_files",          5),
+  ("fsize_db",              16308076048),
+  ("xsection",              0.00159),
+  ("use_it",                True),
+  ("genWeight",             True),
+  ("comment",               "status: VALID; size: 16.31GB; nevents: 495.80k; release: 9_4_9; last modified: 2018-11-22 10:40:17"),
+])
+
+meta_dictionary["/GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] =  OD([
+  ("crab_string",           ""),
+  ("sample_category",       "ZZ"),
+  ("process_name_specific", "ggZZTo4mu"),
+  ("nof_db_events",         995200),
+  ("nof_db_files",          10),
+  ("fsize_db",              35740471883),
+  ("xsection",              0.00159),
+  ("use_it",                True),
+  ("genWeight",             True),
+  ("comment",               "status: VALID; size: 35.74GB; nevents: 995.20k; release: 9_4_9; last modified: 2018-11-19 14:33:51"),
+])
+
+meta_dictionary["/GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] =  OD([
+  ("crab_string",           ""),
+  ("sample_category",       "ZZ"),
+  ("process_name_specific", "ggZZTo4e"),
+  ("nof_db_events",         978600),
+  ("nof_db_files",          8),
+  ("fsize_db",              40150744640),
+  ("xsection",              0.00159),
+  ("use_it",                True),
+  ("genWeight",             True),
+  ("comment",               "status: VALID; size: 40.15GB; nevents: 978.60k; release: 9_4_9; last modified: 2018-12-07 18:43:02"),
+])
+
+meta_dictionary["/GluGluToContinToZZTo2e2tau_13TeV_MCFM701_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] =  OD([
+  ("crab_string",           ""),
+  ("sample_category",       "ZZ"),
+  ("process_name_specific", "ggZZTo2e2tau"),
+  ("nof_db_events",         500000),
+  ("nof_db_files",          4),
+  ("fsize_db",              18524704805),
+  ("xsection",              0.00319),
+  ("use_it",                True),
+  ("genWeight",             True),
+  ("comment",               "status: VALID; size: 18.52GB; nevents: 500.00k; release: 9_4_9; last modified: 2018-11-19 04:13:07"),
+])
+
+meta_dictionary["/GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] =  OD([
+  ("crab_string",           ""),
+  ("sample_category",       "ZZ"),
+  ("process_name_specific", "ggZZTo2e2mu"),
+  ("nof_db_events",         1469600),
+  ("nof_db_files",          15),
+  ("fsize_db",              57428600667),
+  ("xsection",              0.00319),
+  ("use_it",                True),
+  ("genWeight",             True),
+  ("comment",               "status: VALID; size: 57.43GB; nevents: 1.47M; release: 9_4_9; last modified: 2018-11-19 08:29:25"),
+])
+
+meta_dictionary["/GluGluToContinToZZTo2mu2tau_13TeV_MCFM701_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] =  OD([
+  ("crab_string",           ""),
+  ("sample_category",       "ZZ"),
+  ("process_name_specific", "ggZZTo2mu2tau"),
+  ("nof_db_events",         499800),
+  ("nof_db_files",          4),
+  ("fsize_db",              17277791593),
+  ("xsection",              0.00319),
+  ("use_it",                True),
+  ("genWeight",             True),
+  ("comment",               "status: VALID; size: 17.28GB; nevents: 499.80k; release: 9_4_9; last modified: 2018-11-24 08:42:00"),
+])
+
 meta_dictionary["/QCD_Pt_15to20_bcToE_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] =  OD([
   ("crab_string",           "2016v3_2019Sep30_QCD_Pt_15to20_bcToE_TuneCUETP8M1_13TeV_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2"),
   ("sample_category",       "QCD"),
@@ -2732,6 +2810,6 @@ meta_dictionary["/QCD_Pt-1000toInf_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunI
 # EWK:        1.35G
 # WW:         17.90M
 # WZ:         92.26M
-# ZZ:         90.43M
+# ZZ:         95.37M
 # QCD:        593.70M
 
