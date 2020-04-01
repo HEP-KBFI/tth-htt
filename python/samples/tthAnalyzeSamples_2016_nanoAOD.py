@@ -27467,7 +27467,7 @@ samples_2016["/TTTo2L2Nu_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIISummer16Min
   ("nof_events",                      {
   }),
   ("nof_tree_events",                 67860400),
-  ("nof_db_events",                   67860400),
+  ("nof_db_events",                   67926800),
   ("fsize_local",                     147897823407), # 147.90GB, avg file size 108.91MB
   ("fsize_db",                        2988515757147), # 2.99TB, avg file size 3.84GB
   ("use_it",                          False),

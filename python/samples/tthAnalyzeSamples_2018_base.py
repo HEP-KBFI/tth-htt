@@ -18292,7 +18292,7 @@ samples_2018["/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18M
     'CountWeightedPSWeightOriginalXWGTUP'                                            : [   1932159810,   1932162602,   1932162602,   1932159716,   1932162602,   1932159504, ],
   }),
   ("nof_tree_events",                 193215674),
-  ("nof_db_events",                   193215674),
+  ("nof_db_events",                   193465480),
   ("fsize_local",                     395328357545), # 395.33GB, avg file size 704.69MB
   ("fsize_db",                        7864644678843), # 7.86TB, avg file size 2.80GB
   ("use_it",                          True),
@@ -19059,7 +19059,7 @@ samples_2018["/WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAOD
     'CountWeightedPSWeightOriginalXWGTUP'                                            : [     73235734,     71111288,     90238521,     68258346,     70907449,     53181046, ],
   }),
   ("nof_tree_events",                 71026861),
-  ("nof_db_events",                   71026861),
+  ("nof_db_events",                   71072199),
   ("fsize_local",                     106905202940), # 106.91GB, avg file size 358.74MB
   ("fsize_db",                        2702061580245), # 2.70TB, avg file size 2.73GB
   ("use_it",                          True),

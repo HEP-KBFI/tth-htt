@@ -304,19 +304,6 @@ meta_dictionary["/VBFHToTauTau_M125_13TeV_powheg_pythia8/RunIIFall17MiniAODv2-PU
   ("comment",               "100.0%; status: VALID; size: 133.66GB; nevents: 2.98M; release: 9_4_7; last modified: 2019-02-01 22:16:12"),
 ])
 
-meta_dictionary["/VBF_HToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           "2017v2_2019Sep28_VBF_HToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1"),
-  ("sample_category",       "qqH"),
-  ("process_name_specific", "VBF_HToZZTo4L"),
-  ("nof_db_events",         981285),
-  ("nof_db_files",          53),
-  ("fsize_db",              50160648576),
-  ("xsection",              0.0010099),
-  ("use_it",                False),
-  ("genWeight",             True),
-  ("comment",               "100.0%; status: INVALID; size: 50.16GB; nevents: 981.28k; release: 9_4_6_patch1,9_4_7; last modified: 2020-03-20 12:59:29"),
-])
-
 meta_dictionary["/VBF_HToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1/MINIAODSIM"] =  OD([
   ("crab_string",           "2017v2_2019Sep28_VBF_HToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1"),
   ("sample_category",       "qqH"),
