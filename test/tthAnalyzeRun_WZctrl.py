@@ -14,7 +14,7 @@ import getpass
 
 mode_choices     = [ 'default', 'sync' ]
 sys_choices      = [ 'full', 'internal' ] + systematics.an_common_opts
-systematics.full = systematics.an_extended
+systematics.full = systematics.an_tth
 systematics.internal = systematics.an_internal_no_mem
 
 parser = tthAnalyzeParser()

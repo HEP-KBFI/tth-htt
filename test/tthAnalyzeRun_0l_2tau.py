@@ -14,8 +14,8 @@ import re
 # E.g.: ./test/tthAnalyzeRun_0l_2tau.py -v 2017Dec13 -m default -e 2017
 
 mode_choices     = [ 'default', 'forBDTtraining', 'sync' ]
-sys_choices      = [ 'full', 'internal' ] + systematics.an_common_opts + [ 'topPtReweighting' ]
-systematics.full = systematics.an_common + systematics.topPtReweighting
+sys_choices      = [ 'full', 'internal' ] + systematics.an_tth_opts + [ 'topPtReweighting' ]
+systematics.full = systematics.an_tth + systematics.topPtReweighting
 systematics.internal = systematics.an_internal_no_mem
 
 parser = tthAnalyzeParser()

@@ -503,27 +503,21 @@ class systematics(object):
   an_chargeFlip_mu      =    central +  muon_E
   an_chargeFlip_mu_opts = [ "central", "muon_E" ]
 
-  an_common      =    central +  JES +  JER +  tauES +  leptonIDSF +  tauIDSF +  UnclusteredEn +  btag +  FR_t +  lhe +  \
-                      triggerSF +  PU +  DYMCReweighting +  DYMCNormScaleFactors  + L1PreFiring + EWK_jet + EWK_bjet + \
-                      partonShower
-  an_common_opts = [
-    "central", "JES", "JER", "tauES", "leptonIDSF", "tauIDSF", "UnclusteredEn", "btag", "FR_t", "lhe",
-    "triggerSF", "PU", "DYMCReweighting", "DYMCNormScaleFactors", "L1PreFiring", "EWK_jet", "EWK_bjet",
-    "partonShower",
+  an_tth = central + JES + JER + tauES + leptonIDSF + tauIDSF + UnclusteredEn + btag + FR_t + FRe_shape + FRm_shape + \
+           lhe + triggerSF + PU + DYMCReweighting + DYMCNormScaleFactors + L1PreFiring + EWK_jet + EWK_bjet + partonShower
+  an_tth_opts = [
+    "central", "JES", "JER", "tauES", "leptonIDSF", "tauIDSF", "UnclusteredEn", "btag", "FR_t", "FRe_shape", "FRm_shape",
+    "lhe", "triggerSF", "PU", "DYMCReweighting", "DYMCNormScaleFactors", "L1PreFiring", "EWK_jet", "EWK_bjet", "partonShower",
   ]
-  # CV: enable the CMS_ttHl_FRe_shape and CMS_ttHl_FRm_shape only if you plan to run compShapeSyst 1!
-  an_extended      = an_common      +    FRe_shape +  FRm_shape
-  an_extended_opts = an_common_opts + [ "FRe_shape", "FRm_shape" ]
 
   an_inclusive      =    central +  JES +  JER +  tauES +  UnclusteredEn +  btag
   an_inclusive_opts = [ "central", "JES", "JER", "tauES", "UnclusteredEn", "btag" ]
 
-  # Karl: for HH analysis only
-  #TODO add ttbar one the Ntuples are ready
-  an_common_hh      = an_common
-  an_common_opts_hh = an_common_opts
-  an_extended_hh      = an_extended
-  an_extended_opts_hh = an_extended_opts
+  an_hh_multilepton = an_tth
+  an_opts_hh_multilepton = an_tth_opts
+  # TODO uncomment ttbar once the Ntuples are ready
+  an_hh_bbww = an_tth # + ttbar
+  an_opts_hh_bbww = an_tth_opts # + "ttbar"
 
   an_internal_no_mem = central + leptonIDSF + tauIDSF + btag + FR_t + lhe + triggerSF + PU + L1PreFiring + \
                        FRe_shape + FRm_shape + DYMCReweighting + DYMCNormScaleFactors + topPtReweighting + \
