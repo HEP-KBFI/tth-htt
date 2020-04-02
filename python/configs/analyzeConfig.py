@@ -812,7 +812,9 @@ class analyzeConfig(object):
             assert('skipEvery' not in jobOptions)
             jobOptions['skipEvery'] = sample_info['skipEvery']
         if 'useObjectMultiplicity' not in jobOptions:
-            jobOptions['useObjectMultiplicity'] = self.do_sync
+            jobOptions['useObjectMultiplicity'] = False
+        if 'useAssocJetBtag' not in jobOptions:
+            jobOptions['useAssocJetBtag'] = False
 
         jobOptions_local = [
             'process',
@@ -885,6 +887,7 @@ class analyzeConfig(object):
             'minNumJets',
             'skipEvery',
             'apply_topPtReweighting',
+            'useAssocJetBtag',
         ]
         jobOptions_typeMapping = {
           'central_or_shifts_local' : 'cms.vstring(%s)',
