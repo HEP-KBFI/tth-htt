@@ -88,6 +88,12 @@ class systematics(object):
     "CMS_ttHl_JERForwardHighPtUp", "CMS_ttHl_JERForwardHighPtDown",
   ]
 
+  AK8_JES = [ "CMS_ttHl_AK8JESUp", "CMS_ttHl_AK8JESDown" ]
+  AK8_JER = [ "CMS_ttHl_AK8JERUp", "CMS_ttHl_AK8JERDown" ]
+  AK8_JMS = [ "CMS_ttHl_AK8JMSUp", "CMS_ttHl_AK8JMSDown" ]
+  AK8_JMR = [ "CMS_ttHl_AK8JMRUp", "CMS_ttHl_AK8JMRDown" ]
+  AK8 = AK8_JES + AK8_JER + AK8_JMS + AK8_JMR
+
   MEM_3l        = [ "CMS_ttHl_MEM_3l_LRUp",        "CMS_ttHl_MEM_3l_LRDown"        ]
   MEM_2lss_1tau = [ "CMS_ttHl_MEM_2lss_1tau_LRUp", "CMS_ttHl_MEM_2lss_1tau_LRDown" ]
   MEM_3l_1tau   = [ "CMS_ttHl_MEM_3l_1tau_LRUp",   "CMS_ttHl_MEM_3l_1tau_LRDown"   ]
@@ -515,9 +521,9 @@ class systematics(object):
 
   an_hh_multilepton = an_tth
   an_opts_hh_multilepton = an_tth_opts
-  # TODO uncomment ttbar once the Ntuples are ready
-  an_hh_bbww = an_tth # + ttbar
-  an_opts_hh_bbww = an_tth_opts # + "ttbar"
+  # TODO uncomment ttbar and/or AK8 once the Ntuples are ready
+  an_hh_bbww = an_tth # + ttbar + AK8
+  an_opts_hh_bbww = an_tth_opts # + "ttbar" + "AK8"
 
   an_internal_no_mem = central + leptonIDSF + tauIDSF + btag + FR_t + lhe + triggerSF + PU + L1PreFiring + \
                        FRe_shape + FRm_shape + DYMCReweighting + DYMCNormScaleFactors + topPtReweighting + \

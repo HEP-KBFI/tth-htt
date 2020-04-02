@@ -293,7 +293,7 @@ main(int argc,
   const RecoJetCollectionSelectorBtagMedium jetSelectorBtagMedium(era, -1, isDEBUG);
   const RecoJetCollectionSelectorForward jetSelectorForward(era, -1, isDEBUG);
 
-  RecoJetReaderAK8 * const jetReaderAK8 = new RecoJetReaderAK8(era, branchName_jetsAK8, branchName_subjetsAK8);
+  RecoJetReaderAK8 * const jetReaderAK8 = new RecoJetReaderAK8(era, isMC, branchName_jetsAK8, branchName_subjetsAK8);
   inputTree -> registerReader(jetReaderAK8);
   const RecoJetCollectionSelectorAK8 jetSelectorAK8(era);
   const RecoJetCollectionCleanerAK8 jetCleanerAK8(0.8, isDEBUG); // [*]

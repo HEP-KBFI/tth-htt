@@ -17,6 +17,29 @@ isValidJESsource(int era,
   return true;
 }
 
+bool
+isValidFatJetAttribute(int central_or_shift,
+                       const std::string & attribute_name)
+{
+  std::vector<std::string> attribute_whitelist = { "mass", "msoftdrop" };
+  if(central_or_shift == kFatJet_jesUp || central_or_shift == kFatJet_jesUp)
+  {
+    attribute_whitelist.push_back("pt");
+  }
+  else if(central_or_shift == kFatJet_jmsUp || central_or_shift == kFatJet_jmsDown ||
+          central_or_shift == kFatJet_jmrUp || central_or_shift == kFatJet_jmrDown)
+  {
+    attribute_whitelist.push_back("msoftdrop_tau21DDT");
+  }
+  else
+  {
+    // includes JER, nominal, non-nominal
+    attribute_whitelist.push_back("pt");
+    attribute_whitelist.push_back("msoftdrop_tau21DDT");
+  }
+  return std::find(attribute_whitelist.cbegin(), attribute_whitelist.cend(), attribute_name) != attribute_whitelist.cend();
+}
+
 int
 getBTagWeight_option(const std::string & central_or_shift)
 {
@@ -107,6 +130,22 @@ getMETsyst_option(const std::string & central_or_shift)
   else if(central_or_shift == "MET_RespDown")  central_or_shift_int = METSyst::respDown;
   else if(central_or_shift == "MET_ResolUp")   central_or_shift_int = METSyst::resolUp;
   else if(central_or_shift == "MET_ResolDown") central_or_shift_int = METSyst::resolDown;
+  return central_or_shift_int;
+}
+
+int
+getFatJet_option(const std::string & central_or_shift,
+                 bool isMC)
+{
+  int central_or_shift_int = isMC ? kFatJet_central : kFatJet_central_nonNominal;
+  if     (central_or_shift == "CMS_ttHl_AK8JESUp"  ) central_or_shift_int = kFatJet_jesUp;
+  else if(central_or_shift == "CMS_ttHl_AK8JESDown") central_or_shift_int = kFatJet_jesDown;
+  else if(central_or_shift == "CMS_ttHl_AK8JERUp"  ) central_or_shift_int = kFatJet_jerUp;
+  else if(central_or_shift == "CMS_ttHl_AK8JERDown") central_or_shift_int = kFatJet_jerDown;
+  else if(central_or_shift == "CMS_ttHl_AK8JMSUp"  ) central_or_shift_int = kFatJet_jmsUp;
+  else if(central_or_shift == "CMS_ttHl_AK8JMSDown") central_or_shift_int = kFatJet_jmsDown;
+  else if(central_or_shift == "CMS_ttHl_AK8JMRUp"  ) central_or_shift_int = kFatJet_jmrUp;
+  else if(central_or_shift == "CMS_ttHl_AK8JMRDown") central_or_shift_int = kFatJet_jmrDown;
   return central_or_shift_int;
 }
 
@@ -477,6 +516,30 @@ getBranchName_jetMET(const std::string & default_branchName,
   assert(branchNames_sys.count(central_or_shift));
   assert(isValidJESsource(era, central_or_shift));
   assert((isJet && central_or_shift != kJetMET_UnclusteredEnUp && central_or_shift != kJetMET_UnclusteredEnDown) || ! isJet);
+  return branchNames_sys.at(central_or_shift);
+}
+
+std::string
+getBranchName_fatJet(const std::string & default_branchName,
+                     const std::string & attribute_name,
+                     int central_or_shift)
+{
+  assert(boost::starts_with(default_branchName, "FatJet"));
+  static std::map<int, std::string> branchNames_sys;
+  branchNames_sys[kFatJet_central_nonNominal] = Form(
+    "%s_%s", default_branchName.data(), attribute_name.data()
+  );
+  branchNames_sys[kFatJet_central] = branchNames_sys[kFatJet_central_nonNominal] + "_nom";
+  branchNames_sys[kFatJet_jesUp]   = branchNames_sys[kFatJet_central_nonNominal] + "_jesTotalUp";
+  branchNames_sys[kFatJet_jesDown] = branchNames_sys[kFatJet_central_nonNominal] + "_jesTotalDown";
+  branchNames_sys[kFatJet_jerUp]   = branchNames_sys[kFatJet_central_nonNominal] + "_jerUp";
+  branchNames_sys[kFatJet_jerDown] = branchNames_sys[kFatJet_central_nonNominal] + "_jerDown";
+  branchNames_sys[kFatJet_jmsUp]   = branchNames_sys[kFatJet_central_nonNominal] + "_jmsUp";
+  branchNames_sys[kFatJet_jmsDown] = branchNames_sys[kFatJet_central_nonNominal] + "_jmsDown";
+  branchNames_sys[kFatJet_jmrUp]   = branchNames_sys[kFatJet_central_nonNominal] + "_jmrUp";
+  branchNames_sys[kFatJet_jmrDown] = branchNames_sys[kFatJet_central_nonNominal] + "_jmrDown";
+  assert(branchNames_sys.count(central_or_shift));
+  assert(isValidFatJetAttribute(central_or_shift, attribute_name));
   return branchNames_sys.at(central_or_shift);
 }
 

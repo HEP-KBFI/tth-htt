@@ -15,16 +15,22 @@ class RecoSubjetWriterAK8;
 class RecoJetWriterAK8
 {
 public:
-  RecoJetWriterAK8(int era);
   RecoJetWriterAK8(int era,
+                   bool isMC);
+  RecoJetWriterAK8(int era,
+                   bool isMC,
                    const std::string & branchName_jet,
                    const std::string & branchName_subjet);
   RecoJetWriterAK8(int era,
+                   bool isMC,
                    const std::string & branchName_num_jet,
-		   const std::string & branchName_jet,
-		   const std::string & branchName_num_subjet,
+                   const std::string & branchName_jet,
+                   const std::string & branchName_num_subjet,
                    const std::string & branchName_subjet);
   ~RecoJetWriterAK8();
+
+  void
+  set_central_or_shift(int central_or_shift);
 
   /**
    * @brief Call tree->Branch for all RecoJetAK8 branches
@@ -52,17 +58,17 @@ protected:
   setBranchNames();
 
   int era_;
+  bool isMC_;
+  int sysOption_central_;
+  int sysOption_;
   const unsigned int max_nJets_;
   std::string branchName_num_;
   std::string branchName_obj_;
 
   RecoSubjetWriterAK8 * subjetWriter_;
 
-  std::string branchName_pt_;
   std::string branchName_eta_;
   std::string branchName_phi_;
-  std::string branchName_mass_;
-  std::string branchName_msoftdrop_;
   std::string branchName_subJetIdx1_;
   std::string branchName_subJetIdx2_;
   std::string branchName_tau1_;
@@ -70,13 +76,17 @@ protected:
   std::string branchName_tau3_;
   std::string branchName_tau4_;
   std::string branchName_jetId_;
+  std::map<int, std::string> branchNames_pt_systematics_;
+  std::map<int, std::string> branchNames_mass_systematics_;
+  std::map<int, std::string> branchNames_msoftdrop_systematics_;
+
+  const std::string pt_str_;
+  const std::string mass_str_;
+  const std::string msoftdrop_str_;
 
   UInt_t nJets_;
-  Float_t * jet_pt_;
   Float_t * jet_eta_;
   Float_t * jet_phi_;
-  Float_t * jet_mass_;
-  Float_t * jet_msoftdrop_;
   Int_t * subjet_idx1_;
   Int_t * subjet_idx2_;
   Float_t * jet_tau1_;
@@ -84,6 +94,9 @@ protected:
   Float_t * jet_tau3_;
   Float_t * jet_tau4_;
   Int_t * jet_jetId_;
+  std::map<int, Float_t *> jet_pt_systematics_;
+  std::map<int, Float_t *> jet_mass_systematics_;
+  std::map<int, Float_t *> jet_msoftdrop_systematics_;
 };
 
 #endif // tthAnalysis_HiggsToTauTau_RecoJetWriterAK8_h
