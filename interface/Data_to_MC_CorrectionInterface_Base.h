@@ -97,6 +97,11 @@ protected:
   bool
   check_triggerSFsys_opt(TriggerSFsys central_or_shift) const;
 
+  double
+  comp_triggerSFsys_opt(double sf,
+                        double sfErr,
+                        TriggerSFsys central_or_shift) const;
+
   //-----------------------------------------------------------------------------
   // data/MC corrections for electron and muon identification and isolation efficiency,
   // including the cut on the ttH multilepton MVA

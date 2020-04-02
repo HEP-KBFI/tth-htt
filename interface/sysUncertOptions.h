@@ -107,11 +107,14 @@ enum class TauIDSFsys
 enum class TriggerSFsys
 {
   central,
-  shiftUp,        shiftDown,
-  shift_2lssUp,   shift_2lssDown,
-  shift_3lUp,     shift_3lDown,
-  shift_1l1tauUp, shift_1l1tauDown,
-  shift_0l2tauUp, shift_0l2tauDown,
+  shiftUp,          shiftDown,
+  shift_2lssUp,     shift_2lssDown,
+  shift_2lssEEUp,   shift_2lssEEDown,
+  shift_2lssEMuUp,  shift_2lssEMuDown,
+  shift_2lssMuMuUp, shift_2lssMuMuDown,
+  shift_3lUp,       shift_3lDown,
+  shift_1l1tauUp,   shift_1l1tauDown,
+  shift_0l2tauUp,   shift_0l2tauDown,
 };
 
 enum class TriggerSFsysChoice

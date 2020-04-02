@@ -51,7 +51,12 @@ class systematics(object):
   MET_ResponseSyst     = [ "MET_RespUp",                      "MET_RespDown"                      ]
   MET_ResolutionSyst   = [ "MET_ResolUp",                     "MET_ResolDown"                     ]
 
-  triggerSF_2lss   = [ "CMS_ttHl_trigger_2lssUp",   "CMS_ttHl_trigger_2lssDown"   ]
+  triggerSF_2lss   = [
+    "CMS_ttHl_trigger_2lssUp",     "CMS_ttHl_trigger_2lssDown",
+    "CMS_ttHl_trigger_2lssEEUp",   "CMS_ttHl_trigger_2lssEEDown",
+    "CMS_ttHl_trigger_2lssEMuUp",  "CMS_ttHl_trigger_2lssEMuDown",
+    "CMS_ttHl_trigger_2lssMuMuUp", "CMS_ttHl_trigger_2lssMuMuDown",
+  ]
   triggerSF_3l     = [ "CMS_ttHl_trigger_3lUp",     "CMS_ttHl_trigger_3lDown"     ]
   triggerSF_1l1tau = [ "CMS_ttHl_trigger_1l1tauUp", "CMS_ttHl_trigger_1l1tauDown" ]
   triggerSF_0l2tau = [ "CMS_ttHl_trigger_0l2tauUp", "CMS_ttHl_trigger_0l2tauDown" ]

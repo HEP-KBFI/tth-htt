@@ -320,8 +320,14 @@ Data_to_MC_CorrectionInterface_Base::check_triggerSFsys_opt(TriggerSFsys central
   {
     return true;
   }
-  if(central_or_shift == TriggerSFsys::shift_2lssUp ||
-     central_or_shift == TriggerSFsys::shift_2lssDown)
+  if(central_or_shift == TriggerSFsys::shift_2lssUp      ||
+     central_or_shift == TriggerSFsys::shift_2lssDown    ||
+     central_or_shift == TriggerSFsys::shift_2lssEEUp    ||
+     central_or_shift == TriggerSFsys::shift_2lssEEDown  ||
+     central_or_shift == TriggerSFsys::shift_2lssEMuUp   ||
+     central_or_shift == TriggerSFsys::shift_2lssEMuDown ||
+     central_or_shift == TriggerSFsys::shift_2lssMuMuUp  ||
+     central_or_shift == TriggerSFsys::shift_2lssMuMuDown)
   {
     return numLeptons_ <= 2 && numHadTaus_ <= 2;
   }
@@ -331,6 +337,39 @@ Data_to_MC_CorrectionInterface_Base::check_triggerSFsys_opt(TriggerSFsys central
     return numLeptons_ >= 3 && numHadTaus_ <= 1;
   }
   return false;
+}
+
+double
+Data_to_MC_CorrectionInterface_Base::comp_triggerSFsys_opt(double sf,
+                                                           double sfErr,
+                                                           TriggerSFsys central_or_shift) const
+{
+  if(central_or_shift == TriggerSFsys::central ||
+     ((central_or_shift == TriggerSFsys::shift_2lssEEUp   || central_or_shift == TriggerSFsys::shift_2lssEEDown  ) && (numElectrons_ != 2 || numMuons_ != 0)) ||
+     ((central_or_shift == TriggerSFsys::shift_2lssEMuUp  || central_or_shift == TriggerSFsys::shift_2lssEMuDown ) && (numElectrons_ != 1 || numMuons_ != 1)) ||
+     ((central_or_shift == TriggerSFsys::shift_2lssMuMuUp || central_or_shift == TriggerSFsys::shift_2lssMuMuDown) && (numElectrons_ != 0 || numMuons_ != 2)))
+  {
+    return sf;
+  }
+  else if(central_or_shift == TriggerSFsys::shiftUp          ||
+          central_or_shift == TriggerSFsys::shift_2lssUp     ||
+          central_or_shift == TriggerSFsys::shift_2lssEEUp   ||
+          central_or_shift == TriggerSFsys::shift_2lssEMuUp  ||
+          central_or_shift == TriggerSFsys::shift_2lssMuMuUp ||
+          central_or_shift == TriggerSFsys::shift_3lUp)
+  {
+    return sf * (1. + sfErr);
+  }
+  else if(central_or_shift == TriggerSFsys::shiftDown          ||
+          central_or_shift == TriggerSFsys::shift_2lssDown     ||
+          central_or_shift == TriggerSFsys::shift_2lssEEDown   ||
+          central_or_shift == TriggerSFsys::shift_2lssEMuDown  ||
+          central_or_shift == TriggerSFsys::shift_2lssMuMuDown ||
+          central_or_shift == TriggerSFsys::shift_3lDown)
+  {
+    return sf * (1. - sfErr);
+  }
+  throw cmsException(this, __func__, __LINE__) << "Invalid option: " << static_cast<int>(central_or_shift);
 }
 
 double
