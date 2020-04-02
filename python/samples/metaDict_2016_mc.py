@@ -2194,7 +2194,7 @@ meta_dictionary["/GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8/RunIISummer16Min
 ])
 
 meta_dictionary["/GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "2016v3_2020Apr01_GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2"),
   ("sample_category",       "ZZ"),
   ("process_name_specific", "ggZZTo4e"),
   ("nof_db_events",         978600),
@@ -2203,11 +2203,11 @@ meta_dictionary["/GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8/RunIISummer16Mini
   ("xsection",              0.00159),
   ("use_it",                True),
   ("genWeight",             True),
-  ("comment",               "status: VALID; size: 40.15GB; nevents: 978.60k; release: 9_4_9; last modified: 2018-12-07 18:43:02"),
+  ("comment",               "100.0%; status: VALID; size: 40.15GB; nevents: 978.60k; release: 9_4_9; last modified: 2018-12-07 18:43:02"),
 ])
 
 meta_dictionary["/GluGluToContinToZZTo2e2tau_13TeV_MCFM701_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "2016v3_2020Apr01_GluGluToContinToZZTo2e2tau_13TeV_MCFM701_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2"),
   ("sample_category",       "ZZ"),
   ("process_name_specific", "ggZZTo2e2tau"),
   ("nof_db_events",         500000),
@@ -2216,7 +2216,7 @@ meta_dictionary["/GluGluToContinToZZTo2e2tau_13TeV_MCFM701_pythia8/RunIISummer16
   ("xsection",              0.00319),
   ("use_it",                True),
   ("genWeight",             True),
-  ("comment",               "status: VALID; size: 18.52GB; nevents: 500.00k; release: 9_4_9; last modified: 2018-11-19 04:13:07"),
+  ("comment",               "60.0%; status: VALID; size: 18.52GB; nevents: 500.00k; release: 9_4_9; last modified: 2018-11-19 04:13:07"),
 ])
 
 meta_dictionary["/GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] =  OD([
@@ -2233,7 +2233,7 @@ meta_dictionary["/GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8/RunIISummer16M
 ])
 
 meta_dictionary["/GluGluToContinToZZTo2mu2tau_13TeV_MCFM701_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "2016v3_2020Apr01_GluGluToContinToZZTo2mu2tau_13TeV_MCFM701_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2"),
   ("sample_category",       "ZZ"),
   ("process_name_specific", "ggZZTo2mu2tau"),
   ("nof_db_events",         499800),
@@ -2242,7 +2242,7 @@ meta_dictionary["/GluGluToContinToZZTo2mu2tau_13TeV_MCFM701_pythia8/RunIISummer1
   ("xsection",              0.00319),
   ("use_it",                True),
   ("genWeight",             True),
-  ("comment",               "status: VALID; size: 17.28GB; nevents: 499.80k; release: 9_4_9; last modified: 2018-11-24 08:42:00"),
+  ("comment",               "100.0%; status: VALID; size: 17.28GB; nevents: 499.80k; release: 9_4_9; last modified: 2018-11-24 08:42:00"),
 ])
 
 meta_dictionary["/QCD_Pt_15to20_bcToE_TuneCUETP8M1_13TeV_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] =  OD([

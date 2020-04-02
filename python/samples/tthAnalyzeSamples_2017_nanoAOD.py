@@ -23437,6 +23437,178 @@ samples_2017["/ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIIFall17MiniAODv2-
   ]),
 ])
 
+samples_2017["/GluGluToContinToZZTo4tau_13TeV_MCFM701_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v2/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "ZZ"),
+  ("process_name_specific",           "ggZZTo4tau_ext1"),
+  ("nof_files",                       5),
+  ("nof_db_files",                    44),
+  ("nof_events",                      {
+  }),
+  ("nof_tree_events",                 476400),
+  ("nof_db_events",                   477200),
+  ("fsize_local",                     699225749), # 699.23MB, avg file size 139.85MB
+  ("fsize_db",                        20745472369), # 20.75GB, avg file size 471.49MB
+  ("use_it",                          True),
+  ("xsection",                        0.00159),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("nof_PSweights",                   4),
+  ("LHE_set",                         ""),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/kaehatah/2017v2_2020Apr01/GluGluToContinToZZTo4tau_13TeV_MCFM701_pythia8/2017v2_2020Apr01_GluGluToContinToZZTo4tau_13TeV_MCFM701_pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v2/200331_214035"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
+samples_2017["/GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v2/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "ZZ"),
+  ("process_name_specific",           "ggZZTo4mu_ext1"),
+  ("nof_files",                       10),
+  ("nof_db_files",                    46),
+  ("nof_events",                      {
+  }),
+  ("nof_tree_events",                 995200),
+  ("nof_db_events",                   1001800),
+  ("fsize_local",                     1573438472), # 1.57GB, avg file size 157.34MB
+  ("fsize_db",                        47080495649), # 47.08GB, avg file size 1.02GB
+  ("use_it",                          True),
+  ("xsection",                        0.00159),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("nof_PSweights",                   4),
+  ("LHE_set",                         ""),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/kaehatah/2017v2_2020Apr01/GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8/2017v2_2020Apr01_GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v2/200331_214347"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
+samples_2017["/GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext2-v1/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "ZZ"),
+  ("process_name_specific",           "ggZZTo4mu_ext2"),
+  ("nof_files",                       10),
+  ("nof_db_files",                    39),
+  ("nof_events",                      {
+  }),
+  ("nof_tree_events",                 960481),
+  ("nof_db_events",                   960481),
+  ("fsize_local",                     1525650861), # 1.53GB, avg file size 152.57MB
+  ("fsize_db",                        45395004312), # 45.40GB, avg file size 1.16GB
+  ("use_it",                          True),
+  ("xsection",                        0.00159),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("nof_PSweights",                   4),
+  ("LHE_set",                         ""),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/kaehatah/2017v2_2020Apr01/GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8/2017v2_2020Apr01_GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext2-v1/200331_214525"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
+samples_2017["/GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext2-v1/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "ZZ"),
+  ("process_name_specific",           "ggZZTo4e_ext2"),
+  ("nof_files",                       9),
+  ("nof_db_files",                    47),
+  ("nof_events",                      {
+  }),
+  ("nof_tree_events",                 566000),
+  ("nof_db_events",                   866000),
+  ("fsize_local",                     1067876360), # 1.07GB, avg file size 118.65MB
+  ("fsize_db",                        45339904259), # 45.34GB, avg file size 964.68MB
+  ("use_it",                          True),
+  ("xsection",                        0.00159),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("nof_PSweights",                   4),
+  ("LHE_set",                         ""),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/kaehatah/2017v2_2020Apr01/GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8/2017v2_2020Apr01_GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext2-v1/200331_215016"),
+        ("selection", "*"),
+        ("blacklist", [1, 4, 5]),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
 samples_2017["/QCD_Pt_20to30_bcToE_TuneCP5_13TeV_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1/MINIAODSIM"] = OD([
   ("type",                            "mc"),
   ("sample_category",                 "QCD"),
@@ -24499,13 +24671,14 @@ samples_2017["sum_events"] = [
   [ 'TTToSemiLeptonic',                                'TTToSemiLeptonic_PSweights',                       ],
   [ 'TTWJets_LO',                                      'TTWJets_LO_ext1',                                  ],
   [ 'GluGluHToMuMu_M125',                              'GluGluHToMuMu_M125_ext1',                          ],
-  [ 'TTZJets_LO',                                      'TTZJets_LO_ext1',                                  ],
   [ 'VBF_HToZZTo4L_ext1',                              'VBF_HToZZTo4L_ext2',                               ],
+  [ 'TTZJets_LO',                                      'TTZJets_LO_ext1',                                  ],
   [ 'ttHToNonbb_M125_powheg',                          'ttHToNonbb_M125_powheg_ext1',                      ],
   [ 'DYBBJetsToLL_M-50',                               'DYBBJetsToLL_M-50_ext1',                           ],
   [ 'ST_tW_antitop_5f_inclusiveDecays',                'ST_tW_antitop_5f_inclusiveDecays_PSweights',       ],
   [ 'GluGluHToZZTo4L_ext1',                            'GluGluHToZZTo4L_ext3',                            'GluGluHToZZTo4L_ext4',                             ],
   [ 'DYJetsToLL_M50_HT400to600',                       'DYJetsToLL_M50_HT400to600_ext1',                   ],
+  [ 'ggZZTo4mu_ext1',                                  'ggZZTo4mu_ext2',                                   ],
   [ 'DYJetsToLL_M-50',                                 'DYJetsToLL_M-50_ext1',                             ],
   [ 'DYJetsToLL_M-50_amcatnloFXFX',                    'DYJetsToLL_M-50_amcatnloFXFX_ext1',                ],
   [ 'DYJetsToLL_M-4to50_HT-100to200',                  'DYJetsToLL_M-4to50_HT-100to200_ext1',              ],
