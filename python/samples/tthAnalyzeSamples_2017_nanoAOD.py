@@ -24500,7 +24500,7 @@ samples_2017["sum_events"] = [
   [ 'TTWJets_LO',                                      'TTWJets_LO_ext1',                                  ],
   [ 'GluGluHToMuMu_M125',                              'GluGluHToMuMu_M125_ext1',                          ],
   [ 'TTZJets_LO',                                      'TTZJets_LO_ext1',                                  ],
-  [ 'VBF_HToZZTo4L',                                   'VBF_HToZZTo4L_ext1',                              'VBF_HToZZTo4L_ext2',                               ],
+  [ 'VBF_HToZZTo4L_ext1',                              'VBF_HToZZTo4L_ext2',                               ],
   [ 'ttHToNonbb_M125_powheg',                          'ttHToNonbb_M125_powheg_ext1',                      ],
   [ 'DYBBJetsToLL_M-50',                               'DYBBJetsToLL_M-50_ext1',                           ],
   [ 'ST_tW_antitop_5f_inclusiveDecays',                'ST_tW_antitop_5f_inclusiveDecays_PSweights',       ],

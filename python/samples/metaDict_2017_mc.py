@@ -13,7 +13,7 @@ sum_events = {
   ("GluGluHToTauTau", "GluGluHToTauTau_ext1"),
   ("GluGluHToZZTo4L_ext1", "GluGluHToZZTo4L_ext3", "GluGluHToZZTo4L_ext4"),
   ("GluGluHToMuMu_M125", "GluGluHToMuMu_M125_ext1"),
-  ("VBF_HToZZTo4L", "VBF_HToZZTo4L_ext1", "VBF_HToZZTo4L_ext2"),
+  ("VBF_HToZZTo4L_ext1", "VBF_HToZZTo4L_ext2"),
   ("VBFHToGG_M125", "VBFHToGG_M125_PSWeights_ext1"),
   ("TTZToLL_M10", "TTZToLL_M10_PSweights"),
   ("TTZJets_LO", "TTZJets_LO_ext1"),
