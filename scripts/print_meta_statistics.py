@@ -8,6 +8,12 @@ import importlib
 import collections
 import prettytable
 
+ANALYSES = {
+  'tth'            : 'tthAnalysis.HiggsToTauTau',
+  'hh_multilepton' : 'hhAnalysis.multilepton',
+  'hh_bbww'        : 'hhAnalysis.bbww',
+}
+
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(
     formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 55)
@@ -16,13 +22,17 @@ if __name__ == '__main__':
     type = str, dest = 'era', metavar = 'year', required = True, choices = [ '2016', '2017', '2018' ],
     help = 'R|Era',
   )
+  parser.add_argument('-a', '--analysis',
+    type = str, dest = 'analysis', metavar = 'type', required = False, choices = ANALYSES.keys(), default = 'tth',
+    help = 'R|Analysis type',
+  )
   parser.add_argument('-s', '--suffix',
     type = str, dest = 'suffix', metavar = 'string', required = False, default = '',
     help = 'R|Suffix',
   )
   args = parser.parse_args()
 
-  sample_module_str = 'tthAnalysis.HiggsToTauTau.samples.metaDict_{}'.format(args.era)
+  sample_module_str = '{}.samples.metaDict_{}'.format(ANALYSES[args.analysis], args.era)
   if args.suffix:
     sample_module_str += '_{}'.format(args.suffix)
   sample_module = importlib.import_module(sample_module_str)
