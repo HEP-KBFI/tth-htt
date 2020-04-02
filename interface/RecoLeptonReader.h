@@ -114,6 +114,7 @@ protected:
   std::string branchName_genMatchIdx_;
 
   std::map<Btag, std::string> branchNames_jetBtagCSV_;
+  std::map<Btag, std::string> branchNames_assocJetBtagCSV_;
 
   UInt_t nLeptons_;
   Float_t * pt_;
@@ -140,6 +141,7 @@ protected:
   Int_t * genMatchIdx_;
 
   std::map<Btag, Float_t *> jetBtagCSVs_;
+  std::map<Btag, Float_t *> assocJetBtagCSVs_;
 
   // CV: make sure that only one RecoLeptonReader instance exists for a given branchName,
   //     as ROOT cannot handle multiple TTree::SetBranchAddress calls for the same branch.

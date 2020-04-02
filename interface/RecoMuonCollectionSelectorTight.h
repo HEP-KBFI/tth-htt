@@ -20,8 +20,9 @@ public:
   void set_min_cone_pt(double min_cone_pt);
   void set_max_absEta(double max_absEta);
 
-  void
-  set_selection_flags(bool selection_flags);
+  void set_selection_flags(bool selection_flags);
+
+  void set_assocJetBtag(bool flag);
 
   /**
    * @brief Get cut thresholds
@@ -53,6 +54,7 @@ protected:
   const bool apply_looseIdPOG_;   ///< apply (True) or do not apply (False) loose PFMuon id selection
   const bool apply_mediumIdPOG_;  ///< apply (True) or do not apply (False) medium PFMuon id selection
   const Double_t max_jetBtagCSV_; ///< upper cut threshold on CSV b-tagging discriminator value of nearby jet
+  bool useAssocJetBtag_;          ///< if true, use finalJets instead of updatedJets
 };
 
 class RecoMuonCollectionSelectorTight

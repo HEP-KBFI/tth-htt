@@ -97,6 +97,10 @@ RecoLeptonReader::~RecoLeptonReader()
     {
       delete[] kv.second;
     }
+    for(auto & kv: gInstance->assocJetBtagCSVs_)
+    {
+      delete[] kv.second;
+    }
 
     instances_[branchName_obj_] = nullptr;
   }
@@ -133,6 +137,7 @@ RecoLeptonReader::setBranchNames()
         case Btag::kDeepJet: btag_str = "DeepJet"; break;
       }
       branchNames_jetBtagCSV_[btag] = Form("%s_jetBTag%s", branchName_obj_.data(), btag_str.data());
+      branchNames_assocJetBtagCSV_[btag] = Form("%s_assocJetBtag_%s", branchName_obj_.data(), btag_str.data());
     }
     branchName_tightCharge_ = Form("%s_%s", branchName_obj_.data(), "tightCharge");
     branchName_charge_ = Form("%s_%s", branchName_obj_.data(), "charge");
@@ -189,6 +194,12 @@ RecoLeptonReader::setBranchAddresses(TTree * tree)
     {
       bai.setBranchAddress(jetBtagCSVs_[kv.first], kv.second);
     }
+    bai.ignoreErrors(true);
+    for(const auto & kv: branchNames_assocJetBtagCSV_)
+    {
+      bai.setBranchAddress(assocJetBtagCSVs_[kv.first], kv.second);
+    }
+    bai.ignoreErrors(false);
     bai.setBranchAddress(jetNDauChargedMVASel_, branchName_jetNDauChargedMVASel_, -1);
     bai.setBranchAddress(tightCharge_, branchName_tightCharge_);
     bai.setBranchAddress(charge_, branchName_charge_);

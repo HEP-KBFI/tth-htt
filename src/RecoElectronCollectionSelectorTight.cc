@@ -26,6 +26,7 @@ RecoElectronSelectorTight::RecoElectronSelectorTight(int era,
   , max_jetBtagCSV_(get_BtagWP(era_, Btag::kDeepJet, BtagWP::kMedium)) // F
   , max_nLostHits_(0) // F
   , apply_conversionVeto_(true) // F
+  , useAssocJetBtag_(false)
 {
   // L -- inherited from the preselection (loose cut)
   // F -- inherited from the fakeable selection
@@ -99,6 +100,12 @@ RecoElectronSelectorTight::set_selection_flags(bool selection_flag)
   set_selection_flags_ = selection_flag;
 }
 
+void
+RecoElectronSelectorTight::set_assocJetBtag(bool flag)
+{
+  useAssocJetBtag_ = flag;
+}
+
 bool
 RecoElectronSelectorTight::operator()(const RecoElectron & electron) const
 {
@@ -163,11 +170,11 @@ RecoElectronSelectorTight::operator()(const RecoElectron & electron) const
     }
     return false;
   }
-  if(electron.jetBtagCSV() > max_jetBtagCSV_)
+  if(electron.jetBtagCSV(useAssocJetBtag_) > max_jetBtagCSV_)
   {
     if(debug_)
     {
-      std::cout << "FAILS jetBtagCSV = " << electron.jetBtagCSV() << " <= " << max_jetBtagCSV_ << " tight cut\n";
+      std::cout << "FAILS jetBtagCSV = " << electron.jetBtagCSV(useAssocJetBtag_) << " <= " << max_jetBtagCSV_ << " tight cut\n";
     }
     return false;
   }

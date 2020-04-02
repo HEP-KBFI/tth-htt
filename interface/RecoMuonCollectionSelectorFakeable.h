@@ -20,8 +20,9 @@ public:
   void set_min_cone_pt(double min_cone_pt);
   void set_max_absEta(double max_absEta);
 
-  void
-  set_selection_flags(bool selection_flags);
+  void set_selection_flags(bool selection_flags);
+
+  void set_assocJetBtag(bool flag);
 
   /**
    * @brief Get cut thresholds
@@ -61,6 +62,8 @@ protected:
   const Double_t smoothBtagCut_minPt_;
   const Double_t smoothBtagCut_maxPt_;
   const Double_t smoothBtagCut_ptDiff_;
+//-------------------------------------------------------------------------------
+  bool useAssocJetBtag_;                    ///< if true, use finalJets instead of updatedJets
 
   double
   smoothBtagCut(double assocJet_pt) const;
