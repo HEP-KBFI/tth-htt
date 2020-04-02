@@ -572,9 +572,10 @@ class analyzeConfig(object):
       run_ps = sample_info["nof_PSweights"] == 4
       is_HHmc = sample_category.startswith("signal") or sample_category == "HH"
       is_ttbar_sys = sample_info["sample_category"] in systematics.TTbar().full
+      ttHProcs = self.ttHProcs + [ "TTH" ]
 
       if central_or_shift in systematics.LHE().full           and not has_LHE:                                 return False
-      if central_or_shift in systematics.LHE().ttH            and sample_category not in self.ttHProcs:        return False
+      if central_or_shift in systematics.LHE().ttH            and sample_category not in ttHProcs:             return False
       if central_or_shift in systematics.LHE().tHq            and sample_category not in [ "tHq", "TH" ]:      return False
       if central_or_shift in systematics.LHE().tHW            and sample_category not in [ "tHW", "TH" ]:      return False
       if central_or_shift in systematics.LHE().ttW            and sample_category not in [ "TTW", "TTWW" ]:    return False
