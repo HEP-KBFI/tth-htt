@@ -17569,57 +17569,6 @@ samples_2017["/VBFHToTauTau_M125_13TeV_powheg_pythia8/RunIIFall17MiniAODv2-PU201
   ]),
 ])
 
-samples_2017["/VBF_HToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM"] = OD([
-  ("type",                            "mc"),
-  ("sample_category",                 "qqH"),
-  ("process_name_specific",           "VBF_HToZZTo4L"),
-  ("nof_files",                       1),
-  ("nof_db_files",                    53),
-  ("nof_events",                      {
-    'Count'                                                                          : [       234800, ],
-    'CountWeighted'                                                                  : [       234507,       234524,       234478, ],
-    'CountWeightedLHEWeightScale'                                                    : [       233032,       233705,       235753,       234375,       234505,       235848,       235454,       235189,       235923, ],
-    'CountWeightedLHEEnvelope'                                                       : [       246093,       222658, ],
-    'CountWeightedL1PrefireNom'                                                      : [       222568,       222548,       222579, ],
-    'CountWeightedL1Prefire'                                                         : [       222568,       219760,       225350, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom'                                        : [       221177,       221805,       223735,       222404,       222563,       223846,       223389,       223194,       223933, ],
-    'CountWeightedLHEEnvelopeL1PrefireNom'                                           : [       233559,       211345, ],
-  }),
-  ("nof_tree_events",                 141698),
-  ("nof_db_events",                   981285),
-  ("fsize_local",                     527185745), # 527.19MB, avg file size 527.19MB
-  ("fsize_db",                        50160648576), # 50.16GB, avg file size 946.43MB
-  ("use_it",                          True),
-  ("xsection",                        0.0010099),
-  ("genWeight",                       True),
-  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
-  ("nof_PSweights",                   1),
-  ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
-  ("nof_reweighting",                 0),
-  ("local_paths",
-    [
-      OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2020Mar12_wPresel_nom_all/ntuples/VBF_HToZZTo4L"),
-        ("selection", "*"),
-        ("blacklist", []),
-      ]),
-    ]
-  ),
-  ("missing_completely",           [
-    # not computed
-  ]),
-  ("missing_from_superset",        [
-    # not computed
-  ]),
-  ("missing_hlt_paths",            [
-
-  ]),
-  ("hlt_paths",                    [
-    # not computed
-  ]),
-])
-
 samples_2017["/VBF_HToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1/MINIAODSIM"] = OD([
   ("type",                            "mc"),
   ("sample_category",                 "qqH"),
@@ -26153,7 +26102,7 @@ samples_2017["sum_events"] = [
   [ 'TTWJets_LO',                                      'TTWJets_LO_ext1',                                  ],
   [ 'GluGluHToMuMu_M125',                              'GluGluHToMuMu_M125_ext1',                          ],
   [ 'TTZJets_LO',                                      'TTZJets_LO_ext1',                                  ],
-  [ 'VBF_HToZZTo4L',                                   'VBF_HToZZTo4L_ext1',                              'VBF_HToZZTo4L_ext2',                               ],
+  [ 'VBF_HToZZTo4L_ext1',                              'VBF_HToZZTo4L_ext2',                               ],
   [ 'ttHToNonbb_M125_powheg',                          'ttHToNonbb_M125_powheg_ext1',                      ],
   [ 'DYBBJetsToLL_M-50',                               'DYBBJetsToLL_M-50_ext1',                           ],
   [ 'ST_tW_antitop_5f_inclusiveDecays',                'ST_tW_antitop_5f_inclusiveDecays_PSweights',       ],

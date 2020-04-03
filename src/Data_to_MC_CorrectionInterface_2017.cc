@@ -155,21 +155,5 @@ Data_to_MC_CorrectionInterface_2017::getSF_leptonTriggerEff(TriggerSFsys central
   }
 
   sfErr /= 100.;
-  if(central_or_shift == TriggerSFsys::central)
-  {
-    return sf;
-  }
-  else if(central_or_shift == TriggerSFsys::shiftUp      ||
-          central_or_shift == TriggerSFsys::shift_2lssUp ||
-          central_or_shift == TriggerSFsys::shift_3lUp)
-  {
-    return sf * (1. + sfErr);
-  }
-  else if(central_or_shift == TriggerSFsys::shiftDown      ||
-          central_or_shift == TriggerSFsys::shift_2lssDown ||
-          central_or_shift == TriggerSFsys::shift_3lDown)
-  {
-    return sf * (1. - sfErr);
-  }
-  throw cmsException(this, __func__, __LINE__) << "Invalid option: " << static_cast<int>(central_or_shift);
+  return comp_triggerSFsys_opt(sf, sfErr, central_or_shift);
 }

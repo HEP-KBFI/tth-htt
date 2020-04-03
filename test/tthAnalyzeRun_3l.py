@@ -16,8 +16,8 @@ import re
 mode_choices     = [
   'default', 'addMEM', 'forBDTtraining_beforeAddMEM', 'forBDTtraining_afterAddMEM', 'sync', 'sync_wMEM'
 ]
-sys_choices      = [ 'full', 'internal' ] + systematics.an_extended_opts + [ 'MEM_3l' ]
-systematics.full = systematics.an_extended
+sys_choices      = [ 'full', 'internal' ] + systematics.an_tth_opts + [ 'MEM_3l' ]
+systematics.full = systematics.an_tth
 systematics.internal = systematics.an_internal_no_mem
 
 parser = tthAnalyzeParser()

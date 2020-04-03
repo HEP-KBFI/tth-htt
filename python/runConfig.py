@@ -238,7 +238,7 @@ class tthAnalyzeParser(argparse.ArgumentParser):
       help = 'R|Enable regrouped JEC/JER',
     )
 
-  def add_split_trigger_sys(self, default = 'no'):
+  def add_split_trigger_sys(self, default = 'both'):
     choices = [ 'yes', 'no', 'both' ]
     assert(default in choices)
     self.add_argument('-T', '--split-trigger-sys',

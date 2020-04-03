@@ -13,7 +13,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetBase.h" // RecoJetBase
 #include "tthAnalysis/HiggsToTauTau/interface/RecoSubjetAK8.h" // RecoSubjetAK8
 
-#include <memory> // std::shared_ptr
+#include <memory> // std::shared_ptr<>
+#include <map> // std::map<,>
 
 class RecoJetAK8
   : public RecoJetBase
@@ -21,15 +22,16 @@ class RecoJetAK8
 public:
   RecoJetAK8() = default;
   RecoJetAK8(const GenJet & particle,
-	      Double_t msoftdrop,
-	      const RecoSubjetAK8* subJet1,
-	      const RecoSubjetAK8* subJet2,
-	      Double_t tau1,
-	      Double_t tau2,
-	      Double_t tau3,
-	      Double_t tau4,
-	      Int_t jetId,
-	      Int_t idx);
+              Double_t msoftdrop,
+              const RecoSubjetAK8* subJet1,
+              const RecoSubjetAK8* subJet2,
+              Double_t tau1,
+              Double_t tau2,
+              Double_t tau3,
+              Double_t tau4,
+              Int_t jetId,
+              Int_t idx,
+              Int_t central_or_shift);
 
   virtual ~RecoJetAK8();
 
@@ -45,6 +47,10 @@ public:
   Double_t tau3() const;
   Double_t tau4() const;
   Int_t jetId() const;
+  Int_t get_default_systematics() const;
+
+  friend class RecoJetReaderAK8;
+  friend class RecoJetWriterAK8;
 
 protected: 
   Double_t msoftdrop_;
@@ -55,6 +61,14 @@ protected:
   Double_t tau3_;
   Double_t tau4_;
   Int_t jetId_;   ///< jet ID, as explained in https://twiki.cern.ch/twiki/bin/view/CMS/JetID13TeVRun2017
+
+//---------------------------------------------------------
+// needed by RecoJetWriter
+  std::map<int, Double_t> pt_systematics_;
+  std::map<int, Double_t> mass_systematics_;
+  std::map<int, Double_t> msoftdrop_systematics_;
+  int default_systematics_;
+//---------------------------------------------------------
 };
 
 std::ostream &

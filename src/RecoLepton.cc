@@ -231,21 +231,22 @@ RecoLepton::jetPtRel() const
 }
 
 Double_t
-RecoLepton::jetBtagCSV() const
+RecoLepton::jetBtagCSV(bool doAssoc) const
 {
-  return jetBtagCSV(Btag::kDeepJet);
+  return jetBtagCSV(Btag::kDeepJet, doAssoc);
 }
 
 Double_t
-RecoLepton::jetBtagCSV(Btag btag) const
+RecoLepton::jetBtagCSV(Btag btag,
+                       bool doAssoc) const
 {
-  if(! hasJetBtagCSV(btag))
+  if(! hasJetBtagCSV(btag, doAssoc))
   {
     throw cmsException(this, __func__, __LINE__)
       << "b-tagging discriminator not available: " << as_integer(btag)
     ;
   }
-  return jetBtagCSVs_.at(btag);
+  return doAssoc ? assocJetBtagCSVs_.at(btag) : jetBtagCSVs_.at(btag);
 }
 
 Int_t
@@ -309,9 +310,10 @@ RecoLepton::genJet() const
 }
 
 bool
-RecoLepton::hasJetBtagCSV(Btag btag) const
+RecoLepton::hasJetBtagCSV(Btag btag,
+                          bool doAssoc) const
 {
-  return jetBtagCSVs_.count(btag);
+  return doAssoc ? assocJetBtagCSVs_.count(btag) : jetBtagCSVs_.count(btag);
 }
 
 bool

@@ -572,9 +572,10 @@ class analyzeConfig(object):
       run_ps = sample_info["nof_PSweights"] == 4
       is_HHmc = sample_category.startswith("signal") or sample_category == "HH"
       is_ttbar_sys = sample_info["sample_category"] in systematics.TTbar().full
+      ttHProcs = self.ttHProcs + [ "TTH" ]
 
       if central_or_shift in systematics.LHE().full           and not has_LHE:                                 return False
-      if central_or_shift in systematics.LHE().ttH            and sample_category not in self.ttHProcs:        return False
+      if central_or_shift in systematics.LHE().ttH            and sample_category not in ttHProcs:             return False
       if central_or_shift in systematics.LHE().tHq            and sample_category not in [ "tHq", "TH" ]:      return False
       if central_or_shift in systematics.LHE().tHW            and sample_category not in [ "tHW", "TH" ]:      return False
       if central_or_shift in systematics.LHE().ttW            and sample_category not in [ "TTW", "TTWW" ]:    return False
@@ -812,7 +813,9 @@ class analyzeConfig(object):
             assert('skipEvery' not in jobOptions)
             jobOptions['skipEvery'] = sample_info['skipEvery']
         if 'useObjectMultiplicity' not in jobOptions:
-            jobOptions['useObjectMultiplicity'] = self.do_sync
+            jobOptions['useObjectMultiplicity'] = False
+        if 'useAssocJetBtag' not in jobOptions:
+            jobOptions['useAssocJetBtag'] = False
 
         jobOptions_local = [
             'process',
@@ -885,6 +888,7 @@ class analyzeConfig(object):
             'minNumJets',
             'skipEvery',
             'apply_topPtReweighting',
+            'useAssocJetBtag',
         ]
         jobOptions_typeMapping = {
           'central_or_shifts_local' : 'cms.vstring(%s)',

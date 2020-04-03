@@ -11,8 +11,8 @@ RecoElectronSelectorFakeable::RecoElectronSelectorFakeable(int era,
   , debug_(debug)
   , set_selection_flags_(set_selection_flags)
   , apply_offline_e_trigger_cuts_(true)
-  , min_cone_pt_(10.) // F
   , min_lepton_pt_(7.) // L
+  , min_cone_pt_(10.) // F
   , max_absEta_(2.5) // L
   , max_dxy_(0.05) // L
   , max_dz_(0.1) // L
@@ -27,6 +27,7 @@ RecoElectronSelectorFakeable::RecoElectronSelectorFakeable(int era,
   , max_jetBtagCSV_(get_BtagWP(era_, Btag::kDeepJet, BtagWP::kMedium)) // F
   , apply_conversionVeto_(true) // F
   , max_nLostHits_(0) // F
+  , useAssocJetBtag_(false)
 {
   // L -- inherited from the preselection (loose cut)
   // F -- additional fakeable cut not applied in the preselection
@@ -66,6 +67,12 @@ void
 RecoElectronSelectorFakeable::set_selection_flags(bool selection_flags)
 {
   set_selection_flags_ = selection_flags;
+}
+
+void
+RecoElectronSelectorFakeable::set_assocJetBtag(bool flag)
+{
+  useAssocJetBtag_ = flag;
 }
 
 double
@@ -183,11 +190,11 @@ RecoElectronSelectorFakeable::operator()(const RecoElectron & electron) const
     return false;
   }
 
-  if(electron.jetBtagCSV() > max_jetBtagCSV_)
+  if(electron.jetBtagCSV(useAssocJetBtag_) > max_jetBtagCSV_)
   {
     if(debug_)
     {
-      std::cout << "FAILS jetBtagCSV = " << electron.jetBtagCSV() << " <= " << max_jetBtagCSV_ << " fakeable cut\n";
+      std::cout << "FAILS jetBtagCSV = " << electron.jetBtagCSV(useAssocJetBtag_) << " <= " << max_jetBtagCSV_ << " fakeable cut\n";
     }
     return false;
   }

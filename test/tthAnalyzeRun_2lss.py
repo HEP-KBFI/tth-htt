@@ -13,8 +13,8 @@ import getpass
 # E.g. to run: ./test/tthAnalyzeRun_2lss.py -v 2017Dec13 -m default -e 2017
 
 mode_choices     = [ 'default', 'forBDTtraining', 'sync' ]
-sys_choices      = [ 'full', 'internal' ] + systematics.an_extended_opts
-systematics.full = systematics.an_extended
+sys_choices      = [ 'full', 'internal' ] + systematics.an_tth_opts
+systematics.full = systematics.an_tth
 systematics.internal = systematics.an_internal_no_mem
 
 parser = tthAnalyzeParser()

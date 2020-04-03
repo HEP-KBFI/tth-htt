@@ -56,6 +56,16 @@ enum
                                    kJetMET_jesHEMDown,
 };
 
+enum
+{
+  kFatJet_central_nonNominal,     // for data and sync Ntuples
+  kFatJet_central   ,             // for MC
+  kFatJet_jesUp, kFatJet_jesDown, // total JES
+  kFatJet_jerUp, kFatJet_jerDown, // total JER
+  kFatJet_jmsUp, kFatJet_jmsDown, // mass scale
+  kFatJet_jmrUp, kFatJet_jmrDown, // mass resolution
+};
+
 enum class METSyst
 {
   central,
@@ -107,11 +117,14 @@ enum class TauIDSFsys
 enum class TriggerSFsys
 {
   central,
-  shiftUp,        shiftDown,
-  shift_2lssUp,   shift_2lssDown,
-  shift_3lUp,     shift_3lDown,
-  shift_1l1tauUp, shift_1l1tauDown,
-  shift_0l2tauUp, shift_0l2tauDown,
+  shiftUp,          shiftDown,
+  shift_2lssUp,     shift_2lssDown,
+  shift_2lssEEUp,   shift_2lssEEDown,
+  shift_2lssEMuUp,  shift_2lssEMuDown,
+  shift_2lssMuMuUp, shift_2lssMuMuDown,
+  shift_3lUp,       shift_3lDown,
+  shift_1l1tauUp,   shift_1l1tauDown,
+  shift_0l2tauUp,   shift_0l2tauDown,
 };
 
 enum class TriggerSFsysChoice
@@ -218,6 +231,10 @@ bool
 isValidJESsource(int era,
                  int central_or_shift);
 
+bool
+isValidFatJetAttribute(int central_or_shift,
+                       const std::string & attribute_name);
+
 /**
  * @brief Return branchName to read weights that need to be applied, per jet, to MC events
  *       in order to correct for data/MC differences in b-tagging efficiency and mistag rates
@@ -235,6 +252,10 @@ getMET_option(const std::string & central_or_shift,
 
 METSyst
 getMETsyst_option(const std::string & central_or_shift);
+
+int
+getFatJet_option(const std::string & central_or_shift,
+                 bool isMC);
 
 int
 getHadTauPt_option(const std::string & central_or_shift);
@@ -316,6 +337,11 @@ getBranchName_jetMET(const std::string & default_branchName,
                      int era,
                      int central_or_shift,
                      bool isPt);
+
+std::string
+getBranchName_fatJet(const std::string & default_branchName,
+                     const std::string & attribute_name,
+                     int central_or_shift);
 
 /**
  * @brief Return branch name to read PU weights

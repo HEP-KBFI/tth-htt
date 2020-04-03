@@ -135,8 +135,8 @@ public:
   Double_t jetPtRatio() const;
   Double_t jetRelIso() const;
   Double_t jetPtRel() const;
-  Double_t jetBtagCSV() const;
-  Double_t jetBtagCSV(Btag btag) const;
+  Double_t jetBtagCSV(bool doAssoc = false) const;
+  Double_t jetBtagCSV(Btag btag, bool doAssoc = false) const;
   Int_t jetNDauChargedMVASel() const;
   Int_t tightCharge() const;
   UInt_t filterBits() const;
@@ -149,7 +149,7 @@ public:
   const GenPhoton * genPhoton() const;
   const GenJet * genJet() const;
 
-  bool hasJetBtagCSV(Btag btag) const;
+  bool hasJetBtagCSV(Btag btag, bool doAssoc = false) const;
 
   bool isGenMatched(bool requireChargeMatch) const;
   bool hasAnyGenMatch() const;
@@ -183,7 +183,8 @@ protected:
   Int_t genMatchIdx_;           ///< index to matched gen particle (-1 if no match)
   Double_t mvaRawTTH_cut_;      ///< cut on prompt lepton MVA score
 
-  std::map<Btag, Double_t> jetBtagCSVs_; ///< CSV b-tagging discriminator values of nearby jet
+  std::map<Btag, Double_t> jetBtagCSVs_; ///< CSV b-tagging discriminator values of nearby jet as used in prompt lepton MVA
+  std::map<Btag, Double_t> assocJetBtagCSVs_; ///< CSV b-tagging discriminator values of nearby jet found via jetIdx branch
 
   Double_t assocJet_pt_;
   Particle::LorentzVector assocJet_p4_;

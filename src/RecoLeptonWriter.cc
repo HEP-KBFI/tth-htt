@@ -86,6 +86,10 @@ RecoLeptonWriter::~RecoLeptonWriter()
   {
     delete[] kv.second;
   }
+  for(auto & kv: assocJetBtagCSVs_)
+  {
+    delete[] kv.second;
+  }
 }
 
 void RecoLeptonWriter::setBranchNames()
@@ -115,6 +119,7 @@ void RecoLeptonWriter::setBranchNames()
       case Btag::kDeepJet: btag_str = "DeepJet"; break;
     }
     branchNames_jetBtagCSV_[btag] = Form("%s_jetBTag%s", branchName_obj_.data(), btag_str.data());
+    branchNames_assocJetBtagCSV_[btag] = Form("%s_assocJetBtag_%s", branchName_obj_.data(), btag_str.data());
   }
   branchName_jetNDauChargedMVASel_ = Form("%s_%s", branchName_obj_.data(), "jetNDauChargedMVASel");
   branchName_tightCharge_ = Form("%s_%s", branchName_obj_.data(), "tightCharge");
@@ -154,6 +159,10 @@ void RecoLeptonWriter::setBranches(TTree * tree)
   for(const auto & kv: branchNames_jetBtagCSV_)
   {
     bai.setBranch(jetBtagCSVs_[kv.first], kv.second);
+  }
+  for(const auto & kv: branchNames_assocJetBtagCSV_)
+  {
+    bai.setBranch(assocJetBtagCSVs_[kv.first], kv.second);
   }
   bai.setBranch(jetNDauChargedMVASel_, branchName_jetNDauChargedMVASel_);
   bai.setBranch(tightCharge_, branchName_tightCharge_);

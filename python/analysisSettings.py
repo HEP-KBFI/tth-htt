@@ -51,7 +51,12 @@ class systematics(object):
   MET_ResponseSyst     = [ "MET_RespUp",                      "MET_RespDown"                      ]
   MET_ResolutionSyst   = [ "MET_ResolUp",                     "MET_ResolDown"                     ]
 
-  triggerSF_2lss   = [ "CMS_ttHl_trigger_2lssUp",   "CMS_ttHl_trigger_2lssDown"   ]
+  triggerSF_2lss   = [
+    "CMS_ttHl_trigger_2lssUp",     "CMS_ttHl_trigger_2lssDown",
+    "CMS_ttHl_trigger_2lssEEUp",   "CMS_ttHl_trigger_2lssEEDown",
+    "CMS_ttHl_trigger_2lssEMuUp",  "CMS_ttHl_trigger_2lssEMuDown",
+    "CMS_ttHl_trigger_2lssMuMuUp", "CMS_ttHl_trigger_2lssMuMuDown",
+  ]
   triggerSF_3l     = [ "CMS_ttHl_trigger_3lUp",     "CMS_ttHl_trigger_3lDown"     ]
   triggerSF_1l1tau = [ "CMS_ttHl_trigger_1l1tauUp", "CMS_ttHl_trigger_1l1tauDown" ]
   triggerSF_0l2tau = [ "CMS_ttHl_trigger_0l2tauUp", "CMS_ttHl_trigger_0l2tauDown" ]
@@ -82,6 +87,12 @@ class systematics(object):
     "CMS_ttHl_JERForwardLowPtUp",  "CMS_ttHl_JERForwardLowPtDown",
     "CMS_ttHl_JERForwardHighPtUp", "CMS_ttHl_JERForwardHighPtDown",
   ]
+
+  AK8_JES = [ "CMS_ttHl_AK8JESUp", "CMS_ttHl_AK8JESDown" ]
+  AK8_JER = [ "CMS_ttHl_AK8JERUp", "CMS_ttHl_AK8JERDown" ]
+  AK8_JMS = [ "CMS_ttHl_AK8JMSUp", "CMS_ttHl_AK8JMSDown" ]
+  AK8_JMR = [ "CMS_ttHl_AK8JMRUp", "CMS_ttHl_AK8JMRDown" ]
+  AK8 = AK8_JES + AK8_JER + AK8_JMS + AK8_JMR
 
   MEM_3l        = [ "CMS_ttHl_MEM_3l_LRUp",        "CMS_ttHl_MEM_3l_LRDown"        ]
   MEM_2lss_1tau = [ "CMS_ttHl_MEM_2lss_1tau_LRUp", "CMS_ttHl_MEM_2lss_1tau_LRDown" ]
@@ -498,27 +509,21 @@ class systematics(object):
   an_chargeFlip_mu      =    central +  muon_E
   an_chargeFlip_mu_opts = [ "central", "muon_E" ]
 
-  an_common      =    central +  JES +  JER +  tauES +  leptonIDSF +  tauIDSF +  UnclusteredEn +  btag +  FR_t +  lhe +  \
-                      triggerSF +  PU +  DYMCReweighting +  DYMCNormScaleFactors  + L1PreFiring + EWK_jet + EWK_bjet + \
-                      partonShower
-  an_common_opts = [
-    "central", "JES", "JER", "tauES", "leptonIDSF", "tauIDSF", "UnclusteredEn", "btag", "FR_t", "lhe",
-    "triggerSF", "PU", "DYMCReweighting", "DYMCNormScaleFactors", "L1PreFiring", "EWK_jet", "EWK_bjet",
-    "partonShower",
+  an_tth = central + JES + JER + tauES + leptonIDSF + tauIDSF + UnclusteredEn + btag + FR_t + FRe_shape + FRm_shape + \
+           lhe + triggerSF + PU + DYMCReweighting + DYMCNormScaleFactors + L1PreFiring + EWK_jet + EWK_bjet + partonShower
+  an_tth_opts = [
+    "central", "JES", "JER", "tauES", "leptonIDSF", "tauIDSF", "UnclusteredEn", "btag", "FR_t", "FRe_shape", "FRm_shape",
+    "lhe", "triggerSF", "PU", "DYMCReweighting", "DYMCNormScaleFactors", "L1PreFiring", "EWK_jet", "EWK_bjet", "partonShower",
   ]
-  # CV: enable the CMS_ttHl_FRe_shape and CMS_ttHl_FRm_shape only if you plan to run compShapeSyst 1!
-  an_extended      = an_common      +    FRe_shape +  FRm_shape
-  an_extended_opts = an_common_opts + [ "FRe_shape", "FRm_shape" ]
 
   an_inclusive      =    central +  JES +  JER +  tauES +  UnclusteredEn +  btag
   an_inclusive_opts = [ "central", "JES", "JER", "tauES", "UnclusteredEn", "btag" ]
 
-  # Karl: for HH analysis only
-  #TODO add ttbar one the Ntuples are ready
-  an_common_hh      = an_common
-  an_common_opts_hh = an_common_opts
-  an_extended_hh      = an_extended
-  an_extended_opts_hh = an_extended_opts
+  an_hh_multilepton = an_tth
+  an_opts_hh_multilepton = an_tth_opts
+  # TODO uncomment ttbar and/or AK8 once the Ntuples are ready
+  an_hh_bbww = an_tth # + ttbar + AK8
+  an_opts_hh_bbww = an_tth_opts # + "ttbar" + "AK8"
 
   an_internal_no_mem = central + leptonIDSF + tauIDSF + btag + FR_t + lhe + triggerSF + PU + L1PreFiring + \
                        FRe_shape + FRm_shape + DYMCReweighting + DYMCNormScaleFactors + topPtReweighting + \

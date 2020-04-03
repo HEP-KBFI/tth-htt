@@ -60,7 +60,11 @@ public:
       jetPtRel_[idxLepton] = lepton->jetPtRel();
       for(const auto & kv: branchNames_jetBtagCSV_)
       {
-        jetBtagCSVs_[kv.first][idxLepton] = lepton->jetBtagCSV(kv.first);
+        jetBtagCSVs_[kv.first][idxLepton] = lepton->jetBtagCSV(kv.first, false);
+      }
+      for(const auto & kv: branchNames_assocJetBtagCSV_)
+      {
+        assocJetBtagCSVs_[kv.first][idxLepton] = lepton->jetBtagCSV(kv.first, true);
       }
       jetNDauChargedMVASel_[idxLepton] = lepton->jetNDauChargedMVASel();
       tightCharge_[idxLepton] = lepton->tightCharge();
@@ -162,6 +166,7 @@ protected:
   std::string branchName_genMatchIdx_;
 
   std::map<Btag, std::string> branchNames_jetBtagCSV_;
+  std::map<Btag, std::string> branchNames_assocJetBtagCSV_;
 
   UInt_t nLeptons_;
   Float_t * pt_;
@@ -188,6 +193,7 @@ protected:
   Int_t * genMatchIdx_;
 
   std::map<Btag, Float_t *> jetBtagCSVs_;
+  std::map<Btag, Float_t *> assocJetBtagCSVs_;
 };
 
 #endif // tthAnalysis_HiggsToTauTau_RecoLeptonWriter_h

@@ -31,6 +31,8 @@ public:
 
   void set_selection_flags(bool selection_flag);
 
+  void set_assocJetBtag(bool flag);
+
   /**
    * @brief Get cut thresholds
    */
@@ -68,6 +70,8 @@ protected:
   const Double_t max_jetBtagCSV_;            ///< upper cut threshold on CSV b-tagging discriminator value of nearby jet
   const Int_t max_nLostHits_;                ///< upper cut threshold on lost hits in the innermost layer of the tracker (electrons with lost_hits equal to cut threshold pass)
   bool apply_conversionVeto_;                ///< apply (True) or do not apply (False) conversion veto
+//-------------------------------------------------------------------------------
+  bool useAssocJetBtag_;                     ///< if true, use finalJets instead of updatedJets
 };
 
 class RecoElectronCollectionSelectorTight

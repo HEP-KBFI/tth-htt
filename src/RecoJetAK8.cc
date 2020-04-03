@@ -1,15 +1,16 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetAK8.h"
 
 RecoJetAK8::RecoJetAK8(const GenJet & jet,
-			 Double_t msoftdrop,
-			 const RecoSubjetAK8* subJet1,
-			 const RecoSubjetAK8* subJet2,
-			 Double_t tau1,
-			 Double_t tau2,
-			 Double_t tau3,
-			 Double_t tau4,
-		         Int_t jetId,
-			 Int_t idx)
+                         Double_t msoftdrop,
+                         const RecoSubjetAK8* subJet1,
+                         const RecoSubjetAK8* subJet2,
+                         Double_t tau1,
+                         Double_t tau2,
+                         Double_t tau3,
+                         Double_t tau4,
+                         Int_t jetId,
+                         Int_t idx,
+                         Int_t central_or_shift)
   : RecoJetBase(jet, idx)
   , msoftdrop_(msoftdrop)
   , subJet1_(subJet1)
@@ -19,11 +20,11 @@ RecoJetAK8::RecoJetAK8(const GenJet & jet,
   , tau3_(tau3)
   , tau4_(tau4)
   , jetId_(jetId)
+  , default_systematics_(central_or_shift)
 {}
 
 RecoJetAK8::~RecoJetAK8()
 {}
-
 
 Double_t
 RecoJetAK8::msoftdrop() const
@@ -73,16 +74,23 @@ RecoJetAK8::jetId() const
   return jetId_;
 }
 
+int
+RecoJetAK8::get_default_systematics() const
+{
+  return default_systematics_;
+}
+
 std::ostream &
 operator<<(std::ostream & stream,
            const RecoJetAK8 & jet)
 {
-  stream << static_cast<const GenJet &>(jet)             << ","
-            " jet ID = " << jet.jetId()                  << ","
-            " msoftdrop = " << jet.msoftdrop()           << ","
-            " tau1 = " << jet.tau1()                     << ","
-            " tau2 = " << jet.tau2()                     << ","
-            " tau3 = " << jet.tau3()                     << ",\n"
+  stream << static_cast<const GenJet &>(jet)                 << ","
+            " jet ID = " << jet.jetId()                      << ","
+            " msoftdrop = " << jet.msoftdrop()               << ","
+            " tau1 = "      << jet.tau1()                    << ","
+            " tau2 = "      << jet.tau2()                    << ","
+            " tau3 = "      << jet.tau3()                    << ","
+            " sysunc = "    << jet.get_default_systematics() << ",\n"
             " subjets:";
   stream << ",\n  idx1 = " << jet.subJet1();
   if(jet.subJet1())
