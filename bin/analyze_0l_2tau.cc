@@ -28,6 +28,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/mvaAuxFunctions.h" // check_mvaInputs, get_mvaInputVariables
 #include "tthAnalysis/HiggsToTauTau/interface/mvaInputVariables.h" // auxiliary functions for computing input variables of the MVA
 #include "tthAnalysis/HiggsToTauTau/interface/JetToTauFakeRateInterface.h" // JetToTauFakeRateInterface
+#include "tthAnalysis/HiggsToTauTau/interface/jetToTauFakeRateAuxFunctions.h" // getTrigMatchingOption
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronReader.h" // RecoElectronReader
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonReader.h" // RecoMuonReader
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauReader.h" // RecoHadTauReader
@@ -186,6 +187,7 @@ int main(int argc, char* argv[])
 
   std::string histogramDir = cfg_analyze.getParameter<std::string>("histogramDir");
   bool isMCClosure_t = histogramDir.find("mcClosure_t") != std::string::npos;
+  std::cout << "isMCClosure_t = " << isMCClosure_t << std::endl;
 
   std::string era_string = cfg_analyze.getParameter<std::string>("era");
   const int era = get_era(era_string);
@@ -326,11 +328,13 @@ int main(int argc, char* argv[])
     << "Invalid Configuration parameter 'applyFakeRateWeights' = " << applyFakeRateWeights_string << " !!\n";
   bool selectBDT = cfg_analyze.getParameter<bool>("selectBDT");
 
-  JetToTauFakeRateInterface* jetToTauFakeRateInterface = 0;
+  JetToTauFakeRateInterface* jetToTauFakeRateInterface = nullptr;
+  // CV: ditau trigger use tight charge isolation for both tau legs in 2016, 2017, and 2018 data-taking period
+  const std::string trigMatching_passesTrigger = "passesTriggerMatchingTightChargedIso";
   if ( applyFakeRateWeights == kFR_2tau ) {
     edm::ParameterSet cfg_hadTauFakeRateWeight = cfg_analyze.getParameter<edm::ParameterSet>("hadTauFakeRateWeight");
     cfg_hadTauFakeRateWeight.addParameter<std::string>("hadTauSelection", hadTauSelection_part2);
-    jetToTauFakeRateInterface = new JetToTauFakeRateInterface(cfg_hadTauFakeRateWeight);
+    jetToTauFakeRateInterface = new JetToTauFakeRateInterface(cfg_hadTauFakeRateWeight, trigMatching_passesTrigger); 
   }
 
   bool fillGenEvtHistograms = cfg_analyze.getParameter<bool>("fillGenEvtHistograms");
@@ -959,12 +963,12 @@ int main(int argc, char* argv[])
     ">= 2 jets",
     ">= 2 loose b-jets || 1 medium b-jet",
     ">= 2 sel taus",
+    Form("lead hadTau pT > %.0f GeV && abs(eta) < 2.1", minPt_hadTau_lead),
+    Form("sublead hadTau pT > %.0f GeV && abs(eta) < 2.1", minPt_hadTau_sublead),
     "no tight leptons",
     "HLT filter matching",
     ">= 4 jets",
     "m(ll) > 12 GeV",
-    Form("lead hadTau pT > %.0f GeV && abs(eta) < 2.1", minPt_hadTau_lead),
-    Form("sublead hadTau pT > %.0f GeV && abs(eta) < 2.1", minPt_hadTau_sublead),
     "tau-pair OS/SS charge",
     "MEt filters",
     "signal region veto",
@@ -1118,6 +1122,7 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update("trigger", evtWeightRecorder.get(central_or_shift_main));
     cutFlowHistManager->fillHistograms("trigger", evtWeightRecorder.get(central_or_shift_main));
+
 //--- build collections of electrons, muons and hadronic taus;
 //    resolve overlaps in order of priority: muon, electron,
     const std::vector<RecoMuon> muons = muonReader->read();
@@ -1305,6 +1310,30 @@ int main(int argc, char* argv[])
     const RecoHadTau* selHadTau_sublead = selHadTaus[1];
     const hadTauGenMatchEntry& selHadTau_genMatch = getHadTauGenMatch(hadTauGenMatch_definitions, selHadTau_lead, selHadTau_sublead);
 
+    if ( !(selHadTau_lead->pt() > minPt_hadTau_lead && selHadTau_lead->absEta() < 2.1) ) 
+    {
+      if(run_lumi_eventSelector || isDEBUG)
+      {
+        std::cout << "event " << eventInfo.str() << " FAILS lead tau pT and/or eta;" 
+                  << " lead tau pT = " << selHadTau_lead->pt() << ", abs(eta) = " << selHadTau_lead->absEta() << "\n";
+      }
+      continue;
+    }
+    cutFlowTable.update(Form("lead hadTau pT > %.0f GeV && abs(eta) < 2.1", minPt_hadTau_lead), evtWeightRecorder.get(central_or_shift_main));
+    cutFlowHistManager->fillHistograms(Form("lead hadTau pT > %.0f GeV && abs(eta) < 2.1", minPt_hadTau_lead), evtWeightRecorder.get(central_or_shift_main));
+
+    if ( !(selHadTau_sublead->pt() > minPt_hadTau_sublead && selHadTau_sublead->absEta() < 2.1) ) 
+    {
+      if(run_lumi_eventSelector || isDEBUG)
+      {
+        std::cout << "event " << eventInfo.str() << " FAILS sublead tau pT and/or eta;" 
+                  << " sublead tau pT = " << selHadTau_sublead->pt() << ", abs(eta) = " << selHadTau_sublead->absEta() << "\n";
+      }
+      continue;
+    }
+    cutFlowTable.update(Form("sublead hadTau pT > %.0f GeV && abs(eta) < 2.1", minPt_hadTau_sublead), evtWeightRecorder.get(central_or_shift_main));
+    cutFlowHistManager->fillHistograms(Form("sublead hadTau pT > %.0f GeV && abs(eta) < 2.1", minPt_hadTau_sublead), evtWeightRecorder.get(central_or_shift_main));
+
     if(isMC)
     {
       if(apply_DYMCNormScaleFactors)
@@ -1375,7 +1404,6 @@ int main(int argc, char* argv[])
 
     if(! selectBDT && applyFakeRateWeights == kFR_2tau)
     {
-      assert(jetToTauFakeRateInterface);
       evtWeightRecorder.record_jetToTau_FR_lead(jetToTauFakeRateInterface, selHadTau_lead);
       evtWeightRecorder.record_jetToTau_FR_sublead(jetToTauFakeRateInterface, selHadTau_sublead);
       bool passesTight_hadTau_lead = isMatched(*selHadTau_lead, tightHadTausFull);
@@ -1412,26 +1440,6 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update("m(ll) > 12 GeV", evtWeightRecorder.get(central_or_shift_main));
     cutFlowHistManager->fillHistograms("m(ll) > 12 GeV", evtWeightRecorder.get(central_or_shift_main));
-
-    if ( !(selHadTau_lead->pt() > minPt_hadTau_lead && selHadTau_lead->absEta() < 2.1) ) {
-      if(run_lumi_eventSelector || isDEBUG)
-      {
-        std::cout << "event " << eventInfo.str() << " FAILS lead tau pt eta; selHadTau_lead->pt()  " << selHadTau_lead->pt()  << "abs(eta)" << selHadTau_lead->absEta()  << " \n";
-      }
-      continue;
-    }
-    cutFlowTable.update(Form("lead hadTau pT > %.0f GeV && abs(eta) < 2.1", minPt_hadTau_lead), evtWeightRecorder.get(central_or_shift_main));
-    cutFlowHistManager->fillHistograms(Form("lead hadTau pT > %.0f GeV && abs(eta) < 2.1", minPt_hadTau_lead), evtWeightRecorder.get(central_or_shift_main));
-
-    if ( !(selHadTau_sublead->pt() > minPt_hadTau_sublead && selHadTau_sublead->absEta() < 2.1) ) {
-      if(run_lumi_eventSelector || isDEBUG)
-      {
-        std::cout << "event " << eventInfo.str() << " FAILS sublead tau pt eta; selHadTau_sublead->pt()  " << selHadTau_sublead->pt()  << "abs(eta)" << selHadTau_sublead->absEta()  << " \n";
-      }
-      continue;
-    }
-    cutFlowTable.update(Form("sublead hadTau pT > %.0f GeV && abs(eta) < 2.1", minPt_hadTau_sublead), evtWeightRecorder.get(central_or_shift_main));
-    cutFlowHistManager->fillHistograms(Form("sublead hadTau pT > %.0f GeV && abs(eta) < 2.1", minPt_hadTau_sublead), evtWeightRecorder.get(central_or_shift_main));
 
     bool isCharge_SS = selHadTau_lead->charge()*selHadTau_sublead->charge() > 0;
     bool isCharge_OS = selHadTau_lead->charge()*selHadTau_sublead->charge() < 0;
@@ -1483,7 +1491,7 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update("signal region veto", evtWeightRecorder.get(central_or_shift_main));
     cutFlowHistManager->fillHistograms("signal region veto", evtWeightRecorder.get(central_or_shift_main));
-
+ 
     std::vector<double> WeightBM; // weights to do histograms for BMs
     std::map<std::string, double> Weight_ktScan; // weights to do histograms for BMs
     double HHWeight = 1.0; // X: for the SM point -- the point explicited on this code
