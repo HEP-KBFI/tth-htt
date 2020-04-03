@@ -82,6 +82,7 @@ RecoJetReaderAK8::~RecoJetReaderAK8()
 void
 RecoJetReaderAK8::set_central_or_shift(int central_or_shift)
 {
+#if 0
   if(! isMC_ && central_or_shift != kFatJet_central_nonNominal)
   {
     throw cmsException(this, __func__, __LINE__) << "Data has only non-nominal attributes";
@@ -91,12 +92,13 @@ RecoJetReaderAK8::set_central_or_shift(int central_or_shift)
   {
     read_sys(sysOption_ != sysOption_central_);
   }
+#endif
 }
 
 void
 RecoJetReaderAK8::read_sys(bool flag)
 {
-  readSys_ = flag;
+  //readSys_ = flag;
 }
 
 void
