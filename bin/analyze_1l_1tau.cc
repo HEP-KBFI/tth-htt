@@ -29,6 +29,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/mvaInputVariables.h" // auxiliary functions for computing input variables of the MVA used for signal extraction in the 1l_1tau category
 #include "tthAnalysis/HiggsToTauTau/interface/LeptonFakeRateInterface.h" // LeptonFakeRateInterface
 #include "tthAnalysis/HiggsToTauTau/interface/JetToTauFakeRateInterface.h" // JetToTauFakeRateInterface
+#include "tthAnalysis/HiggsToTauTau/interface/jetToTauFakeRateAuxFunctions.h" // getTrigMatchingOption
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronReader.h" // RecoElectronReader
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonReader.h" // RecoMuonReader
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauReader.h" // RecoHadTauReader
@@ -358,18 +359,22 @@ int main(int argc, char* argv[])
   else throw cms::Exception("analyze_1l_1tau")
     << "Invalid Configuration parameter 'applyFakeRateWeights' = " << applyFakeRateWeights_string << " !!\n";
 
-  LeptonFakeRateInterface* leptonFakeRateInterface = 0;
+  LeptonFakeRateInterface* leptonFakeRateInterface = nullptr;
   if ( applyFakeRateWeights == kFR_2L ) {
     edm::ParameterSet cfg_leptonFakeRateWeight = cfg_analyze.getParameter<edm::ParameterSet>("leptonFakeRateWeight");
     cfg_leptonFakeRateWeight.addParameter<std::string>("era", era_string);
     leptonFakeRateInterface = new LeptonFakeRateInterface(cfg_leptonFakeRateWeight);
   }
 
-  JetToTauFakeRateInterface* jetToTauFakeRateInterface = 0;
+  JetToTauFakeRateInterface* jetToTauFakeRateInterface_withoutTrigger = nullptr;
+  JetToTauFakeRateInterface* jetToTauFakeRateInterface_passesTrigger  = nullptr;
+  // CV: e+tau and mu+tau cross-triggers use loose charge isolation for tau leg in 2016, 2017, and 2018 data-taking period
+  const std::string trigMatching_passesTrigger = "passesTriggerMatchingLooseChargedIso";
   if ( applyFakeRateWeights == kFR_2L || applyFakeRateWeights == kFR_1tau ) {
     edm::ParameterSet cfg_hadTauFakeRateWeight = cfg_analyze.getParameter<edm::ParameterSet>("hadTauFakeRateWeight");
     cfg_hadTauFakeRateWeight.addParameter<std::string>("hadTauSelection", hadTauSelection_part2);
-    jetToTauFakeRateInterface = new JetToTauFakeRateInterface(cfg_hadTauFakeRateWeight);
+    jetToTauFakeRateInterface_withoutTrigger = new JetToTauFakeRateInterface(cfg_hadTauFakeRateWeight, "withoutTriggerMatching");
+    jetToTauFakeRateInterface_passesTrigger  = new JetToTauFakeRateInterface(cfg_hadTauFakeRateWeight, trigMatching_passesTrigger);
   }
 
   bool fillGenEvtHistograms = cfg_analyze.getParameter<bool>("fillGenEvtHistograms");
@@ -1561,19 +1566,34 @@ int main(int argc, char* argv[])
 
     if(! selectBDT)
     {
-      const bool passesTight_hadTau = isMatched(*selHadTau, tightHadTausFull);
-      if(applyFakeRateWeights == kFR_2L)
+      JetToTauFakeRateInterface* jetToTauFakeRateInterface = nullptr;
+      if ( applyFakeRateWeights == kFR_2L || applyFakeRateWeights == kFR_1tau )
+      {
+        if ( selTrigger_1e || selTrigger_1mu ) 
+        {
+          jetToTauFakeRateInterface = jetToTauFakeRateInterface_withoutTrigger;
+        }
+        else
+        {
+          jetToTauFakeRateInterface = jetToTauFakeRateInterface_passesTrigger;
+        }
+      }
+      if ( applyFakeRateWeights == kFR_2L )
       {
         evtWeightRecorder.record_jetToLepton_FR_lead(leptonFakeRateInterface, selLepton);
+        assert(jetToTauFakeRateInterface);
         evtWeightRecorder.record_jetToTau_FR_lead(jetToTauFakeRateInterface, selHadTau);
 
         const bool passesTight_lepton = isMatched(*selLepton, tightElectrons) || isMatched(*selLepton, tightMuons);
-
+        const bool passesTight_hadTau = isMatched(*selHadTau, tightHadTausFull);
         evtWeightRecorder.compute_FR_1l1tau(passesTight_lepton, passesTight_hadTau);
       }
-      else if( applyFakeRateWeights == kFR_1tau)
+      else if ( applyFakeRateWeights == kFR_1tau )
       {
+        assert(jetToTauFakeRateInterface);
         evtWeightRecorder.record_jetToTau_FR_lead(jetToTauFakeRateInterface, selHadTau);
+
+        const bool passesTight_hadTau = isMatched(*selHadTau, tightHadTausFull);
         evtWeightRecorder.compute_FR_1tau(passesTight_hadTau);
       }
 
@@ -1582,6 +1602,7 @@ int main(int argc, char* argv[])
       {
         if(! (selHadTau->genHadTau() || selHadTau->genLepton()))
         {
+          assert(jetToTauFakeRateInterface);
           evtWeightRecorder.record_jetToTau_SF_lead(jetToTauFakeRateInterface, selHadTau);
         }
       }
@@ -2462,7 +2483,8 @@ int main(int argc, char* argv[])
   delete dataToMCcorrectionInterface_1l_1tau_trigger;
 
   delete leptonFakeRateInterface;
-  delete jetToTauFakeRateInterface;
+  delete jetToTauFakeRateInterface_withoutTrigger;
+  delete jetToTauFakeRateInterface_passesTrigger;
 
   delete run_lumi_eventSelector;
 

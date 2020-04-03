@@ -9,7 +9,7 @@
 class JetToTauFakeRateInterface
 {
 public:
-  JetToTauFakeRateInterface(const edm::ParameterSet & cfg);
+  JetToTauFakeRateInterface(const edm::ParameterSet & cfg, const std::string& trigMatching = "withoutTriggerMatching");
   ~JetToTauFakeRateInterface();
 
   // jet->tau fake-rates (product of fake-rates in MC, determined in bins of tau candidate pT and eta, and data/MC scale factors)

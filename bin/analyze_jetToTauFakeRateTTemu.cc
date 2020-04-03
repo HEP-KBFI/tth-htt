@@ -81,8 +81,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/EvtWeightManager.h" // EvtWeightManager
 #include "tthAnalysis/HiggsToTauTau/interface/EvtWeightRecorder.h" // EvtWeightRecorder
 #include "tthAnalysis/HiggsToTauTau/interface/jetToTauFakeRateHistManagers.h" // denominatorHistManagers, numeratorSelector_and_HistManagers
-#include "tthAnalysis/HiggsToTauTau/interface/TrigObjReader.h" // TrigObjReader
-#include "tthAnalysis/HiggsToTauTau/interface/TrigObj.h" // TrigObj
 
 #include <boost/math/special_functions/sign.hpp> // boost::math::sign()
 
@@ -251,7 +249,6 @@ int main(int argc, char* argv[])
   std::string branchName_hadTaus = cfg_analyze.getParameter<std::string>("branchName_hadTaus");
   std::string branchName_jets = cfg_analyze.getParameter<std::string>("branchName_jets");
   std::string branchName_met = cfg_analyze.getParameter<std::string>("branchName_met");
-  std::string branchName_triggerObjects = cfg_analyze.getParameter<std::string>("branchName_triggerObjects");
 
   std::string branchName_genLeptons = cfg_analyze.getParameter<std::string>("branchName_genLeptons");
   std::string branchName_genHadTaus = cfg_analyze.getParameter<std::string>("branchName_genHadTaus");
@@ -360,9 +357,6 @@ int main(int argc, char* argv[])
   RecoMEtReader* metReader = new RecoMEtReader(era, isMC, branchName_met);
   metReader->setMEt_central_or_shift(met_option);
   inputTree->registerReader(metReader);
-
-  TrigObjReader* trigObjReader = new TrigObjReader(branchName_triggerObjects);
-  inputTree->registerReader(trigObjReader);
 
   MEtFilter metFilters;
   MEtFilterReader* metFilterReader = new MEtFilterReader(&metFilters, era);
@@ -1006,9 +1000,6 @@ int main(int argc, char* argv[])
       evtWeight);
     selEvtYieldHistManager.fillHistograms(eventInfo, evtWeight);
 
-//--- read trigger objects
-    std::vector<TrigObj> triggerObjects = trigObjReader->read();
-
 //--- iterate over jets
     for ( std::vector<const RecoJet*>::const_iterator cleanedJet = cleanedJets.begin();
           cleanedJet != cleanedJets.end(); ++cleanedJet ) {
@@ -1046,7 +1037,7 @@ int main(int argc, char* argv[])
         dataToMCcorrectionInterface->setHadTaus(preselHadTau_dRmatched_genPdgId, preselHadTau_dRmatched->pt(), preselHadTau_dRmatched->eta());
         evtWeight_denominator *= dataToMCcorrectionInterface->getSF_hadTauID_and_Iso(tauIDSF_option);
 
-        (*denominator)->fillHistograms(**cleanedJet, triggerObjects, *preselHadTau_dRmatched, evtWeight_denominator);
+        (*denominator)->fillHistograms(**cleanedJet, *preselHadTau_dRmatched, evtWeight_denominator);
       }
 
       for ( std::vector<numeratorSelector_and_HistManagers*>::iterator numerator = numerators.begin();
@@ -1061,7 +1052,7 @@ int main(int argc, char* argv[])
         dataToMCcorrectionInterface->setHadTaus(preselHadTau_dRmatched_genPdgId, preselHadTau_dRmatched->pt(), preselHadTau_dRmatched->eta());
         evtWeight_numerator *= dataToMCcorrectionInterface->getSF_hadTauID_and_Iso(tauIDSF_option);
 
-        (*numerator)->fillHistograms(**cleanedJet, triggerObjects, *preselHadTau_dRmatched, evtWeight_numerator);
+        (*numerator)->fillHistograms(**cleanedJet, *preselHadTau_dRmatched, evtWeight_numerator);
       }
     }
 

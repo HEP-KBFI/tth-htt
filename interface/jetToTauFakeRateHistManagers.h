@@ -9,7 +9,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorFakeable.h"  // RecoHadTauSelectorFakeable
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorTight.h"     // RecoHadTauSelectorTight
 #include "tthAnalysis/HiggsToTauTau/interface/HadTauHistManager.h"                     // HadTauHistManager
-#include "tthAnalysis/HiggsToTauTau/interface/TrigObj.h"                               // TrigObj
+#include "tthAnalysis/HiggsToTauTau/interface/hltFilter.h"                             // TauFilterBit (enum)
 #include "tthAnalysis/HiggsToTauTau/interface/EvtHistManager_jetToTauFakeRateTTemu.h"  // EvtHistManager_jetToTauFakeRateTTemu
 #include "tthAnalysis/HiggsToTauTau/interface/EvtHistManager_jetToTauFakeRateDYmumu.h" // EvtHistManager_jetToTauFakeRateDYmumu
 
@@ -27,14 +27,14 @@ struct denominatorHistManagers
     double minAbsEta, double maxAbsEta, int decayMode, const std::vector<int>& genJet_pdgIds, const std::string& central_or_shift);
   ~denominatorHistManagers();
   void bookHistograms(TFileDirectory& dir);
-  void fillHistograms(const RecoJet& jet, const std::vector<TrigObj>& triggerObjects, const RecoHadTau& hadTau, double evtWeight);
+  void fillHistograms(const RecoJet& jet, const RecoHadTau& hadTau, double evtWeight);
   std::string process_;
   std::string era_string_;
   int era_;
   bool isMC_;
   std::string chargeSelection_;
   std::string hadTauSelection_denominator_;
-  int trigMatching_denominator_;
+  TauFilterBit trigMatching_denominator_;
   double minAbsEta_;
   double maxAbsEta_;
   int decayMode_;                  // value of -1 selects all hadronic taus
@@ -63,7 +63,7 @@ struct numeratorSelector_and_HistManagers : public denominatorHistManagers
     double minAbsEta, double maxAbsEta, int decayMode, const std::vector<int>& genJet_pdgIds, const std::string& central_or_shift);
   ~numeratorSelector_and_HistManagers();
   void bookHistograms(TFileDirectory& dir);
-  void fillHistograms(const RecoJet& jet, const std::vector<TrigObj>& triggerObjects, const RecoHadTau& hadTau, double evtWeight);
+  void fillHistograms(const RecoJet& jet, const RecoHadTau& hadTau, double evtWeight);
   std::string hadTauSelection_numerator_;
   RecoHadTauSelectorTight* tightHadTauSelector_;
 };

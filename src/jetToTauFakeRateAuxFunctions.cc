@@ -2,6 +2,7 @@
 
 #include "FWCore/Utilities/interface/Exception.h" // cms::Exception
 #include "DataFormats/Math/interface/deltaR.h" // deltaR
+#include "tthAnalysis/HiggsToTauTau/interface/hltFilter.h" // kTauFilterBit_notApplied,..., kTauFilterBit_passesTightChargedIso, kTauFilterBit_failsTightChargedIso 
 
 #include <TString.h> // Form()
 
@@ -43,41 +44,18 @@ getPtBin(double minPt,
   return boost::replace_all_copy(PtBin, ".", "_");
 }
 
-int
+TauFilterBit
 getTrigMatchingOption(const std::string& trigMatching)
 {
-  int trigMatching_int;
-  if      ( trigMatching == "woTriggerMatching"                ) trigMatching_int = kFilterBit_notApplied;
-  else if ( trigMatching == "wTriggerMatchingLooseChargedIso"  ) trigMatching_int = kFilterBit_looseChargedIso;
-  else if ( trigMatching == "wTriggerMatchingMediumChargedIso" ) trigMatching_int = kFilterBit_mediumChargedIso;
-  else if ( trigMatching == "wTriggerMatchingTightChargedIso"  ) trigMatching_int = kFilterBit_tightChargedIso;
+  TauFilterBit filterBit;
+  if      ( trigMatching == "withoutTriggerMatching"                ) filterBit = kTauFilterBit_notApplied;
+  else if ( trigMatching == "passesTriggerMatchingLooseChargedIso"  ) filterBit = kTauFilterBit_passesLooseChargedIso;
+  else if ( trigMatching == "failsTriggerMatchingLooseChargedIso"   ) filterBit = kTauFilterBit_failsLooseChargedIso;
+  else if ( trigMatching == "passesTriggerMatchingMediumChargedIso" ) filterBit = kTauFilterBit_passesMediumChargedIso;
+  else if ( trigMatching == "failsTriggerMatchingMediumChargedIso"  ) filterBit = kTauFilterBit_failsMediumChargedIso;
+  else if ( trigMatching == "passesTriggerMatchingTightChargedIso"  ) filterBit = kTauFilterBit_passesTightChargedIso;
+  else if ( trigMatching == "failsTriggerMatchingTightChargedIso"   ) filterBit = kTauFilterBit_failsTightChargedIso;
   else throw cms::Exception("getTrigMatchingOption") 
     << "Invalid parameter 'trigMatching' = " << trigMatching << " !!\n";
-  return trigMatching_int;
-}
-
-bool 
-matchesTrigObj(const RecoJet& jet, const std::vector<TrigObj>& triggerObjects, int filterBit, double dRmatch)
-{ 
-  int filterBit_mask = 0;
-  // CV: bit masks defined in https://github.com/HEP-KBFI/cmssw/blob/master/PhysicsTools/NanoAOD/python/triggerObjects_cff.py#L94
-  if      ( filterBit == kFilterBit_looseChargedIso  ) filterBit_mask = 1;
-  else if ( filterBit == kFilterBit_mediumChargedIso ) filterBit_mask = 2;
-  else if ( filterBit == kFilterBit_tightChargedIso  ) filterBit_mask = 4;
-  else throw cms::Exception("matchesTrigObj") 
-    << "Invalid parameter 'filterBit' = " << filterBit << " !!\n";
-  bool isMatched = false;
-  for ( const TrigObj& triggerObject : triggerObjects )
-  {
-    if ( triggerObject.id() == 15 && triggerObject.filterBits() & filterBit_mask )
-    {
-      double dR = deltaR(jet.eta(), jet.phi(), triggerObject.eta(), triggerObject.phi());
-      if ( dR < dRmatch )
-      {
-        isMatched = true;
-        break;
-      }
-    }
-  }
-  return isMatched;
+  return filterBit;
 }

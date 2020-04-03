@@ -41,8 +41,8 @@ hltFilter(const std::map<hltPathsE, bool> & trigger_bits,
     { hltPathsE::trigger_3e,      {{ 128,   0,   0 }} },
     { hltPathsE::trigger_3mu,     {{   0, 128,   0 }} },
     { hltPathsE::trigger_1e1tau,  {{  64,   0, 128 }} },
-    { hltPathsE::trigger_1mu1tau, {{   0, 256,  64 }} },
-    { hltPathsE::trigger_2tau,    {{   0,   0,  64 }} },
+    { hltPathsE::trigger_1mu1tau, {{   0,  64, 256 }} },
+    { hltPathsE::trigger_2tau,    {{   0,   0,  64 }} }
   };
 
   bool is_matched = false;
@@ -107,4 +107,47 @@ hltFilter(const std::map<hltPathsE, bool> & trigger_bits,
     }
   }
   return is_matched;
+}
+
+bool
+hltFilter(const RecoHadTau& tau, const hltPathsE& hltPath)
+{ 
+  static const std::map<hltPathsE, int> trigger_filterBits = {
+    { hltPathsE::trigger_1e1tau,  128 },
+    { hltPathsE::trigger_1mu1tau, 256 },
+    { hltPathsE::trigger_2tau,     64 }
+  };
+  if ( trigger_filterBits.find(hltPath) == trigger_filterBits.end() )
+    throw cms::Exception("hltFilter") 
+      << "Invalid parameter 'hltPath' = " << (int)hltPath << " !!\n";
+  if ( tau.filterBits() & trigger_filterBits.at(hltPath) ) return true;
+  else return false;
+}
+
+bool
+hltFilter(const RecoHadTau& tau, TauFilterBit filterBit)
+{
+  UInt_t filterBit_mask = 0;
+  // CV: bit masks defined in https://github.com/HEP-KBFI/cmssw/blob/master/PhysicsTools/NanoAOD/python/triggerObjects_cff.py#L94
+  int filterBit_status = -1; // passes = 1, fails = 0
+  if      ( filterBit == kTauFilterBit_notApplied             ) return true;
+  else if ( filterBit == kTauFilterBit_passesLooseChargedIso  ) { filterBit_mask = 1; filterBit_status = 1; }
+  else if ( filterBit == kTauFilterBit_failsLooseChargedIso   ) { filterBit_mask = 1; filterBit_status = 0; }
+  else if ( filterBit == kTauFilterBit_passesMediumChargedIso ) { filterBit_mask = 2; filterBit_status = 1; }
+  else if ( filterBit == kTauFilterBit_failsMediumChargedIso  ) { filterBit_mask = 2; filterBit_status = 0; }
+  else if ( filterBit == kTauFilterBit_passesTightChargedIso  ) { filterBit_mask = 4; filterBit_status = 1; }
+  else if ( filterBit == kTauFilterBit_failsTightChargedIso   ) { filterBit_mask = 4; filterBit_status = 0; }
+  else throw cms::Exception("hltFilter") 
+    << "Invalid parameter 'filterBit' = " << filterBit << " !!\n";
+  if      ( filterBit_status == 1 ) 
+  {
+    if ( tau.filterBits() & filterBit_mask ) return true;
+    else return false;
+  } 
+  else if ( filterBit_status == 0 )
+  {
+    if ( tau.filterBits() & filterBit_mask ) return false;
+    else return true;
+  }
+  else assert(0);
 }

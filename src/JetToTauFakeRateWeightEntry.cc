@@ -4,9 +4,10 @@
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 #include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // kFRjt_*
 
-#include <TFile.h> // TFile
+#include <TFile.h>             // TFile
+#include <TString.h>           // TString
 #include <TGraphAsymmErrors.h> // TGraphAsymmErrors
-#include <TF1.h> // TF1
+#include <TF1.h>               // TF1
 
 #include <boost/algorithm/string/replace.hpp> // boost::replace_all_copy()
 
@@ -66,27 +67,31 @@ JetToTauFakeRateWeightEntry::JetToTauFakeRateWeightEntry(double absEtaMin,
                                                          const std::string & hadTauSelection,
                                                          TFile * inputFile,
                                                          const edm::ParameterSet & cfg,
+                                                         const std::string& trigMatching,
                                                          int central_or_shift)
   : absEtaMin_(absEtaMin)
   , absEtaMax_(absEtaMax)
   , hadTauSelection_(hadTauSelection)
-  , graphName_(cfg.getParameter<std::string>("graphName"))
   , graph_(nullptr)
   , applyGraph_(cfg.getParameter<bool>("applyGraph"))
   , fitFunction_(nullptr)
   , applyFitFunction_(cfg.getParameter<bool>("applyFitFunction"))
 {
   const std::string etaBin = getEtaBin(absEtaMin_, absEtaMax_);
+  TString graphName = cfg.getParameter<std::string>("graphName").data();
+  graphName.ReplaceAll("jetToTauFakeRate/", Form("jetToTauFakeRate_%s/", trigMatching.data()));
+  graphName_ = graphName.Data();
   graph_ = loadGraph(inputFile, graphName_, etaBin, hadTauSelection_);
 
-  const std::string fitFunctionName = cfg.getParameter<std::string>("fitFunctionName");
+  TString fitFunctionName = cfg.getParameter<std::string>("fitFunctionName").data();
+  fitFunctionName.ReplaceAll("jetToTauFakeRate/", Form("jetToTauFakeRate_%s/", trigMatching.data()));
   switch(central_or_shift)
   {
-    case kFRjt_central:   fitFunctionName_ = fitFunctionName;                             break;
-    case kFRjt_normUp:    fitFunctionName_ = Form("%s_par1Up",   fitFunctionName.data()); break;
-    case kFRjt_normDown:  fitFunctionName_ = Form("%s_par1Down", fitFunctionName.data()); break;
-    case kFRjt_shapeUp:   fitFunctionName_ = Form("%s_par2Up",   fitFunctionName.data()); break;
-    case kFRjt_shapeDown: fitFunctionName_ = Form("%s_par2Down", fitFunctionName.data()); break;
+    case kFRjt_central:   fitFunctionName_ = fitFunctionName.Data();                      break;
+    case kFRjt_normUp:    fitFunctionName_ = Form("%s_par1Up",   fitFunctionName.Data()); break;
+    case kFRjt_normDown:  fitFunctionName_ = Form("%s_par1Down", fitFunctionName.Data()); break;
+    case kFRjt_shapeUp:   fitFunctionName_ = Form("%s_par2Up",   fitFunctionName.Data()); break;
+    case kFRjt_shapeDown: fitFunctionName_ = Form("%s_par2Down", fitFunctionName.Data()); break;
     default: throw cmsException(this)
                << "Invalid Configuration parameter 'central_or_shift' = " << central_or_shift;
   }

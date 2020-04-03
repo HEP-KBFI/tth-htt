@@ -98,10 +98,10 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
     self.hadTau_selection_denominator = hadTau_selection_denominator
     self.hadTau_selections_numerator = hadTau_selections_numerator
     self.trigMatchingOptions = [ 
-      "woTriggerMatching", 
-      "wTriggerMatchingLooseChargedIso", 
-      "wTriggerMatchingMediumChargedIso", 
-      "wTriggerMatchingTightChargedIso" 
+      "withoutTriggerMatching", 
+      "passesTriggerMatchingLooseChargedIso",  "failsTriggerMatchingLooseChargedIso", 
+      "passesTriggerMatchingMediumChargedIso", "failsTriggerMatchingMediumChargedIso", 
+      "passesTriggerMatchingTightChargedIso",  "failsTriggerMatchingTightChargedIso" 
     ]
 
     self.absEtaBins = absEtaBins
@@ -397,40 +397,44 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
           self.dirs[key_makePlots_dir][DKEY_PLOT], "makePlots_%s.png" % self.channel),
         'histogramDir' : "jetToTauFakeRate_%s" % charge_selection,
         'label' : None,
-        'make_plots_backgrounds' : self.make_plots_backgrounds,
+        'make_plots_backgrounds' : self.make_plots_backgrounds
       }
       self.createCfg_makePlots(self.jobOptions_make_plots[key_makePlots_job])
-      self.cfgFile_make_plots = self.cfgFile_make_plots_denominator
-      for absEtaBin in [ "absEtaLt1_5", "absEta1_5to9_9" ]:
-        key_hadd_stage2_job = getKey(charge_selection)
-        key_makePlots_job = getKey(charge_selection, absEtaBin, "denominator")        
-        self.jobOptions_make_plots[key_makePlots_job] = {
-          'executable' : self.executable_make_plots,
-          'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2_job],
-          'cfgFile_modified' : os.path.join(
-            self.dirs[key_makePlots_dir][DKEY_CFGS], "makePlots_%s_%s_denominator_%s_cfg.py" % (self.channel, charge_selection, absEtaBin)),
-          'outputFile' : os.path.join(
-            self.dirs[key_makePlots_dir][DKEY_PLOT], "makePlots_%s_%s_denominator_%s.png" % (self.channel, charge_selection, absEtaBin)),
-          'histogramDir' : "jetToTauFakeRate_%s/denominator/%s" % (charge_selection, absEtaBin),
-          'label' : None,
-          'make_plots_backgrounds' : self.make_plots_backgrounds,
-        }
-        self.createCfg_makePlots(self.jobOptions_make_plots[key_makePlots_job])
-        for hadTau_selection_numerator in self.hadTau_selections_numerator:
+      for trigMatchingOption in self.trigMatchingOptions:
+        self.cfgFile_make_plots = self.cfgFile_make_plots_denominator
+        for absEtaBin in [ "absEtaLt1_5", "absEta1_5to9_9" ]:
           key_hadd_stage2_job = getKey(charge_selection)
-          key_makePlots_job = getKey(charge_selection, absEtaBin, "numerator", hadTau_selection_numerator)
+          key_makePlots_job = getKey(charge_selection, trigMatchingOption, absEtaBin, "denominator")        
           self.jobOptions_make_plots[key_makePlots_job] = {
             'executable' : self.executable_make_plots,
             'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2_job],
             'cfgFile_modified' : os.path.join(
-              self.dirs[key_makePlots_dir][DKEY_CFGS], "makePlots_%s_%s_numerator_%s_%s_cfg.py" % (self.channel, charge_selection, hadTau_selection_numerator, absEtaBin)),
+              self.dirs[key_makePlots_dir][DKEY_CFGS], "makePlots_%s_%s_%s_denominator_%s_cfg.py" % \
+                (self.channel, charge_selection, trigMatchingOption, absEtaBin)),
             'outputFile' : os.path.join(
-              self.dirs[key_makePlots_dir][DKEY_PLOT], "makePlots_%s_%s_numerator_%s_%s.png" % (self.channel, charge_selection, hadTau_selection_numerator, absEtaBin)),
-            'histogramDir' : "jetToTauFakeRate_%s/numerator/%s/%s" % (charge_selection, hadTau_selection_numerator, absEtaBin),
+              self.dirs[key_makePlots_dir][DKEY_PLOT], "makePlots_%s_%s_%s_denominator_%s.png" % (self.channel, charge_selection, trigMatchingOption, absEtaBin)),
+            'histogramDir' : "jetToTauFakeRate_%s_%s/denominator/%s" % (charge_selection, trigMatchingOption, absEtaBin),
             'label' : None,
-            'make_plots_backgrounds' : self.make_plots_backgrounds,
+            'make_plots_backgrounds' : self.make_plots_backgrounds
           }
           self.createCfg_makePlots(self.jobOptions_make_plots[key_makePlots_job])
+          for hadTau_selection_numerator in self.hadTau_selections_numerator:
+            key_hadd_stage2_job = getKey(charge_selection)
+            key_makePlots_job = getKey(charge_selection, trigMatchingOption, absEtaBin, "numerator", hadTau_selection_numerator)
+            self.jobOptions_make_plots[key_makePlots_job] = {
+              'executable' : self.executable_make_plots,
+              'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2_job],
+              'cfgFile_modified' : os.path.join(
+                self.dirs[key_makePlots_dir][DKEY_CFGS], "makePlots_%s_%s_%s_numerator_%s_%s_cfg.py" % \
+                  (self.channel, charge_selection, trigMatchingOption, hadTau_selection_numerator, absEtaBin)),
+              'outputFile' : os.path.join(
+                self.dirs[key_makePlots_dir][DKEY_PLOT], "makePlots_%s_%s_%s_numerator_%s_%s.png" % \
+                  (self.channel, charge_selection, trigMatchingOption, hadTau_selection_numerator, absEtaBin)),
+              'histogramDir' : "jetToTauFakeRate_%s_%s/numerator/%s/%s" % (charge_selection, trigMatchingOption, hadTau_selection_numerator, absEtaBin),
+              'label' : None,
+              'make_plots_backgrounds' : self.make_plots_backgrounds
+            }
+            self.createCfg_makePlots(self.jobOptions_make_plots[key_makePlots_job])
 
     self.sbatchFile_analyze = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_analyze_%s.py" % self.channel)
     self.sbatchFile_comp_jetToTauFakeRate = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_comp_jetToTauFakeRate.py")
@@ -443,7 +447,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
     lines_makefile = []
     self.addToMakefile_analyze(lines_makefile)
     self.addToMakefile_hadd_stage1(lines_makefile)
-    self.addToMakefile_hadd_stage2(lines_makefile, make_dependency = "phony_hadd_stage1")
+    self.addToMakefile_hadd_stage2(lines_makefile, make_dependency = "phony_hadd_stage1", max_mem = '4096M')
     self.addToMakefile_comp_jetToTauFakeRate(lines_makefile)
     self.addToMakefile_make_plots(lines_makefile)
     self.createMakefile(lines_makefile)

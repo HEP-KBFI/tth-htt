@@ -66,7 +66,6 @@ process.analyze_jetToTauFakeRateDYmumu = cms.PSet(
     branchName_hadTaus = cms.string('Tau'),
     branchName_jets = cms.string('Jet'),
     branchName_met = cms.string('MET'),
-    branchName_triggerObjects = cms.string('TrigObj'),
 
     branchName_genLeptons = cms.string('GenLep'),
     branchName_genHadTaus = cms.string('GenVisTau'),

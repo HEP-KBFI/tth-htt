@@ -1,6 +1,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/jetToTauFakeRateHistManagers.h"
 
-#include "tthAnalysis/HiggsToTauTau/interface/jetToTauFakeRateAuxFunctions.h" // getTrigMatching_string, matchesTrigObj
+#include "tthAnalysis/HiggsToTauTau/interface/jetToTauFakeRateAuxFunctions.h" // getTrigMatching_string
+#include "tthAnalysis/HiggsToTauTau/interface/hltFilter.h"                    // hltFilter
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h"         // get_era
 
 #include <TString.h> // Form
@@ -110,9 +111,9 @@ denominatorHistManagers::bookHistograms(TFileDirectory& dir)
 }
 
 void 
-denominatorHistManagers::fillHistograms(const RecoJet& jet, const std::vector<TrigObj>& triggerObjects, const RecoHadTau& hadTau, double evtWeight)
+denominatorHistManagers::fillHistograms(const RecoJet& jet, const RecoHadTau& hadTau, double evtWeight)
 {
-  if ( trigMatching_denominator_ == kFilterBit_notApplied || matchesTrigObj(jet, triggerObjects, trigMatching_denominator_) ) 
+  if ( (*fakeableHadTauSelector_)(hadTau) && hltFilter(hadTau, trigMatching_denominator_) )
   {
     bool isSelected_decayMode = false;
     if ( decayMode_ ==  -1                                                           ) isSelected_decayMode = true;
@@ -192,7 +193,10 @@ numeratorSelector_and_HistManagers::bookHistograms(TFileDirectory& dir)
 }
   
 void 
-numeratorSelector_and_HistManagers::fillHistograms(const RecoJet& jet, const std::vector<TrigObj>& triggerObjects, const RecoHadTau& hadTau, double evtWeight)
+numeratorSelector_and_HistManagers::fillHistograms(const RecoJet& jet, const RecoHadTau& hadTau, double evtWeight)
 {
-  denominatorHistManagers::fillHistograms(jet, triggerObjects, hadTau, evtWeight);   
+  if ( (*tightHadTauSelector_)(hadTau) ) 
+  {
+    denominatorHistManagers::fillHistograms(jet, hadTau, evtWeight);   
+  }
 }

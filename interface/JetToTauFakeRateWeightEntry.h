@@ -16,6 +16,7 @@ public:
                               const std::string & hadTauSelection,
                               TFile * inputFile,
                               const edm::ParameterSet & cfg,
+                              const std::string& trigMatching,
                               int central_or_shift);
   ~JetToTauFakeRateWeightEntry();
 

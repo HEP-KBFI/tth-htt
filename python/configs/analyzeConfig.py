@@ -1526,7 +1526,7 @@ class analyzeConfig(object):
         for outputFile in outputFiles.values():
             self.filesToClean.append(outputFile)
 
-    def addToMakefile_hadd_stage1(self, lines_makefile, make_target = "phony_hadd_stage1", make_dependency = "phony_analyze"):
+    def addToMakefile_hadd_stage1(self, lines_makefile, make_target = "phony_hadd_stage1", make_dependency = "phony_analyze", max_input_files_per_job = 10, max_mem = ''):
         self.addToMakefile_hadd(lines_makefile, make_target, make_dependency, self.inputFiles_hadd_stage1, self.outputFile_hadd_stage1)
 
     def addToMakefile_hadd_sync(self, lines_makefile, make_target = "phony_hadd_sync", make_dependency = "phony_analyze"):
@@ -1558,13 +1558,13 @@ class analyzeConfig(object):
         for job in jobOptions.values():
             self.filesToClean.append(job['outputFile'])
 
-    def addToMakefile_hadd_stage1_5(self, lines_makefile, make_target, make_dependency, max_input_files_per_job = 10, max_mem = ''):
+    def addToMakefile_hadd_stage1_5(self, lines_makefile, make_target, make_dependency, max_input_files_per_job = 2, max_mem = ''):
         """Adds the commands to Makefile that are necessary for building the intermediate histogram file
            that is used as input for data-driven background estimation.
         """
         self.addToMakefile_hadd(lines_makefile, make_target, make_dependency, self.inputFiles_hadd_stage1_5, self.outputFile_hadd_stage1_5, max_input_files_per_job, max_mem)
 
-    def addToMakefile_hadd_stage1_6(self, lines_makefile, make_target, make_dependency, max_input_files_per_job = 10, max_mem = ''):
+    def addToMakefile_hadd_stage1_6(self, lines_makefile, make_target, make_dependency, max_input_files_per_job = 2, max_mem = ''):
         """Adds the commands to Makefile that are necessary for building the intermediate histogram file
            that is used as input for data-driven background estimation.
         """
@@ -1596,15 +1596,6 @@ class analyzeConfig(object):
         for job in self.jobOptions_addFlips.values():
             self.filesToClean.append(job['outputFile'])
 
-    def get_hadd_settings(self):
-        if len(self.central_or_shifts) > 1:
-            if self.channel in [ '1l_1tau', '2lss' ]:
-                return 2, '4096M'
-            else:
-                return 2, ''
-        else:
-            return 10, ''
-
     def addToMakefile_backgrounds_from_data(self, lines_makefile, make_target = "phony_addFakes", make_dependency = "phony_hadd_stage1"):
         max_input_files_per_job, max_mem = self.get_hadd_settings()
         self.addToMakefile_addBackgrounds(lines_makefile, "phony_addBackgrounds", make_dependency, self.sbatchFile_addBackgrounds, self.jobOptions_addBackgrounds)
@@ -1629,10 +1620,9 @@ class analyzeConfig(object):
             lines_makefile.append("")
         self.make_dependency_hadd_stage2 = " ".join([ "phony_addBackgrounds_sum", make_target ])
 
-    def addToMakefile_hadd_stage2(self, lines_makefile, make_target = "phony_hadd_stage2", make_dependency = None):
+    def addToMakefile_hadd_stage2(self, lines_makefile, make_target = "phony_hadd_stage2", make_dependency = None, max_input_files_per_job = 2, max_mem = ''):
         """Adds the commands to Makefile that are necessary for building the final histogram file.
         """
-        max_input_files_per_job, max_mem = self.get_hadd_settings()
         if make_dependency is None:
             make_dependency = self.make_dependency_hadd_stage2
         self.addToMakefile_hadd(lines_makefile, make_target, make_dependency, self.inputFiles_hadd_stage2, self.outputFile_hadd_stage2, max_input_files_per_job, max_mem)

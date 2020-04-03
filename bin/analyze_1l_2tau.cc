@@ -28,6 +28,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/mvaInputVariables.h" // auxiliary functions for computing input variables of the MVA used for signal extraction in the 1l_2tau category
 #include "tthAnalysis/HiggsToTauTau/interface/LeptonFakeRateInterface.h" // LeptonFakeRateInterface
 #include "tthAnalysis/HiggsToTauTau/interface/JetToTauFakeRateInterface.h" // JetToTauFakeRateInterface
+#include "tthAnalysis/HiggsToTauTau/interface/jetToTauFakeRateAuxFunctions.h" // getTrigMatchingOption
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronReader.h" // RecoElectronReader
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonReader.h" // RecoMuonReader
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauReader.h" // RecoHadTauReader
@@ -342,11 +343,19 @@ int main(int argc, char* argv[])
     leptonFakeRateInterface = new LeptonFakeRateInterface(cfg_leptonFakeRateWeight);
   }
 
-  JetToTauFakeRateInterface* jetToTauFakeRateInterface = 0;
+  JetToTauFakeRateInterface* jetToTauFakeRateInterface_withoutTrigger = nullptr;
+  JetToTauFakeRateInterface* jetToTauFakeRateInterface_passesTrigger  = nullptr;
+  JetToTauFakeRateInterface* jetToTauFakeRateInterface_failsTrigger   = nullptr;
+  // CV: e+tau and mu+tau cross-triggers use loose charge isolation for tau leg in 2016, 2017, and 2018 data-taking period
+  const std::string trigMatching_passesTrigger = "passesTriggerMatchingLooseChargedIso";
+  const std::string trigMatching_failsTrigger  = "failsTriggerMatchingLooseChargedIso";
+  TauFilterBit filterBit_passesTrigger = getTrigMatchingOption(trigMatching_passesTrigger);
   if ( applyFakeRateWeights == kFR_3L || applyFakeRateWeights == kFR_2tau ) {
     edm::ParameterSet cfg_hadTauFakeRateWeight = cfg_analyze.getParameter<edm::ParameterSet>("hadTauFakeRateWeight");
     cfg_hadTauFakeRateWeight.addParameter<std::string>("hadTauSelection", hadTauSelection_part2);
-    jetToTauFakeRateInterface = new JetToTauFakeRateInterface(cfg_hadTauFakeRateWeight);
+    jetToTauFakeRateInterface_withoutTrigger = new JetToTauFakeRateInterface(cfg_hadTauFakeRateWeight, "withoutTriggerMatching");
+    jetToTauFakeRateInterface_passesTrigger  = new JetToTauFakeRateInterface(cfg_hadTauFakeRateWeight, trigMatching_passesTrigger);
+    jetToTauFakeRateInterface_failsTrigger   = new JetToTauFakeRateInterface(cfg_hadTauFakeRateWeight, trigMatching_failsTrigger);
   }
 
   bool fillGenEvtHistograms = cfg_analyze.getParameter<bool>("fillGenEvtHistograms");
@@ -1446,10 +1455,25 @@ int main(int argc, char* argv[])
 
     if(! selectBDT)
     {
-      if(jetToTauFakeRateInterface)
+      JetToTauFakeRateInterface* jetToTauFakeRateInterface_lead    = nullptr;
+      JetToTauFakeRateInterface* jetToTauFakeRateInterface_sublead = nullptr;
+      if ( applyFakeRateWeights == kFR_3L || applyFakeRateWeights == kFR_2tau ) 
       {
-        evtWeightRecorder.record_jetToTau_FR_lead(jetToTauFakeRateInterface, selHadTau_lead);
-        evtWeightRecorder.record_jetToTau_FR_sublead(jetToTauFakeRateInterface, selHadTau_sublead);
+        if ( selTrigger_1e || selTrigger_1mu ) 
+        {
+          jetToTauFakeRateInterface_lead    = jetToTauFakeRateInterface_withoutTrigger;
+          jetToTauFakeRateInterface_sublead = jetToTauFakeRateInterface_withoutTrigger;
+        }
+        else
+        {
+          if ( hltFilter(*selHadTau_lead,    filterBit_passesTrigger) ) jetToTauFakeRateInterface_lead    = jetToTauFakeRateInterface_passesTrigger;
+          else                                                          jetToTauFakeRateInterface_lead    = jetToTauFakeRateInterface_failsTrigger;
+          if ( hltFilter(*selHadTau_sublead, filterBit_passesTrigger) ) jetToTauFakeRateInterface_sublead = jetToTauFakeRateInterface_passesTrigger;
+          else                                                          jetToTauFakeRateInterface_sublead = jetToTauFakeRateInterface_failsTrigger;
+        }
+        assert(jetToTauFakeRateInterface_lead && jetToTauFakeRateInterface_sublead);
+        evtWeightRecorder.record_jetToTau_FR_lead(jetToTauFakeRateInterface_lead, selHadTau_lead);
+        evtWeightRecorder.record_jetToTau_FR_sublead(jetToTauFakeRateInterface_sublead, selHadTau_sublead);
       }
       if(leptonFakeRateInterface)
       {
@@ -1457,18 +1481,15 @@ int main(int argc, char* argv[])
       }
       if(applyFakeRateWeights == kFR_3L)
       {
-
         bool passesTight_lepton = isMatched(*selLepton, tightElectrons) || isMatched(*selLepton, tightMuons);
         bool passesTight_hadTau_lead = isMatched(*selHadTau_lead, tightHadTausFull);
         bool passesTight_hadTau_sublead = isMatched(*selHadTau_sublead, tightHadTausFull);
-
         evtWeightRecorder.compute_FR_1l2tau(passesTight_lepton, passesTight_hadTau_lead, passesTight_hadTau_sublead);
       }
       else if(applyFakeRateWeights == kFR_2tau)
       {
         bool passesTight_hadTau_lead = isMatched(*selHadTau_lead, tightHadTausFull);
         bool passesTight_hadTau_sublead = isMatched(*selHadTau_sublead, tightHadTausFull);
-
         evtWeightRecorder.compute_FR_2tau(passesTight_hadTau_lead, passesTight_hadTau_sublead);
       }
 
@@ -1477,11 +1498,13 @@ int main(int argc, char* argv[])
       {
         if(! (selHadTau_lead->genHadTau() || selHadTau_lead->genLepton()))
         {
-          evtWeightRecorder.record_jetToTau_SF_lead(jetToTauFakeRateInterface, selHadTau_lead);
+          assert(jetToTauFakeRateInterface_lead);
+          evtWeightRecorder.record_jetToTau_SF_lead(jetToTauFakeRateInterface_lead, selHadTau_lead);
         }
         if(! (selHadTau_sublead->genHadTau() || selHadTau_sublead->genLepton()))
         {
-          evtWeightRecorder.record_jetToTau_SF_sublead(jetToTauFakeRateInterface, selHadTau_sublead);
+          assert(jetToTauFakeRateInterface_sublead);
+          evtWeightRecorder.record_jetToTau_SF_sublead(jetToTauFakeRateInterface_sublead, selHadTau_sublead);
         }
       }
     }
@@ -2255,7 +2278,9 @@ int main(int argc, char* argv[])
   delete dataToMCcorrectionInterface_1l_2tau_trigger;
 
   delete leptonFakeRateInterface;
-  delete jetToTauFakeRateInterface;
+  delete jetToTauFakeRateInterface_withoutTrigger;
+  delete jetToTauFakeRateInterface_passesTrigger;
+  delete jetToTauFakeRateInterface_failsTrigger;
 
   delete run_lumi_eventSelector;
 

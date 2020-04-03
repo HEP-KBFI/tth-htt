@@ -15,6 +15,7 @@ namespace
   initializeJetToTauFakeRateWeights(TFile * inputFile,
                                     const std::string & hadTauSelection,
                                     const edm::ParameterSet & cfg,
+                                    const std::string& trigMatching,
                                     int central_or_shift,
                                     std::map<int, std::vector<JetToTauFakeRateWeightEntry *>> & jetToTauFakeRateWeights,
                                     bool & isInitialized)
@@ -33,7 +34,7 @@ namespace
       const double absEtaMax = absEtaBins[idxBin + 1];
       
       JetToTauFakeRateWeightEntry * jetToTauFakeRateWeight = new JetToTauFakeRateWeightEntry(
-        absEtaMin, absEtaMax, hadTauSelection, inputFile, cfg, central_or_shift
+        absEtaMin, absEtaMax, hadTauSelection, inputFile, cfg, trigMatching, central_or_shift
       );
       if(! jetToTauFakeRateWeights.count(central_or_shift))
       {
@@ -46,7 +47,7 @@ namespace
   }
 }
 
-JetToTauFakeRateInterface::JetToTauFakeRateInterface(const edm::ParameterSet & cfg)
+JetToTauFakeRateInterface::JetToTauFakeRateInterface(const edm::ParameterSet & cfg, const std::string& trigMatching)
   : inputFile_(nullptr)
   , isInitialized_lead_(false)
   , isInitialized_sublead_(false)
@@ -60,12 +61,13 @@ JetToTauFakeRateInterface::JetToTauFakeRateInterface(const edm::ParameterSet & c
 
   const auto initializeJetToTauFRWeights = [&, this](
     const edm::ParameterSet & cfg_prio,
+    const std::string& trigMatching_prio,
     std::map<int, std::vector<JetToTauFakeRateWeightEntry *>> & jetToTauFakeRateWeights_prio,
     bool & isInitialized,
     int FRjt_option) -> void
   {
     initializeJetToTauFakeRateWeights(
-      inputFile_, hadTauSelection, cfg_prio, FRjt_option, jetToTauFakeRateWeights_prio, isInitialized
+      inputFile_, hadTauSelection, cfg_prio, trigMatching_prio, FRjt_option, jetToTauFakeRateWeights_prio, isInitialized
     );
   };
 
@@ -74,22 +76,22 @@ JetToTauFakeRateInterface::JetToTauFakeRateInterface(const edm::ParameterSet & c
     if(cfg.exists("lead"))
     {
       const edm::ParameterSet cfg_lead = cfg.getParameter<edm::ParameterSet>("lead");
-      initializeJetToTauFRWeights(cfg_lead, jetToTauFakeRateWeights_lead_, isInitialized_lead_, FRjt_option);
+      initializeJetToTauFRWeights(cfg_lead, trigMatching, jetToTauFakeRateWeights_lead_, isInitialized_lead_, FRjt_option);
     }
     if(cfg.exists("sublead"))
     {
       const edm::ParameterSet cfg_sublead = cfg.getParameter<edm::ParameterSet>("sublead");
-      initializeJetToTauFRWeights(cfg_sublead, jetToTauFakeRateWeights_sublead_, isInitialized_sublead_, FRjt_option);
+      initializeJetToTauFRWeights(cfg_sublead, trigMatching, jetToTauFakeRateWeights_sublead_, isInitialized_sublead_, FRjt_option);
     }
     if(cfg.exists("third"))
     {
       const edm::ParameterSet cfg_third = cfg.getParameter<edm::ParameterSet>("third");
-      initializeJetToTauFRWeights(cfg_third, jetToTauFakeRateWeights_third_, isInitialized_third_, FRjt_option);
+      initializeJetToTauFRWeights(cfg_third, trigMatching, jetToTauFakeRateWeights_third_, isInitialized_third_, FRjt_option);
     }
     if(cfg.exists("fourth"))
     {
       const edm::ParameterSet cfg_fourth = cfg.getParameter<edm::ParameterSet>("fourth");
-      initializeJetToTauFRWeights(cfg_fourth, jetToTauFakeRateWeights_fourth_, isInitialized_fourth_, FRjt_option);
+      initializeJetToTauFRWeights(cfg_fourth, trigMatching, jetToTauFakeRateWeights_fourth_, isInitialized_fourth_, FRjt_option);
     }
   }
 }
