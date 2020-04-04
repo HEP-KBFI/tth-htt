@@ -1018,15 +1018,15 @@ int main(int argc, char* argv[])
     ">= 2 jets",
     ">= 2 loose b-jets || 1 medium b-jet",
     ">= 1 sel lepton",
+    Form("sel lepton pT > %.0f(e)/%.0f(mu) GeV", minPt_e, minPt_mu),
+    Form("sel lepton abs(eta) < %.1f", maxAbsEta_lepton),
     "<= 1 tight leptons",
     ">= 1 sel tau",
+    Form("sel hadTau pT > %.0f GeV", minPt_hadTau),
     "<= 1 veto taus",
     "HLT filter matching",
     ">= 4 jets",
     "m(ll) > 12 GeV",
-    Form("sel lepton pT > %.0f(e)/%.0f(mu) GeV", minPt_e, minPt_mu),
-    Form("sel lepton abs(eta) < %.1f", maxAbsEta_lepton),
-    Form("sel hadTau pT > %.0f GeV", minPt_hadTau),
     Form("lepton+tau %s charge", chargeSumSelection_string.data()),
     "MEt filters",
     "signal region veto",
@@ -1448,6 +1448,29 @@ int main(int argc, char* argv[])
     int selLepton_type = getLeptonType(selLepton->pdgId());
     const leptonChargeFlipGenMatchEntry& selLepton_genMatch = getLeptonChargeFlipGenMatch(leptonGenMatch_definitions, selLepton);
 
+    const double minPt = selLepton->is_electron() ? minPt_e : minPt_mu;
+    if ( !(selLepton->cone_pt() > minPt) )
+    {
+      if(run_lumi_eventSelector || isDEBUG)
+      {
+        std::cout << "event " << eventInfo.str() << " FAILS minPt = " << minPt << " < cut on the selected lepton\n";
+      }
+      continue;
+    }
+    cutFlowTable.update(Form("sel lepton pT > %.0f(e)/%.0f(mu) GeV", minPt_e, minPt_mu), evtWeightRecorder.get(central_or_shift_main));
+    cutFlowHistManager->fillHistograms(Form("sel lepton pT > %.0f(e)/%.0f(mu) GeV", minPt_e, minPt_mu), evtWeightRecorder.get(central_or_shift_main));
+
+    if ( !(selLepton->absEta() < maxAbsEta_lepton) )
+    {
+      if(run_lumi_eventSelector || isDEBUG)
+      {
+        std::cout << "event " << eventInfo.str() << " FAILS maxAbsEta = " << maxAbsEta_lepton << " > cut on the selected lepton\n";
+      }
+      continue;
+    }
+    cutFlowTable.update(Form("sel lepton abs(eta) < %.1f", maxAbsEta_lepton), evtWeightRecorder.get(central_or_shift_main));
+    cutFlowHistManager->fillHistograms(Form("sel lepton abs(eta) < %.1f", maxAbsEta_lepton), evtWeightRecorder.get(central_or_shift_main));
+
     // require exactly one lepton passing tight selection criteria, to avoid overlap with other channels
     if ( !(tightLeptonsFull.size() <= 1) ) {
       if ( run_lumi_eventSelector ) {
@@ -1473,6 +1496,17 @@ int main(int argc, char* argv[])
     cutFlowHistManager->fillHistograms(">= 1 sel tau", evtWeightRecorder.get(central_or_shift_main));
     const RecoHadTau* selHadTau = selHadTaus[0];
     const hadTauChargeFlipGenMatchEntry& selHadTau_genMatch = getHadTauChargeFlipGenMatch(hadTauGenMatch_definitions, selHadTau);
+
+    if ( !(selHadTau->pt() > minPt_hadTau) )
+    {
+      if(run_lumi_eventSelector || isDEBUG)
+      {
+        std::cout << "event " << eventInfo.str() << " FAILS minPt = " << minPt_hadTau << " < cut on the selected tau\n";
+      }
+      continue;
+    }
+    cutFlowTable.update(Form("sel hadTau pT > %.0f GeV", minPt_hadTau), evtWeightRecorder.get(central_or_shift_main));
+    cutFlowHistManager->fillHistograms(Form("sel hadTau pT > %.0f GeV", minPt_hadTau), evtWeightRecorder.get(central_or_shift_main));
 
     // veto events containing more than one tau passing the Medium WP, to avoid overlap with the 1l+1tau category
     // we want to keep all cuts consistent in SR and fake CR, to obtain a consistent estimate of the fake background
@@ -1629,40 +1663,6 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update("m(ll) > 12 GeV", evtWeightRecorder.get(central_or_shift_main));
     cutFlowHistManager->fillHistograms("m(ll) > 12 GeV", evtWeightRecorder.get(central_or_shift_main));
-
-    const double minPt = selLepton->is_electron() ? minPt_e : minPt_mu;
-    if ( !(selLepton->cone_pt() > minPt) )
-    {
-      if(run_lumi_eventSelector || isDEBUG)
-      {
-        std::cout << "event " << eventInfo.str() << " FAILS minPt = " << minPt << " < cut on the selected lepton\n";
-      }
-      continue;
-    }
-    cutFlowTable.update(Form("sel lepton pT > %.0f(e)/%.0f(mu) GeV", minPt_e, minPt_mu), evtWeightRecorder.get(central_or_shift_main));
-    cutFlowHistManager->fillHistograms(Form("sel lepton pT > %.0f(e)/%.0f(mu) GeV", minPt_e, minPt_mu), evtWeightRecorder.get(central_or_shift_main));
-
-    if ( !(selLepton->absEta() < maxAbsEta_lepton) )
-    {
-      if(run_lumi_eventSelector || isDEBUG)
-      {
-        std::cout << "event " << eventInfo.str() << " FAILS maxAbsEta = " << maxAbsEta_lepton << " > cut on the selected lepton\n";
-      }
-      continue;
-    }
-    cutFlowTable.update(Form("sel lepton abs(eta) < %.1f", maxAbsEta_lepton), evtWeightRecorder.get(central_or_shift_main));
-    cutFlowHistManager->fillHistograms(Form("sel lepton abs(eta) < %.1f", maxAbsEta_lepton), evtWeightRecorder.get(central_or_shift_main));
-
-    if ( !(selHadTau->pt() > minPt_hadTau) )
-    {
-      if(run_lumi_eventSelector || isDEBUG)
-      {
-        std::cout << "event " << eventInfo.str() << " FAILS minPt = " << minPt_hadTau << " < cut on the selected tau\n";
-      }
-      continue;
-    }
-    cutFlowTable.update(Form("sel hadTau pT > %.0f GeV", minPt_hadTau), evtWeightRecorder.get(central_or_shift_main));
-    cutFlowHistManager->fillHistograms(Form("sel hadTau pT > %.0f GeV", minPt_hadTau), evtWeightRecorder.get(central_or_shift_main));
 
     bool isCharge_SS = selLepton->charge()*selHadTau->charge() > 0;
     bool isCharge_OS = selLepton->charge()*selHadTau->charge() < 0;
