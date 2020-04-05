@@ -1713,7 +1713,7 @@ meta_dictionary["/GluGluToContinToZZTo2e2tau_13TeV_MCFM701_pythia8/RunIIAutumn18
   ("xsection",              0.00319),
   ("use_it",                True),
   ("genWeight",             True),
-  ("comment",               "66.67%; status: VALID; size: 23.14GB; nevents: 492.00k; release: 10_2_5; last modified: 2019-08-06 13:47:30"),
+  ("comment",               "100.0%; status: VALID; size: 23.14GB; nevents: 492.00k; release: 10_2_5; last modified: 2019-08-06 13:47:30"),
 ])
 
 meta_dictionary["/GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v3/MINIAODSIM"] =  OD([
@@ -1730,7 +1730,7 @@ meta_dictionary["/GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8/RunIIAutumn18M
 ])
 
 meta_dictionary["/GluGluToContinToZZTo2mu2tau_13TeV_MCFM701_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v4/MINIAODSIM"] =  OD([
-  ("crab_string",           ""),
+  ("crab_string",           "2018_2020Apr01_GluGluToContinToZZTo2mu2tau_13TeV_MCFM701_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v4"),
   ("sample_category",       "ZZ"),
   ("process_name_specific", "ggZZTo2mu2tau"),
   ("nof_db_events",         500000),
@@ -1739,7 +1739,7 @@ meta_dictionary["/GluGluToContinToZZTo2mu2tau_13TeV_MCFM701_pythia8/RunIIAutumn1
   ("xsection",              0.00319),
   ("use_it",                True),
   ("genWeight",             True),
-  ("comment",               "status: VALID; size: 22.89GB; nevents: 500.00k; release: 10_2_5; last modified: 2019-09-12 01:16:13"),
+  ("comment",               "100.0%; status: VALID; size: 22.89GB; nevents: 500.00k; release: 10_2_5; last modified: 2019-09-12 01:16:13"),
 ])
 
 meta_dictionary["/QCD_Pt_15to20_bcToE_TuneCP5_13TeV_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/MINIAODSIM"] =  OD([
