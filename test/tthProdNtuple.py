@@ -89,7 +89,7 @@ elif mode == 'hh_bbww_sync':
 
   samples = load_samples(era, False, base = 'hh_bbww', suffix = 'sync')
   pileup = os.path.join(
-    os.environ['CMSSW_BASE'], 'src/hhAnalysis/bbww/data/pileup_hh_{}.root'.format(era)
+    os.environ['CMSSW_BASE'], 'src/hhAnalysis/bbww/data/pileup_hh_{}_sync.root'.format(era)
   )
 elif mode == 'hh':
   if preselection:
