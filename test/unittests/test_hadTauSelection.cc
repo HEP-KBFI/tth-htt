@@ -4,7 +4,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorTight.h"
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h"
 
-#define SELECTOR_ERA kEra_2017
+#define SELECTOR_ERA Era::k2017
 #define SELECTOR_DBG true
 
 #define FAKEABLE_DR03MVA "dR03mvaVLoose"

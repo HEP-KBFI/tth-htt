@@ -10,7 +10,8 @@
  *
  */
 
-#include "tthAnalysis/HiggsToTauTau/interface/HistManagerBase.h" // HistManagerBase
+#include "tthAnalysis/HiggsToTauTau/interface/HistManagerBase.h"      // HistManagerBase
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Era
 
 class EvtHistManager_ttZctrl
   : public HistManagerBase
@@ -44,7 +45,7 @@ public:
     getHistogram_EventCounter() const;
 
 private:
-  int era_;
+  Era era_;
 
   TH1 * histogram_numElectrons_;
   TH1 * histogram_numMuons_;

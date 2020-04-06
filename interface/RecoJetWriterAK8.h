@@ -1,6 +1,8 @@
 #ifndef tthAnalysis_HiggsToTauTau_RecoJetWriterAK8_h
 #define tthAnalysis_HiggsToTauTau_RecoJetWriterAK8_h
 
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Era
+
 #include <Rtypes.h> // UInt_t, Float_t
 
 #include <string>
@@ -15,13 +17,13 @@ class RecoSubjetWriterAK8;
 class RecoJetWriterAK8
 {
 public:
-  RecoJetWriterAK8(int era,
+  RecoJetWriterAK8(Era era,
                    bool isMC);
-  RecoJetWriterAK8(int era,
+  RecoJetWriterAK8(Era era,
                    bool isMC,
                    const std::string & branchName_jet,
                    const std::string & branchName_subjet);
-  RecoJetWriterAK8(int era,
+  RecoJetWriterAK8(Era era,
                    bool isMC,
                    const std::string & branchName_num_jet,
                    const std::string & branchName_jet,
@@ -57,7 +59,7 @@ protected:
   void
   setBranchNames();
 
-  int era_;
+  Era era_;
   bool isMC_;
   int sysOption_central_;
   int sysOption_;

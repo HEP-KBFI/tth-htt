@@ -1,14 +1,13 @@
 #include "tthAnalysis/HiggsToTauTau/interface/TauESTool.h"
 
-#include "tthAnalysis/HiggsToTauTau/interface/LocalFileInPath.h" // LocalFileInPath
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_*
+#include "tthAnalysis/HiggsToTauTau/interface/LocalFileInPath.h"      // LocalFileInPath
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Era::k*
 
 #include <TString.h> // Form()
+#include <TFile.h>   // TFile
+#include <TH1.h>     // TH1
 
-#include <TFile.h> // TFile
-#include <TH1.h> // TH1
-
-TauESTool::TauESTool(int era,
+TauESTool::TauESTool(Era era,
                      TauID tauID,
                      int central_or_shift,
                      bool debug)
@@ -90,10 +89,10 @@ TauESTool::get_era_str() const
 {
   switch(era_)
   {
-    case kEra_2016: return "2016Legacy";
-    case kEra_2017: return "2017ReReco";
-    case kEra_2018: return "2018ReReco";
-    default: throw cmsException(this, __func__, __LINE__) << "Invalid era: " << era_;
+    case Era::k2016: return "2016Legacy";
+    case Era::k2017: return "2017ReReco";
+    case Era::k2018: return "2018ReReco";
+    default: throw cmsException(this, __func__, __LINE__) << "Invalid era: " << static_cast<int>(era_);
   }
 }
 
@@ -163,7 +162,7 @@ TauESTool::load_sf(const std::string & input_name,
 
   if(debug_)
   {
-    std::cout << "Loaded the following tau ES SF from file '" << input_name_full << "' for era " << era_ << ":\n";
+    std::cout << "Loaded the following tau ES SF from file '" << input_name_full << "' for era " << static_cast<int>(era_) << ":\n";
     for(const auto & kv: sf)
     {
       std::cout << "  DM = " << kv.first << " -> SF = " << kv.second << " +/- " << sfErr[kv.first] << '\n';

@@ -1,12 +1,10 @@
 #include "tthAnalysis/HiggsToTauTau/interface/EvtHistManager_WZctrl.h"
 
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // fillWithOverFlow()
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // get_era(), kEra_*
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 
 EvtHistManager_WZctrl::EvtHistManager_WZctrl(const edm::ParameterSet & cfg)
   : HistManagerBase(cfg)
-  , era_(get_era(cfg.getParameter<std::string>("era")))
 {
   const std::vector<std::string> sysOpts_central = {
     "numElectrons",

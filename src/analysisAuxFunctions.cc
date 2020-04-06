@@ -16,7 +16,7 @@
 #include <numeric> // std::accumulate()
 
 double
-get_BtagWP(int era,
+get_BtagWP(Era era,
            Btag btag,
            BtagWP wp)
 {
@@ -95,33 +95,33 @@ get_selection(const std::string & selectionString)
   throw cmsException(__func__) << "Invalid Configuration parameter for object selection = " << selectionString;
 }
 
-int
+Era
 get_era(const std::string & eraString)
 {
   if(eraString == "2016")
   {
-    return kEra_2016;
+    return Era::k2016;
   }
   else if(eraString == "2017")
   {
-    return kEra_2017;
+    return Era::k2017;
   }
   else if(eraString == "2018")
   {
-    return kEra_2018;
+    return Era::k2018;
   }
   throw cmsException(__func__) << "Invalid Configuration parameter 'era' = " << eraString;
 }
 
 std::string
-get_era(int era)
+get_era(Era era)
 {
   switch(era)
   {
-    case kEra_2016: return "2016";
-    case kEra_2017: return "2017";
-    case kEra_2018: return "2018";
-    default: throw cmsException(__func__, __LINE__) << "Invalid era: " << era;
+    case Era::k2016: return "2016";
+    case Era::k2017: return "2017";
+    case Era::k2018: return "2018";
+    default: throw cmsException(__func__, __LINE__) << "Invalid era: " << static_cast<int>(era);
   }
 }
 

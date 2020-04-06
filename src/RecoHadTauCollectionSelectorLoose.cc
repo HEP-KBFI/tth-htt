@@ -1,9 +1,9 @@
-#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorLoose.h" // RecoHadTauSelectorLoose
+#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorLoose.h"
 
-#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_*
+#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h"         // cmsException()
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Era::k*
 
-RecoHadTauSelectorLoose::RecoHadTauSelectorLoose(int era,
+RecoHadTauSelectorLoose::RecoHadTauSelectorLoose(Era era,
                                                  int index,
                                                  bool debug,
                                                  bool set_selection_flags)

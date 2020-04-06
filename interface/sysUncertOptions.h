@@ -1,6 +1,8 @@
 #ifndef SYSUNCEROPTIONS_H
 #define SYSUNCEROPTIONS_H
 
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Era
+
 #include <string> // std::string
 
 enum class Btag;
@@ -228,7 +230,7 @@ enum class EWKBJetSys
 };
 
 bool
-isValidJESsource(int era,
+isValidJESsource(Era era,
                  int central_or_shift);
 
 bool
@@ -334,7 +336,7 @@ getBranchName_bTagWeight(Btag btag,
  */
 std::string
 getBranchName_jetMET(const std::string & default_branchName,
-                     int era,
+                     Era era,
                      int central_or_shift,
                      bool isPt);
 

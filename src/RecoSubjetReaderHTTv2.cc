@@ -1,17 +1,17 @@
-#include "tthAnalysis/HiggsToTauTau/interface/RecoSubjetReaderHTTv2.h" // RecoSubjetReaderHTTv2
+#include "tthAnalysis/HiggsToTauTau/interface/RecoSubjetReaderHTTv2.h"
 
-#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kBtag_*
+#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h"             // cmsException()
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h"     // kBtag_*
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
 
 std::map<std::string, int> RecoSubjetReaderHTTv2::numInstances_;
 std::map<std::string, RecoSubjetReaderHTTv2 *> RecoSubjetReaderHTTv2::instances_;
 
-RecoSubjetReaderHTTv2::RecoSubjetReaderHTTv2(int era)
+RecoSubjetReaderHTTv2::RecoSubjetReaderHTTv2(Era era)
   : RecoSubjetReaderHTTv2(era, "HTTV2Subjets")
 {}
 
-RecoSubjetReaderHTTv2::RecoSubjetReaderHTTv2(int era,
+RecoSubjetReaderHTTv2::RecoSubjetReaderHTTv2(Era era,
                                              const std::string & branchName_obj)
   : era_(era)
   , max_nJets_(128)

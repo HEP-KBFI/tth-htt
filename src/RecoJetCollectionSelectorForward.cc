@@ -1,11 +1,11 @@
-#include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelectorForward.h" // RecoJetSelectorForward
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelectorForward.h"
 
-#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // get_human_line()
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_*
+#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h"         // get_human_line()
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Era::k*
 
-RecoJetSelectorForward::RecoJetSelectorForward(int era,
-                                 int index,
-                                 bool debug)
+RecoJetSelectorForward::RecoJetSelectorForward(Era era,
+                                               int index,
+                                               bool debug)
   : era_(era)
   , min_pt_(25.)
   , max_absEta_(5.0)
@@ -15,9 +15,9 @@ RecoJetSelectorForward::RecoJetSelectorForward(int era,
 {
   switch(era)
   {
-    case kEra_2016: min_jetId_ = 1; break; // 1 means loose
-    case kEra_2017:
-    case kEra_2018: min_jetId_ = 2; break; // 2 means tight (loose jet ID deprecated since 94x)
+    case Era::k2016: min_jetId_ = 1; break; // 1 means loose
+    case Era::k2017:
+    case Era::k2018: min_jetId_ = 2; break; // 2 means tight (loose jet ID deprecated since 94x)
     default: throw cmsException(this) << "Implement me!";
   }
 }

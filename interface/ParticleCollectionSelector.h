@@ -1,6 +1,8 @@
 #ifndef tthAnalysis_HiggsToTauTau_ParticleCollectionSelector_h
 #define tthAnalysis_HiggsToTauTau_ParticleCollectionSelector_h
 
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Era
+
 #include <vector> // std::vector<>
 #include <algorithm> // std::sort()
 #include <type_traits> // std::enable_if<>, std::is_base_of<>
@@ -10,7 +12,7 @@ template <typename Tobj,
 class ParticleCollectionSelector
 {
 public:
-  ParticleCollectionSelector(int era,
+  ParticleCollectionSelector(Era era,
                              int index = -1,
                              bool debug = false)
     : selIndex_(index)

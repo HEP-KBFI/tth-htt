@@ -1,15 +1,16 @@
 #ifndef tthAnalysis_HiggsToTauTau_RecoHadTauCollectionSelectorLoose_h
 #define tthAnalysis_HiggsToTauTau_RecoHadTauCollectionSelectorLoose_h
 
-#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauSelectorBase.h" // RecoHadTauSelectorBase, RecoHadTau
+#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauSelectorBase.h"       // RecoHadTauSelectorBase, RecoHadTau
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelector.h" // RecoHadTauCollectionSelector
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h"         // Era
 
 class RecoHadTauSelectorLoose
   : public RecoHadTauSelectorBase
 {
 public:
   explicit
-  RecoHadTauSelectorLoose(int era,
+  RecoHadTauSelectorLoose(Era era,
                           int index = -1,
                           bool debug = false,
                           bool set_selection_flags = true);

@@ -1,8 +1,9 @@
 #include "tthAnalysis/HiggsToTauTau/interface/jetToTauFakeRateAuxFunctions.h"
 
-#include "FWCore/Utilities/interface/Exception.h" // cms::Exception
-#include "DataFormats/Math/interface/deltaR.h" // deltaR
-#include "tthAnalysis/HiggsToTauTau/interface/hltFilter.h" // kTauFilterBit_notApplied,..., kTauFilterBit_passesTightChargedIso, kTauFilterBit_failsTightChargedIso 
+#include "FWCore/Utilities/interface/Exception.h"                     // cms::Exception
+#include "DataFormats/Math/interface/deltaR.h"                        // deltaR
+#include "tthAnalysis/HiggsToTauTau/interface/hltFilter.h"            // kTauFilterBit*
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Era::k*
 
 #include <TString.h> // Form()
 
@@ -44,18 +45,34 @@ getPtBin(double minPt,
   return boost::replace_all_copy(PtBin, ".", "_");
 }
 
-TauFilterBit
-getTrigMatchingOption(const std::string& trigMatching)
+int
+getTrigMatchingOption_2016(const std::string& trigMatching)
 {
-  TauFilterBit filterBit;
-  if      ( trigMatching == "withoutTriggerMatching"                ) filterBit = kTauFilterBit_notApplied;
-  else if ( trigMatching == "passesTriggerMatchingLooseChargedIso"  ) filterBit = kTauFilterBit_passesLooseChargedIso;
-  else if ( trigMatching == "failsTriggerMatchingLooseChargedIso"   ) filterBit = kTauFilterBit_failsLooseChargedIso;
-  else if ( trigMatching == "passesTriggerMatchingMediumChargedIso" ) filterBit = kTauFilterBit_passesMediumChargedIso;
-  else if ( trigMatching == "failsTriggerMatchingMediumChargedIso"  ) filterBit = kTauFilterBit_failsMediumChargedIso;
-  else if ( trigMatching == "passesTriggerMatchingTightChargedIso"  ) filterBit = kTauFilterBit_passesTightChargedIso;
-  else if ( trigMatching == "failsTriggerMatchingTightChargedIso"   ) filterBit = kTauFilterBit_failsTightChargedIso;
-  else throw cms::Exception("getTrigMatchingOption") 
+  int filterBit;
+  // HLT filter names specific to 2016 data-taking period
+  if      ( trigMatching == "withoutTriggerMatching"                ) filterBit = kTauFilterBit2016_notApplied;
+  else if ( trigMatching == "passesTriggerMatchingLooseIso"         ) filterBit = kTauFilterBit2016_passesLooseIso;
+  else if ( trigMatching == "failsTriggerMatchingLooseIso"          ) filterBit = kTauFilterBit2016_failsLooseIso;
+  else if ( trigMatching == "passesTriggerMatchingMediumIso"        ) filterBit = kTauFilterBit2016_passesMediumIso;
+  else if ( trigMatching == "failsTriggerMatchingMediumIso"         ) filterBit = kTauFilterBit2016_failsMediumIso;
+  else throw cms::Exception("getTrigMatchingOption_2016") 
+    << "Invalid parameter 'trigMatching' = " << trigMatching << " !!\n";
+  return filterBit;
+}
+
+int
+getTrigMatchingOption_2017and2018(const std::string& trigMatching)
+{
+  int filterBit;
+  // HLT filter names specific to 2017 and 2018 data-taking periods
+  if      ( trigMatching == "withoutTriggerMatching"                ) filterBit = kTauFilterBit2017and2018_notApplied;
+  else if ( trigMatching == "passesTriggerMatchingLooseChargedIso"  ) filterBit = kTauFilterBit2017and2018_passesLooseChargedIso;
+  else if ( trigMatching == "failsTriggerMatchingLooseChargedIso"   ) filterBit = kTauFilterBit2017and2018_failsLooseChargedIso;
+  else if ( trigMatching == "passesTriggerMatchingMediumChargedIso" ) filterBit = kTauFilterBit2017and2018_passesMediumChargedIso;
+  else if ( trigMatching == "failsTriggerMatchingMediumChargedIso"  ) filterBit = kTauFilterBit2017and2018_failsMediumChargedIso;
+  else if ( trigMatching == "passesTriggerMatchingTightChargedIso"  ) filterBit = kTauFilterBit2017and2018_passesTightChargedIso;
+  else if ( trigMatching == "failsTriggerMatchingTightChargedIso"   ) filterBit = kTauFilterBit2017and2018_failsTightChargedIso;
+  else throw cms::Exception("getTrigMatchingOption_2017and2018") 
     << "Invalid parameter 'trigMatching' = " << trigMatching << " !!\n";
   return filterBit;
 }

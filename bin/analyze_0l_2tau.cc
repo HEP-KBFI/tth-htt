@@ -190,7 +190,7 @@ int main(int argc, char* argv[])
   std::cout << "isMCClosure_t = " << isMCClosure_t << std::endl;
 
   std::string era_string = cfg_analyze.getParameter<std::string>("era");
-  const int era = get_era(era_string);
+  const Era era = get_era(era_string);
 
   vstring triggerNames_2tau = cfg_analyze.getParameter<vstring>("triggers_2tau");
   std::vector<hltPath*> triggers_2tau = create_hltPaths(triggerNames_2tau);
@@ -309,10 +309,10 @@ int main(int argc, char* argv[])
   Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface = nullptr;
   switch(era)
   {
-    case kEra_2016: dataToMCcorrectionInterface = new Data_to_MC_CorrectionInterface_2016(cfg_dataToMCcorrectionInterface); break;
-    case kEra_2017: dataToMCcorrectionInterface = new Data_to_MC_CorrectionInterface_2017(cfg_dataToMCcorrectionInterface); break;
-    case kEra_2018: dataToMCcorrectionInterface = new Data_to_MC_CorrectionInterface_2018(cfg_dataToMCcorrectionInterface); break;
-    default: throw cmsException("analyze_0l_2tau", __LINE__) << "Invalid era = " << era;
+    case Era::k2016: dataToMCcorrectionInterface = new Data_to_MC_CorrectionInterface_2016(cfg_dataToMCcorrectionInterface); break;
+    case Era::k2017: dataToMCcorrectionInterface = new Data_to_MC_CorrectionInterface_2017(cfg_dataToMCcorrectionInterface); break;
+    case Era::k2018: dataToMCcorrectionInterface = new Data_to_MC_CorrectionInterface_2018(cfg_dataToMCcorrectionInterface); break;
+    default: throw cmsException("analyze_0l_2tau", __LINE__) << "Invalid era = " << static_cast<int>(era);
   }
   Data_to_MC_CorrectionInterface_0l_2tau_trigger * dataToMCcorrectionInterface_0l_2tau_trigger = nullptr;
   if(isMC)
@@ -329,8 +329,18 @@ int main(int argc, char* argv[])
   bool selectBDT = cfg_analyze.getParameter<bool>("selectBDT");
 
   JetToTauFakeRateInterface* jetToTauFakeRateInterface = nullptr;
-  // CV: ditau trigger use tight charge isolation for both tau legs in 2016, 2017, and 2018 data-taking period
-  const std::string trigMatching_passesTrigger = "passesTriggerMatchingTightChargedIso";
+  // CV: ditau trigger uses medium isolation (tight charged isolation) 
+  //     for both tau legs in 2016 data-taking period (2017 and 2018 data-taking periods)
+  std::string trigMatching_passesTrigger;
+  if ( era == Era::k2016 )
+  {
+    trigMatching_passesTrigger = "passesTriggerMatchingMediumIso";
+  }
+  else if ( era == Era::k2017 || era == Era::k2018 )
+  {
+    trigMatching_passesTrigger = "passesTriggerMatchingTightChargedIso";
+  }
+  else throw cmsException("analyze_0l_2tau", __LINE__) << "Invalid era = " << static_cast<int>(era);
   if ( applyFakeRateWeights == kFR_2tau ) {
     edm::ParameterSet cfg_hadTauFakeRateWeight = cfg_analyze.getParameter<edm::ParameterSet>("hadTauFakeRateWeight");
     cfg_hadTauFakeRateWeight.addParameter<std::string>("hadTauSelection", hadTauSelection_part2);

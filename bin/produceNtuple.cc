@@ -35,7 +35,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RunLumiEventSelector.h" // RunLumiEventSelector
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // createSubdirectory_recursively
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2017, kLoose, kFakeable, kTight
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kLoose, kFakeable, kTight
 #include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // k*_central
 #include "tthAnalysis/HiggsToTauTau/interface/leptonTypes.h" // getLeptonType(), kElectron, kMuon
 #include "tthAnalysis/HiggsToTauTau/interface/branchEntryType.h" // branchEntryBaseType
@@ -112,7 +112,7 @@ main(int argc,
   const int cacheSize = cfg_produceNtuple.getParameter<int>("cacheSize");
 
   const std::string era_string = cfg_produceNtuple.getParameter<std::string>("era");
-  const int era = get_era(era_string);
+  const Era era = get_era(era_string);
 
   const std::string leptonSelection_string = cfg_produceNtuple.getParameter<std::string>("leptonSelection");
   const int leptonSelection = get_selection(leptonSelection_string);

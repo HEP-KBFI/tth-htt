@@ -16,7 +16,7 @@
 #include <algorithm> // std::sort(), std::min()
 
 MEMInterface_3l::MEMInterface_3l(const std::string & configFileName,
-                                 int era)
+                                 Era era)
   : jetSelectorBtagLoose_(era)
   , shyp_(nullptr)
   , hyp_(nullptr)

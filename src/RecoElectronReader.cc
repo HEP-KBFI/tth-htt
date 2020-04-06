@@ -1,21 +1,21 @@
-#include "tthAnalysis/HiggsToTauTau/interface/RecoElectronReader.h" // RecoElectronReader
+#include "tthAnalysis/HiggsToTauTau/interface/RecoElectronReader.h"
 
-#include "tthAnalysis/HiggsToTauTau/interface/RecoLeptonReader.h" // RecoLeptonReader
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // setValue_float()
-#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
+#include "tthAnalysis/HiggsToTauTau/interface/RecoLeptonReader.h"         // RecoLeptonReader
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h"     // setValue_float()
+#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h"             // cmsException()
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_*
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h"     // Era::k*
 
 std::map<std::string, int> RecoElectronReader::numInstances_;
 std::map<std::string, RecoElectronReader *> RecoElectronReader::instances_;
 
-RecoElectronReader::RecoElectronReader(int era,
+RecoElectronReader::RecoElectronReader(Era era,
                                        bool isMC,
                                        bool readGenMatching)
   : RecoElectronReader(era, "Electron", isMC, readGenMatching)
 {}
 
-RecoElectronReader::RecoElectronReader(int era,
+RecoElectronReader::RecoElectronReader(Era era,
                                        const std::string & branchName_obj,
                                        bool isMC,
                                        bool readGenMatching)
@@ -148,7 +148,7 @@ RecoElectronReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(OoEminusOoP_, branchName_OoEminusOoP_);
     bai.setBranchAddress(lostHits_, branchName_lostHits_);
     bai.setBranchAddress(conversionVeto_, branchName_conversionVeto_);
-    bai.setBranchAddress(cutbasedID_HLT_, era_ == kEra_2016 ? branchName_cutbasedID_HLT_ : "");
+    bai.setBranchAddress(cutbasedID_HLT_, era_ == Era::k2016 ? branchName_cutbasedID_HLT_ : "");
   }
 }
 

@@ -3,7 +3,7 @@
 #include "TauAnalysisTools/TauTriggerSFs/interface/TauTriggerSFs2017.h" // TauTriggerSFs2017
 #include "TauAnalysisTools/TauTriggerSFs/interface/SFProvider.h" // tau_trigger::SFProvider
 
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // get_era(), kEra_*, get_tau_id_*(), TauID::
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // get_era(), Era::k*, get_tau_id_*(), TauID::
 #include "tthAnalysis/HiggsToTauTau/interface/data_to_MC_corrections_auxFunctions.h" // aux::getHadTauSelectionLabel()
 #include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // TriggerSFsys
 #include "tthAnalysis/HiggsToTauTau/interface/LocalFileInPath.h" // LocalFileInPath
@@ -32,7 +32,7 @@ TauTriggerSFInterface::TauTriggerSFInterface(const std::string & era_str,
                                              TauTriggerType triggerType)
   : TauTriggerSFInterface(triggerType)
 {
-  const int __attribute__((unused)) era = get_era(era_str);
+  const Era __attribute__((unused)) era = get_era(era_str);
   const TauID tauId = get_tau_id_enum(hadTauSelection);
   const std::string triggerType_str = tauTriggerType_toStr(triggerType);
 

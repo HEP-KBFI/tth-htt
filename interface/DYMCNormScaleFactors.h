@@ -1,7 +1,8 @@
 #ifndef tthAnalysis_HiggsToTauTau_DYMCNormScaleFactors_h
 #define tthAnalysis_HiggsToTauTau_DYMCNormScaleFactors_h
 
-#include "tthAnalysis/HiggsToTauTau/interface/GenParticle.h" // GenParticle
+#include "tthAnalysis/HiggsToTauTau/interface/GenParticle.h"          // GenParticle
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Era
 
 // forward declarations
 class TFile;
@@ -12,7 +13,7 @@ class TFile;
 class DYMCNormScaleFactors
 {
 public:
-  DYMCNormScaleFactors(int era,
+  DYMCNormScaleFactors(Era era,
                        bool debug = false);
   ~DYMCNormScaleFactors();
 
@@ -24,7 +25,7 @@ public:
             int central_or_shift) const;
 
 protected:
-  int era_;
+  Era era_;
   bool debug_;
 
 };

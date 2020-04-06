@@ -1,23 +1,23 @@
-#include "tthAnalysis/HiggsToTauTau/interface/RecoJetWriterAK8.h" // RecoJetWriterAK8
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJetWriterAK8.h"
 
-#include "tthAnalysis/HiggsToTauTau/interface/RecoSubjetWriterAK8.h" // RecoSubjetWriterAK8
-#include "tthAnalysis/HiggsToTauTau/interface/RecoJetAK8.h" // RecoJetAK8
+#include "tthAnalysis/HiggsToTauTau/interface/RecoSubjetWriterAK8.h"      // RecoSubjetWriterAK8
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJetAK8.h"               // RecoJetAK8
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
-#include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // kFatJet_*
+#include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h"         // kFatJet_*
 
-RecoJetWriterAK8::RecoJetWriterAK8(int era,
+RecoJetWriterAK8::RecoJetWriterAK8(Era era,
                                    bool isMC)
   : RecoJetWriterAK8(era, isMC, "FatJet", "SubJet")
 {}
 
-RecoJetWriterAK8::RecoJetWriterAK8(int era,
+RecoJetWriterAK8::RecoJetWriterAK8(Era era,
                                    bool isMC,
                                    const std::string & branchName_jet,
                                    const std::string & branchName_subjet)  
   : RecoJetWriterAK8(era, isMC, Form("n%s", branchName_jet.data()), branchName_jet, Form("n%s", branchName_subjet.data()), branchName_subjet)
 {}
 
-RecoJetWriterAK8::RecoJetWriterAK8(int era,
+RecoJetWriterAK8::RecoJetWriterAK8(Era era,
                                    bool isMC,
                                    const std::string & branchName_num_jets,
                                    const std::string & branchName_jet,

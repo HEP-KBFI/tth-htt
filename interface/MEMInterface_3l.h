@@ -1,9 +1,10 @@
 #ifndef tthAnalysis_HiggsToTauTau_MEMInterface_3l_h
 #define tthAnalysis_HiggsToTauTau_MEMInterface_3l_h
 
-#include "tthAnalysis/HiggsToTauTau/interface/MEMOutput_3l.h" // MEMOutput_3l
+#include "tthAnalysis/HiggsToTauTau/interface/MEMOutput_3l.h"                  // MEMOutput_3l
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelectorBtag.h" // RecoJetSelectorBtagLoose
-#include "tthAnalysis/HiggsToTauTau/interface/RecoMEt.h" // RecoMEt
+#include "tthAnalysis/HiggsToTauTau/interface/RecoMEt.h"                       // RecoMEt
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h"          // Era
 
 #include <string>
 
@@ -18,7 +19,7 @@ class MEMInterface_3l
 {
 public:
   MEMInterface_3l(const std::string & configFileName,
-                  int era);
+                  Era era);
   ~MEMInterface_3l();
 
   /**

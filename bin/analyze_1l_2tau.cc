@@ -183,7 +183,7 @@ int main(int argc, char* argv[])
   bool isMCClosure_t = histogramDir.find("mcClosure_t") != std::string::npos;
 
   std::string era_string = cfg_analyze.getParameter<std::string>("era");
-  const int era = get_era(era_string);
+  const Era era = get_era(era_string);
 
   vstring triggerNames_1e = cfg_analyze.getParameter<vstring>("triggers_1e");
   std::vector<hltPath*> triggers_1e = create_hltPaths(triggerNames_1e, "triggers_1e");
@@ -315,10 +315,10 @@ int main(int argc, char* argv[])
   Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface = nullptr;
   switch(era)
   {
-    case kEra_2016: dataToMCcorrectionInterface = new Data_to_MC_CorrectionInterface_2016(cfg_dataToMCcorrectionInterface); break;
-    case kEra_2017: dataToMCcorrectionInterface = new Data_to_MC_CorrectionInterface_2017(cfg_dataToMCcorrectionInterface); break;
-    case kEra_2018: dataToMCcorrectionInterface = new Data_to_MC_CorrectionInterface_2018(cfg_dataToMCcorrectionInterface); break;
-    default: throw cmsException("analyze_1l_2tau", __LINE__) << "Invalid era = " << era;
+    case Era::k2016: dataToMCcorrectionInterface = new Data_to_MC_CorrectionInterface_2016(cfg_dataToMCcorrectionInterface); break;
+    case Era::k2017: dataToMCcorrectionInterface = new Data_to_MC_CorrectionInterface_2017(cfg_dataToMCcorrectionInterface); break;
+    case Era::k2018: dataToMCcorrectionInterface = new Data_to_MC_CorrectionInterface_2018(cfg_dataToMCcorrectionInterface); break;
+    default: throw cmsException("analyze_1l_2tau", __LINE__) << "Invalid era = " << static_cast<int>(era);
   }
   Data_to_MC_CorrectionInterface_1l_2tau_trigger * dataToMCcorrectionInterface_1l_2tau_trigger = nullptr;
   if(isMC)
@@ -346,10 +346,23 @@ int main(int argc, char* argv[])
   JetToTauFakeRateInterface* jetToTauFakeRateInterface_withoutTrigger = nullptr;
   JetToTauFakeRateInterface* jetToTauFakeRateInterface_passesTrigger  = nullptr;
   JetToTauFakeRateInterface* jetToTauFakeRateInterface_failsTrigger   = nullptr;
-  // CV: e+tau and mu+tau cross-triggers use loose charge isolation for tau leg in 2016, 2017, and 2018 data-taking period
-  const std::string trigMatching_passesTrigger = "passesTriggerMatchingLooseChargedIso";
-  const std::string trigMatching_failsTrigger  = "failsTriggerMatchingLooseChargedIso";
-  TauFilterBit filterBit_passesTrigger = getTrigMatchingOption(trigMatching_passesTrigger);
+  // CV: e+tau and mu+tau cross-triggers use loose isolation (loose charged isolation) 
+  //     for tau leg in 2016 data-taking period (2017 and 2018 data-taking periods)
+  std::string trigMatching_passesTrigger, trigMatching_failsTrigger;
+  int filterBit_passesTrigger = 0;
+  if ( era == Era::k2016 )
+  {
+    trigMatching_passesTrigger = "passesTriggerMatchingLooseIso";
+    trigMatching_failsTrigger  = "failsTriggerMatchingLooseIso";
+    filterBit_passesTrigger = getTrigMatchingOption_2016(trigMatching_passesTrigger);
+  }
+  else if ( era == Era::k2017 || era == Era::k2018 )
+  {
+    trigMatching_passesTrigger = "passesTriggerMatchingLooseChargedIso";
+    trigMatching_failsTrigger  = "failsTriggerMatchingLooseChargedIso";
+    filterBit_passesTrigger = getTrigMatchingOption_2017and2018(trigMatching_passesTrigger);
+  }
+  else throw cmsException("analyze_1l_2tau", __LINE__) << "Invalid era = " << static_cast<int>(era);
   if ( applyFakeRateWeights == kFR_3L || applyFakeRateWeights == kFR_2tau ) {
     edm::ParameterSet cfg_hadTauFakeRateWeight = cfg_analyze.getParameter<edm::ParameterSet>("hadTauFakeRateWeight");
     cfg_hadTauFakeRateWeight.addParameter<std::string>("hadTauSelection", hadTauSelection_part2);
@@ -1466,10 +1479,10 @@ int main(int argc, char* argv[])
         }
         else
         {
-          if ( hltFilter(*selHadTau_lead,    filterBit_passesTrigger) ) jetToTauFakeRateInterface_lead    = jetToTauFakeRateInterface_passesTrigger;
-          else                                                          jetToTauFakeRateInterface_lead    = jetToTauFakeRateInterface_failsTrigger;
-          if ( hltFilter(*selHadTau_sublead, filterBit_passesTrigger) ) jetToTauFakeRateInterface_sublead = jetToTauFakeRateInterface_passesTrigger;
-          else                                                          jetToTauFakeRateInterface_sublead = jetToTauFakeRateInterface_failsTrigger;
+          if ( hltFilter(*selHadTau_lead,    filterBit_passesTrigger, era) ) jetToTauFakeRateInterface_lead    = jetToTauFakeRateInterface_passesTrigger;
+          else                                                               jetToTauFakeRateInterface_lead    = jetToTauFakeRateInterface_failsTrigger;
+          if ( hltFilter(*selHadTau_sublead, filterBit_passesTrigger, era) ) jetToTauFakeRateInterface_sublead = jetToTauFakeRateInterface_passesTrigger;
+          else                                                               jetToTauFakeRateInterface_sublead = jetToTauFakeRateInterface_failsTrigger;
         }
         assert(jetToTauFakeRateInterface_lead && jetToTauFakeRateInterface_sublead);
         evtWeightRecorder.record_jetToTau_FR_lead(jetToTauFakeRateInterface_lead, selHadTau_lead);

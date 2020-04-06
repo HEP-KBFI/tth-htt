@@ -1,8 +1,9 @@
 #ifndef tthAnalysis_HiggsToTauTau_RecoElectronReader_h
 #define tthAnalysis_HiggsToTauTau_RecoElectronReader_h
 
-#include "tthAnalysis/HiggsToTauTau/interface/ReaderBase.h" // ReaderBase
-#include "tthAnalysis/HiggsToTauTau/interface/RecoElectron.h" // RecoElectron
+#include "tthAnalysis/HiggsToTauTau/interface/ReaderBase.h"           // ReaderBase
+#include "tthAnalysis/HiggsToTauTau/interface/RecoElectron.h"         // RecoElectron
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Era
 
 #include <map> // std::map<,>
 
@@ -16,10 +17,10 @@ class RecoElectronReader
   : public ReaderBase
 {
 public:
-  RecoElectronReader(int era,
+  RecoElectronReader(Era era,
                      bool isMC,
                      bool readGenMatching);
-  RecoElectronReader(int era,
+  RecoElectronReader(Era era,
                      const std::string & branchName_obj,
                      bool isMC,
                      bool readGenMatching);
@@ -51,7 +52,7 @@ protected:
   void
   setBranchNames();
 
-  int era_;
+  Era era_;
 
   std::string branchName_num_;
   std::string branchName_obj_;

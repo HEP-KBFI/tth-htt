@@ -1,7 +1,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface_0l_2tau_trigger.h"
 
 #include "tthAnalysis/HiggsToTauTau/interface/leptonTypes.h" // kElectron, kMuon
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_*, get_era()
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Era::k*, get_era()
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 #include "tthAnalysis/HiggsToTauTau/interface/data_to_MC_corrections_auxFunctions.h" // aux::
 #include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // TriggerSFsys
@@ -101,7 +101,13 @@ Data_to_MC_CorrectionInterface_0l_2tau_trigger::getSF_triggerEff(TriggerSFsys ce
 
     const double eff_data = eff_2tau_tauLeg1_data * eff_2tau_tauLeg2_data;
     const double eff_mc   = eff_2tau_tauLeg1_mc   * eff_2tau_tauLeg2_mc;
-
+if ( eff_data < 1.e-3 && eff_mc < 1.e-3 )
+{
+  std::cout << "tauLeg1: pT = " << hadTau1_pt_ << ", eta = " << hadTau1_eta_ << std::endl;
+  std::cout << "tauLeg2: pT = " << hadTau2_pt_ << ", eta = " << hadTau2_eta_ << std::endl;
+  std::cout << " eff_data = " << eff_data << ": eff_2tau_tauLeg1_data = " << eff_2tau_tauLeg1_data << ", eff_2tau_tauLeg1_data = " << eff_2tau_tauLeg2_data << std::endl;
+  std::cout << " eff_mc = " << eff_mc << ": eff_2tau_tauLeg1_mc = " << eff_2tau_tauLeg1_mc << ", eff_2tau_tauLeg1_mc = " << eff_2tau_tauLeg2_mc << std::endl;
+}
     sf = aux::compSF(eff_data, eff_mc);
     if(isDEBUG_)
     {

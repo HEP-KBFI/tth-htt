@@ -1,9 +1,9 @@
-#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorFakeable.h" // RecoHadTauSelectorFakeable
+#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorFakeable.h"
 
-#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_*
+#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h"         // cmsException()
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Era::k*
 
-RecoHadTauSelectorFakeable::RecoHadTauSelectorFakeable(int era,
+RecoHadTauSelectorFakeable::RecoHadTauSelectorFakeable(Era era,
                                                        int index,
                                                        bool debug,
                                                        bool set_selection_flags)

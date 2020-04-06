@@ -2,12 +2,13 @@
 #define tthAnalysis_HiggsToTauTau_GenJetCollectionSelector_h
 
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionSelector.h" // ParticleCollectionSelector
-#include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet
+#include "tthAnalysis/HiggsToTauTau/interface/GenJet.h"                     // GenJet
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h"       // Era
 
 class GenJetSelector
 {
 public:
-  explicit GenJetSelector(int era,
+  explicit GenJetSelector(Era era,
 			  int index = -1,
 			  bool debug = false);
   ~GenJetSelector() {}
@@ -32,7 +33,7 @@ public:
   operator()(const GenJet & jet) const;
 
 protected:
-  int era_;
+  Era era_;
   Double_t min_pt_;     ///< lower cut threshold on pT
   Double_t max_absEta_; ///< upper cut threshold on absolute value of eta
   bool debug_;

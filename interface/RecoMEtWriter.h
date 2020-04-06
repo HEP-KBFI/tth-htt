@@ -1,7 +1,8 @@
 #ifndef tthAnalysis_HiggsToTauTau_RecoMEtWriter_h
 #define tthAnalysis_HiggsToTauTau_RecoMEtWriter_h
 
-#include "tthAnalysis/HiggsToTauTau/interface/RecoMEt.h" // RecoMEt, *_t
+#include "tthAnalysis/HiggsToTauTau/interface/RecoMEt.h"              // RecoMEt, *_t
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Era
 
 #include <string> // std::string
 #include <map> // std::map<,>
@@ -12,9 +13,9 @@ class TTree;
 class RecoMEtWriter
 {
 public:
-  RecoMEtWriter(int era,
+  RecoMEtWriter(Era era,
                 bool isMC);
-  RecoMEtWriter(int era,
+  RecoMEtWriter(Era era,
                 bool isMC,
                 const std::string & branchName_obj);
   ~RecoMEtWriter();
@@ -44,7 +45,7 @@ protected:
   void
   setBranchNames();
 
-  int era_;
+  Era era_;
   bool isMC_;
   bool ptPhiOption_;
   bool write_ptPhi_systematics_;

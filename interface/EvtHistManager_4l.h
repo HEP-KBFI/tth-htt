@@ -45,7 +45,6 @@ class EvtHistManager_4l
   enum { kOption_undefined, kOption_allHistograms, kOption_minimalHistograms };
 
  private:
-  int era_;
   std::vector<std::string> ctrl_cateories_;
 
   TH1 * histogram_numElectrons_;

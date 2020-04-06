@@ -1,8 +1,9 @@
 #ifndef tthAnalysis_HiggsToTauTau_RecoMEtReader_h
 #define tthAnalysis_HiggsToTauTau_RecoMEtReader_h
 
-#include "tthAnalysis/HiggsToTauTau/interface/ReaderBase.h" // ReaderBase
-#include "tthAnalysis/HiggsToTauTau/interface/RecoMEt.h" // RecoMEt
+#include "tthAnalysis/HiggsToTauTau/interface/ReaderBase.h"           // ReaderBase
+#include "tthAnalysis/HiggsToTauTau/interface/RecoMEt.h"              // RecoMEt
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Era
 
 #include <map> // std::map<,>
 
@@ -13,9 +14,9 @@ class RecoMEtReader
   : public ReaderBase
 {
 public:
-  RecoMEtReader(int era,
+  RecoMEtReader(Era era,
                 bool isMC);
-  RecoMEtReader(int era,
+  RecoMEtReader(Era era,
                 bool isMC,
                 const std::string & branchName_obj,
                 const std::string & branchName_cov = "");
@@ -47,7 +48,7 @@ protected:
   void
   setBranchNames();
 
-  int era_;
+  Era era_;
   bool isMC_;
   std::string branchName_obj_;
   std::string branchName_cov_;

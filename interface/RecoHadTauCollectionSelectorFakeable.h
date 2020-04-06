@@ -1,15 +1,16 @@
 #ifndef tthAnalysis_HiggsToTauTau_RecoHadTauCollectionSelectorFakeable_h
 #define tthAnalysis_HiggsToTauTau_RecoHadTauCollectionSelectorFakeable_h
 
-#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauSelectorBase.h" // RecoHadTauSelectorBase, RecoHadTau
+#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauSelectorBase.h"       // RecoHadTauSelectorBase, RecoHadTau
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelector.h" // RecoHadTauCollectionSelector
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h"         // Era
 
 class RecoHadTauSelectorFakeable
   : public RecoHadTauSelectorBase
 {
 public:
   explicit
-  RecoHadTauSelectorFakeable(int era,
+  RecoHadTauSelectorFakeable(Era era,
                              int index = -1,
                              bool debug = false,
                              bool set_selection_flags = true);

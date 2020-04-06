@@ -2,6 +2,7 @@
 #define tthAnalysis_HiggsToTauTau_L1PreFiringWeightReader_h
 
 #include "tthAnalysis/HiggsToTauTau/interface/ReaderBase.h" // ReaderBase
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Era
 
 #include <Rtypes.h> // Int_t, Double_t
 
@@ -20,7 +21,7 @@ class L1PreFiringWeightReader
   : public ReaderBase
 {
 public:
-  L1PreFiringWeightReader(int era);
+  L1PreFiringWeightReader(Era era);
   ~L1PreFiringWeightReader();
 
   /**
@@ -39,7 +40,7 @@ protected:
    void
    setBranchNames();
 
-  int era_;
+  Era era_;
 
   std::string branchName_l1PreFiringWeight_;
 

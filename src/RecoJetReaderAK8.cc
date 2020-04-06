@@ -1,21 +1,20 @@
-#include "tthAnalysis/HiggsToTauTau/interface/RecoJetReaderAK8.h" // RecoJetReaderAK8
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJetReaderAK8.h"
 
-#include "tthAnalysis/HiggsToTauTau/interface/RecoSubjetReaderAK8.h" // RecoSubjetReaderAK8
-
-#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kBtag_*
+#include "tthAnalysis/HiggsToTauTau/interface/RecoSubjetReaderAK8.h"      // RecoSubjetReaderAK8
+#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h"             // cmsException()
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h"     // kBtag_*
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
-#include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // kFatJet_*
+#include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h"         // kFatJet_*
 
 std::map<std::string, int> RecoJetReaderAK8::numInstances_;
 std::map<std::string, RecoJetReaderAK8 *> RecoJetReaderAK8::instances_;
 
-RecoJetReaderAK8::RecoJetReaderAK8(int era,
+RecoJetReaderAK8::RecoJetReaderAK8(Era era,
                                    bool isMC)
   : RecoJetReaderAK8(era, isMC, "FatJet", "SubJet")
 {}
 
-RecoJetReaderAK8::RecoJetReaderAK8(int era,
+RecoJetReaderAK8::RecoJetReaderAK8(Era era,
                                    bool isMC,
                                    const std::string & branchName_jet,
                                    const std::string & branchName_subjet)

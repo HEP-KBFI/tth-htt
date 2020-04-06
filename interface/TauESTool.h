@@ -1,16 +1,17 @@
 #ifndef tthAnalysis_HiggsToTauTau_TauESTool_h
 #define tthAnalysis_HiggsToTauTau_TauESTool_h
 
-#include <map> // std::map
-
 #include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h"
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Era
+
+#include <map> // std::map
 
 enum class TauID;
 
 class TauESTool
 {
 public:
-  TauESTool(int era,
+  TauESTool(Era era,
             TauID tauID,
             int central_or_shift = kHadTauPt_central,
             bool debug = false);
@@ -41,7 +42,7 @@ private:
           std::map<int, double> & sf,
           std::map<int, double> & sfErr);
 
-  int era_;
+  Era era_;
   TauID tauID_;
   int central_or_shift_;
   bool debug_;

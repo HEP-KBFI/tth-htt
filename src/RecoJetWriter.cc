@@ -1,23 +1,23 @@
-#include "tthAnalysis/HiggsToTauTau/interface/RecoJetWriter.h" // RecoJetWriter
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJetWriter.h"
 
-#include "tthAnalysis/HiggsToTauTau/interface/GenParticleWriter.h" // GenParticleWriter
-#include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet, GenLepton, GenHadTau, GenJet
+#include "tthAnalysis/HiggsToTauTau/interface/GenParticleWriter.h"        // GenParticleWriter
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h"                  // RecoJet, GenLepton, GenHadTau, GenJet
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
-#include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // kBtag_*, kJetMET_*
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_*
+#include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h"         // kBtag_*, kJetMET_*
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h"     // Era::k*
 
-RecoJetWriter::RecoJetWriter(int era,
+RecoJetWriter::RecoJetWriter(Era era,
                              bool isMC)
   : RecoJetWriter(era, isMC, "Jet")
 {}
 
-RecoJetWriter::RecoJetWriter(int era,
+RecoJetWriter::RecoJetWriter(Era era,
                              bool isMC,
                              const std::string & branchName_obj)
   : RecoJetWriter(era, isMC, Form("n%s", branchName_obj.data()), branchName_obj)
 {}
 
-RecoJetWriter::RecoJetWriter(int era,
+RecoJetWriter::RecoJetWriter(Era era,
                              bool isMC,
                              const std::string & branchName_num,
                              const std::string & branchName_obj)
@@ -151,7 +151,7 @@ RecoJetWriter::setPtMass_central_or_shift(int central_or_shift)
   }
   if(! isValidJESsource(era_, central_or_shift))
   {
-    throw cmsException(this, __func__, __LINE__) << "Invalid option for the era = " << era_ << ": " << central_or_shift;
+    throw cmsException(this, __func__, __LINE__) << "Invalid option for the era = " << static_cast<int>(era_) << ": " << central_or_shift;
   }
 
   if(central_or_shift <= kJetMET_jerDown)

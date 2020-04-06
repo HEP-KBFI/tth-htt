@@ -1,8 +1,9 @@
 #ifndef tthAnalysis_HiggsToTauTau_RecoHadTauReader_h
 #define tthAnalysis_HiggsToTauTau_RecoHadTauReader_h
 
-#include "tthAnalysis/HiggsToTauTau/interface/ReaderBase.h" // ReaderBase
-#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h" // RecoHadTau
+#include "tthAnalysis/HiggsToTauTau/interface/ReaderBase.h"           // ReaderBase
+#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h"           // RecoHadTau
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Era
 
 #include <map> // std::map<,>
 
@@ -20,10 +21,10 @@ class RecoHadTauReader
   : public ReaderBase
 {
 public:
-  RecoHadTauReader(int era,
+  RecoHadTauReader(Era era,
                    bool isMC,
                    bool readGenMatching);
-  RecoHadTauReader(int era,
+  RecoHadTauReader(Era era,
                    const std::string & branchName_obj,
                    bool isMC,
                    bool readGenMatching);
@@ -56,7 +57,7 @@ protected:
   void
   setBranchNames();
 
-  int era_;
+  Era era_;
   const int max_nHadTaus_;
   std::string branchName_num_;
   std::string branchName_obj_;

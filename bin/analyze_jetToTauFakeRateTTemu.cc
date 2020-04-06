@@ -97,6 +97,17 @@ typedef std::vector<std::string> vstring;
 typedef std::vector<double> vdouble;
 typedef std::vector<int> vint;
 
+void fillHistogram_filterBits(TH1* histogram, UInt_t filterBits, int numFilterBits, double evtWeight)
+{
+  for ( int idxFilterBit = 0; idxFilterBit < numFilterBits; ++idxFilterBit )
+  {
+    if ( filterBits & (1 << idxFilterBit) )
+    {
+       histogram->Fill(idxFilterBit, evtWeight);
+    }
+  }
+}
+
 /**
  * @brief Measure jet->tau fake-rate in data and compare with Monte Carlo simulation.
  */
@@ -138,7 +149,7 @@ int main(int argc, char* argv[])
   const bool isSignal = process_string == "ttH" || process_string == "ttH_ctcvcp";
 
   std::string era_string = cfg_analyze.getParameter<std::string>("era");
-  const int era = get_era(era_string);
+  const Era era = get_era(era_string);
 
   vstring triggerNames_1e = cfg_analyze.getParameter<vstring>("triggers_1e");
   std::vector<hltPath*> triggers_1e = create_hltPaths(triggerNames_1e);
@@ -235,10 +246,10 @@ int main(int argc, char* argv[])
   Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface = nullptr;
   switch(era)
   {
-    case kEra_2016: dataToMCcorrectionInterface = new Data_to_MC_CorrectionInterface_2016(cfg_dataToMCcorrectionInterface); break;
-    case kEra_2017: dataToMCcorrectionInterface = new Data_to_MC_CorrectionInterface_2017(cfg_dataToMCcorrectionInterface); break;
-    case kEra_2018: dataToMCcorrectionInterface = new Data_to_MC_CorrectionInterface_2018(cfg_dataToMCcorrectionInterface); break;
-    default: throw cmsException("analyze_jetToTauFakeRate", __LINE__) << "Invalid era = " << era;
+    case Era::k2016: dataToMCcorrectionInterface = new Data_to_MC_CorrectionInterface_2016(cfg_dataToMCcorrectionInterface); break;
+    case Era::k2017: dataToMCcorrectionInterface = new Data_to_MC_CorrectionInterface_2017(cfg_dataToMCcorrectionInterface); break;
+    case Era::k2018: dataToMCcorrectionInterface = new Data_to_MC_CorrectionInterface_2018(cfg_dataToMCcorrectionInterface); break;
+    default: throw cmsException("analyze_jetToTauFakeRate", __LINE__) << "Invalid era = " << static_cast<int>(era);
   }
 
   bool fillGenEvtHistograms = cfg_analyze.getParameter<bool>("fillGenEvtHistograms");
@@ -560,6 +571,10 @@ int main(int argc, char* argv[])
       genEvtHistManager_afterCuts->bookHistograms(fs, eventWeightManager);
     }
   }
+
+  TH1* histogram_electronFilterBits = fs.make<TH1D>("electronFilterBits", "electronFilterBits", 12, -0.5, +11.5);
+  TH1* histogram_muonFilterBits = fs.make<TH1D>("muonFilterBits", "muonFilterBits", 12, -0.5, +11.5);
+  TH1* histogram_tauFilterBits = fs.make<TH1D>("tauFilterBits", "tauFilterBits", 12, -0.5, +11.5);
 
   int analyzedEntries = 0;
   int selectedEntries = 0;
@@ -1000,6 +1015,18 @@ int main(int argc, char* argv[])
       evtWeight);
     selEvtYieldHistManager.fillHistograms(eventInfo, evtWeight);
 
+    for ( const RecoLepton* selLepton : selLeptons )
+    {
+      if ( selLepton->is_electron() ) 
+      {
+        fillHistogram_filterBits(histogram_electronFilterBits, selLepton->filterBits(), 11, evtWeight);
+      }
+      if ( selLepton->is_muon() ) 
+      {
+        fillHistogram_filterBits(histogram_muonFilterBits, selLepton->filterBits(), 10, evtWeight);
+      }
+    }
+
 //--- iterate over tau candidates passing preselection criteria
     for ( std::vector<const RecoHadTau*>::const_iterator preselHadTau = preselHadTaus.begin();
           preselHadTau != preselHadTaus.end(); ++preselHadTau ) {
@@ -1028,6 +1055,8 @@ int main(int argc, char* argv[])
       std::vector<const RecoJet*> cleanedBJets_wrtPreselHadTau_loose = jetSelectorBtagLoose(cleanedJets_wrtPreselHadTau);
       std::vector<const RecoJet*> cleanedBJets_wrtPreselHadTau_medium = jetSelectorBtagMedium(cleanedJets_wrtPreselHadTau);    
       if ( !(cleanedBJets_wrtPreselHadTau_loose.size() >= 2 || cleanedBJets_wrtPreselHadTau_medium.size() >= 1) ) continue;
+
+      fillHistogram_filterBits(histogram_tauFilterBits, (*preselHadTau)->filterBits(), 10, evtWeight);
 
       for ( std::vector<denominatorHistManagers*>::iterator denominator = denominators.begin();
             denominator != denominators.end(); ++denominator ) {

@@ -1,8 +1,9 @@
 #ifndef tthAnalysis_HiggsToTauTau_RecoMuonReader_h
 #define tthAnalysis_HiggsToTauTau_RecoMuonReader_h
 
-#include "tthAnalysis/HiggsToTauTau/interface/RecoMuon.h" // RecoMuon, *_t
-#include "tthAnalysis/HiggsToTauTau/interface/ReaderBase.h" // ReaderBase
+#include "tthAnalysis/HiggsToTauTau/interface/RecoMuon.h"             // RecoMuon, *_t
+#include "tthAnalysis/HiggsToTauTau/interface/ReaderBase.h"           // ReaderBase
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Era
 
 #include <map> // std::map<,>
 
@@ -13,10 +14,10 @@ class RecoMuonReader
   : public ReaderBase
 {
 public:
-  RecoMuonReader(int era,
+  RecoMuonReader(Era era,
                  bool isMC,
                  bool readGenMatching);
-  RecoMuonReader(int era,
+  RecoMuonReader(Era era,
                  const std::string & branchName_obj,
                  bool isMC,
                  bool readGenMatching);
@@ -45,7 +46,7 @@ protected:
   void
   setBranchNames();
 
-  int era_;
+  Era era_;
   std::string branchName_num_;
   std::string branchName_obj_;
 

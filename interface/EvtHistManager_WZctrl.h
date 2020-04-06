@@ -10,7 +10,8 @@
  *
  */
 
-#include "tthAnalysis/HiggsToTauTau/interface/HistManagerBase.h" // HistManagerBase
+#include "tthAnalysis/HiggsToTauTau/interface/HistManagerBase.h"      // HistManagerBase
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Era
 
 class EvtHistManager_WZctrl
   : public HistManagerBase
@@ -42,8 +43,6 @@ public:
                  double evtWeight);
 
 private:
-  int era_;
-
   TH1 * histogram_numElectrons_;
   TH1 * histogram_numMuons_;
   TH1 * histogram_numLeptons_;

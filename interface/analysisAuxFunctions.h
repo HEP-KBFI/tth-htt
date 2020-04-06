@@ -47,9 +47,9 @@ const double w_mass   = 80.385;
 const double w_window = 10.;
 
 //--- declare data-taking periods
-enum
+enum class Era
 {
-  kEra_undefined, kEra_2016, kEra_2017, kEra_2018
+  k2016, k2017, k2018
 };
 
 enum class Btag
@@ -133,9 +133,9 @@ const std::map<EGammaWP, std::string> EGammaWP_map = {
 
 enum class BtagWP { kLoose, kMedium, kTight };
 
-const std::map<int, std::map<Btag, std::map<BtagWP, double>>> BtagWP_map = {
+const std::map<Era, std::map<Btag, std::map<BtagWP, double>>> BtagWP_map = {
   {
-    kEra_2016, {
+    Era::k2016, {
 //--- source: https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation2016Legacy
       {
         Btag::kDeepJet, {
@@ -163,7 +163,7 @@ const std::map<int, std::map<Btag, std::map<BtagWP, double>>> BtagWP_map = {
     },
   },
   {
-    kEra_2017, {
+    Era::k2017, {
 //--- source: https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation94X
       {
         Btag::kDeepJet, {
@@ -191,7 +191,7 @@ const std::map<int, std::map<Btag, std::map<BtagWP, double>>> BtagWP_map = {
     },
   },
   {
-    kEra_2018, {
+    Era::k2018, {
 //--- source: https://twiki.cern.ch/twiki/bin/viewauth/CMS/BtagRecommendation102X
       {
         Btag::kDeepJet, {
@@ -213,7 +213,7 @@ const std::map<int, std::map<Btag, std::map<BtagWP, double>>> BtagWP_map = {
 };
 
 double
-get_BtagWP(int era,
+get_BtagWP(Era era,
            Btag btag,
            BtagWP wp);
 
@@ -252,11 +252,11 @@ selectObjects(int objectSelection,
 int
 get_selection(const std::string & selectionString);
 
-int
+Era
 get_era(const std::string & eraString);
 
 std::string
-get_era(int era);
+get_era(Era era);
 
 TauID
 get_tau_id_enum(const std::string & tauId_str);

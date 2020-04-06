@@ -30,11 +30,11 @@ struct denominatorHistManagers
   void fillHistograms(const RecoHadTau& hadTau, const RecoJet* jet, double evtWeight);
   std::string process_;
   std::string era_string_;
-  int era_;
+  Era era_;
   bool isMC_;
   std::string chargeSelection_;
   std::string hadTauSelection_denominator_;
-  TauFilterBit trigMatching_denominator_;
+  int trigMatching_denominator_;
   double minAbsEta_;
   double maxAbsEta_;
   int decayMode_;                  // value of -1 selects all hadronic taus

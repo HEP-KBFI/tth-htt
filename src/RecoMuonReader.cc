@@ -1,19 +1,19 @@
-#include "tthAnalysis/HiggsToTauTau/interface/RecoMuonReader.h" // RecoMuonReader
+#include "tthAnalysis/HiggsToTauTau/interface/RecoMuonReader.h"
 
-#include "tthAnalysis/HiggsToTauTau/interface/RecoLeptonReader.h" // RecoLeptonReader
-#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
+#include "tthAnalysis/HiggsToTauTau/interface/RecoLeptonReader.h"         // RecoLeptonReader
+#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h"             // cmsException()
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
 
 std::map<std::string, int> RecoMuonReader::numInstances_;
 std::map<std::string, RecoMuonReader *> RecoMuonReader::instances_;
 
-RecoMuonReader::RecoMuonReader(int era,
+RecoMuonReader::RecoMuonReader(Era era,
                                bool isMC,
                                bool readGenMatching)
   : RecoMuonReader(era, "Muon", isMC, readGenMatching)
 {}
 
-RecoMuonReader::RecoMuonReader(int era,
+RecoMuonReader::RecoMuonReader(Era era,
                                const std::string & branchName_obj,
                                bool isMC,
                                bool readGenMatching)

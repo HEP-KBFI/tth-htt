@@ -1,6 +1,6 @@
-#include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelectorHTTv2.h" // RecoJetSelectorHTTv2
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelectorHTTv2.h"
 
-RecoJetSelectorHTTv2::RecoJetSelectorHTTv2(int era,
+RecoJetSelectorHTTv2::RecoJetSelectorHTTv2(Era era,
                                            int index,
                                            bool debug)
   : min_pt_(200.)

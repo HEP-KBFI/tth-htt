@@ -1,12 +1,10 @@
 #include "tthAnalysis/HiggsToTauTau/interface/EvtHistManager_3l.h"
 
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // fillWithOverFlow(), getLogWeight()
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // get_era(), kEra_*
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 
 EvtHistManager_3l::EvtHistManager_3l(const edm::ParameterSet & cfg, bool isControlRegion)
   : HistManagerBase(cfg)
-  , era_(get_era(cfg.getParameter<std::string>("era")))
   , option_(kOption_undefined)
 {
   const std::string option_string = cfg.getParameter<std::string>("option");

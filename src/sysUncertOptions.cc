@@ -1,16 +1,16 @@
 #include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h"
 
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_*
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Era::k*
 
 #include <TString.h> // Form()
 
 #include <boost/algorithm/string/predicate.hpp> // boost::algorithm::starts_with(), boost::algorithm::ends_with()
 
 bool
-isValidJESsource(int era,
+isValidJESsource(Era era,
                  int central_or_shift)
 {
-  if(central_or_shift == kJetMET_jesHEMDown && era != kEra_2018)
+  if(central_or_shift == kJetMET_jesHEMDown && era != Era::k2018)
   {
     return false;
   }
@@ -458,9 +458,9 @@ getBranchName_bTagWeight(Btag btag,
 
 std::string
 getBranchName_jetMET(const std::string & default_branchName,
-                        int era,
-                        int central_or_shift,
-                        bool isPt)
+                     Era era,
+                     int central_or_shift,
+                     bool isPt)
 {
   static std::map<int, std::string> branchNames_sys;
   const bool isJet = boost::starts_with(default_branchName, "Jet");
@@ -468,10 +468,10 @@ getBranchName_jetMET(const std::string & default_branchName,
   const std::string era_str = [era]() -> std::string {
     switch(era)
     {
-      case kEra_2016 : return "2016";
-      case kEra_2017 : return "2017";
-      case kEra_2018 : return "2018";
-      default: throw cmsException(__func__, __LINE__) << "Invalid era: " << era;
+      case Era::k2016 : return "2016";
+      case Era::k2017 : return "2017";
+      case Era::k2018 : return "2018";
+      default: throw cmsException(__func__, __LINE__) << "Invalid era: " << static_cast<int>(era);
     }
   }();
   if(! isJet && ! isMET)

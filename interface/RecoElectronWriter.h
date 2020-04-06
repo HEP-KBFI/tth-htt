@@ -1,6 +1,8 @@
 #ifndef tthAnalysis_HiggsToTauTau_RecoElectronWriter_h
 #define tthAnalysis_HiggsToTauTau_RecoElectronWriter_h
 
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Era
+
 #include <Rtypes.h> // *_t
 
 #include <string> // std::string
@@ -17,12 +19,12 @@ enum class EGammaWP;
 class RecoElectronWriter
 {
 public:
-  RecoElectronWriter(int era,
+  RecoElectronWriter(Era era,
                      bool isMC);
-  RecoElectronWriter(int era,
+  RecoElectronWriter(Era era,
                      bool isMC,
                      const std::string & branchName_obj);
-  RecoElectronWriter(int era,
+  RecoElectronWriter(Era era,
                      bool isMC,
                      const std::string & branchName_num,
                      const std::string & branchName_obj);
@@ -50,7 +52,7 @@ protected:
   void
   setBranchNames();
 
-  int era_;
+  Era era_;
 
   std::string branchName_num_;
   std::string branchName_obj_;

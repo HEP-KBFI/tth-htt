@@ -11,7 +11,7 @@ class RecoHadTauCollectionSelector
 {
 public:
   explicit
-  RecoHadTauCollectionSelector(int era,
+  RecoHadTauCollectionSelector(Era era,
                                int index = -1,
                                bool debug = false)
     : ParticleCollectionSelector<RecoHadTau, T>(era, index, debug)

@@ -1,7 +1,8 @@
 #ifndef tthAnalysis_HiggsToTauTau_RecoJetWriter_h
 #define tthAnalysis_HiggsToTauTau_RecoJetWriter_h
 
-#include "tthAnalysis/HiggsToTauTau/interface/GenParticle.h" // GenParticle, *_t
+#include "tthAnalysis/HiggsToTauTau/interface/GenParticle.h"          // GenParticle, *_t
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Era
 
 #include <string>
 #include <vector>
@@ -17,12 +18,12 @@ enum class Btag;
 class RecoJetWriter
 {
 public:
-  RecoJetWriter(int era,
+  RecoJetWriter(Era era,
                 bool isMC);
-  RecoJetWriter(int era,
+  RecoJetWriter(Era era,
                 bool isMC,
                 const std::string & branchName_obj);
-  RecoJetWriter(int era,
+  RecoJetWriter(Era era,
                 bool isMC,
                 const std::string & branchName_num,
                 const std::string & branchName_obj);
@@ -57,7 +58,7 @@ protected:
   void
   setBranchNames();
 
-  int era_;
+  Era era_;
   bool isMC_;
   int ptMassOption_;
 

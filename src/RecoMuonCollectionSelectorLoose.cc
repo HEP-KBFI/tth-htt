@@ -2,7 +2,7 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // get_human_line()
 
-RecoMuonSelectorLoose::RecoMuonSelectorLoose(int era,
+RecoMuonSelectorLoose::RecoMuonSelectorLoose(Era era,
                                              int index,
                                              bool debug,
                                              bool set_selection_flags) 

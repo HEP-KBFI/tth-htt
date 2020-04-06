@@ -98,12 +98,22 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
     self.hadTau_selection_denominator = hadTau_selection_denominator
     self.hadTau_selections_numerator = hadTau_selections_numerator
     self.trigMatchingOptions = [ 
-      "withoutTriggerMatching", 
-      "passesTriggerMatchingLooseChargedIso",  "failsTriggerMatchingLooseChargedIso", 
-      "passesTriggerMatchingMediumChargedIso", "failsTriggerMatchingMediumChargedIso", 
-      "passesTriggerMatchingTightChargedIso",  "failsTriggerMatchingTightChargedIso" 
+      "withoutTriggerMatching"
     ]
-
+    if self.era == '2016':
+      self.trigMatchingOptions.extend([
+        "passesTriggerMatchingLooseIso",         "failsTriggerMatchingLooseIso", 
+        "passesTriggerMatchingMediumIso",        "failsTriggerMatchingMediumIso"
+      ])
+    elif self.era == '2017' or self.era == '2018':
+      self.trigMatchingOptions.extend([
+        "passesTriggerMatchingLooseChargedIso",  "failsTriggerMatchingLooseChargedIso", 
+        "passesTriggerMatchingMediumChargedIso", "failsTriggerMatchingMediumChargedIso", 
+        "passesTriggerMatchingTightChargedIso",  "failsTriggerMatchingTightChargedIso" 
+      ])
+    else:
+      raise ValueError('Invalid era: %s' % self.era)
+ 
     self.absEtaBins = absEtaBins
     self.ptBins = ptBins
     self.decayModes = decayModes

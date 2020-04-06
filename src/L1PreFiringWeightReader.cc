@@ -1,7 +1,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/L1PreFiringWeightReader.h" // L1PreFiringWeightReader
 
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2018
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Era::k2018
 #include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // L1PreFiringWeightSys
 
 #include <cassert> // assert()
@@ -9,7 +9,7 @@
 std::map<std::string, int> L1PreFiringWeightReader::numInstances_;
 std::map<std::string, L1PreFiringWeightReader*> L1PreFiringWeightReader::instances_;
 
-L1PreFiringWeightReader::L1PreFiringWeightReader(int era)
+L1PreFiringWeightReader::L1PreFiringWeightReader(Era era)
   : era_(era)
   , branchName_l1PreFiringWeight_("L1PreFiringWeight")
   , l1PreFiringWeight_nominal_(1.)
@@ -43,7 +43,7 @@ L1PreFiringWeightReader::setBranchNames()
 void
 L1PreFiringWeightReader::setBranchAddresses(TTree * tree)
 {
-  if(era_ != kEra_2018)
+  if(era_ != Era::k2018)
   {
     BranchAddressInitializer bai(tree);
     bai.setBranchAddress(l1PreFiringWeight_nominal_, Form("%s_Nom", branchName_l1PreFiringWeight_.data()), 1.);

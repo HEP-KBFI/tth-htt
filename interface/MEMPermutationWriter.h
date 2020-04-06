@@ -2,12 +2,13 @@
 #define MEMPERMUTATIONWRITER_H
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorFakeable.h" // RecoHadTauCollectionSelectorFakeable
-#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorTight.h" // RecoHadTauCollectionSelectorTight
+#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauCollectionSelectorTight.h"    // RecoHadTauCollectionSelectorTight
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h"                 // Era
 
-#include <string> // std::string
-#include <vector> // std::vector<>
-#include <array> // std::array<,>
-#include <map> // std::map<,>
+#include <string>     // std::string
+#include <vector>     // std::vector<>
+#include <array>      // std::array<,>
+#include <map>        // std::map<,>
 #include <functional> // std::function<>
 
 // forward declarations
@@ -16,11 +17,11 @@ class RecoLepton;
 class RecoJet;
 
 typedef std::function<
-    int(const std::vector<const RecoLepton *> & /*selLeptons*/,
-        const std::vector<const RecoHadTau *> & /*selHadTaus*/,
-        const std::vector<const RecoJet *> & /*selBJets_loose*/,
-        const std::vector<const RecoJet *> & /*selBJets_medium*/,
-        bool /*failsZbosonMassVeto*/)
+    int(const std::vector<const RecoLepton *> &,
+        const std::vector<const RecoHadTau *> &,
+        const std::vector<const RecoJet *> &,
+        const std::vector<const RecoJet *> &,
+        bool)
   > MEMPremutationCondition;
 
 class MEMPermutationWriter
@@ -53,7 +54,7 @@ public:
 
   void
   setBranchNames(TTree * tree,
-                 int era,
+                 Era era,
                  bool verbose = false);
 
   void

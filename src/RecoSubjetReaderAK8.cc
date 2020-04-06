@@ -1,17 +1,17 @@
-#include "tthAnalysis/HiggsToTauTau/interface/RecoSubjetReaderAK8.h" // RecoSubjetReaderAK8
+#include "tthAnalysis/HiggsToTauTau/interface/RecoSubjetReaderAK8.h"
 
-#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kBtag_*
+#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h"             // cmsException()
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h"     // kBtag_*
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
 
 std::map<std::string, int> RecoSubjetReaderAK8::numInstances_;
 std::map<std::string, RecoSubjetReaderAK8 *> RecoSubjetReaderAK8::instances_;
 
-RecoSubjetReaderAK8::RecoSubjetReaderAK8(int era)
+RecoSubjetReaderAK8::RecoSubjetReaderAK8(Era era)
   : RecoSubjetReaderAK8(era, "SubJet")
 {}
 
-RecoSubjetReaderAK8::RecoSubjetReaderAK8(int era,
+RecoSubjetReaderAK8::RecoSubjetReaderAK8(Era era,
                                          const std::string & branchName_obj)
   : era_(era)
   , btag_(Btag::kDeepCSV) // maybe read DeepJet?

@@ -2,13 +2,14 @@
 #define tthAnalysis_HiggsToTauTau_RecoMuonCollectionSelectorFakeable_h
 
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionSelector.h" // ParticleCollectionSelector
-#include "tthAnalysis/HiggsToTauTau/interface/RecoMuon.h" // RecoMuon
+#include "tthAnalysis/HiggsToTauTau/interface/RecoMuon.h"                   // RecoMuon
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h"       // Era
 
 class RecoMuonSelectorFakeable
 {
 public:
   explicit
-  RecoMuonSelectorFakeable(int era,
+  RecoMuonSelectorFakeable(Era era,
                            int index = -1,
                            bool debug = false,
                            bool set_selection_flags = true);
@@ -41,7 +42,7 @@ public:
   operator()(const RecoMuon & muon) const;
 
 protected:
-  const int era_;
+  const Era era_;
   bool debug_;
   bool set_selection_flags_;
 
@@ -74,7 +75,7 @@ class RecoMuonCollectionSelectorFakeable
 {
 public:
   explicit
-  RecoMuonCollectionSelectorFakeable(int era,
+  RecoMuonCollectionSelectorFakeable(Era era,
                                      int index = -1,
                                      bool debug = false,
                                      bool set_selection_flags = true);

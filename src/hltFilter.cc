@@ -1,8 +1,9 @@
-#include "tthAnalysis/HiggsToTauTau/interface/hltFilter.h" // hltFilter()
+#include "tthAnalysis/HiggsToTauTau/interface/hltFilter.h" 
 
-#include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
-#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h" // RecoHadTau
-#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
+#include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h"           // RecoLepton
+#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h"           // RecoHadTau
+#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h"         // cmsException()
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2016, kEra_2017, kEra_2018
 
 bool
 hltFilter(const std::map<hltPathsE, bool> & trigger_bits,
@@ -125,20 +126,37 @@ hltFilter(const RecoHadTau& tau, const hltPathsE& hltPath)
 }
 
 bool
-hltFilter(const RecoHadTau& tau, TauFilterBit filterBit)
+hltFilter(const RecoHadTau& tau, int filterBit, Era era)
 {
   UInt_t filterBit_mask = 0;
   // CV: bit masks defined in https://github.com/HEP-KBFI/cmssw/blob/master/PhysicsTools/NanoAOD/python/triggerObjects_cff.py#L94
   int filterBit_status = -1; // passes = 1, fails = 0
-  if      ( filterBit == kTauFilterBit_notApplied             ) return true;
-  else if ( filterBit == kTauFilterBit_passesLooseChargedIso  ) { filterBit_mask = 1; filterBit_status = 1; }
-  else if ( filterBit == kTauFilterBit_failsLooseChargedIso   ) { filterBit_mask = 1; filterBit_status = 0; }
-  else if ( filterBit == kTauFilterBit_passesMediumChargedIso ) { filterBit_mask = 2; filterBit_status = 1; }
-  else if ( filterBit == kTauFilterBit_failsMediumChargedIso  ) { filterBit_mask = 2; filterBit_status = 0; }
-  else if ( filterBit == kTauFilterBit_passesTightChargedIso  ) { filterBit_mask = 4; filterBit_status = 1; }
-  else if ( filterBit == kTauFilterBit_failsTightChargedIso   ) { filterBit_mask = 4; filterBit_status = 0; }
+  // HLT filter names specific to 2016 data-taking period
+  if ( era == Era::k2016 ) 
+  {
+    if      ( filterBit == kTauFilterBit2016_notApplied                    ) return true;
+    else if ( filterBit == kTauFilterBit2016_passesLooseIso                ) { filterBit_mask = 1; filterBit_status = 1; }
+    else if ( filterBit == kTauFilterBit2016_failsLooseIso                 ) { filterBit_mask = 1; filterBit_status = 0; }
+    else if ( filterBit == kTauFilterBit2016_passesMediumIso               ) { filterBit_mask = 2; filterBit_status = 1; }
+    else if ( filterBit == kTauFilterBit2016_failsMediumIso                ) { filterBit_mask = 2; filterBit_status = 0; }
+    else throw cms::Exception("hltFilter") 
+      << "Invalid parameter 'filterBit' = " << filterBit << " !!\n";
+  }
+  // HLT filter names specific to 2017 and 2018 data-taking periods
+  else if ( era == Era::k2017 || era == Era::k2018 )
+  {
+    if      ( filterBit == kTauFilterBit2017and2018_notApplied             ) return true;
+    else if ( filterBit == kTauFilterBit2017and2018_passesLooseChargedIso  ) { filterBit_mask = 1; filterBit_status = 1; }
+    else if ( filterBit == kTauFilterBit2017and2018_failsLooseChargedIso   ) { filterBit_mask = 1; filterBit_status = 0; }
+    else if ( filterBit == kTauFilterBit2017and2018_passesMediumChargedIso ) { filterBit_mask = 2; filterBit_status = 1; }
+    else if ( filterBit == kTauFilterBit2017and2018_failsMediumChargedIso  ) { filterBit_mask = 2; filterBit_status = 0; }
+    else if ( filterBit == kTauFilterBit2017and2018_passesTightChargedIso  ) { filterBit_mask = 4; filterBit_status = 1; }
+    else if ( filterBit == kTauFilterBit2017and2018_failsTightChargedIso   ) { filterBit_mask = 4; filterBit_status = 0; }
+    else throw cms::Exception("hltFilter") 
+      << "Invalid parameter 'filterBit' = " << filterBit << " !!\n";
+  }
   else throw cms::Exception("hltFilter") 
-    << "Invalid parameter 'filterBit' = " << filterBit << " !!\n";
+    << "Invalid era = " << static_cast<int>(era) << " !!\n";
   if      ( filterBit_status == 1 ) 
   {
     if ( tau.filterBits() & filterBit_mask ) return true;

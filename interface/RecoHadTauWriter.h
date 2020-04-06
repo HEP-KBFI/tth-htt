@@ -1,11 +1,12 @@
 #ifndef tthAnalysis_HiggsToTauTau_RecoHadTauWriter_h
 #define tthAnalysis_HiggsToTauTau_RecoHadTauWriter_h
 
-#include "tthAnalysis/HiggsToTauTau/interface/GenParticle.h" // GenParticle, *_t
+#include "tthAnalysis/HiggsToTauTau/interface/GenParticle.h"          // GenParticle, *_t
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Era
 
 #include <string> // std::string
 #include <vector> // std::vector<>
-#include <map> // std::map<,>
+#include <map>    // std::map<,>
 
 // forward declarations
 class TTree;
@@ -17,12 +18,12 @@ enum class TauID;
 class RecoHadTauWriter
 {
 public:
-  RecoHadTauWriter(int era,
+  RecoHadTauWriter(Era era,
                    bool isMC);
-  RecoHadTauWriter(int era,
+  RecoHadTauWriter(Era era,
                    bool isMC,
                    const std::string & branchName_obj);
-  RecoHadTauWriter(int era,
+  RecoHadTauWriter(Era era,
                    bool isMC,
                    const std::string & branchName_num,
                    const std::string & branchName_obj);
@@ -50,7 +51,7 @@ protected:
    */
   void setBranchNames();
 
-  int era_;
+  Era era_;
   bool isMC_;
   const int max_nHadTaus_;
   std::string branchName_num_;

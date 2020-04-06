@@ -1,19 +1,19 @@
-#include "tthAnalysis/HiggsToTauTau/interface/RecoJetReaderHTTv2.h" // RecoJetReaderHTTv2
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJetReaderHTTv2.h"
 
-#include "tthAnalysis/HiggsToTauTau/interface/RecoSubjetReaderHTTv2.h" // RecoSubjetReaderHTTv2
+#include "tthAnalysis/HiggsToTauTau/interface/RecoSubjetReaderHTTv2.h"    // RecoSubjetReaderHTTv2
 
-#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kBtag_*
+#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h"             // cmsException()
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h"     // kBtag_*
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
 
 std::map<std::string, int> RecoJetReaderHTTv2::numInstances_;
 std::map<std::string, RecoJetReaderHTTv2 *> RecoJetReaderHTTv2::instances_;
 
-RecoJetReaderHTTv2::RecoJetReaderHTTv2(int era)
+RecoJetReaderHTTv2::RecoJetReaderHTTv2(Era era)
   : RecoJetReaderHTTv2(era, "HTTV2", "HTTV2Subjets")
 {}
 
-RecoJetReaderHTTv2::RecoJetReaderHTTv2(int era,
+RecoJetReaderHTTv2::RecoJetReaderHTTv2(Era era,
                                        const std::string & branchName_jet,
                                        const std::string & branchName_subjet)
   : era_(era)

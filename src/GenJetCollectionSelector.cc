@@ -1,9 +1,9 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenJetCollectionSelector.h" // GenJetSelector
 
-#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // get_human_line()
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_*
+#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h"         // get_human_line()
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Era::k*
 
-GenJetSelector::GenJetSelector(int era,
+GenJetSelector::GenJetSelector(Era era,
 			       int index,
 			       bool debug)
   : era_(era)

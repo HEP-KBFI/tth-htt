@@ -1,19 +1,19 @@
-#include "tthAnalysis/HiggsToTauTau/interface/RecoSubjetWriterAK8.h" // RecoSubjetWriterAK8
+#include "tthAnalysis/HiggsToTauTau/interface/RecoSubjetWriterAK8.h"
 
-#include "tthAnalysis/HiggsToTauTau/interface/RecoSubjetAK8.h" // RecoSubjetAK8
+#include "tthAnalysis/HiggsToTauTau/interface/RecoSubjetAK8.h"            // RecoSubjetAK8
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_*
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h"     // Era::k*
 
-RecoSubjetWriterAK8::RecoSubjetWriterAK8(int era)
+RecoSubjetWriterAK8::RecoSubjetWriterAK8(Era era)
   : RecoSubjetWriterAK8(era, "SubJet")
 {}
 
-RecoSubjetWriterAK8::RecoSubjetWriterAK8(int era,
+RecoSubjetWriterAK8::RecoSubjetWriterAK8(Era era,
                                          const std::string & branchName_obj)
   : RecoSubjetWriterAK8(era, Form("n%s", branchName_obj.data()), branchName_obj)
 {}
 
-RecoSubjetWriterAK8::RecoSubjetWriterAK8(int era,
+RecoSubjetWriterAK8::RecoSubjetWriterAK8(Era era,
                                          const std::string & branchName_num,
                                          const std::string & branchName_obj)
   : era_(era)

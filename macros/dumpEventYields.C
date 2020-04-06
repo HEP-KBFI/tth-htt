@@ -33,13 +33,15 @@ void dumpEventYields()
   typedef std::vector<std::string> vstring;
   vstring channels;
   //channels.push_back("0l_2tau");
-  channels.push_back("1l_1tau_OS");
-  channels.push_back("1l_1tau_SS");
+  //channels.push_back("1l_1tau_OS");
+  //channels.push_back("1l_1tau_SS");
   //channels.push_back("0l_3tau");
   //channels.push_back("1l_2tau");
   //channels.push_back("2lss_1tau");
   //channels.push_back("2los_1tau");
-  //channels.push_back("2l_2tau");
+  channels.push_back("2l_2tau_2016");
+  channels.push_back("2l_2tau_2017");
+  channels.push_back("2l_2tau_2018");
   //channels.push_back("2los_2tau");
   //channels.push_back("2lss_2tau");
   //  channels.push_back("3l_1tau_2jets");
@@ -52,7 +54,8 @@ void dumpEventYields()
   //  std::string inputFilePath = "/home/sbhowmik/ttHAnalysis/2016/2017Dec18_Loose/datacards/";
   //  std::string inputFilePath = "/home/karmakar/ttHAnalysis/2016/2017Oct29_Loose/datacards/";
   //std::string inputFilePath = "/home/sbhowmik/ttHAnalysis/2016/2017Feb27/datacards/";
-  std::string inputFilePath = "/home/veelken/ttHAnalysis/2017/2018Nov16/datacards/1l_1tau/";
+  //std::string inputFilePath = "/home/veelken/ttHAnalysis/2017/2018Nov16/datacards/1l_1tau/";
+  std::string inputFilePath = "/home/veelken/public/tthAnalysis/datacards/";
 
   std::map<std::string, std::string> inputFileNames; // key = channel
   inputFileNames["0l_2tau"] = "2016Aug15_dR03mvaTight/datacards/prepareDatacards_0l_2tau_mTauTauVis.root";
@@ -68,6 +71,9 @@ void dumpEventYields()
   inputFileNames["3l_1tau_2jets"] = "ttH_3l_1tau_35.9fb_mvaDiscr_3l_2017Mar10.input.root";
   inputFileNames["3l_1tau_1or2jets"] = "ttH_3l_1tau_35.9fb_mvaDiscr_3l_2017Mar23_1or2jets.input.root";
   inputFileNames["ttZctrl"] = "ttZctrl/prepareDatacards_ttZctrl_3lepton_numJets.root";
+  inputFileNames["2l_2tau_2016"] = "prepareDatacards_2l_2tau_mvaOutput_final_2016.root";
+  inputFileNames["2l_2tau_2017"] = "prepareDatacards_2l_2tau_mvaOutput_final_2017.root";
+  inputFileNames["2l_2tau_2018"] = "prepareDatacards_2l_2tau_mvaOutput_final_2018.root";
 
   std::map<std::string, vstring> signal_processes; // key = channel
   signal_processes["0l_2tau"].push_back("ttH_htt");
@@ -87,13 +93,18 @@ void dumpEventYields()
   signal_processes["3l_1tau_2jets"] = signal_processes["0l_2tau"];
   signal_processes["3l_1tau_1or2jets"] = signal_processes["0l_2tau"];
   signal_processes["ttZctrl"] = signal_processes["0l_2tau"];
+  signal_processes["2l_2tau_2016"] = signal_processes["2l_2tau"];
+  signal_processes["2l_2tau_2017"] = signal_processes["2l_2tau"];
+  signal_processes["2l_2tau_2018"] = signal_processes["2l_2tau"];
 
   std::map<std::string, vstring> background_processes; // key = channel
-  background_processes["0l_2tau"].push_back("TT");
+  //background_processes["0l_2tau"].push_back("TT");
   background_processes["0l_2tau"].push_back("TTW");
   background_processes["0l_2tau"].push_back("TTWW");
   background_processes["0l_2tau"].push_back("TTZ");
-  background_processes["0l_2tau"].push_back("EWK");
+  //background_processes["0l_2tau"].push_back("EWK");
+  background_processes["0l_2tau"].push_back("WZ");
+  background_processes["0l_2tau"].push_back("ZZ");
   background_processes["0l_2tau"].push_back("Rares");
   background_processes["0l_2tau"].push_back("data_fakes");
   background_processes["0l_2tau"].push_back("fakes_mc");  
@@ -116,6 +127,9 @@ void dumpEventYields()
   background_processes["3l_1tau_2jets"] = background_processes["0l_2tau"];
   background_processes["3l_1tau_1or2jets"] = background_processes["0l_2tau"];
   background_processes["ttZctrl"] = background_processes["0l_2tau"];
+  background_processes["2l_2tau_2016"] = background_processes["2l_2tau"];
+  background_processes["2l_2tau_2017"] = background_processes["2l_2tau"];
+  background_processes["2l_2tau_2018"] = background_processes["2l_2tau"];
 
   //double lumi_datacard = 41.5;
   //double lumi_projection = 41.5;

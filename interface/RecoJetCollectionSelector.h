@@ -2,12 +2,13 @@
 #define tthAnalysis_HiggsToTauTau_RecoJetCollectionSelector_h
 
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionSelector.h" // ParticleCollectionSelector
-#include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h"                    // RecoJet
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h"       // Era
 
 class RecoJetSelector
 {
 public:
-  explicit RecoJetSelector(int era,
+  explicit RecoJetSelector(Era era,
                            int index = -1,
                            bool debug = false);
   ~RecoJetSelector() {}
@@ -34,7 +35,7 @@ public:
   operator()(const RecoJet & jet) const;
 
 protected:
-  int era_;
+  Era era_;
   Double_t min_pt_;     ///< lower cut threshold on pT
   Double_t max_absEta_; ///< upper cut threshold on absolute value of eta
   Int_t min_jetId_;     ///< lower cut threshold on jet ID value

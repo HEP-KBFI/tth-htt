@@ -1,7 +1,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/backgroundEstimation.h"
 
-#include "tthAnalysis/HiggsToTauTau/interface/leptonTypes.h" // kElectron, kMuon
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_*
+#include "tthAnalysis/HiggsToTauTau/interface/leptonTypes.h"          // kElectron, kMuon
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Era::k*
 
 #include <cmath> // std::fabs()
 #include <cassert> // assert()
@@ -15,7 +15,7 @@
  *         estimate "charge flip" background in SS signal region
  */
 double
-prob_chargeMisId(int era,
+prob_chargeMisId(Era era,
                  int lepton_type,
                  double lepton_pt,
                  double lepton_eta)
@@ -24,7 +24,7 @@ prob_chargeMisId(int era,
   if(lepton_type == kElectron)
   {
     const double abs_lepton_eta = std::fabs(lepton_eta);
-    if(era == kEra_2016)
+    if(era == Era::k2016)
     {
       if(abs_lepton_eta >= 0. && abs_lepton_eta < 1.479)
       {
@@ -39,7 +39,7 @@ prob_chargeMisId(int era,
         else if(lepton_pt >= 50.                   ) prob = 1.62015e-3;
       }
     }
-    else if(era == kEra_2017)
+    else if(era == Era::k2017)
     {
       if(abs_lepton_eta >= 0. && abs_lepton_eta < 1.479)
       {
@@ -54,7 +54,7 @@ prob_chargeMisId(int era,
         else if(lepton_pt >= 50.                   ) prob = 8.84194e-4;
       }
     }
-    else if(era == kEra_2018)
+    else if(era == Era::k2018)
     {
       if(abs_lepton_eta >= 0. && abs_lepton_eta < 1.479)
       {

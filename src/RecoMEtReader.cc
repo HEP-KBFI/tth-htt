@@ -1,19 +1,19 @@
-#include "tthAnalysis/HiggsToTauTau/interface/RecoMEtReader.h" // RecoMEtReader
+#include "tthAnalysis/HiggsToTauTau/interface/RecoMEtReader.h"
 
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // getBranchName_MEt()
-#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h"     // getBranchName_MEt()
+#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h"             // cmsException()
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
-#include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // kJetMET_*
+#include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h"         // kJetMET_*
 
 std::map<std::string, int> RecoMEtReader::numInstances_;
 std::map<std::string, RecoMEtReader *> RecoMEtReader::instances_;
 
-RecoMEtReader::RecoMEtReader(int era,
+RecoMEtReader::RecoMEtReader(Era era,
                              bool isMC)
   : RecoMEtReader(era, isMC, "MET")
 {}
 
-RecoMEtReader::RecoMEtReader(int era,
+RecoMEtReader::RecoMEtReader(Era era,
                              bool isMC,
                              const std::string & branchName_obj,
                              const std::string & branchName_cov)
@@ -48,7 +48,7 @@ RecoMEtReader::setMEt_central_or_shift(int central_or_shift)
   }
   if(! isValidJESsource(era_, central_or_shift))
   {
-    throw cmsException(this, __func__, __LINE__) << "Invalid option for the era = " << era_ << ": " << central_or_shift;
+    throw cmsException(this, __func__, __LINE__) << "Invalid option for the era = " << static_cast<int>(era_) << ": " << central_or_shift;
   }
   if(central_or_shift <= kJetMET_UnclusteredEnDown)
   {

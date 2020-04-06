@@ -11,8 +11,7 @@
  */
 
 #include "tthAnalysis/HiggsToTauTau/interface/HistManagerBase.h" // HistManagerBase
-
-#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h" // RecoHadTau
+#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h"      // RecoHadTau
 
 struct EvtHistManager_0l_2tau_Input
 {

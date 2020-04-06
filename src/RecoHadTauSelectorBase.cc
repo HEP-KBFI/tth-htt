@@ -1,8 +1,8 @@
-#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauSelectorBase.h" // RecoHadTauSelectorBase
+#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauSelectorBase.h"
 
 #include <FWCore/Utilities/interface/Parse.h> // edm::tokenize()
 
-#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
+#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h"         // cmsException()
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // get_tau_id_wp_int()
 
 #include <boost/algorithm/string/join.hpp> // boost::algorithm::join()
@@ -13,7 +13,7 @@ const std::map<TauID, std::string> RecoHadTauSelectorBase::nominal_fakeable_wp_ 
   { TauID::DeepTau2017v2VSjet, "VVLoose" },
 };
 
-RecoHadTauSelectorBase::RecoHadTauSelectorBase(int era,
+RecoHadTauSelectorBase::RecoHadTauSelectorBase(Era era,
                                                int index,
                                                bool debug,
                                                bool set_selection_flags)

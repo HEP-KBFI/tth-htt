@@ -1,9 +1,9 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorFakeable.h" // RecoElectronSelectorFakeable
 
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_*
-#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException(), assert()
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Era::k*
+#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h"         // cmsException(), assert()
 
-RecoElectronSelectorFakeable::RecoElectronSelectorFakeable(int era,
+RecoElectronSelectorFakeable::RecoElectronSelectorFakeable(Era era,
                                                            int index,
                                                            bool debug,
                                                            bool set_selection_flags)
@@ -258,7 +258,7 @@ RecoElectronSelectorFakeable::operator()(const RecoElectron & electron) const
   return true;
 }
 
-RecoElectronCollectionSelectorFakeable::RecoElectronCollectionSelectorFakeable(int era,
+RecoElectronCollectionSelectorFakeable::RecoElectronCollectionSelectorFakeable(Era era,
                                                                                int index,
                                                                                bool debug,
                                                                                bool set_selection_flags)

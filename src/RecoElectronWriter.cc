@@ -1,22 +1,22 @@
-#include "tthAnalysis/HiggsToTauTau/interface/RecoElectronWriter.h" // RecoElectronWriter
+#include "tthAnalysis/HiggsToTauTau/interface/RecoElectronWriter.h"
 
-#include "tthAnalysis/HiggsToTauTau/interface/RecoLeptonWriter.h" // RecoLeptonWriter
-#include "tthAnalysis/HiggsToTauTau/interface/RecoElectron.h" // RecoElectron
+#include "tthAnalysis/HiggsToTauTau/interface/RecoLeptonWriter.h"         // RecoLeptonWriter
+#include "tthAnalysis/HiggsToTauTau/interface/RecoElectron.h"             // RecoElectron
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_*
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h"     // Era::k*
 
-RecoElectronWriter::RecoElectronWriter(int era,
+RecoElectronWriter::RecoElectronWriter(Era era,
                                        bool isMC)
   : RecoElectronWriter(era, isMC, "Electron")
 {}
 
-RecoElectronWriter::RecoElectronWriter(int era,
+RecoElectronWriter::RecoElectronWriter(Era era,
                                        bool isMC,
                                        const std::string & branchName_obj)
   : RecoElectronWriter(era, isMC, Form("n%s", branchName_obj.data()), branchName_obj)
 {}
 
-RecoElectronWriter::RecoElectronWriter(int era,
+RecoElectronWriter::RecoElectronWriter(Era era,
                                        bool isMC,
                                        const std::string & branchName_num,
                                        const std::string & branchName_obj)

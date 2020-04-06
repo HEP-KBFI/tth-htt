@@ -1,8 +1,9 @@
 #ifndef tthAnalysis_HiggsToTauTau_RecoJetReaderAK8_h
 #define tthAnalysis_HiggsToTauTau_RecoJetReaderAK8_h
 
-#include "tthAnalysis/HiggsToTauTau/interface/ReaderBase.h" // ReaderBase
-#include "tthAnalysis/HiggsToTauTau/interface/RecoJetAK8.h" // RecoJetAK8
+#include "tthAnalysis/HiggsToTauTau/interface/ReaderBase.h"           // ReaderBase
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJetAK8.h"           // RecoJetAK8
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Era
 
 #include <map> // std::map<,>
 
@@ -14,9 +15,9 @@ class RecoJetReaderAK8
   : public ReaderBase
 {
 public:
-  RecoJetReaderAK8(int era,
+  RecoJetReaderAK8(Era era,
                    bool isMC);
-  RecoJetReaderAK8(int era,
+  RecoJetReaderAK8(Era era,
                    bool isMC,
                    const std::string & branchName_jet,
                    const std::string & branchName_subjet);
@@ -48,7 +49,7 @@ protected:
   void
   setBranchNames();
 
-  int era_;
+  Era era_;
   bool isMC_;
   const unsigned int max_nJets_;
   std::string branchName_num_;

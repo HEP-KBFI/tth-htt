@@ -1,6 +1,8 @@
 #ifndef tthAnalysis_HiggsToTauTau_RecoMuonWriter_h
 #define tthAnalysis_HiggsToTauTau_RecoMuonWriter_h
 
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Era
+
 #include <Rtypes.h> // *_t
 
 #include <vector> // std::vector<>
@@ -14,12 +16,12 @@ class RecoLeptonWriter;
 class RecoMuonWriter
 {
 public:
-  RecoMuonWriter(int era,
+  RecoMuonWriter(Era era,
                  bool isMC);
-  RecoMuonWriter(int era,
+  RecoMuonWriter(Era era,
                  bool isMC,
                  const std::string & branchName_obj);
-  RecoMuonWriter(int era,
+  RecoMuonWriter(Era era,
                  bool isMC,
                  const std::string & branchName_num,
                  const std::string & branchName_obj);
@@ -44,7 +46,7 @@ protected:
   void
   setBranchNames();
 
-  int era_;
+  Era era_;
   std::string branchName_num_;
   std::string branchName_obj_;
 

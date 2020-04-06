@@ -1,7 +1,8 @@
 #ifndef tthAnalysis_HiggsToTauTau_DYMCReweighting_h
 #define tthAnalysis_HiggsToTauTau_DYMCReweighting_h
 
-#include "tthAnalysis/HiggsToTauTau/interface/GenParticle.h" // GenParticle
+#include "tthAnalysis/HiggsToTauTau/interface/GenParticle.h"          // GenParticle
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Era
 
 #include <map> // std::map<,>
 
@@ -12,7 +13,7 @@ class lutWrapperBase;
 class DYMCReweighting
 {
 public:
-  DYMCReweighting(int era,
+  DYMCReweighting(Era era,
                   bool debug = false);
   ~DYMCReweighting();
 
@@ -24,7 +25,7 @@ public:
             int central_or_shift) const;
 
 protected:
-  int era_;
+  Era era_;
   bool debug_;
   std::map<std::string, TFile *> inputFiles_;
   lutWrapperBase * weights_;

@@ -1,8 +1,9 @@
 #ifndef tthAnalysis_HiggsToTauTau_Data_to_MC_CorrectionInterface_1l_1tau_trigger_h
 #define tthAnalysis_HiggsToTauTau_Data_to_MC_CorrectionInterface_1l_1tau_trigger_h
 
-#include "tthAnalysis/HiggsToTauTau/interface/lutAuxFunctions.h" // lutWrapperBase, vLutWrapperBase
+#include "tthAnalysis/HiggsToTauTau/interface/lutAuxFunctions.h"       // lutWrapperBase, vLutWrapperBase
 #include "tthAnalysis/HiggsToTauTau/interface/TauTriggerSFInterface.h" // TauTriggerSFInterface, TriggerSFsys
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h"  // Era
 
 class Data_to_MC_CorrectionInterface_1l_1tau_trigger
 {
@@ -45,7 +46,7 @@ protected:
   std::map<std::string, TFile *> inputFiles_;
 
   std::string era_str_;
-  int era_;
+  Era era_;
   std::string hadTauSelection_;
   bool isDEBUG_;
   std::vector<int> allowedDecayModes_;

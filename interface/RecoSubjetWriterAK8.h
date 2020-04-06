@@ -1,6 +1,8 @@
 #ifndef tthAnalysis_HiggsToTauTau_RecoSubjetWriterAK8_h
 #define tthAnalysis_HiggsToTauTau_RecoSubjetWriterAK8_h
 
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Era
+
 #include <Rtypes.h> // UInt_t, Float_t
 
 #include <string>
@@ -15,10 +17,10 @@ enum class Btag;
 class RecoSubjetWriterAK8
 {
 public:
-  RecoSubjetWriterAK8(int era);
-  RecoSubjetWriterAK8(int era,
+  RecoSubjetWriterAK8(Era era);
+  RecoSubjetWriterAK8(Era era,
                       const std::string & branchName_obj);
-  RecoSubjetWriterAK8(int era,
+  RecoSubjetWriterAK8(Era era,
                       const std::string & branchName_num,
                       const std::string & branchName_obj);
   ~RecoSubjetWriterAK8();
@@ -42,7 +44,7 @@ protected:
   void
   setBranchNames();
 
-  int era_;
+  Era era_;
   Btag btag_;
 
   const unsigned int max_nJets_;

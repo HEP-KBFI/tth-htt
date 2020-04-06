@@ -1,9 +1,9 @@
-#include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorFakeable.h" // RecoMuonSelectorFakeable
+#include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorFakeable.h"
 
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_*
-#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Era::k*
+#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h"         // cmsException()
 
-RecoMuonSelectorFakeable::RecoMuonSelectorFakeable(int era,
+RecoMuonSelectorFakeable::RecoMuonSelectorFakeable(Era era,
                                                    int index,
                                                    bool debug,
                                                    bool set_selection_flags)
@@ -216,7 +216,7 @@ RecoMuonSelectorFakeable::smoothBtagCut(double assocJet_pt) const
   return ptInterp * min_jetBtagCSV_ + (1. - ptInterp) * max_jetBtagCSV_;
 }
 
-RecoMuonCollectionSelectorFakeable::RecoMuonCollectionSelectorFakeable(int era,
+RecoMuonCollectionSelectorFakeable::RecoMuonCollectionSelectorFakeable(Era era,
                                                                        int index,
                                                                        bool debug,
                                                                        bool set_selection_flags)

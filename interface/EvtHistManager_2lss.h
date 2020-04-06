@@ -55,8 +55,6 @@ class EvtHistManager_2lss
   enum { kOption_undefined, kOption_allHistograms, kOption_minimalHistograms };
 
  private:
-  int era_;
-
   TH1 * histogram_numElectrons_;
   TH1 * histogram_numMuons_;
   TH1 * histogram_numHadTaus_;

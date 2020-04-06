@@ -2,12 +2,13 @@
 #define tthAnalysis_HiggsToTauTau_RecoJetCollectionSelectorBtag_h
 
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionSelector.h" // ParticleCollectionSelector
-#include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h"                    // RecoJet
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h"       // Era
 
 class RecoJetSelectorBtag
 {
 public:
-  explicit RecoJetSelectorBtag(int era,
+  explicit RecoJetSelectorBtag(Era era,
                                int index,
                                bool debug);
 
@@ -35,7 +36,7 @@ public:
   operator()(const RecoJet & jet) const;
 
 protected:
-  int era_;
+  Era era_;
   bool debug_;
   Double_t min_pt_;      ///< lower cut threshold on pT
   Double_t max_absEta_;  ///< upper cut threshold on absolute value of eta
@@ -47,7 +48,7 @@ class RecoJetSelectorBtagLoose
   : public RecoJetSelectorBtag
 {
 public:
-  explicit RecoJetSelectorBtagLoose(int era, int index = -1, bool debug = false);
+  explicit RecoJetSelectorBtagLoose(Era era, int index = -1, bool debug = false);
 };
 
 typedef ParticleCollectionSelector<RecoJet, RecoJetSelectorBtagLoose> RecoJetCollectionSelectorBtagLoose;
@@ -56,7 +57,7 @@ class RecoJetSelectorBtagMedium
   : public RecoJetSelectorBtag
 {
 public:
-  explicit RecoJetSelectorBtagMedium(int era, int index = -1, bool debug = false);
+  explicit RecoJetSelectorBtagMedium(Era era, int index = -1, bool debug = false);
 };
 
 typedef ParticleCollectionSelector<RecoJet, RecoJetSelectorBtagMedium> RecoJetCollectionSelectorBtagMedium;

@@ -17,7 +17,9 @@ std::string
 getPtBin(double minPt,
          double maxPt);
 
-TauFilterBit
-getTrigMatchingOption(const std::string& trigMatching);
+int
+getTrigMatchingOption_2016(const std::string& trigMatching);
+int
+getTrigMatchingOption_2017and2018(const std::string& trigMatching);
 
 #endif // tthAnalysis_HiggsToTauTau_jetToTauFakeRateAuxFunctions_h

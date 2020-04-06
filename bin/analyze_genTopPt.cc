@@ -159,10 +159,6 @@ int main(int argc, char* argv[])
   const bool isMC_TT = isMC && process_string == "TT";
   assert(isMC_TT);
 
-  std::string era_string = cfg_analyze.getParameter<std::string>("era");
-  const int era = get_era(era_string);
-  std::cout << " era = '" << era << "'" << std::endl;
-
   bool hasLHE = cfg_analyze.getParameter<bool>("hasLHE");
 
   edm::VParameterSet lumiScale = cfg_analyze.getParameter<edm::VParameterSet>("lumiScale");

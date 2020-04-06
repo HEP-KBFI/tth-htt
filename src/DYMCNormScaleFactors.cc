@@ -1,13 +1,13 @@
 #include "tthAnalysis/HiggsToTauTau/interface/DYMCNormScaleFactors.h"
 
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2016, kEra_2017
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Era::k*
 #include "tthAnalysis/HiggsToTauTau/interface/data_to_MC_corrections_auxFunctions.h" // aux::
 #include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // kDYMCNormScaleFactors_central, kDYMCNormScaleFactors_Up, kDYMCNormScaleFactors_Down
 
 #include <TFile.h> // TFile
 
-DYMCNormScaleFactors::DYMCNormScaleFactors(int era,
+DYMCNormScaleFactors::DYMCNormScaleFactors(Era era,
                                            bool debug)
   : era_(era)
   , debug_(debug)
@@ -44,7 +44,7 @@ DYMCNormScaleFactors::getWeight(const std::vector<GenParticle> & genTauLeptons,
     const Particle::LorentzVector dileptonP4 = genTauLeptonPlus->p4() + genTauLeptonMinus->p4();
     const double dileptonMass = dileptonP4.mass();
 
-    if(era_ == kEra_2016)
+    if(era_ == Era::k2016)
     {
       if     (nBMedium >= 2 && nJets >= 4)                 { weight = 0.868; weight_error = 0.141; }
       else if(nBMedium >= 2 && nJets == 3)                 { weight = 0.779; weight_error = 0.066; }
@@ -59,7 +59,7 @@ DYMCNormScaleFactors::getWeight(const std::vector<GenParticle> & genTauLeptons,
       else if(nBMedium == 0 && nBLoose >= 2 && nJets == 3) { weight = 0.853; weight_error = 0.056; }
       else if(nBMedium == 0 && nBLoose >= 2 && nJets == 2) { weight = 0.800; weight_error = 0.007; }
     }
-    else if(era_ == kEra_2017)
+    else if(era_ == Era::k2017)
     {
       if     (nBMedium >= 2 && nJets >= 4)                 { weight = 1.453; weight_error = 0.081; }
       else if(nBMedium >= 2 && nJets == 3)                 { weight = 1.054; weight_error = 0.036; }
@@ -74,7 +74,7 @@ DYMCNormScaleFactors::getWeight(const std::vector<GenParticle> & genTauLeptons,
       else if(nBMedium == 0 && nBLoose >= 2 && nJets == 3) { weight = 1.053; weight_error = 0.023; }
       else if(nBMedium == 0 && nBLoose >= 2 && nJets == 2) { weight = 0.950; weight_error = 0.020; }
     }
-    else if(era_ == kEra_2018)
+    else if(era_ == Era::k2018)
     {
       if     (nBMedium >= 2 && nJets >= 4)                 { weight = 1.329; weight_error = 0.140; }
       else if(nBMedium >= 2 && nJets == 3)                 { weight = 1.012; weight_error = 0.046; }
@@ -91,7 +91,7 @@ DYMCNormScaleFactors::getWeight(const std::vector<GenParticle> & genTauLeptons,
     }
     else
     {
-      throw cmsException(this, __func__, __LINE__) << "Invalid era: " << era_;
+      throw cmsException(this, __func__, __LINE__) << "Invalid era: " << static_cast<int>(era_);
     }
 
     if(debug_)

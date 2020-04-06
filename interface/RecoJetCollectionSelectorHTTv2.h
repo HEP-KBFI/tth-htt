@@ -2,12 +2,13 @@
 #define tthAnalysis_HiggsToTauTau_RecoJetCollectionSelectorHTTv2_h
 
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionSelector.h" // ParticleCollectionSelector
-#include "tthAnalysis/HiggsToTauTau/interface/RecoJetHTTv2.h" // RecoJet
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJetHTTv2.h"               // RecoJet
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h"       // Era
 
 class RecoJetSelectorHTTv2
 {
 public:
-  explicit RecoJetSelectorHTTv2(int era,
+  explicit RecoJetSelectorHTTv2(Era era,
                                 int index = -1,
                                 bool debug = false);
   ~RecoJetSelectorHTTv2() {}

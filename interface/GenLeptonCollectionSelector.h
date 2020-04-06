@@ -2,12 +2,13 @@
 #define tthAnalysis_HiggsToTauTau_GenLeptonCollectionSelector_h
 
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionSelector.h" // ParticleCollectionSelector
-#include "tthAnalysis/HiggsToTauTau/interface/GenLepton.h" // GenLepton
+#include "tthAnalysis/HiggsToTauTau/interface/GenLepton.h"                  // GenLepton
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h"       // Era
 
 class GenLeptonSelector
 {
 public:
-  explicit GenLeptonSelector(int era,
+  explicit GenLeptonSelector(Era era,
 			     int index = -1,
 			     bool debug = false);
   ~GenLeptonSelector() {}
@@ -36,7 +37,7 @@ public:
   operator()(const GenLepton & lepton) const;
 
 protected:
-  int era_;
+  Era era_;
   Double_t min_pt_muon_;         ///< lower cut threshold on pT for muons
   Double_t max_absEta_muon_;     ///< upper cut threshold on absolute value of eta for muons
   Double_t min_pt_electron_;     ///< lower cut threshold on pT for electrons

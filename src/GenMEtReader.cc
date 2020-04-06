@@ -6,14 +6,14 @@
 std::map<std::string, int> GenMEtReader::numInstances_;
 std::map<std::string, GenMEtReader *> GenMEtReader::instances_;
 
-GenMEtReader::GenMEtReader(int era,
-                             bool isMC)
+GenMEtReader::GenMEtReader(Era era,
+                           bool isMC)
   : GenMEtReader(era, isMC, "GenMET")
 {}
 
-GenMEtReader::GenMEtReader(int era,
-                             bool isMC,
-                             const std::string & branchName_obj)
+GenMEtReader::GenMEtReader(Era era,
+                           bool isMC,
+                           const std::string & branchName_obj)
   : era_(era)
   , isMC_(isMC)
   , branchName_obj_(branchName_obj)

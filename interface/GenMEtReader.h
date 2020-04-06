@@ -1,8 +1,9 @@
 #ifndef tthAnalysis_HiggsToTauTau_GenMEtReader_h
 #define tthAnalysis_HiggsToTauTau_GenMEtReader_h
 
-#include "tthAnalysis/HiggsToTauTau/interface/ReaderBase.h" // ReaderBase
-#include "tthAnalysis/HiggsToTauTau/interface/GenMEt.h" // GenMEt
+#include "tthAnalysis/HiggsToTauTau/interface/ReaderBase.h"           // ReaderBase
+#include "tthAnalysis/HiggsToTauTau/interface/GenMEt.h"               // GenMEt
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Era
 
 #include <map> // std::map<,>
 
@@ -13,11 +14,11 @@ class GenMEtReader
 : public ReaderBase
 {
  public:
-  GenMEtReader(int era,
-                bool isMC);
-  GenMEtReader(int era,
-                bool isMC,
-                const std::string & branchName_obj);
+  GenMEtReader(Era era,
+               bool isMC);
+  GenMEtReader(Era era,
+               bool isMC,
+               const std::string & branchName_obj);
   ~GenMEtReader();
 
   /**
@@ -40,7 +41,7 @@ protected:
   void
   setBranchNames();
 
-  int era_;
+  Era era_;
   bool isMC_;
   std::string branchName_obj_;
 

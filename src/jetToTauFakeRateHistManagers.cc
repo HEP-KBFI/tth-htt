@@ -1,8 +1,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/jetToTauFakeRateHistManagers.h"
 
-#include "tthAnalysis/HiggsToTauTau/interface/jetToTauFakeRateAuxFunctions.h" // getTrigMatching_string
+#include "tthAnalysis/HiggsToTauTau/interface/jetToTauFakeRateAuxFunctions.h" // getTrigMatchingOption_*
 #include "tthAnalysis/HiggsToTauTau/interface/hltFilter.h"                    // hltFilter
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h"         // get_era
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h"         // get_era, Era::k*
 
 #include <TString.h> // Form
 
@@ -49,7 +49,16 @@ denominatorHistManagers::denominatorHistManagers(
   , hadTauHistManager_genJet_(0)
   , fakeableHadTauSelector_(0)
 {
-  trigMatching_denominator_ = getTrigMatchingOption(trigMatching_denominator);
+  if ( era_ == Era::k2016 ) 
+  {
+    trigMatching_denominator_ = getTrigMatchingOption_2016(trigMatching_denominator);
+  }
+  else if ( era_ == Era::k2017 || era_ == Era::k2018 )
+  {
+    trigMatching_denominator_ = getTrigMatchingOption_2017and2018(trigMatching_denominator);
+  }
+  else throw cms::Exception("denominatorHistManagers") 
+    << "Invalid era = " << era_string << " !!\n";
   std::string etaBin = getEtaBin(minAbsEta_, maxAbsEta_);
   subdir_ = Form("jetToTauFakeRate_%s_%s/denominator/%s", chargeSelection_.data(), trigMatching_denominator.data(), etaBin.data());
   if ( decayMode            != -1 ) subdir_.append(Form("_dm%i", decayMode));
@@ -113,7 +122,7 @@ denominatorHistManagers::bookHistograms(TFileDirectory& dir)
 void 
 denominatorHistManagers::fillHistograms(const RecoHadTau& hadTau, const RecoJet* jet, double evtWeight)
 {
-  if ( (*fakeableHadTauSelector_)(hadTau) && hltFilter(hadTau, trigMatching_denominator_) )
+  if ( (*fakeableHadTauSelector_)(hadTau) && hltFilter(hadTau, trigMatching_denominator_, era_) )
   {
     bool isSelected_decayMode = false;
     if ( decayMode_ ==  -1                                                           ) isSelected_decayMode = true;

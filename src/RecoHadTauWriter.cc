@@ -1,22 +1,22 @@
-#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauWriter.h" // RecoHadTauWriter
+#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTauWriter.h"
 
-#include "tthAnalysis/HiggsToTauTau/interface/GenParticleWriter.h" // GenParticleWriter
-#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h" // RecoHadTau, GenLepton, GenHadTau, GenJet
+#include "tthAnalysis/HiggsToTauTau/interface/GenParticleWriter.h"        // GenParticleWriter
+#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h"               // RecoHadTau, GenLepton, GenHadTau, GenJet
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_*
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h"     // Era::k*
 
-RecoHadTauWriter::RecoHadTauWriter(int era,
+RecoHadTauWriter::RecoHadTauWriter(Era era,
                                    bool isMC)
   : RecoHadTauWriter(era, isMC, "Tau")
 {}
 
-RecoHadTauWriter::RecoHadTauWriter(int era,
+RecoHadTauWriter::RecoHadTauWriter(Era era,
                                    bool isMC,
                                    const std::string & branchName_obj)
   : RecoHadTauWriter(era, isMC, Form("n%s", branchName_obj.data()), branchName_obj)
 {}
 
-RecoHadTauWriter::RecoHadTauWriter(int era,
+RecoHadTauWriter::RecoHadTauWriter(Era era,
                                    bool isMC,
                                    const std::string & branchName_num,
                                    const std::string & branchName_obj)

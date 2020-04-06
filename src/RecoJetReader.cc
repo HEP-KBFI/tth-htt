@@ -1,24 +1,24 @@
-#include "tthAnalysis/HiggsToTauTau/interface/RecoJetReader.h" // RecoJetReader
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJetReader.h"
 
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Btag
-#include "tthAnalysis/HiggsToTauTau/interface/GenLeptonReader.h" // GenLeptonReader
-#include "tthAnalysis/HiggsToTauTau/interface/GenHadTauReader.h" // GenHadTauReader
-#include "tthAnalysis/HiggsToTauTau/interface/GenJetReader.h" // GenJetReader
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h"     // Btag
+#include "tthAnalysis/HiggsToTauTau/interface/GenLeptonReader.h"          // GenLeptonReader
+#include "tthAnalysis/HiggsToTauTau/interface/GenHadTauReader.h"          // GenHadTauReader
+#include "tthAnalysis/HiggsToTauTau/interface/GenJetReader.h"             // GenJetReader
 
-#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
+#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h"             // cmsException()
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
-#include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // getBranchName_bTagWeight(), getBranchName_jetPtMass()
+#include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h"         // getBranchName_bTagWeight(), getBranchName_jetPtMass()
 
 std::map<std::string, int> RecoJetReader::numInstances_;
 std::map<std::string, RecoJetReader *> RecoJetReader::instances_;
 
-RecoJetReader::RecoJetReader(int era,
+RecoJetReader::RecoJetReader(Era era,
                              bool isMC,
                              bool readGenMatching)
   : RecoJetReader(era, isMC, "Jet", readGenMatching)
 {}
 
-RecoJetReader::RecoJetReader(int era,
+RecoJetReader::RecoJetReader(Era era,
                              bool isMC,
                              const std::string & branchName_obj,
                              bool readGenMatching)
@@ -117,7 +117,7 @@ RecoJetReader::setPtMass_central_or_shift(int central_or_shift)
   }
   if(! isValidJESsource(era_, central_or_shift))
   {
-    throw cmsException(this, __func__, __LINE__) << "Invalid option for the era = " << era_ << ": " << central_or_shift;
+    throw cmsException(this, __func__, __LINE__) << "Invalid option for the era = " << static_cast<int>(era_) << ": " << central_or_shift;
   }
   ptMassOption_ = central_or_shift;
   read_systematics_whitelist_.clear();

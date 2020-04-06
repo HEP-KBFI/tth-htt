@@ -2,13 +2,14 @@
 #define tthAnalysis_HiggsToTauTau_RecoElectronCollectionSelectorFakeable_h
 
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionSelector.h" // ParticleCollectionSelector
-#include "tthAnalysis/HiggsToTauTau/interface/RecoElectron.h" // RecoElectron
+#include "tthAnalysis/HiggsToTauTau/interface/RecoElectron.h"               // RecoElectron
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h"       // Era
 
 class RecoElectronSelectorFakeable
 {
 public:
   explicit
-  RecoElectronSelectorFakeable(int era,
+  RecoElectronSelectorFakeable(Era era,
                                int index = -1,
                                bool debug = false,
                                bool set_selection_flags = true);
@@ -42,7 +43,7 @@ public:
   bool operator()(const RecoElectron & electron) const;
 
 protected:
-  const int era_;
+  const Era era_;
   bool debug_;
   bool set_selection_flags_;
   bool apply_offline_e_trigger_cuts_;
@@ -78,7 +79,7 @@ class RecoElectronCollectionSelectorFakeable
 {
 public:
   explicit
-  RecoElectronCollectionSelectorFakeable(int era,
+  RecoElectronCollectionSelectorFakeable(Era era,
                                          int index = -1,
                                          bool debug = false,
                                          bool set_selection_flags = true);

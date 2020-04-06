@@ -1,21 +1,21 @@
-#include "tthAnalysis/HiggsToTauTau/interface/RecoMuonWriter.h" // RecoMuonWriter
+#include "tthAnalysis/HiggsToTauTau/interface/RecoMuonWriter.h"
 
-#include "tthAnalysis/HiggsToTauTau/interface/RecoLeptonWriter.h" // RecoLeptonWriter
-#include "tthAnalysis/HiggsToTauTau/interface/RecoMuon.h" // RecoMuon
+#include "tthAnalysis/HiggsToTauTau/interface/RecoLeptonWriter.h"         // RecoLeptonWriter
+#include "tthAnalysis/HiggsToTauTau/interface/RecoMuon.h"                 // RecoMuon
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
 
-RecoMuonWriter::RecoMuonWriter(int era,
+RecoMuonWriter::RecoMuonWriter(Era era,
                                bool isMC)
   : RecoMuonWriter(era, isMC, "Muon")
 {}
 
-RecoMuonWriter::RecoMuonWriter(int era,
+RecoMuonWriter::RecoMuonWriter(Era era,
                                bool isMC,
                                const std::string & branchName_obj)
   : RecoMuonWriter(era, isMC, Form("n%s", branchName_obj.data()), branchName_obj)
 {}
 
-RecoMuonWriter::RecoMuonWriter(int era,
+RecoMuonWriter::RecoMuonWriter(Era era,
                                bool isMC,
                                const std::string & branchName_num,
                                const std::string & branchName_obj)

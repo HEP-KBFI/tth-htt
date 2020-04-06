@@ -2,13 +2,14 @@
 #define tthAnalysis_HiggsToTauTau_RecoMuonCollectionSelectorLoose_h
 
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionSelector.h" // ParticleCollectionSelector
-#include "tthAnalysis/HiggsToTauTau/interface/RecoMuon.h" // RecoMuon
+#include "tthAnalysis/HiggsToTauTau/interface/RecoMuon.h"                   // RecoMuon
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h"       // Era
 
 class RecoMuonSelectorLoose
 {
 public:
   explicit
-  RecoMuonSelectorLoose(int era,
+  RecoMuonSelectorLoose(Era era,
                         int index = -1,
                         bool debug = false,
                         bool set_selection_flags = true);
@@ -33,7 +34,7 @@ public:
   operator()(const RecoMuon & muon) const;
 
 protected:
-  const int era_;
+  const Era era_;
   bool debug_;
   bool set_selection_flags_;
 

@@ -1,16 +1,16 @@
-#include "tthAnalysis/HiggsToTauTau/interface/RecoMEtWriter.h" // RecoMEtWriter
+#include "tthAnalysis/HiggsToTauTau/interface/RecoMEtWriter.h"
 
-#include "tthAnalysis/HiggsToTauTau/interface/RecoMEtReader.h" // RecoMEtReader::kJetMET_*
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // getBranchName_MEt()
+#include "tthAnalysis/HiggsToTauTau/interface/RecoMEtReader.h"            // RecoMEtReader::kJetMET_*
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h"     // getBranchName_MEt()
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
-#include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // kJetMET_*
+#include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h"         // kJetMET_*
 
-RecoMEtWriter::RecoMEtWriter(int era,
+RecoMEtWriter::RecoMEtWriter(Era era,
                              bool isMC)
   : RecoMEtWriter(era, isMC, "MET")
 {}
 
-RecoMEtWriter::RecoMEtWriter(int era,
+RecoMEtWriter::RecoMEtWriter(Era era,
                              bool isMC,
                              const std::string & branchName_obj)
   : era_(era)
@@ -52,7 +52,7 @@ RecoMEtWriter::setPtPhi_central_or_shift(int central_or_shift)
   }
   if(! isValidJESsource(era_, central_or_shift))
   {
-    throw cmsException(this, __func__, __LINE__) << "Invalid option for the era = " << era_ << ": " << central_or_shift;
+    throw cmsException(this, __func__, __LINE__) << "Invalid option for the era = " << static_cast<int>(era_) << ": " << central_or_shift;
   }
   if(central_or_shift <= kJetMET_UnclusteredEnDown)
   {

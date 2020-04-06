@@ -1,9 +1,9 @@
-#include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelectorBtag.h" // RecoJetSelector
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelectorBtag.h"
 
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_*
-#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Era::k*
+#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h"         // cmsException()
 
-RecoJetSelectorBtag::RecoJetSelectorBtag(int era,
+RecoJetSelectorBtag::RecoJetSelectorBtag(Era era,
                                          int index,
                                          bool debug)
   : era_(era)
@@ -15,9 +15,9 @@ RecoJetSelectorBtag::RecoJetSelectorBtag(int era,
 {
   switch(era)
   {
-    case kEra_2016: min_jetId_ = 1; break; // 1 means loose
-    case kEra_2017:
-    case kEra_2018: min_jetId_ = 2; break; // 2 means tight (loose jet ID deprecated since 94x)
+    case Era::k2016: min_jetId_ = 1; break; // 1 means loose
+    case Era::k2017:
+    case Era::k2018: min_jetId_ = 2; break; // 2 means tight (loose jet ID deprecated since 94x)
     default: throw cmsException(this) << "Implement me!";
   }
 }
@@ -64,7 +64,7 @@ RecoJetSelectorBtag::get_min_BtagCSV() const
   return min_BtagCSV_;
 }
 
-RecoJetSelectorBtagLoose::RecoJetSelectorBtagLoose(int era,
+RecoJetSelectorBtagLoose::RecoJetSelectorBtagLoose(Era era,
                                                    int index,
                                                    bool debug)
   : RecoJetSelectorBtag(era, index, debug)
@@ -72,7 +72,7 @@ RecoJetSelectorBtagLoose::RecoJetSelectorBtagLoose(int era,
   min_BtagCSV_ = get_BtagWP(era_, Btag::kDeepJet, BtagWP::kLoose);
 }
 
-RecoJetSelectorBtagMedium::RecoJetSelectorBtagMedium(int era,
+RecoJetSelectorBtagMedium::RecoJetSelectorBtagMedium(Era era,
                                                      int index,
                                                      bool debug)
   : RecoJetSelectorBtag(era, index, debug)

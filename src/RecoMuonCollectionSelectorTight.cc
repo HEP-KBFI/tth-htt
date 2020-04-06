@@ -1,9 +1,9 @@
-#include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorTight.h" // RecoMuonSelectorTight
+#include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorTight.h"
 
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_*
-#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Era::k*
+#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h"         // cmsException()
 
-RecoMuonSelectorTight::RecoMuonSelectorTight(int era,
+RecoMuonSelectorTight::RecoMuonSelectorTight(Era era,
                                              int index,
                                              bool debug,
                                              bool set_selection_flags)
@@ -180,7 +180,7 @@ RecoMuonSelectorTight::set_assocJetBtag(bool flag)
   useAssocJetBtag_ = flag;
 }
 
-RecoMuonCollectionSelectorTight::RecoMuonCollectionSelectorTight(int era,
+RecoMuonCollectionSelectorTight::RecoMuonCollectionSelectorTight(Era era,
                                                                  int index,
                                                                  bool debug,
                                                                  bool set_selection_flags)

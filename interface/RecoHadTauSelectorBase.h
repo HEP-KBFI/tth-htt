@@ -1,7 +1,8 @@
 #ifndef tthAnalysis_HiggsToTauTau_RecoHadTauSelectorBase_h
 #define tthAnalysis_HiggsToTauTau_RecoHadTauSelectorBase_h
 
-#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h" // RecoHadTau
+#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h"           // RecoHadTau
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Era
 
 #define DEFAULT_TAUID_ID_VALUE -1000
 #define DEFAULT_TAUID_RAW_VALUE -1.e+6
@@ -10,7 +11,7 @@ class RecoHadTauSelectorBase
 {
 public:
   explicit
-  RecoHadTauSelectorBase(int era,
+  RecoHadTauSelectorBase(Era era,
                          int index = -1,
                          bool debug = false,
                          bool set_selection_flags = true);

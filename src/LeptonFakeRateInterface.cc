@@ -1,7 +1,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/LeptonFakeRateInterface.h"
 
 #include "tthAnalysis/HiggsToTauTau/interface/lutAuxFunctions.h" // lutWrapperTH2
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // get_era, kEra_*, cmsException()
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // get_era, Era::k*, cmsException()
 
 #include <TFile.h> // TFile
 
@@ -15,13 +15,13 @@ LeptonFakeRateInterface::LeptonFakeRateInterface(const edm::ParameterSet & cfg)
   const std::string histogramName_e  = cfg.getParameter<std::string>("histogramName_e");
   const std::string histogramName_mu = cfg.getParameter<std::string>("histogramName_mu");
 
-  const int era = get_era(cfg.getParameter<std::string>("era"));
+  const Era era = get_era(cfg.getParameter<std::string>("era"));
   switch(era)
   {
     // Slide 16 in https://indico.cern.ch/event/885279/contributions/3789360/attachments/2004535/3347458/mar15.pdf
-    case kEra_2016: jetToEleFakeRateCorr_ = 1.376; jetToMuFakeRateCorr_ = 1.050; break;
-    case kEra_2017: jetToEleFakeRateCorr_ = 1.252; jetToMuFakeRateCorr_ = 1.157; break;
-    case kEra_2018: jetToEleFakeRateCorr_ = 1.325; jetToMuFakeRateCorr_ = 1.067; break;
+    case Era::k2016: jetToEleFakeRateCorr_ = 1.376; jetToMuFakeRateCorr_ = 1.050; break;
+    case Era::k2017: jetToEleFakeRateCorr_ = 1.252; jetToMuFakeRateCorr_ = 1.157; break;
+    case Era::k2018: jetToEleFakeRateCorr_ = 1.325; jetToMuFakeRateCorr_ = 1.067; break;
   }
 
   for(int FR_option = kFRl_central; FR_option <= kFRm_shape_eta_barrelDown; ++FR_option)

@@ -10,8 +10,7 @@
  *
  */
 
-#include "tthAnalysis/HiggsToTauTau/interface/HistManagerBase.h" // HistManagerBase
-
+#include "tthAnalysis/HiggsToTauTau/interface/HistManagerBase.h"   // HistManagerBase
 #include "tthAnalysis/HiggsToTauTau/interface/MEMOutput_3l_1tau.h" // MEMOutput_3l_1tau
 
 struct EvtHistManager_3l_1tau_Input
@@ -49,8 +48,6 @@ class EvtHistManager_3l_1tau
   enum { kOption_undefined, kOption_allHistograms, kOption_minimalHistograms };
 
  private:
-  int era_;
-
   TH1 * histogram_numElectrons_;
   TH1 * histogram_numMuons_;
   TH1 * histogram_numHadTaus_;

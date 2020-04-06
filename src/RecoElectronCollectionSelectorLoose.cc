@@ -1,9 +1,9 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorLoose.h" // RecoElectronSelectorLoose
 
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_*
-#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException(), assert()
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Era::k*
+#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h"         // cmsException(), assert()
 
-RecoElectronSelectorLoose::RecoElectronSelectorLoose(int era,
+RecoElectronSelectorLoose::RecoElectronSelectorLoose(Era era,
                                                      int index,
                                                      bool debug,
                                                      bool set_selection_flags)

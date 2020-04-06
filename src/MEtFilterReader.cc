@@ -1,8 +1,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/MEtFilterReader.h" // MEtFilterReader
 
-#include "tthAnalysis/HiggsToTauTau/interface/MEtFilter.h" // MEtFilter
+#include "tthAnalysis/HiggsToTauTau/interface/MEtFilter.h"                // MEtFilter
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_*
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h"     // Era::k*
 
 #include <cassert> // assert()
 
@@ -10,7 +10,7 @@ int MEtFilterReader::numInstances_ = 0;
 MEtFilterReader * MEtFilterReader::instance_ = nullptr;
 
 MEtFilterReader::MEtFilterReader(MEtFilter * metFilter,
-                                 int era)
+                                 Era era)
   : metFilter_(metFilter)
   , era_(era)
 {
@@ -53,7 +53,7 @@ MEtFilterReader::setBranchAddresses(TTree * tree)
       std::string metFilterFlagString = getMEtFilterFlagString(flag_enum);
       if(flag == MEtFilterFlag::ecalBadCalibFilterV2)
       {
-        if(era_ == kEra_2016)
+        if(era_ == Era::k2016)
         {
           // not present in 2016
           continue;

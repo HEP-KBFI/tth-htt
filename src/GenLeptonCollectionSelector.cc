@@ -1,9 +1,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenLeptonCollectionSelector.h" // GenLeptonSelector
 
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // get_human_line()
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_*
 
-GenLeptonSelector::GenLeptonSelector(int era,
+GenLeptonSelector::GenLeptonSelector(Era era,
                                      int index,
                                      bool debug)
   : era_(era)

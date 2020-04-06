@@ -1,8 +1,9 @@
 #ifndef tthAnalysis_HiggsToTauTau_MEtFilterReader_h
 #define tthAnalysis_HiggsToTauTau_MEtFilterReader_h
 
-#include "tthAnalysis/HiggsToTauTau/interface/ReaderBase.h" // ReaderBase
-#include "tthAnalysis/HiggsToTauTau/interface/MEtFilterFlag.h" // MEtFilterFlag::
+#include "tthAnalysis/HiggsToTauTau/interface/ReaderBase.h"           // ReaderBase
+#include "tthAnalysis/HiggsToTauTau/interface/MEtFilterFlag.h"        // MEtFilterFlag::
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Era
 
 #include <array> // std::array<>
 
@@ -14,7 +15,7 @@ class MEtFilterReader
 {
 public:
   MEtFilterReader(MEtFilter * metFilter,
-                  int era);
+                  Era era);
   ~MEtFilterReader();
 
   void
@@ -34,7 +35,7 @@ protected:
   static MEtFilterReader * instance_;
 
   MEtFilter * metFilter_;
-  int era_;
+  Era era_;
 };
 
 #endif

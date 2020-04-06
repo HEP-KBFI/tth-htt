@@ -42,7 +42,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/EvtWeightRecorder.h" // EvtWeightRecorder
 
 #include "tthAnalysis/HiggsToTauTau/interface/convert_to_ptrs.h" // convert_to_ptrs()
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_2017, getBTagWeight_option()
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Era::k2017, getBTagWeight_option()
 #include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // get*_option()
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // fillWithOverflow
 #include "tthAnalysis/HiggsToTauTau/interface/leptonFakeRateAuxFunctions.h"
@@ -173,7 +173,7 @@ main(int argc,
   const bool isSignal = process_string == "ttH" || process_string == "ttH_ctcvcp";
 
   const std::string era_string = cfg_analyze.getParameter<std::string>("era");
-  const int era = get_era(era_string);
+  const Era era = get_era(era_string);
   const bool isMC    = cfg_analyze.getParameter<bool>("isMC");
   const bool hasLHE  = cfg_analyze.getParameter<bool>("hasLHE");
   const bool useObjectMultiplicity = cfg_analyze.getParameter<bool>("useObjectMultiplicity");

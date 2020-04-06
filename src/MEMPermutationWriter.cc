@@ -119,7 +119,7 @@ MEMPermutationWriter::addCondition(const std::string & channel,
 
 void
 MEMPermutationWriter::setBranchNames(TTree * tree,
-                                     int era,
+                                     Era era,
                                      bool verbose)
 {
   // initialize the selector classes

@@ -20,13 +20,13 @@
 std::map<std::string, int> RecoHadTauReader::numInstances_;
 std::map<std::string, RecoHadTauReader *> RecoHadTauReader::instances_;
 
-RecoHadTauReader::RecoHadTauReader(int era,
+RecoHadTauReader::RecoHadTauReader(Era era,
                                    bool isMC,
                                    bool readGenMatching)
   : RecoHadTauReader(era, "Tau", isMC, readGenMatching)
 {}
 
-RecoHadTauReader::RecoHadTauReader(int era,
+RecoHadTauReader::RecoHadTauReader(Era era,
                                    const std::string & branchName_obj,
                                    bool isMC,
                                    bool readGenMatching)

@@ -1,12 +1,12 @@
 #include "tthAnalysis/HiggsToTauTau/interface/DYMCReweighting.h"
 
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // kEra_*
-#include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // kDYMCReweighting_*
-#include "tthAnalysis/HiggsToTauTau/interface/lutAuxFunctions.h" // lutWrapperBase, vLutWrapperBase
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Era::k*
+#include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h"     // kDYMCReweighting_*
+#include "tthAnalysis/HiggsToTauTau/interface/lutAuxFunctions.h"      // lutWrapperBase, vLutWrapperBase
 
 #include <TFile.h> // TFile
 
-DYMCReweighting::DYMCReweighting(int era,
+DYMCReweighting::DYMCReweighting(Era era,
                                  bool debug)
   : era_(era)
   , debug_(debug)
@@ -16,7 +16,7 @@ DYMCReweighting::DYMCReweighting(int era,
   //     in order to use the lutWrapperTH2 class, we need to declare the dilepton mass as "eta"
   switch(era_)
   {
-    case kEra_2016:
+    case Era::k2016:
       weights_ = new lutWrapperTH2(
         inputFiles_,
         "tthAnalysis/HiggsToTauTau/data/zpt_weights_summer2016_v2.root",
@@ -24,7 +24,7 @@ DYMCReweighting::DYMCReweighting(int era,
         lut::kXetaYpt, 50., 800., lut::kLimit, 0., 600., lut::kLimit
       );
       break;
-    case kEra_2017:
+    case Era::k2017:
       weights_ = new lutWrapperTH2(
         inputFiles_,
         "tthAnalysis/HiggsToTauTau/data/zpt_weights_2017.root",
@@ -32,7 +32,7 @@ DYMCReweighting::DYMCReweighting(int era,
         lut::kXetaYpt, 50., 1000., lut::kLimit, 0., 1000., lut::kLimit
       );
       break;
-    case kEra_2018:
+    case Era::k2018:
       weights_ = new lutWrapperTH2(
         inputFiles_,
         "tthAnalysis/HiggsToTauTau/data/zpt_weights_2018.root",
@@ -41,7 +41,7 @@ DYMCReweighting::DYMCReweighting(int era,
       );
       break;
     default:
-      throw cmsException(this, __func__, __LINE__) << "Invalid era = " << era_;
+      throw cmsException(this, __func__, __LINE__) << "Invalid era = " << static_cast<int>(era_);
   }
 }
 

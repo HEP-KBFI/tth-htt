@@ -1,8 +1,9 @@
 #ifndef tthAnalysis_HiggsToTauTau_RecoJetReaderHTTv2_h
 #define tthAnalysis_HiggsToTauTau_RecoJetReaderHTTv2_h
 
-#include "tthAnalysis/HiggsToTauTau/interface/ReaderBase.h" // ReaderBase
-#include "tthAnalysis/HiggsToTauTau/interface/RecoJetHTTv2.h" // RecoJetHTTv2
+#include "tthAnalysis/HiggsToTauTau/interface/ReaderBase.h"           // ReaderBase
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJetHTTv2.h"         // RecoJetHTTv2
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Era
 
 #include <map> // std::map<,>
 
@@ -14,8 +15,8 @@ class RecoJetReaderHTTv2
   : public ReaderBase
 {
 public:
-  RecoJetReaderHTTv2(int era);
-  RecoJetReaderHTTv2(int era,
+  RecoJetReaderHTTv2(Era era);
+  RecoJetReaderHTTv2(Era era,
                      const std::string & branchName_jet,
                      const std::string & branchName_subjet);
   ~RecoJetReaderHTTv2();
@@ -40,7 +41,7 @@ protected:
   void
   setBranchNames();
 
-  int era_;
+  Era era_;
   const unsigned int max_nJets_;
   std::string branchName_num_;
   std::string branchName_obj_;
