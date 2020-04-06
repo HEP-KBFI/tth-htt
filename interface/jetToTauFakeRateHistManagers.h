@@ -27,7 +27,7 @@ struct denominatorHistManagers
     double minAbsEta, double maxAbsEta, int decayMode, const std::vector<int>& genJet_pdgIds, const std::string& central_or_shift);
   ~denominatorHistManagers();
   void bookHistograms(TFileDirectory& dir);
-  void fillHistograms(const RecoJet& jet, const RecoHadTau& hadTau, double evtWeight);
+  void fillHistograms(const RecoHadTau& hadTau, const RecoJet* jet, double evtWeight);
   std::string process_;
   std::string era_string_;
   int era_;
@@ -63,7 +63,7 @@ struct numeratorSelector_and_HistManagers : public denominatorHistManagers
     double minAbsEta, double maxAbsEta, int decayMode, const std::vector<int>& genJet_pdgIds, const std::string& central_or_shift);
   ~numeratorSelector_and_HistManagers();
   void bookHistograms(TFileDirectory& dir);
-  void fillHistograms(const RecoJet& jet, const RecoHadTau& hadTau, double evtWeight);
+  void fillHistograms(const RecoHadTau& hadTau, const RecoJet* jet, double evtWeight);
   std::string hadTauSelection_numerator_;
   RecoHadTauSelectorTight* tightHadTauSelector_;
 };

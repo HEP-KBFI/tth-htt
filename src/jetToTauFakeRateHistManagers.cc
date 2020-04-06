@@ -111,7 +111,7 @@ denominatorHistManagers::bookHistograms(TFileDirectory& dir)
 }
 
 void 
-denominatorHistManagers::fillHistograms(const RecoJet& jet, const RecoHadTau& hadTau, double evtWeight)
+denominatorHistManagers::fillHistograms(const RecoHadTau& hadTau, const RecoJet* jet, double evtWeight)
 {
   if ( (*fakeableHadTauSelector_)(hadTau) && hltFilter(hadTau, trigMatching_denominator_) )
   {
@@ -127,11 +127,11 @@ denominatorHistManagers::fillHistograms(const RecoJet& jet, const RecoHadTau& ha
     bool isSelected_genJet_pdgId = false;
     if ( genJet_pdgIds_.size() >= 1 )
     {
-      if ( jet.isGenMatched() && jet.genJet() )
+      if ( jet && jet->isGenMatched() && jet->genJet() )
       {
         for ( int genJet_pdgId : genJet_pdgIds_ )
         {
-          if ( TMath::Abs(jet.genJet()->pdgId()) == genJet_pdgId )
+          if ( TMath::Abs(jet->genJet()->pdgId()) == genJet_pdgId )
           {
             isSelected_genJet_pdgId = true;
             break;
@@ -143,20 +143,22 @@ denominatorHistManagers::fillHistograms(const RecoJet& jet, const RecoHadTau& ha
     {
       isSelected_genJet_pdgId = true;
     }
-    if ( jet.absEta() > minAbsEta_ && jet.absEta() < maxAbsEta_ && isSelected_decayMode && isSelected_genJet_pdgId ) {
-      jetHistManager_->fillHistograms(jet, evtWeight);
-      if ( isMC_ ) {
-        if      ( jet.genHadTau() ) jetHistManager_genHadTau_->fillHistograms(jet, evtWeight);
-        else if ( jet.genLepton() ) jetHistManager_genLepton_->fillHistograms(jet, evtWeight);
-        else                        jetHistManager_genJet_->fillHistograms(jet, evtWeight);
+    if ( isSelected_decayMode && isSelected_genJet_pdgId ) {
+      if (  jet && (minAbsEta_ <= 0. || jet->absEta() > minAbsEta_) && (maxAbsEta_ <= 0. || jet->absEta() < maxAbsEta_) ) {
+        jetHistManager_->fillHistograms(*jet, evtWeight);
+        if ( isMC_ ) {
+          if      ( jet->genHadTau() ) jetHistManager_genHadTau_->fillHistograms(*jet, evtWeight);
+          else if ( jet->genLepton() ) jetHistManager_genLepton_->fillHistograms(*jet, evtWeight);
+          else                         jetHistManager_genJet_->fillHistograms(*jet, evtWeight);
+        }
       }
-    }
-    if ( hadTau.absEta() > minAbsEta_ && hadTau.absEta() < maxAbsEta_ && isSelected_decayMode && isSelected_genJet_pdgId ) {
-      hadTauHistManager_->fillHistograms(hadTau, evtWeight);
-      if ( isMC_ ) {
-        if      ( hadTau.genHadTau() ) hadTauHistManager_genHadTau_->fillHistograms(hadTau, evtWeight);
-        else if ( hadTau.genLepton() ) hadTauHistManager_genLepton_->fillHistograms(hadTau, evtWeight);
-        else                           hadTauHistManager_genJet_->fillHistograms(hadTau, evtWeight);
+      if ( (minAbsEta_ <= 0. || hadTau.absEta() > minAbsEta_) && (maxAbsEta_ <= 0. || hadTau.absEta() < maxAbsEta_) ) {
+        hadTauHistManager_->fillHistograms(hadTau, evtWeight);
+        if ( isMC_ ) {
+          if      ( hadTau.genHadTau() ) hadTauHistManager_genHadTau_->fillHistograms(hadTau, evtWeight);
+          else if ( hadTau.genLepton() ) hadTauHistManager_genLepton_->fillHistograms(hadTau, evtWeight);
+          else                           hadTauHistManager_genJet_->fillHistograms(hadTau, evtWeight);
+        }
       }
     }
   }
@@ -193,10 +195,10 @@ numeratorSelector_and_HistManagers::bookHistograms(TFileDirectory& dir)
 }
   
 void 
-numeratorSelector_and_HistManagers::fillHistograms(const RecoJet& jet, const RecoHadTau& hadTau, double evtWeight)
+numeratorSelector_and_HistManagers::fillHistograms(const RecoHadTau& hadTau, const RecoJet* jet, double evtWeight)
 {
   if ( (*tightHadTauSelector_)(hadTau) ) 
   {
-    denominatorHistManagers::fillHistograms(jet, hadTau, evtWeight);   
+    denominatorHistManagers::fillHistograms(hadTau, jet, evtWeight);   
   }
 }

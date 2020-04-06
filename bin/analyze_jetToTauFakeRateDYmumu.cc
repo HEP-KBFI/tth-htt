@@ -958,59 +958,56 @@ int main(int argc, char* argv[])
       evtWeight);
     selEvtYieldHistManager.fillHistograms(eventInfo, evtWeight);
 
-//--- iterate over jets
-    for ( std::vector<const RecoJet*>::const_iterator cleanedJet = cleanedJets.begin();
-          cleanedJet != cleanedJets.end(); ++cleanedJet ) {
-      if ( !((*cleanedJet)->pt() > jet_minPt && std::fabs((*cleanedJet)->eta()) > jet_minAbsEta  &&
-             (*cleanedJet)->pt() < jet_maxPt && std::fabs((*cleanedJet)->eta()) < jet_maxAbsEta) ) continue;
+//--- iterate over tau candidates passing preselection criteria
+    for ( std::vector<const RecoHadTau*>::const_iterator preselHadTau = preselHadTaus.begin();
+          preselHadTau != preselHadTaus.end(); ++preselHadTau ) {
 
-      const RecoHadTau* preselHadTau_dRmatched = 0;
+//--- find jet matching the tau candidate
+      const RecoJet* cleanedJet_dRmatched = nullptr;
       double dRmin = 1.e+3;
-      for ( std::vector<const RecoHadTau*>::const_iterator preselHadTau = preselHadTaus.begin();
-            preselHadTau != preselHadTaus.end(); ++preselHadTau ) {
-        double dR = deltaR((*preselHadTau)->eta(), (*preselHadTau)->phi(), (*cleanedJet)->eta(), (*cleanedJet)->phi());
-        if ( dR < dRmin || !preselHadTau_dRmatched ) {
-          preselHadTau_dRmatched = (*preselHadTau);
-          dRmin = dR;
+      for ( std::vector<const RecoJet*>::const_iterator cleanedJet = cleanedJets.begin();
+            cleanedJet != cleanedJets.end(); ++cleanedJet ) {
+        if ( (jet_minPt     <= 0. || (*cleanedJet)->pt()             > jet_minPt    ) && 
+             (jet_minAbsEta <= 0. || std::fabs((*cleanedJet)->eta()) > jet_minAbsEta) &&
+             (jet_maxPt     <= 0. || (*cleanedJet)->pt()             < jet_maxPt    ) &&
+             (jet_maxAbsEta <= 0. || std::fabs((*cleanedJet)->eta()) < jet_maxAbsEta) ) {
+          double dR = deltaR((*preselHadTau)->eta(), (*preselHadTau)->phi(), (*cleanedJet)->eta(), (*cleanedJet)->phi());
+          if ( dR < 0.3 && dR < dRmin ) {
+            cleanedJet_dRmatched = (*cleanedJet);
+            dRmin = dR;
+          }
         }
       }
-      if ( !(preselHadTau_dRmatched && dRmin < 0.3) ) continue;
-
-      std::vector<const RecoHadTau*> preselHadTau_ptrs;
-      preselHadTau_ptrs.push_back(preselHadTau_dRmatched);
-      std::vector<const RecoJet*> cleanedJets_wrtPreselHadTau = jetCleaner(selJets, preselHadTau_ptrs);
-      std::vector<const RecoJet*> cleanedBJets_wrtPreselHadTau_loose = jetSelectorBtagLoose(cleanedJets_wrtPreselHadTau);
-      std::vector<const RecoJet*> cleanedBJets_wrtPreselHadTau_medium = jetSelectorBtagMedium(cleanedJets_wrtPreselHadTau);    
-      if ( !(cleanedBJets_wrtPreselHadTau_loose.size() >= 2 || cleanedBJets_wrtPreselHadTau_medium.size() >= 1) ) continue;
+      //if ( !cleanedJet_dRmatched ) continue;
 
       for ( std::vector<denominatorHistManagers*>::iterator denominator = denominators.begin();
             denominator != denominators.end(); ++denominator ) {
-        if ( !(*(*denominator)->fakeableHadTauSelector_)(*preselHadTau_dRmatched) ) continue;
+        if ( !(*(*denominator)->fakeableHadTauSelector_)(**preselHadTau) ) continue;
 
 //--- apply data/MC corrections for hadronic tau identification efficiency 
 //    and for e->tau and mu->tau misidentification rates
         double evtWeight_denominator = evtWeight;
         dataToMCcorrectionInterface->setHadTauSelection((*denominator)->fakeableHadTauSelector_->get());
-        int preselHadTau_dRmatched_genPdgId = getHadTau_genPdgId(preselHadTau_dRmatched);
-        dataToMCcorrectionInterface->setHadTaus(preselHadTau_dRmatched_genPdgId, preselHadTau_dRmatched->pt(), preselHadTau_dRmatched->eta());
+        int preselHadTau_genPdgId = getHadTau_genPdgId(*preselHadTau);
+        dataToMCcorrectionInterface->setHadTaus(preselHadTau_genPdgId, (*preselHadTau)->pt(), (*preselHadTau)->eta());
         evtWeight_denominator *= dataToMCcorrectionInterface->getSF_hadTauID_and_Iso(tauIDSF_option);
 
-        (*denominator)->fillHistograms(**cleanedJet, *preselHadTau_dRmatched, evtWeight_denominator);
+        (*denominator)->fillHistograms(**preselHadTau, cleanedJet_dRmatched, evtWeight_denominator);
       }
 
       for ( std::vector<numeratorSelector_and_HistManagers*>::iterator numerator = numerators.begin();
             numerator != numerators.end(); ++numerator ) {
-        if ( !(*(*numerator)->tightHadTauSelector_)(*preselHadTau_dRmatched) ) continue;
+        if ( !(*(*numerator)->tightHadTauSelector_)(**preselHadTau) ) continue;
 
 //--- apply data/MC corrections for hadronic tau identification efficiency 
 //    and for e->tau and mu->tau misidentification rates
         double evtWeight_numerator = evtWeight;
         dataToMCcorrectionInterface->setHadTauSelection((*numerator)->hadTauSelection_numerator_);
-        int preselHadTau_dRmatched_genPdgId = getHadTau_genPdgId(preselHadTau_dRmatched);
-        dataToMCcorrectionInterface->setHadTaus(preselHadTau_dRmatched_genPdgId, preselHadTau_dRmatched->pt(), preselHadTau_dRmatched->eta());
+        int preselHadTau_genPdgId = getHadTau_genPdgId(*preselHadTau);
+        dataToMCcorrectionInterface->setHadTaus(preselHadTau_genPdgId, (*preselHadTau)->pt(), (*preselHadTau)->eta());
         evtWeight_numerator *= dataToMCcorrectionInterface->getSF_hadTauID_and_Iso(tauIDSF_option);
 
-        (*numerator)->fillHistograms(**cleanedJet, *preselHadTau_dRmatched, evtWeight_numerator);
+        (*numerator)->fillHistograms(**preselHadTau, cleanedJet_dRmatched, evtWeight_numerator);
       }
     }
 
