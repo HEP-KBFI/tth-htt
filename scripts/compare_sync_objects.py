@@ -85,6 +85,7 @@ LEPTON_BRANCH_NAMES = COMMON_BRANCH_NAMES | {
   'charge', 'dxy', 'dz', 'miniRelIso', 'miniIsoCharged', 'miniIsoNeutral', 'PFRelIso04',
   'jetNDauChargedMVASel', 'jetPtRel', 'jetPtRatio', 'jetCSV', 'jetDeepCSV', 'jetDeepJet',
   'sip3D', 'dxyAbs', 'isfakeablesel', 'ismvasel', 'leptonMVA', 'conept', 'isGenMatched',
+  'jetRelIso',
 }
 
 OBJECTS_MAP['mu']['branch_names'] = LEPTON_BRANCH_NAMES | {
@@ -191,6 +192,8 @@ class ParticleWrapper(object):
     }
     self.recordings = {} # data for plotting
     self.is_matched = False
+    if not self.branch_names:
+      raise RuntimeError("No branches found for object: %s" % prefix)
     self.max_branch_name_len = max(map(lambda branch_name: len(branch_name), self.branch_names)) + 1
 
     self.selection_branches = [ 'isfakeablesel', 'ismvasel' ]
@@ -945,6 +948,7 @@ elif args.analysis == 'hh_bbww':
   del OBJECTS_MAP['jetFwd']
   del OBJECTS_MAP['jetAK8']
   del OBJECTS_MAP['jetHTTv2']
+  del OBJECTS_MAP['ak8lsJet']
   del OBJECTS_MAP['tau']
 PRESELECTION_COUNTER_BRANCHES = [ 'n_presel_%s' % object_prefix for object_prefix in OBJECTS_MAP ]
 
@@ -1154,14 +1158,14 @@ for rle in rle_loop:
 
   # Modify only between these long lines
   ##################################################################################################
-  if not evt.mu1.is_matched:
-    continue
+#  if not evt.mu1.is_matched:
+#    continue
 
 #  if not (evt.mu1.ref.isfakeablesel == 1 and evt.mu1.test.isfakeablesel == 0):
 #    continue
 
-  if abs(evt.mu1.diff.leptonMVA) < 1e-2:
-    continue
+#  if abs(evt.mu1.diff.leptonMVA) < 1e-2:
+#    continue
 
 #  if abs(evt.mu1.diff.conept) < 1e-2:
 #    continue
@@ -1172,6 +1176,7 @@ for rle in rle_loop:
   print('RLE %s' % rle)
 #  evt.mu1.printVars(['pt', 'eta', 'phi', 'conept', 'leptonMVA', 'isfakeablesel', 'ismvasel'])
   evt.mu1.printVars()
+  evt.mu2.printVars()
 #  evt.mu1.record()
   ##################################################################################################
 
