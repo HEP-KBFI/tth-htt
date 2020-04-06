@@ -285,7 +285,7 @@ void addLabel_CMS_simulation(double x0, double y0)
   label_cms->AddText("CMS");
   label_cms->SetTextFont(61);
   label_cms->SetTextAlign(13);
-  label_cms->SetTextSize(0.055);
+  label_cms->SetTextSize(0.060);
   label_cms->SetTextColor(1);
   label_cms->SetFillStyle(0);
   label_cms->SetBorderSize(0);
@@ -502,12 +502,12 @@ void makeFakeFactorPlots_parton_flavor()
 
   std::vector<std::string> modes;
   modes.push_back("TTemu");
-  //modes.push_back("DYmumu");
+  modes.push_back("DYmumu");
 
   std::string inputFilePath = "/hdfs/local/veelken/ttHAnalysis/2017/";
   std::map<std::string, std::string> inputFileNames; // key = mode 
-  inputFileNames["TTemu"]  = "2020Mar31/histograms/jetToTauFakeRateTTemu/OS/hadd/hadd_stage2_OS.root";
-  inputFileNames["DYmumu"] = "2020Mar31/histograms/jetToTauFakeRateDYmumu/OS/hadd/hadd_stage2_OS.root";
+  inputFileNames["TTemu"]  = "2020Apr03/histograms/jetToTauFakeRateTTemu/OS/hadd/hadd_stage2_OS.root";
+  inputFileNames["DYmumu"] = "2020Apr04/histograms/jetToTauFakeRateDYmumu/OS/hadd/hadd_stage2_OS.root";
 
   std::map<std::string, std::string> process_of_interest; // key = mode 
   process_of_interest["TTemu"]  = "TTj";
@@ -515,7 +515,7 @@ void makeFakeFactorPlots_parton_flavor()
 
   std::vector<std::string> etaBins;
   etaBins.push_back("absEtaLt1_5");
-  //etaBins.push_back("absEta1_5to9_9");
+  etaBins.push_back("absEta1_5to9_9");
 
   std::string denominator = "deepVSjVVLoose"; // corresponding to "fakeable" tau definition
 
@@ -574,7 +574,7 @@ void makeFakeFactorPlots_parton_flavor()
       for ( std::vector<std::string>::const_iterator observable = observables.begin();
             observable != observables.end(); ++observable ) {
 
-        std::string directoryName_denominator = "jetToTauFakeRate_OS_woTriggerMatching/denominator/";
+        std::string directoryName_denominator = "jetToTauFakeRate_OS_withoutTriggerMatching/denominator/";
 
         std::string histogramName_denominator_uds = Form("%s_pdgId1&2&3/hadTaus/%s/%s", 
           etaBin->data(), process_of_interest[*mode].data(), observable->data());
@@ -592,7 +592,7 @@ void makeFakeFactorPlots_parton_flavor()
         for ( std::vector<std::string>::const_iterator numerator = numerators.begin();
               numerator != numerators.end(); ++numerator ) {
 
-          std::string directoryName_numerator = Form("jetToTauFakeRate_OS_woTriggerMatching/numerator/%s/", numerator->data());
+          std::string directoryName_numerator = Form("jetToTauFakeRate_OS_withoutTriggerMatching/numerator/%s/", numerator->data());
 
           std::string histogramName_numerator_uds = Form("%s_pdgId1&2&3/hadTaus/%s/%s", 
             etaBin->data(), process_of_interest[*mode].data(), observable->data());
