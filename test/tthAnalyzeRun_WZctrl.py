@@ -13,7 +13,7 @@ import getpass
 # E.g.: ./test/tthAnalyzeRun_WZctrl.py -v 2017Dec13 -e 2017
 
 mode_choices     = [ 'default', 'sync' ]
-sys_choices      = [ 'full', 'internal' ] + systematics.an_common_opts
+sys_choices      = [ 'full', 'internal' ] + systematics.an_tth_opts
 systematics.full = systematics.an_tth
 systematics.internal = systematics.an_internal_no_mem
 
