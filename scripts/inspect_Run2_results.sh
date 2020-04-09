@@ -3,11 +3,11 @@
 declare -A RESULTS
 declare -A RESULT
 
-RESULT["0l_2tau"]='/hdfs/local/karl/ttHAnalysis/2016/2020Mar18'
-RESULT["1l_1tau"]='/hdfs/local/karl/ttHAnalysis/2016/2020Mar18'
-RESULT["1l_2tau"]='/hdfs/local/karl/ttHAnalysis/2016/2020Mar18'
+RESULT["0l_2tau"]='/hdfs/local/karl/ttHAnalysis/2016/2020Apr07'
+RESULT["1l_1tau"]='/hdfs/local/karl/ttHAnalysis/2016/2020Apr07'
+RESULT["1l_2tau"]='/hdfs/local/karl/ttHAnalysis/2016/2020Apr07'
 RESULT["2l_2tau"]='/hdfs/local/karl/ttHAnalysis/2016/2020Mar18'
-RESULT["2lss_1tau"]='/hdfs/local/karl/ttHAnalysis/2016/2020Mar18'
+RESULT["2lss_1tau"]='/hdfs/local/karl/ttHAnalysis/2016/2020Apr07'
 RESULT["2los_1tau"]='/hdfs/local/karl/ttHAnalysis/2016/2020Mar18'
 RESULT["2lss"]='/hdfs/local/karl/ttHAnalysis/2016/2020Mar19'
 RESULT["3l"]='/hdfs/local/karl/ttHAnalysis/2016/2020Mar19'
@@ -20,11 +20,11 @@ for CHANNEL in "${!RESULT[@]}"; do
   RESULTS[$ERA,$CHANNEL]=${RESULT[$CHANNEL]}
 done
 
-RESULT["0l_2tau"]='/hdfs/local/karl/ttHAnalysis/2017/2020Mar18'
-RESULT["1l_1tau"]='/hdfs/local/karl/ttHAnalysis/2017/2020Mar18'
-RESULT["1l_2tau"]='/hdfs/local/karl/ttHAnalysis/2017/2020Mar18'
+RESULT["0l_2tau"]='/hdfs/local/karl/ttHAnalysis/2017/2020Apr07'
+RESULT["1l_1tau"]='/hdfs/local/karl/ttHAnalysis/2017/2020Apr07'
+RESULT["1l_2tau"]='/hdfs/local/karl/ttHAnalysis/2017/2020Apr07'
 RESULT["2l_2tau"]='/hdfs/local/karl/ttHAnalysis/2017/2020Mar18'
-RESULT["2lss_1tau"]='/hdfs/local/karl/ttHAnalysis/2017/2020Mar18'
+RESULT["2lss_1tau"]='/hdfs/local/karl/ttHAnalysis/2017/2020Apr07'
 RESULT["2los_1tau"]='/hdfs/local/karl/ttHAnalysis/2017/2020Mar18'
 RESULT["2lss"]='/hdfs/local/karl/ttHAnalysis/2017/2020Mar19'
 RESULT["3l"]='/hdfs/local/karl/ttHAnalysis/2017/2020Mar19'
@@ -37,11 +37,11 @@ for CHANNEL in "${!RESULT[@]}"; do
   RESULTS[$ERA,$CHANNEL]=${RESULT[$CHANNEL]}
 done
 
-RESULT["0l_2tau"]='/hdfs/local/karl/ttHAnalysis/2018/2020Mar18'
-RESULT["1l_1tau"]='/hdfs/local/karl/ttHAnalysis/2018/2020Mar18'
-RESULT["1l_2tau"]='/hdfs/local/karl/ttHAnalysis/2018/2020Mar18'
+RESULT["0l_2tau"]='/hdfs/local/karl/ttHAnalysis/2018/2020Apr07'
+RESULT["1l_1tau"]='/hdfs/local/karl/ttHAnalysis/2018/2020Apr07'
+RESULT["1l_2tau"]='/hdfs/local/karl/ttHAnalysis/2018/2020Apr07'
 RESULT["2l_2tau"]='/hdfs/local/karl/ttHAnalysis/2018/2020Mar18'
-RESULT["2lss_1tau"]='/hdfs/local/karl/ttHAnalysis/2018/2020Mar18'
+RESULT["2lss_1tau"]='/hdfs/local/karl/ttHAnalysis/2018/2020Apr07'
 RESULT["2los_1tau"]='/hdfs/local/karl/ttHAnalysis/2018/2020Mar18'
 RESULT["2lss"]='/hdfs/local/karl/ttHAnalysis/2018/2020Mar19'
 RESULT["3l"]='/hdfs/local/karl/ttHAnalysis/2018/2020Mar19'
