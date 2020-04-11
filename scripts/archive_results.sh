@@ -12,7 +12,7 @@ check_if_exists() {
 }
 
 TMP_DIR=/scratch/1/$USER;
-OUTPUT_DIR=/hdfs/local/$USER/archive;
+OUTPUT_DIR=/hdfs/local/$USER/archives;
 DRYRUN=false;
 OVERWRITE_OUTPUT_FILE=false;
 VERBOSE=false;
