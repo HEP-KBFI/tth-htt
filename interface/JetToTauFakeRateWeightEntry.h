@@ -36,9 +36,13 @@ private:
   std::string hadTauSelection_;
   std::string graphName_;
   TGraphAsymmErrors * graph_;
+  double graph_xMin_;
+  double graph_xMax_;
   bool applyGraph_;
   std::string fitFunctionName_;
   TF1 * fitFunction_;
+  double fitFunction_xMin_;
+  double fitFunction_xMax_;
   bool applyFitFunction_;
 };
 
