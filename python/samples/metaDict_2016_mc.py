@@ -2216,7 +2216,7 @@ meta_dictionary["/GluGluToContinToZZTo2e2tau_13TeV_MCFM701_pythia8/RunIISummer16
   ("xsection",              0.00319),
   ("use_it",                True),
   ("genWeight",             True),
-  ("comment",               "60.0%; status: VALID; size: 18.52GB; nevents: 500.00k; release: 9_4_9; last modified: 2018-11-19 04:13:07"),
+  ("comment",               "100.0%; status: VALID; size: 18.52GB; nevents: 500.00k; release: 9_4_9; last modified: 2018-11-19 04:13:07"),
 ])
 
 meta_dictionary["/GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] =  OD([
