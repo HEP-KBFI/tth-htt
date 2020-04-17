@@ -507,7 +507,7 @@ void makeFakeFactorPlots_parton_flavor()
   std::string inputFilePath = "/hdfs/local/veelken/ttHAnalysis/2017/";
   std::map<std::string, std::string> inputFileNames; // key = mode 
   inputFileNames["TTemu"]  = "2020Apr04v6/histograms/jetToTauFakeRateTTemu/OS/hadd/hadd_stage2_OS.root";
-  inputFileNames["DYmumu"] = "2020Apr04v6/histograms/jetToTauFakeRateDYmumu/OS/hadd/hadd_stage2_OS.root";
+  inputFileNames["DYmumu"] = "2020Apr06/histograms/jetToTauFakeRateDYmumu/OS/hadd/hadd_stage2_OS.root";
 
   std::map<std::string, std::string> process_of_interest; // key = mode 
   process_of_interest["TTemu"]  = "TTj";

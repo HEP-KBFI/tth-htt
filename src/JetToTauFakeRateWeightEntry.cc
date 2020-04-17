@@ -82,6 +82,15 @@ JetToTauFakeRateWeightEntry::JetToTauFakeRateWeightEntry(double absEtaMin,
   graphName.ReplaceAll("jetToTauFakeRate/", Form("jetToTauFakeRate_%s/", trigMatching.data()));
   graphName_ = graphName.Data();
   graph_ = loadGraph(inputFile, graphName_, etaBin, hadTauSelection_);
+  int idxPoint_first = 0;
+  double x_first, y_first;
+  graph_->GetPoint(idxPoint_first, x_first, y_first);
+  graph_xMin_ = x_first - graph_->GetErrorXlow(idxPoint_first);
+  int idxPoint_last = graph_->GetN() - 1;
+  double x_last, y_last;
+  graph_->GetPoint(idxPoint_last, x_last, y_last);
+  graph_xMax_ = x_last + graph_->GetErrorXhigh(idxPoint_last);
+  assert(graph_xMax_ > graph_xMin_);
 
   TString fitFunctionName = cfg.getParameter<std::string>("fitFunctionName").data();
   fitFunctionName.ReplaceAll("jetToTauFakeRate/", Form("jetToTauFakeRate_%s/", trigMatching.data()));
@@ -96,6 +105,9 @@ JetToTauFakeRateWeightEntry::JetToTauFakeRateWeightEntry(double absEtaMin,
                << "Invalid Configuration parameter 'central_or_shift' = " << central_or_shift;
   }
   fitFunction_ = loadFitFunction(inputFile, fitFunctionName_, etaBin, hadTauSelection_);
+  fitFunction_xMin_ = fitFunction_->GetXmin();
+  fitFunction_xMax_ = fitFunction_->GetXmax();
+  assert(fitFunction_xMax_ > fitFunction_xMin_);
 }
 
 JetToTauFakeRateWeightEntry::~JetToTauFakeRateWeightEntry()
@@ -122,13 +134,23 @@ JetToTauFakeRateWeightEntry::getWeight(double pt) const
   double weight = 1.;
   if(applyGraph_)
   {
-    weight *= graph_->Eval(pt);
+    double graph_x = pt;
+    if ( graph_x < graph_xMin_ ) graph_x = graph_xMin_;
+    if ( graph_x > graph_xMax_ ) graph_x = graph_xMax_;
+    weight *= graph_->Eval(graph_x);
   }
   if(applyFitFunction_)
   {
-    weight *= fitFunction_->Eval(pt);
+    double fitFunction_x = pt;
+    if ( fitFunction_x < fitFunction_xMin_ ) fitFunction_x = fitFunction_xMin_;
+    if ( fitFunction_x > fitFunction_xMax_ ) fitFunction_x = fitFunction_xMax_;
+    weight *= fitFunction_->Eval(fitFunction_x);
   }
-  weight = std::max(weight, 0.);
+  if ( weight < 0. ) weight = 0.;
+  // CV: set upper limit on fake-rates (FR), 
+  //     as event weights, which are computed as FR/(1 - FR), grow indefinitely as FR approaches 1
+  const double weight_max = 0.9;
+  if ( weight > weight_max ) weight = weight_max;
   return weight;
 }
 
