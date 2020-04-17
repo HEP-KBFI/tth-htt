@@ -97,7 +97,8 @@ class systematics(object):
   MEM_3l        = [ "CMS_ttHl_MEM_3l_LRUp",        "CMS_ttHl_MEM_3l_LRDown"        ]
   MEM_2lss_1tau = [ "CMS_ttHl_MEM_2lss_1tau_LRUp", "CMS_ttHl_MEM_2lss_1tau_LRDown" ]
   MEM_3l_1tau   = [ "CMS_ttHl_MEM_3l_1tau_LRUp",   "CMS_ttHl_MEM_3l_1tau_LRDown"   ]
-  MEM = MEM_3l + MEM_2lss_1tau + MEM_3l_1tau
+  MEM_bb2l      = [ "CMS_ttHl_MEM_bb2l_LRUp",      "CMS_ttHl_MEM_bb2l_LRDown"      ]
+  MEM = MEM_3l + MEM_2lss_1tau + MEM_3l_1tau + MEM_bb2l
 
   class TTbar(object):
     hdamp = [ "TT_hdampUp", "TT_hdampDown" ]

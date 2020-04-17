@@ -853,6 +853,7 @@ class analyzeConfig(object):
             'useNonNominal',
             'apply_hlt_filter',
             'branchName_memOutput',
+            'branchName_hmeOutput',
             'leptonFakeRateWeight.inputFileName',
             'leptonFakeRateWeight.histogramName_e',
             'leptonFakeRateWeight.histogramName_mu',
