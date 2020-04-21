@@ -522,9 +522,9 @@ class systematics(object):
 
   an_hh_multilepton = an_tth
   an_opts_hh_multilepton = an_tth_opts
-  # TODO uncomment ttbar and/or AK8 once the Ntuples are ready
-  an_hh_bbww = an_tth # + ttbar + AK8
-  an_opts_hh_bbww = an_tth_opts # + "ttbar" + "AK8"
+  # TODO uncomment ttbar once the Ntuples are ready
+  an_hh_bbww = an_tth + AK8 # + ttbar
+  an_opts_hh_bbww = an_tth_opts + [ "AK8"  ]# + "ttbar" ]
 
   an_internal_no_mem = central + leptonIDSF + tauIDSF + btag + FR_t + lhe + triggerSF + PU + L1PreFiring + \
                        FRe_shape + FRm_shape + DYMCReweighting + DYMCNormScaleFactors + topPtReweighting + \

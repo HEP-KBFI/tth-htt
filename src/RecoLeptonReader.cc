@@ -194,12 +194,10 @@ RecoLeptonReader::setBranchAddresses(TTree * tree)
     {
       bai.setBranchAddress(jetBtagCSVs_[kv.first], kv.second);
     }
-    bai.ignoreErrors(true);
     for(const auto & kv: branchNames_assocJetBtagCSV_)
     {
       bai.setBranchAddress(assocJetBtagCSVs_[kv.first], kv.second);
     }
-    bai.ignoreErrors(false);
     bai.setBranchAddress(jetNDauChargedMVASel_, branchName_jetNDauChargedMVASel_, -1);
     bai.setBranchAddress(tightCharge_, branchName_tightCharge_);
     bai.setBranchAddress(charge_, branchName_charge_);

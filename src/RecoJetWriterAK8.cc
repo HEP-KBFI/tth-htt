@@ -24,7 +24,7 @@ RecoJetWriterAK8::RecoJetWriterAK8(Era era,
                                    const std::string & branchName_num_subjets,
                                    const std::string & branchName_subjet)
   : era_(era)
-  , isMC_(false) // TODO
+  , isMC_(isMC)
   , sysOption_central_(isMC_ ? kJetMET_central : kJetMET_central_nonNominal)
   , sysOption_(sysOption_central_)
   , max_nJets_(32)
@@ -78,13 +78,11 @@ RecoJetWriterAK8::~RecoJetWriterAK8()
 void
 RecoJetWriterAK8::set_central_or_shift(int central_or_shift)
 {
-#if 0
   if(! isMC_ && central_or_shift != kFatJet_central_nonNominal)
   {
     throw cmsException(this, __func__, __LINE__) << "Data has only non-nominal attributes";
   }
   sysOption_ = central_or_shift;
-#endif
 }
 
 void
@@ -144,15 +142,15 @@ RecoJetWriterAK8::setBranches(TTree * tree)
       }
       if(branchNames_pt_systematics_.count(idxShift) && ! jet_pt_systematics_.count(idxShift))
       {
-        bai.setBranch(jet_pt_systematics_[idxShift], branchNames_pt_systematics_[idxShift]);
+        bai.setBranch(jet_pt_systematics_[idxShift], branchNames_pt_systematics_.at(idxShift));
       }
       if(branchNames_mass_systematics_.count(idxShift) && ! jet_mass_systematics_.count(idxShift))
       {
-        bai.setBranch(jet_mass_systematics_[idxShift], branchNames_mass_systematics_[idxShift]);
+        bai.setBranch(jet_mass_systematics_[idxShift], branchNames_mass_systematics_.at(idxShift));
       }
       if(branchNames_msoftdrop_systematics_.count(idxShift) && ! jet_msoftdrop_systematics_.count(idxShift))
       {
-        bai.setBranch(jet_msoftdrop_systematics_[idxShift], branchNames_msoftdrop_systematics_[idxShift]);
+        bai.setBranch(jet_msoftdrop_systematics_[idxShift], branchNames_msoftdrop_systematics_.at(idxShift));
       }
     }
   }
