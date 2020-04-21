@@ -12,7 +12,7 @@ import getpass
 # E.g.: ./test/tthProdNtuple.py -v 2017Dec13 -m all -e 2017 -p
 
 mode_choices = [
-  'all', 'all_except_forBDTtraining', 'forBDTtraining', 'sync', 'leptonFR_sync', 'hh', 'hh_bbww', 'hh_bkg', 'hh_wjets',
+  'all', 'all_except_forBDTtraining', 'forBDTtraining', 'sync', 'leptonFR_sync', 'hh', 'hh_bbww', 'hh_bkg',
   'hh_bbww_sync', 'hh_bbww_ttbar',
 ]
 
@@ -115,14 +115,6 @@ elif mode == 'hh_bbww_ttbar':
   pileup = os.path.join(
     os.environ['CMSSW_BASE'], 'src/hhAnalysis/bbww/data/pileup_hh_{}_ttbar.root'.format(era)
   )
-elif mode == 'hh_wjets':
-  if preselection:
-    raise ValueError("Preselection not possible for %s mode" % mode)
-
-  samples = load_samples(era, False, base = 'hh_multilepton', suffix = 'wjets')
-  pileup = os.path.join(
-    os.environ['CMSSW_BASE'], 'src/hhAnalysis/multilepton/data/pileup_wjets_{}.root'.format(era)
-  )
 else:
   samples = load_samples(era, preselection, suffix = 'base' if preselection else '')
 
@@ -138,7 +130,7 @@ else:
 if 'sum_events' in samples:
   del samples['sum_events']
 for sample_name, sample_entry in samples.items():
-  if mode == 'all' or mode == 'hh_bkg' or mode == 'hh_wjets':
+  if mode == 'all' or mode == 'hh_bkg':
     sample_entry['use_it'] = True
   elif mode == 'forBDTtraining':
     sample_entry['use_it'] = not sample_entry['use_it']
