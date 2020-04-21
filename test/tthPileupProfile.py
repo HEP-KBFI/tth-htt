@@ -11,7 +11,7 @@ import getpass
 
 # E.g.: ./test/tthPileupProfile.py -v 2018May09 -e 2017 -m all
 
-mode_choices = [ 'all', 'sync', 'hh', 'hh_bbww', 'hh_bbww_sync', 'hh_bbww_ttbar' ]
+mode_choices = [ 'all', 'sync', 'hh', 'hh_bbww', 'hh_bbww_sync', 'hh_bbww_ttbar', 'hh_bbww_sync_ttbar' ]
 
 parser = tthAnalyzeParser(default_num_parallel_jobs = 100)
 parser.add_modes(mode_choices)
@@ -66,6 +66,8 @@ elif mode == 'hh_bbww_ttbar':
   samples = load_samples(era, False, base = 'hh_bbww', suffix = 'ttbar')
 elif mode == 'hh_bbww_sync':
   samples = load_samples(era, False, base = 'hh_bbww', suffix = 'sync')
+elif mode == 'hh_bbww_sync_ttbar':
+  samples = load_samples(era, False, base = 'hh_bbww', suffix = 'sync_ttbar')
 else:
   raise ValueError('Invalid mode: %s' % mode)
 

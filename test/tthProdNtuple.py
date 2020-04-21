@@ -13,7 +13,7 @@ import getpass
 
 mode_choices = [
   'all', 'all_except_forBDTtraining', 'forBDTtraining', 'sync', 'leptonFR_sync', 'hh', 'hh_bbww', 'hh_bkg',
-  'hh_bbww_sync', 'hh_bbww_ttbar',
+  'hh_bbww_sync', 'hh_bbww_ttbar', 'hh_bbww_sync_ttbar',
 ]
 
 parser = tthAnalyzeParser()
@@ -91,6 +91,14 @@ elif mode == 'hh_bbww_sync':
   pileup = os.path.join(
     os.environ['CMSSW_BASE'], 'src/hhAnalysis/bbww/data/pileup_hh_{}_sync.root'.format(era)
   )
+elif mode == 'hh_bbww_sync_ttbar':
+  if preselection:
+    raise ValueError("Preselection not possible in mode: %s" % mode)
+
+  samples = load_samples(era, False, base = 'hh_bbww', suffix = 'sync')
+  pileup = os.path.join(
+    os.environ['CMSSW_BASE'], 'src/hhAnalysis/bbww/data/pileup_hh_{}_sync_ttbar.root'.format(era)
+  )
 elif mode == 'hh':
   if preselection:
     raise ValueError("Preselection not possible for %s mode" % mode)
@@ -134,10 +142,10 @@ for sample_name, sample_entry in samples.items():
     sample_entry['use_it'] = True
   elif mode == 'forBDTtraining':
     sample_entry['use_it'] = not sample_entry['use_it']
-  elif mode.startswith('hh') and mode != 'hh_bbww_ttbar':
+  elif mode.startswith('hh') and 'ttbar' not in mode:
     sample_entry['use_it'] = sample_entry['process_name_specific'].startswith('signal') and \
                              'hh' in sample_entry['process_name_specific']
-  elif mode == 'hh_bbww_ttbar':
+  elif mode.startswith('hh') and 'ttbar' in mode:
     sample_entry['use_it'] = sample_entry['process_name_specific'].startswith('TTTo')
   elif do_sync or mode == 'all_except_forBDTtraining':
     pass
