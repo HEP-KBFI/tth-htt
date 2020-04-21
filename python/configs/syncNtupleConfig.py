@@ -70,6 +70,7 @@ class syncNtupleConfig:
         file_pattern = 'tthAnalyzeRun_%s.py',
         suffix = '',
         submission_cmd = None,
+        mode = None,
       ):
 
     self.running_method     = running_method
@@ -164,7 +165,16 @@ class syncNtupleConfig:
       cmd_args = common_args if 'inclusive' not in channel else inclusive_args
       if 'inclusive' not in channel:
         cmd_args += " -p %s" % use_preselected
-        cmd_args += ' -m %s' % ('sync_wMEM' if with_mem and channel in mem_channels else 'sync')
+
+      mode_str = ''
+      if mode:
+        mode_str = '{}_sync'.format(mode)
+      elif 'inclusive' not in channel:
+        mode_str = 'sync'
+      if mode_str and with_mem and channel in mem_channels:
+        mode_str = '{}_wMEM'.format(mode_str)
+      if mode_str:
+        cmd_args += ' -m %s' % mode_str
       cmd_args += channels_extended[channel]
 
       channel_cmd_create = '%s %s 2>%s 1>%s' % \
