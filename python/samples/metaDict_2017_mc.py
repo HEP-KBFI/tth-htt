@@ -2134,7 +2134,7 @@ meta_dictionary["/GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8/RunIIFall17MiniA
   ("xsection",              0.00159),
   ("use_it",                True),
   ("genWeight",             True),
-  ("comment",               "50.0%; status: VALID; size: 47.58GB; nevents: 971.50k; release: 9_4_7; last modified: 2019-10-07 22:06:01"),
+  ("comment",               "80.0%; status: VALID; size: 47.58GB; nevents: 971.50k; release: 9_4_7; last modified: 2019-10-07 22:06:01"),
 ])
 
 meta_dictionary["/GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v2/MINIAODSIM"] =  OD([
@@ -2238,7 +2238,7 @@ meta_dictionary["/GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8/RunIIFall17Min
   ("xsection",              0.00319),
   ("use_it",                True),
   ("genWeight",             True),
-  ("comment",               "50.0%; status: VALID; size: 26.10GB; nevents: 500.00k; release: 9_4_7; last modified: 2019-09-11 07:13:35"),
+  ("comment",               "66.67%; status: VALID; size: 26.10GB; nevents: 500.00k; release: 9_4_7; last modified: 2019-09-11 07:13:35"),
 ])
 
 meta_dictionary["/GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v2/MINIAODSIM"] =  OD([
