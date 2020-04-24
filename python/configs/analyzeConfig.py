@@ -108,6 +108,7 @@ class analyzeConfig(object):
           isDebug                         = False,
           template_dir                    = None,
           submission_cmd                  = None,
+          use_dymumu_tau_fr               = False,
       ):
 
         self.configDir = configDir
@@ -524,9 +525,13 @@ class analyzeConfig(object):
         if not os.path.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', self.leptonFakeRateWeight_inputFile)):
             raise ValueError("No such file: 'leptonFakeRateWeight_inputFile' = %s" % self.leptonFakeRateWeight_inputFile)
 
+        self.use_dymumu_tau_fr = use_dymumu_tau_fr
         self.hadTau_selection_relaxed = None
         if self.era in [ '2016', '2017', '2018' ]:
-            self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_deeptau_{}_v6.root".format(era)
+            if self.use_dymumu_tau_fr:
+                self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_deeptau_DYmumu_{}_v6.root".format(era)
+            else:
+                self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_deeptau_{}_v6.root".format(era)
         else:
             raise ValueError('Invalid era: %s' % self.era)
         assert(os.path.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', self.hadTauFakeRateWeight_inputFile)))
@@ -555,7 +560,12 @@ class analyzeConfig(object):
         self.hadTau_selection_relaxed = hadTau_selection_relaxed
         assert(self.hadTau_selection_relaxed.startswith("deepVSj"))
         if self.hadTau_selection_relaxed == "deepVSjVVVLoose":
-            self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_deeptau_BDT_{}_v4.root".format(self.era)
+            if self.use_dymumu_tau_fr:
+                raise RuntimeError("No jet->tau FR files determined from DY events are available for the relaxed denomintor")
+                self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_deeptau_DYmumu_BDT_{}_v4.root".format(self.era)
+            else:
+                raise RuntimeError("The format of jet->tau FR files has changed")
+                self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_deeptau_BDT_{}_v4.root".format(self.era)
         assert(os.path.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', self.hadTauFakeRateWeight_inputFile)))
         self.isBDTtraining = True
 
