@@ -653,7 +653,7 @@ class analyzeConfig(object):
           else:
             jobOptions['apply_topPtReweighting'] = ''
         if 'hasPS' not in jobOptions:
-          jobOptions['hasPS'] = sample_info["nof_PSweights"] == 4 and any(
+          jobOptions['hasPS'] = sample_info["nof_PSweights"] == 4 and 'central_or_shifts_local' in jobOptions and any(
             central_or_shift in systematics.PartonShower().full \
             for central_or_shift in jobOptions['central_or_shifts_local']
           )
