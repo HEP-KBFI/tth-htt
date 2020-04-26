@@ -144,7 +144,7 @@ def save_graph(gen_parts, output_file_name, keep_tmp = False):
     dot_file.write(jinja2.Template(GRAPH_TEMPLATE).render(nodes = graph_nodes, edges = graph_edges))
   output_file_name_eps = output_file_name.replace('.png', '.eps')
   subprocess.call("dot -Teps {} > {}".format(output_file_name_dot, output_file_name_eps), shell = True)
-  subprocess.call("convert -flatten -density 300 {} {}".format(output_file_name_eps, output_file_name), shell = True)
+  subprocess.call("convert -flatten -density 150 {} {}".format(output_file_name_eps, output_file_name), shell = True)
   logging.debug("Created file {}".format(output_file_name))
   if not keep_tmp:
     os.remove(output_file_name_dot)
