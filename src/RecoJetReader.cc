@@ -304,10 +304,8 @@ RecoJetReader::setBranchAddresses(TTree * tree)
     }
 
     bai.setBranchAddress(jet_QGDiscr_, branchName_QGDiscr_, 1.);
-    bai.ignoreErrors(true);
     bai.setBranchAddress(jet_bRegCorr_, branchName_bRegCorr_, 1.);
     bai.setBranchAddress(jet_bRegRes_, branchName_bRegRes_, 0.);
-    bai.ignoreErrors(false);
     bai.setBranchAddress(jet_pullEta_, branchName_pullEta_);
     bai.setBranchAddress(jet_pullPhi_, branchName_pullPhi_);
     bai.setBranchAddress(jet_pullMag_, branchName_pullMag_);
