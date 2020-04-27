@@ -7,6 +7,18 @@
 #include <boost/algorithm/string/predicate.hpp> // boost::algorithm::starts_with(), boost::algorithm::ends_with()
 
 bool
+isTTbarSys(const std::string & central_or_shift)
+{
+  return
+    central_or_shift == "QCDbased"               ||
+    central_or_shift == "GluonMove"              ||
+    central_or_shift == "erdON"                  ||
+    boost::starts_with(central_or_shift, "mtop") ||
+    boost::starts_with(central_or_shift, "widthx")
+  ;
+}
+
+bool
 isValidJESsource(Era era,
                  int central_or_shift)
 {
@@ -61,7 +73,7 @@ getBTagWeight_option(const std::string & central_or_shift)
   else if(central_or_shift == "CMS_ttHl_btag_cErr2Up"     ) central_or_shift_int = kBtag_cErr2Up;
   else if(central_or_shift == "CMS_ttHl_btag_cErr2Down"   ) central_or_shift_int = kBtag_cErr2Down;
   else if(central_or_shift == "CMS_ttHl_JESUp"            ) central_or_shift_int = kBtag_jesUp;
-  else if(central_or_shift == "CMS_ttHl_JESDown"          ) central_or_shift_int = kBtag_jesDown; 
+  else if(central_or_shift == "CMS_ttHl_JESDown"          ) central_or_shift_int = kBtag_jesDown;
   return central_or_shift_int;
 }
 
@@ -413,7 +425,7 @@ checkOptionValidity(const std::string & central_or_shift,
     {
       throw cmsException(__func__, __LINE__) << "Non-empty or non-central systematics option passed to data";
     }
-    if(isMC && ! (boost::ends_with(central_or_shift, "Up") || boost::ends_with(central_or_shift, "Down")))
+    if(isMC && ! (boost::ends_with(central_or_shift, "Up") || boost::ends_with(central_or_shift, "Down")) && ! isTTbarSys(central_or_shift))
     {
       throw cmsException(__func__, __LINE__) << "Non-central MC systematics option not ending with Up or Down";
     }

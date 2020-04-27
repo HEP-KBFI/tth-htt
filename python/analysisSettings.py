@@ -101,14 +101,14 @@ class systematics(object):
   MEM = MEM_3l + MEM_2lss_1tau + MEM_3l_1tau + MEM_bb2l
 
   class TTbar(object):
-    hdamp = [ "TT_hdampUp", "TT_hdampDown" ]
-    ue    = [ "TT_ueUp",    "TT_ueDown"    ]
-    cr    = [ "TT_QCDbased", "TT_GluonMove", "TT_erdON" ]
+    hdamp = [ "hdampUp", "hdampDown" ]
+    ue    = [ "ueUp",    "ueDown"    ]
+    cr    = [ "QCDbased", "GluonMove", "erdON" ]
     mtop  = [
-      "TT_mtop166p5", "TT_mtop169p5", "TT_mtop171p5", "TT_mtop173p5", "TT_mtop175p5", "TT_mtop178p5",
+      "mtop166p5", "mtop169p5", "mtop171p5", "mtop173p5", "mtop175p5", "mtop178p5",
     ]
     width = [
-      "TT_widthx0p7", "TT_widthx0p85", "TT_widthx1p15", "TT_widthx1p3",
+      "widthx0p7", "widthx0p85", "widthx1p15", "widthx1p3",
     ]
     full = hdamp + ue + cr + mtop + width
 
@@ -522,9 +522,8 @@ class systematics(object):
 
   an_hh_multilepton = an_tth
   an_opts_hh_multilepton = an_tth_opts
-  # TODO uncomment ttbar once the Ntuples are ready
-  an_hh_bbww = an_tth + AK8 # + ttbar
-  an_opts_hh_bbww = an_tth_opts + [ "AK8"  ]# + "ttbar" ]
+  an_hh_bbww = an_tth + ttbar + AK8
+  an_opts_hh_bbww = an_tth_opts + [ "ttbar", "AK8" ]
 
   an_internal_no_mem = central + leptonIDSF + tauIDSF + btag + FR_t + lhe + triggerSF + PU + L1PreFiring + \
                        FRe_shape + FRm_shape + DYMCReweighting + DYMCNormScaleFactors + topPtReweighting + \

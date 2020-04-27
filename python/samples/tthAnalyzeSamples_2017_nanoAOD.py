@@ -23527,13 +23527,13 @@ samples_2017["/GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8/RunIIFall17MiniAODv
   ("type",                            "mc"),
   ("sample_category",                 "ZZ"),
   ("process_name_specific",           "ggZZTo4mu"),
-  ("nof_files",                       10),
+  ("nof_files",                       20),
   ("nof_db_files",                    56),
   ("nof_events",                      {
   }),
-  ("nof_tree_events",                 471500),
+  ("nof_tree_events",                 971500),
   ("nof_db_events",                   971500),
-  ("fsize_local",                     816764345), # 816.76MB, avg file size 81.68MB
+  ("fsize_local",                     1709563367), # 1.71GB, avg file size 85.48MB
   ("fsize_db",                        47581811116), # 47.58GB, avg file size 849.68MB
   ("use_it",                          True),
   ("xsection",                        0.00159),
@@ -23546,9 +23546,9 @@ samples_2017["/GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8/RunIIFall17MiniAODv
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2017v2_2020Apr01/GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8/2017v2_2020Apr01_GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/200331_214210"),
+        ("path",      "/hdfs/cms/store/user/kaehatah/2017v2_2020Apr22/GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8/2017v2_2020Apr22_GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/200422_125913"),
         ("selection", "*"),
-        ("blacklist", [1, 4, 5, 7, 9]),
+        ("blacklist", []),
       ]),
     ]
   ),
@@ -23871,13 +23871,13 @@ samples_2017["/GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8/RunIIFall17MiniAO
   ("type",                            "mc"),
   ("sample_category",                 "ZZ"),
   ("process_name_specific",           "ggZZTo2e2mu"),
-  ("nof_files",                       6),
+  ("nof_files",                       11),
   ("nof_db_files",                    28),
   ("nof_events",                      {
   }),
-  ("nof_tree_events",                 200000),
+  ("nof_tree_events",                 500000),
   ("nof_db_events",                   500000),
-  ("fsize_local",                     394255837), # 394.26MB, avg file size 65.71MB
+  ("fsize_local",                     996057620), # 996.06MB, avg file size 90.55MB
   ("fsize_db",                        26095529769), # 26.10GB, avg file size 931.98MB
   ("use_it",                          True),
   ("xsection",                        0.00319),
@@ -23890,9 +23890,9 @@ samples_2017["/GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8/RunIIFall17MiniAO
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2017v2_2020Apr01/GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8/2017v2_2020Apr01_GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v3/200331_215436"),
+        ("path",      "/hdfs/cms/store/user/kaehatah/2017v2_2020Apr22/GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8/2017v2_2020Apr22_GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v3/200422_130107"),
         ("selection", "*"),
-        ("blacklist", [2, 4, 5]),
+        ("blacklist", []),
       ]),
     ]
   ),
