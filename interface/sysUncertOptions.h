@@ -203,7 +203,7 @@ enum class L1PreFiringWeightSys
 enum
 {
   kDYMCReweighting_central,
-  kDYMCReweighting_shiftUp, kDYMCReweighting_shiftDown 
+  kDYMCReweighting_shiftUp, kDYMCReweighting_shiftDown
 };
 
 enum
@@ -228,6 +228,9 @@ enum class EWKBJetSys
   central,
   up, down,
 };
+
+bool
+isTTbarSys(const std::string & central_or_shift);
 
 bool
 isValidJESsource(Era era,

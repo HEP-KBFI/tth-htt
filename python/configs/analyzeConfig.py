@@ -640,6 +640,8 @@ class analyzeConfig(object):
           jobOptions['hhWeight_cfg.do_ktscan'] = 'hh' in self.channel
           jobOptions['hhWeight_cfg.apply_rwgt'] = 'hh' in self.channel
 
+        sample_category_ttbar = sample_info["sample_category"].replace("TT_", "")
+        is_ttbar_sys = sample_category_ttbar in systematics.ttbar
         if 'process' not in jobOptions:
           jobOptions['process'] = sample_info["sample_category"]
         if 'isMC' not in jobOptions:
@@ -808,7 +810,7 @@ class analyzeConfig(object):
           if is_mc and self.use_lumi:
             jobOptions['lumiScale'] = [
               cms.PSet(
-                central_or_shift = cms.string(central_or_shift),
+                central_or_shift = cms.string(central_or_shift if not is_ttbar_sys else sample_category_ttbar),
                 lumi             = cms.double(sample_info["xsection"] * self.lumi / nof_events[central_or_shift]),
               ) for central_or_shift in nof_events
             ]
@@ -827,6 +829,12 @@ class analyzeConfig(object):
             jobOptions['useObjectMultiplicity'] = False
         if 'useAssocJetBtag' not in jobOptions:
             jobOptions['useAssocJetBtag'] = False
+
+        # not very nice, but guaranteed to work
+        if is_ttbar_sys:
+          jobOptions['process'] = "TT"
+          jobOptions['central_or_shift'] = sample_category_ttbar
+          jobOptions['central_or_shifts_local'] = []
 
         jobOptions_local = [
             'process',
