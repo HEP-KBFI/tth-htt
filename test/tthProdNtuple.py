@@ -116,10 +116,7 @@ elif mode == 'hh_bbww':
     os.environ['CMSSW_BASE'], 'src/hhAnalysis/bbww/data/pileup_hh_{}.root'.format(era)
   )
 elif mode == 'hh_bbww_ttbar':
-  if preselection:
-    raise ValueError("Preselection not possible for %s mode" % mode)
-
-  samples = load_samples(era, False, base = 'hh_bbww', suffix = 'ttbar')
+  samples = load_samples(era, preselection, base = 'hh_bbww', suffix = 'ttbar')
   pileup = os.path.join(
     os.environ['CMSSW_BASE'], 'src/hhAnalysis/bbww/data/pileup_hh_{}_ttbar.root'.format(era)
   )
