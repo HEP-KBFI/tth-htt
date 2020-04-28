@@ -55,6 +55,7 @@ process.analyze_ttWctrl = cms.PSet(
         histogramName_e = cms.string(""),
         histogramName_mu = cms.string(""),
         era = cms.string(""),
+        applyNonClosureCorrection = cms.bool(True),
     ),
 
     isMC = cms.bool(False),

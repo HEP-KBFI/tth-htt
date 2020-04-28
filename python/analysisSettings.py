@@ -460,6 +460,8 @@ class systematics(object):
 
     full = pt + norm + eta_barrel + corr
 
+  FakeRate_l_shape_corr = FakeRate_e_shape().corr + FakeRate_m_shape().corr
+
   class FakeRate_t(object):
     jt_norm  = [ "CMS_ttHl_FRjt_normUp",  "CMS_ttHl_FRjt_normDown"  ]
     jt_shape = [ "CMS_ttHl_FRjt_shapeUp", "CMS_ttHl_FRjt_shapeDown" ]

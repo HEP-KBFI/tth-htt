@@ -10,18 +10,22 @@
 LeptonFakeRateInterface::LeptonFakeRateInterface(const edm::ParameterSet & cfg)
   : jetToEleFakeRateCorr_(1.)
   , jetToMuFakeRateCorr_(1.)
+  , applyNonClosureCorrection_(cfg.getParameter<bool>("applyNonClosureCorrection"))
 {
   const std::string inputFileName    = cfg.getParameter<std::string>("inputFileName");
   const std::string histogramName_e  = cfg.getParameter<std::string>("histogramName_e");
   const std::string histogramName_mu = cfg.getParameter<std::string>("histogramName_mu");
 
-  const Era era = get_era(cfg.getParameter<std::string>("era"));
-  switch(era)
+  if(applyNonClosureCorrection_)
   {
-    // Slide 16 in https://indico.cern.ch/event/885279/contributions/3789360/attachments/2004535/3347458/mar15.pdf
-    case Era::k2016: jetToEleFakeRateCorr_ = 1.376; jetToMuFakeRateCorr_ = 1.050; break;
-    case Era::k2017: jetToEleFakeRateCorr_ = 1.252; jetToMuFakeRateCorr_ = 1.157; break;
-    case Era::k2018: jetToEleFakeRateCorr_ = 1.325; jetToMuFakeRateCorr_ = 1.067; break;
+    const Era era = get_era(cfg.getParameter<std::string>("era"));
+    switch(era)
+    {
+      // Slide 16 in https://indico.cern.ch/event/885279/contributions/3789360/attachments/2004535/3347458/mar15.pdf
+      case Era::k2016: jetToEleFakeRateCorr_ = 1.376; jetToMuFakeRateCorr_ = 1.050; break;
+      case Era::k2017: jetToEleFakeRateCorr_ = 1.252; jetToMuFakeRateCorr_ = 1.157; break;
+      case Era::k2018: jetToEleFakeRateCorr_ = 1.325; jetToMuFakeRateCorr_ = 1.067; break;
+    }
   }
 
   for(int FR_option = kFRl_central; FR_option <= kFRm_shape_eta_barrelDown; ++FR_option)
@@ -81,6 +85,10 @@ LeptonFakeRateInterface::getWeight_e(double electronPt,
                                      double electronAbsEta,
                                      int central_or_shift) const
 {
+  if(! applyNonClosureCorrection_ && (central_or_shift == kFRe_shape_corrUp || central_or_shift == kFRe_shape_corrDown))
+  {
+    throw cmsException(this, __func__, __LINE__) << "Requested non-closure systematics while non-closure corrections disabled";
+  }
   int central_or_shift_e = central_or_shift;
   if(central_or_shift_e == kFRe_shape_corrUp || central_or_shift_e == kFRe_shape_corrDown)
   {
@@ -107,6 +115,10 @@ LeptonFakeRateInterface::getWeight_mu(double muonPt,
                                       double muonAbsEta,
                                       int central_or_shift) const
 {
+  if(! applyNonClosureCorrection_ && (central_or_shift == kFRm_shape_corrUp || central_or_shift == kFRm_shape_corrDown))
+  {
+    throw cmsException(this, __func__, __LINE__) << "Requested non-closure systematics while non-closure corrections disabled";
+  }
   int central_or_shift_m = central_or_shift;
   if(central_or_shift_m == kFRm_shape_corrUp || central_or_shift_m == kFRm_shape_corrDown)
   {

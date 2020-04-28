@@ -109,6 +109,7 @@ class analyzeConfig(object):
           template_dir                    = None,
           submission_cmd                  = None,
           use_dymumu_tau_fr               = False,
+          apply_nc_correction       = True,
       ):
 
         self.configDir = configDir
@@ -200,6 +201,18 @@ class analyzeConfig(object):
         if not 'central' in self.central_or_shifts:
             logging.warning('Running with systematic uncertainties, but without central value, is not supported --> adding central value.')
             self.central_or_shifts.append('central')
+        self.apply_nc_correction = apply_nc_correction
+        if not self.apply_nc_correction:
+          central_or_shift_nc = [
+            central_or_shift for central_or_shift in self.central_or_shifts if central_or_shift in systematics.FakeRate_l_shape_corr
+          ]
+          if central_or_shift_nc:
+            logging.warning("Removing the following systematics because jet->lepton FR non-closure corrections are not applied: {}".format(
+              ", ".join(central_or_shift_nc)
+            ))
+          self.central_or_shifts = [
+            central_or_shift for central_or_shift in self.central_or_shifts if central_or_shift not in central_or_shift_nc
+          ]
         #------------------------------------------------------------------------
         # CV: make sure that 'central' is always first entry in self.central_or_shifts
         #    (logic for building dependencies between analysis, 'hadd', and 'addBackgrounds' jobs in derived classes may abort with KeyError otherwise)
@@ -829,6 +842,8 @@ class analyzeConfig(object):
             jobOptions['useObjectMultiplicity'] = False
         if 'useAssocJetBtag' not in jobOptions:
             jobOptions['useAssocJetBtag'] = False
+        if 'leptonFakeRateWeight.applyNonClosureCorrection' not in jobOptions:
+            jobOptions['leptonFakeRateWeight.applyNonClosureCorrection'] = self.apply_nc_correction
 
         # not very nice, but guaranteed to work
         if is_ttbar_sys:
@@ -876,6 +891,7 @@ class analyzeConfig(object):
             'leptonFakeRateWeight.inputFileName',
             'leptonFakeRateWeight.histogramName_e',
             'leptonFakeRateWeight.histogramName_mu',
+            'leptonFakeRateWeight.applyNonClosureCorrection',
             'hadTauFakeRateWeight.inputFileName',
             'hadTauFakeRateWeight.lead.fitFunctionName',
             'hadTauFakeRateWeight.sublead.fitFunctionName',

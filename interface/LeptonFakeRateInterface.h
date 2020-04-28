@@ -29,6 +29,7 @@ public:
 private:
   double jetToEleFakeRateCorr_;
   double jetToMuFakeRateCorr_;
+  bool applyNonClosureCorrection_;
   std::map<std::string, TFile *> inputFiles_;
 
   std::map<int, lutWrapperBase *> lutFakeRate_e_;
