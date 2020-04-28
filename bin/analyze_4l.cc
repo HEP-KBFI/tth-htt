@@ -1225,35 +1225,27 @@ int main(int argc, char* argv[])
     {
     // apply requirement on jets (incl. b-tagged jets) and hadronic taus on preselection level
     if ( !((int)selJets.size() >= minNumJets)) {
-      if ( run_lumi_eventSelector ) {
-        std::cout << "event " << eventInfo.str() << " FAILS selJets selection." << std::endl;
-        printCollection("selJets", selJets);
+        if ( run_lumi_eventSelector ) {
+          std::cout << "event " << eventInfo.str() << " FAILS selJets selection." << std::endl;
+          printCollection("selJets", selJets);
+        }
+        continue;
       }
-      continue;
     }
-  }
 
     cutFlowTable.update(">=N jets", evtWeightRecorder.get(central_or_shift_main));
     cutFlowHistManager->fillHistograms(">= N jets", evtWeightRecorder.get(central_or_shift_main));
 
-    const int nofSFOSZbosonPairs = countZbosonSFOSpairs(selLeptons);
     if (!isControlRegion)
     {
       if ( !(selBJets_loose.size() >= 2 || selBJets_medium.size() >= 1) )
-    {
-      if ( run_lumi_eventSelector ) {
-        std::cout << "event " << eventInfo.str() << " FAILS selBJets selection." << std::endl;
-	printCollection("selJets", selJets);
-	printCollection("selBJets_loose", selBJets_loose);
-	printCollection("selBJets_medium", selBJets_medium);
-      }
-      continue;
-    }
-    } else if ( nofSFOSZbosonPairs == 1 && selBJets_medium.size() < 1)
-    {
-      if ( run_lumi_eventSelector ) {
+      {
+        if ( run_lumi_eventSelector ) {
           std::cout << "event " << eventInfo.str() << " FAILS selBJets selection." << std::endl;
-  	      printCollection("selBJets_medium", selBJets_medium);
+          printCollection("selJets", selJets);
+          printCollection("selBJets_loose", selBJets_loose);
+          printCollection("selBJets_medium", selBJets_medium);
+        }
         continue;
       }
     }
@@ -1531,6 +1523,7 @@ int main(int argc, char* argv[])
 
 //--- fill histograms with events passing final selection
     int ctrl_category = -1;
+    const int nofSFOSZbosonPairs = countZbosonSFOSpairs(selLeptons);
     if(isControlRegion)
     {
       if(nofSFOSZbosonPairs == 2)
