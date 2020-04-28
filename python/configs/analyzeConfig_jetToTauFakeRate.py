@@ -126,6 +126,9 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
     self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_jetToTauFakeRate%s_cfg.py" % self.event_selection)
     self.cfgFile_make_plots_denominator = os.path.join(self.template_dir, "makePlots_jetToTauFakeRate%s_denominator_cfg.py" % self.event_selection)
 
+    self.comp_input_files = {}
+    self.comp_output_files = {}
+
     self.make_plots_backgrounds = [ "TT", "TTW", "TTWW", "TTZ", "EWK", "Rares" ]
     self.processes_to_comp = self.make_plots_backgrounds + [ "ttH" ]
     self.select_rle_output = select_rle_output
@@ -205,6 +208,18 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
         lines_makefile.append("\t%s" % ":") # CV: null command
         lines_makefile.append("")
       self.filesToClean.append(jobOptions['outputFile'])
+
+  def addToMakefile_comp_hadd(self, lines_makefile):
+    make_target = "sbatch_comp_hadd"
+    self.addToMakefile_hadd(
+      lines_makefile, make_target = make_target, make_dependency = "sbatch_comp_jetToTauFakeRate",
+      inputFiles = self.comp_input_files, outputFiles = self.comp_output_files,
+    )
+    for output_file in self.comp_output_files.values():
+      lines_makefile.append("%s: %s" % (output_file, make_target))
+      lines_makefile.append("\t:")
+      lines_makefile.append("")
+      self.targets.append(output_file)
 
   def create(self):
     """Creates all necessary config files and runs the complete analysis workfow -- either locally or on the batch system
@@ -369,6 +384,8 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
 
     logging.info("Creating configuration files for executing 'comp_jetToTauFakeRate'")
     for charge_selection in self.charge_selections:
+      charge_key = "comp_%s" % charge_selection
+      self.comp_input_files[charge_key] = []
       for trigMatchingOption in self.trigMatchingOptions:
         key_hadd_stage2_job = getKey(charge_selection)
         key_comp_jetToTauFakeRate_dir = getKey("comp_jetToTauFakeRate")
@@ -391,7 +408,10 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
           'plots_outputFileName' : os.path.join(self.dirs[key_comp_jetToTauFakeRate_dir][DKEY_PLOT], "comp_jetToTauFakeRate_%s.png" % trigMatchingOption)
         }
         self.createCfg_comp_jetToTauFakeRate(self.jobOptions_comp_jetToTauFakeRate[key_comp_jetToTauFakeRate_job])
-        self.targets.append(self.jobOptions_comp_jetToTauFakeRate[key_comp_jetToTauFakeRate_job]['outputFile'])
+        comp_output = self.jobOptions_comp_jetToTauFakeRate[key_comp_jetToTauFakeRate_job]['outputFile']
+        self.targets.append(comp_output)
+        self.comp_input_files[charge_key].append(comp_output)
+      self.comp_output_files[charge_key] = os.path.join(self.dirs[DKEY_HIST], "comp_jetToTauFakeRate_%s.root" % charge_selection)
 
     logging.info("Creating configuration files to run 'makePlots'")
     for charge_selection in self.charge_selections:
@@ -459,6 +479,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
     self.addToMakefile_hadd_stage1(lines_makefile)
     self.addToMakefile_hadd_stage2(lines_makefile, make_dependency = "phony_hadd_stage1", max_mem = '4096M')
     self.addToMakefile_comp_jetToTauFakeRate(lines_makefile)
+    self.addToMakefile_comp_hadd(lines_makefile)
     self.addToMakefile_make_plots(lines_makefile)
     self.createMakefile(lines_makefile)
 
