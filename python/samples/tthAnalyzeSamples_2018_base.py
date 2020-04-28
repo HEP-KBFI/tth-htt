@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2020-04-16 11:25:01 with the following command:
+# file generated at 2020-04-25 14:11:28 with the following command:
 # create_dictionary.py -m python/samples/metaDict_2018.py -p python/samples/sampleLocations_2018.txt -N samples_2018 -E 2018 -o python/samples -g tthAnalyzeSamples_2018_base.py -M
 
 samples_2018 = OD()
@@ -20828,6 +20828,422 @@ samples_2018["/ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIIAutumn18MiniAOD-
   ]),
 ])
 
+samples_2018["/GluGluToContinToZZTo4tau_13TeV_MCFM701_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "ZZ"),
+  ("process_name_specific",           "ggZZTo4tau"),
+  ("nof_files",                       1),
+  ("nof_db_files",                    65),
+  ("nof_events",                      {
+    'Count'                                                                          : [       482400, ],
+    'CountWeighted'                                                                  : [       482336,       482307,       482378, ],
+    'CountWeightedLHEEnvelope'                                                       : [       482336,       482336, ],
+    'CountWeightedPSWeight'                                                          : [       476696,       477193,       653616,       476933,       476386,       319053, ],
+    'CountWeightedPSWeightOriginalXWGTUP'                                            : [       482273,       482753,       661262,       482511,       481964,       322778, ],
+  }),
+  ("nof_tree_events",                 482400),
+  ("nof_db_events",                   482400),
+  ("fsize_local",                     1408120530), # 1.41GB, avg file size 1.41GB
+  ("fsize_db",                        21683296777), # 21.68GB, avg file size 333.59MB
+  ("use_it",                          True),
+  ("xsection",                        0.00349),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         False),
+  ("nof_PSweights",                   4),
+  ("LHE_set",                         "LHEPdfWeight[nLHEPdfWeight]/F"),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Apr24_woPresel_nom_all/ntuples/ggZZTo4tau"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+    "HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg",
+    "HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg",
+    "HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg",
+    "HLT_Ele24_eta2p1_WPTight_Gsf_LooseChargedIsoPFTau30_eta2p1_CrossL1",
+    "HLT_IsoMu20_eta2p1_LooseChargedIsoPFTau27_eta2p1_CrossL1",
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
+samples_2018["/GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "ZZ"),
+  ("process_name_specific",           "ggZZTo4mu"),
+  ("nof_files",                       2),
+  ("nof_db_files",                    50),
+  ("nof_events",                      {
+    'Count'                                                                          : [       911500, ],
+    'CountWeighted'                                                                  : [       911550,       911468,       911377, ],
+    'CountWeightedLHEEnvelope'                                                       : [       911550,       911550, ],
+    'CountWeightedPSWeight'                                                          : [       900803,       900545,      1234864,       900978,       901344,       603194, ],
+    'CountWeightedPSWeightOriginalXWGTUP'                                            : [       911427,       911174,      1249370,       911568,       911883,       610278, ],
+  }),
+  ("nof_tree_events",                 911500),
+  ("nof_db_events",                   911500),
+  ("fsize_local",                     3040478191), # 3.04GB, avg file size 1.52GB
+  ("fsize_db",                        45292352281), # 45.29GB, avg file size 905.85MB
+  ("use_it",                          True),
+  ("xsection",                        0.00349),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         False),
+  ("nof_PSweights",                   4),
+  ("LHE_set",                         "LHEPdfWeight[nLHEPdfWeight]/F"),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Apr24_woPresel_nom_all/ntuples/ggZZTo4mu"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+    "HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg",
+    "HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg",
+    "HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg",
+    "HLT_Ele24_eta2p1_WPTight_Gsf_LooseChargedIsoPFTau30_eta2p1_CrossL1",
+    "HLT_IsoMu20_eta2p1_LooseChargedIsoPFTau27_eta2p1_CrossL1",
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
+samples_2018["/GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "ZZ"),
+  ("process_name_specific",           "ggZZTo4mu_ext1"),
+  ("nof_files",                       2),
+  ("nof_db_files",                    52),
+  ("nof_events",                      {
+    'Count'                                                                          : [       982548, ],
+    'CountWeighted'                                                                  : [       982452,       982416,       982298, ],
+    'CountWeightedLHEEnvelope'                                                       : [       982452,       982452, ],
+    'CountWeightedPSWeight'                                                          : [       982065,       982395,      1328864,       982262,       980983,       671449, ],
+    'CountWeightedPSWeightOriginalXWGTUP'                                            : [       982414,       982732,      1329354,       982612,       981355,       671681, ],
+  }),
+  ("nof_tree_events",                 982548),
+  ("nof_db_events",                   982548),
+  ("fsize_local",                     2980278731), # 2.98GB, avg file size 1.49GB
+  ("fsize_db",                        47038473062), # 47.04GB, avg file size 904.59MB
+  ("use_it",                          True),
+  ("xsection",                        0.00349),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         False),
+  ("nof_PSweights",                   4),
+  ("LHE_set",                         "LHEPdfWeight[nLHEPdfWeight]/F"),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Apr24_woPresel_nom_all/ntuples/ggZZTo4mu_ext1"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+    "HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg",
+    "HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg",
+    "HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg",
+    "HLT_Ele24_eta2p1_WPTight_Gsf_LooseChargedIsoPFTau30_eta2p1_CrossL1",
+    "HLT_IsoMu20_eta2p1_LooseChargedIsoPFTau27_eta2p1_CrossL1",
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
+samples_2018["/GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "ZZ"),
+  ("process_name_specific",           "ggZZTo4e"),
+  ("nof_files",                       2),
+  ("nof_db_files",                    63),
+  ("nof_events",                      {
+    'Count'                                                                          : [       913200, ],
+    'CountWeighted'                                                                  : [       913253,       913371,       913274, ],
+    'CountWeightedLHEEnvelope'                                                       : [       913253,       913253, ],
+    'CountWeightedPSWeight'                                                          : [       902222,       901587,      1236290,       901897,       902836,       604317, ],
+    'CountWeightedPSWeightOriginalXWGTUP'                                            : [       913357,       912714,      1251583,       912980,       913951,       611711, ],
+  }),
+  ("nof_tree_events",                 913200),
+  ("nof_db_events",                   913200),
+  ("fsize_local",                     3194656304), # 3.19GB, avg file size 1.60GB
+  ("fsize_db",                        48500006880), # 48.50GB, avg file size 769.84MB
+  ("use_it",                          True),
+  ("xsection",                        0.00349),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         False),
+  ("nof_PSweights",                   4),
+  ("LHE_set",                         "LHEPdfWeight[nLHEPdfWeight]/F"),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Apr24_woPresel_nom_all/ntuples/ggZZTo4e"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+    "HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg",
+    "HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg",
+    "HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg",
+    "HLT_Ele24_eta2p1_WPTight_Gsf_LooseChargedIsoPFTau30_eta2p1_CrossL1",
+    "HLT_IsoMu20_eta2p1_LooseChargedIsoPFTau27_eta2p1_CrossL1",
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
+samples_2018["/GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "ZZ"),
+  ("process_name_specific",           "ggZZTo4e_ext1"),
+  ("nof_files",                       2),
+  ("nof_db_files",                    23),
+  ("nof_events",                      {
+    'Count'                                                                          : [       610000, ],
+    'CountWeighted'                                                                  : [       609915,       609956,       610004, ],
+    'CountWeightedLHEEnvelope'                                                       : [       609915,       609915, ],
+    'CountWeightedPSWeight'                                                          : [       609527,       609483,       824524,       609192,       608886,       416718, ],
+    'CountWeightedPSWeightOriginalXWGTUP'                                            : [       610110,       610056,       825322,       609772,       609486,       417113, ],
+  }),
+  ("nof_tree_events",                 610000),
+  ("nof_db_events",                   610000),
+  ("fsize_local",                     1954544944), # 1.95GB, avg file size 977.27MB
+  ("fsize_db",                        31351488856), # 31.35GB, avg file size 1.36GB
+  ("use_it",                          True),
+  ("xsection",                        0.00349),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         False),
+  ("nof_PSweights",                   4),
+  ("LHE_set",                         "LHEPdfWeight[nLHEPdfWeight]/F"),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Apr24_woPresel_nom_all/ntuples/ggZZTo4e_ext1"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+    "HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg",
+    "HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg",
+    "HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg",
+    "HLT_Ele24_eta2p1_WPTight_Gsf_LooseChargedIsoPFTau30_eta2p1_CrossL1",
+    "HLT_IsoMu20_eta2p1_LooseChargedIsoPFTau27_eta2p1_CrossL1",
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
+samples_2018["/GluGluToContinToZZTo2e2tau_13TeV_MCFM701_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v3/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "ZZ"),
+  ("process_name_specific",           "ggZZTo2e2tau"),
+  ("nof_files",                       2),
+  ("nof_db_files",                    7),
+  ("nof_events",                      {
+    'Count'                                                                          : [       492000, ],
+    'CountWeighted'                                                                  : [       491990,       491990,       491915, ],
+    'CountWeightedLHEEnvelope'                                                       : [       491990,       491990, ],
+    'CountWeightedPSWeight'                                                          : [       491917,       491829,       665296,       491525,       491313,       336249, ],
+    'CountWeightedPSWeightOriginalXWGTUP'                                            : [       492140,       492047,       665599,       491747,       491548,       336406, ],
+  }),
+  ("nof_tree_events",                 492000),
+  ("nof_db_events",                   492000),
+  ("fsize_local",                     1483443118), # 1.48GB, avg file size 741.72MB
+  ("fsize_db",                        23139138901), # 23.14GB, avg file size 3.31GB
+  ("use_it",                          True),
+  ("xsection",                        0.00698),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         False),
+  ("nof_PSweights",                   4),
+  ("LHE_set",                         "LHEPdfWeight[nLHEPdfWeight]/F"),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Apr24_woPresel_nom_all/ntuples/ggZZTo2e2tau"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+    "HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg",
+    "HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg",
+    "HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg",
+    "HLT_Ele24_eta2p1_WPTight_Gsf_LooseChargedIsoPFTau30_eta2p1_CrossL1",
+    "HLT_IsoMu20_eta2p1_LooseChargedIsoPFTau27_eta2p1_CrossL1",
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
+samples_2018["/GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v3/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "ZZ"),
+  ("process_name_specific",           "ggZZTo2e2mu"),
+  ("nof_files",                       3),
+  ("nof_db_files",                    7),
+  ("nof_events",                      {
+    'Count'                                                                          : [       494000, ],
+    'CountWeighted'                                                                  : [       493950,       493930,       493931, ],
+    'CountWeightedLHEEnvelope'                                                       : [       493950,       493950, ],
+    'CountWeightedPSWeight'                                                          : [       493884,       493527,       668655,       493712,       494341,       337743, ],
+    'CountWeightedPSWeightOriginalXWGTUP'                                            : [       494052,       493691,       668876,       493880,       494511,       337863, ],
+  }),
+  ("nof_tree_events",                 494000),
+  ("nof_db_events",                   494000),
+  ("fsize_local",                     1627138590), # 1.63GB, avg file size 542.38MB
+  ("fsize_db",                        24817178115), # 24.82GB, avg file size 3.55GB
+  ("use_it",                          True),
+  ("xsection",                        0.00698),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         False),
+  ("nof_PSweights",                   4),
+  ("LHE_set",                         "LHEPdfWeight[nLHEPdfWeight]/F"),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Apr24_woPresel_nom_all/ntuples/ggZZTo2e2mu"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+    "HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg",
+    "HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg",
+    "HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg",
+    "HLT_Ele24_eta2p1_WPTight_Gsf_LooseChargedIsoPFTau30_eta2p1_CrossL1",
+    "HLT_IsoMu20_eta2p1_LooseChargedIsoPFTau27_eta2p1_CrossL1",
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
+samples_2018["/GluGluToContinToZZTo2mu2tau_13TeV_MCFM701_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v4/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "ZZ"),
+  ("process_name_specific",           "ggZZTo2mu2tau"),
+  ("nof_files",                       1),
+  ("nof_db_files",                    24),
+  ("nof_events",                      {
+    'Count'                                                                          : [       500000, ],
+    'CountWeighted'                                                                  : [       499974,       500081,       500020, ],
+    'CountWeightedLHEEnvelope'                                                       : [       499974,       499974, ],
+    'CountWeightedPSWeight'                                                          : [       499800,       499973,       675944,       499731,       498974,       341794, ],
+    'CountWeightedPSWeightOriginalXWGTUP'                                            : [       500009,       500186,       676221,       499943,       499176,       341940, ],
+  }),
+  ("nof_tree_events",                 500000),
+  ("nof_db_events",                   500000),
+  ("fsize_local",                     1471941313), # 1.47GB, avg file size 1.47GB
+  ("fsize_db",                        22889816959), # 22.89GB, avg file size 953.74MB
+  ("use_it",                          True),
+  ("xsection",                        0.00698),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         False),
+  ("nof_PSweights",                   4),
+  ("LHE_set",                         "LHEPdfWeight[nLHEPdfWeight]/F"),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Apr24_woPresel_nom_all/ntuples/ggZZTo2mu2tau"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+    "HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg",
+    "HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg",
+    "HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg",
+    "HLT_Ele24_eta2p1_WPTight_Gsf_LooseChargedIsoPFTau30_eta2p1_CrossL1",
+    "HLT_IsoMu20_eta2p1_LooseChargedIsoPFTau27_eta2p1_CrossL1",
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
 samples_2018["/QCD_Pt_15to20_bcToE_TuneCP5_13TeV_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/MINIAODSIM"] = OD([
   ("type",                            "mc"),
   ("sample_category",                 "QCD"),
@@ -22301,8 +22717,10 @@ samples_2018["/QCD_Pt-1000toInf_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn1
 samples_2018["sum_events"] = [
   [ 'ZZTo4L_ext1',                                     'ZZTo4L_ext2',                                      ],
   [ 'ZZTo2L2Nu_ext1',                                  'ZZTo2L2Nu_ext2',                                   ],
+  [ 'ggZZTo4mu',                                       'ggZZTo4mu_ext1',                                   ],
   [ 'QCD_Pt80to120_Mu5',                               'QCD_Pt80to120_Mu5_ext1',                           ],
   [ 'DYJetsToLL_M50_HT400to600_PSweights',             'DYJetsToLL_M50_HT400to600_PSweights_ext2',         ],
+  [ 'ggZZTo4e',                                        'ggZZTo4e_ext1',                                    ],
   [ 'GluGluHToMuMu_M125',                              'GluGluHToMuMu_M125_ext1',                          ],
   [ 'QCD_Pt470to600_Mu5',                              'QCD_Pt470to600_Mu5_ext1',                          ],
   [ 'ZH_HToBB_ZToLL',                                  'ZH_HToBB_ZToLL_ext1',                              ],

@@ -108,6 +108,7 @@ class analyzeConfig(object):
           isDebug                         = False,
           template_dir                    = None,
           submission_cmd                  = None,
+          use_dymumu_tau_fr               = False,
       ):
 
         self.configDir = configDir
@@ -222,9 +223,10 @@ class analyzeConfig(object):
             self.central_or_shifts.remove(systematics.JES_HEM)
         # ------------------------------------------------------------------------
         for central_or_shift in self.central_or_shifts:
-          if central_or_shift in systematics.TTbar().full:
+          if central_or_shift in systematics.ttbar:
+            central_or_shift_ttbar = "TT_{}".format(central_or_shift)
             for sample_key, sample_info in self.samples.items():
-              if sample_info["sample_category"] == central_or_shift:
+              if sample_info["sample_category"] == central_or_shift_ttbar:
                 logging.info("Enabling sample {} because systematics {} was requested".format(
                   sample_info["process_name_specific"], central_or_shift,
                 ))
@@ -524,9 +526,13 @@ class analyzeConfig(object):
         if not os.path.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', self.leptonFakeRateWeight_inputFile)):
             raise ValueError("No such file: 'leptonFakeRateWeight_inputFile' = %s" % self.leptonFakeRateWeight_inputFile)
 
+        self.use_dymumu_tau_fr = use_dymumu_tau_fr
         self.hadTau_selection_relaxed = None
         if self.era in [ '2016', '2017', '2018' ]:
-            self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_deeptau_{}_v6.root".format(era)
+            if self.use_dymumu_tau_fr:
+                self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_deeptau_DYmumu_{}_v6.root".format(era)
+            else:
+                self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_deeptau_{}_v6.root".format(era)
         else:
             raise ValueError('Invalid era: %s' % self.era)
         assert(os.path.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', self.hadTauFakeRateWeight_inputFile)))
@@ -555,7 +561,12 @@ class analyzeConfig(object):
         self.hadTau_selection_relaxed = hadTau_selection_relaxed
         assert(self.hadTau_selection_relaxed.startswith("deepVSj"))
         if self.hadTau_selection_relaxed == "deepVSjVVVLoose":
-            self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_deeptau_BDT_{}_v4.root".format(self.era)
+            if self.use_dymumu_tau_fr:
+                raise RuntimeError("No jet->tau FR files determined from DY events are available for the relaxed denomintor")
+                self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_deeptau_DYmumu_BDT_{}_v4.root".format(self.era)
+            else:
+                raise RuntimeError("The format of jet->tau FR files has changed")
+                self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_deeptau_BDT_{}_v4.root".format(self.era)
         assert(os.path.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', self.hadTauFakeRateWeight_inputFile)))
         self.isBDTtraining = True
 
@@ -571,7 +582,7 @@ class analyzeConfig(object):
       enable_toppt_rwgt = sample_info["apply_toppt_rwgt"] if "apply_toppt_rwgt" in sample_info else False
       run_ps = sample_info["nof_PSweights"] == 4
       is_HHmc = sample_category.startswith("signal") or sample_category == "HH"
-      is_ttbar_sys = sample_info["sample_category"] in systematics.TTbar().full
+      is_ttbar_sys = sample_info["sample_category"].replace("TT_", "") in systematics.ttbar
       ttHProcs = self.ttHProcs + [ "TTH" ]
 
       if central_or_shift in systematics.LHE().full           and not has_LHE:                                 return False
@@ -629,6 +640,8 @@ class analyzeConfig(object):
           jobOptions['hhWeight_cfg.do_ktscan'] = 'hh' in self.channel
           jobOptions['hhWeight_cfg.apply_rwgt'] = 'hh' in self.channel
 
+        sample_category_ttbar = sample_info["sample_category"].replace("TT_", "")
+        is_ttbar_sys = sample_category_ttbar in systematics.ttbar
         if 'process' not in jobOptions:
           jobOptions['process'] = sample_info["sample_category"]
         if 'isMC' not in jobOptions:
@@ -797,7 +810,7 @@ class analyzeConfig(object):
           if is_mc and self.use_lumi:
             jobOptions['lumiScale'] = [
               cms.PSet(
-                central_or_shift = cms.string(central_or_shift),
+                central_or_shift = cms.string(central_or_shift if not is_ttbar_sys else sample_category_ttbar),
                 lumi             = cms.double(sample_info["xsection"] * self.lumi / nof_events[central_or_shift]),
               ) for central_or_shift in nof_events
             ]
@@ -816,6 +829,12 @@ class analyzeConfig(object):
             jobOptions['useObjectMultiplicity'] = False
         if 'useAssocJetBtag' not in jobOptions:
             jobOptions['useAssocJetBtag'] = False
+
+        # not very nice, but guaranteed to work
+        if is_ttbar_sys:
+          jobOptions['process'] = "TT"
+          jobOptions['central_or_shift'] = sample_category_ttbar
+          jobOptions['central_or_shifts_local'] = []
 
         jobOptions_local = [
             'process',
@@ -1035,7 +1054,8 @@ class analyzeConfig(object):
         central_or_shift for central_or_shift in self.central_or_shifts if central_or_shift in systematics.an_internal
       ]
       self.central_or_shifts_external = [
-        central_or_shift for central_or_shift in self.central_or_shifts if central_or_shift not in systematics.an_internal
+        central_or_shift for central_or_shift in self.central_or_shifts if central_or_shift not in systematics.an_internal and \
+                                                                           central_or_shift not in systematics.ttbar
       ]
       if "central" not in self.central_or_shifts_internal:
         self.central_or_shifts_internal = [ "central" ] + self.central_or_shifts_internal

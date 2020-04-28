@@ -19,7 +19,7 @@ RecoJetReaderAK8::RecoJetReaderAK8(Era era,
                                    const std::string & branchName_jet,
                                    const std::string & branchName_subjet)
   : era_(era)
-  , isMC_(false) // TODO
+  , isMC_(isMC)
   , max_nJets_(32)
   , branchName_num_(Form("n%s", branchName_jet.data()))
   , branchName_obj_(branchName_jet)
@@ -81,7 +81,6 @@ RecoJetReaderAK8::~RecoJetReaderAK8()
 void
 RecoJetReaderAK8::set_central_or_shift(int central_or_shift)
 {
-#if 0
   if(! isMC_ && central_or_shift != kFatJet_central_nonNominal)
   {
     throw cmsException(this, __func__, __LINE__) << "Data has only non-nominal attributes";
@@ -91,13 +90,12 @@ RecoJetReaderAK8::set_central_or_shift(int central_or_shift)
   {
     read_sys(sysOption_ != sysOption_central_);
   }
-#endif
 }
 
 void
 RecoJetReaderAK8::read_sys(bool flag)
 {
-  //readSys_ = flag;
+  readSys_ = flag;
 }
 
 void
@@ -153,28 +151,28 @@ RecoJetReaderAK8::setBranchAddresses(TTree * tree)
     BranchAddressInitializer bai(tree, max_nJets_);
     subjetReader_->setBranchAddresses(tree);
     bai.setBranchAddress(nJets_, branchName_num_);
-    bai.setBranchAddress(jet_pt_systematics_[sysOption_],        branchNames_pt_systematics_[sysOption_]);
-    bai.setBranchAddress(jet_mass_systematics_[sysOption_],      branchNames_mass_systematics_[sysOption_]);
-    bai.setBranchAddress(jet_msoftdrop_systematics_[sysOption_], branchNames_msoftdrop_systematics_[sysOption_]);
+    bai.setBranchAddress(jet_pt_systematics_[sysOption_central_],        branchNames_pt_systematics_.at(sysOption_central_));
+    bai.setBranchAddress(jet_mass_systematics_[sysOption_central_],      branchNames_mass_systematics_.at(sysOption_central_));
+    bai.setBranchAddress(jet_msoftdrop_systematics_[sysOption_central_], branchNames_msoftdrop_systematics_.at(sysOption_central_));
     if(isMC_ && readSys_)
     {
       for(int idxShift = kFatJet_central_nonNominal; idxShift <= kFatJet_jmrDown; ++idxShift)
       {
-        if(idxShift == sysOption_)
+        if(idxShift == sysOption_central_)
         {
           continue; // do not bind the same branch twice
         }
         if(branchNames_pt_systematics_.count(idxShift))
         {
-          bai.setBranchAddress(jet_pt_systematics_[idxShift], branchNames_pt_systematics_[idxShift]);
+          bai.setBranchAddress(jet_pt_systematics_[idxShift], branchNames_pt_systematics_.at(idxShift));
         }
         if(branchNames_mass_systematics_.count(idxShift))
         {
-          bai.setBranchAddress(jet_mass_systematics_[idxShift], branchNames_mass_systematics_[idxShift]);
+          bai.setBranchAddress(jet_mass_systematics_[idxShift], branchNames_mass_systematics_.at(idxShift));
         }
         if(branchNames_msoftdrop_systematics_.count(idxShift))
         {
-          bai.setBranchAddress(jet_msoftdrop_systematics_[idxShift], branchNames_msoftdrop_systematics_[idxShift]);
+          bai.setBranchAddress(jet_msoftdrop_systematics_[idxShift], branchNames_msoftdrop_systematics_.at(idxShift));
         }
       }
     }

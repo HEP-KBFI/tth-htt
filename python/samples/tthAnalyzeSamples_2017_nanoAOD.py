@@ -23450,7 +23450,7 @@ samples_2017["/GluGluToContinToZZTo4tau_13TeV_MCFM701_pythia8/RunIIFall17MiniAOD
   ("fsize_local",                     787797105), # 787.80MB, avg file size 157.56MB
   ("fsize_db",                        21715964564), # 21.72GB, avg file size 723.87MB
   ("use_it",                          True),
-  ("xsection",                        0.00159),
+  ("xsection",                        0.00349),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -23493,7 +23493,7 @@ samples_2017["/GluGluToContinToZZTo4tau_13TeV_MCFM701_pythia8/RunIIFall17MiniAOD
   ("fsize_local",                     699225749), # 699.23MB, avg file size 139.85MB
   ("fsize_db",                        20745472369), # 20.75GB, avg file size 471.49MB
   ("use_it",                          True),
-  ("xsection",                        0.00159),
+  ("xsection",                        0.00349),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -23536,7 +23536,7 @@ samples_2017["/GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8/RunIIFall17MiniAODv
   ("fsize_local",                     1709563367), # 1.71GB, avg file size 85.48MB
   ("fsize_db",                        47581811116), # 47.58GB, avg file size 849.68MB
   ("use_it",                          True),
-  ("xsection",                        0.00159),
+  ("xsection",                        0.00349),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -23579,7 +23579,7 @@ samples_2017["/GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8/RunIIFall17MiniAODv
   ("fsize_local",                     1573438472), # 1.57GB, avg file size 157.34MB
   ("fsize_db",                        47080495649), # 47.08GB, avg file size 1.02GB
   ("use_it",                          True),
-  ("xsection",                        0.00159),
+  ("xsection",                        0.00349),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -23622,7 +23622,7 @@ samples_2017["/GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8/RunIIFall17MiniAODv
   ("fsize_local",                     1525650861), # 1.53GB, avg file size 152.57MB
   ("fsize_db",                        45395004312), # 45.40GB, avg file size 1.16GB
   ("use_it",                          True),
-  ("xsection",                        0.00159),
+  ("xsection",                        0.00349),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -23665,7 +23665,7 @@ samples_2017["/GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8/RunIIFall17MiniAODv2
   ("fsize_local",                     1975006617), # 1.98GB, avg file size 197.50MB
   ("fsize_db",                        52618761774), # 52.62GB, avg file size 809.52MB
   ("use_it",                          True),
-  ("xsection",                        0.00159),
+  ("xsection",                        0.00349),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -23708,7 +23708,7 @@ samples_2017["/GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8/RunIIFall17MiniAODv2
   ("fsize_local",                     1798455524), # 1.80GB, avg file size 179.85MB
   ("fsize_db",                        49825784818), # 49.83GB, avg file size 1.22GB
   ("use_it",                          True),
-  ("xsection",                        0.00159),
+  ("xsection",                        0.00349),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -23751,7 +23751,7 @@ samples_2017["/GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8/RunIIFall17MiniAODv2
   ("fsize_local",                     1632776021), # 1.63GB, avg file size 181.42MB
   ("fsize_db",                        45339904259), # 45.34GB, avg file size 964.68MB
   ("use_it",                          True),
-  ("xsection",                        0.00159),
+  ("xsection",                        0.00349),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -23794,7 +23794,7 @@ samples_2017["/GluGluToContinToZZTo2e2tau_13TeV_MCFM701_pythia8/RunIIFall17MiniA
   ("fsize_local",                     745589145), # 745.59MB, avg file size 149.12MB
   ("fsize_db",                        24799309356), # 24.80GB, avg file size 991.97MB
   ("use_it",                          True),
-  ("xsection",                        0.00319),
+  ("xsection",                        0.00698),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -23837,7 +23837,7 @@ samples_2017["/GluGluToContinToZZTo2e2tau_13TeV_MCFM701_pythia8/RunIIFall17MiniA
   ("fsize_local",                     852162555), # 852.16MB, avg file size 170.43MB
   ("fsize_db",                        23839960820), # 23.84GB, avg file size 1.14GB
   ("use_it",                          True),
-  ("xsection",                        0.00319),
+  ("xsection",                        0.00698),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -23880,7 +23880,7 @@ samples_2017["/GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8/RunIIFall17MiniAO
   ("fsize_local",                     996057620), # 996.06MB, avg file size 90.55MB
   ("fsize_db",                        26095529769), # 26.10GB, avg file size 931.98MB
   ("use_it",                          True),
-  ("xsection",                        0.00319),
+  ("xsection",                        0.00698),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -23923,7 +23923,7 @@ samples_2017["/GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8/RunIIFall17MiniAO
   ("fsize_local",                     870309841), # 870.31MB, avg file size 174.06MB
   ("fsize_db",                        24213519868), # 24.21GB, avg file size 931.29MB
   ("use_it",                          True),
-  ("xsection",                        0.00319),
+  ("xsection",                        0.00698),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -23966,7 +23966,7 @@ samples_2017["/GluGluToContinToZZTo2mu2tau_13TeV_MCFM701_pythia8/RunIIFall17Mini
   ("fsize_local",                     861726423), # 861.73MB, avg file size 172.35MB
   ("fsize_db",                        23700660914), # 23.70GB, avg file size 877.80MB
   ("use_it",                          True),
-  ("xsection",                        0.00319),
+  ("xsection",                        0.00698),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -24009,7 +24009,7 @@ samples_2017["/GluGluToContinToZZTo2mu2tau_13TeV_MCFM701_pythia8/RunIIFall17Mini
   ("fsize_local",                     774165021), # 774.17MB, avg file size 154.83MB
   ("fsize_db",                        22474675351), # 22.47GB, avg file size 832.40MB
   ("use_it",                          True),
-  ("xsection",                        0.00319),
+  ("xsection",                        0.00698),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
