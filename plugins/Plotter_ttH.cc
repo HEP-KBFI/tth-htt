@@ -107,6 +107,7 @@ void Plotter_ttH::makePlot(double canvasSizeX, double canvasSizeY,
       histogramBackground_density = (TH1*)histogramBackground->Clone(histogramNameBackground_density.data());
     }
     if ( process.find("TTWH") != std::string::npos ||
+         process.find("TTZH") != std::string::npos ||
          process.find("ggH") != std::string::npos  ||
          process.find("qqH") != std::string::npos  ||
          process.find("VH") != std::string::npos   ||
@@ -207,9 +208,12 @@ void Plotter_ttH::makePlot(double canvasSizeX, double canvasSizeY,
   
   //---------------------------------------------------------------------------
   // CV: sum ttW and ttWW backgrounds
-  assert(histogramTTW && histogramTTW_density && histogramTTWW && histogramTTWW_density);
-  histogramTTW->Add(histogramTTWW);
-  histogramTTW_density->Add(histogramTTWW_density);
+  if(histogramTTWW && histogramTTWW_density)
+  {
+    assert(histogramTTW && histogramTTW_density && histogramTTWW && histogramTTWW_density);
+    histogramTTW->Add(histogramTTWW);
+    histogramTTW_density->Add(histogramTTWW_density);
+  }
   //---------------------------------------------------------------------------
   
   TCanvas* canvas = new TCanvas("canvas", "", canvasSizeX, canvasSizeY);
