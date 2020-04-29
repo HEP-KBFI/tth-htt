@@ -76,4 +76,8 @@ def reclassifySamples(samples_era_base, samples_era_hh_multilepton = None, sampl
     if sample_name.startswith('/Tau/'):
       sample_info["use_it"] = False
 
+    #TODO remove once agreed to enable the sample
+    if sample_name.startswith('/GluGluToContinTo'):
+      sample_info["use_it"] = False
+
   return samples
