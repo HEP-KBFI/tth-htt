@@ -58,6 +58,7 @@ class analyzeConfig_hadTopTagger(analyzeConfig):
       isDebug               = isDebug,
       use_home              = use_home,
       submission_cmd        = submission_cmd,
+      apply_nc_correction   = None,
     )
 
     self.hadTau_selection = hadTau_selection

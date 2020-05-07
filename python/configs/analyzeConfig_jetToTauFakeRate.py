@@ -84,6 +84,7 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
       isDebug               = isDebug,
       use_home              = use_home,
       submission_cmd        = submission_cmd,
+      apply_nc_correction   = None,
     )
 
     self.charge_selections = charge_selections

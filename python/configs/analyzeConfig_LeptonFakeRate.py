@@ -183,6 +183,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
       use_home              = use_home,
       lep_mva_wp            = lep_mva_wp,
       submission_cmd        = submission_cmd,
+      apply_nc_correction   = None,
     )
 
     self.cmssw_base_dir_combine = cmssw_base_dir_combine

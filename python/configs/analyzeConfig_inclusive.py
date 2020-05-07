@@ -53,6 +53,7 @@ class analyzeConfig_inclusive(analyzeConfig):
       do_sync               = True,
       use_home              = use_home,
       submission_cmd        = submission_cmd,
+      apply_nc_correction   = None,
     )
 
     self.cfgFile_analyze = cfgFile_analyze

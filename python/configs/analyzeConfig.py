@@ -109,7 +109,7 @@ class analyzeConfig(object):
           template_dir                    = None,
           submission_cmd                  = None,
           use_dymumu_tau_fr               = False,
-          apply_nc_correction       = True,
+          apply_nc_correction             = True,
       ):
 
         self.configDir = configDir
@@ -953,6 +953,8 @@ class analyzeConfig(object):
             if jobOptions_key not in jobOptions:
               continue
             jobOptions_val = jobOptions[jobOptions_key]
+            if jobOptions_val is None:
+              continue
             jobOptions_expr = ""
             if jobOptions_key in jobOptions_typeMapping:
               jobOptions_expr = jobOptions_typeMapping[jobOptions_key]
