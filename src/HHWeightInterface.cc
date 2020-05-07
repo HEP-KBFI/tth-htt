@@ -40,7 +40,7 @@ const std::vector<double> HHWeightInterface::c2gJHEP  = { 0.0,     0.0,     0.6,
 const std::vector<double> HHWeightInterface::normJHEP = { 0.99997, 0.94266, 0.71436, 0.95608, 0.97897, 0.87823, 0.95781, 1.00669, 0.92494, 0.86083, 1.00658, 0.95096, 1.00063 };
 
 //TODO: understand why it's needed to pass these variables by reference
-HHWeightInterface::HHWeightInterface(const edm::ParameterSet & cfg)
+HHWeightInterface::HHWeightInterface(const edm::ParameterSet & cfg, bool isHH_analysis )
   : modeldata_(nullptr)
   , moduleMainString_(nullptr)
   , moduleMain_(nullptr)
@@ -59,7 +59,7 @@ HHWeightInterface::HHWeightInterface(const edm::ParameterSet & cfg)
   const std::string histtitle = cfg.getParameter<std::string>("histtitle");
   const bool isDEBUG = cfg.getParameter<bool>("isDEBUG");
   const bool do_scan = cfg.getParameter<bool>("do_scan");
-  const bool do_ktscan = cfg.getParameter<bool>("do_ktscan");
+  const bool do_ktscan = ( isHH_analysis ) ? false : cfg.getParameter<bool>("do_ktscan");
 
   // read the python file that we're about to execute
   const std::string applicationLoadPath = LocalFileInPath("hhAnalysis/multilepton/python/do_weight.py").fullPath();
