@@ -203,6 +203,7 @@ class prodNtupleConfig:
             "skip_tools_step     = %s" % self.skip_tools_step,
             "remove_intermediate = %s" % (not self.do_sync),
             "compTopRwgt         = %s" % jobOptions['compTopRwgt'],
+            "compHTXS            = %s" % jobOptions['compHTXS'],
             "isTuneCP5           = %s" % jobOptions['isTuneCP5'],
         ]
         create_cfg(self.cfgFile_prodNtuple_original, jobOptions['cfgFile_modified'], lines)
@@ -335,6 +336,7 @@ class prodNtupleConfig:
                     'triggers'         : hlt_paths,
                     'HLTcuts'          : hlt_cuts,
                     'compTopRwgt'      : sample_name.startswith('/TTTo'),
+                    'compHTXS'         : sample_info['sample_category'].startswith('ttH'),
                     'isTuneCP5'        : (self.era == "2016" and 'TuneCP5' in sample_name),
                 }
                 self.createCfg_prodNtuple(jobOptions)
