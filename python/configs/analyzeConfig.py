@@ -575,11 +575,9 @@ class analyzeConfig(object):
         assert(self.hadTau_selection_relaxed.startswith("deepVSj"))
         if self.hadTau_selection_relaxed == "deepVSjVVVLoose":
             if self.use_dymumu_tau_fr:
-                raise RuntimeError("No jet->tau FR files determined from DY events are available for the relaxed denomintor")
-                self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_deeptau_DYmumu_BDT_{}_v4.root".format(self.era)
+                self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_deeptau_DYmumu_BDT_{}_v6.root".format(self.era)
             else:
-                raise RuntimeError("The format of jet->tau FR files has changed")
-                self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_deeptau_BDT_{}_v4.root".format(self.era)
+                self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_deeptau_BDT_{}_v6.root".format(self.era)
         assert(os.path.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', self.hadTauFakeRateWeight_inputFile)))
         self.isBDTtraining = True
 
