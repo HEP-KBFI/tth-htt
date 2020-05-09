@@ -101,6 +101,7 @@ LHESCALEARR = [
   # HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_NOPU_L1PREFIRE_NOM,
 ]
 TH_INDICES = [ coupling.idx.value() for coupling in tHweights if coupling.idx.value() >= 0 ]
+HTXS_BINS = [ "fwd", "pt0to60", "pt60to120", "pt120to200", "pt200to300", "ptGt300", "pt300to450", "ptGt450" ]
 
 # see https://github.com/cms-nanoAOD/cmssw/blob/9a2728ac9f44fc45ba1aa56389e28c594207c0fe/PhysicsTools/NanoAOD/python/nano_cff.py#L99-L104
 LHE_DOC = {
@@ -546,6 +547,7 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
   digit_regex = re.compile(r"tree_(?P<i>\d+)\.root$")
   is_data = meta_dict[key]['sample_category'] == 'data_obs'
   is_rwgt = meta_dict[key]['sample_category'] in [ "tHq", "tHW", "signal_ctcvcp" ]
+  is_htxs = meta_dict[key]['sample_category'].startswith('ttH')
 
   histogram_names = collections.OrderedDict([ ( HISTOGRAM_COUNT, -1 ) ])
   if not is_data:
@@ -578,6 +580,17 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
       if era in [2016, 2017]:
         for histogram_name in HISTOGRAM_COUNT_EXTENDED_MC:
           histogram_names["{}_rwgt{}".format(histogram_name, tH_idx)] = -1
+  if is_htxs:
+    for htxs_bin in HTXS_BINS:
+      for lheScaleHistName in LHESCALEARR:
+        histogram_name_rwgt = "{}_{}".format(lheScaleHistName, htxs_bin)
+        lheScaleArr.append(histogram_name_rwgt)
+      for histogram_name in HISTOGRAM_COUNT_COMMON_MC:
+        histogram_name_rwgt = "{}_{}".format(histogram_name, htxs_bin)
+        histogram_names[histogram_name_rwgt] = -1
+      if era in [2016, 2017]:
+        for histogram_name in HISTOGRAM_COUNT_EXTENDED_MC:
+          histogram_names["{}_{}".format(histogram_name, htxs_bin)] = -1
 
   indices = {}
   lhe_set = ''
