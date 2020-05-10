@@ -33,6 +33,8 @@ public:
   double getWeight_scale_xDown() const;
   double getWeight_scale_yUp() const;
   double getWeight_scale_yDown() const;
+  double getWeight_scale_xyUp() const;
+  double getWeight_scale_xyDown() const;
   double getWeight_scale_Up() const;
   double getWeight_scale_Down() const;
 
@@ -66,6 +68,8 @@ protected:
   mutable double weight_scale_xDown_;
   mutable double weight_scale_yUp_;
   mutable double weight_scale_yDown_;
+  mutable double weight_scale_xyUp_;
+  mutable double weight_scale_xyDown_;
   mutable Float_t weight_scale_Up_;
   mutable Float_t weight_scale_Down_;
 

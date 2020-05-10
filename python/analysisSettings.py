@@ -221,12 +221,17 @@ class systematics(object):
         down = "CMS_ttHl_thu_shape_ttH_y1Down"
         full = [ up, down ]
 
+      class x1y1_(object):
+        up   = "CMS_ttHl_thu_shape_ttH_x1y1Up"
+        down = "CMS_ttHl_thu_shape_ttH_x1y1Down"
+        full = [ up, down ]
+
       class env_(object):
         up   = "CMS_ttHl_thu_shape_ttHUp"
         down = "CMS_ttHl_thu_shape_ttHDown"
         full = [ up, down ]
 
-      full = x1_().full + y1_().full + env_().full
+      full = x1_().full + y1_().full + x1y1_().full + env_().full
 
     class THQ(object):
 
@@ -240,12 +245,17 @@ class systematics(object):
         down = "CMS_ttHl_thu_shape_tHq_y1Down"
         full = [ up, down ]
 
+      class x1y1_(object):
+        up   = "CMS_ttHl_thu_shape_tHq_x1y1Up"
+        down = "CMS_ttHl_thu_shape_tHq_x1y1Down"
+        full = [ up, down ]
+
       class env_(object):
         up   = "CMS_ttHl_thu_shape_tHqUp"
         down = "CMS_ttHl_thu_shape_tHqDown"
         full = [ up, down ]
 
-      full = x1_().full + y1_().full + env_().full
+      full = x1_().full + y1_().full + x1y1_().full + env_().full
 
     class THW(object):
 
@@ -259,12 +269,17 @@ class systematics(object):
         down = "CMS_ttHl_thu_shape_tHW_y1Down"
         full = [ up, down ]
 
+      class x1y1_(object):
+        up   = "CMS_ttHl_thu_shape_tHW_x1y1Up"
+        down = "CMS_ttHl_thu_shape_tHW_x1y1Down"
+        full = [ up, down ]
+
       class env_(object):
         up   = "CMS_ttHl_thu_shape_tHWUp"
         down = "CMS_ttHl_thu_shape_tHWDown"
         full = [ up, down ]
 
-      full = x1_().full + y1_().full + env_().full
+      full = x1_().full + y1_().full + x1y1_().full + env_().full
 
     class TTW(object):
 
@@ -278,12 +293,17 @@ class systematics(object):
         down = "CMS_ttHl_thu_shape_ttW_y1Down"
         full = [ up, down ]
 
+      class x1y1_(object):
+        up   = "CMS_ttHl_thu_shape_ttW_x1y1Up"
+        down = "CMS_ttHl_thu_shape_ttW_x1y1Down"
+        full = [ up, down ]
+
       class env_(object):
         up   = "CMS_ttHl_thu_shape_ttWUp"
         down = "CMS_ttHl_thu_shape_ttWDown"
         full = [ up, down ]
 
-      full = x1_().full + y1_().full + env_().full
+      full = x1_().full + y1_().full + x1y1_().full + env_().full
 
     class TTZ(object):
 
@@ -297,12 +317,17 @@ class systematics(object):
         down = "CMS_ttHl_thu_shape_ttZ_y1Down"
         full = [ up, down ]
 
+      class x1y1_(object):
+        up   = "CMS_ttHl_thu_shape_ttZ_x1y1Up"
+        down = "CMS_ttHl_thu_shape_ttZ_x1y1Down"
+        full = [ up, down ]
+
       class env_(object):
         up   = "CMS_ttHl_thu_shape_ttZUp"
         down = "CMS_ttHl_thu_shape_ttZDown"
         full = [ up, down ]
 
-      full = x1_().full + y1_().full + env_().full
+      full = x1_().full + y1_().full + x1y1_().full + env_().full
 
     class HH(object):
       class x1_(object):
@@ -316,12 +341,17 @@ class systematics(object):
         down = "CMS_ttHl_thu_shape_HH_y1Down"
         full = [ up, down ]
 
+      class x1y1_(object):
+        up   = "CMS_ttHl_thu_shape_HH_x1y1Up"
+        down = "CMS_ttHl_thu_shape_HH_x1y1Down"
+        full = [ up, down ]
+
       class env_(object):
         up   = "CMS_ttHl_thu_shape_HHUp"
         down = "CMS_ttHl_thu_shape_HHDown"
         full = [ up, down ]
 
-      full = x1_().full + y1_().full + env_().full
+      full = x1_().full + y1_().full + x1y1_().full + env_().full
 
     class DY(object):
       class x1_(object):
@@ -335,12 +365,17 @@ class systematics(object):
         down = "CMS_ttHl_thu_shape_DY_y1Down"
         full = [ up, down ]
 
+      class x1y1_(object):
+        up   = "CMS_ttHl_thu_shape_DY_x1y1Up"
+        down = "CMS_ttHl_thu_shape_DY_x1y1Down"
+        full = [ up, down ]
+
       class env_(object):
         up   = "CMS_ttHl_thu_shape_DYUp"
         down = "CMS_ttHl_thu_shape_DYDown"
         full = [ up, down ]
 
-      full = x1_().full + y1_().full + env_().full
+      full = x1_().full + y1_().full + x1y1_().full + env_().full
 
     class TT(object):
       class x1_(object):
@@ -354,12 +389,17 @@ class systematics(object):
         down = "CMS_ttHl_thu_shape_TT_y1Down"
         full = [ up, down ]
 
+      class x1y1_(object):
+        up   = "CMS_ttHl_thu_shape_TT_x1y1Up"
+        down = "CMS_ttHl_thu_shape_TT_x1y1Down"
+        full = [ up, down ]
+
       class env_(object):
         up   = "CMS_ttHl_thu_shape_TTUp"
         down = "CMS_ttHl_thu_shape_TTDown"
         full = [ up, down ]
 
-      full = x1_().full + y1_().full + env_().full
+      full = x1_().full + y1_().full + x1y1_().full + env_().full
 
     class WZ(object):
       class x1_(object):
@@ -373,12 +413,17 @@ class systematics(object):
         down = "CMS_ttHl_thu_shape_WZ_y1Down"
         full = [ up, down ]
 
+      class x1y1_(object):
+        up   = "CMS_ttHl_thu_shape_WZ_x1y1Up"
+        down = "CMS_ttHl_thu_shape_WZ_x1y1Down"
+        full = [ up, down ]
+
       class env_(object):
         up   = "CMS_ttHl_thu_shape_WZUp"
         down = "CMS_ttHl_thu_shape_WZDown"
         full = [ up, down ]
 
-      full = x1_().full + y1_().full + env_().full
+      full = x1_().full + y1_().full + x1y1_().full + env_().full
     
     class ZZ(object):
       class x1_(object):
@@ -392,12 +437,17 @@ class systematics(object):
         down = "CMS_ttHl_thu_shape_ZZ_y1Down"
         full = [ up, down ]
 
+      class x1y1_(object):
+        up   = "CMS_ttHl_thu_shape_ZZ_x1y1Up"
+        down = "CMS_ttHl_thu_shape_ZZ_x1y1Down"
+        full = [ up, down ]
+
       class env_(object):
         up   = "CMS_ttHl_thu_shape_ZZUp"
         down = "CMS_ttHl_thu_shape_ZZDown"
         full = [ up, down ]
 
-      full = x1_().full + y1_().full + env_().full
+      full = x1_().full + y1_().full + x1y1_().full + env_().full
 
     ttH   = TTH().full
     tHq   = THQ().full
@@ -412,12 +462,14 @@ class systematics(object):
 
     procs = [ TTH, THQ, THW, TTW, TTZ, HH, DY, TT, WZ, ZZ ]
 
-    x1_up    = [ proc.x1_().up    for proc in procs ]
-    x1_down  = [ proc.x1_().down  for proc in procs ]
-    y1_down  = [ proc.y1_().down  for proc in procs ]
-    y1_up    = [ proc.y1_().up    for proc in procs ]
-    env_up   = [ proc.env_().up   for proc in procs ]
-    env_down = [ proc.env_().down for proc in procs ]
+    x1_up     = [ proc.x1_().up     for proc in procs ]
+    x1_down   = [ proc.x1_().down   for proc in procs ]
+    y1_up     = [ proc.y1_().up     for proc in procs ]
+    y1_down   = [ proc.y1_().down   for proc in procs ]
+    x1y1_up   = [ proc.x1y1_().up   for proc in procs ]
+    x1y1_down = [ proc.x1y1_().down for proc in procs ]
+    env_up    = [ proc.env_().up    for proc in procs ]
+    env_down  = [ proc.env_().down  for proc in procs ]
 
     full = ttH + tHq + tHW + ttW + ttZ + dy + hh + ttbar + wz + zz
 

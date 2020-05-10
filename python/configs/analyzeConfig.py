@@ -733,6 +733,12 @@ class analyzeConfig(object):
               elif central_or_shift in systematics.LHE().y1_down:
                 nof_events_label = 'CountWeightedLHEWeightScale{}'.format(count_suffix)
                 nof_events_idx = 1 # muR=0.5 muF=1
+              elif central_or_shift in systematics.LHE().x1y1_up:
+                nof_events_label = 'CountWeightedLHEWeightScale{}'.format(count_suffix)
+                nof_events_idx = 8 # muR=2   muF=2
+              elif central_or_shift in systematics.LHE().x1y1_down:
+                nof_events_label = 'CountWeightedLHEWeightScale{}'.format(count_suffix)
+                nof_events_idx = 0 # muR=0.5   muF=0.5
               elif central_or_shift in systematics.LHE().env_up:
                 nof_events_label = 'CountWeightedLHEEnvelope{}'.format(count_suffix)
                 nof_events_idx = 0
