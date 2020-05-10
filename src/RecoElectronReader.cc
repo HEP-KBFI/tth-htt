@@ -23,7 +23,7 @@ RecoElectronReader::RecoElectronReader(Era era,
   , branchName_num_(Form("n%s", branchName_obj.data()))
   , branchName_obj_(branchName_obj)
   , readUncorrected_(false)
-  , leptonReader_(new RecoLeptonReader(branchName_obj_, isMC, readGenMatching))
+  , leptonReader_(new RecoLeptonReader(branchName_obj_, era, isMC, readGenMatching))
   , eCorr_(nullptr)
   , sigmaEtaEta_(nullptr)
   , HoE_(nullptr)

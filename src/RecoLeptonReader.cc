@@ -6,18 +6,21 @@
 std::map<std::string, int> RecoLeptonReader::numInstances_;
 std::map<std::string, RecoLeptonReader *> RecoLeptonReader::instances_;
 
-RecoLeptonReader::RecoLeptonReader(bool isMC,
+RecoLeptonReader::RecoLeptonReader(Era era,
+                                   bool isMC,
                                    bool readGenMatching_b)
-  : RecoLeptonReader("Lepton", isMC, readGenMatching_b)
+  : RecoLeptonReader("Lepton", era, isMC, readGenMatching_b)
 {}
 
 RecoLeptonReader::RecoLeptonReader(const std::string & branchName_obj,
+                                   Era era,
                                    bool isMC,
                                    bool readGenMatching_b)
   : max_nLeptons_(64)
   , branchName_num_(Form("n%s", branchName_obj.data()))
   , branchName_obj_(branchName_obj)
   , isMC_(isMC)
+  , era_(era)
   , genLeptonReader_(nullptr)
   , genHadTauReader_(nullptr)
   , genPhotonReader_(nullptr)
@@ -129,6 +132,10 @@ RecoLeptonReader::setBranchNames()
     branchName_jetNDauChargedMVASel_ = Form("%s_%s", branchName_obj_.data(), "jetNDauChargedMVASel");
     for(Btag btag: { Btag::kCSVv2, Btag::kDeepCSV, Btag::kDeepJet })
     {
+      if(btag == Btag::kCSVv2 && era_ == Era::k2018)
+      {
+        continue;
+      }
       std::string btag_str = "";
       switch(btag)
       {

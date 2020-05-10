@@ -7,15 +7,19 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenPhotonReader.h" // GenPhotonReader
 #include "tthAnalysis/HiggsToTauTau/interface/GenJetReader.h" // GenJetReader
 
+// forward declarations
 enum class Btag;
+enum class Era;
 
 class RecoLeptonReader
   : public ReaderBase
 {
 public:
-  RecoLeptonReader(bool isMC,
+  RecoLeptonReader(Era era,
+                   bool isMC,
                    bool readGenMatching);
   RecoLeptonReader(const std::string & branchName_obj,
+                   Era era,
                    bool isMC,
                    bool readGenMatching);
   ~RecoLeptonReader();
@@ -40,6 +44,7 @@ protected:
   std::string branchName_num_;
   std::string branchName_obj_;
   bool isMC_;
+  Era era_;
 
   /**
    * @brief Read branches containing information on matching of RecoElectrons and RecoMuons

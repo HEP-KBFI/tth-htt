@@ -20,7 +20,7 @@ RecoMuonReader::RecoMuonReader(Era era,
   : era_(era)
   , branchName_num_(Form("n%s", branchName_obj.data()))
   , branchName_obj_(branchName_obj)
-  , leptonReader_(new RecoLeptonReader(branchName_obj_, isMC, readGenMatching))
+  , leptonReader_(new RecoLeptonReader(branchName_obj_, era, isMC, readGenMatching))
   , mediumIdPOG_(nullptr)
   , segmentCompatibility_(nullptr)
   , ptErr_(nullptr)

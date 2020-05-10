@@ -14,13 +14,16 @@
 // forward declaration
 class TTree;
 enum class Btag;
+enum class Era;
 
 class RecoLeptonWriter
 {
 public:
-  RecoLeptonWriter(bool isMC,
+  RecoLeptonWriter(Era era,
+                   bool isMC,
                    const std::string & branchName_obj);
-  RecoLeptonWriter(bool isMC,
+  RecoLeptonWriter(Era era,
+                   bool isMC,
                    const std::string & branchName_num,
                    const std::string & branchName_obj);
   ~RecoLeptonWriter();
@@ -135,6 +138,7 @@ protected:
   std::string branchName_num_;
   std::string branchName_obj_;
   bool isMC_;
+  Era era_;
 
   GenParticleWriter * genLeptonWriter_;
   GenParticleWriter * genHadTauWriter_;

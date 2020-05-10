@@ -35,7 +35,7 @@ RecoElectronWriter::RecoElectronWriter(Era era,
   , conversionVeto_(nullptr)
   , cutbasedID_HLT_(nullptr)
 {
-  leptonWriter_ = new RecoLeptonWriter(isMC, branchName_obj_);
+  leptonWriter_ = new RecoLeptonWriter(era, isMC, branchName_obj_);
   setBranchNames();
 }
 

@@ -3,18 +3,21 @@
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Btag
 
-RecoLeptonWriter::RecoLeptonWriter(bool isMC,
+RecoLeptonWriter::RecoLeptonWriter(Era era,
+                                   bool isMC,
                                    const std::string & branchName_obj)
-  : RecoLeptonWriter(isMC, Form("n%s", branchName_obj.data()), branchName_obj)
+  : RecoLeptonWriter(era, isMC, Form("n%s", branchName_obj.data()), branchName_obj)
 {}
 
-RecoLeptonWriter::RecoLeptonWriter(bool isMC,
+RecoLeptonWriter::RecoLeptonWriter(Era era,
+                                   bool isMC,
                                    const std::string & branchName_num,
                                    const std::string & branchName_obj)
   : max_nLeptons_(64)
   , branchName_num_(branchName_num)
   , branchName_obj_(branchName_obj)
   , isMC_(isMC)
+  , era_(era)
   , genLeptonWriter_(nullptr)
   , genHadTauWriter_(nullptr)
   , genPhotonWriter_(nullptr)
@@ -111,6 +114,10 @@ void RecoLeptonWriter::setBranchNames()
   branchName_jetPtRel_ = Form("%s_%s", branchName_obj_.data(), "jetPtRelv2");
   for(Btag btag: { Btag::kCSVv2, Btag::kDeepCSV, Btag::kDeepJet })
   {
+    if(btag == Btag::kCSVv2 && era_ == Era::k2018)
+    {
+      continue;
+    }
     std::string btag_str = "";
     switch(btag)
     {
