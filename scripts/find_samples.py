@@ -861,7 +861,7 @@ if __name__ == '__main__':
           if line.startswith('#'):
             continue
           line_split = line.rstrip('\n').split()
-          if line_split:
+          if len(line_split) > 1:
             sum_events_flattened.append(line_split)
 
     # Let's get the total event counts in each sample category; we want to maintain the original
