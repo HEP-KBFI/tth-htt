@@ -100,6 +100,7 @@ class analyzeConfig_3l(analyzeConfig):
       isDebug                   = isDebug,
       use_home                  = use_home,
       submission_cmd            = submission_cmd,
+      do_stxs                   = True,
     )
 
     self.MEMbranch = MEMbranch

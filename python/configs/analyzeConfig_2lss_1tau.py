@@ -98,6 +98,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
       isDebug                   = isDebug,
       use_home                  = use_home,
       submission_cmd            = submission_cmd,
+      do_stxs                   = True,
     )
 
     self.MEMbranch = MEMbranch

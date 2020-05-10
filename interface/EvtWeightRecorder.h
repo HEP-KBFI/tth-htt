@@ -43,10 +43,12 @@ public:
   virtual ~EvtWeightRecorder() {}
 
   double
-  get(const std::string & central_or_shift) const;
+  get(const std::string & central_or_shift,
+      const std::string & bin = "") const;
 
   virtual double
-  get_inclusive(const std::string & central_or_shift) const;
+  get_inclusive(const std::string & central_or_shift,
+                const std::string & bin = "") const;
 
   double
   get_genWeight() const;
@@ -61,7 +63,8 @@ public:
   get_auxWeight(const std::string & central_or_shift) const;
 
   double
-  get_lumiScale(const std::string & central_or_shift) const;
+  get_lumiScale(const std::string & central_or_shift,
+                const std::string & bin = "") const;
 
   double
   get_nom_tH_weight(const std::string & central_or_shift) const;
@@ -327,7 +330,7 @@ protected:
   bool isMC_;
   double genWeight_;
   std::map<std::string, double> auxWeight_;
-  std::map<std::string, double> lumiScale_;
+  std::map<std::string, std::map<std::string, double>> lumiScale_;
   std::map<std::string, double> nom_tH_weight_;
   double leptonSF_;
   double chargeMisIdProb_;

@@ -104,6 +104,7 @@ class analyzeConfig_1l_1tau(analyzeConfig):
       isDebug               = isDebug,
       use_home              = use_home,
       submission_cmd        = submission_cmd,
+      do_stxs               = True,
     )
 
     self.lepton_and_hadTau_selections = [ "Tight", "Fakeable" ]

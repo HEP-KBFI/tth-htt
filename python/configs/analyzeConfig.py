@@ -3,7 +3,7 @@ from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg
 from tthAnalysis.HiggsToTauTau.analysisTools import createMakefile as tools_createMakefile, get_tH_weight_str, get_tH_SM_str
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch as tools_createScript_sbatch
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch_hadd_nonBlocking as tools_createScript_sbatch_hadd_nonBlocking
-from tthAnalysis.HiggsToTauTau.analysisSettings import Triggers, systematics
+from tthAnalysis.HiggsToTauTau.analysisSettings import Triggers, systematics, HTXS_BINS
 from tthAnalysis.HiggsToTauTau.common import logging, DEPENDENCIES
 from tthAnalysis.HiggsToTauTau.samples.stitch import get_branch_type
 
@@ -110,6 +110,7 @@ class analyzeConfig(object):
           submission_cmd                  = None,
           use_dymumu_tau_fr               = False,
           apply_nc_correction             = True,
+          do_stxs                         = False,
       ):
 
         self.configDir = configDir
@@ -304,6 +305,7 @@ class analyzeConfig(object):
         self.triggerTable = Triggers(self.era)
         self.do_sync = do_sync
         self.topPtRwgtChoice = "Quadratic" # alternatives: "TOP16011", "Linear"
+        self.do_stxs = do_stxs
 
         samples_to_stitch = []
         if self.era == '2016':
@@ -790,6 +792,13 @@ class analyzeConfig(object):
               if nof_events_idx >= 0 and nof_events_label:
                 nof_events[central_or_shift] = sample_info["nof_events"][nof_events_label][nof_events_idx]
                 assert(nof_events[central_or_shift] > 0)
+                if self.do_stxs and sample_info["sample_category"].lower().startswith('tth'):
+                  for htxs_bin in HTXS_BINS:
+                    nof_events_label_htxs = '{}_{}'.format(nof_events_label, htxs_bin)
+                    assert(nof_events_label_htxs in sample_info["nof_events"])
+                    central_or_shift_htxs = '{}_{}'.format(central_or_shift, htxs_bin)
+                    nof_events[central_or_shift_htxs] = sample_info["nof_events"][nof_events_label_htxs][nof_events_idx]
+                    assert(nof_events[central_or_shift_htxs])
                 stitch_histogram_names[central_or_shift] = '{}_{}'.format(nof_events_label, nof_events_idx)
 
                 if use_th_weights and central_or_shift not in tH_weights_map:
@@ -814,6 +823,7 @@ class analyzeConfig(object):
                       if idx in missing_reweighting:
                         continue
 
+                      #TODO use event counts per Higgs pT bin
                       nof_events_rwgt = sample_info["nof_events"]["{}_rwgt{}".format(nof_events_label, idx)][nof_events_idx]
                       tHweight = copy.deepcopy(find_tHweight(tHweights, idx))
                       assert(nof_events_rwgt >= 0)
@@ -825,12 +835,23 @@ class analyzeConfig(object):
                       tH_weights_map[central_or_shift].append(tHweight)
 
           if is_mc and self.use_lumi:
-            jobOptions['lumiScale'] = [
-              cms.PSet(
-                central_or_shift = cms.string(central_or_shift if not is_ttbar_sys else sample_category_ttbar),
-                lumi             = cms.double(sample_info["xsection"] * self.lumi / nof_events[central_or_shift]),
-              ) for central_or_shift in nof_events
-            ]
+            jobOptions['lumiScale'] = []
+            for central_or_shift_tmp in nof_events:
+              central_or_shift_split = central_or_shift_tmp.split('_')
+              is_htxs = len(central_or_shift_split) > 1 and central_or_shift_split[-1] in HTXS_BINS
+              lumi_figure = self.lumi / nof_events[central_or_shift_tmp]
+              if is_htxs:
+                central_or_shift = '_'.join(central_or_shift_split[:-1])
+              else:
+                central_or_shift = central_or_shift_tmp
+                lumi_figure *= sample_info["xsection"]
+              lumiScale_object = cms.PSet(
+                  central_or_shift = cms.string(central_or_shift if not is_ttbar_sys else sample_category_ttbar),
+                  lumi             = cms.double(lumi_figure),
+                )
+              if is_htxs:
+                lumiScale_object.bin = cms.string(central_or_shift_split[-1])
+              jobOptions['lumiScale'].append(lumiScale_object)
           if use_th_weights:
             tH_weights = []
             for central_or_shift in tH_weights_map:
