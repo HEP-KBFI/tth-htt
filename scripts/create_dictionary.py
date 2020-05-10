@@ -582,6 +582,7 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
           histogram_names["{}_rwgt{}".format(histogram_name, tH_idx)] = -1
   if is_htxs:
     for htxs_bin in HTXS_BINS:
+      histogram_names["{}_{}".format(HISTOGRAM_COUNT, htxs_bin)] = -1
       for lheScaleHistName in LHESCALEARR:
         histogram_name_rwgt = "{}_{}".format(lheScaleHistName, htxs_bin)
         lheScaleArr.append(histogram_name_rwgt)
