@@ -18,7 +18,7 @@ lumi_2017 = 41.529e+3 # 1/pb (uncertainty: 2.3%)
 # Official figures: https://hypernews.cern.ch/HyperNews/CMS/get/luminosity/860.html & PAS LUM-18-002
 lumi_2018 = 59.741e+3 # 1/pb (uncertainty: 2.5%)
 
-# Reproduced
+HTXS_BINS = [ "fwd", "pt0to60", "pt60to120", "pt120to200", "pt200to300", "ptGt300", "pt300to450", "ptGt450" ]
 
 def get_lumi(era):
   if era == "2016":

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from tthAnalysis.HiggsToTauTau.jobTools import run_cmd, human_size
-from tthAnalysis.HiggsToTauTau.analysisSettings import Triggers
+from tthAnalysis.HiggsToTauTau.analysisSettings import Triggers, HTXS_BINS
 from tthAnalysis.HiggsToTauTau.safe_root import ROOT
 from tthAnalysis.HiggsToTauTau.common import logging, SmartFormatter
 from tthAnalysis.HiggsToTauTau.hdfs import hdfs
@@ -101,7 +101,6 @@ LHESCALEARR = [
   # HISTOGRAM_COUNTFULLWEIGHTED_LHESCALE_NOPU_L1PREFIRE_NOM,
 ]
 TH_INDICES = [ coupling.idx.value() for coupling in tHweights if coupling.idx.value() >= 0 ]
-HTXS_BINS = [ "fwd", "pt0to60", "pt60to120", "pt120to200", "pt200to300", "ptGt300", "pt300to450", "ptGt450" ]
 
 # see https://github.com/cms-nanoAOD/cmssw/blob/9a2728ac9f44fc45ba1aa56389e28c594207c0fe/PhysicsTools/NanoAOD/python/nano_cff.py#L99-L104
 LHE_DOC = {
@@ -546,16 +545,34 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
 
   digit_regex = re.compile(r"tree_(?P<i>\d+)\.root$")
   is_data = meta_dict[key]['sample_category'] == 'data_obs'
-  is_rwgt = meta_dict[key]['sample_category'] in [ "tHq", "tHW", "signal_ctcvcp" ]
+  is_rwgt = meta_dict[key]['sample_category'] in [ "tHq", "tHW", "ttH_ctcvcp" ]
   is_htxs = meta_dict[key]['sample_category'].startswith('ttH')
 
+  lheScaleArr = copy.deepcopy(LHESCALEARR)
+  th_arr = TH_INDICES if is_rwgt else [ -1 ]
+  htxs_arr = HTXS_BINS if is_htxs else [ "" ]
   histogram_names = collections.OrderedDict([ ( HISTOGRAM_COUNT, -1 ) ])
   if not is_data:
-    for histogram_name in HISTOGRAM_COUNT_COMMON_MC:
-      histogram_names[histogram_name] = -1
-    if era in [ 2016, 2017 ]:
-      for histogram_name in HISTOGRAM_COUNT_EXTENDED_MC:
-        histogram_names[histogram_name] = -1
+    for tH_idx in th_arr:
+      for htxs_bin in htxs_arr:
+        for histogram_name_tmp in HISTOGRAM_COUNT_COMMON_MC:
+          histogram_name = histogram_name_tmp
+          if tH_idx >= 0:
+            histogram_name += "_rwgt{}".format(tH_idx)
+          if htxs_bin:
+            histogram_name += "_{}".format(htxs_bin)
+            histogram_name_count = "{}_{}".format(HISTOGRAM_COUNT, htxs_bin)
+            if histogram_name_count not in histogram_names:
+              histogram_names[histogram_name_count] = -1
+          histogram_names[histogram_name] = -1
+        if era in [ 2016, 2017 ]:
+          for histogram_name_tmp in HISTOGRAM_COUNT_EXTENDED_MC:
+            histogram_name = histogram_name_tmp
+            if tH_idx >= 0:
+              histogram_name += "_rwgt{}".format(tH_idx)
+            if htxs_bin:
+              histogram_name += "_{}".format(htxs_bin)
+            histogram_names[histogram_name] = -1
 
   if key.startswith('/TTTo'):
     histogram_names_extend = []
@@ -567,31 +584,6 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
           histogram_names_extend.append('{}{}{}'.format(histogram_name, topPtPrefix, topPtSuffix))
     for histogram_name in histogram_names_extend:
         histogram_names[histogram_name] = -1
-
-  lheScaleArr = copy.deepcopy(LHESCALEARR)
-  if is_rwgt:
-    for tH_idx in TH_INDICES:
-      for lheScaleHistName in LHESCALEARR:
-        histogram_name_rwgt = "{}_rwgt{}".format(lheScaleHistName, tH_idx)
-        lheScaleArr.append(histogram_name_rwgt)
-      for histogram_name in HISTOGRAM_COUNT_COMMON_MC:
-        histogram_name_rwgt = "{}_rwgt{}".format(histogram_name, tH_idx)
-        histogram_names[histogram_name_rwgt] = -1
-      if era in [2016, 2017]:
-        for histogram_name in HISTOGRAM_COUNT_EXTENDED_MC:
-          histogram_names["{}_rwgt{}".format(histogram_name, tH_idx)] = -1
-  if is_htxs:
-    for htxs_bin in HTXS_BINS:
-      histogram_names["{}_{}".format(HISTOGRAM_COUNT, htxs_bin)] = -1
-      for lheScaleHistName in LHESCALEARR:
-        histogram_name_rwgt = "{}_{}".format(lheScaleHistName, htxs_bin)
-        lheScaleArr.append(histogram_name_rwgt)
-      for histogram_name in HISTOGRAM_COUNT_COMMON_MC:
-        histogram_name_rwgt = "{}_{}".format(histogram_name, htxs_bin)
-        histogram_names[histogram_name_rwgt] = -1
-      if era in [2016, 2017]:
-        for histogram_name in HISTOGRAM_COUNT_EXTENDED_MC:
-          histogram_names["{}_{}".format(histogram_name, htxs_bin)] = -1
 
   indices = {}
   lhe_set = ''
