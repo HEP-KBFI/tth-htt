@@ -549,8 +549,12 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
   is_htxs = meta_dict[key]['sample_category'].startswith('ttH')
 
   lheScaleArr = copy.deepcopy(LHESCALEARR)
-  th_arr = TH_INDICES if is_rwgt else [ -1 ]
-  htxs_arr = HTXS_BINS if is_htxs else [ "" ]
+  th_arr = [ -1 ]
+  if is_rwgt:
+    th_arr.extend(TH_INDICES)
+  htxs_arr = [ "" ]
+  if is_htxs:
+    htxs_arr.extend(HTXS_BINS)
   histogram_names = collections.OrderedDict([ ( HISTOGRAM_COUNT, -1 ) ])
   if not is_data:
     for tH_idx in th_arr:
