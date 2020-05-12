@@ -635,7 +635,8 @@ class analyzeConfig(object):
            sample_info['nof_reweighting'] > 0
 
         is_hh_channel = 'hh' in self.channel
-        if (is_hh_channel and sample_info["sample_category"].startswith('signal_') and not "spin" in sample_info["sample_category"]) or \
+        if (is_hh_channel and sample_info["sample_category"].startswith('signal_') and
+            not "spin" in sample_info["sample_category"] and not "cHHH" in sample_info["sample_category"]) or \
            (not is_hh_channel and sample_info["sample_category"] == "HH"):
           sample_category_to_check = 'sample_category_hh' if not is_hh_channel else 'sample_category'
           assert(sample_category_to_check in sample_info)
