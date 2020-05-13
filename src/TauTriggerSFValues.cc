@@ -14,7 +14,9 @@ TauTriggerSFValues::TauTriggerSFValues(double min_,
   : min(min_)
   , central(central_)
   , max(max_)
-{}
+{
+  assert(min <= central && central <= max);
+}
 
 TauTriggerSFValues &
 TauTriggerSFValues::max_of(double value)
@@ -30,6 +32,21 @@ bool
 TauTriggerSFValues::is_ordered() const
 {
   return min <= central && central <= max;
+}
+
+TauTriggerSFValues
+operator*(const TauTriggerSFValues & lhs,
+          const TauTriggerSFValues & rhs)
+{
+  const double central = lhs.central * rhs.central;
+  const double min_min = lhs.min * rhs.min;
+  const double min_max = lhs.min * rhs.max;
+  const double max_min = lhs.max * rhs.min;
+  const double max_max = lhs.max * rhs.max;
+  const double true_min = std::min(std::min(min_min, min_max), std::min(max_min, max_max));
+  const double true_max = std::max(std::max(min_min, min_max), std::max(max_min, max_max));
+  assert(true_min <= central && central <= true_max);
+  return { true_min, central, true_max };
 }
 
 TauTriggerSFValues
