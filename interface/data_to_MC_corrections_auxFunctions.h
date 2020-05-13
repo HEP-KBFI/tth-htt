@@ -2,9 +2,9 @@
 #define DATA_TO_MC_CORRECTIONS_AUXFUNCTIONS_H
 
 #include "tthAnalysis/HiggsToTauTau/interface/lutAuxFunctions.h" // lutWrapperBase, vLutWrapperBase
+#include "tthAnalysis/HiggsToTauTau/interface/TauTriggerSFValues.h" // TauTriggerSFValues
 
 #include <string> // std::string
-#include <cmath> // std::min(), std::max()
 #include <vector> // std::vector<>
 #include <map> // std::map<>
 
@@ -47,6 +47,11 @@ namespace aux
   double
   compSF(double eff_data,
          double eff_mc);
+
+  double
+  compSF(const TauTriggerSFValues & eff_data,
+         const TauTriggerSFValues & eff_mc,
+         TriggerSFsys central_or_shift);
 
   bool
   hasDecayMode(const std::vector<int> & allowedDecayModes,

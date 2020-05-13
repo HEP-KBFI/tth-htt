@@ -181,6 +181,32 @@ TauTriggerSFInterface::getTauTriggerEvalMC(TriggerSFsys central_or_shift,
   throw cmsException(this, __func__, __LINE__) << "Class not initialized properly";
 }
 
+TauTriggerSFValues
+TauTriggerSFInterface::getTauTriggerEvalData(double pt,
+                                             double eta,
+                                             double phi,
+                                             int dm) const
+{
+  const double sf_central = getTauTriggerEvalData(TriggerSFsys::central,   pt, eta, phi, dm);
+  const double sf_min     = getTauTriggerEvalData(TriggerSFsys::shiftDown, pt, eta, phi, dm);
+  const double sf_max     = getTauTriggerEvalData(TriggerSFsys::shiftUp,   pt, eta, phi, dm);
+  assert(sf_min <= sf_central && sf_central <= sf_max);
+  return { sf_min, sf_central, sf_max };
+}
+
+TauTriggerSFValues
+TauTriggerSFInterface::getTauTriggerEvalMC(double pt,
+                                           double eta,
+                                           double phi,
+                                           int dm) const
+{
+  const double sf_central = getTauTriggerEvalMC(TriggerSFsys::central,   pt, eta, phi, dm, false);
+  const double sf_min     = getTauTriggerEvalMC(TriggerSFsys::shiftDown, pt, eta, phi, dm, false);
+  const double sf_max     = getTauTriggerEvalMC(TriggerSFsys::shiftUp,   pt, eta, phi, dm, false);
+  assert(sf_min <= sf_central && sf_central <= sf_max);
+  return { sf_min, sf_central, sf_max };
+}
+
 TriggerSFsys
 TauTriggerSFInterface::getGenericTriggerSFsys(TriggerSFsys central_or_shift) const
 {
