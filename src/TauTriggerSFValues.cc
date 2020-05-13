@@ -81,12 +81,10 @@ operator*(const TauTriggerSFValues & values,
   const double max_value     = values.max     * factor;
   if(min_value <= central_value && central_value <= max_value)
   {
-    assert(factor >= 0.);
     return { min_value, central_value, max_value };
   }
   else if(min_value >= central_value && central_value >= max_value)
   {
-    assert(factor <= 0.);
     return { max_value, central_value, min_value };
   }
   else
