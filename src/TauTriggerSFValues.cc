@@ -34,6 +34,22 @@ TauTriggerSFValues::is_ordered() const
   return min <= central && central <= max;
 }
 
+void
+TauTriggerSFValues::reset_to_central()
+{
+  min = central;
+  max = central;
+}
+
+TauTriggerSFValues &
+TauTriggerSFValues::operator+=(const TauTriggerSFValues & values)
+{
+  min     += values.min;
+  central += values.central;
+  max     += values.max;
+  return *this;
+}
+
 TauTriggerSFValues
 operator*(const TauTriggerSFValues & lhs,
           const TauTriggerSFValues & rhs)
@@ -100,10 +116,47 @@ operator-(double minuend,
   }
 }
 
+TauTriggerSFValues
+operator-(const TauTriggerSFValues & minuend,
+          const TauTriggerSFValues & values)
+{
+  const double central_value = minuend.central - values.central;
+  const double min_min       = minuend.min - values.min;
+  const double min_max       = minuend.min - values.max;
+  const double max_min       = minuend.max - values.min;
+  const double max_max       = minuend.max - values.max;
+  const double min_value     = std::min(std::min(min_min, min_max), std::min(max_min, max_max));
+  const double max_value     = std::max(std::max(min_min, min_max), std::max(max_min, max_max));
+  return { min_value, central_value, max_value };
+}
+
 std::ostream &
 operator<<(std::ostream & stream,
            const TauTriggerSFValues & values)
 {
   stream << values.min << " / " << values.central << " / " << values.max;
   return stream;
+}
+
+namespace aux
+{
+  TauTriggerSFValues
+  min(const TauTriggerSFValues & lhs,
+      const TauTriggerSFValues & rhs)
+  {
+    const double min_value     = std::min(lhs.min,     rhs.min);
+    const double central_value = std::min(lhs.central, rhs.central);
+    const double max_value     = std::min(lhs.max,     rhs.max);
+    return { min_value, central_value, max_value };
+  }
+
+  TauTriggerSFValues
+  max(const TauTriggerSFValues & lhs,
+      const TauTriggerSFValues & rhs)
+  {
+    const double min_value     = std::max(lhs.min,     rhs.min);
+    const double central_value = std::max(lhs.central, rhs.central);
+    const double max_value     = std::max(lhs.max,     rhs.max);
+    return { min_value, central_value, max_value };
+  }
 }

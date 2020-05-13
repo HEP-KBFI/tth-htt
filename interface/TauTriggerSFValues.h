@@ -21,6 +21,12 @@ struct TauTriggerSFValues
   bool
   is_ordered() const;
 
+  void
+  reset_to_central();
+
+  TauTriggerSFValues &
+  operator+=(const TauTriggerSFValues & values);
+
   double min;
   double central;
   double max;
@@ -42,8 +48,23 @@ TauTriggerSFValues
 operator-(double minuend,
           const TauTriggerSFValues & values);
 
+TauTriggerSFValues
+operator-(const TauTriggerSFValues & minuend,
+          const TauTriggerSFValues & values);
+
 std::ostream &
 operator<<(std::ostream & stream,
            const TauTriggerSFValues & values);
+
+namespace aux
+{
+  TauTriggerSFValues
+  min(const TauTriggerSFValues & lhs,
+      const TauTriggerSFValues & rhs);
+
+  TauTriggerSFValues
+  max(const TauTriggerSFValues & lhs,
+      const TauTriggerSFValues & rhs);
+}
 
 #endif
