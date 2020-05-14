@@ -58,7 +58,7 @@ class systematics(object):
     "CMS_ttHl_trigger_2lssMuMuUp", "CMS_ttHl_trigger_2lssMuMuDown",
   ]
   triggerSF_3l     = [ "CMS_ttHl_trigger_3lUp",     "CMS_ttHl_trigger_3lDown"     ]
-  triggerSF_1l2tau = [ "CMS_ttHl_trigger_1l1tauUp", "CMS_ttHl_trigger_1l1tauDown" ]
+  triggerSF_1l2tau = [ "CMS_ttHl_trigger_1l2tauUp", "CMS_ttHl_trigger_1l2tauDown" ]
   triggerSF_1l1tau = [ "CMS_ttHl_trigger_1l1tauUp", "CMS_ttHl_trigger_1l1tauDown" ]
   triggerSF_0l2tau = [ "CMS_ttHl_trigger_0l2tauUp", "CMS_ttHl_trigger_0l2tauDown" ]
   triggerSF_split = triggerSF_2lss + triggerSF_3l + triggerSF_1l2tau + triggerSF_1l1tau + triggerSF_0l2tau
