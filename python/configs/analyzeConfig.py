@@ -487,7 +487,7 @@ class analyzeConfig(object):
           for line in kl_file:
             kl_value = float(line.split()[0])
             self.kl_weights += [
-              "kl_" + str("{:3.2f}".format(kt_value)).replace(".", "p").replace("-", "m")
+              "kl_" + str("{:3.2f}".format(kl_value)).replace(".", "p").replace("-", "m")
             ]
         self.BM_weights = [ 'SM' ] + [ 'BM{}'.format(idx) for idx in range(1, 13) ]
 
