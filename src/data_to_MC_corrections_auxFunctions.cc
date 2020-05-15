@@ -159,6 +159,38 @@ namespace aux
     return std::min(eff_data / std::max(1.e-6, eff_mc), 1.e+1);
   }
 
+  double
+  compSF(const TauTriggerSFValues & eff_data,
+         const TauTriggerSFValues & eff_mc,
+         TriggerSFsys central_or_shift)
+  {
+    assert(eff_data.is_ordered());
+    assert(eff_mc.is_ordered());
+    switch(central_or_shift)
+    {
+      case TriggerSFsys::central:            return aux::compSF(eff_data.central, eff_mc.central);
+      case TriggerSFsys::shiftUp:            __attribute__((fallthrough));
+      case TriggerSFsys::shift_2lssUp:       __attribute__((fallthrough));
+      case TriggerSFsys::shift_2lssEEUp:     __attribute__((fallthrough));
+      case TriggerSFsys::shift_2lssEMuUp:    __attribute__((fallthrough));
+      case TriggerSFsys::shift_2lssMuMuUp:   __attribute__((fallthrough));
+      case TriggerSFsys::shift_3lUp:         __attribute__((fallthrough));
+      case TriggerSFsys::shift_1l2tauUp:     __attribute__((fallthrough));
+      case TriggerSFsys::shift_1l1tauUp:     __attribute__((fallthrough));
+      case TriggerSFsys::shift_0l2tauUp:     return aux::compSF(eff_data.max, eff_mc.min);
+      case TriggerSFsys::shiftDown:          __attribute__((fallthrough));
+      case TriggerSFsys::shift_2lssDown:     __attribute__((fallthrough));
+      case TriggerSFsys::shift_2lssEEDown:   __attribute__((fallthrough));
+      case TriggerSFsys::shift_2lssEMuDown:  __attribute__((fallthrough));
+      case TriggerSFsys::shift_2lssMuMuDown: __attribute__((fallthrough));
+      case TriggerSFsys::shift_3lDown:       __attribute__((fallthrough));
+      case TriggerSFsys::shift_1l2tauDown:   __attribute__((fallthrough));
+      case TriggerSFsys::shift_1l1tauDown:   __attribute__((fallthrough));
+      case TriggerSFsys::shift_0l2tauDown:   return aux::compSF(eff_data.min, eff_mc.max);
+      default: assert(false);
+    }
+  }
+
   bool
   hasDecayMode(const std::vector<int> & allowedDecayModes,
                int hadTau_decayMode)

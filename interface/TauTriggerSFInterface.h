@@ -1,6 +1,8 @@
 #ifndef tthAnalysis_HiggsToTauTau_TauTriggerSFInterface_h
 #define tthAnalysis_HiggsToTauTau_TauTriggerSFInterface_h
 
+#include "tthAnalysis/HiggsToTauTau/interface/TauTriggerSFValues.h" // TauTriggerSFValues
+
 #include <string> // std::string
 #include <functional> // std::function<>
 
@@ -38,6 +40,18 @@ public:
                       double phi,
                       int dm,
                       bool flip = true) const;
+
+  TauTriggerSFValues
+  getTauTriggerEvalData(double pt,
+                        double eta,
+                        double phi,
+                        int dm) const;
+
+  TauTriggerSFValues
+  getTauTriggerEvalMC(double pt,
+                      double eta,
+                      double phi,
+                      int dm) const;
 
 protected:
   static std::string
