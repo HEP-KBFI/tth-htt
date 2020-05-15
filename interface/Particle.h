@@ -3,11 +3,13 @@
 
 #include <Rtypes.h> // Int_t, Long64_t, Double_t
 #include <DataFormats/Math/interface/LorentzVector.h> // math::PtEtaPhiMLorentzVector
+#include "DataFormats/Math/interface/Vector3D.h"      // math::XYZVector
 
 class Particle
 {
 public:
   typedef math::PtEtaPhiMLorentzVector LorentzVector;
+  typedef math::XYZVector Point;
 
   Particle();
   Particle(Double_t pt,
