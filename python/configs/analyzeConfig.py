@@ -481,6 +481,15 @@ class analyzeConfig(object):
             self.kt_weights += [
               "kt_" + str("{:3.2f}".format(kt_value)).replace(".", "p").replace("-", "m")
             ]
+        self.kl_weights = []
+        self.kl_scan_file = "hhAnalysis/multilepton/data/kl_scan.dat"
+        with open(os.path.join(os.environ["CMSSW_BASE"], "src", self.kl_scan_file), "r") as kl_file:
+          for line in kl_file:
+            kl_value = float(line.split()[0])
+            self.kl_weights += [
+              "kl_" + str("{:3.2f}".format(kt_value)).replace(".", "p").replace("-", "m")
+            ]
+        self.BM_weights = [ 'SM' ] + [ 'BM{}'.format(idx) for idx in range(1, 13) ]
 
         self.jobOptions_analyze = {}
         self.inputFiles_hadd_stage1 = {}
@@ -648,10 +657,13 @@ class analyzeConfig(object):
           else:
             raise ValueError("Uncrecongizable sample category: %s" % sample_info[sample_category_to_check])
           jobOptions['hhWeight_cfg.denominator_file'] = 'hhAnalysis/{}/data/denom_{}.root'.format(hhWeight_base, self.era)
-          #jobOptions['hhWeight_cfg.histtitle'] = sample_info["sample_category_hh"]
           jobOptions['hhWeight_cfg.histtitle'] = sample_info[sample_category_to_check]
-          jobOptions['hhWeight_cfg.ktScan_file'] = self.kt_scan_file
-          jobOptions['hhWeight_cfg.do_ktscan'] = 'hh' in self.channel
+          jobOptions['hhWeight_cfg.do_ktscan'] = not ('hh' in self.channel or 'ctrl' in self.channel)
+          if jobOptions['hhWeight_cfg.do_ktscan']:
+            jobOptions['hhWeight_cfg.ktScan_file'] = self.kt_scan_file
+          else:
+            jobOptions['hhWeight_cfg.klScan_file'] = self.kl_scan_file
+
           jobOptions['hhWeight_cfg.apply_rwgt'] = 'hh' in self.channel
 
         sample_category_ttbar = sample_info["sample_category"].replace("TT_", "")
@@ -945,6 +957,7 @@ class analyzeConfig(object):
             'hhWeight_cfg.denominator_file',
             'hhWeight_cfg.histtitle',
             'hhWeight_cfg.do_ktscan',
+            'hhWeight_cfg.klScan_file',
             'hhWeight_cfg.ktScan_file',
             'hhWeight_cfg.apply_rwgt',
             'minNumJets',
