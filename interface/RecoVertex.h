@@ -11,6 +11,8 @@
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h" // edm::ParameterSet
 
+#include "tthAnalysis/HiggsToTauTau/interface/Particle.h" // Particle::Point
+
 #include <Rtypes.h> // Int_t, Double_t
 
 #include <iostream> // std::ostream
@@ -31,6 +33,7 @@ public:
              Int_t npvsGood);
   ~RecoVertex();
 
+  const Particle::Point& position() const;
   Double_t x() const;
   Double_t y() const;
   Double_t z() const; 
@@ -41,15 +44,13 @@ public:
   Int_t npvsGood() const;
 
 private:
-  Double_t x_;        ///< x-coordinate of vertex position (in units of cm)
-  Double_t y_;        ///< y-coordinate of vertex position (in units of cm)
-  Double_t z_;        ///< z-coordinate of vertex position (in units of cm)
-  Double_t ndof_;     ///< number of degrees of freedom in vertex fit
-  Double_t chi2_;     ///< chi^2 per degree of freedom
-  Double_t score_;    ///< vertex score, i.e. sum pT^2 of clustered objects
-  Int_t    npvs_;     ///< total number of reconstructed primary vertices 
-  Int_t    npvsGood_; ///< number of good reconstructed primary vertices
-                      ///< (selection = !isFake && ndof > 4 && abs(z) <= 24 && position.Rho <= 2)
+  Particle::Point position_; ///< vertex position (x,y,z coordinates in units of cm)
+  Double_t ndof_;            ///< number of degrees of freedom in vertex fit
+  Double_t chi2_;            ///< chi^2 per degree of freedom
+  Double_t score_;           ///< vertex score, i.e. sum pT^2 of clustered objects
+  Int_t    npvs_;            ///< total number of reconstructed primary vertices 
+  Int_t    npvsGood_;        ///< number of good reconstructed primary vertices
+                             ///< (selection = !isFake && ndof > 4 && abs(z) <= 24 && position.Rho <= 2)
 };
 
 std::ostream &

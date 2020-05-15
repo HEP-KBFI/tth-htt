@@ -11,9 +11,7 @@ RecoVertex::RecoVertex(Double_t x,
                        Double_t score,
                        Int_t npvs,
                        Int_t npvsGood)
-  : x_(x)
-  , y_(y)
-  , z_(z)
+  : position_(x, y, z)
   , ndof_(ndof)
   , chi2_(chi2)
   , score_(score)
@@ -24,22 +22,28 @@ RecoVertex::RecoVertex(Double_t x,
 RecoVertex::~RecoVertex()
 {}
 
+const Particle::Point& 
+RecoVertex::position() const
+{
+  return position_;
+}
+
 Double_t 
 RecoVertex::x() const
 {
-  return x_;
+  return position_.x();
 }
 
 Double_t 
 RecoVertex::y() const
 {
-  return y_;
+  return position_.y();
 }
 
 Double_t 
 RecoVertex::z() const
 {
-  return z_;
+  return position_.z();
 }
 
 Double_t 
