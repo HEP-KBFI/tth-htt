@@ -486,7 +486,9 @@ class analyzeConfig(object):
         self.cfgFile_copyHistograms = os.path.join(self.template_dir, "copyHistograms_cfg.py")
         self.jobOptions_copyHistograms = {}
         self.executable_copyHistograms = 'copyHistograms_recursively'
+        self.cfgFile_addSysTT = os.path.join(self.template_dir, "addSysTT_cfg.py")
         self.cfgFile_addBackgrounds = os.path.join(self.template_dir, "addBackgrounds_cfg.py")
+        self.jobOptions_addSysTT = {}
         self.jobOptions_addBackgrounds = {}
         self.jobOptions_addBackgrounds_sum = {}
         self.inputFiles_hadd_stage1_5 = {}
@@ -523,6 +525,7 @@ class analyzeConfig(object):
         self.num_jobs['analyze'] = 0
         self.num_jobs['hadd'] = 0
         self.num_jobs['copyHistograms'] = 0
+        self.num_jobs['addSysTT'] = 0
         self.num_jobs['addBackgrounds'] = 0
         self.num_jobs['addFakes'] = 0
 
@@ -1169,6 +1172,24 @@ class analyzeConfig(object):
             lines.append("process.addBackgrounds.sysShifts = cms.vstring(%s)" % self.central_or_shifts)
         create_cfg(self.cfgFile_addBackgrounds, jobOptions['cfgFile_modified'], lines)
 
+    def createCfg_addSysTT(self, jobOptions):
+        """Create python configuration file for the addBackgrounds executable (sum either all "fake" or all "non-fake" contributions)
+           Args:
+             inputFiles: input file (the ROOT file produced by hadd_stage1_5)
+             outputFile: output file of the job
+        """
+        lines = []
+        lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
+        lines.append("process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(jobOptions['outputFile']))
+        lines.append("process.addSysTT.categories = cms.vstring(%s)" % jobOptions['categories'])
+        lines.append("process.addSysTT.process_output = cms.string('%s')" % jobOptions['process_output'])
+        if 'histogramsToCopy' in jobOptions.keys():
+            lines.append("process.addSysTT.histogramsToCopy = cms.vstring(%s)" % jobOptions['histogramsToCopy'])
+        if 'sysShifts' in jobOptions.keys():
+            lines.append("process.addSysTT.sysShifts = cms.vstring(%s)" % jobOptions['sysShifts'])
+        create_cfg(self.cfgFile_addSysTT, jobOptions['cfgFile_modified'], lines)
+
+
     def createCfg_addFakes(self, jobOptions):
         """Create python configuration file for the addBackgroundLeptonFakes executable (data-driven estimation of 'Fakes' backgrounds)
 
@@ -1461,6 +1482,11 @@ class analyzeConfig(object):
         """Creates the python script necessary to submit the 'copyHistograms' jobs to the batch system
         """
         self.num_jobs['copyHistograms'] += self.createScript_sbatch(executable, sbatchFile, jobOptions, min_file_size = 5000)
+
+    def createScript_sbatch_addSysTT(self, executable, sbatchFile, jobOptions):
+        """Creates the python script necessary to submit the 'addSysTT' jobs to the batch system                                                                                                      
+        """
+        self.num_jobs['addSysTT'] += self.createScript_sbatch(executable, sbatchFile, jobOptions, min_file_size = 5000)
 
     def createScript_sbatch_addBackgrounds(self, executable, sbatchFile, jobOptions):
         """Creates the python script necessary to submit the 'addBackgrounds' jobs to the batch system
