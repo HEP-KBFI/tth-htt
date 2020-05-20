@@ -99,6 +99,7 @@ class analyzeConfig_4l(analyzeConfig):
       isDebug                   = isDebug,
       use_home                  = use_home,
       submission_cmd            = submission_cmd,
+      do_stxs                   = True,
     )
 
     self.lepton_selections = [ "Tight", "Fakeable" ]

@@ -232,9 +232,40 @@ int main(int argc, char* argv[])
   binning2_pt[10] = 430.;
   binning2_pt[11] = 500.;
   binning2_pt[12] = 800.;
+//   (top pT binning from H->WW group)
+  int numBins3_pt = 26;
+  Float_t* binning3_pt = new Float_t[numBins3_pt + 1];
+  binning3_pt[0]  =    0.;
+  binning3_pt[1]  =   50.;
+  binning3_pt[2]  =  100.;
+  binning3_pt[3]  =  150.;
+  binning3_pt[4]  =  200.;
+  binning3_pt[5]  =  250.;
+  binning3_pt[6]  =  300.;
+  binning3_pt[7]  =  350.;
+  binning3_pt[8]  =  400.;
+  binning3_pt[9]  =  450.;
+  binning3_pt[10] =  500.;
+  binning3_pt[11] =  550.;
+  binning3_pt[12] =  600.;
+  binning3_pt[13] =  650.;
+  binning3_pt[14] =  700.;
+  binning3_pt[15] =  800.;
+  binning3_pt[16] =  900.;
+  binning3_pt[17] = 1000.;
+  binning3_pt[18] = 1100.;
+  binning3_pt[19] = 1200.;
+  binning3_pt[20] = 1400.;
+  binning3_pt[21] = 1600.;
+  binning3_pt[22] = 1800.;
+  binning3_pt[23] = 2000.;
+  binning3_pt[24] = 2200.;
+  binning3_pt[25] = 2600.;
+  binning3_pt[26] = 3000.;
 
   TH1* histogram_genTopQuark_pt_binning1     = fs.make<TH1D>("genTopQuark_pt_binning1",     "genTopQuark_pt_binning1",     numBins1_pt, binning1_pt);
   TH1* histogram_genTopQuark_pt_binning2     = fs.make<TH1D>("genTopQuark_pt_binning2",     "genTopQuark_pt_binning2",     numBins2_pt, binning2_pt);
+  TH1* histogram_genTopQuark_pt_binning3     = fs.make<TH1D>("genTopQuark_pt_binning3",     "genTopQuark_pt_binning3",     numBins3_pt, binning3_pt);
   TH1* histogram_genTopQuark_pt_fine_binning = fs.make<TH1D>("genTopQuark_pt_fine_binning", "genTopQuark_pt_fine_binning", 3000, 0., 3000.);
 
   int analyzedEntries = 0;
@@ -259,8 +290,8 @@ int main(int argc, char* argv[])
     if(isMC)
     {
       if(apply_genWeight)         evtWeightRecorder.record_genWeight(boost::math::sign(eventInfo.genWeight));
-      if(eventWeightManager)      evtWeightRecorder.record_auxWeight(eventWeightManager);
-      if(apply_topPtReweighting)  evtWeightRecorder.record_toppt_rwgt(eventInfo.topPtRwgtSF);
+      //if(eventWeightManager)      evtWeightRecorder.record_auxWeight(eventWeightManager);
+      //if(apply_topPtReweighting)  evtWeightRecorder.record_toppt_rwgt(eventInfo.topPtRwgtSF);
       lheInfoReader->read();
       evtWeightRecorder.record_lheScaleWeight(lheInfoReader);
       evtWeightRecorder.record_puWeight(&eventInfo);
@@ -275,6 +306,7 @@ int main(int argc, char* argv[])
           genTopQuark != genTopQuarks.end(); ++genTopQuark ) {
       histogram_genTopQuark_pt_binning1->Fill(genTopQuark->pt(), evtWeight);
       histogram_genTopQuark_pt_binning2->Fill(genTopQuark->pt(), evtWeight);
+      histogram_genTopQuark_pt_binning3->Fill(genTopQuark->pt(), evtWeight);
       histogram_genTopQuark_pt_fine_binning->Fill(genTopQuark->pt(), evtWeight);
     }
   }

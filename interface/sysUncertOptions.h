@@ -125,6 +125,7 @@ enum class TriggerSFsys
   shift_2lssEMuUp,  shift_2lssEMuDown,
   shift_2lssMuMuUp, shift_2lssMuMuDown,
   shift_3lUp,       shift_3lDown,
+  shift_1l2tauUp,   shift_1l2tauDown,
   shift_1l1tauUp,   shift_1l1tauDown,
   shift_0l2tauUp,   shift_0l2tauDown,
 };
@@ -139,9 +140,10 @@ enum class TriggerSFsysChoice
 enum
 {
   kLHE_scale_central,
-  kLHE_scale_xUp, kLHE_scale_xDown, // factorization scale
-  kLHE_scale_yUp, kLHE_scale_yDown, // renormalization scale
-  kLHE_scale_Up,  kLHE_scale_Down,  // envelope (Swiss cross + both up + both down)
+  kLHE_scale_xUp,  kLHE_scale_xDown,  // factorization scale
+  kLHE_scale_yUp,  kLHE_scale_yDown,  // renormalization scale
+  kLHE_scale_xyUp, kLHE_scale_xyDown, // simultaneous factorization and renormalization scales
+  kLHE_scale_Up,   kLHE_scale_Down,   // envelope (Swiss cross + both up + both down)
 };
 
 enum

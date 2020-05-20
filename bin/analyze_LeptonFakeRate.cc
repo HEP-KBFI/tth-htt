@@ -10,6 +10,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticleReader.h" // GenParticleReader
 #include "tthAnalysis/HiggsToTauTau/interface/LHEInfoReader.h" // LHEInfoReader
 #include "tthAnalysis/HiggsToTauTau/interface/EventInfoReader.h" // EventInfoReader
+#include "tthAnalysis/HiggsToTauTau/interface/RecoVertexReader.h" // RecoVertexReader
 #include "tthAnalysis/HiggsToTauTau/interface/MEtFilterReader.h" // MEtFilterReader
 #include "tthAnalysis/HiggsToTauTau/interface/ObjectMultiplicity.h" // ObjectMultiplicity
 #include "tthAnalysis/HiggsToTauTau/interface/ObjectMultiplicityReader.h" // ObjectMultiplicityReader
@@ -294,7 +295,8 @@ main(int argc,
   const std::string branchName_muons     = cfg_analyze.getParameter<std::string>("branchName_muons");
   const std::string branchName_jets      = cfg_analyze.getParameter<std::string>("branchName_jets");
   const std::string branchName_met       = cfg_analyze.getParameter<std::string>("branchName_met");
-  const std::string branchName_genmet       = cfg_analyze.getParameter<std::string>("branchName_genmet");
+  const std::string branchName_vertex    = cfg_analyze.getParameter<std::string>("branchName_vertex");
+  const std::string branchName_genmet    = cfg_analyze.getParameter<std::string>("branchName_genmet");
 
   const std::string branchName_genTauLeptons = cfg_analyze.getParameter<std::string>("branchName_genTauLeptons");
   const std::string branchName_genLeptons    = cfg_analyze.getParameter<std::string>("branchName_genLeptons");
@@ -394,6 +396,9 @@ main(int argc,
     eventInfoReader.setTopPtRwgtBranchName(apply_topPtReweighting_str);
   }
   inputTree->registerReader(&eventInfoReader);
+
+  RecoVertexReader vertexReader(branchName_vertex);
+  inputTree -> registerReader(&vertexReader);
 
   ObjectMultiplicity objectMultiplicity;
   ObjectMultiplicityReader objectMultiplicityReader(&objectMultiplicity);
@@ -775,7 +780,8 @@ main(int argc,
       }
     }
 
-    if(eventInfo.PV_ndof <= min_PV_ndof)
+    const RecoVertex vertex = vertexReader.read();
+    if(vertex.ndof() <= min_PV_ndof)
     {
       if(run_lumi_eventSelector)
       {

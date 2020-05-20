@@ -213,8 +213,9 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
   def addToMakefile_comp_hadd(self, lines_makefile):
     make_target = "sbatch_comp_hadd"
     self.addToMakefile_hadd(
-      lines_makefile, make_target = make_target, make_dependency = "sbatch_comp_jetToTauFakeRate",
-      inputFiles = self.comp_input_files, outputFiles = self.comp_output_files,
+      lines_makefile, make_target = make_target, make_dependency = ' '.join(
+        input_file for input_files in self.comp_input_files.values() for input_file in input_files
+      ), inputFiles = self.comp_input_files, outputFiles = self.comp_output_files,
     )
     for output_file in self.comp_output_files.values():
       lines_makefile.append("%s: %s" % (output_file, make_target))

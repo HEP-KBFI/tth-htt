@@ -28,6 +28,8 @@ LHEInfoReader::LHEInfoReader(bool has_LHE_weights)
   , weight_scale_xDown_(1.)
   , weight_scale_yUp_(1.)
   , weight_scale_yDown_(1.)
+  , weight_scale_xyUp_(1.)
+  , weight_scale_xyDown_(1.)
   , weight_scale_Up_(1.)
   , weight_scale_Down_(1.)
   , has_LHE_weights_(has_LHE_weights)
@@ -119,19 +121,23 @@ LHEInfoReader::read() const
   //    [8] is muR=2.0 muF=2.0
   if(gInstance->scale_nWeights_ == 9)
   {
-    weight_scale_yDown_ = gInstance->scale_weights_[1]; // muR=0.5 muF=1.0
-    weight_scale_xDown_ = gInstance->scale_weights_[3]; // muR=1.0 muF=0.5
-    weight_scale_xUp_   = gInstance->scale_weights_[5]; // muR=1.0 muF=2.0
-    weight_scale_yUp_   = gInstance->scale_weights_[7]; // muR=2.0 muF=1.0
+    weight_scale_xyDown_ = gInstance->scale_weights_[0]; // muR=0.5 muF=0.5
+    weight_scale_yDown_  = gInstance->scale_weights_[1]; // muR=0.5 muF=1.0
+    weight_scale_xDown_  = gInstance->scale_weights_[3]; // muR=1.0 muF=0.5
+    weight_scale_xUp_    = gInstance->scale_weights_[5]; // muR=1.0 muF=2.0
+    weight_scale_yUp_    = gInstance->scale_weights_[7]; // muR=2.0 muF=1.0
+    weight_scale_xyUp_   = gInstance->scale_weights_[8]; // muR=2.0 muF=2.0
   }
   else
   {
-    weight_scale_yDown_ = 1.; // muR=0.5 muF=1.0
-    weight_scale_xDown_ = 1.; // muR=1.0 muF=0.5
-    weight_scale_xUp_   = 1.; // muR=1.0 muF=2.0
-    weight_scale_yUp_   = 1.; // muR=2.0 muF=1.0
-    weight_scale_Up_    = 1.; // envelope
-    weight_scale_Down_  = 1.; // envelope
+    weight_scale_xyDown_ = 1.; // muR=0.5 muF=0.5
+    weight_scale_yDown_  = 1.; // muR=0.5 muF=1.0
+    weight_scale_xDown_  = 1.; // muR=1.0 muF=0.5
+    weight_scale_xUp_    = 1.; // muR=1.0 muF=2.0
+    weight_scale_yUp_    = 1.; // muR=2.0 muF=1.0
+    weight_scale_xyUp_   = 1.; // muR=2.0 muF=2.0
+    weight_scale_Up_     = 1.; // envelope
+    weight_scale_Down_   = 1.; // envelope
     std::cerr << "Unexpected number of LHE scale weights: " << gInstance->scale_nWeights_ << '\n';
     return;
   }
@@ -169,6 +175,18 @@ LHEInfoReader::getWeight_scale_yDown() const
 }
 
 double
+LHEInfoReader::getWeight_scale_xyUp() const
+{
+  return clip(weight_scale_xyUp_);
+}
+
+double
+LHEInfoReader::getWeight_scale_xyDown() const
+{
+  return clip(weight_scale_xyDown_);
+}
+
+double
 LHEInfoReader::getWeight_scale_Up() const
 {
   return clip(weight_scale_Up_);
@@ -190,6 +208,8 @@ LHEInfoReader::getWeight_scale(int central_or_shift) const
     case kLHE_scale_xUp:     return getWeight_scale_xUp();
     case kLHE_scale_yDown:   return getWeight_scale_yDown();
     case kLHE_scale_yUp:     return getWeight_scale_yUp();
+    case kLHE_scale_xyDown:  return getWeight_scale_xyDown();
+    case kLHE_scale_xyUp:    return getWeight_scale_xyUp();
     case kLHE_scale_Down:    return getWeight_scale_Down();
     case kLHE_scale_Up:      return getWeight_scale_Up();
     default: throw cmsException(this, __func__, __LINE__)

@@ -22,7 +22,7 @@ RecoMuonWriter::RecoMuonWriter(Era era,
   : era_(era)
   , branchName_num_(branchName_num)
   , branchName_obj_(branchName_obj)
-  , leptonWriter_(new RecoLeptonWriter(isMC, branchName_obj_))
+  , leptonWriter_(new RecoLeptonWriter(era, isMC, branchName_obj_))
   , looseIdPOG_(nullptr)
   , mediumIdPOG_(nullptr)
   , segmentCompatibility_(nullptr)

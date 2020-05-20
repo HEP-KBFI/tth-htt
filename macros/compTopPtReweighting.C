@@ -12,11 +12,15 @@
 #include <TROOT.h>
 #include <TString.h>
 #include <TSystem.h>
+#include <TPRegexp.h>
+#include <TObjString.h>
+#include <TObjArray.h>
 
 #include <string>
 #include <vector>
 #include <map>
 #include <iostream>
+#include <fstream>
 #include <iomanip>
 #include <assert.h>
 #include <math.h>
@@ -46,40 +50,102 @@ TH1* loadHistogram(TFile* inputFile, const std::string& histogramName)
   return histogram;
 }
 
-void process(const std::string& era, TH1* histogram, TH1* histogram_fine_binning, int numBins, Float_t* binning, Float_t* xSections, const std::string& outputFileName)
+double square(double x)
 {
+  return x*x;
+}
+
+void read_xSection(const std::string& inputFileName, int numBins, Float_t* binning, Float_t* xSections, Float_t* xSectionsErr)
+{
+  std::ifstream inputFile;
+  inputFile.open(inputFileName);
+
+  TPRegexp regexpParser("([0-9.e+/-]+)\\s+([0-9.e+/-]+)\\s+([0-9.e+/-]+)\\s+([0-9.e+/-]+)\\s+([0-9.e+/-]+)\\s+([0-9.e+/-]+)\\s+([0-9.e+/-]+)\\s+([0-9.e+/-]+)\\s+([0-9.e+/-]+)\\s*");
+
+  std::string line;
+  int idxBin = 0;
+  while ( std::getline(inputFile, line) ) {
+    const TObjArray * const subStrings = regexpParser.MatchS(line.data());
+    if ( subStrings->GetEntries() == 10 ) {
+      double binCenter          = (static_cast<TObjString *>(subStrings->At(1)))->GetString().Atof();
+      double binWidth           = (static_cast<TObjString *>(subStrings->At(9)))->GetString().Atof();
+      double binEdgeLo          = binCenter - 0.5*binWidth;
+      double binEdgeHi          = binCenter + 0.5*binWidth;
+      assert(TMath::Abs(binEdgeLo - binning[idxBin]    ) < 1.e-3);
+      assert(TMath::Abs(binEdgeHi - binning[idxBin + 1]) < 1.e-3);
+      double xSection_central   = (static_cast<TObjString *>(subStrings->At(2)))->GetString().Atof();
+      double xSection_scaleDown = (static_cast<TObjString *>(subStrings->At(3)))->GetString().Atof();
+      double xSection_scaleUp   = (static_cast<TObjString *>(subStrings->At(4)))->GetString().Atof();
+      double xSection_pdfDown   = (static_cast<TObjString *>(subStrings->At(5)))->GetString().Atof();
+      double xSection_pdfUp     = (static_cast<TObjString *>(subStrings->At(6)))->GetString().Atof();
+      double xSectionErr        = TMath::Sqrt(
+         0.5*(square(xSection_central - xSection_scaleDown) + square(xSection_scaleUp - xSection_central)) 
+       + 0.5*(square(xSection_central - xSection_pdfDown  ) + square(xSection_pdfUp   - xSection_central)));
+      std::cout << "xSection[" << binEdgeLo << "-" << binEdgeHi << "] = " << xSection_central << " +/- " << xSectionErr << std::endl;
+      //assert(idxBin < numBins);
+      if ( idxBin < numBins ) {
+        xSections[idxBin]         = xSection_central;
+        xSectionsErr[idxBin]      = xSectionErr;
+      }
+      ++idxBin;
+    }
+  }
+  inputFile.close();
+}
+
+void process(const std::string& era, 
+             TH1* histogram, TH1* histogram_fine_binning, 
+             TH1* histogram_theory, 
+             const std::string& outputFileName)
+{
+  assert(histogram->GetNbinsX() == histogram_theory->GetNbinsX());
+  int numBins = histogram->GetXaxis()->GetNbins();
+
   double sum_histogram = 0.;
-  double sum_xSections = 0.;
+  double sum_histogram_theory = 0.;
   for ( int idxBin = 0; idxBin < numBins; ++idxBin ) 
   {
     sum_histogram += histogram->GetBinContent(idxBin + 1); // CV: leftmost bin of TH1 has index 1 (index 0 corresponds to the underflow bin)
-    sum_xSections += xSections[idxBin];
+    sum_histogram_theory += histogram_theory->GetBinContent(idxBin + 1);
   }
 
   TGraphAsymmErrors* graph = new TGraphAsymmErrors(numBins);
   for ( int idxBin = 0; idxBin < numBins; ++idxBin ) 
   {
-    double xMin_idxBin = binning[idxBin];
-    double xMax_idxBin = binning[idxBin + 1];
-    assert(TMath::Abs(histogram->GetXaxis()->GetBinLowEdge(idxBin) - xMin_idxBin) < 1.e-3);
-    assert(TMath::Abs(histogram->GetXaxis()->GetBinUpEdge(idxBin)  - xMax_idxBin) < 1.e-3);
+    double xMin_idxBin = histogram->GetXaxis()->GetBinLowEdge(idxBin + 1);
+    double xMax_idxBin = histogram->GetXaxis()->GetBinUpEdge(idxBin + 1);
+    assert(TMath::Abs(histogram_theory->GetXaxis()->GetBinLowEdge(idxBin) - xMin_idxBin) < 1.e-3);
+    assert(TMath::Abs(histogram_theory->GetXaxis()->GetBinUpEdge(idxBin)  - xMax_idxBin) < 1.e-3);    
     histogram_fine_binning->GetXaxis()->SetRangeUser(xMin_idxBin, xMax_idxBin);
     double graph_x = histogram_fine_binning->GetMean();
-    double graph_y = (xSections[idxBin]/sum_xSections)/(histogram->GetBinContent(idxBin + 1)/sum_histogram);
+    double graph_y = (histogram_theory->GetBinContent(idxBin + 1)/sum_histogram_theory)/(histogram->GetBinContent(idxBin + 1)/sum_histogram);
     graph->SetPoint(idxBin, graph_x, graph_y);
     double graphErrLo_x = graph_x - xMin_idxBin;
     double graphErrHi_x = xMax_idxBin - graph_x;
-    double graphErrLo_y = graph_y*(histogram->GetBinError(idxBin + 1)/histogram->GetBinContent(idxBin + 1));
-    //std::cout << "bin #" << idxBin + 1 << ": binContent = " << histogram->GetBinContent(idxBin + 1) << ", binError = " << histogram->GetBinError(idxBin + 1) << std::endl;
+    // sum statistical uncertainty on Powheg distribution
+    //  + systematic (scale + PDF) uncertainty on NNLO cross section
+    // in quadrature
+    double graphRelErr = TMath::Sqrt(
+       square(histogram->GetBinError(idxBin + 1)/histogram->GetBinContent(idxBin + 1))
+     + square(histogram_theory->GetBinError(idxBin + 1)/histogram_theory->GetBinContent(idxBin + 1)));
+    // CV: increase uncertainties by factor 3, 
+    //     in order for fit to better converges
+    const double fudgeFactor = 3.;
+    graphRelErr *= fudgeFactor;
+    double graphErrLo_y = graph_y*graphRelErr;
     double graphErrHi_y = graphErrLo_y;
     graph->SetPointError(idxBin, graphErrLo_x, graphErrHi_x, graphErrLo_y, graphErrHi_y);
   }
 
-  double xMin = binning[0];
-  double xMax = binning[numBins];
-  TF1* fitFunction = new TF1("fitFunction", "TMath::Exp([0] + [1]*x + [2]*x*x)", xMin, xMax); 
-  graph->Fit(fitFunction, "W");
-  std::cout << "Era = '" << era << "': par0 = " << fitFunction->GetParameter(0) << ", par1 = " << fitFunction->GetParameter(1) << std::endl;
+  double xMin = histogram->GetXaxis()->GetXmin();
+  double xMax = histogram->GetXaxis()->GetXmax();
+
+  TF1* fitFunction1 = new TF1("fitFunction1", "TMath::Exp([0] + [1]*x + [2]*x*x)", xMin, xMax); 
+  graph->Fit(fitFunction1, "N");
+  std::cout << "Era = '" << era << "': par0 = " << fitFunction1->GetParameter(0) << ", par1 = " << fitFunction1->GetParameter(1) << std::endl;
+
+  TF1* fitFunction2 = new TF1("fitFunction2", "TMath::Exp([0] + [1]*x + [2]*x*x + [3]/(x + [4]))", xMin, xMax); 
+  graph->Fit(fitFunction2, "N");
 
   TCanvas* canvas = new TCanvas("canvas", "canvas", 800, 600);
   canvas->SetFillColor(10);
@@ -90,7 +156,7 @@ void process(const std::string& era, TH1* histogram, TH1* histogram_fine_binning
   TH1* dummyHistogram = new TH1D("dummyHistogram", "dummyHistogram", 10, xMin, xMax);
   dummyHistogram->SetStats(false);
   dummyHistogram->SetTitle("");
-  dummyHistogram->SetMinimum(0.5);
+  dummyHistogram->SetMinimum(0.3);
   dummyHistogram->SetMaximum(1.5);
 
   TAxis* xAxis = dummyHistogram->GetXaxis();
@@ -105,13 +171,18 @@ void process(const std::string& era, TH1* histogram, TH1* histogram_fine_binning
 
   dummyHistogram->Draw("axis");
 
-  fitFunction->SetLineColor(2);
-  fitFunction->SetLineWidth(2);
-  fitFunction->Draw("same");
+  fitFunction1->SetLineColor(1);
+  fitFunction1->SetLineWidth(1);
+  fitFunction1->Draw("same");
 
-  TF1* fitFunction_Top_PAG = new TF1("fitFunction_Top_PAG", "TMath::Exp([0] - [1]*x)", xMin, xMax); 
-  fitFunction_Top_PAG->SetParameter(0, 0.0615);
-  fitFunction_Top_PAG->SetParameter(1, 0.0005);
+  fitFunction2->SetLineColor(1);
+  fitFunction2->SetLineWidth(2);
+  fitFunction2->SetLineStyle(7);
+  fitFunction2->Draw("same");
+
+  TF1* fitFunction_Top_PAG = new TF1("fitFunction_Top_PAG", "TMath::Exp([0] + [1]*TMath::Min(550., x))", xMin, xMax); 
+  fitFunction_Top_PAG->SetParameter(0,  0.0615);
+  fitFunction_Top_PAG->SetParameter(1, -0.0005);
   
   fitFunction_Top_PAG->SetLineColor(4);
   fitFunction_Top_PAG->SetLineWidth(2);
@@ -125,12 +196,13 @@ void process(const std::string& era, TH1* histogram, TH1* histogram_fine_binning
   graph->SetLineWidth(1);
   graph->Draw("P");
 
-  TLegend* legend = new TLegend(0.61, 0.71, 0.89, 0.89, "", "brNDC"); 
+  TLegend* legend = new TLegend(0.58, 0.56, 0.89, 0.89, "", "brNDC"); 
   legend->SetBorderSize(0);
   legend->SetFillColor(0);
   legend->SetTextSize(0.045);
-  legend->AddEntry(graph, "Our ratio", "p");
-  legend->AddEntry(fitFunction, "Our fit", "l");
+  legend->AddEntry(graph, "HIG-19-008 ratio", "p");
+  legend->AddEntry(fitFunction1, "HIG-19-008 fit1", "l");
+  legend->AddEntry(fitFunction2, "HIG-19-008 fit2", "l");
   legend->AddEntry(fitFunction_Top_PAG, "Fit by Top PAG", "l");
   legend->Draw();
 
@@ -142,9 +214,10 @@ void process(const std::string& era, TH1* histogram, TH1* histogram_fine_binning
   canvas->Print(std::string(outputFileName_plot).append(".png").data());
   canvas->Print(std::string(outputFileName_plot).append(".pdf").data());
 
-  delete graph;
   delete dummyHistogram;
-  delete fitFunction;
+  delete graph;
+  delete fitFunction1;
+  delete fitFunction2;
   delete fitFunction_Top_PAG;
   delete legend;
   delete canvas;
@@ -169,42 +242,86 @@ void compTopPtReweighting()
   inputFileNames["2017"] = "analyze_genTopPt_2017.root";
   inputFileNames["2018"] = "analyze_genTopPt_2018.root";
   
-  std::string histogramName = "genTopQuark_pt_binning1";
+  std::string histogramName = "genTopQuark_pt_binning3";
   std::string histogramName_fine_binning = "genTopQuark_pt_fine_binning";
 
 //--- define NNLO cross-sections (with electroweak corrections),
 //    taken from arXiv:1705.04105
-//   (downloaded from http://www.precision.hep.phy.cam.ac.uk/wp-content/results/ttbar-nnloQCD-nloEW/LHC13-ttbar-CMS_bin-ancillary-files-172_5.tar.gz,
-//    using the file LHC13-CMS-mt_172.5-PTavt-MT2-NNPDF31-pheno.dat;
-//    the binning in top pT is defined in TOP-16-011, shown in Fig. 26 of CMS AN-2015/309 v7)
-  int numBins = 6;
+//   (downloaded from http://www.precision.hep.phy.cam.ac.uk/wp-content/results/ttbar-nnloQCD-nloEW/ttbar-LHC13-LHC8-NNLOQCD+NLOEW.tar.gz,
+//    using the file LHC13-PTavt-MT2-NNPDF30QED-pheno.dat;
+//    the binning in top pT is defined in that file)
+  int numBins = 26;
   Float_t* binning = new Float_t[numBins + 1];
-  binning[0] =   0.;
-  binning[1] =  65.;
-  binning[2] = 125.;
-  binning[3] = 200.;
-  binning[4] = 290.;
-  binning[5] = 400.;
-  binning[6] = 550.;
+  binning[0]  =    0.;
+  binning[1]  =   50.;
+  binning[2]  =  100.;
+  binning[3]  =  150.;
+  binning[4]  =  200.;
+  binning[5]  =  250.;
+  binning[6]  =  300.;
+  binning[7]  =  350.;
+  binning[8]  =  400.;
+  binning[9]  =  450.;
+  binning[10] =  500.;
+  binning[11] =  550.;
+  binning[12] =  600.;
+  binning[13] =  650.;
+  binning[14] =  700.;
+  binning[15] =  800.;
+  binning[16] =  900.;
+  binning[17] = 1000.;
+  binning[18] = 1100.;
+  binning[19] = 1200.;
+  binning[20] = 1400.;
+  binning[21] = 1600.;
+  binning[22] = 1800.;
+  binning[23] = 2000.;
+  binning[24] = 2200.;
+  binning[25] = 2600.;
+  binning[26] = 3000.;
 
-  Float_t* xSections = new Float_t[numBins];
-  xSections[0] = 2.1053398799999999e+02;
-  xSections[1] = 3.0159929299999999e+02;
-  xSections[2] = 2.0868522600000000e+02;
-  xSections[3] = 7.8802675300000004e+01;
-  xSections[4] = 2.2525836999999999e+01;
-  xSections[5] = 5.6874119900000002e+00;
+  Float_t* xSections    = new Float_t[numBins];
+  Float_t* xSectionsErr = new Float_t[numBins];
+  std::string inputFilePath_xSection = "/home/veelken/CMSSW_10_2_10_centOS/CMSSW_10_2_10/src/tthAnalysis/HiggsToTauTau/macros/";
+  std::string inputFileName_xSection = "LHC13-PTavt-MT2-NNPDF30QED-pheno.dat";
+  std::string inputFileName_xSection_full = inputFilePath_xSection;
+  if ( inputFileName_xSection_full.find_last_of("/") != (inputFileName_xSection_full.size() - 1) ) inputFileName_xSection_full.append("/");
+  inputFileName_xSection_full.append(inputFileName_xSection);
+  read_xSection(inputFileName_xSection_full, numBins, binning, xSections, xSectionsErr);
+  TH1* histogram_theory = new TH1D("histogram_theory", "histogram_theory", numBins, binning);
+  for ( int idxBin = 0; idxBin < numBins; ++idxBin ) {
+    histogram_theory->SetBinContent(idxBin + 1, xSections[idxBin]);
+    histogram_theory->SetBinError(idxBin + 1, xSectionsErr[idxBin]);
+  }
+  histogram_theory->Rebin(2);
+
+  TH1* histogram_allEras = nullptr;
+  TH1* histogram_fine_binning_allEras = nullptr;
 
   for ( std::vector<std::string>::const_iterator era = eras.begin();
 	era != eras.end(); ++era ) {
     TFile* inputFile = openFile(inputFilePath, inputFileNames[*era]);
 
     TH1* histogram = loadHistogram(inputFile, histogramName);
+    histogram->Rebin(2);
+    if ( !histogram_allEras ) {
+      histogram_allEras = (TH1*)histogram->Clone("histogram_allEras");
+    } else {
+      histogram_allEras->Add(histogram);
+    }
     TH1* histogram_fine_binning = loadHistogram(inputFile, histogramName_fine_binning);
+    if ( !histogram_fine_binning_allEras ) {
+      histogram_fine_binning_allEras = (TH1*)histogram_fine_binning->Clone("histogram_fine_binning_allEras");
+    } else {
+      histogram_fine_binning_allEras->Add(histogram_fine_binning);
+    }
 
     std::string outputFileName = Form("compTopPtReweighting_%s.png", era->data());
-    process(*era, histogram, histogram_fine_binning, numBins, binning, xSections, outputFileName);
+    process(*era, histogram, histogram_fine_binning, histogram_theory, outputFileName);
 
     delete inputFile;
   }
+
+  std::string outputFileName_allEras = Form("compTopPtReweighting_allEras.png");
+  process("allEras", histogram_allEras, histogram_fine_binning_allEras, histogram_theory, outputFileName_allEras);
 }

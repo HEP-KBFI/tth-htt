@@ -45,17 +45,19 @@ EvtWeightRecorder::EvtWeightRecorder(const std::vector<std::string> & central_or
 }
 
 double
-EvtWeightRecorder::get(const std::string & central_or_shift) const
+EvtWeightRecorder::get(const std::string & central_or_shift,
+                       const std::string & bin) const
 {
-  return (isMC_ ? get_inclusive(central_or_shift) * get_data_to_MC_correction(central_or_shift) * prescale_ : 1.) *
+  return (isMC_ ? get_inclusive(central_or_shift, bin) * get_data_to_MC_correction(central_or_shift) * prescale_ : 1.) *
          get_FR(central_or_shift) * chargeMisIdProb_
   ;
 }
 
 double
-EvtWeightRecorder::get_inclusive(const std::string & central_or_shift) const
+EvtWeightRecorder::get_inclusive(const std::string & central_or_shift,
+                                 const std::string & bin) const
 {
-  return isMC_ ? get_genWeight() * get_bmWeight() * get_auxWeight(central_or_shift) * get_lumiScale(central_or_shift) *
+  return isMC_ ? get_genWeight() * get_bmWeight() * get_auxWeight(central_or_shift) * get_lumiScale(central_or_shift, bin) *
                  get_nom_tH_weight(central_or_shift) * get_puWeight(central_or_shift) *
                  get_l1PreFiringWeight(central_or_shift) * get_lheScaleWeight(central_or_shift) *
                  get_dy_rwgt(central_or_shift) * get_rescaling() * get_psWeight(central_or_shift)
@@ -92,11 +94,16 @@ EvtWeightRecorder::get_auxWeight(const std::string & central_or_shift) const
 }
 
 double
-EvtWeightRecorder::get_lumiScale(const std::string & central_or_shift) const
+EvtWeightRecorder::get_lumiScale(const std::string & central_or_shift,
+                                 const std::string & bin) const
 {
   if(isMC_ && lumiScale_.count(central_or_shift))
   {
-    return lumiScale_.at(central_or_shift);
+    if(! lumiScale_.at(central_or_shift).count(bin))
+    {
+      throw cmsException(this, __func__, __LINE__) << "No such bin found in lumiscale map: '" << bin << '\'';
+    }
+    return lumiScale_.at(central_or_shift).at(bin);
   }
   return 1.;
 }
@@ -428,8 +435,14 @@ EvtWeightRecorder::record_lumiScale(const edm::VParameterSet & lumiScales)
   for(const edm::ParameterSet & lumiScale: lumiScales)
   {
     const std::string central_or_shift = lumiScale.getParameter<std::string>("central_or_shift");
+    const std::string bin = lumiScale.exists("bin") ? lumiScale.getParameter<std::string>("bin") : "";
     const double nof_events = lumiScale.getParameter<double>("lumi");
-    lumiScale_[central_or_shift] = nof_events;
+    if(! lumiScale_.count(central_or_shift))
+    {
+      lumiScale_[central_or_shift] = {};
+    }
+    assert(! lumiScale_.at(central_or_shift).count(bin));
+    lumiScale_[central_or_shift][bin] = nof_events;
   }
   assert(lumiScale_.count(central_or_shift_));
   for(const std::string & central_or_shift: central_or_shifts_)

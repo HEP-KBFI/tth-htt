@@ -2238,7 +2238,9 @@ int main(int argc, char* argv[])
           {
             if(htxs_category & kw.second)
             {
-              selHistManager->evt_htxs_[kv.first][kw.first]->fillHistograms(fillVariables);
+              EvtHistManager_2lss_1tau_Input fillVariables_htxs = fillVariables;
+              fillVariables_htxs.evtWeight = evtWeightRecorder.get(central_or_shift, kw.first);
+              selHistManager->evt_htxs_[kv.first][kw.first]->fillHistograms(fillVariables_htxs);
             }
           }
 
@@ -2256,7 +2258,9 @@ int main(int argc, char* argv[])
               {
                 if(htxs_category & kw.second)
                 {
-                  selHistManager->evt_htxs_in_decayModes_[kv.first][decayModeStr][kw.first]->fillHistograms(fillVariables);
+                  EvtHistManager_2lss_1tau_Input fillVariables_htxs = fillVariables;
+                  fillVariables_htxs.evtWeight = evtWeightRecorder.get(central_or_shift, kw.first);
+                  selHistManager->evt_htxs_in_decayModes_[kv.first][decayModeStr][kw.first]->fillHistograms(fillVariables_htxs);
                 }
               }
             }

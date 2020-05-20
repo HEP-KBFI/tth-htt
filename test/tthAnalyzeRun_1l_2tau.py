@@ -74,8 +74,8 @@ if split_trigger_sys == 'yes':
     del systematics.internal[systematics.internal.index(trigger_sys)]
     del systematics.full[systematics.full.index(trigger_sys)]
 if split_trigger_sys in [ 'yes', 'both' ]:
-  systematics.internal.extend(systematics.triggerSF_1l1tau)
-  systematics.full.extend(systematics.triggerSF_1l1tau)
+  systematics.internal.extend(systematics.triggerSF_1l2tau)
+  systematics.full.extend(systematics.triggerSF_1l2tau)
 
 # Use the arguments
 central_or_shifts = []
