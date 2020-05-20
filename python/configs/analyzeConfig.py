@@ -1734,6 +1734,21 @@ class analyzeConfig(object):
             lines_makefile.append("")
         self.make_dependency_hadd_stage2 = " ".join([ "phony_addBackgrounds_sum", make_target ])
 
+    def addToMakefile_addSysTT(self, lines_makefile, make_target, make_dependency):
+      if make_target not in self.phoniesToAdd:
+            self.phoniesToAdd.append(make_target)
+      lines_makefile.append("%s: %s" % (make_target, make_dependency))
+      if self.is_sbatch:
+        lines_makefile.append("\t%s %s" % ("python", self.sbatchFile_addSysTT))
+      else:
+        for job in self.jobOptions_addSysTT.values():
+          lines_makefile.append("\t%s %s &> %s" % (self.executable_addSysTT, job['cfgFile_modified'], job['logFile']))
+      lines_makefile.append("")
+      for job in self.jobOptions_addSysTT.values():
+        self.filesToClean.append(job['outputFile'])
+
+                            
+
     def addToMakefile_hadd_stage2(self, lines_makefile, make_target = "phony_hadd_stage2", make_dependency = None, 
                                   max_input_files_per_job = 2, max_mem = ''):
         """Adds the commands to Makefile that are necessary for building the final histogram file.
