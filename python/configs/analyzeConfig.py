@@ -1740,14 +1740,17 @@ class analyzeConfig(object):
       lines_makefile.append("%s: %s" % (make_target, make_dependency))
       if self.is_sbatch:
         lines_makefile.append("\t%s %s" % ("python", self.sbatchFile_addSysTT))
+        lines_makefile.append("")
+        for job in self.jobOptions_addSysTT.values():
+          lines_makefile.append("%s: %s" % (job['outputFile'], make_target))
+          lines_makefile.append("")
       else:
         for job in self.jobOptions_addSysTT.values():
           lines_makefile.append("\t%s %s &> %s" % (self.executable_addSysTT, job['cfgFile_modified'], job['logFile']))
       lines_makefile.append("")
       for job in self.jobOptions_addSysTT.values():
         self.filesToClean.append(job['outputFile'])
-
-                            
+        self.targets.append(job['outputFile'])
 
     def addToMakefile_hadd_stage2(self, lines_makefile, make_target = "phony_hadd_stage2", make_dependency = None, 
                                   max_input_files_per_job = 2, max_mem = ''):
