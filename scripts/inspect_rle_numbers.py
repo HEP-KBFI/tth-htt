@@ -224,10 +224,17 @@ def validate_regions(rles):
       has_errors_sample = False
       for central_or_shift in validation_set[sample_name]:
         for rle in validation_set[sample_name][central_or_shift]:
-          if len(validation_set[sample_name][central_or_shift][rle]) > 1:
+          regions = validation_set[sample_name][central_or_shift][rle]
+          if len(regions) > 1:
+            if 'hh' in channel and any(len(set(
+                  region.replace('_hadTau{}'.format(hadTauCharge), '').replace('_lep{}'.format(lepCharge), '').replace('_sum{}'.format(sumCharge), '')
+                  for region in regions
+                )) == 1 for hadTauCharge in [ 'SS', 'OS' ] for lepCharge in [ 'SS', 'OS' ] for sumCharge in [ 'SS', 'OS' ]
+               ):
+              continue
             logging.error(
               "Found duplicates in channel {} and sample {} for event {}: regions {}".format(
-                channel, sample_name, rle, ', '.join(validation_set[sample_name][central_or_shift][rle])
+                channel, sample_name, rle, ', '.join(regions)
               )
             )
             has_errors_sample = True
