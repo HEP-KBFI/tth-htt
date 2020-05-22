@@ -304,7 +304,7 @@ class analyzeConfig(object):
         self.triggers = triggers
         self.triggerTable = Triggers(self.era)
         self.do_sync = do_sync
-        self.topPtRwgtChoice = "Quadratic" # alternatives: "TOP16011", "Linear"
+        self.topPtRwgtChoice = "Quadratic" # alternatives: "TOP16011", "Linear", "Quadratic", "HighPt"
         self.do_stxs = do_stxs
 
         samples_to_stitch = []
