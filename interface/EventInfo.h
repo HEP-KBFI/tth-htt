@@ -31,7 +31,6 @@ public:
   Float_t   pileupWeight;        ///< pile-up weight (only if MC)
   Float_t   pileupWeightUp;      ///< pile-up weight up-shifted (only if MC)
   Float_t   pileupWeightDown;    ///< pile-up weight down-shifted (only if MC)
-  Float_t   PV_ndof;             ///< number of degree of freedom of the main primary vertex
   Int_t     genDiHiggsDecayMode; ///< Decay mode of both Higgs bosons (only if HH signal MC)
   Float_t   gen_mHH;             ///< LHE parton-level di-Higgs mass
   Float_t   gen_cosThetaStar;    ///< LHE parton-level cos(theta*) variable

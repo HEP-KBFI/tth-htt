@@ -481,6 +481,15 @@ class analyzeConfig(object):
             self.kt_weights += [
               "kt_" + str("{:3.2f}".format(kt_value)).replace(".", "p").replace("-", "m")
             ]
+        self.kl_weights = []
+        self.kl_scan_file = "hhAnalysis/multilepton/data/kl_scan.dat"
+        with open(os.path.join(os.environ["CMSSW_BASE"], "src", self.kl_scan_file), "r") as kl_file:
+          for line in kl_file:
+            kl_value = float(line.split()[0])
+            self.kl_weights += [
+              "kl_" + str("{:3.2f}".format(kl_value)).replace(".", "p").replace("-", "m")
+            ]
+        self.BM_weights = [ 'SM' ] + [ 'BM{}'.format(idx) for idx in range(1, 13) ]
 
         self.jobOptions_analyze = {}
         self.inputFiles_hadd_stage1 = {}
@@ -488,7 +497,9 @@ class analyzeConfig(object):
         self.cfgFile_copyHistograms = os.path.join(self.template_dir, "copyHistograms_cfg.py")
         self.jobOptions_copyHistograms = {}
         self.executable_copyHistograms = 'copyHistograms_recursively'
+        self.cfgFile_addSysTT = os.path.join(self.template_dir, "addSysTT_cfg.py")
         self.cfgFile_addBackgrounds = os.path.join(self.template_dir, "addBackgrounds_cfg.py")
+        self.jobOptions_addSysTT = {}
         self.jobOptions_addBackgrounds = {}
         self.jobOptions_addBackgrounds_sum = {}
         self.inputFiles_hadd_stage1_5 = {}
@@ -525,6 +536,7 @@ class analyzeConfig(object):
         self.num_jobs['analyze'] = 0
         self.num_jobs['hadd'] = 0
         self.num_jobs['copyHistograms'] = 0
+        self.num_jobs['addSysTT'] = 0
         self.num_jobs['addBackgrounds'] = 0
         self.num_jobs['addFakes'] = 0
 
@@ -648,10 +660,13 @@ class analyzeConfig(object):
           else:
             raise ValueError("Uncrecongizable sample category: %s" % sample_info[sample_category_to_check])
           jobOptions['hhWeight_cfg.denominator_file'] = 'hhAnalysis/{}/data/denom_{}.root'.format(hhWeight_base, self.era)
-          #jobOptions['hhWeight_cfg.histtitle'] = sample_info["sample_category_hh"]
           jobOptions['hhWeight_cfg.histtitle'] = sample_info[sample_category_to_check]
-          jobOptions['hhWeight_cfg.ktScan_file'] = self.kt_scan_file
-          jobOptions['hhWeight_cfg.do_ktscan'] = 'hh' in self.channel
+          jobOptions['hhWeight_cfg.do_ktscan'] = not ('hh' in self.channel or 'ctrl' in self.channel)
+          if jobOptions['hhWeight_cfg.do_ktscan']:
+            jobOptions['hhWeight_cfg.ktScan_file'] = self.kt_scan_file
+          else:
+            jobOptions['hhWeight_cfg.klScan_file'] = self.kl_scan_file
+
           jobOptions['hhWeight_cfg.apply_rwgt'] = 'hh' in self.channel
 
         sample_category_ttbar = sample_info["sample_category"].replace("TT_", "")
@@ -945,6 +960,7 @@ class analyzeConfig(object):
             'hhWeight_cfg.denominator_file',
             'hhWeight_cfg.histtitle',
             'hhWeight_cfg.do_ktscan',
+            'hhWeight_cfg.klScan_file',
             'hhWeight_cfg.ktScan_file',
             'hhWeight_cfg.apply_rwgt',
             'minNumJets',
@@ -1194,6 +1210,24 @@ class analyzeConfig(object):
         else:
             lines.append("process.addBackgrounds.sysShifts = cms.vstring(%s)" % self.central_or_shifts)
         create_cfg(self.cfgFile_addBackgrounds, jobOptions['cfgFile_modified'], lines)
+
+    def createCfg_addSysTT(self, jobOptions):
+        """Create python configuration file for the addBackgrounds executable (sum either all "fake" or all "non-fake" contributions)
+           Args:
+             inputFiles: input file (the ROOT file produced by hadd_stage1_5)
+             outputFile: output file of the job
+        """
+        lines = []
+        lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
+        lines.append("process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(jobOptions['outputFile']))
+        lines.append("process.addSysTT.categories = cms.vstring(%s)" % jobOptions['categories'])
+        lines.append("process.addSysTT.process_output = cms.string('%s')" % jobOptions['process_output'])
+        if 'histogramsToCopy' in jobOptions.keys():
+            lines.append("process.addSysTT.histogramsToCopy = cms.vstring(%s)" % jobOptions['histogramsToCopy'])
+        if 'sysShifts' in jobOptions.keys():
+            lines.append("process.addSysTT.sysShifts = cms.vstring(%s)" % jobOptions['sysShifts'])
+        create_cfg(self.cfgFile_addSysTT, jobOptions['cfgFile_modified'], lines)
+
 
     def createCfg_addFakes(self, jobOptions):
         """Create python configuration file for the addBackgroundLeptonFakes executable (data-driven estimation of 'Fakes' backgrounds)
@@ -1488,6 +1522,11 @@ class analyzeConfig(object):
         """
         self.num_jobs['copyHistograms'] += self.createScript_sbatch(executable, sbatchFile, jobOptions, min_file_size = 5000)
 
+    def createScript_sbatch_addSysTT(self, executable, sbatchFile, jobOptions):
+        """Creates the python script necessary to submit the 'addSysTT' jobs to the batch system                                                                                                      
+        """
+        self.num_jobs['addSysTT'] += self.createScript_sbatch(executable, sbatchFile, jobOptions, min_file_size = 5000)
+
     def createScript_sbatch_addBackgrounds(self, executable, sbatchFile, jobOptions):
         """Creates the python script necessary to submit the 'addBackgrounds' jobs to the batch system
         """
@@ -1694,6 +1733,24 @@ class analyzeConfig(object):
             lines_makefile.append("%s: %s" % (make_target, "phony_addFlips"))
             lines_makefile.append("")
         self.make_dependency_hadd_stage2 = " ".join([ "phony_addBackgrounds_sum", make_target ])
+
+    def addToMakefile_addSysTT(self, lines_makefile, make_target, make_dependency):
+      if make_target not in self.phoniesToAdd:
+            self.phoniesToAdd.append(make_target)
+      lines_makefile.append("%s: %s" % (make_target, make_dependency))
+      if self.is_sbatch:
+        lines_makefile.append("\t%s %s" % ("python", self.sbatchFile_addSysTT))
+        lines_makefile.append("")
+        for job in self.jobOptions_addSysTT.values():
+          lines_makefile.append("%s: %s" % (job['outputFile'], make_target))
+          lines_makefile.append("")
+      else:
+        for job in self.jobOptions_addSysTT.values():
+          lines_makefile.append("\t%s %s &> %s" % (self.executable_addSysTT, job['cfgFile_modified'], job['logFile']))
+      lines_makefile.append("")
+      for job in self.jobOptions_addSysTT.values():
+        self.filesToClean.append(job['outputFile'])
+        self.targets.append(job['outputFile'])
 
     def addToMakefile_hadd_stage2(self, lines_makefile, make_target = "phony_hadd_stage2", make_dependency = None, 
                                   max_input_files_per_job = 2, max_mem = ''):

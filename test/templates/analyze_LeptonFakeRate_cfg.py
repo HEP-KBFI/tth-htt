@@ -73,6 +73,7 @@ process.analyze_LeptonFakeRate = cms.PSet(
     branchName_jets = cms.string('Jet'),
     branchName_met = cms.string('MET'),
     branchName_genmet = cms.string('GenMET'),
+    branchName_vertex = cms.string('PV'),
 
     branchName_genTauLeptons = cms.string('GenTau'),
     branchName_genLeptons = cms.string('GenLep'),

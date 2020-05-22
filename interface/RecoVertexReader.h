@@ -6,7 +6,6 @@
 
 // forward declarations
 class TTree;
-class EventInfo;
 
 class RecoVertexReader
   : public ReaderBase

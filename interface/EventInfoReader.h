@@ -43,7 +43,6 @@ public:
   const std::string branchName_run;
   const std::string branchName_lumi;
   const std::string branchName_event;
-  const std::string branchName_PV_ndof;
   const std::string branchName_genHiggsDecayMode;
   const std::string branchName_genWeight;
   const std::string branchName_LHEReweightingWeight;

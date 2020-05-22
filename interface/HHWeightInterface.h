@@ -12,7 +12,7 @@ class TH2;
 class HHWeightInterface
 {
 public:
-  HHWeightInterface(const edm::ParameterSet & cfg, bool isHH_analysis = false);
+  HHWeightInterface(const edm::ParameterSet & cfg);
   ~HHWeightInterface();
 
   /**
