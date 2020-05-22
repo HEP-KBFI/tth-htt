@@ -2,7 +2,7 @@
 #define tthAnalysis_HiggsToTauTau_Data_to_MC_CorrectionInterface_2016_h
 
 #include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface_Base.h"
-#include "tthAnalysis/HiggsToTauTau/interface/lutAuxFunctions.h" // lutWrapperBase, vLutWrapperBase
+#include "tthAnalysis/HiggsToTauTau/interface/lutAuxFunctions.h" // vLutWrapperBase
 
 class Data_to_MC_CorrectionInterface_2016
   : virtual public Data_to_MC_CorrectionInterface_Base
@@ -18,7 +18,7 @@ public:
   //-----------------------------------------------------------------------------
 
 protected:
-  // data/MC corrections for trigger efficiencies in 2016 data
+  // data/MC corrections for efficiencies of single lepton triggers in 2016 data
   vLutWrapperBase effTrigger_1e_data_;
   vLutWrapperBase effTrigger_1e_mc_;
   vLutWrapperBase effTrigger_1m_data_;

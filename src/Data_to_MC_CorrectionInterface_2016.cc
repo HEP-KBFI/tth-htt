@@ -1,5 +1,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface_2016.h"
 
+#include "tthAnalysis/HiggsToTauTau/interface/lutAuxFunctions.h" // lutWrapperTH2
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // as_integer()
 #include "tthAnalysis/HiggsToTauTau/interface/data_to_MC_corrections_auxFunctions.h" // aux::
@@ -120,29 +121,8 @@ Data_to_MC_CorrectionInterface_2016::Data_to_MC_CorrectionInterface_2016(const e
     ));
   }
 
-  const std::vector<double> etaBinEdges_1m = { -1., 0.9, 1.2, 2.1 };
-  assert(etaBinEdges_1m.size() > 0);
-  const std::size_t numEtaBins_1m = etaBinEdges_1m.size() - 1;
-  for(std::size_t idxEtaBin = 0; idxEtaBin < numEtaBins_1m; ++idxEtaBin)
-  {
-    const double etaMin = etaBinEdges_1m[idxEtaBin];
-    const double etaMax = etaBinEdges_1m[idxEtaBin + 1];
-    const std::string etaBinLabel = aux::getEtaBinLabel(etaMin, etaMax);
-    effTrigger_1m_data_.push_back(new lutWrapperTGraph(
-      inputFiles_,
-      "tthAnalysis/HiggsToTauTau/data/triggerSF/2016/Muon_Mu22OR_eta2p1_eff.root",
-      Form("ZMassEta%s_Data", etaBinLabel.data()),
-      lut::kXptYabsEta,
-      -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
-    ));
-    effTrigger_1m_mc_.push_back(new lutWrapperTGraph(
-      inputFiles_,
-      "tthAnalysis/HiggsToTauTau/data/triggerSF/2016/Muon_Mu22OR_eta2p1_eff.root",
-      Form("ZMassEta%s_MC", etaBinLabel.data()),
-      lut::kXptYabsEta,
-      -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
-    ));
-  }
+  aux::loadTriggerEff_1e_2016(effTrigger_1e_data_, effTrigger_1e_mc_, inputFiles_);
+  aux::loadTriggerEff_1m_2016(effTrigger_1m_data_, effTrigger_1m_mc_, inputFiles_);
 
   if(applyHadTauSF_)
   {
@@ -164,22 +144,42 @@ Data_to_MC_CorrectionInterface_2016::getSF_leptonTriggerEff(TriggerSFsys central
   double sf = 1.;
   double sfErr = 0.;
 
-  const double lepton_cone_pt_sublead = std::min(lepton_cone_pt_[0], lepton_cone_pt_[1]);
-  if(numElectrons_ == 2 && numMuons_ == 0)
+  if((numElectrons_ + numMuons_) == 1)
   {
-    if  (lepton_cone_pt_sublead >= 25.) { sf = 1.000; }
-    else                                { sf = 0.980; }
-    sfErr = 2.;
+    if(numElectrons_ == 1)
+    {
+      double eff_data = get_from_lut(effTrigger_1e_data_, lepton_pt_[0], lepton_eta_[0], isDEBUG_);
+      double eff_mc   = get_from_lut(effTrigger_1e_mc_,   lepton_pt_[0], lepton_eta_[0], isDEBUG_);
+      sf = aux::compSF(eff_data, eff_mc);
+      sfErr = 2.;
+    } 
+    else if(numMuons_ == 1)
+    {
+      double eff_data = get_from_lut(effTrigger_1m_data_, lepton_pt_[0], lepton_eta_[0], isDEBUG_);
+      double eff_mc   = get_from_lut(effTrigger_1m_mc_,   lepton_pt_[0], lepton_eta_[0], isDEBUG_);
+      sf = aux::compSF(eff_data, eff_mc);
+      sfErr = 2.;
+    } else assert(0);
   }
-  else if(numElectrons_ == 1 && numMuons_ == 1)
+  else if((numElectrons_ + numMuons_) == 2)
   {
-    sf = 1.000;
-    sfErr = 1.;
-  }
-  else if(numElectrons_ == 0 && numMuons_ == 2)
-  {
-    sf = 0.990;
-    sfErr = 1.;
+    const double lepton_cone_pt_sublead = std::min(lepton_cone_pt_[0], lepton_cone_pt_[1]);
+    if(numElectrons_ == 2 && numMuons_ == 0)
+    {
+      if  (lepton_cone_pt_sublead >= 25.) { sf = 1.000; }
+      else                                { sf = 0.980; }
+      sfErr = 2.;
+    }
+    else if(numElectrons_ == 1 && numMuons_ == 1)
+    {
+      sf = 1.000;
+      sfErr = 1.;
+    }
+    else if(numElectrons_ == 0 && numMuons_ == 2)
+    {
+      sf = 0.990;
+      sfErr = 1.;
+    } else assert(0);
   }
   else if((numElectrons_ + numMuons_) >= 3)
   {

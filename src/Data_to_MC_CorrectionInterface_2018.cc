@@ -3,6 +3,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/lutAuxFunctions.h" // lutWrapperTH2
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // as_integer()
+#include "tthAnalysis/HiggsToTauTau/interface/data_to_MC_corrections_auxFunctions.h" // aux::
 
 #include "TauPOG/TauIDSFs/interface/TauIDSFTool.h" // TauIDSFTool
 
@@ -88,6 +89,9 @@ Data_to_MC_CorrectionInterface_2018::Data_to_MC_CorrectionInterface_2018(const e
     lut::kXabsEtaYpt
   ));
 
+  aux::loadTriggerEff_1e_2018(effTrigger_1e_data_, effTrigger_1e_mc_, inputFiles_);
+  aux::loadTriggerEff_1m_2018(effTrigger_1m_data_, effTrigger_1m_mc_, inputFiles_);
+
   if(applyHadTauSF_)
   {
     const std::string tauIDSFTool_era = "2018ReReco";
@@ -108,26 +112,46 @@ Data_to_MC_CorrectionInterface_2018::getSF_leptonTriggerEff(TriggerSFsys central
   double sf = 1.;
   double sfErr = 0.;
 
-  const double lepton_cone_pt_lead    = std::max(lepton_cone_pt_[0], lepton_cone_pt_[1]);
-  const double lepton_cone_pt_sublead = std::min(lepton_cone_pt_[0], lepton_cone_pt_[1]);
-  if(numElectrons_ == 2 && numMuons_ == 0)
+  if((numElectrons_ + numMuons_) == 1)
   {
-    if  (lepton_cone_pt_sublead >= 25.) { sf = 1.000; }
-    else                                { sf = 0.980; }
-    sfErr = 1.;
+    if(numElectrons_ == 1)
+    {
+      double eff_data = get_from_lut(effTrigger_1e_data_, lepton_pt_[0], lepton_eta_[0], isDEBUG_);
+      double eff_mc   = get_from_lut(effTrigger_1e_mc_,   lepton_pt_[0], lepton_eta_[0], isDEBUG_);
+      sf = aux::compSF(eff_data, eff_mc);
+      sfErr = 2.;
+    } 
+    else if(numMuons_ == 1)
+    {
+      double eff_data = get_from_lut(effTrigger_1m_data_, lepton_pt_[0], lepton_eta_[0], isDEBUG_);
+      double eff_mc   = get_from_lut(effTrigger_1m_mc_,   lepton_pt_[0], lepton_eta_[0], isDEBUG_);
+      sf = aux::compSF(eff_data, eff_mc);
+      sfErr = 2.;
+    } else assert(0);
   }
-  else if(numElectrons_ == 1 && numMuons_ == 1)
+  else if((numElectrons_ + numMuons_) == 2)
   {
-    if     (lepton_cone_pt_sublead >= 25.) { sf = 1.000; }
-    else                                   { sf = 0.980; }
-    sfErr = 1.;
-  }
-  else if(numElectrons_ == 0 && numMuons_ == 2)
-  {
-    if     (lepton_cone_pt_lead >= 70.) { sf = 0.980; }
-    else if(lepton_cone_pt_lead >= 40.) { sf = 0.995; }
-    else if(lepton_cone_pt_lead >= 15.) { sf = 1.010; }
-    sfErr = 1.;
+    const double lepton_cone_pt_lead    = std::max(lepton_cone_pt_[0], lepton_cone_pt_[1]);
+    const double lepton_cone_pt_sublead = std::min(lepton_cone_pt_[0], lepton_cone_pt_[1]);
+    if(numElectrons_ == 2 && numMuons_ == 0)
+    {
+      if  (lepton_cone_pt_sublead >= 25.) { sf = 1.000; }
+      else                                { sf = 0.980; }
+      sfErr = 1.;
+    }
+    else if(numElectrons_ == 1 && numMuons_ == 1)
+    {
+      if     (lepton_cone_pt_sublead >= 25.) { sf = 1.000; }
+      else                                   { sf = 0.980; }
+      sfErr = 1.;
+    }
+    else if(numElectrons_ == 0 && numMuons_ == 2)
+    {
+      if     (lepton_cone_pt_lead >= 70.) { sf = 0.980; }
+      else if(lepton_cone_pt_lead >= 40.) { sf = 0.995; }
+      else if(lepton_cone_pt_lead >= 15.) { sf = 1.010; }
+      sfErr = 1.;
+    } else assert(0);
   }
   else if((numElectrons_ + numMuons_) >= 3)
   {
