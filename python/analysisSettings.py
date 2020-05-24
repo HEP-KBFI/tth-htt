@@ -111,7 +111,7 @@ class systematics(object):
     width = [
       "widthx0p7", "widthx0p85", "widthx1p15", "widthx1p3",
     ]
-    full = hdamp + ue + cr + mtop + width
+    full = hdamp + cr + mtop + width # removed UE because its effect is very small
 
   class L1PreFiring_(object):
     up   = "CMS_ttHl_l1PreFireUp"
