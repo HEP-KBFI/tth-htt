@@ -1284,6 +1284,12 @@ class analyzeConfig(object):
         """
         assert(self.prep_dcard_processesToCopy)
         category_output = self.channel
+        central_or_shifts_modified = self.central_or_shifts
+        if 'hh' in category_output :
+          central_or_shift_remove = ["hdampUp", "hdampDown", 'QCDbased', 'GluonMove', 'erdON', 'mtop171p5', 'mtop173p5']
+          central_or_shifts_added = ["CMS_HHbbww_TT_hdampUp", "CMS_HHbbww_TT_hdampDown", "CMS_HHbbww_TT_crUp", "CMS_HHbbww_TT_crDown", "CMS_HHbbww_TT_mtopUp", "CMS_HHbbww_TT_mtopDown"]
+          central_or_shifts_modified = [central_or_shift for central_or_shift in self.central_or_shifts if central_or_shift not in central_or_shift_remove]
+          central_or_shifts_modified += central_or_shifts_added
         if 'label' in jobOptions.keys() and jobOptions['label']:
             category_output += "_%s" % jobOptions['label']
         histogramToFit = jobOptions['histogramToFit']
@@ -1300,7 +1306,7 @@ class analyzeConfig(object):
         lines.append("    )")
         lines.append(")")
         lines.append("process.prepareDatacards.histogramToFit = cms.string('%s')" % histogramToFit)
-        lines.append("process.prepareDatacards.sysShifts = cms.vstring(%s)" % self.central_or_shifts)
+        lines.append("process.prepareDatacards.sysShifts = cms.vstring(%s)" % central_or_shifts_modified)
 
         # If the user has specified the binning options for a particular histogram, we expect to see
         # a dictionary instead of a list of histogram names that's been passed to this class as histograms_to_fit
