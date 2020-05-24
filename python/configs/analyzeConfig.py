@@ -236,6 +236,7 @@ class analyzeConfig(object):
             logging.warning('Removing systematics {} from {} era'.format(systematics.JES_HEM, self.era))
             self.central_or_shifts.remove(systematics.JES_HEM)
         # ------------------------------------------------------------------------
+        self.ttbar_syst_enabled = False
         for central_or_shift in self.central_or_shifts:
           if central_or_shift in systematics.ttbar:
             central_or_shift_ttbar = "TT_{}".format(central_or_shift)
@@ -245,6 +246,8 @@ class analyzeConfig(object):
                   sample_info["process_name_specific"], central_or_shift,
                 ))
                 sample_info["use_it"] = True
+                if not self.ttbar_syst_enabled:
+                  self.ttbar_syst_enabled = True
         # ------------------------------------------------------------------------
         self.ttHProcs = [ "ttH" ]# , "ttH_ctcvcp" ]
         self.prep_dcard_processesToCopy = [  ]
