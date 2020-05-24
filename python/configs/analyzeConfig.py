@@ -1285,10 +1285,10 @@ class analyzeConfig(object):
         assert(self.prep_dcard_processesToCopy)
         category_output = self.channel
         central_or_shifts_modified = self.central_or_shifts
-        if len(self.central_or_shifts) >1 and "hh_bbWW" in category_output :
-          central_or_shift_remove = ["hdampUp", "hdampDown", 'QCDbased', 'GluonMove', 'erdON', 'mtop171p5', 'mtop173p5']
-          central_or_shifts_added = ["CMS_HHbbww_TT_hdampUp", "CMS_HHbbww_TT_hdampDown", "CMS_HHbbww_TT_crUp", "CMS_HHbbww_TT_crDown", "CMS_HHbbww_TT_mtopUp", "CMS_HHbbww_TT_mtopDown"]
-          central_or_shifts_modified = [central_or_shift for central_or_shift in self.central_or_shifts if central_or_shift not in central_or_shift_remove]
+        if len(self.central_or_shifts) > 1 and "hh_bbWW" in category_output :
+          central_or_shift_remove = systematics.ttbar
+          central_or_shifts_added = [ "CMS_HHbbww_TT_{}".format(central_or_shift) for central_or_shift in central_or_shift_remove ]
+          central_or_shifts_modified = [ central_or_shift for central_or_shift in self.central_or_shifts if central_or_shift not in central_or_shift_remove ]
           central_or_shifts_modified += central_or_shifts_added
         if 'label' in jobOptions.keys() and jobOptions['label']:
             category_output += "_%s" % jobOptions['label']
