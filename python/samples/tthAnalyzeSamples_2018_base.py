@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2020-05-12 13:35:29 with the following command:
+# file generated at 2020-05-23 12:23:03 with the following command:
 # create_dictionary.py -m python/samples/metaDict_2018.py -p python/samples/sampleLocations_2018.txt -N samples_2018 -E 2018 -o python/samples -g tthAnalyzeSamples_2018_base.py -M
 
 samples_2018 = OD()
@@ -17667,7 +17667,7 @@ samples_2018["/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_
   }),
   ("nof_tree_events",                 64310000),
   ("nof_db_events",                   64310000),
-  ("fsize_local",                     258637052503), # 258.64GB, avg file size 1.00GB
+  ("fsize_local",                     258321930075), # 258.32GB, avg file size 1.00GB
   ("fsize_db",                        3413760837047), # 3.41TB, avg file size 3.53GB
   ("use_it",                          False),
   ("xsection",                        88.4),
@@ -17680,7 +17680,7 @@ samples_2018["/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Apr12_woPresel_nom_all/ntuples/TTTo2L2Nu"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020May20_woPresel_nom_all/ntuples/TTTo2L2Nu"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -17750,7 +17750,7 @@ samples_2018["/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAO
   }),
   ("nof_tree_events",                 101550000),
   ("nof_db_events",                   101550000),
-  ("fsize_local",                     438169160826), # 438.17GB, avg file size 1.08GB
+  ("fsize_local",                     437953000956), # 437.95GB, avg file size 1.08GB
   ("fsize_db",                        5446585250527), # 5.45TB, avg file size 3.58GB
   ("use_it",                          False),
   ("xsection",                        365.52),
@@ -17763,7 +17763,7 @@ samples_2018["/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAO
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Apr12_woPresel_nom_all/ntuples/TTToSemiLeptonic"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020May20_woPresel_nom_all/ntuples/TTToSemiLeptonic"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -17833,7 +17833,7 @@ samples_2018["/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-10
   }),
   ("nof_tree_events",                 133808000),
   ("nof_db_events",                   133808000),
-  ("fsize_local",                     595237125014), # 595.24GB, avg file size 1.07GB
+  ("fsize_local",                     595578758641), # 595.58GB, avg file size 1.07GB
   ("fsize_db",                        7273064972485), # 7.27TB, avg file size 2.20GB
   ("use_it",                          False),
   ("xsection",                        377.85),
@@ -17846,7 +17846,7 @@ samples_2018["/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-10
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Apr12_woPresel_nom_all/ntuples/TTToHadronic"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020May20_woPresel_nom_all/ntuples/TTToHadronic"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
