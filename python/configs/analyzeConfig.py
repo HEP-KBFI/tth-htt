@@ -1285,7 +1285,7 @@ class analyzeConfig(object):
         assert(self.prep_dcard_processesToCopy)
         category_output = self.channel
         central_or_shifts_modified = self.central_or_shifts
-        if 'hh' in category_output :
+        if len(self.central_or_shifts) >1 and "hh_bbWW" in category_output :
           central_or_shift_remove = ["hdampUp", "hdampDown", 'QCDbased', 'GluonMove', 'erdON', 'mtop171p5', 'mtop173p5']
           central_or_shifts_added = ["CMS_HHbbww_TT_hdampUp", "CMS_HHbbww_TT_hdampDown", "CMS_HHbbww_TT_crUp", "CMS_HHbbww_TT_crDown", "CMS_HHbbww_TT_mtopUp", "CMS_HHbbww_TT_mtopDown"]
           central_or_shifts_modified = [central_or_shift for central_or_shift in self.central_or_shifts if central_or_shift not in central_or_shift_remove]
