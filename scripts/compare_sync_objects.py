@@ -1161,7 +1161,11 @@ for rle in rle_loop:
 #  if not evt.mu1.is_matched:
 #    continue
 
-#  if not (evt.mu1.ref.isfakeablesel == 1 and evt.mu1.test.isfakeablesel == 0):
+  if not (evt.ele1.ref.isfakeablesel == evt.ele1.test.isfakeablesel and evt.ele2.ref.isfakeablesel == evt.ele2.test.isfakeablesel):
+    print('RLE %s' % rle)
+    print evt.ele1.printVars()
+    print evt.ele2.printVars()
+
 #    continue
 
 #  if abs(evt.mu1.diff.leptonMVA) < 1e-2:
@@ -1173,10 +1177,10 @@ for rle in rle_loop:
 #  if abs(evt.mu1.diff.leptonMVA) > 1e-3:
 #    continue
 
-  print('RLE %s' % rle)
+  #print('RLE %s' % rle)
 #  evt.mu1.printVars(['pt', 'eta', 'phi', 'conept', 'leptonMVA', 'isfakeablesel', 'ismvasel'])
-  evt.mu1.printVars()
-  evt.mu2.printVars()
+  #evt.mu1.printVars()
+  #evt.mu2.printVars()
 #  evt.mu1.record()
   ##################################################################################################
 
