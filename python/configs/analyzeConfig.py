@@ -1759,7 +1759,6 @@ class analyzeConfig(object):
       lines_makefile.append("")
       for job in self.jobOptions_addSysTT.values():
         self.filesToClean.append(job['outputFile'])
-        self.targets.append(job['outputFile'])
 
     def addToMakefile_hadd_stage2(self, lines_makefile, make_target = "phony_hadd_stage2", make_dependency = None, 
                                   max_input_files_per_job = 2, max_mem = ''):
