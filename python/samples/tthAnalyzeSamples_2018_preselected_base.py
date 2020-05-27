@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2020-05-24 11:50:02 with the following command:
+# file generated at 2020-05-27 11:43:08 with the following command:
 # create_dictionary.py -m python/samples/metaDict_2018.py -p python/samples/sampleLocations_2018_preselected.txt -N samples_2018 -E 2018 -o python/samples -g tthAnalyzeSamples_2018_preselected_base.py -M
 
 samples_2018 = OD()
@@ -18551,17 +18551,17 @@ samples_2018["/tZq_ll_4f_ckm_NLO_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18Min
   ("type",                            "mc"),
   ("sample_category",                 "Rares"),
   ("process_name_specific",           "tZq_ll_4f_ext1"),
-  ("nof_files",                       2),
+  ("nof_files",                       14),
   ("nof_db_files",                    382),
   ("nof_events",                      {
     'Count'                                                                          : [     13136000, ],
-    'CountWeighted'                                                                  : [      3431656,      3431123,      3432252, ],
-    'CountWeightedLHEWeightScale'                                                    : [      3721202,      3668975,      3634563,      3510251,      3431562,      3370875,      3312875,      3217881,      3140717, ],
+    'CountWeighted'                                                                  : [      3431655,      3431123,      3432253, ],
+    'CountWeightedLHEWeightScale'                                                    : [      3721202,      3668974,      3634563,      3510251,      3431562,      3370875,      3312875,      3217880,      3140717, ],
     'CountWeightedLHEEnvelope'                                                       : [      3990649,      2939228, ],
   }),
   ("nof_tree_events",                 6297580),
   ("nof_db_events",                   13736000),
-  ("fsize_local",                     31049062510), # 31.05GB, avg file size 15.52GB
+  ("fsize_local",                     30992289586), # 30.99GB, avg file size 2.21GB
   ("fsize_db",                        775261524542), # 775.26GB, avg file size 2.03GB
   ("use_it",                          True),
   ("xsection",                        0.07358),
@@ -18574,7 +18574,7 @@ samples_2018["/tZq_ll_4f_ckm_NLO_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18Min
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Apr15_wPresel_nom_all/ntuples/tZq_ll_4f_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020May26_wPresel_nom_all/ntuples/tZq_ll_4f_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
