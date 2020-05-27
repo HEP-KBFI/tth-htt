@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2020-05-24 11:50:03 with the following command:
+# file generated at 2020-05-27 11:43:36 with the following command:
 # create_dictionary.py -m python/samples/metaDict_2017.py -p python/samples/sampleLocations_2017_preselected.txt -N samples_2017 -E 2017 -o python/samples -g tthAnalyzeSamples_2017_preselected_base.py -M
 
 samples_2017 = OD()
@@ -24339,25 +24339,25 @@ samples_2017["/tZq_ll_4f_ckm_NLO_TuneCP5_PSweights_13TeV-amcatnlo-pythia8/RunIIF
   ("type",                            "mc"),
   ("sample_category",                 "Rares"),
   ("process_name_specific",           "tZq_ll_4f_PSweights"),
-  ("nof_files",                       2),
+  ("nof_files",                       14),
   ("nof_db_files",                    211),
   ("nof_events",                      {
     'Count'                                                                          : [     13276146, ],
     'CountWeighted'                                                                  : [      3467989,      3467686,      3468397, ],
     'CountWeightedLHEWeightScale'                                                    : [      3759876,      3707453,      3672835,      3547218,      3467916,      3406742,      3348106,      3252250,      3174436, ],
     'CountWeightedLHEEnvelope'                                                       : [      4032364,      2970586, ],
-    'CountWeightedPSWeight'                                                          : [      3468436,      3469428,      4894411,      3467768,      3460571,      2178507, ],
+    'CountWeightedPSWeight'                                                          : [      3468436,      3469428,      4894412,      3467768,      3460571,      2178507, ],
     'CountWeightedPSWeightOriginalXWGTUP'                                            : [      3791554,      3791092,      5419438,      3791571,      3791889,      2326363, ],
-    'CountWeightedL1PrefireNom'                                                      : [      3214941,      3214244,      3215695, ],
+    'CountWeightedL1PrefireNom'                                                      : [      3214941,      3214245,      3215695, ],
     'CountWeightedL1Prefire'                                                         : [      3214941,      3158096,      3271707, ],
     'CountWeightedLHEWeightScaleL1PrefireNom'                                        : [      3482952,      3436213,      3405933,      3286405,      3214874,      3159959,      3102201,      3015371,      2945025, ],
-    'CountWeightedLHEEnvelopeL1PrefireNom'                                           : [      3736122,      2755541, ],
-    'CountWeightedPSWeightL1PrefireNom'                                              : [      3215895,      3214585,      4535985,      3213972,      3211177,      2021815, ],
+    'CountWeightedLHEEnvelopeL1PrefireNom'                                           : [      3736122,      2755540, ],
+    'CountWeightedPSWeightL1PrefireNom'                                              : [      3215895,      3214585,      4535985,      3213972,      3211177,      2021816, ],
     'CountWeightedPSWeightOriginalXWGTUPL1PrefireNom'                                : [      3513433,      3510253,      5017843,      3512051,      3516465,      2159044, ],
   }),
   ("nof_tree_events",                 6491004),
   ("nof_db_events",                   13276146),
-  ("fsize_local",                     32956847705), # 32.96GB, avg file size 16.48GB
+  ("fsize_local",                     32968267578), # 32.97GB, avg file size 2.35GB
   ("fsize_db",                        748393512503), # 748.39GB, avg file size 3.55GB
   ("use_it",                          True),
   ("xsection",                        0.07358),
@@ -24370,7 +24370,7 @@ samples_2017["/tZq_ll_4f_ckm_NLO_TuneCP5_PSweights_13TeV-amcatnlo-pythia8/RunIIF
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2020Apr15_wPresel_nom_all/ntuples/tZq_ll_4f_PSweights"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2020May26_wPresel_nom_all/ntuples/tZq_ll_4f_PSweights"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
