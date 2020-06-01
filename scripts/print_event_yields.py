@@ -16,7 +16,8 @@ OUTPUT_NN = 'output_NN'
 OUTPUT_NN_RE     = re.compile('.*_{}_(?P<node>\w+)'.format(OUTPUT_NN))
 OUTPUT_NN_RE_CAT = re.compile('.*_{}_(?P<node>\w+)_(?P<category>\w+)'.format(OUTPUT_NN))
 EVENTCOUNTER = 'EventCounter'
-SYS_HISTOGRAM_PREFIX = 'CMS_ttHl_'
+SYS_HISTOGRAM_PREFIXES = ('CMS_ttHl_', 'CMS_HHbbww_')
+TT_SYS = ('hdamp', 'QCDbased', 'GluonMove', 'erdON', 'mtop', 'widthx')
 HTXS = 'htxs'
 HTXS_PROCESSES = [ 'ttH' ]
 HTXS_CATEGORIES = [ 'fwd', 'pt0to60', 'pt60to120', 'pt120to200', 'pt200to300', 'ptGt300', 'pt300to450', 'ptGt450' ]
@@ -62,12 +63,17 @@ def get_systematics(histogram_name):
       OUTPUT_NN_RE.match(histogram_name)    or
       OUTPUT_NN_RE_CAT.match(histogram_name)
   )
-  if histogram_name.startswith(SYS_HISTOGRAM_PREFIX):
+  if histogram_name.startswith(SYS_HISTOGRAM_PREFIXES):
     if EVENTCOUNTER in histogram_name:
-      histogram_name_prefix = histogram_name.replace('_{}'.format(EVENTCOUNTER), '').replace(SYS_HISTOGRAM_PREFIX, '')
+      histogram_name_prefix = histogram_name.replace('_{}'.format(EVENTCOUNTER), '')
     else:
-      histogram_name_prefix = histogram_name.split('_{}'.format(OUTPUT_NN))[0].replace(SYS_HISTOGRAM_PREFIX, '')
+      histogram_name_prefix = histogram_name.split('_{}'.format(OUTPUT_NN))[0]
+    for sys_histogram_prefix in SYS_HISTOGRAM_PREFIXES:
+      histogram_name_prefix = histogram_name_prefix.replace(sys_histogram_prefix, '')
     assert(histogram_name_prefix.endswith(('Up', 'Down')))
+    return histogram_name_prefix
+  elif histogram_name.startswith(TT_SYS):
+    histogram_name_prefix = histogram_name.split('_')[0]
     return histogram_name_prefix
   else:
     return 'central'
@@ -405,8 +411,6 @@ def extract_metadata(hadd_stage_path):
     return { 'path' : hadd_stage_path }
   era = path_split[4]
   channel = path_split[7]
-  if channel not in CHANNEL_LIST:
-    raise RuntimeError("Unrecognizable channel found in path %s: %s" % (hadd_stage_path, channel))
   region = path_split[8]
   region_name = ''
   region_key = ''
@@ -444,8 +448,15 @@ def is_hadd_stage_file(input_path, is_hadd_stage1, metadata = None):
   if not metadata:
     metadata = extract_metadata(input_path)
   candidate_file_basename = os.path.basename(input_path)
+  region_key = ANALYSIS_REGIONS[metadata['region_key']]
+  region_no_sr = ''.join(
+    region_part for region_part in metadata['region'].split(region_key) if region_part
+  ).strip('_')
+  region_original = '{}_{}'.format(region_key, region_no_sr)
+  region_flipped = '{}_{}'.format(region_no_sr, region_key)
   return candidate_file_basename.startswith('hadd_stage{}_'.format(1 if is_hadd_stage1 else 2)) and (
-     candidate_file_basename.endswith('_{}.root'.format(metadata['region'])) or
+     candidate_file_basename.endswith('_{}.root'.format(region_original)) or
+     candidate_file_basename.endswith('_{}.root'.format(region_flipped)) or
      candidate_file_basename.replace('lep', '').replace('sum', '').endswith('_{}.root'.format(metadata['region']))
     )
 
@@ -508,7 +519,7 @@ def path_sorter(path):
   metadata = extract_metadata(path)
   if all(key in metadata for key in [ 'era', 'channel', 'region_key' ]):
     return (
-      CHANNEL_LIST.index(metadata['channel']),
+      CHANNEL_LIST.index(metadata['channel']) if metadata['channel'] in CHANNEL_LIST else -1,
       ANALYSIS_REGIONS.keys().index(metadata['region_key']),
       int(metadata['era'])
     )
