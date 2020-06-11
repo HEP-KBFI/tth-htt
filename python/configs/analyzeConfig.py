@@ -970,6 +970,7 @@ class analyzeConfig(object):
             'skipEvery',
             'apply_topPtReweighting',
             'useAssocJetBtag',
+            'mode'
         ]
         jobOptions_typeMapping = {
           'central_or_shifts_local' : 'cms.vstring(%s)',
