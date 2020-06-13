@@ -97,30 +97,6 @@ Data_to_MC_CorrectionInterface_2016::Data_to_MC_CorrectionInterface_2016(const e
     lut::kXabsEtaYpt
   ));
 
-  const std::vector<double> etaBinEdges_1e = { -1., 1.48, 2.1 };
-  assert(etaBinEdges_1e.size() > 0);
-  const std::size_t numEtaBins_1e = etaBinEdges_1e.size() - 1;
-  for(std::size_t idxEtaBin = 0; idxEtaBin < numEtaBins_1e; ++idxEtaBin)
-  {
-    const double etaMin = etaBinEdges_1e[idxEtaBin];
-    const double etaMax = etaBinEdges_1e[idxEtaBin + 1];
-    const std::string etaBinLabel = aux::getEtaBinLabel(etaMin, etaMax);
-    effTrigger_1e_data_.push_back(new lutWrapperTGraph(
-      inputFiles_,
-      "tthAnalysis/HiggsToTauTau/data/triggerSF/2016/Electron_Ele25WPTight_eff.root",
-      Form("ZMassEta%s_Data", etaBinLabel.data()),
-      lut::kXptYabsEta,
-      -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
-    ));
-    effTrigger_1e_mc_.push_back(new lutWrapperTGraph(
-      inputFiles_,
-      "tthAnalysis/HiggsToTauTau/data/triggerSF/2016/Electron_Ele25WPTight_eff.root",
-      Form("ZMassEta%s_MC", etaBinLabel.data()),
-      lut::kXptYabsEta,
-      -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
-    ));
-  }
-
   aux::loadTriggerEff_1e_2016(effTrigger_1e_data_, effTrigger_1e_mc_, inputFiles_);
   aux::loadTriggerEff_1m_2016(effTrigger_1m_data_, effTrigger_1m_mc_, inputFiles_);
 
