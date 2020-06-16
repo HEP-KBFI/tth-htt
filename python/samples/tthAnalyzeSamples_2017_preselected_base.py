@@ -30560,6 +30560,59 @@ samples_2017["/QCD_Pt-1000toInf_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIFall17M
   ]),
 ])
 
+samples_2017["/TTWJetsToLNu_EWK_5f_NLO/RunIIFall17MiniAODv2/USER"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "TTW"),
+  ("process_name_specific",           "TTWJetsToLNu_EWK_5f_NLO"),
+  ("nof_files",                       1),
+  ("nof_db_files",                    30),
+  ("nof_events",                      {
+    'Count'                                                                          : [        24503, ],
+    'CountWeighted'                                                                  : [        22953,        22949,        22952, ],
+    'CountWeightedLHEEnvelope'                                                       : [        22953,        22953, ],
+    'CountWeightedPSWeight'                                                          : [        22998,        22800,        34743,        22893,        23222,        12534, ],
+    'CountWeightedPSWeightOriginalXWGTUP'                                            : [          420,          417,          633,          418,          423,          230, ],
+    'CountWeightedL1PrefireNom'                                                      : [        21266,        21262,        21263, ],
+    'CountWeightedL1Prefire'                                                         : [        21266,        20887,        21644, ],
+    'CountWeightedLHEEnvelopeL1PrefireNom'                                           : [        21266,        21266, ],
+    'CountWeightedPSWeightL1PrefireNom'                                              : [        21324,        21088,        32203,        21189,        21589,        11635, ],
+    'CountWeightedPSWeightOriginalXWGTUPL1PrefireNom'                                : [          390,          387,          588,          388,          394,          214, ],
+  }),
+  ("nof_tree_events",                 7584),
+  ("nof_db_events",                   24503),
+  ("fsize_local",                     46092232), # 46.09MB, avg file size 46.09MB
+  ("fsize_db",                        2203739653), # 2.20GB, avg file size 73.46MB
+  ("use_it",                          False),
+  ("xsection",                        0.0162562),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         False),
+  ("nof_PSweights",                   4),
+  ("LHE_set",                         "LHEPdfWeight[nLHEPdfWeight]/F"),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2020Jun16_wPresel_nom_all/ntuples/TTWJetsToLNu_EWK_5f_NLO"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
 samples_2017["sum_events"] = [
   [ 'ST_s-channel_4f_leptonDecays',                    'ST_s-channel_4f_leptonDecays_PSweights',           ],
   [ 'DYJetsToLL_M-4to50_HT-200to400',                  'DYJetsToLL_M-4to50_HT-200to400_ext1',              ],
