@@ -886,7 +886,7 @@ class analyzeConfig(object):
             jobOptions['useObjectMultiplicity'] = False
         if 'useAssocJetBtag' not in jobOptions:
             jobOptions['useAssocJetBtag'] = False
-        if 'leptonFakeRateWeight.applyNonClosureCorrection' not in jobOptions:
+        if 'leptonFakeRateWeight.applyNonClosureCorrection' not in jobOptions and '0l' not in self.channel:
             jobOptions['leptonFakeRateWeight.applyNonClosureCorrection'] = self.apply_nc_correction
 
         # not very nice, but guaranteed to work
