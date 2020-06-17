@@ -23569,6 +23569,54 @@ samples_2018["/QCD_Pt-1000toInf_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn1
   ]),
 ])
 
+samples_2018["/TTWJetsToLNu_EWK_5f_NLO/RunIIAutumn18MiniAOD/USER"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "TTW"),
+  ("process_name_specific",           "TTWJetsToLNu_EWK_5f_NLO"),
+  ("nof_files",                       1),
+  ("nof_db_files",                    54),
+  ("nof_events",                      {
+    'Count'                                                                          : [        48000, ],
+    'CountWeighted'                                                                  : [        44969,        44977,        44960, ],
+    'CountWeightedLHEEnvelope'                                                       : [        44969,        44969, ],
+    'CountWeightedPSWeight'                                                          : [        44937,        45164,        67789,        44977,        44597,        24507, ],
+    'CountWeightedPSWeightOriginalXWGTUP'                                            : [          821,          824,         1238,          821,          818,          450, ],
+  }),
+  ("nof_tree_events",                 14470),
+  ("nof_db_events",                   49000),
+  ("fsize_local",                     84386425), # 84.39MB, avg file size 84.39MB
+  ("fsize_db",                        4386666225), # 4.39GB, avg file size 81.23MB
+  ("use_it",                          False),
+  ("xsection",                        0.0162562),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         False),
+  ("nof_PSweights",                   4),
+  ("LHE_set",                         "LHEPdfWeight[nLHEPdfWeight]/F"),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Jun16_wPresel_nom_all/ntuples/TTWJetsToLNu_EWK_5f_NLO"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
 samples_2018["sum_events"] = [
   [ 'ZZTo4L_ext1',                                     'ZZTo4L_ext2',                                      ],
   [ 'ZZTo2L2Nu_ext1',                                  'ZZTo2L2Nu_ext2',                                   ],
