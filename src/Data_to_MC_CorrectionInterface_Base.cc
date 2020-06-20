@@ -352,9 +352,9 @@ Data_to_MC_CorrectionInterface_Base::setHadTaus(int hadTau1_genPdgId, double had
 {
   numHadTaus_ = 1;
 
-  hadTau_genPdgId_[numHadTaus_] = hadTau1_genPdgId;
-  hadTau_pt_[numHadTaus_] = hadTau1_pt;
-  hadTau_eta_[numHadTaus_] = hadTau1_eta;
+  hadTau_genPdgId_[0] = hadTau1_genPdgId;
+  hadTau_pt_[0] = hadTau1_pt;
+  hadTau_eta_[0] = hadTau1_eta;
 }
 
 void
@@ -363,13 +363,13 @@ Data_to_MC_CorrectionInterface_Base::setHadTaus(int hadTau1_genPdgId, double had
 {
   numHadTaus_ = 2;
 
-  hadTau_genPdgId_[numHadTaus_] = hadTau1_genPdgId;
-  hadTau_pt_[numHadTaus_] = hadTau1_pt;
-  hadTau_eta_[numHadTaus_] = hadTau1_eta;
+  hadTau_genPdgId_[0] = hadTau1_genPdgId;
+  hadTau_pt_[0] = hadTau1_pt;
+  hadTau_eta_[0] = hadTau1_eta;
 
-  hadTau_genPdgId_[numHadTaus_] = hadTau2_genPdgId;
-  hadTau_pt_[numHadTaus_] = hadTau2_pt;
-  hadTau_eta_[numHadTaus_] = hadTau2_eta;
+  hadTau_genPdgId_[1] = hadTau2_genPdgId;
+  hadTau_pt_[1] = hadTau2_pt;
+  hadTau_eta_[1] = hadTau2_eta;
 }
 
 void
@@ -379,17 +379,17 @@ Data_to_MC_CorrectionInterface_Base::setHadTaus(int hadTau1_genPdgId, double had
 {
   numHadTaus_ = 3;
 
-  hadTau_genPdgId_[numHadTaus_] = hadTau1_genPdgId;
-  hadTau_pt_[numHadTaus_] = hadTau1_pt;
-  hadTau_eta_[numHadTaus_] = hadTau1_eta;
+  hadTau_genPdgId_[0] = hadTau1_genPdgId;
+  hadTau_pt_[0] = hadTau1_pt;
+  hadTau_eta_[0] = hadTau1_eta;
 
-  hadTau_genPdgId_[numHadTaus_] = hadTau2_genPdgId;
-  hadTau_pt_[numHadTaus_] = hadTau2_pt;
-  hadTau_eta_[numHadTaus_] = hadTau2_eta;
+  hadTau_genPdgId_[1] = hadTau2_genPdgId;
+  hadTau_pt_[1] = hadTau2_pt;
+  hadTau_eta_[1] = hadTau2_eta;
 
-  hadTau_genPdgId_[numHadTaus_] = hadTau3_genPdgId;
-  hadTau_pt_[numHadTaus_] = hadTau3_pt;
-  hadTau_eta_[numHadTaus_] = hadTau3_eta;
+  hadTau_genPdgId_[2] = hadTau3_genPdgId;
+  hadTau_pt_[2] = hadTau3_pt;
+  hadTau_eta_[2] = hadTau3_eta;
 }
 
 void
@@ -400,21 +400,21 @@ Data_to_MC_CorrectionInterface_Base::setHadTaus(int hadTau1_genPdgId, double had
 {
   numHadTaus_ = 4;
 
-  hadTau_genPdgId_[numHadTaus_] = hadTau1_genPdgId;
-  hadTau_pt_[numHadTaus_] = hadTau1_pt;
-  hadTau_eta_[numHadTaus_] = hadTau1_eta;
+  hadTau_genPdgId_[0] = hadTau1_genPdgId;
+  hadTau_pt_[0] = hadTau1_pt;
+  hadTau_eta_[0] = hadTau1_eta;
 
-  hadTau_genPdgId_[numHadTaus_] = hadTau2_genPdgId;
-  hadTau_pt_[numHadTaus_] = hadTau2_pt;
-  hadTau_eta_[numHadTaus_] = hadTau2_eta;
+  hadTau_genPdgId_[1] = hadTau2_genPdgId;
+  hadTau_pt_[1] = hadTau2_pt;
+  hadTau_eta_[1] = hadTau2_eta;
 
-  hadTau_genPdgId_[numHadTaus_] = hadTau3_genPdgId;
-  hadTau_pt_[numHadTaus_] = hadTau3_pt;
-  hadTau_eta_[numHadTaus_] = hadTau3_eta;
+  hadTau_genPdgId_[2] = hadTau3_genPdgId;
+  hadTau_pt_[2] = hadTau3_pt;
+  hadTau_eta_[2] = hadTau3_eta;
 
-  hadTau_genPdgId_[numHadTaus_] = hadTau4_genPdgId;
-  hadTau_pt_[numHadTaus_] = hadTau4_pt;
-  hadTau_eta_[numHadTaus_] = hadTau4_eta;
+  hadTau_genPdgId_[3] = hadTau4_genPdgId;
+  hadTau_pt_[3] = hadTau4_pt;
+  hadTau_eta_[3] = hadTau4_eta;
 }
 
 double
