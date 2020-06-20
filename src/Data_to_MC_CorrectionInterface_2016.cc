@@ -115,7 +115,13 @@ Data_to_MC_CorrectionInterface_2016::~Data_to_MC_CorrectionInterface_2016()
 double
 Data_to_MC_CorrectionInterface_2016::getSF_leptonTriggerEff(TriggerSFsys central_or_shift) const
 {
-  assert(check_triggerSFsys_opt(central_or_shift));
+  if(! check_triggerSFsys_opt(central_or_shift))
+  {
+    throw cmsException(this, __func__, __LINE__)
+      << "Invalid central_or_shift option, given the number of "
+         "leptons (" << numLeptons_ << "), electrons (" << numElectrons_ << "), muons (" << numMuons_ << ") and "
+         "hadronic taus (" << numHadTaus_ << "): " << as_integer(central_or_shift);
+  }
   // see https://cernbox.cern.ch/index.php/s/lW2BiTli5tJR0MN
   double sf = 1.;
   double sfErr = 0.;

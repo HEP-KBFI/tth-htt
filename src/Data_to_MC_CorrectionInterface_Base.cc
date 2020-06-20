@@ -140,6 +140,145 @@ Data_to_MC_CorrectionInterface_Base::setHadTauSelection(const std::string & hadT
 }
 
 void
+Data_to_MC_CorrectionInterface_Base::setLeptons()
+{
+  numLeptons_ = 0;
+  for(std::size_t idxElectron = 0; idxElectron < numElectrons_; ++idxElectron)
+  {
+    lepton_type_[numLeptons_] = kElectron;
+    lepton_pt_[numLeptons_] = electron_pt_[idxElectron];
+    lepton_cone_pt_[numLeptons_] = electron_cone_pt_[idxElectron];
+    lepton_eta_[numLeptons_] = electron_eta_[idxElectron];
+    ++numLeptons_;
+  }
+  for(std::size_t idxMuon = 0; idxMuon < numMuons_; ++idxMuon)
+  {
+    lepton_type_[numLeptons_] = kMuon;
+    lepton_pt_[numLeptons_] = muon_pt_[idxMuon];
+    lepton_cone_pt_[numLeptons_] = muon_cone_pt_[idxMuon];
+    lepton_eta_[numLeptons_] = muon_eta_[idxMuon];
+    ++numLeptons_;
+  }
+}
+
+void
+Data_to_MC_CorrectionInterface_Base::setLeptons(int lepton1_type, double lepton1_pt, double lepton1_cone_pt, double lepton1_eta)
+{
+  numElectrons_ = 0;
+  if(lepton1_type == kElectron)
+  {
+    electron_pt_[numElectrons_] = lepton1_pt;
+    electron_cone_pt_[numElectrons_] = lepton1_cone_pt;
+    electron_eta_[numElectrons_] = lepton1_eta;
+    ++numElectrons_;
+  }
+
+  numMuons_ = 0;
+  if(lepton1_type == kMuon)
+  {
+    muon_pt_[numMuons_] = lepton1_pt;
+    muon_cone_pt_[numMuons_] = lepton1_cone_pt;
+    muon_eta_[numMuons_] = lepton1_eta;
+    ++numMuons_;
+  }
+
+  setLeptons();
+}
+
+void
+Data_to_MC_CorrectionInterface_Base::setLeptons(int lepton1_type, double lepton1_pt, double lepton1_cone_pt, double lepton1_eta,
+                                                int lepton2_type, double lepton2_pt, double lepton2_cone_pt, double lepton2_eta)
+{
+  numElectrons_ = 0;
+  if(lepton1_type == kElectron)
+  {
+    electron_pt_[numElectrons_] = lepton1_pt;
+    electron_cone_pt_[numElectrons_] = lepton1_cone_pt;
+    electron_eta_[numElectrons_] = lepton1_eta;
+    ++numElectrons_;
+  }
+  if(lepton2_type == kElectron)
+  {
+    electron_pt_[numElectrons_] = lepton2_pt;
+    electron_cone_pt_[numElectrons_] = lepton2_cone_pt;
+    electron_eta_[numElectrons_] = lepton2_eta;
+    ++numElectrons_;
+  }
+
+  numMuons_ = 0;
+  if(lepton1_type == kMuon)
+  {
+    muon_pt_[numMuons_] = lepton1_pt;
+    muon_cone_pt_[numMuons_] = lepton1_cone_pt;
+    muon_eta_[numMuons_] = lepton1_eta;
+    ++numMuons_;
+  }
+  if(lepton2_type == kMuon)
+  {
+    muon_pt_[numMuons_] = lepton2_pt;
+    muon_cone_pt_[numMuons_] = lepton2_cone_pt;
+    muon_eta_[numMuons_] = lepton2_eta;
+    ++numMuons_;
+  }
+
+  setLeptons();
+}
+
+void
+Data_to_MC_CorrectionInterface_Base::setLeptons(int lepton1_type, double lepton1_pt, double lepton1_cone_pt, double lepton1_eta,
+                                                int lepton2_type, double lepton2_pt, double lepton2_cone_pt, double lepton2_eta,
+                                                int lepton3_type, double lepton3_pt, double lepton3_cone_pt, double lepton3_eta)
+{
+  numElectrons_ = 0;
+  if(lepton1_type == kElectron)
+  {
+    electron_pt_[numElectrons_] = lepton1_pt;
+    electron_cone_pt_[numElectrons_] = lepton1_cone_pt;
+    electron_eta_[numElectrons_] = lepton1_eta;
+    ++numElectrons_;
+  }
+  if(lepton2_type == kElectron)
+  {
+    electron_pt_[numElectrons_] = lepton2_pt;
+    electron_cone_pt_[numElectrons_] = lepton2_cone_pt;
+    electron_eta_[numElectrons_] = lepton2_eta;
+    ++numElectrons_;
+  }
+  if(lepton3_type == kElectron)
+  {
+    electron_pt_[numElectrons_] = lepton3_pt;
+    electron_cone_pt_[numElectrons_] = lepton3_cone_pt;
+    electron_eta_[numElectrons_] = lepton3_eta;
+    ++numElectrons_;
+  }
+
+  numMuons_ = 0;
+  if(lepton1_type == kMuon)
+  {
+    muon_pt_[numMuons_] = lepton1_pt;
+    muon_cone_pt_[numMuons_] = lepton1_cone_pt;
+    muon_eta_[numMuons_] = lepton1_eta;
+    ++numMuons_;
+  }
+  if(lepton2_type == kMuon)
+  {
+    muon_pt_[numMuons_] = lepton2_pt;
+    muon_cone_pt_[numMuons_] = lepton2_cone_pt;
+    muon_eta_[numMuons_] = lepton2_eta;
+    ++numMuons_;
+  }
+  if(lepton3_type == kMuon)
+  {
+    muon_pt_[numMuons_] = lepton3_pt;
+    muon_cone_pt_[numMuons_] = lepton3_cone_pt;
+    muon_eta_[numMuons_] = lepton3_eta;
+    ++numMuons_;
+  }
+
+  setLeptons();
+}
+
+void
 Data_to_MC_CorrectionInterface_Base::setLeptons(int lepton1_type, double lepton1_pt, double lepton1_cone_pt, double lepton1_eta,
                                                 int lepton2_type, double lepton2_pt, double lepton2_cone_pt, double lepton2_eta,
                                                 int lepton3_type, double lepton3_pt, double lepton3_cone_pt, double lepton3_eta,
@@ -205,23 +344,52 @@ Data_to_MC_CorrectionInterface_Base::setLeptons(int lepton1_type, double lepton1
     ++numMuons_;
   }
 
-  numLeptons_ = 0;
-  for(std::size_t idxElectron = 0; idxElectron < numElectrons_; ++idxElectron)
-  {
-    lepton_type_[numLeptons_] = kElectron;
-    lepton_pt_[numLeptons_] = electron_pt_[idxElectron];
-    lepton_cone_pt_[numLeptons_] = electron_cone_pt_[idxElectron];
-    lepton_eta_[numLeptons_] = electron_eta_[idxElectron];
-    ++numLeptons_;
-  }
-  for(std::size_t idxMuon = 0; idxMuon < numMuons_; ++idxMuon)
-  {
-    lepton_type_[numLeptons_] = kMuon;
-    lepton_pt_[numLeptons_] = muon_pt_[idxMuon];
-    lepton_cone_pt_[numLeptons_] = muon_cone_pt_[idxMuon];
-    lepton_eta_[numLeptons_] = muon_eta_[idxMuon];
-    ++numLeptons_;
-  }
+  setLeptons();
+}
+
+void
+Data_to_MC_CorrectionInterface_Base::setHadTaus(int hadTau1_genPdgId, double hadTau1_pt, double hadTau1_eta)
+{
+  numHadTaus_ = 1;
+
+  hadTau_genPdgId_[numHadTaus_] = hadTau1_genPdgId;
+  hadTau_pt_[numHadTaus_] = hadTau1_pt;
+  hadTau_eta_[numHadTaus_] = hadTau1_eta;
+}
+
+void
+Data_to_MC_CorrectionInterface_Base::setHadTaus(int hadTau1_genPdgId, double hadTau1_pt, double hadTau1_eta,
+                                                int hadTau2_genPdgId, double hadTau2_pt, double hadTau2_eta)
+{
+  numHadTaus_ = 2;
+
+  hadTau_genPdgId_[numHadTaus_] = hadTau1_genPdgId;
+  hadTau_pt_[numHadTaus_] = hadTau1_pt;
+  hadTau_eta_[numHadTaus_] = hadTau1_eta;
+
+  hadTau_genPdgId_[numHadTaus_] = hadTau2_genPdgId;
+  hadTau_pt_[numHadTaus_] = hadTau2_pt;
+  hadTau_eta_[numHadTaus_] = hadTau2_eta;
+}
+
+void
+Data_to_MC_CorrectionInterface_Base::setHadTaus(int hadTau1_genPdgId, double hadTau1_pt, double hadTau1_eta,
+                                                int hadTau2_genPdgId, double hadTau2_pt, double hadTau2_eta,
+                                                int hadTau3_genPdgId, double hadTau3_pt, double hadTau3_eta)
+{
+  numHadTaus_ = 3;
+
+  hadTau_genPdgId_[numHadTaus_] = hadTau1_genPdgId;
+  hadTau_pt_[numHadTaus_] = hadTau1_pt;
+  hadTau_eta_[numHadTaus_] = hadTau1_eta;
+
+  hadTau_genPdgId_[numHadTaus_] = hadTau2_genPdgId;
+  hadTau_pt_[numHadTaus_] = hadTau2_pt;
+  hadTau_eta_[numHadTaus_] = hadTau2_eta;
+
+  hadTau_genPdgId_[numHadTaus_] = hadTau3_genPdgId;
+  hadTau_pt_[numHadTaus_] = hadTau3_pt;
+  hadTau_eta_[numHadTaus_] = hadTau3_eta;
 }
 
 void
@@ -230,35 +398,23 @@ Data_to_MC_CorrectionInterface_Base::setHadTaus(int hadTau1_genPdgId, double had
                                                 int hadTau3_genPdgId, double hadTau3_pt, double hadTau3_eta,
                                                 int hadTau4_genPdgId, double hadTau4_pt, double hadTau4_eta)
 {
-  numHadTaus_ = 0;
-  if(hadTau1_pt > 0.)
-  {
-    hadTau_genPdgId_[numHadTaus_] = hadTau1_genPdgId;
-    hadTau_pt_[numHadTaus_] = hadTau1_pt;
-    hadTau_eta_[numHadTaus_] = hadTau1_eta;
-    ++numHadTaus_;
-  }
-  if(hadTau2_pt > 0.)
-  {
-    hadTau_genPdgId_[numHadTaus_] = hadTau2_genPdgId;
-    hadTau_pt_[numHadTaus_] = hadTau2_pt;
-    hadTau_eta_[numHadTaus_] = hadTau2_eta;
-    ++numHadTaus_;
-  }
-  if(hadTau3_pt > 0.)
-  {
-    hadTau_genPdgId_[numHadTaus_] = hadTau3_genPdgId;
-    hadTau_pt_[numHadTaus_] = hadTau3_pt;
-    hadTau_eta_[numHadTaus_] = hadTau3_eta;
-    ++numHadTaus_;
-  }
-  if(hadTau4_pt > 0.)
-  {
-    hadTau_genPdgId_[numHadTaus_] = hadTau4_genPdgId;
-    hadTau_pt_[numHadTaus_] = hadTau4_pt;
-    hadTau_eta_[numHadTaus_] = hadTau4_eta;
-    ++numHadTaus_;
-  }
+  numHadTaus_ = 4;
+
+  hadTau_genPdgId_[numHadTaus_] = hadTau1_genPdgId;
+  hadTau_pt_[numHadTaus_] = hadTau1_pt;
+  hadTau_eta_[numHadTaus_] = hadTau1_eta;
+
+  hadTau_genPdgId_[numHadTaus_] = hadTau2_genPdgId;
+  hadTau_pt_[numHadTaus_] = hadTau2_pt;
+  hadTau_eta_[numHadTaus_] = hadTau2_eta;
+
+  hadTau_genPdgId_[numHadTaus_] = hadTau3_genPdgId;
+  hadTau_pt_[numHadTaus_] = hadTau3_pt;
+  hadTau_eta_[numHadTaus_] = hadTau3_eta;
+
+  hadTau_genPdgId_[numHadTaus_] = hadTau4_genPdgId;
+  hadTau_pt_[numHadTaus_] = hadTau4_pt;
+  hadTau_eta_[numHadTaus_] = hadTau4_eta;
 }
 
 double
