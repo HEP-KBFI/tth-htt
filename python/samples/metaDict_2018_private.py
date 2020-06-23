@@ -22,7 +22,7 @@ meta_dictionary["/TTWJetsToLNu_EWK_5f_NLO/RunIIAutumn18MiniAOD/USER"] =  OD([
   ("xsection",              0.0162562),
   ("use_it",                False),
   ("genWeight",             True),
-  ("comment",               "0%; status: VALID; size: 4.39GB; nevents: 49.00k; release: 9_4_0; last modified: 2020-06-16 21:22:45"),
+  ("comment",               "100.0%; status: VALID; size: 4.39GB; nevents: 49.00k; release: 9_4_0; last modified: 2020-06-16 21:22:45"),
 ])
 
 

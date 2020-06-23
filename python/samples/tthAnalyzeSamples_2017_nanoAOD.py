@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2020-03-03 05:38:22 with the following command:
+# file generated at 2020-06-23 13:10:34 with the following command:
 # create_dictionary.py -m python/samples/metaDict_2017.py -p python/samples/sampleLocations_2017_nanoAOD.txt -N samples_2017 -E 2017 -o python/samples -g tthAnalyzeSamples_2017_nanoAOD.py -M
 
 samples_2017 = OD()
@@ -17933,6 +17933,92 @@ samples_2017["/TTZToLLNuNu_M-10_TuneCP5_PSweights_13TeV-amcatnlo-pythia8/RunIIFa
   ]),
 ])
 
+samples_2017["/TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "TTZ"),
+  ("process_name_specific",           "TTZToQQ"),
+  ("nof_files",                       4),
+  ("nof_db_files",                    16),
+  ("nof_events",                      {
+  }),
+  ("nof_tree_events",                 100100),
+  ("nof_db_events",                   750000),
+  ("fsize_local",                     297485195), # 297.49MB, avg file size 74.37MB
+  ("fsize_db",                        47371109410), # 47.37GB, avg file size 2.96GB
+  ("use_it",                          False),
+  ("xsection",                        0.5868),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("nof_PSweights",                   1),
+  ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/kaehatah/2017v2_2020Jun15/TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8/2017v2_2020Jun15_TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/200615_103250"),
+        ("selection", "*"),
+        ("blacklist", [1, 2, 3]),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
+samples_2017["/TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "TTZ"),
+  ("process_name_specific",           "TTZToQQ_ext1"),
+  ("nof_files",                       90),
+  ("nof_db_files",                    223),
+  ("nof_events",                      {
+  }),
+  ("nof_tree_events",                 7440000),
+  ("nof_db_events",                   8940000),
+  ("fsize_local",                     22065975478), # 22.07GB, avg file size 245.18MB
+  ("fsize_db",                        565843250989), # 565.84GB, avg file size 2.54GB
+  ("use_it",                          False),
+  ("xsection",                        0.5868),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("nof_PSweights",                   1),
+  ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/kaehatah/2017v2_2020Jun15/TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8/2017v2_2020Jun15_TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1/200615_103354"),
+        ("selection", "*"),
+        ("blacklist", [1, 2, 5, 10, 12, 28, 30, 69, 71, 73, 76, 77, 80, 82, 84]),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
 samples_2017["/TTZToLL_M-1to10_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/MINIAODSIM"] = OD([
   ("type",                            "mc"),
   ("sample_category",                 "TTZ"),
@@ -18131,6 +18217,49 @@ samples_2017["/TTWJetsToLNu_TuneCP5_PSweights_13TeV-amcatnloFXFX-madspin-pythia8
         ("path",      "/hdfs/cms/store/user/kaehatah/2017v2_2019Sep28/TTWJetsToLNu_TuneCP5_PSweights_13TeV-amcatnloFXFX-madspin-pythia8/2017v2_2019Sep28_TTWJetsToLNu_TuneCP5_PSweights_13TeV-amcatnloFXFX-madspin-pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v/190928_171603"),
         ("selection", "*"),
         ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
+samples_2017["/TTWJetsToQQ_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "TTW"),
+  ("process_name_specific",           "TTWJetsToQQ"),
+  ("nof_files",                       9),
+  ("nof_db_files",                    18),
+  ("nof_events",                      {
+  }),
+  ("nof_tree_events",                 213947),
+  ("nof_db_events",                   811306),
+  ("fsize_local",                     619718295), # 619.72MB, avg file size 68.86MB
+  ("fsize_db",                        50441060315), # 50.44GB, avg file size 2.80GB
+  ("use_it",                          False),
+  ("xsection",                        0.4049),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("nof_PSweights",                   1),
+  ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/kaehatah/2017v2_2020Jun15/TTWJetsToQQ_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/2017v2_2020Jun15_TTWJetsToQQ_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/200615_103106"),
+        ("selection", "*"),
+        ("blacklist", [2, 3, 4, 5, 7, 8]),
       ]),
     ]
   ),
@@ -20281,6 +20410,264 @@ samples_2017["/ZHToTauTau_M125_13TeV_powheg_pythia8/RunIIFall17MiniAODv2-PU2017_
         ("path",      "/hdfs/cms/store/user/kaehatah/2017v2_2019Sep28/ZHToTauTau_M125_13TeV_powheg_pythia8/2017v2_2019Sep28_ZHToTauTau_M125_13TeV_powheg_pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/190928_194040"),
         ("selection", "*"),
         ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
+samples_2017["/HZJ_HToWW_M125_13TeV_powheg_jhugen714_pythia8_TuneCP5/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v4/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "VH"),
+  ("process_name_specific",           "HZJ_HToWW"),
+  ("nof_files",                       4),
+  ("nof_db_files",                    29),
+  ("nof_events",                      {
+  }),
+  ("nof_tree_events",                 391095),
+  ("nof_db_events",                   391095),
+  ("fsize_local",                     721938503), # 721.94MB, avg file size 180.48MB
+  ("fsize_db",                        18356331450), # 18.36GB, avg file size 632.98MB
+  ("use_it",                          False),
+  ("xsection",                        0.1889),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("nof_PSweights",                   1),
+  ("LHE_set",                         "LHA IDs 306000 - 306102 -> NNPDF31_nnlo_hessian_pdfas PDF set, expecting 103 weights (counted 103 weights)"),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/kaehatah/2017v2_2020Jun15/HZJ_HToWW_M125_13TeV_powheg_jhugen714_pythia8_TuneCP5/2017v2_2020Jun15_HZJ_HToWW_M125_13TeV_powheg_jhugen714_pythia8_TuneCP5__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v4/200615_103001"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
+samples_2017["/WminusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "VH"),
+  ("process_name_specific",           "WminusH_HToBB_WToLNu"),
+  ("nof_files",                       24),
+  ("nof_db_files",                    40),
+  ("nof_events",                      {
+  }),
+  ("nof_tree_events",                 2382500),
+  ("nof_db_events",                   2382500),
+  ("fsize_local",                     3964126482), # 3.96GB, avg file size 165.17MB
+  ("fsize_db",                        111033138742), # 111.03GB, avg file size 2.78GB
+  ("use_it",                          False),
+  ("xsection",                        0.1012),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("nof_PSweights",                   1),
+  ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/kaehatah/2017v2_2020Jun15/WminusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8/2017v2_2020Jun15_WminusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/200615_103528"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
+samples_2017["/WplusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "VH"),
+  ("process_name_specific",           "WplusH_HToBB_WToLNu"),
+  ("nof_files",                       25),
+  ("nof_db_files",                    74),
+  ("nof_events",                      {
+  }),
+  ("nof_tree_events",                 2481200),
+  ("nof_db_events",                   2481200),
+  ("fsize_local",                     4164033357), # 4.16GB, avg file size 166.56MB
+  ("fsize_db",                        119124102255), # 119.12GB, avg file size 1.61GB
+  ("use_it",                          False),
+  ("xsection",                        0.1595),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("nof_PSweights",                   1),
+  ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/kaehatah/2017v2_2020Jun15/WplusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8/2017v2_2020Jun15_WplusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1/200615_103705"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
+samples_2017["/DYJetsToLL_0J_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "EWK"),
+  ("process_name_specific",           "DYToLL_0J"),
+  ("nof_files",                       886),
+  ("nof_db_files",                    1214),
+  ("nof_events",                      {
+  }),
+  ("nof_tree_events",                 88230653),
+  ("nof_db_events",                   88324470),
+  ("fsize_local",                     88714629730), # 88.71GB, avg file size 100.13MB
+  ("fsize_db",                        3650415551882), # 3.65TB, avg file size 3.01GB
+  ("use_it",                          False),
+  ("xsection",                        4843.6),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("nof_PSweights",                   1),
+  ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/kaehatah/2017v2_2020Jun15/DYJetsToLL_0J_TuneCP5_13TeV-amcatnloFXFX-pythia8/2017v2_2020Jun15_DYJetsToLL_0J_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/200615_102547"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
+samples_2017["/DYJetsToLL_1J_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "EWK"),
+  ("process_name_specific",           "DYToLL_1J"),
+  ("nof_files",                       963),
+  ("nof_db_files",                    1494),
+  ("nof_events",                      {
+  }),
+  ("nof_tree_events",                 95629091),
+  ("nof_db_events",                   95629091),
+  ("fsize_local",                     124064863166), # 124.06GB, avg file size 128.83MB
+  ("fsize_db",                        4307552110393), # 4.31TB, avg file size 2.88GB
+  ("use_it",                          False),
+  ("xsection",                        897.8),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("nof_PSweights",                   1),
+  ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/kaehatah/2017v2_2020Jun15/DYJetsToLL_1J_TuneCP5_13TeV-amcatnloFXFX-pythia8/2017v2_2020Jun15_DYJetsToLL_1J_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/200615_102722"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
+samples_2017["/DYJetsToLL_2J_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "EWK"),
+  ("process_name_specific",           "DYToLL_2J"),
+  ("nof_files",                       550),
+  ("nof_db_files",                    869),
+  ("nof_events",                      {
+  }),
+  ("nof_tree_events",                 54392766),
+  ("nof_db_events",                   54592285),
+  ("fsize_local",                     92963530273), # 92.96GB, avg file size 169.02MB
+  ("fsize_db",                        2476615739180), # 2.48TB, avg file size 2.85GB
+  ("use_it",                          False),
+  ("xsection",                        335.8),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("nof_PSweights",                   1),
+  ("LHE_set",                         "LHA IDs 306000 - 306102 -> NNPDF31_nnlo_hessian_pdfas PDF set, expecting 103 weights (counted 103 weights)"),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/kaehatah/2017v2_2020Jun15/DYJetsToLL_2J_TuneCP5_13TeV-amcatnloFXFX-pythia8/2017v2_2020Jun15_DYJetsToLL_2J_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/200615_102824"),
+        ("selection", "*"),
+        ("blacklist", [62, 546]),
       ]),
     ]
   ),
@@ -25125,12 +25512,12 @@ samples_2017["sum_events"] = [
   [ 'GluGluHToTauTau',                                 'GluGluHToTauTau_ext1',                             ],
   [ 'ggZZTo4e',                                        'ggZZTo4e_ext1',                                   'ggZZTo4e_ext2',                                    ],
   [ 'WWToLNuQQ',                                       'WWToLNuQQ_ext1',                                  'WWToLNuQQ_PSweights_ext1',                         ],
-  [ 'TTToHadronic',                                    'TTToHadronic_PSweights',                           ],
   [ 'TTWJetsToLNu',                                    'TTWJetsToLNu_PSweights',                           ],
+  [ 'TTToHadronic',                                    'TTToHadronic_PSweights',                           ],
   [ 'TTTo2L2Nu',                                       'TTTo2L2Nu_PSweights',                              ],
   [ 'DYJetsToLL_M-10to50',                             'DYJetsToLL_M-10to50_ext1',                         ],
   [ 'ST_t-channel_antitop_4f_inclusiveDecays',         'ST_t-channel_antitop_4f_inclusiveDecays_PSweights',  ],
-  [ 'DY1JetsToLL_M-50_ext1',                           'DY1JetsToLL_M-50',                                 ],
+  [ 'TTZToQQ',                                         'TTZToQQ_ext1',                                     ],
   [ 'WWTo2L2Nu',                                       'WWTo2L2Nu_PSweights_ext1',                         ],
   [ 'DYJetsToLL_M50_HT200to400',                       'DYJetsToLL_M50_HT200to400_ext1',                   ],
   [ 'DYJetsToLL_M-4to50_HT-600toInf',                  'DYJetsToLL_M-4to50_HT-600toInf_ext1',              ],
@@ -25145,6 +25532,7 @@ samples_2017["sum_events"] = [
   [ 'ggZZTo4tau',                                      'ggZZTo4tau_ext1',                                  ],
   [ 'ZZTo4L',                                          'ZZTo4L_ext1',                                     'ZZTo4L_ext2',                                      ],
   [ 'WJetsToLNu_madgraphMLM',                          'WJetsToLNu_madgraphMLM_ext1',                      ],
+  [ 'DY1JetsToLL_M-50_ext1',                           'DY1JetsToLL_M-50',                                 ],
   [ 'TTToSemiLeptonic',                                'TTToSemiLeptonic_PSweights',                       ],
   [ 'TTWJets_LO',                                      'TTWJets_LO_ext1',                                  ],
   [ 'GluGluHToMuMu_M125',                              'GluGluHToMuMu_M125_ext1',                          ],
