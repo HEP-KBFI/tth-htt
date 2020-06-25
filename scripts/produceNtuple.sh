@@ -40,6 +40,8 @@ SKIP_TOOLS_STEP=$(python -c "execfile('$SCRIPT'); print(skip_tools_step)")
 REMOVE_INTERMEDIATE=$(python -c "execfile('$SCRIPT'); print(remove_intermediate)")
 COMP_TOP_RWGT=$(python -c "execfile('$SCRIPT'); print(compTopRwgt)")
 COMP_HTXS=$(python -c "execfile('$SCRIPT'); print(compHTXS)")
+SPLIT_BY_LHENJET=$(python -c "execfile('$SCRIPT'); print(splitByNlheJet)")
+
 echo "Found the following file(s): '$FILES'"
 echo "Found the following executable: '$EXECUTABLE'"
 echo "Era? '$ERA'"
@@ -49,6 +51,7 @@ echo "Skip tools step? '$SKIP_TOOLS_STEP'"
 echo "Remove intermediate file? '$REMOVE_INTERMEDIATE'"
 echo "Compute SFs for top reweighting? '$COMP_TOP_RWGT'"
 echo "Count events in bins of Higgs pT? '$COMP_HTXS'"
+echo "Splitting event counts by # LHE jets? '$SPLIT_BY_LHENJET'"
 
 if [[ -z $(which "$EXECUTABLE" 2>/dev/null) ]]; then
   echo "Executable '$EXECUTABLE' not in \$PATH";
@@ -93,6 +96,8 @@ if [ "$SKIP_TOOLS_STEP" == "False" ]; then
         COUNTHISTOGRAM_MODULE="${COUNTHISTOGRAM_MODULE}CompTopRwgt";
       elif [ "$COMP_HTXS" == "True" ]; then
         COUNTHISTOGRAM_MODULE="${COUNTHISTOGRAM_MODULE}CompHTXS";
+      elif [ "$SPLIT_BY_LHENJET" == "True" ]; then
+        COUNTHISTOGRAM_MODULE="${COUNTHISTOGRAM_MODULE}SplitByLHENjet";
       fi
       nano_postproc.py -s i -I tthAnalysis.NanoAODTools.postprocessing.tthModules $COUNTHISTOGRAM_MODULE \
                        . $F_i
