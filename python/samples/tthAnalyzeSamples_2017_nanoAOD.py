@@ -17937,13 +17937,13 @@ samples_2017["/TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAODv2-PU201
   ("type",                            "mc"),
   ("sample_category",                 "TTZ"),
   ("process_name_specific",           "TTZToQQ"),
-  ("nof_files",                       4),
+  ("nof_files",                       8),
   ("nof_db_files",                    16),
   ("nof_events",                      {
   }),
-  ("nof_tree_events",                 100100),
+  ("nof_tree_events",                 352900),
   ("nof_db_events",                   750000),
-  ("fsize_local",                     297485195), # 297.49MB, avg file size 74.37MB
+  ("fsize_local",                     1049321643), # 1.05GB, avg file size 131.17MB
   ("fsize_db",                        47371109410), # 47.37GB, avg file size 2.96GB
   ("use_it",                          False),
   ("xsection",                        0.5868),
@@ -17958,7 +17958,7 @@ samples_2017["/TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAODv2-PU201
       OD([
         ("path",      "/hdfs/cms/store/user/kaehatah/2017v2_2020Jun15/TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8/2017v2_2020Jun15_TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/200615_103250"),
         ("selection", "*"),
-        ("blacklist", [1, 2, 3]),
+        ("blacklist", [1, 2, 5, 7]),
       ]),
     ]
   ),
@@ -17984,9 +17984,9 @@ samples_2017["/TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAODv2-PU201
   ("nof_db_files",                    223),
   ("nof_events",                      {
   }),
-  ("nof_tree_events",                 7440000),
+  ("nof_tree_events",                 7640000),
   ("nof_db_events",                   8940000),
-  ("fsize_local",                     22065975478), # 22.07GB, avg file size 245.18MB
+  ("fsize_local",                     22658987485), # 22.66GB, avg file size 251.77MB
   ("fsize_db",                        565843250989), # 565.84GB, avg file size 2.54GB
   ("use_it",                          False),
   ("xsection",                        0.5868),
@@ -18001,7 +18001,7 @@ samples_2017["/TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17MiniAODv2-PU201
       OD([
         ("path",      "/hdfs/cms/store/user/kaehatah/2017v2_2020Jun15/TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8/2017v2_2020Jun15_TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1/200615_103354"),
         ("selection", "*"),
-        ("blacklist", [1, 2, 5, 10, 12, 28, 30, 69, 71, 73, 76, 77, 80, 82, 84]),
+        ("blacklist", [1, 2, 5, 10, 12, 28, 69, 71, 73, 77, 80, 82, 84]),
       ]),
     ]
   ),
@@ -18242,9 +18242,9 @@ samples_2017["/TTWJetsToQQ_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIIFall1
   ("nof_db_files",                    18),
   ("nof_events",                      {
   }),
-  ("nof_tree_events",                 213947),
+  ("nof_tree_events",                 314161),
   ("nof_db_events",                   811306),
-  ("fsize_local",                     619718295), # 619.72MB, avg file size 68.86MB
+  ("fsize_local",                     908638550), # 908.64MB, avg file size 100.96MB
   ("fsize_db",                        50441060315), # 50.44GB, avg file size 2.80GB
   ("use_it",                          False),
   ("xsection",                        0.4049),
@@ -18259,7 +18259,7 @@ samples_2017["/TTWJetsToQQ_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIIFall1
       OD([
         ("path",      "/hdfs/cms/store/user/kaehatah/2017v2_2020Jun15/TTWJetsToQQ_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/2017v2_2020Jun15_TTWJetsToQQ_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/200615_103106"),
         ("selection", "*"),
-        ("blacklist", [2, 3, 4, 5, 7, 8]),
+        ("blacklist", [2, 4, 5, 7, 8]),
       ]),
     ]
   ),

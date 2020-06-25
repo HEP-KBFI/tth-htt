@@ -16571,9 +16571,9 @@ samples_2018["/TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8/RunIIAutumn18MiniAOD-102X_
   ("nof_db_files",                    30),
   ("nof_events",                      {
   }),
-  ("nof_tree_events",                 250000),
+  ("nof_tree_events",                 650000),
   ("nof_db_events",                   750000),
-  ("fsize_local",                     736627871), # 736.63MB, avg file size 92.08MB
+  ("fsize_local",                     1912619013), # 1.91GB, avg file size 239.08MB
   ("fsize_db",                        47083718012), # 47.08GB, avg file size 1.57GB
   ("use_it",                          False),
   ("xsection",                        0.5868),
@@ -16588,7 +16588,7 @@ samples_2018["/TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8/RunIIAutumn18MiniAOD-102X_
       OD([
         ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Jun15/TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8/2018_2020Jun15_TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/200615_110709"),
         ("selection", "*"),
-        ("blacklist", [2, 4, 5, 6, 7]),
+        ("blacklist", [4]),
       ]),
     ]
   ),
@@ -16618,9 +16618,9 @@ samples_2018["/TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8/RunIIAutumn18MiniAOD-102X_
   ("nof_db_files",                    238),
   ("nof_events",                      {
   }),
-  ("nof_tree_events",                 3191000),
+  ("nof_tree_events",                 4991000),
   ("nof_db_events",                   8891000),
-  ("fsize_local",                     9380152143), # 9.38GB, avg file size 105.39MB
+  ("fsize_local",                     14670717736), # 14.67GB, avg file size 164.84MB
   ("fsize_db",                        555110604743), # 555.11GB, avg file size 2.33GB
   ("use_it",                          False),
   ("xsection",                        0.5868),
@@ -16635,7 +16635,7 @@ samples_2018["/TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8/RunIIAutumn18MiniAOD-102X_
       OD([
         ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Jun15/TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8/2018_2020Jun15_TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1/200615_110844"),
         ("selection", "*"),
-        ("blacklist", [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17, 18, 19, 20, 22, 23, 24, 25, 27, 28, 30, 31, 32, 33, 34, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 48, 54, 55, 56, 61, 62, 63, 65, 67, 72, 74, 78, 79, 80, 85, 86, 88]),
+        ("blacklist", [1, 2, 3, 4, 6, 7, 9, 10, 11, 12, 16, 18, 19, 20, 24, 25, 32, 33, 34, 37, 39, 40, 42, 45, 48, 54, 55, 56, 61, 62, 63, 65, 67, 72, 78, 79, 80, 85, 86]),
       ]),
     ]
   ),
