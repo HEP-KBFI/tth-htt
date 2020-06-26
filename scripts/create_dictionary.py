@@ -547,25 +547,29 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
   is_data = meta_dict[key]['sample_category'] == 'data_obs'
   is_rwgt = meta_dict[key]['sample_category'] in [ "tHq", "tHW", "ttH_ctcvcp" ]
   is_htxs = meta_dict[key]['sample_category'].startswith('ttH')
+  is_njet = meta_dict[key]['process_name_specific'].startswith(('DYToLL_0J', 'DYToLL_1J', 'DYToLL_2J', 'DYJetsToLL_M-50_amcatnloFXFX'))
+  assert(not (is_htxs and is_njet))
 
   lheScaleArr = copy.deepcopy(LHESCALEARR)
   th_arr = [ -1 ]
   if is_rwgt:
     th_arr.extend(TH_INDICES)
-  htxs_arr = [ "" ]
+  aux_arr = [ "" ]
   if is_htxs:
-    htxs_arr.extend(HTXS_BINS)
+    aux_arr.extend(HTXS_BINS)
+  elif is_njet:
+    aux_arr.extend("LHENjet{}_{}".format(njet, pos_neg) for njet in range(4) for pos_neg in [ "pos", "neg"])
   histogram_names = collections.OrderedDict([ ( HISTOGRAM_COUNT, -1 ) ])
   if not is_data:
     for tH_idx in th_arr:
-      for htxs_bin in htxs_arr:
+      for aux_bin in aux_arr:
         for histogram_name_tmp in HISTOGRAM_COUNT_COMMON_MC:
           histogram_name = histogram_name_tmp
           if tH_idx >= 0:
             histogram_name += "_rwgt{}".format(tH_idx)
-          if htxs_bin:
-            histogram_name += "_{}".format(htxs_bin)
-            histogram_name_count = "{}_{}".format(HISTOGRAM_COUNT, htxs_bin)
+          if aux_bin:
+            histogram_name += "_{}".format(aux_bin)
+            histogram_name_count = "{}_{}".format(HISTOGRAM_COUNT, aux_bin)
             if histogram_name_count not in histogram_names:
               histogram_names[histogram_name_count] = -1
           histogram_names[histogram_name] = -1
@@ -574,8 +578,8 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
             histogram_name = histogram_name_tmp
             if tH_idx >= 0:
               histogram_name += "_rwgt{}".format(tH_idx)
-            if htxs_bin:
-              histogram_name += "_{}".format(htxs_bin)
+            if aux_bin:
+              histogram_name += "_{}".format(aux_bin)
             histogram_names[histogram_name] = -1
 
   if key.startswith('/TTTo'):
