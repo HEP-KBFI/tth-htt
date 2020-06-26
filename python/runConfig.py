@@ -172,10 +172,17 @@ class tthAnalyzeParser(argparse.ArgumentParser):
     )
 
   def add_tau_id_wp(self, default_wp = '', required = False, choices = []):
-    self.add_argument('-w', '--tau-id-wp',
-      type = str, dest = 'tau_id_wp', metavar = 'tau ID WP', default = default_wp, required = required, choices = choices,
-      help = 'R|Overwrite tau ID working point (choices: %s)' % tthAnalyzeParser.cat(choices),
-    )
+    argparse_args = {
+      'type'     : str,
+      'dest'     : 'tau_id_wp',
+      'metavar'  : 'tau ID WP',
+      'default'  : default_wp,
+      'required' : required,
+      'help'     : 'R|Overwrite tau ID working point (choices: %s)' % tthAnalyzeParser.cat(choices),
+    }
+    if choices:
+      argparse_args['choices'] = choices
+    self.add_argument('-w', '--tau-id-wp', **argparse_args)
 
   def add_tau_id(self, default_id = 'deepVSj'):
     choices = [ 'dR03mva', 'deepVSj' ]
