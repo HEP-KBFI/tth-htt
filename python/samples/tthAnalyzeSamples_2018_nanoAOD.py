@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2020-03-03 08:06:19 with the following command:
+# file generated at 2020-06-23 13:18:37 with the following command:
 # create_dictionary.py -m python/samples/metaDict_2018.py -p python/samples/sampleLocations_2018_nanoAOD.txt -N samples_2018 -E 2018 -o python/samples -g tthAnalyzeSamples_2018_nanoAOD.py -M
 
 samples_2018 = OD()
@@ -16563,6 +16563,100 @@ samples_2018["/TTZToLLNuNu_M-10_TuneCP5_13TeV-amcatnlo-pythia8/RunIIAutumn18Mini
   ]),
 ])
 
+samples_2018["/TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "TTZ"),
+  ("process_name_specific",           "TTZToQQ"),
+  ("nof_files",                       8),
+  ("nof_db_files",                    30),
+  ("nof_events",                      {
+  }),
+  ("nof_tree_events",                 650000),
+  ("nof_db_events",                   750000),
+  ("fsize_local",                     1912619013), # 1.91GB, avg file size 239.08MB
+  ("fsize_db",                        47083718012), # 47.08GB, avg file size 1.57GB
+  ("use_it",                          False),
+  ("xsection",                        0.5868),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("nof_PSweights",                   4),
+  ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Jun15/TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8/2018_2020Jun15_TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/200615_110709"),
+        ("selection", "*"),
+        ("blacklist", [4]),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+    "HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg",
+    "HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg",
+    "HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg",
+    "HLT_Ele24_eta2p1_WPTight_Gsf_LooseChargedIsoPFTau30_eta2p1_CrossL1",
+    "HLT_IsoMu20_eta2p1_LooseChargedIsoPFTau27_eta2p1_CrossL1",
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
+samples_2018["/TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "TTZ"),
+  ("process_name_specific",           "TTZToQQ_ext1"),
+  ("nof_files",                       89),
+  ("nof_db_files",                    238),
+  ("nof_events",                      {
+  }),
+  ("nof_tree_events",                 4991000),
+  ("nof_db_events",                   8891000),
+  ("fsize_local",                     14670717736), # 14.67GB, avg file size 164.84MB
+  ("fsize_db",                        555110604743), # 555.11GB, avg file size 2.33GB
+  ("use_it",                          False),
+  ("xsection",                        0.5868),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("nof_PSweights",                   4),
+  ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Jun15/TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8/2018_2020Jun15_TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1/200615_110844"),
+        ("selection", "*"),
+        ("blacklist", [1, 2, 3, 4, 6, 7, 9, 10, 11, 12, 16, 18, 19, 20, 24, 25, 32, 33, 34, 37, 39, 40, 42, 45, 48, 54, 55, 56, 61, 62, 63, 65, 67, 72, 78, 79, 80, 85, 86]),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+    "HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg",
+    "HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg",
+    "HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg",
+    "HLT_Ele24_eta2p1_WPTight_Gsf_LooseChargedIsoPFTau30_eta2p1_CrossL1",
+    "HLT_IsoMu20_eta2p1_LooseChargedIsoPFTau27_eta2p1_CrossL1",
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
 samples_2018["/TTZToLL_M-1to10_TuneCP5_13TeV-amcatnlo-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM"] = OD([
   ("type",                            "mc"),
   ("sample_category",                 "TTZ"),
@@ -16683,6 +16777,53 @@ samples_2018["/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIIAutu
         ("path",      "/hdfs/cms/store/user/rdewanje/2018_2019Oct25/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/2018_2019Oct25_TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/191024_212639"),
         ("selection", "*"),
         ("blacklist", [2, 11, 19, 35, 44]),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+    "HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg",
+    "HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg",
+    "HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg",
+    "HLT_Ele24_eta2p1_WPTight_Gsf_LooseChargedIsoPFTau30_eta2p1_CrossL1",
+    "HLT_IsoMu20_eta2p1_LooseChargedIsoPFTau27_eta2p1_CrossL1",
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
+samples_2018["/TTWJetsToQQ_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "TTW"),
+  ("process_name_specific",           "TTWJetsToQQ"),
+  ("nof_files",                       9),
+  ("nof_db_files",                    28),
+  ("nof_events",                      {
+  }),
+  ("nof_tree_events",                 736928),
+  ("nof_db_events",                   835296),
+  ("fsize_local",                     2106790770), # 2.11GB, avg file size 234.09MB
+  ("fsize_db",                        51705071156), # 51.71GB, avg file size 1.85GB
+  ("use_it",                          False),
+  ("xsection",                        0.4049),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("nof_PSweights",                   4),
+  ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Jun15/TTWJetsToQQ_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/2018_2020Jun15_TTWJetsToQQ_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/200615_110535"),
+        ("selection", "*"),
+        ("blacklist", [1]),
       ]),
     ]
   ),
@@ -18608,6 +18749,382 @@ samples_2018["/ZHToTauTau_M125_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102X_up
     [
       OD([
         ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/ZHToTauTau_M125_13TeV_powheg_pythia8/2018_2019Sep29_ZHToTauTau_M125_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/190929_144631"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+    "HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg",
+    "HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg",
+    "HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg",
+    "HLT_Ele24_eta2p1_WPTight_Gsf_LooseChargedIsoPFTau30_eta2p1_CrossL1",
+    "HLT_IsoMu20_eta2p1_LooseChargedIsoPFTau27_eta2p1_CrossL1",
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
+samples_2018["/HZJ_HToWW_M125_13TeV_powheg_jhugen714_pythia8_TuneCP5/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "VH"),
+  ("process_name_specific",           "HZJ_HToWW"),
+  ("nof_files",                       10),
+  ("nof_db_files",                    35),
+  ("nof_events",                      {
+  }),
+  ("nof_tree_events",                 999993),
+  ("nof_db_events",                   999993),
+  ("fsize_local",                     1830422500), # 1.83GB, avg file size 183.04MB
+  ("fsize_db",                        45663026359), # 45.66GB, avg file size 1.30GB
+  ("use_it",                          False),
+  ("xsection",                        0.1889),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("nof_PSweights",                   4),
+  ("LHE_set",                         "LHA IDs 306000 - 306102 -> NNPDF31_nnlo_hessian_pdfas PDF set, expecting 103 weights (counted 103 weights)"),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Jun15/HZJ_HToWW_M125_13TeV_powheg_jhugen714_pythia8_TuneCP5/2018_2020Jun15_HZJ_HToWW_M125_13TeV_powheg_jhugen714_pythia8_TuneCP5__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/200615_110432"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+    "HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg",
+    "HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg",
+    "HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg",
+    "HLT_Ele24_eta2p1_WPTight_Gsf_LooseChargedIsoPFTau30_eta2p1_CrossL1",
+    "HLT_IsoMu20_eta2p1_LooseChargedIsoPFTau27_eta2p1_CrossL1",
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
+samples_2018["/WminusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "VH"),
+  ("process_name_specific",           "WminusH_HToBB_WToLNu"),
+  ("nof_files",                       25),
+  ("nof_db_files",                    61),
+  ("nof_events",                      {
+  }),
+  ("nof_tree_events",                 2435200),
+  ("nof_db_events",                   2435200),
+  ("fsize_local",                     4035041220), # 4.04GB, avg file size 161.40MB
+  ("fsize_db",                        114172425100), # 114.17GB, avg file size 1.87GB
+  ("use_it",                          False),
+  ("xsection",                        0.1012),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("nof_PSweights",                   4),
+  ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Jun15/WminusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8/2018_2020Jun15_WminusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/200615_110949"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+    "HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg",
+    "HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg",
+    "HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg",
+    "HLT_Ele24_eta2p1_WPTight_Gsf_LooseChargedIsoPFTau30_eta2p1_CrossL1",
+    "HLT_IsoMu20_eta2p1_LooseChargedIsoPFTau27_eta2p1_CrossL1",
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
+samples_2018["/WminusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "VH"),
+  ("process_name_specific",           "WminusH_HToBB_WToLNu_ext1"),
+  ("nof_files",                       14),
+  ("nof_db_files",                    38),
+  ("nof_events",                      {
+  }),
+  ("nof_tree_events",                 1200000),
+  ("nof_db_events",                   1200000),
+  ("fsize_local",                     1993216351), # 1.99GB, avg file size 142.37MB
+  ("fsize_db",                        56354082060), # 56.35GB, avg file size 1.48GB
+  ("use_it",                          False),
+  ("xsection",                        0.1012),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("nof_PSweights",                   4),
+  ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Jun15/WminusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8/2018_2020Jun15_WminusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1/200615_111123"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+    "HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg",
+    "HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg",
+    "HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg",
+    "HLT_Ele24_eta2p1_WPTight_Gsf_LooseChargedIsoPFTau30_eta2p1_CrossL1",
+    "HLT_IsoMu20_eta2p1_LooseChargedIsoPFTau27_eta2p1_CrossL1",
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
+samples_2018["/WplusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "VH"),
+  ("process_name_specific",           "WplusH_HToBB_WToLNu"),
+  ("nof_files",                       25),
+  ("nof_db_files",                    65),
+  ("nof_events",                      {
+  }),
+  ("nof_tree_events",                 2409200),
+  ("nof_db_events",                   2409200),
+  ("fsize_local",                     4018061853), # 4.02GB, avg file size 160.72MB
+  ("fsize_db",                        113941396858), # 113.94GB, avg file size 1.75GB
+  ("use_it",                          False),
+  ("xsection",                        0.1595),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("nof_PSweights",                   4),
+  ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Jun15/WplusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8/2018_2020Jun15_WplusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/200615_111255"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+    "HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg",
+    "HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg",
+    "HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg",
+    "HLT_Ele24_eta2p1_WPTight_Gsf_LooseChargedIsoPFTau30_eta2p1_CrossL1",
+    "HLT_IsoMu20_eta2p1_LooseChargedIsoPFTau27_eta2p1_CrossL1",
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
+samples_2018["/WplusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "VH"),
+  ("process_name_specific",           "WplusH_HToBB_WToLNu_ext1"),
+  ("nof_files",                       14),
+  ("nof_db_files",                    40),
+  ("nof_events",                      {
+  }),
+  ("nof_tree_events",                 1200000),
+  ("nof_db_events",                   1200000),
+  ("fsize_local",                     2005473613), # 2.01GB, avg file size 143.25MB
+  ("fsize_db",                        56822247371), # 56.82GB, avg file size 1.42GB
+  ("use_it",                          False),
+  ("xsection",                        0.1595),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("nof_PSweights",                   4),
+  ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Jun15/WplusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8/2018_2020Jun15_WplusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1/200615_111358"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+    "HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg",
+    "HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg",
+    "HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg",
+    "HLT_Ele24_eta2p1_WPTight_Gsf_LooseChargedIsoPFTau30_eta2p1_CrossL1",
+    "HLT_IsoMu20_eta2p1_LooseChargedIsoPFTau27_eta2p1_CrossL1",
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
+samples_2018["/DYJetsToLL_0J_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "EWK"),
+  ("process_name_specific",           "DYToLL_0J"),
+  ("nof_files",                       945),
+  ("nof_db_files",                    1405),
+  ("nof_events",                      {
+  }),
+  ("nof_tree_events",                 93979507),
+  ("nof_db_events",                   93979507),
+  ("fsize_local",                     93557584077), # 93.56GB, avg file size 99.00MB
+  ("fsize_db",                        3831294218269), # 3.83TB, avg file size 2.73GB
+  ("use_it",                          False),
+  ("xsection",                        4843.6),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("nof_PSweights",                   4),
+  ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Jun15/DYJetsToLL_0J_TuneCP5_13TeV-amcatnloFXFX-pythia8/2018_2020Jun15_DYJetsToLL_0J_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/200615_110019"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+    "HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg",
+    "HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg",
+    "HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg",
+    "HLT_Ele24_eta2p1_WPTight_Gsf_LooseChargedIsoPFTau30_eta2p1_CrossL1",
+    "HLT_IsoMu20_eta2p1_LooseChargedIsoPFTau27_eta2p1_CrossL1",
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
+samples_2018["/DYJetsToLL_1J_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "EWK"),
+  ("process_name_specific",           "DYToLL_1J"),
+  ("nof_files",                       972),
+  ("nof_db_files",                    1517),
+  ("nof_events",                      {
+  }),
+  ("nof_tree_events",                 96530534),
+  ("nof_db_events",                   96929140),
+  ("fsize_local",                     123926888999), # 123.93GB, avg file size 127.50MB
+  ("fsize_db",                        4318408661253), # 4.32TB, avg file size 2.85GB
+  ("use_it",                          False),
+  ("xsection",                        897.8),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("nof_PSweights",                   4),
+  ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Jun15/DYJetsToLL_1J_TuneCP5_13TeV-amcatnloFXFX-pythia8/2018_2020Jun15_DYJetsToLL_1J_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/200615_110153"),
+        ("selection", "*"),
+        ("blacklist", [27, 28, 792, 793]),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+    "HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg",
+    "HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg",
+    "HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg",
+    "HLT_Ele24_eta2p1_WPTight_Gsf_LooseChargedIsoPFTau30_eta2p1_CrossL1",
+    "HLT_IsoMu20_eta2p1_LooseChargedIsoPFTau27_eta2p1_CrossL1",
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
+samples_2018["/DYJetsToLL_2J_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "EWK"),
+  ("process_name_specific",           "DYToLL_2J"),
+  ("nof_files",                       620),
+  ("nof_db_files",                    1102),
+  ("nof_events",                      {
+  }),
+  ("nof_tree_events",                 61848731),
+  ("nof_db_events",                   61848731),
+  ("fsize_local",                     104534437048), # 104.53GB, avg file size 168.60MB
+  ("fsize_db",                        2780018207316), # 2.78TB, avg file size 2.52GB
+  ("use_it",                          False),
+  ("xsection",                        335.8),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("nof_PSweights",                   4),
+  ("LHE_set",                         "LHA IDs 306000 - 306102 -> NNPDF31_nnlo_hessian_pdfas PDF set, expecting 103 weights (counted 103 weights)"),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Jun15/DYJetsToLL_2J_TuneCP5_13TeV-amcatnloFXFX-pythia8/2018_2020Jun15_DYJetsToLL_2J_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/200615_110257"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -23143,20 +23660,70 @@ samples_2018["/QCD_Pt-1000toInf_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn1
   ]),
 ])
 
+samples_2018["/TTWJetsToLNu_EWK_5f_NLO/RunIIAutumn18MiniAOD/USER"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "TTW"),
+  ("process_name_specific",           "TTWJetsToLNu_EWK_5f_NLO"),
+  ("nof_files",                       1),
+  ("nof_db_files",                    54),
+  ("nof_events",                      {
+  }),
+  ("nof_tree_events",                 48000),
+  ("nof_db_events",                   49000),
+  ("fsize_local",                     141089094), # 141.09MB, avg file size 141.09MB
+  ("fsize_db",                        4386666225), # 4.39GB, avg file size 81.23MB
+  ("use_it",                          False),
+  ("xsection",                        0.0162562),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("nof_PSweights",                   4),
+  ("LHE_set",                         ""),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Jun16/TTWJetsToLNu_EWK_5f_NLO/2018_2020Jun16_TTWJetsToLNu_EWK_5f_NLO__RunIIAutumn18MiniAOD/000000_000000"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+    "HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg",
+    "HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg",
+    "HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg",
+    "HLT_Ele24_eta2p1_WPTight_Gsf_LooseChargedIsoPFTau30_eta2p1_CrossL1",
+    "HLT_IsoMu20_eta2p1_LooseChargedIsoPFTau27_eta2p1_CrossL1",
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
 samples_2018["sum_events"] = [
   [ 'ZZTo4L_ext1',                                     'ZZTo4L_ext2',                                      ],
   [ 'ZZTo2L2Nu_ext1',                                  'ZZTo2L2Nu_ext2',                                   ],
-  [ 'ggZZTo4mu',                                       'ggZZTo4mu_ext1',                                   ],
+  [ 'WplusH_HToBB_WToLNu',                             'WplusH_HToBB_WToLNu_ext1',                         ],
   [ 'QCD_Pt80to120_Mu5',                               'QCD_Pt80to120_Mu5_ext1',                           ],
   [ 'DYJetsToLL_M50_HT400to600_PSweights',             'DYJetsToLL_M50_HT400to600_PSweights_ext2',         ],
+  [ 'ggZZTo4mu',                                       'ggZZTo4mu_ext1',                                   ],
   [ 'ggZZTo4e',                                        'ggZZTo4e_ext1',                                    ],
-  [ 'GluGluHToMuMu_M125',                              'GluGluHToMuMu_M125_ext1',                          ],
-  [ 'QCD_Pt470to600_Mu5',                              'QCD_Pt470to600_Mu5_ext1',                          ],
-  [ 'ZH_HToBB_ZToLL',                                  'ZH_HToBB_ZToLL_ext1',                              ],
-  [ 'DYJetsToLL_M-50_amcatnloFXFX',                    'DYJetsToLL_M-50_amcatnloFXFX_ext2',                ],
-  [ 'QCD_Pt120to170_Mu5',                              'QCD_Pt120to170_Mu5_ext1',                          ],
   [ 'WZTo3LNu',                                        'WZTo3LNu_ext1',                                    ],
+  [ 'QCD_Pt470to600_Mu5',                              'QCD_Pt470to600_Mu5_ext1',                          ],
+  [ 'WminusH_HToBB_WToLNu',                            'WminusH_HToBB_WToLNu_ext1',                        ],
+  [ 'DYJetsToLL_M-50_amcatnloFXFX',                    'DYJetsToLL_M-50_amcatnloFXFX_ext2',                ],
+  [ 'TTZToQQ',                                         'TTZToQQ_ext1',                                     ],
+  [ 'QCD_Pt120to170_Mu5',                              'QCD_Pt120to170_Mu5_ext1',                          ],
+  [ 'GluGluHToMuMu_M125',                              'GluGluHToMuMu_M125_ext1',                          ],
   [ 'QCD_Pt300to470_Mu5',                              'QCD_Pt300to470_Mu5_ext3',                          ],
+  [ 'ZH_HToBB_ZToLL',                                  'ZH_HToBB_ZToLL_ext1',                              ],
   [ 'TTWW_ext1',                                       'TTWW_ext2',                                        ],
 ]
 

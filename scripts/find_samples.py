@@ -473,7 +473,7 @@ def scan_private(dataset_private_path):
     fs_results['size'] += hdfs.getsize(dataset_private_file)
     fs_results['nevents'] += nof_events
     fs_results['nfiles'] += 1
-    current_mtime = int(hdfs.getmtime(dataset_private_file).timestamp())
+    current_mtime = int(hdfs.getmtime(dataset_private_file).strftime('%s'))
     if current_mtime > fs_results['last_modification_date']:
       fs_results['last_modification_date'] = current_mtime
   # Convert the results to strings
@@ -745,6 +745,8 @@ if __name__ == '__main__':
         dataset_private_path = das_query_results[dataset]['private_path']
         if not dataset_private_path:
           raise ValueError('No path provided for sample %s' % dataset)
+        if dataset_private_path.startswith('/store'):
+          dataset_private_path = '/hdfs/cms{}'.format(dataset_private_path)
         fs_results = scan_private(dataset_private_path)
 
         das_query_results[dataset]['name'] = dataset

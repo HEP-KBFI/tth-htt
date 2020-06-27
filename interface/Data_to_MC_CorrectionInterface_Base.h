@@ -27,16 +27,40 @@ public:
   // set lepton type, pT and eta
   // (to be called once per event, before calling any of the getSF.. functions)
   void
-  setLeptons(int lepton1_type,      double lepton1_pt,      double lepton1_cone_pt,      double lepton1_eta,
-             int lepton2_type = -1, double lepton2_pt = 0., double lepton2_cone_pt = 0., double lepton2_eta = 0.,
-             int lepton3_type = -1, double lepton3_pt = 0., double lepton3_cone_pt = 0., double lepton3_eta = 0.,
-             int lepton4_type = -1, double lepton4_pt = 0., double lepton4_cone_pt = 0., double lepton4_eta = 0.);
+  setLeptons(int lepton1_type, double lepton1_pt, double lepton1_cone_pt, double lepton1_eta);
 
   void
-  setHadTaus(int hadTau1_genPdgId,      double hadTau1_pt,      double hadTau1_eta,
-             int hadTau2_genPdgId = -1, double hadTau2_pt = 0., double hadTau2_eta = 0.,
-             int hadTau3_genPdgId = -1, double hadTau3_pt = 0., double hadTau3_eta = 0.,
-             int hadTau4_genPdgId = -1, double hadTau4_pt = 0., double hadTau4_eta = 0.);
+  setLeptons(int lepton1_type, double lepton1_pt, double lepton1_cone_pt, double lepton1_eta,
+             int lepton2_type, double lepton2_pt, double lepton2_cone_pt, double lepton2_eta);
+
+  void
+  setLeptons(int lepton1_type, double lepton1_pt, double lepton1_cone_pt, double lepton1_eta,
+             int lepton2_type, double lepton2_pt, double lepton2_cone_pt, double lepton2_eta,
+             int lepton3_type, double lepton3_pt, double lepton3_cone_pt, double lepton3_eta);
+
+  void
+  setLeptons(int lepton1_type, double lepton1_pt, double lepton1_cone_pt, double lepton1_eta,
+             int lepton2_type, double lepton2_pt, double lepton2_cone_pt, double lepton2_eta,
+             int lepton3_type, double lepton3_pt, double lepton3_cone_pt, double lepton3_eta,
+             int lepton4_type, double lepton4_pt, double lepton4_cone_pt, double lepton4_eta);
+
+  void
+  setHadTaus(int hadTau1_genPdgId, double hadTau1_pt, double hadTau1_eta);
+
+  void
+  setHadTaus(int hadTau1_genPdgId, double hadTau1_pt, double hadTau1_eta,
+             int hadTau2_genPdgId, double hadTau2_pt, double hadTau2_eta);
+
+  void
+  setHadTaus(int hadTau1_genPdgId, double hadTau1_pt, double hadTau1_eta,
+             int hadTau2_genPdgId, double hadTau2_pt, double hadTau2_eta,
+             int hadTau3_genPdgId, double hadTau3_pt, double hadTau3_eta);
+
+  void
+  setHadTaus(int hadTau1_genPdgId, double hadTau1_pt, double hadTau1_eta,
+             int hadTau2_genPdgId, double hadTau2_pt, double hadTau2_eta,
+             int hadTau3_genPdgId, double hadTau3_pt, double hadTau3_eta,
+             int hadTau4_genPdgId, double hadTau4_pt, double hadTau4_eta);
   //-----------------------------------------------------------------------------
 
   //-----------------------------------------------------------------------------
@@ -101,6 +125,9 @@ protected:
   comp_triggerSFsys_opt(double sf,
                         double sfErr,
                         TriggerSFsys central_or_shift) const;
+
+  void
+  setLeptons();
 
   //-----------------------------------------------------------------------------
   // data/MC corrections for electron and muon identification and isolation efficiency,

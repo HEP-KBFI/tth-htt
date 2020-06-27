@@ -1407,8 +1407,8 @@ int main(int argc, char* argv[])
       int selHadTau_lead_genPdgId = getHadTau_genPdgId(selHadTau_lead);
       int selHadTau_sublead_genPdgId = getHadTau_genPdgId(selHadTau_sublead);
       dataToMCcorrectionInterface->setHadTaus(
-        selHadTau_lead_genPdgId, selHadTau_lead->pt(), selHadTau_lead->eta(), selHadTau_lead->decayMode(),
-        selHadTau_sublead_genPdgId, selHadTau_sublead->pt(), selHadTau_sublead->eta(), selHadTau_sublead->decayMode()
+        selHadTau_lead_genPdgId, selHadTau_lead->pt(), selHadTau_lead->eta(),
+        selHadTau_sublead_genPdgId, selHadTau_sublead->pt(), selHadTau_sublead->eta()
       );
       evtWeightRecorder.record_hadTauID_and_Iso(dataToMCcorrectionInterface);
       evtWeightRecorder.record_eToTauFakeRate(dataToMCcorrectionInterface);
