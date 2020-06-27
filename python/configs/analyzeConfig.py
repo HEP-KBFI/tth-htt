@@ -584,22 +584,18 @@ class analyzeConfig(object):
         self.leptonFakeRateWeight_histogramName_e = "FR_mva%s_el_%s_NC" % (convert_lep_wp(self.lep_mva_cut_e), suffix)
         self.leptonFakeRateWeight_histogramName_mu = "FR_mva%s_mu_%s" % (convert_lep_wp(self.lep_mva_cut_mu), suffix)
 
-    def relax_hadTau_selection(self, hadTau_selection_nominal):
-        assert(hadTau_selection_nominal.startswith("deepVSj"))
-        if hadTau_selection_nominal == "deepVSjVVVLoose":
-            raise RuntimeError("Too loose tau ID WP: %s" % hadTau_selection_nominal)
-        elif hadTau_selection_nominal == "deepVSjVVLoose":
+    def set_BDT_training(self, hadTau_selection_relaxed):
+        """Run analysis with loose selection criteria for leptons and hadronic taus,
+           for the purpose of preparing event list files for BDT training.
+        """
+        self.hadTau_selection_relaxed = hadTau_selection_relaxed
+        assert(self.hadTau_selection_relaxed.startswith("deepVSj"))
+        if self.hadTau_selection_relaxed == "deepVSjVVVLoose":
             if self.use_dymumu_tau_fr:
                 self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_deeptau_DYmumu_BDT_{}_v6.root".format(self.era)
             else:
                 self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_deeptau_BDT_{}_v6.root".format(self.era)
         assert(os.path.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', self.hadTauFakeRateWeight_inputFile)))
-            
-
-    def set_BDT_training(self):
-        """Run analysis with loose selection criteria for leptons and hadronic taus,
-           for the purpose of preparing event list files for BDT training.
-        """
         self.isBDTtraining = True
 
     def get_addMEM_systematics(self, central_or_shift):
