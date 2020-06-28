@@ -745,13 +745,9 @@ class analyzeConfig(object):
               elif central_or_shift in systematics.LHE().x1_up:
                 nof_events_label = 'CountWeightedLHEWeightScale{}'.format(count_suffix)
                 nof_events_idx = 5 # muR=1   muF=2
-                if len(sample_info["nof_events"][nof_events_label]) == 8:
-                  nof_events_idx -= 1
               elif central_or_shift in systematics.LHE().y1_up:
                 nof_events_label = 'CountWeightedLHEWeightScale{}'.format(count_suffix)
                 nof_events_idx = 7 # muR=2   muF=1
-                if len(sample_info["nof_events"][nof_events_label]) == 8:
-                  nof_events_idx -= 1
               elif central_or_shift in systematics.LHE().x1_down:
                 nof_events_label = 'CountWeightedLHEWeightScale{}'.format(count_suffix)
                 nof_events_idx = 3 # muR=1   muF=0.5
@@ -761,8 +757,6 @@ class analyzeConfig(object):
               elif central_or_shift in systematics.LHE().x1y1_up:
                 nof_events_label = 'CountWeightedLHEWeightScale{}'.format(count_suffix)
                 nof_events_idx = 8 # muR=2   muF=2
-                if len(sample_info["nof_events"][nof_events_label]) == 8:
-                  nof_events_idx -= 1
               elif central_or_shift in systematics.LHE().x1y1_down:
                 nof_events_label = 'CountWeightedLHEWeightScale{}'.format(count_suffix)
                 nof_events_idx = 0 # muR=0.5   muF=0.5

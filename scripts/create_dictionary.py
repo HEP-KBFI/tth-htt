@@ -710,8 +710,8 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
                 path           = subentry_file.name,
               ))
             nBins = histogram.GetNbinsX()
-            if nBins not in [ 8, 9 ] and histogram_name in lheScaleArr:
-              logging.warning("Expected 8 or 9 bins but found {nBins} bins in {histogram_name}".format(
+            if nBins != 9 and histogram_name in lheScaleArr:
+              logging.warning("Expected 9 bins but found {nBins} bins in {histogram_name}".format(
                 nBins          = nBins,
                 histogram_name = histogram_name,
               ))

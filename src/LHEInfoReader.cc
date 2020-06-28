@@ -114,7 +114,7 @@ LHEInfoReader::read() const
   //    [1] is muR=0.5 muF=1.0
   //    [2] is muR=0.5 muF=2.0
   //    [3] is muR=1.0 muF=0.5
-  //    [4] is muR=1.0 muF=1.0 <- missing if there are only 8 weights available
+  //    [4] is muR=1.0 muF=1.0
   //    [5] is muR=1.0 muF=2.0
   //    [6] is muR=2.0 muF=0.5
   //    [7] is muR=2.0 muF=1.0
@@ -127,15 +127,6 @@ LHEInfoReader::read() const
     weight_scale_xUp_    = gInstance->scale_weights_[5]; // muR=1.0 muF=2.0
     weight_scale_yUp_    = gInstance->scale_weights_[7]; // muR=2.0 muF=1.0
     weight_scale_xyUp_   = gInstance->scale_weights_[8]; // muR=2.0 muF=2.0
-  }
-  else if(gInstance->scale_nWeights_ == 8)
-  {
-    weight_scale_xyDown_ = gInstance->scale_weights_[0]; // muR=0.5 muF=0.5
-    weight_scale_yDown_  = gInstance->scale_weights_[1]; // muR=0.5 muF=1.0
-    weight_scale_xDown_  = gInstance->scale_weights_[3]; // muR=1.0 muF=0.5
-    weight_scale_xUp_    = gInstance->scale_weights_[4]; // muR=1.0 muF=2.0
-    weight_scale_yUp_    = gInstance->scale_weights_[6]; // muR=2.0 muF=1.0
-    weight_scale_xyUp_   = gInstance->scale_weights_[7]; // muR=2.0 muF=2.0
   }
   else
   {
