@@ -925,6 +925,7 @@ class analyzeConfig(object):
             'apply_genWeight',
             'apply_DYMCReweighting',
             'apply_DYMCNormScaleFactors',
+            'apply_l1PreFireWeight',
             'selEventsFileName_output',
             'fillGenEvtHistograms',
             'selectBDT',
