@@ -368,15 +368,19 @@ operator<<(std::ostream & stream,
             " tightCharge = "         << lepton.tightCharge()                   << ","
             " jetPtRatio = "          << lepton.jetPtRatio()                    << ","
             " jetPtRel = "            << lepton.jetPtRel()                      << ",\n"
-            " jetBtagCSV(default) = " << lepton.jetBtagCSV()                    << ","
-            " jetBtagCSV(DeepJet) = " << lepton.jetBtagCSV(Btag::kDeepJet)      << ","
-            " jetBtagCSV(DeepCSV) = " << lepton.jetBtagCSV(Btag::kDeepCSV)      << ","
-            " jetBtagCSV(CSVv2) = "   << lepton.jetBtagCSV(Btag::kCSVv2)        << ",\n"
-            " mvaRawTTH = "           << lepton.mvaRawTTH()                     << ","
-            " mvaRawTTH_cut = "       << lepton.mvaRawTTH_cut()                 << ",\n"
-            " is loose/fakeable/tight = " << lepton.isLoose()    << '/'
-                                          << lepton.isFakeable() << '/'
-                                          << lepton.isTight()    << ",\n"
+            " jetBtagCSV(default) = " << lepton.jetBtagCSV()
+  ;
+  std::cout << ", jetBtagCSV(DeepJet) = ";
+  if(lepton.hasJetBtagCSV(Btag::kDeepJet)) stream << lepton.jetBtagCSV(Btag::kDeepJet); else stream << "N/A";
+  std::cout << ", jetBtagCSV(DeepCSV) = ";
+  if(lepton.hasJetBtagCSV(Btag::kDeepCSV)) stream << lepton.jetBtagCSV(Btag::kDeepCSV); else stream << "N/A";
+  std::cout << ", jetBtagCSV(CSVv2) = ";
+  if(lepton.hasJetBtagCSV(Btag::kCSVv2))   stream << lepton.jetBtagCSV(Btag::kCSVv2);   else stream << "N/A";
+  stream << ", mvaRawTTH = "               << lepton.mvaRawTTH()
+         << ", mvaRawTTH_cut = "           << lepton.mvaRawTTH_cut()
+         << ", is loose/fakeable/tight = " << lepton.isLoose()       << '/'
+                                           << lepton.isFakeable()    << '/'
+                                           << lepton.isTight()       << ",\n"
             " gen. matching:";
   stream << ",\n  lepton = " << lepton.genLepton();
   if(lepton.genLepton())
