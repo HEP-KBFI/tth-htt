@@ -1485,25 +1485,22 @@ int main(int argc, char* argv[])
       evtWeightRecorder.record_jetToTau_FR_lead(jetToTauFakeRateInterface, selHadTau);
     }
 
-    if(! selectBDT)
+    if(applyFakeRateWeights == kFR_3L)
     {
-      if(applyFakeRateWeights == kFR_3L)
-      {
-        evtWeightRecorder.compute_FR_2l1tau(passesTight_lepton_lead, passesTight_lepton_sublead, passesTight_hadTau);
-      }
-      else if(applyFakeRateWeights == kFR_2lepton)
-      {
-        evtWeightRecorder.compute_FR_2l(passesTight_lepton_lead, passesTight_lepton_sublead);
-      }
-      else if (applyFakeRateWeights == kFR_1tau)
-      {
-        evtWeightRecorder.compute_FR_1tau(passesTight_hadTau);
-      }
-      // CV: apply data/MC ratio for jet->tau fake-rates in case data-driven "fake" background estimation is applied to leptons only
-      if(isMC && apply_hadTauFakeRateSF && hadTauSelection == kTight && !(selHadTau->genHadTau() || selHadTau->genLepton()))
-      {
-        evtWeightRecorder.record_jetToTau_SF_lead(jetToTauFakeRateInterface, selHadTau);
-      }
+      evtWeightRecorder.compute_FR_2l1tau(passesTight_lepton_lead, passesTight_lepton_sublead, passesTight_hadTau);
+    }
+    else if(applyFakeRateWeights == kFR_2lepton)
+    {
+      evtWeightRecorder.compute_FR_2l(passesTight_lepton_lead, passesTight_lepton_sublead);
+    }
+    else if (applyFakeRateWeights == kFR_1tau)
+    {
+      evtWeightRecorder.compute_FR_1tau(passesTight_hadTau);
+    }
+    // CV: apply data/MC ratio for jet->tau fake-rates in case data-driven "fake" background estimation is applied to leptons only
+    if(isMC && apply_hadTauFakeRateSF && hadTauSelection == kTight && !(selHadTau->genHadTau() || selHadTau->genLepton()))
+    {
+      evtWeightRecorder.record_jetToTau_SF_lead(jetToTauFakeRateInterface, selHadTau);
     }
 
     // require exactly two leptons passing tight selection criteria, to avoid overlap with other channels

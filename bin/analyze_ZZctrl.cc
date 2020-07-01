@@ -1251,18 +1251,16 @@ int main(int argc, char* argv[])
       }
     }
 
-    if ( !selectBDT ) {
-      if ( applyFakeRateWeights == kFR_4lepton ) {
-        bool passesTight_lepton_lead = isMatched(*selLepton_lead, tightElectrons) || isMatched(*selLepton_lead, tightMuons);
-        bool passesTight_lepton_sublead = isMatched(*selLepton_sublead, tightElectrons) || isMatched(*selLepton_sublead, tightMuons);
-        bool passesTight_lepton_third = isMatched(*selLepton_third, tightElectrons) || isMatched(*selLepton_third, tightMuons);
-        bool passesTight_lepton_fourth = isMatched(*selLepton_fourth, tightElectrons) || isMatched(*selLepton_fourth, tightMuons);
-        evtWeightRecorder.record_jetToLepton_FR_lead(leptonFakeRateInterface, selLepton_lead);
-        evtWeightRecorder.record_jetToLepton_FR_sublead(leptonFakeRateInterface, selLepton_sublead);
-        evtWeightRecorder.record_jetToLepton_FR_third(leptonFakeRateInterface, selLepton_third);
-        evtWeightRecorder.record_jetToLepton_FR_fourth(leptonFakeRateInterface, selLepton_fourth);
-        evtWeightRecorder.compute_FR_4l(passesTight_lepton_lead, passesTight_lepton_sublead, passesTight_lepton_third, passesTight_lepton_fourth);
-      }
+    if ( applyFakeRateWeights == kFR_4lepton ) {
+      bool passesTight_lepton_lead = isMatched(*selLepton_lead, tightElectrons) || isMatched(*selLepton_lead, tightMuons);
+      bool passesTight_lepton_sublead = isMatched(*selLepton_sublead, tightElectrons) || isMatched(*selLepton_sublead, tightMuons);
+      bool passesTight_lepton_third = isMatched(*selLepton_third, tightElectrons) || isMatched(*selLepton_third, tightMuons);
+      bool passesTight_lepton_fourth = isMatched(*selLepton_fourth, tightElectrons) || isMatched(*selLepton_fourth, tightMuons);
+      evtWeightRecorder.record_jetToLepton_FR_lead(leptonFakeRateInterface, selLepton_lead);
+      evtWeightRecorder.record_jetToLepton_FR_sublead(leptonFakeRateInterface, selLepton_sublead);
+      evtWeightRecorder.record_jetToLepton_FR_third(leptonFakeRateInterface, selLepton_third);
+      evtWeightRecorder.record_jetToLepton_FR_fourth(leptonFakeRateInterface, selLepton_fourth);
+      evtWeightRecorder.compute_FR_4l(passesTight_lepton_lead, passesTight_lepton_sublead, passesTight_lepton_third, passesTight_lepton_fourth);
     }
 
 //--- apply HLT filter
