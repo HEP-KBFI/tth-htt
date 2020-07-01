@@ -257,7 +257,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
                   else:
                     self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
                       "_".join([ hadTau_selection_and_frWeight, hadTau_charge_selection ]), process_name_or_dummy)
-    for subdirectory in [ "addBackgrounds", "addBackgroundLeptonFakes", "prepareDatacards", "addSystFakeRates", "makePlots" ]:
+    for subdirectory in [ "addBackgrounds", "addBackgroundLeptonFakes", "prepareDatacards", "addSystFakeRates", "makePlots", "stxs" ]:
       key_dir = getKey(subdirectory)
       for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT ]:
         initDict(self.dirs, [ key_dir, dir_type ])
@@ -612,6 +612,14 @@ class analyzeConfig_0l_2tau(analyzeConfig):
             })
           self.createCfg_add_syst_fakerate(self.jobOptions_add_syst_fakerate[key_add_syst_fakerate_job])
 
+          self.jobOptions_mergeHTXS[key_add_syst_fakerate_job] = {
+            'inputDatacard' : self.jobOptions_add_syst_fakerate[key_add_syst_fakerate_job]['outputFile'],
+            'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2_job],
+            'outputFile' : os.path.join(self.dirs['stxs'][DKEY_DCRD], "stxs_%s_%s_%s_%s.root" % add_syst_fakerate_job_tuple),
+            'histogramDir': getHistogramDir(category, "Tight", "disabled", hadTau_charge_selection),
+            'histogramToFit' : histogramToFit,
+          }
+
     logging.info("Creating configuration files to run 'makePlots'")
     key_makePlots_dir = getKey("makePlots")
     if "OS" in self.hadTau_charge_selections:
@@ -674,6 +682,7 @@ class analyzeConfig_0l_2tau(analyzeConfig):
     self.addToMakefile_add_syst_fakerate(lines_makefile)
     self.addToMakefile_make_plots(lines_makefile)
     self.addToMakefile_validate(lines_makefile)
+    self.addToMakefile_mergeHTXS(lines_makefile)
     self.createMakefile(lines_makefile)
 
     logging.info("Done.")

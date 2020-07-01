@@ -239,7 +239,7 @@ class analyzeConfig_3l(analyzeConfig):
                   else:
                     self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
                       "_".join([ lepton_selection_and_frWeight, chargeSumSelection ]), process_name_or_dummy)
-    for subdirectory in [ "addBackgrounds", "addBackgroundLeptonFakes", "prepareDatacards", "addSystFakeRates", "makePlots" ]:
+    for subdirectory in [ "addBackgrounds", "addBackgroundLeptonFakes", "prepareDatacards", "addSystFakeRates", "makePlots", "stxs" ]:
       key_dir = getKey(subdirectory)
       for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT ]:
         initDict(self.dirs, [ key_dir, dir_type ])
@@ -623,6 +623,14 @@ class analyzeConfig_3l(analyzeConfig):
             'histogramName_mcClosure_%s' % lepton_type : "%s/sel/evt/fakes_mc/%s" % (histogramDir_mcClosure, histogramToFit)
           })
         self.createCfg_add_syst_fakerate(self.jobOptions_add_syst_fakerate[key_add_syst_fakerate_job])
+        
+        self.jobOptions_mergeHTXS[key_add_syst_fakerate_job] = {
+          'inputDatacard' : self.jobOptions_add_syst_fakerate[key_add_syst_fakerate_job]['outputFile'],
+          'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2_job],
+          'outputFile' : os.path.join(self.dirs['stxs'][DKEY_DCRD], "stxs_%s_%s_%s.root" % add_syst_fakerate_job_tuple),
+          'histogramDir': histogramDir_nominal,
+          'histogramToFit' : histogramToFit,
+        }
 
     logging.info("Creating configuration files to run 'makePlots'")
     key_makePlots_dir = getKey("makePlots")
@@ -686,6 +694,7 @@ class analyzeConfig_3l(analyzeConfig):
     self.addToMakefile_add_syst_fakerate(lines_makefile)
     self.addToMakefile_make_plots(lines_makefile)
     self.addToMakefile_validate(lines_makefile)
+    self.addToMakefile_mergeHTXS(lines_makefile)
     self.createMakefile(lines_makefile)
 
     logging.info("Done.")

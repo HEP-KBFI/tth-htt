@@ -523,6 +523,7 @@ class analyzeConfig(object):
         self.make_plots_signal = "ttH"
         self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_cfg.py")
         self.jobOptions_make_plots = {}
+        self.jobOptions_mergeHTXS = {}
         self.filesToClean = []
         self.phoniesToAdd = []
         self.rleOutputFiles = {}
@@ -1826,6 +1827,16 @@ class analyzeConfig(object):
             self.phoniesToAdd.append(make_target_validate)
         if make_target_validate not in self.targets:
             self.targets.append(make_target_validate)
+
+    def addToMakefile_mergeHTXS(self, lines_makefile):
+        """Copy STXS histograms from hadd stage2 file to the output of addSystFakeRates
+        """
+        for job in self.jobOptions_mergeHTXS.values():
+            lines_makefile.append("%s: %s %s" % (job['outputFile'], job['inputDatacard'], job['inputFile']))
+            lines_makefile.append("\tmerge_htxs.py -i {inputFile} -d {inputDatacard} -b {histogramDir} -f {histogramToFit} -o {outputFile}".format(**job))
+            lines_makefile.append("")
+            if job['outputFile'] not in self.targets:
+                self.targets.append(job['outputFile'])
 
     def createMakefile(self, lines_makefile):
         """Creates Makefile that runs the complete analysis workfow.
