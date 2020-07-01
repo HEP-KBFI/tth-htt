@@ -591,7 +591,7 @@ class analyzeConfig(object):
         """
         self.hadTau_selection_relaxed = hadTau_selection_relaxed
         assert(self.hadTau_selection_relaxed.startswith("deepVSj"))
-        if self.hadTau_selection_relaxed == "deepVSjVVVLoose":
+        if self.hadTau_selection_relaxed == "deepVSjVVLoose":
             if self.use_dymumu_tau_fr:
                 self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_deeptau_DYmumu_BDT_{}_v6.root".format(self.era)
             else:
