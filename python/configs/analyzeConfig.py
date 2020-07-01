@@ -1832,6 +1832,8 @@ class analyzeConfig(object):
         """Copy STXS histograms from hadd stage2 file to the output of addSystFakeRates
         """
         for job in self.jobOptions_mergeHTXS.values():
+            if job['histogramToFit'] == 'numJets':
+                continue
             lines_makefile.append("%s: %s %s" % (job['outputFile'], job['inputDatacard'], job['inputFile']))
             lines_makefile.append("\tmerge_htxs.py -i {inputFile} -d {inputDatacard} -b {histogramDir} -f {histogramToFit} -o {outputFile}".format(**job))
             lines_makefile.append("")
