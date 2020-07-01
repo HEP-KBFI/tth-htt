@@ -114,6 +114,7 @@ if __name__ == '__main__':
         if not sysname.endswith(('Down', 'Up')):
           raise RuntimeError("Invalid systematics in histogram name %s" % histogram_name)
         histogram_name_new += '_{}'.format(sysname)
+      assert(histogram_name_new not in histograms)
       histograms[histogram_name_new] = htxs_dir.Get(histogram_name)
 
   output.cd()
