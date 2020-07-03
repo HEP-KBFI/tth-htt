@@ -106,12 +106,11 @@ class analyzeConfig_4l(analyzeConfig):
     self.lepton_frWeights = [ "enabled", "disabled" ]
     self.hadTauVeto_selection_part2 = hadTauVeto_selection
     self.applyFakeRateWeights = applyFakeRateWeights
-    run_mcClosure = 'central' not in self.central_or_shifts or len(central_or_shifts) > 1 or self.do_sync
 
     self.apply_leptonGenMatching = None
     if applyFakeRateWeights == "4lepton":
       self.apply_leptonGenMatching = True
-      if run_mcClosure:
+      if self.run_mcClosure:
         self.lepton_selections.extend([ "Fakeable_mcClosure_e", "Fakeable_mcClosure_m" ])
       self.central_or_shifts_fr = systematics.FRe_shape + systematics.FRm_shape
     else:

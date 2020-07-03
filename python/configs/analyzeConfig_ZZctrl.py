@@ -104,7 +104,6 @@ class analyzeConfig_ZZctrl(analyzeConfig):
     self.lepton_frWeights = [ "enabled", "disabled" ]
     self.hadTauVeto_selection_part2 = hadTauVeto_selection
     self.applyFakeRateWeights = applyFakeRateWeights
-    run_mcClosure = 'central' not in self.central_or_shifts or len(central_or_shifts) > 1 or self.do_sync
 
     self.lepton_genMatches = [ "4l0g0j", "3l1g0j", "3l0g1j", "2l2g0j", "2l1g1j", "2l0g2j",
                                "1l3g0j", "1l2g1j", "1l1g2j", "1l0g3j", "0l4g0j", "0l3g1j",
@@ -123,7 +122,7 @@ class analyzeConfig_ZZctrl(analyzeConfig):
           self.lepton_genMatches_Convs.append(lepton_genMatch)
         else:
           self.lepton_genMatches_fakes.append(lepton_genMatch)
-      if run_mcClosure:
+      if self.run_mcClosure:
         self.lepton_selections.extend([ "Fakeable_mcClosure_e", "Fakeable_mcClosure_m" ])
       self.central_or_shifts_fr = systematics.FRe_shape + systematics.FRm_shape
     else:

@@ -38,6 +38,9 @@ class systematics(object):
 
   central = [ "central" ]
 
+  mcClosure_str = 'mcClosure'
+  mcClosure = [ mcClosure_str ]
+
   JES                  = [ "CMS_ttHl_JESUp",                  "CMS_ttHl_JESDown"                  ]
   JER                  = [ "CMS_ttHl_JERUp",                  "CMS_ttHl_JERDown"                  ]
   UnclusteredEn        = [ "CMS_ttHl_UnclusteredEnUp",        "CMS_ttHl_UnclusteredEnDown"        ]
@@ -549,10 +552,11 @@ class systematics(object):
   leptonIDSF   = LeptonIDSF().full
   FRe_shape    = FakeRate_e_shape().full
   FRm_shape    = FakeRate_m_shape().full
+  FRl_shape    = FRe_shape + FRm_shape
   FR_t         = FakeRate_t().full
   electron_E   = Electron_energy().full
   muon_E       = Muon_energy().full
-  FR_all       = FRe_shape + FRm_shape + FR_t
+  FR_all       = FRl_shape + FR_t
   partonShower = PartonShower().full
   ttbar        = TTbar().full
 
@@ -570,10 +574,12 @@ class systematics(object):
   an_chargeFlip_mu_opts = [ "central", "muon_E" ]
 
   an_tth = central + JES + JER + tauES + leptonIDSF + tauIDSF + UnclusteredEn + btag + FR_t + FRe_shape + FRm_shape + \
-           lhe + triggerSF + PU + DYMCReweighting + DYMCNormScaleFactors + L1PreFiring + EWK_jet + EWK_bjet + partonShower
+           lhe + triggerSF + PU + DYMCReweighting + DYMCNormScaleFactors + L1PreFiring + EWK_jet + EWK_bjet + partonShower + \
+           mcClosure
   an_tth_opts = [
     "central", "JES", "JER", "tauES", "leptonIDSF", "tauIDSF", "UnclusteredEn", "btag", "FR_t", "FRe_shape", "FRm_shape",
     "lhe", "triggerSF", "PU", "DYMCReweighting", "DYMCNormScaleFactors", "L1PreFiring", "EWK_jet", "EWK_bjet", "partonShower",
+    mcClosure_str,
   ]
 
   an_inclusive      =    central +  JES +  JER +  tauES +  UnclusteredEn +  btag
