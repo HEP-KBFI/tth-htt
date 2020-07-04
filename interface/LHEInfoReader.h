@@ -74,6 +74,7 @@ protected:
   mutable Float_t weight_scale_Down_;
 
   bool has_LHE_weights_;
+  mutable double correctiveFactor_;
 
   // CV: make sure that only one LHEInfoReader instance exists for a given branchName,
   //     as ROOT cannot handle multiple TTree::SetBranchAddress calls for the same branch.

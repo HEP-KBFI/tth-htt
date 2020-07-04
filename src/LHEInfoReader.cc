@@ -33,6 +33,7 @@ LHEInfoReader::LHEInfoReader(bool has_LHE_weights)
   , weight_scale_Up_(1.)
   , weight_scale_Down_(1.)
   , has_LHE_weights_(has_LHE_weights)
+  , correctiveFactor_(1.)
 {
   setBranchNames();
 }
@@ -108,13 +109,16 @@ LHEInfoReader::read() const
       << ", exceeds max_scale_nWeights_ = " << max_scale_nWeights_ << " !!\n";
   }
 
+  // additional factor of two: https://github.com/HEP-KBFI/tth-htt/issues/149#issuecomment-653760494
+  correctiveFactor_ = gInstance->scale_nWeights_ == 8 ? 2. : 1.;
+
   // Karl: the nomenclature depends on the MG version used
   // below MG ver 2.6:
   //    [0] is muR=0.5 muF=0.5
   //    [1] is muR=0.5 muF=1.0
   //    [2] is muR=0.5 muF=2.0
   //    [3] is muR=1.0 muF=0.5
-  //    [4] is muR=1.0 muF=1.0
+  //    [4] is muR=1.0 muF=1.0 <- missing if there are only 8 weights available
   //    [5] is muR=1.0 muF=2.0
   //    [6] is muR=2.0 muF=0.5
   //    [7] is muR=2.0 muF=1.0
@@ -127,6 +131,15 @@ LHEInfoReader::read() const
     weight_scale_xUp_    = gInstance->scale_weights_[5]; // muR=1.0 muF=2.0
     weight_scale_yUp_    = gInstance->scale_weights_[7]; // muR=2.0 muF=1.0
     weight_scale_xyUp_   = gInstance->scale_weights_[8]; // muR=2.0 muF=2.0
+  }
+  else if(gInstance->scale_nWeights_ == 8)
+  {
+    weight_scale_xyDown_ = gInstance->scale_weights_[0]; // muR=0.5 muF=0.5
+    weight_scale_yDown_  = gInstance->scale_weights_[1]; // muR=0.5 muF=1.0
+    weight_scale_xDown_  = gInstance->scale_weights_[3]; // muR=1.0 muF=0.5
+    weight_scale_xUp_    = gInstance->scale_weights_[4]; // muR=1.0 muF=2.0
+    weight_scale_yUp_    = gInstance->scale_weights_[6]; // muR=2.0 muF=1.0
+    weight_scale_xyUp_   = gInstance->scale_weights_[7]; // muR=2.0 muF=2.0
   }
   else
   {
@@ -153,49 +166,49 @@ LHEInfoReader::read() const
 double
 LHEInfoReader::getWeight_scale_xUp() const
 { 
-  return clip(weight_scale_xUp_);
+  return clip(correctiveFactor_ * weight_scale_xUp_);
 }
 
 double
 LHEInfoReader::getWeight_scale_xDown() const
 { 
-  return clip(weight_scale_xDown_);
+  return clip(correctiveFactor_ * weight_scale_xDown_);
 }
 
 double
 LHEInfoReader::getWeight_scale_yUp() const
 {
-  return clip(weight_scale_yUp_);
+  return clip(correctiveFactor_ * weight_scale_yUp_);
 }
 
 double
 LHEInfoReader::getWeight_scale_yDown() const
 { 
-  return clip(weight_scale_yDown_);
+  return clip(correctiveFactor_ * weight_scale_yDown_);
 }
 
 double
 LHEInfoReader::getWeight_scale_xyUp() const
 {
-  return clip(weight_scale_xyUp_);
+  return clip(correctiveFactor_ * weight_scale_xyUp_);
 }
 
 double
 LHEInfoReader::getWeight_scale_xyDown() const
 {
-  return clip(weight_scale_xyDown_);
+  return clip(correctiveFactor_ * weight_scale_xyDown_);
 }
 
 double
 LHEInfoReader::getWeight_scale_Up() const
 {
-  return clip(weight_scale_Up_);
+  return clip(correctiveFactor_ * weight_scale_Up_);
 }
 
 double
 LHEInfoReader::getWeight_scale_Down() const
 {
-  return clip(weight_scale_Down_);
+  return clip(correctiveFactor_ * weight_scale_Down_);
 }
 
 double
@@ -258,5 +271,5 @@ LHEInfoReader::getWeight_pdf(unsigned int idx) const
       << "Given index = " << idx << ", exceeds number of PDF weights stored in Ntuple = "
       << pdf_nWeights_ << " !!\n";
   }
-  return clip(pdf_weights_[idx]);
+  return clip(correctiveFactor_ * pdf_weights_[idx]);
 }
