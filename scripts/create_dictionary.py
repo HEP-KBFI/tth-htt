@@ -710,8 +710,8 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
                 path           = subentry_file.name,
               ))
             nBins = histogram.GetNbinsX()
-            if nBins != 9 and histogram_name in lheScaleArr:
-              logging.warning("Expected 9 bins but found {nBins} bins in {histogram_name}".format(
+            if nBins not in [ 8, 9 ] and histogram_name in lheScaleArr:
+              logging.warning("Expected 8 or 9 bins but found {nBins} bins in {histogram_name}".format(
                 nBins          = nBins,
                 histogram_name = histogram_name,
               ))
@@ -735,6 +735,14 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
                 )
             del histogram
 
+        for histogram_name in index_entry[HISTOGRAM_COUNT_KEY]:
+          if histogram_names[histogram_name] == 8 and (histogram_name in lheScaleArr or is_njet):
+            histogram_name_nolhe = histogram_name.replace('LHEWeightScale', '')
+            assert(histogram_name_nolhe != histogram_name)
+            assert(histogram_name_nolhe in index_entry[HISTOGRAM_COUNT_KEY])
+            # use nominal weight as the 5th LHE scale weight
+            index_entry[HISTOGRAM_COUNT_KEY][histogram_name].insert(4, index_entry[HISTOGRAM_COUNT_KEY][histogram_name_nolhe][0])
+
       # this was probably a success: record the results
       indices[matched_idx] = copy.deepcopy(index_entry)
       logging.debug(
@@ -755,6 +763,11 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
   if not indices:
     logging.debug("Path {path} contains no ROOT files".format(path = path_obj.name))
     return
+
+  for matched_idx in indices:
+    for histogram_name in indices[matched_idx][HISTOGRAM_COUNT_KEY]:
+      if histogram_names[histogram_name] == 8 and (histogram_name in lheScaleArr or is_njet):
+        histogram_names[histogram_name] += 1
 
   logging.debug("Found total {nof_tree_events} tree events in {nof_files} files in "
                 "{path} for entry {key}".format(
