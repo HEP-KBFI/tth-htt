@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2020-06-27 15:41:23 with the following command:
+# file generated at 2020-07-05 10:40:47 with the following command:
 # create_dictionary.py -m python/samples/metaDict_2016.py -p python/samples/sampleLocations_2016.txt -N samples_2016 -E 2016 -o python/samples -g tthAnalyzeSamples_2016_base.py -M
 
 samples_2016 = OD()
@@ -33484,29 +33484,29 @@ samples_2016["/WGToLNuG_01J_5f_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISumm
   ("nof_events",                      {
     'Count'                                                                          : [     26722551, ],
     'CountWeighted'                                                                  : [     15865327,     15865015,     15864527, ],
-    'CountWeightedLHEWeightScale'                                                    : [      8040902,      8329407,      8511316,      7592629,      8162415,      7235490,      7613445,      7880673, ],
-    'CountWeightedLHEEnvelope'                                                       : [     15865327,     15865327, ],
+    'CountWeightedLHEWeightScale'                                                    : [     16075971,     16660610,     17048057,     15176614,     15865327,     16335988,     14460722,     15226122,     15765505, ],
+    'CountWeightedLHEEnvelope'                                                       : [     18524123,     13321940, ],
     'CountWeightedL1PrefireNom'                                                      : [     15709455,     15708590,     15709433, ],
     'CountWeightedL1Prefire'                                                         : [     15709455,     15666112,     15752290, ],
-    'CountWeightedLHEWeightScaleL1PrefireNom'                                        : [      7958142,      8245216,      8426066,      7516498,      8083236,      7164596,      7540535,      7806335, ],
-    'CountWeightedLHEEnvelopeL1PrefireNom'                                           : [     15709455,     15709455, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom'                                        : [     15910479,     16492196,     16877342,     15024420,     15709455,     16177555,     14319021,     15080318,     15616820, ],
+    'CountWeightedLHEEnvelopeL1PrefireNom'                                           : [     18337894,     13192590, ],
   }),
   ("nof_tree_events",                 26722551),
   ("nof_db_events",                   26722551),
-  ("fsize_local",                     57259505877), # 57.26GB, avg file size 530.18MB
+  ("fsize_local",                     57386817084), # 57.39GB, avg file size 531.36MB
   ("fsize_db",                        903161012258), # 903.16GB, avg file size 2.60GB
   ("use_it",                          True),
   ("xsection",                        191.6),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         False),
+  ("has_LHE",                         True),
   ("nof_PSweights",                   1),
   ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
   ("nof_reweighting",                 0),
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2020Apr12_woPresel_nom_all/ntuples/WGToLNuG_01J"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2020Jul04_woPresel_nom_all/ntuples/WGToLNuG_01J"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
