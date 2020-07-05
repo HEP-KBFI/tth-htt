@@ -98,6 +98,16 @@ def load_samples_stitched(samples, era, load = None):
   load_nlo_dy = 'dy_nlo' in load or 'dy_nlo_incl' in load or 'dy_nlo_noincl' in load
   load_lo_dy  = 'dy_lo'  in load or 'dy_lo_incl'  in load or 'dy_lo_noincl'  in load
 
+  if load_wjets:
+    if sum(load_option in [ 'wjets', 'wjets_incl', 'wjets_noincl' ] for load_option in load) > 1:
+      raise ValueError("Conflicting options given: %s" % ', '.join(load))
+  if load_nlo_dy:
+    if sum(load_option in [ 'dy_nlo', 'dy_nlo_incl', 'dy_nlo_noincl' ] for load_option in load) > 1:
+      raise ValueError("Conflicting options given: %s" % ', '.join(load))
+  if load_lo_dy:
+    if sum(load_option in [ 'dy_lo', 'dy_lo_incl', 'dy_lo_noincl' ] for load_option in load) > 1:
+      raise ValueError("Conflicting options given: %s" % ', '.join(load))
+
   if load_nlo_dy and load_lo_dy:
     raise ValueError("Conflictiong options: %s; cannot load LO and NLO DY samples simultaneously" % ', '.join(load))
 
