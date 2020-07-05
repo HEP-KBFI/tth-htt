@@ -14,6 +14,7 @@ import re
 import collections
 import copy
 import array
+import os
 
 parser = argparse.ArgumentParser(
     formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 35)
@@ -23,7 +24,7 @@ parser.add_argument('-e', '--era',
   help = 'R|Era',
 )
 parser.add_argument('-o', '--output',
-  type = str, dest = 'output', metavar = 'path', required = True,
+  type = str, dest = 'output', metavar = 'path', required = False,
   help = 'R|Output file name',
 )
 parser.add_argument('-p', '--plot',
@@ -36,14 +37,19 @@ era = args.era
 output = args.output
 plot = args.plot
 
+if not output:
+  output = os.path.join(
+    os.environ['CMSSW_BASE'], 'src', 'tthAnalysis', 'HiggsToTauTau', 'data', 'stitched_weights_nlo_{}.root'.format(era)
+  )
+
 samples = load_samples(era)
 
 if era == '2016':
-  from tthAnalysis.HiggsToTauTau.samples.stitch_nlo import samples_to_stitch_2016 as samples_to_stitch
+  from tthAnalysis.HiggsToTauTau.samples.stitch_nlo import samples_to_stitch_DYJets_NLO_2016 as samples_to_stitch
 elif era == '2017':
-  from tthAnalysis.HiggsToTauTau.samples.stitch_nlo import samples_to_stitch_2017 as samples_to_stitch
+  from tthAnalysis.HiggsToTauTau.samples.stitch_nlo import samples_to_stitch_DYJets_NLO_2017 as samples_to_stitch
 elif era == '2018':
-  from tthAnalysis.HiggsToTauTau.samples.stitch_nlo import samples_to_stitch_2018 as samples_to_stitch
+  from tthAnalysis.HiggsToTauTau.samples.stitch_nlo import samples_to_stitch_DYJets_NLO_2018 as samples_to_stitch
 else:
   raise RuntimeError("Invalid era: %s" % era)
 
@@ -60,6 +66,8 @@ COUNT_REGEX = re.compile(
     COUNT_NAME_KEY, COUNT_LHENJET, COUNT_BIN_KEY, COUNT_SIGN_KEY
   )
 )
+assert(SPLITVAR in samples_to_stitch)
+exclusive_sample_lists = [ sample_list['samples'] for sample_list in samples_to_stitch[SPLITVAR] ]
 
 def get_sample_stats(sample_name, sample_dict):
   sample_xsec = -1.
@@ -142,10 +150,10 @@ def merge_samples(sample_list, sample_dict):
             sample_yields_final[count_key][bin_key][bin_idx] += bin_value
     return sample_yields_final, sample_xsec_final
 
-inclusive_count, inclusive_xsec = merge_samples(samples_to_stitch['inclusive'], samples)
+inclusive_count, inclusive_xsec = merge_samples(samples_to_stitch['inclusive']['samples'], samples)
 exclusive_counts = []
 exclusive_xsecs = []
-for exclusive_sample_list in samples_to_stitch['exclusive']:
+for exclusive_sample_list in exclusive_sample_lists:
   exclusive_count, exclusive_xsec = merge_samples(exclusive_sample_list, samples)
   exclusive_counts.append(exclusive_count)
   exclusive_xsecs.append(exclusive_xsec)
@@ -344,21 +352,21 @@ if plot:
 def save_weights(fp, sample_names, stitching_dict):
   for sample_name in sample_names:
     sample_dir = fp.mkdir(sample_name)
-    hist_dir = sample_dir.mkdir('LHE_Njets')
+    hist_dir = sample_dir.mkdir(SPLITVAR)
     hist_dir.cd()
     for bin_count_name in stitching_dict:
       bin_array = array.array('f', list(range(max(bin_keys) + 2)))
       hist = ROOT.TH1D(bin_count_name, bin_count_name, len(bin_array) - 1, bin_array)
       hist.SetDirectory(hist_dir)
       hist.SetTitle(bin_count_name)
-      hist.SetXTitle('LHE_Njets')
+      hist.SetXTitle(SPLITVAR)
       for bin_idx in bin_keys:
         hist.SetBinContent(bin_idx + 1, stitching_dict[bin_count_name][bin_idx])
-        hist.GetXaxis().SetBinLabel(bin_idx + 1, "%d <= LHE_Njets < %d" % (bin_idx, bin_idx + 1))
+        hist.GetXaxis().SetBinLabel(bin_idx + 1, "%d <= %s < %d" % (bin_idx, SPLITVAR, bin_idx + 1))
       hist.Write()
 
 fp = ROOT.TFile.Open(output, 'recreate')
-save_weights(fp, samples_to_stitch['inclusive'], inclusive_stitching)
-for exclusive_idx in range(len(samples_to_stitch['exclusive'])):
-  save_weights(fp, samples_to_stitch['exclusive'][exclusive_idx], exclusive_stitchings[exclusive_idx])
+save_weights(fp, samples_to_stitch['inclusive']['samples'], inclusive_stitching)
+for exclusive_idx in range(len(exclusive_sample_lists)):
+  save_weights(fp, exclusive_sample_lists[exclusive_idx], exclusive_stitchings[exclusive_idx])
 fp.Close()

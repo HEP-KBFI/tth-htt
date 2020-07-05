@@ -1,4 +1,4 @@
-from tthAnalysis.HiggsToTauTau.common import logging, SmartFormatter
+from tthAnalysis.HiggsToTauTau.common import logging, SmartFormatter, STITCHING_OPTIONS
 from tthAnalysis.HiggsToTauTau.configs.analyzeConfig import LEP_MVA_WPS
 
 import argparse
@@ -253,22 +253,13 @@ class tthAnalyzeParser(argparse.ArgumentParser):
       help = 'R|Split trigger systematic uncertainties (choices: %s)' % tthAnalyzeParser.cat(choices),
     )
 
-  def add_stitched(self, use_dy = False, use_wj = False, disable_dy_incl = False, disable_wj_incl = False):
-    choices = [ 'dy', 'wjets', 'dy_noincl', 'wjets_noincl' ]
-    default = []
-    if use_dy:
-      if disable_dy_incl:
-        default.append('dy_noincl')
-      else:
-        default.append('dy')
-    if use_wj:
-      if disable_wj_incl:
-        default.append('wjets_noincl')
-      else:
-        default.append('wjets')
+  def add_stitched(self, choices = None):
+    if choices:
+      assert(all(choice in STITCHING_OPTIONS for choice in choices))
     self.add_argument('-u', '--use-stitched',
-      type = str, dest = 'use_stitched', metavar = 'process', default = default, required = False, choices = choices,
-      help = 'R|Load stitched samples (choices: %s)' % tthAnalyzeParser.cat(choices),
+      type = str, dest = 'use_stitched', metavar = 'process', default = choices, required = False, nargs = '+',
+      choices = STITCHING_OPTIONS,
+      help = 'R|Load stitched samples (choices: %s)' % tthAnalyzeParser.cat(STITCHING_OPTIONS),
     )
 
   @staticmethod

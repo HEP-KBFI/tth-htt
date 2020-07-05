@@ -116,10 +116,7 @@ if not mode.startswith("sync"):
       sample_info["skipEvery"] = 3
 
 if use_stitched:
-  samples = load_samples_stitched(
-    samples, era, load_dy = 'dy' in use_stitched, load_wjets = 'wjets' in use_stitched,
-    disable_dy_inclusive = 'dy_noincl' in use_stitched, disable_wjets_inclusive = 'wjets_noincl' in use_stitched,
-  )
+  samples = load_samples_stitched(samples, era, use_stitched)
 
 #--------------------------------------------------------------------------------
 # CV: add ttbar MC samples to make a few extra plots for the HIG-19-008 paper

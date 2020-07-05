@@ -82,39 +82,67 @@ def load_samples_hh_multilepton(era, is_postproc = True, suffix = ''):
 def load_samples_hh_bbww(era, is_postproc = True, suffix = ''):
   return load_samples(era, is_postproc, "hh_bbww", suffix)
 
-def load_samples_stitched(samples, era, load_dy = True, load_wjets = True, disable_dy_inclusive = False, disable_wjets_inclusive = False):
-  sample_module = importlib.import_module('tthAnalysis.HiggsToTauTau.samples.stitch')
+STITCHING_OPTIONS = [
+  'dy_lo',  'dy_lo_incl',  'dy_lo_noincl',
+  'dy_nlo', 'dy_nlo_incl', 'dy_nlo_noincl',
+  'wjets',  'wjets_incl',  'wjets_noincl',
+]
 
-  if load_dy and load_wjets:
-    samples_binned = getattr(sample_module, 'samples_to_stitch_{}'.format(era))
-  elif load_dy:
-    samples_binned = getattr(sample_module, 'samples_to_stitch_DYJets_{}'.format(era))
-  elif load_wjets:
-    samples_binned = getattr(sample_module, 'samples_to_stitch_WJets_{}'.format(era))
-  else:
-    raise ValueError("Must load binned DY, binned W+jets or both")
+def load_samples_stitched(samples, era, load = None):
+  if not load:
+    return samples
+  assert(type(load) == list)
+  assert(load_option in STITCHING_OPTIONS for load_option in load)
 
-  sample_names = []
+  load_wjets  = 'wjets'  in load or 'wjets_incl'  in load or 'wjets_noincl'  in load
+  load_nlo_dy = 'dy_nlo' in load or 'dy_nlo_incl' in load or 'dy_nlo_noincl' in load
+  load_lo_dy  = 'dy_lo'  in load or 'dy_lo_incl'  in load or 'dy_lo_noincl'  in load
+
+  if load_nlo_dy and load_lo_dy:
+    raise ValueError("Conflictiong options: %s; cannot load LO and NLO DY samples simultaneously" % ', '.join(load))
+
+  sample_module_lo = importlib.import_module('tthAnalysis.HiggsToTauTau.samples.stitch_lo')
+  sample_module_nlo = importlib.import_module('tthAnalysis.HiggsToTauTau.samples.stitch_nlo')
+
+  samples_binned = []
+  if load_lo_dy:
+    samples_binned.extend(getattr(sample_module_lo, 'samples_to_stitch_DYJets_LO_{}'.format(era)))
+  elif load_nlo_dy:
+    samples_binned.append(getattr(sample_module_nlo, 'samples_to_stitch_DYJets_NLO_{}'.format(era)))
+  if load_wjets:
+    samples_binned.extend(getattr(sample_module_lo, 'samples_to_stitch_WJets_{}'.format(era)))
+  assert(samples_binned)
+
+  sample_names_exclusive = []
   sample_names_inclusive = []
   for sample_set in samples_binned:
     for sample_key, sample_value in sample_set.items():
       if sample_key == 'inclusive':
-        sample_names.extend(sample_value['samples'])
         sample_names_inclusive.extend(sample_value['samples'])
       else:
         for sample_binned_value in sample_value:
-          sample_names.extend(sample_binned_value['samples'])
+          sample_names_exclusive.extend(sample_binned_value['samples'])
+  sample_names = sample_names_inclusive + sample_names_exclusive
 
   for sample_key, sample_info in samples.items():
     if sample_key == 'sum_events':
       continue
-    if load_dy and sample_info['process_name_specific'].startswith('DY'):
-      sample_info['use_it'] = sample_info['process_name_specific'] in sample_names and \
-                              not (disable_dy_inclusive and sample_info['process_name_specific'] in sample_names_inclusive)
-    if load_wjets and sample_info['process_name_specific'].startswith(
-          ('WJetsToLNu', 'W1JetsToLNu', 'W2JetsToLNu', 'W3JetsToLNu', 'W4JetsToLNu')
-        ):
-      sample_info['use_it'] = sample_info['process_name_specific'] in sample_names and \
-                              not (disable_wjets_inclusive and sample_info['process_name_specific'] in sample_names_inclusive)
+    process_name = sample_info['process_name_specific']
+    if load_wjets and process_name.startswith(('WJetsToLNu', 'W1JetsToLNu', 'W2JetsToLNu', 'W3JetsToLNu', 'W4JetsToLNu')):
+      if 'wjets' in load:
+        sample_info["use_it"] = process_name in sample_names
+      elif 'wjets_incl' in load:
+        sample_info["use_it"] = process_name in sample_names_inclusive
+      elif 'wjets_noincl' in load:
+        sample_info["use_it"] = process_name in sample_names_exclusive
+      else:
+        assert(False)
+    elif (load_lo_dy or load_nlo_dy) and process_name.startswith('DY'):
+      if 'dy_lo' in load or 'dy_nlo' in load:
+        sample_info["use_it"] = process_name in sample_names
+      elif 'dy_lo_incl' in load or 'dy_nlo_incl' in load:
+        sample_info["use_it"] = process_name in sample_names_inclusive
+      elif 'dy_lo_noincl' in load or 'dy_nlo_noincl' in load:
+        sample_info["use_it"] = process_name in sample_names_exclusive
 
   return samples
