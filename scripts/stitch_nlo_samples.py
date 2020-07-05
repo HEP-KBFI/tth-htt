@@ -89,9 +89,9 @@ def get_sample_stats(sample_name, sample_dict):
     if sample_count_name == 'Count':
       # skip unweighted counts
       continue
-    #if sample_count_name == 'CountWeightedPSWeightOriginalXWGTUP':
-    #  # mega hack: in 2018 the numbers are bogus, easier to skip because these counts will be ignored anyways
-    #  continue
+    if sample_count_name == 'CountWeightedPSWeightOriginalXWGTUP':
+      # mega hack: in 2018 the numbers are bogus, easier to skip because these counts will be ignored anyways
+      continue
     if sample_count_name != 'Count':
       if sample_count_sign == 'pos':
         assert(all(count > 0 for count in sample_yields[sample_count]))
