@@ -22,6 +22,7 @@ class DYMCNormScaleFactors;
 class Data_to_MC_CorrectionInterface_0l_2tau_trigger;
 class Data_to_MC_CorrectionInterface_1l_1tau_trigger;
 class Data_to_MC_CorrectionInterface_1l_2tau_trigger;
+class BtagSFRatioFacility;
 
 enum class L1PreFiringWeightSys;
 enum class PUsys;
@@ -65,6 +66,9 @@ public:
   double
   get_lumiScale(const std::string & central_or_shift,
                 const std::string & bin = "") const;
+
+  double
+  get_btagSFRatio(const std::string & central_or_shift) const;
 
   double
   get_nom_tH_weight(const std::string & central_or_shift) const;
@@ -148,6 +152,10 @@ public:
   
   void
   record_lumiScale(const edm::VParameterSet & lumiScales);
+
+  void
+  record_btagSFRatio(const BtagSFRatioFacility * const btagSFRatioFacility,
+                     int nselJets);
 
   void
   record_rescaling(double rescaling);
@@ -332,6 +340,7 @@ protected:
   std::map<std::string, double> auxWeight_;
   std::map<std::string, std::map<std::string, double>> lumiScale_;
   std::map<std::string, double> nom_tH_weight_;
+  std::map<std::string, double> btagSFRatio_;
   double leptonSF_;
   double chargeMisIdProb_;
   double prescale_;
