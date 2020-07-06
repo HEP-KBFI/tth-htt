@@ -8,8 +8,11 @@ from tthAnalysis.HiggsToTauTau.common import logging, load_samples
 import os
 import sys
 import getpass
+import collections
+import itertools
 
-# E.g.: ./test/tthPileupProfile.py -v 2018May09 -e 2017 -m all
+# E.g.: ./test/tthProjection.py -v 2018May09 -e 2017 -m all -p pileup
+#       ./test/tthProjection.py -v 2018May09 -e 2017 -m all -p btagSF -j 4
 
 mode_choices = [ 'all', 'sync', 'hh', 'hh_bbww', 'hh_bbww_sync', 'hh_bbww_ttbar', 'hh_bbww_sync_ttbar' ]
 projections = [ 'pileup', 'btagSF' ]
@@ -65,32 +68,50 @@ if output_file == default_output:
   output_file = output_file.format(projection = projection, era = era)
 version = "%s_%s" % (version, mode)
 
-use_postproc = projection == 'btagSF'
-
-if mode == 'sync':
-  samples = load_samples(era, use_postproc, suffix = 'sync')
-elif mode == 'all':
-  samples = load_samples(era, use_postproc, suffix = 'base' if use_postproc else '')
-elif mode == 'hh':
-  samples = load_samples(era, use_postproc, base = 'hh_multilepton', suffix = 'hh' if use_postproc else '')
-elif mode == 'hh_bbww':
-  samples = load_samples(era, use_postproc, base = 'hh_bbww', suffix = 'hh' if use_postproc else '')
-elif mode == 'hh_bbww_ttbar':
-  samples = load_samples(era, use_postproc, base = 'hh_bbww', suffix = 'ttbar')
-elif mode == 'hh_bbww_sync':
-  samples = load_samples(era, use_postproc, base = 'hh_bbww', suffix = 'sync')
-elif mode == 'hh_bbww_sync_ttbar':
-  samples = load_samples(era, use_postproc, base = 'hh_bbww', suffix = 'sync_ttbar')
-else:
-  raise ValueError('Invalid mode: %s' % mode)
-
-projection_module = None
-if projection == "pileup":
+if projection == 'pileup':
   projection_module = "puHist"
-elif projection == "btagSF":
+
+  if mode == 'all':
+    samples = load_samples(era, False)
+  elif mode == 'sync':
+    samples = load_samples(era, False, suffix = 'sync')
+  elif mode == 'hh':
+    samples = load_samples(era, False, base = 'hh_multilepton')
+  elif mode == 'hh_bbww':
+    samples = load_samples(era, False, base = 'hh_bbww')
+  elif mode == 'hh_bbww_ttbar':
+    samples = load_samples(era, False, base = 'hh_bbww', suffix = 'ttbar')
+  elif mode == 'hh_bbww_sync':
+    samples = load_samples(era, False, base = 'hh_bbww', suffix = 'sync')
+  elif mode == 'hh_bbww_sync_ttbar':
+    samples = load_samples(era, False, base = 'hh_bbww', suffix = 'sync_ttbar')
+  else:
+    raise ValueError('Invalid mode: %s' % mode)
+elif projection == 'btagSF':
   projection_module = "btagSFRatio"
+
+  if mode == 'all':
+    samples_tth         = load_samples(era, True,                          suffix = 'base')
+    samples_ttbar       = load_samples(era, True, base = 'hh_bbww',        suffix = 'ttbar')
+    samples_multilepton = load_samples(era, True, base = 'hh_multilepton', suffix = 'hh')
+    samples_bbww        = load_samples(era, True, base = 'hh_bbww',        suffix = 'hh')
+    del samples_tth['sum_events']
+    del samples_ttbar['sum_events']
+    del samples_multilepton['sum_events']
+    del samples_bbww['sum_events']
+    samples = collections.OrderedDict(itertools.chain(
+      samples_tth.items(), samples_ttbar.items(), samples_multilepton.items(), samples_bbww.items(),
+    ))
+  elif mode == 'sync':
+    samples = load_samples(era, True, suffix = 'sync')
+  elif mode == 'hh_bbww_sync':
+    samples = load_samples(era, True, base = 'hh_bbww', suffix = 'sync')
+  elif mode == 'hh_bbww_sync_ttbar':
+    samples = load_samples(era, True, base = 'hh_bbww', suffix = 'sync_ttbar')
+  else:
+    raise ValueError('Invalid mode: %s' % mode)
 else:
-  raise ValueError("Invalid projection: %s" % projection)
+  raise ValueError('Invalid projection: %s' % projection)
 
 for sample_name, sample_entry in samples.items():
   if sample_name == 'sum_events':
