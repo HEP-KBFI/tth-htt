@@ -36,9 +36,10 @@ if [ ! -f "$INPUT_FILE" ]; then
 fi
 
 LAST_LINE=`tail -n1 "$INPUT_FILE"`
-ERA=$(echo "$LAST_LINE" | awk '{print $1}')
-HISTOGRAM_NAME=$(echo "$LAST_LINE" | awk '{print $2}')
-OUTPUT_FILE=$(echo "$LAST_LINE" | awk '{print $3}')
+PROJECTION_MODULE=$(echo "$LAST_LINE" | awk '{print $1}')
+ERA=$(echo "$LAST_LINE" | awk '{print $2}')
+HISTOGRAM_NAME=$(echo "$LAST_LINE" | awk '{print $3}')
+OUTPUT_FILE=$(echo "$LAST_LINE" | awk '{print $4}')
 
 if [ -z ${OUTPUT_FILE+x} ]; then
   echo "No era provided";
@@ -94,7 +95,7 @@ HADD_FILES="$OUTPUT_FILE_BASENAME"
 for INDEX in ${!INPUT_FILES[@]}; do
   INDEX_INCR=$((INDEX+1));
   TMP_OUTPUT_FILENAME="${OUTPUT_FILE_FILENAME}_${INDEX_INCR}.${OUTPUT_FILE_EXTENSION}";
-  nano_postproc.py -I tthAnalysis.NanoAODTools.postprocessing.tthModules "puHist$ERA($TMP_OUTPUT_FILENAME;$HISTOGRAM_NAME)" --noout . "${INPUT_FILES[INDEX]}";
+  nano_postproc.py -I tthAnalysis.NanoAODTools.postprocessing.tthModules "${PROJECTION_MODULE}$ERA($TMP_OUTPUT_FILENAME;$HISTOGRAM_NAME)" --noout . "${INPUT_FILES[INDEX]}";
   test_exit_code $?;
   HADD_FILES+=" $TMP_OUTPUT_FILENAME";
 done

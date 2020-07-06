@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from tthAnalysis.HiggsToTauTau.configs.puHistogramConfig import puHistogramConfig, validate_pu
+from tthAnalysis.HiggsToTauTau.configs.projectionConfig import projectionConfig, validate_pu
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 from tthAnalysis.HiggsToTauTau.runConfig import tthAnalyzeParser, filter_samples
 from tthAnalysis.HiggsToTauTau.common import logging, load_samples
@@ -12,17 +12,27 @@ import getpass
 # E.g.: ./test/tthPileupProfile.py -v 2018May09 -e 2017 -m all
 
 mode_choices = [ 'all', 'sync', 'hh', 'hh_bbww', 'hh_bbww_sync', 'hh_bbww_ttbar', 'hh_bbww_sync_ttbar' ]
+projections = [ 'pileup', 'btagSF' ]
+default_output = '{projection}_{era}.root'
 
 parser = tthAnalyzeParser(default_num_parallel_jobs = 100)
 parser.add_modes(mode_choices)
 parser.add_files_per_job(100)
 parser.add_use_home()
+parser.add_argument('-p', '--project',
+  type = str, dest = 'project', metavar = 'choice', choices = projections, required = True,
+  help = 'R|Type of job',
+)
+parser.add_argument('-P', '--plot',
+  dest = 'plot', action = 'store_true', default = False,
+  help = 'R|Make plots (not supported for btagSF projection)',
+)
 parser.add_argument('-V', '--validate',
   dest = 'validate', action = 'store_true', default = False,
   help = 'R|Validate the results',
 )
 parser.add_argument('-o', '--output-file',
-  type = str, dest = 'output_file', metavar = 'filename', default = 'pileup_{era}.root',
+  type = str, dest = 'output_file', metavar = 'filename', default = default_output,
   required = False,
   help = 'R|File name of the output file',
 )
@@ -41,7 +51,9 @@ running_method     = args.running_method
 
 # Additional arguments
 mode          = args.mode
+projection    = args.project
 files_per_job = args.files_per_job
+plot          = args.plot
 validate      = args.validate
 use_home      = args.use_home
 
@@ -49,27 +61,36 @@ use_home      = args.use_home
 output_file = args.output_file
 
 # Use the arguments
-if '{era}' in output_file:
-  output_file = output_file.format(era = era)
+if output_file == default_output:
+  output_file = output_file.format(projection = projection, era = era)
 version = "%s_%s" % (version, mode)
 
+use_postproc = projection == 'btagSF'
 
 if mode == 'sync':
-  samples = load_samples(era, False, suffix = 'sync')
+  samples = load_samples(era, use_postproc, suffix = 'sync')
 elif mode == 'all':
-  samples = load_samples(era, False)
+  samples = load_samples(era, use_postproc)
 elif mode == 'hh':
-  samples = load_samples(era, False, base = 'hh_multilepton')
+  samples = load_samples(era, use_postproc, base = 'hh_multilepton')
 elif mode == 'hh_bbww':
-  samples = load_samples(era, False, base = 'hh_bbww')
+  samples = load_samples(era, use_postproc, base = 'hh_bbww')
 elif mode == 'hh_bbww_ttbar':
-  samples = load_samples(era, False, base = 'hh_bbww', suffix = 'ttbar')
+  samples = load_samples(era, use_postproc, base = 'hh_bbww', suffix = 'ttbar')
 elif mode == 'hh_bbww_sync':
-  samples = load_samples(era, False, base = 'hh_bbww', suffix = 'sync')
+  samples = load_samples(era, use_postproc, base = 'hh_bbww', suffix = 'sync')
 elif mode == 'hh_bbww_sync_ttbar':
-  samples = load_samples(era, False, base = 'hh_bbww', suffix = 'sync_ttbar')
+  samples = load_samples(era, use_postproc, base = 'hh_bbww', suffix = 'sync_ttbar')
 else:
   raise ValueError('Invalid mode: %s' % mode)
+
+projection_module = None
+if projection == "pileup":
+  projection_module = "puHist"
+elif projection == "btagSF":
+  projection_module = "btagSFRatio"
+else:
+  raise ValueError("Invalid projection: %s" % projection)
 
 for sample_name, sample_entry in samples.items():
   if sample_name == 'sum_events':
@@ -82,21 +103,24 @@ if __name__ == '__main__':
   if 'sum_events' in samples:
     del samples['sum_events']
 
-  configDir = os.path.join("/home",       getpass.getuser(), "ttHPileupProduction", era, version)
-  outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHPileupProduction", era, version)
+  projection_dir = 'ttH{}Projection'.format(projection.capitalize())
+  configDir = os.path.join("/home",       getpass.getuser(), projection_dir, era, version)
+  outputDir = os.path.join("/hdfs/local", getpass.getuser(), projection_dir, era, version)
 
-  if validate:
+  if validate and projection == 'pileup':
     validation_result = validate_pu(os.path.join(outputDir, output_file), samples)
     sys.exit(validation_result)
 
-  puHistogramProduction = puHistogramConfig(
+  projectionJobs = projectionConfig(
     configDir          = configDir,
     outputDir          = outputDir,
     output_file        = output_file,
-    executable         = "puHistogramProducer.sh",
+    executable         = "projectHistogram.sh",
+    projection_module  = projection_module,
     samples            = samples,
     max_files_per_job  = files_per_job,
     era                = era,
+    plot               = plot,
     check_output_files = check_output_files,
     running_method     = running_method,
     num_parallel_jobs  = num_parallel_jobs,
@@ -105,17 +129,17 @@ if __name__ == '__main__':
     submission_cmd     = sys.argv,
   )
 
-  job_statistics = puHistogramProduction.create()
+  job_statistics = projectionJobs.create()
   for job_type, num_jobs in job_statistics.items():
     logging.info(" #jobs of type '%s' = %i" % (job_type, num_jobs))
 
   if auto_exec:
-    run_puHistogramProduction = True
+    run_projection = True
   elif no_exec:
-    run_puHistogramProduction = False
+    run_projection = False
   else:
-    run_puHistogramProduction = query_yes_no("Start jobs ?")
-  if run_puHistogramProduction:
-    puHistogramProduction.run()
+    run_projection = query_yes_no("Start jobs ?")
+  if run_projection:
+    projectionJobs.run()
   else:
     sys.exit(0)
