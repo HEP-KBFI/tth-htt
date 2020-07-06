@@ -550,7 +550,7 @@ class analyzeConfig(object):
           os.environ['CMSSW_BASE'], "src/tthAnalysis/HiggsToTauTau/data/btagSFRatio_{}.root".format(self.era)
         )
         self.btagSFRatios = {}
-        self.btagSFRatio_useCentralOnly = False
+        self.btagSFRatio_useCentralOnly = True
 
         self.leptonFakeRateWeight_histogramName_e = None
         self.leptonFakeRateWeight_histogramName_mu = None
