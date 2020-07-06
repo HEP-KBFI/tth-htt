@@ -70,11 +70,11 @@ use_postproc = projection == 'btagSF'
 if mode == 'sync':
   samples = load_samples(era, use_postproc, suffix = 'sync')
 elif mode == 'all':
-  samples = load_samples(era, use_postproc)
+  samples = load_samples(era, use_postproc, suffix = 'base' if use_postproc else '')
 elif mode == 'hh':
-  samples = load_samples(era, use_postproc, base = 'hh_multilepton')
+  samples = load_samples(era, use_postproc, base = 'hh_multilepton', suffix = 'hh' if use_postproc else '')
 elif mode == 'hh_bbww':
-  samples = load_samples(era, use_postproc, base = 'hh_bbww')
+  samples = load_samples(era, use_postproc, base = 'hh_bbww', suffix = 'hh' if use_postproc else '')
 elif mode == 'hh_bbww_ttbar':
   samples = load_samples(era, use_postproc, base = 'hh_bbww', suffix = 'ttbar')
 elif mode == 'hh_bbww_sync':
