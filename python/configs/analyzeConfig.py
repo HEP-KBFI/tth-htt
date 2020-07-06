@@ -1,3 +1,4 @@
+from tthAnalysis.HiggsToTauTau.safe_root import ROOT
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, generate_file_ids, get_log_version, check_submission_cmd, record_software_state
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile, is_dymc_reweighting, is_dymc_normalization, check_sample_pairs
 from tthAnalysis.HiggsToTauTau.analysisTools import createMakefile as tools_createMakefile, get_tH_weight_str, get_tH_SM_str
@@ -545,6 +546,12 @@ class analyzeConfig(object):
         self.num_jobs['addBackgrounds'] = 0
         self.num_jobs['addFakes'] = 0
 
+        self.btagSFRatioFile = os.path.join(
+          os.environ['CMSSW_BASE'], "src/tthAnalysis/HiggsToTauTau/data/btagSFRatio_{}.root".format(self.era)
+        )
+        self.btagSFRatios = {}
+        self.btagSFRatio_useCentralOnly = False
+
         self.leptonFakeRateWeight_histogramName_e = None
         self.leptonFakeRateWeight_histogramName_mu = None
 
@@ -643,6 +650,7 @@ class analyzeConfig(object):
         if dropCtrl:
           channel_str = channel_str.replace('ctrl', '')
         process_string = 'process.analyze_{}'.format(channel_str)
+        process_name = sample_info["process_name_specific"]
         current_function_name = inspect.stack()[0][3]
 
         stitch_histogram_names = {}
@@ -707,7 +715,7 @@ class analyzeConfig(object):
           if jobOptions['hasPS']:
             if 'apply_lhe_nom' not in sample_info:
               logging.warning('Sample {} has parton shower weights, but is not consiered in ISR/FSR variation'.format(
-                sample_info["process_name_specific"]
+                process_name
               ))
               jobOptions['hasPS'] = False
               central_or_shift_to_remove = []
@@ -827,7 +835,7 @@ class analyzeConfig(object):
 
                   if missing_reweighting:
                     logging.warning("Could not find the following weights for {}: {}".format(
-                      sample_info["process_name_specific"],
+                      process_name,
                       ", ".join(map(str, missing_reweighting))
                     ))
                   else:
@@ -890,6 +898,39 @@ class analyzeConfig(object):
             jobOptions['useAssocJetBtag'] = False
         if 'leptonFakeRateWeight.applyNonClosureCorrection' not in jobOptions and '0l' not in self.channel:
             jobOptions['leptonFakeRateWeight.applyNonClosureCorrection'] = self.apply_nc_correction
+        if 'applyBtagSFRatio' not in jobOptions:
+            jobOptions['applyBtagSFRatio'] = False # disable by default
+
+        jobOptions['applyBtagSFRatio'] &= jobOptions["isMC"]
+        btagSFRatio_args = {}
+        if jobOptions['applyBtagSFRatio']:
+          if not self.btagSFRatios:
+            self.load_btagSFRatios()
+          if process_name not in self.btagSFRatios:
+            raise RuntimeError(
+              "Unable to find b-tagging SF ratios for the same %s from file %s" % (process_name, self.btagSFRatioFile)
+            )
+          btagSFRatio_process = self.btagSFRatios[process_name]
+          keep_central_or_shift = []
+          if not self.btagSFRatio_useCentralOnly:
+            if jobOptions['central_or_shift'] == "central":
+              # keep only b-tagging SF systematics and the central one
+              for central_or_shift in self.central_or_shifts_internal:
+                if central_or_shift in btagSFRatio_process:
+                  keep_central_or_shift.append(central_or_shift)
+              keep_central_or_shift.append("central")
+            else:
+              if jobOptions['central_or_shift'] in btagSFRatio_process:
+                # it's a JES/JER shift
+                keep_central_or_shift.append(jobOptions['central_or_shift'])
+              else:
+                # it's neither b-tagging SF sys or JES/JER sys -> use central ratios
+                keep_central_or_shift.append("central")
+          else:
+            keep_central_or_shift.append("central")
+          for central_or_shift in keep_central_or_shift:
+            assert(central_or_shift in btagSFRatio_process)
+            btagSFRatio_args[central_or_shift] = btagSFRatio_process[central_or_shift]
 
         # not very nice, but guaranteed to work
         if is_ttbar_sys:
@@ -973,7 +1014,8 @@ class analyzeConfig(object):
             'skipEvery',
             'apply_topPtReweighting',
             'useAssocJetBtag',
-            'mode'
+            'mode',
+            'applyBtagSFRatio',
         ]
         jobOptions_typeMapping = {
           'central_or_shifts_local' : 'cms.vstring(%s)',
@@ -1102,6 +1144,12 @@ class analyzeConfig(object):
             ])
           lines.extend("])")
 
+        if btagSFRatio_args:
+          lines.append("{}.{:<{len}} = cms.PSet(".format(process_string, 'btagSFRatio', len = max_option_len))
+          for central_or_shift in btagSFRatio_args:
+            lines.append("  {} = cms.vdouble({}),".format(central_or_shift, ", ".join(map(str, btagSFRatio_args[central_or_shift]))))
+          lines.append(")")
+
         return lines
 
     def pruneSystematics(self):
@@ -1183,6 +1231,33 @@ class analyzeConfig(object):
                     else:
                         processes_input_base.append("%s_%s_%s" % (sample_category, coupling, decayMode))
         return processes_input_base
+
+    def load_btagSFRatios(self):
+        btagSFRatio_fptr = ROOT.TFile.Open(self.btagSFRatioFile)
+        btagSFRatio_sampleNames = [ key.GetName() for key in btagSFRatio_fptr.GetListOfKeys() ]
+        for sample_name in btagSFRatio_sampleNames:
+            sample_dir = btagSFRatio_fptr.Get(sample_name)
+            btagSFRatio_allSysNames = [ key.GetName() for key in sample_dir.GetListOfKeys() ]
+            assert("central" in btagSFRatio_allSysNames)
+            if self.btagSFRatio_useCentralOnly:
+                btagSFRatio_sysNames = [ "central" ]
+            else:
+                btagSFRatio_sysNames = btagSFRatio_allSysNames
+
+            self.btagSFRatios[sample_name] = {}
+            for sys_name in btagSFRatio_sysNames:
+                btagSFRatio_histogram = sample_dir.Get(sys_name)
+                btagSFRatio_nbins = btagSFRatio_histogram.GetXaxis().GetNbins()
+                btagSFRatio_values = [ btagSFRatio_histogram.GetBinContent(bin_idx) for bin_idx in range(1, btagSFRatio_nbins + 1) ]
+                if sys_name.startswith(('JES', 'JER')):
+                    sys_key = 'CMS_ttHl_{}'.format(sys_name).replace(self.era, 'Era')
+                elif sys_name != 'central':
+                    sys_key = 'CMS_ttHl_btag_{}'.format(sys_name)
+                else:
+                    sys_key = sys_name
+                assert(sys_key not in self.btagSFRatios[sample_name])
+                self.btagSFRatios[sample_name][sys_key] = btagSFRatio_values
+        btagSFRatio_fptr.Close()
 
     def createCfg_copyHistograms(self, jobOptions):
         """Create python configuration file for the copyHistograms executable (split the ROOT files produced by hadd_stage1 into separate ROOT files, one for each event category)
