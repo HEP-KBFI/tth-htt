@@ -243,7 +243,7 @@ class projectionConfig:
             verbose                 = self.verbose,
             dry_run                 = self.dry_run,
             use_home                = self.use_home,
-            max_input_files_per_job = 100,
+            max_input_files_per_job = 20,
             min_file_size           = -1,
         )
         return sbatch_hadd_file
