@@ -78,9 +78,12 @@ def get_ratios(wobtag_count, wbtag_count, wobtag_label, wbtag_label):
 def get_ratio_errs(ratios, wobtag_count, wbtag_count, wobtag_err, wbtag_err):
   ratio_errs = []
   for bin_idx in range(len(wobtag_err)):
-    ratio_err = ratios[bin_idx] * math.sqrt(
-      (wobtag_err[bin_idx] / wobtag_count[bin_idx]) ** 2 + (wbtag_err[bin_idx] / wbtag_count[bin_idx]) ** 2
-    )
+    if wobtag_count[bin_idx] != 0. and wbtag_count[bin_idx] != 0.:
+      ratio_err = ratios[bin_idx] * math.sqrt(
+        (wobtag_err[bin_idx] / wobtag_count[bin_idx]) ** 2 + (wbtag_err[bin_idx] / wbtag_count[bin_idx]) ** 2
+      )
+    else:
+      ratio_err = 0.
     ratio_errs.append(ratio_err)
   return ratio_errs
 
