@@ -57,12 +57,12 @@ def get_ratios(wobtag_count, wbtag_count, wobtag_label, wbtag_label):
     wbtag_count_bin_idx = wbtag_count[bin_idx]
     if wobtag_count_bin_idx == 0. and wbtag_count_bin_idx == 0.:
       ratios.append(1.)
-    elif wobtag_count_bin_idx != 0. and wbtag_count_bin_idx == 0.:
+    elif (wobtag_count_bin_idx != 0. and wobtag_count_bin_idx != -0.) and wbtag_count_bin_idx == 0.:
       raise RuntimeError(
         'Found bin idx %d in histogram %s with zero events but %.2f events in histogram %s' % \
         (bin_idx, wbtag_label, wobtag_count_bin_idx, wobtag_label)
       )
-    elif wobtag_count_bin_idx == 0. and wbtag[bin_idx] != 0.:
+    elif wobtag_count_bin_idx == 0. and (wbtag_count_bin_idx != 0. and wbtag_count_bin_idx != -0.):
       raise RuntimeError(
         'Found bin idx %d in histogram %s with zero events but %.2f events in histogram %s' % \
         (bin_idx, wobtag_label, wbtag_count_bin_idx, wbtag_label)
