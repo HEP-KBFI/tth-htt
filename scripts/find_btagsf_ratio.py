@@ -143,6 +143,7 @@ if plot and not plot.endswith('.pdf'):
 fptr = ROOT.TFile.Open(input, 'read')
 histogram_names = [ key.GetName() for key in fptr.GetListOfKeys() ]
 
+logging.info("Finding b-tagging SF ratios")
 results = collections.OrderedDict()
 for histogram_name_wobtag in histogram_names:
   if 'woBtag' not in histogram_name_wobtag:
@@ -173,6 +174,8 @@ for histogram_name_wobtag in histogram_names:
     },
   }
 
+nof_samples = len(results)
+logging.info("Found b-tagging SF ratios for {} samples".format(nof_samples))
 for sample_name in results:
     assert('central' in results[sample_name])
     nbins = len(results[sample_name]['central']['ratio']['count'])
@@ -191,7 +194,9 @@ for sample_name in results:
 
 if plot:
   with backend_pdf.PdfPages(plot) as pdf:
-    for sample_name in results:
+    for sample_idx, sample_name in enumerate(results.keys()):
+      logging.info("Creating plots for sample {} ({}/{})".format(sample_name, sample_idx + 1, nof_samples))
+
       fig, ax = plt.subplots(2, 1, sharex = True, figsize = (10, 12), dpi = 100)
       fig.subplots_adjust(hspace = 0)
 
@@ -212,7 +217,7 @@ if plot:
       ax[0].set_xticks(np.arange(0, nbins + 1, 1.))
       ax[0].set_yticks(np.arange(-0.5, 1.5, 0.1))
       ax[0].set_xlim(-0.5, nbins - 0.5)
-      ax[0].set_ylim(0.5, 1.5)
+      ax[0].set_ylim(0.2, 1.2)
       ax[0].set_ylabel(r'$\sum w(\mathrm{no\;btag\;SF}) / \sum w(\mathrm{with\;btag\;SF})$')
       ax[0].set_title(sample_name)
       ax[0].legend(loc = 'upper right', fontsize = 8)
@@ -237,6 +242,7 @@ if plot:
 
 out_fptr = ROOT.TFile.Open(output, 'recreate')
 for sample_key in results:
+  logging.info("Saving histograms for process {}".format(sample_key))
   sample_dir = out_fptr.mkdir(sample_key)
   sample_dir.cd()
   assert('central' in results[sample_key])
