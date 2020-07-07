@@ -55,18 +55,26 @@ def get_ratios(wobtag_count, wbtag_count, wobtag_label, wbtag_label):
   for bin_idx in range(len(wobtag_count)):
     wobtag_count_bin_idx = wobtag_count[bin_idx]
     wbtag_count_bin_idx = wbtag_count[bin_idx]
+    ratio = 1.
+
     if wobtag_count_bin_idx == 0. and wbtag_count_bin_idx == 0.:
-      ratios.append(1.)
-    elif (wobtag_count_bin_idx != 0. and wobtag_count_bin_idx != -0.) and wbtag_count_bin_idx == 0.:
-      raise RuntimeError(
-        'Found bin idx %d in histogram %s with zero events but %.2f events in histogram %s' % \
-        (bin_idx, wbtag_label, wobtag_count_bin_idx, wobtag_label)
-      )
-    elif wobtag_count_bin_idx == 0. and (wbtag_count_bin_idx != 0. and wbtag_count_bin_idx != -0.):
-      raise RuntimeError(
-        'Found bin idx %d in histogram %s with zero events but %.2f events in histogram %s' % \
-        (bin_idx, wobtag_label, wbtag_count_bin_idx, wbtag_label)
-      )
+      pass
+    elif wbtag_count_bin_idx == 0.:
+        if abs(wobtag_count_bin_idx) > 1e-2:
+          raise RuntimeError(
+            'Found bin idx %d in histogram %s with zero events but %.2f events in histogram %s' % \
+            (bin_idx, wbtag_label, wobtag_count_bin_idx, wobtag_label)
+          )
+        else:
+          ratio = 1.
+    elif wobtag_count_bin_idx == 0.:
+      if abs(wobtag_count_bin_idx) > 1e-2:
+        raise RuntimeError(
+          'Found bin idx %d in histogram %s with zero events but %.2f events in histogram %s' % \
+          (bin_idx, wobtag_label, wbtag_count_bin_idx, wbtag_label)
+        )
+      else:
+        ratio = 1.
     else:
       ratio = wobtag_count_bin_idx / wbtag_count_bin_idx
       if ratio < 0.:
@@ -77,7 +85,7 @@ def get_ratios(wobtag_count, wbtag_count, wobtag_label, wbtag_label):
           )
         )
         ratio = 1.
-      ratios.append(ratio)
+    ratios.append(ratio)
   return ratios
 
 def get_ratio_errs(ratios, wobtag_count, wbtag_count, wobtag_err, wbtag_err):
@@ -235,7 +243,7 @@ if plot:
       ax[1].grid(True, which = 'both')
       ax[1].set_xlabel('# preselected jets')
       ax[1].set_ylabel('Sum of event weights per bin')
-      ax[1].legend(loc = 'upper left', fontsize = 8)
+      ax[1].legend(loc = 'upper right', fontsize = 8)
 
       plt.savefig(pdf, format = 'pdf', bbox_inches = 'tight')
       plt.close()
