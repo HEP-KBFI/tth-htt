@@ -103,6 +103,10 @@ parser.add_argument('-p', '--plot',
   type = str, dest = 'plot', metavar = 'path', required = False,
   help = 'R|Plot file name',
 )
+parser.add_argument('-c', '--central-only',
+  dest = 'central_only', action = 'store_true', default = False,
+  help = 'R|Save only the central ratios to the output file',
+)
 parser.add_argument('-f', '--force',
   dest = 'force', action = 'store_true', default = False,
   help = 'R|Create output directory if it does not exist',
@@ -113,6 +117,7 @@ input = args.input
 output = os.path.abspath(args.output)
 max_bins = args.max_bins
 plot = os.path.abspath(args.plot)
+central_only = args.central_only
 force = args.force
 
 if not os.path.isfile(input):
@@ -226,7 +231,10 @@ out_fptr = ROOT.TFile.Open(output, 'recreate')
 for sample_key in results:
   sample_dir = out_fptr.mkdir(sample_key)
   sample_dir.cd()
+  assert('central' in results[sample_key])
   for sys_key in results[sample_key]:
+    if central_only and sys_key != 'central':
+      continue
     if not sys_key or sys_key.startswith('envelope'):
       continue
     ratios = results[sample_key][sys_key]['ratio']['count']
