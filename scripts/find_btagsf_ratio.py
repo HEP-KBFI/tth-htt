@@ -202,7 +202,7 @@ if plot:
       ax[0].set_ylim(0.5, 1.5)
       ax[0].set_ylabel(r'$\sum w(\mathrm{no\;btag\;SF}) / \sum w(\mathrm{with\;btag\;SF})$')
       ax[0].set_title(sample_name)
-      ax[0].legend(loc = 'upper right')
+      ax[0].legend(loc = 'upper right', fontsize = 8)
 
       plot_y1 = results[sample_name]['central']['wobtag']['count']
       plot_y2 = results[sample_name]['central']['wbtag']['count']
@@ -217,7 +217,7 @@ if plot:
       ax[1].grid(True, which = 'both')
       ax[1].set_xlabel('# preselected jets')
       ax[1].set_ylabel('Sum of event weights per bin')
-      ax[1].legend(loc = 'upper left')
+      ax[1].legend(loc = 'upper left', fontsize = 8)
 
       plt.savefig(pdf, format = 'pdf', bbox_inches = 'tight')
       plt.close()
