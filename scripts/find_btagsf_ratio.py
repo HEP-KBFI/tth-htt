@@ -132,7 +132,7 @@ args = parser.parse_args()
 input = args.input
 output = os.path.abspath(args.output)
 max_bins = args.max_bins
-plot = os.path.abspath(args.plot)
+plot = args.plot
 central_only = args.central_only
 force = args.force
 
@@ -143,6 +143,7 @@ output_dir = os.path.dirname(output)
 create_dir_if_not_exists(output, force)
 
 if plot:
+  plot = os.path.abspath(plot)
   create_dir_if_not_exists(plot, force)
 
 if plot and not plot.endswith('.pdf'):
