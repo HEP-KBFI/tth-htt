@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from tthAnalysis.HiggsToTauTau.safe_root import ROOT
-from tthAnalysis.HiggsToTauTau.common import SmartFormatter
+from tthAnalysis.HiggsToTauTau.common import SmartFormatter, logging
 
 import matplotlib
 matplotlib.use('Agg') # headless mode
@@ -53,25 +53,30 @@ def extract_from_name(name):
 def get_ratios(wobtag_count, wbtag_count, wobtag_label, wbtag_label):
   ratios = []
   for bin_idx in range(len(wobtag_count)):
-    if wobtag_count[bin_idx] == 0. and wbtag_count[bin_idx] == 0.:
+    wobtag_count_bin_idx = wobtag_count[bin_idx]
+    wbtag_count_bin_idx = wbtag_count[bin_idx]
+    if wobtag_count_bin_idx == 0. and wbtag_count_bin_idx == 0.:
       ratios.append(1.)
-    elif wobtag_count[bin_idx] != 0. and wbtag_count[bin_idx] == 0.:
+    elif wobtag_count_bin_idx != 0. and wbtag_count_bin_idx == 0.:
       raise RuntimeError(
         'Found bin idx %d in histogram %s with zero events but %.2f events in histogram %s' % \
-        (bin_idx, wbtag_label, wobtag_count[bin_idx], wobtag_label)
+        (bin_idx, wbtag_label, wobtag_count_bin_idx, wobtag_label)
       )
-    elif wobtag_count[bin_idx] == 0. and wbtag[bin_idx] != 0.:
+    elif wobtag_count_bin_idx == 0. and wbtag[bin_idx] != 0.:
       raise RuntimeError(
         'Found bin idx %d in histogram %s with zero events but %.2f events in histogram %s' % \
-        (bin_idx, wobtag_label, wbtag_count[bin_idx], wbtag_label)
+        (bin_idx, wobtag_label, wbtag_count_bin_idx, wbtag_label)
       )
     else:
-      ratio = wobtag_count[bin_idx] / wbtag_count[bin_idx]
+      ratio = wobtag_count_bin_idx / wbtag_count_bin_idx
       if ratio < 0.:
-        raise RuntimeError(
-          'Found event sums with opposite sign at bin %d in histograms %s and %s: %.2f and %.2f' % \
-          (bin_idx, wobtag_label, wbtag_label, wobtag_count[bin_idx], wbtag_count[bin_idx])
+        logging.warning(
+          'Found event sums with opposite sign at bin {} in histograms {} and {}: {:.2f} and {:.2f} '
+          '-> setting ratio to 1 instead'.format(
+            bin_idx, wobtag_label, wbtag_label, wobtag_count_bin_idx, wbtag_count_bin_idx
+          )
         )
+        ratio = 1.
       ratios.append(ratio)
   return ratios
 
