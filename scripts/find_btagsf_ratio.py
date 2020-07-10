@@ -100,6 +100,55 @@ def get_ratio_errs(ratios, wobtag_count, wbtag_count, wobtag_err, wbtag_err):
     ratio_errs.append(ratio_err)
   return ratio_errs
 
+def plot_output(plot_or_output):
+  fig, ax = plt.subplots(2, 1, sharex = True, figsize = (10, 12), dpi = 100)
+  fig.subplots_adjust(hspace = 0)
+
+  plot_y = results[sample_name]['central']['ratio']['count']
+  plot_yerr = results[sample_name]['central']['ratio']['err']
+  plot_sys_ymin = results[sample_name]['envelopeMin']
+  plot_sys_ymax = results[sample_name]['envelopeMax']
+  nbins = len(plot_y)
+  assert(nbins == len(plot_yerr))
+  plot_x = list(range(nbins))
+
+  ax[0].axhline(y = 1.0, color = 'black', linestyle = '-')
+  ax[0].fill_between(
+    plot_x, plot_sys_ymin, plot_sys_ymax, alpha = 0.2, color = 'green', label = 'Syst unc (JES, JER, btag)'
+  )
+  ax[0].errorbar(plot_x, plot_y, yerr = plot_yerr, fmt = 'o', markersize = 4, label = 'Central + stat unc')
+  ax[0].grid(True)
+  ax[0].set_xticks(np.arange(0, nbins + 1, 1.))
+  ax[0].set_yticks(np.arange(-0.5, 1.5, 0.1))
+  ax[0].set_xlim(-0.5, nbins - 0.5)
+  ax[0].set_ylim(0.2, 1.2)
+  ax[0].set_ylabel(r'$\sum w(\mathrm{no\;btag\;SF}) / \sum w(\mathrm{with\;btag\;SF})$')
+  ax[0].set_title(sample_name)
+  ax[0].legend(loc = 'upper right', fontsize = 8)
+
+  plot_y1 = results[sample_name]['central']['wobtag']['count']
+  plot_y2 = results[sample_name]['central']['wbtag']['count']
+  nbins1 = len(plot_y1)
+  nbins2 = len(plot_y2)
+  assert(nbins == nbins1)
+  assert(nbins == nbins2)
+
+  ax[1].step(plot_x, plot_y1, label = 'Without b-tagging SF (central)', where = 'mid')
+  ax[1].step(plot_x, plot_y2, label = 'With b-tagging SF (central)', where = 'mid')
+  ax[1].set_yscale('log')
+  ax[1].grid(True, which = 'both')
+  ax[1].set_xlabel('# preselected jets')
+  ax[1].set_ylabel('Sum of event weights per bin')
+  ax[1].legend(loc = 'upper right', fontsize = 8)
+
+  if type(plot_or_output) == str:
+    extension = os.path.splitext(plot_or_output)[1][1:]
+  else:
+    assert(type(plot_or_output) == backend_pdf.PdfPages)
+    extension = 'pdf'
+  plt.savefig(plot_or_output, format = extension, bbox_inches = 'tight')
+  plt.close()
+
 parser = argparse.ArgumentParser(
     formatter_class = lambda prog: SmartFormatter(prog, max_help_position = 35)
 )
@@ -119,6 +168,10 @@ parser.add_argument('-p', '--plot',
   type = str, dest = 'plot', metavar = 'path', required = False,
   help = 'R|Plot file name',
 )
+parser.add_argument('-s', '--sample',
+  type = str, dest = 'sample', metavar = 'name', required = False,
+  help = 'R|Derive results from a single sample',
+)
 parser.add_argument('-c', '--central-only',
   dest = 'central_only', action = 'store_true', default = False,
   help = 'R|Save only the central ratios to the output file',
@@ -133,6 +186,7 @@ input = args.input
 output = os.path.abspath(args.output)
 max_bins = args.max_bins
 plot = args.plot
+sample = args.sample
 central_only = args.central_only
 force = args.force
 
@@ -142,12 +196,12 @@ if not os.path.isfile(input):
 output_dir = os.path.dirname(output)
 create_dir_if_not_exists(output, force)
 
+if plot and not sample and not plot.endswith('.pdf'):
+  raise ValueError("Can only accept the path to plot in pdf format: %s" % plot)
+
 if plot:
   plot = os.path.abspath(plot)
   create_dir_if_not_exists(plot, force)
-
-if plot and not plot.endswith('.pdf'):
-  raise ValueError("Can only accept the path to plot in pdf format: %s" % plot)
 
 fptr = ROOT.TFile.Open(input, 'read')
 histogram_names = [ key.GetName() for key in fptr.GetListOfKeys() ]
@@ -160,6 +214,8 @@ for histogram_name_wobtag in histogram_names:
   histogram_name_wbtag = histogram_name_wobtag.replace('woBtag', 'wBtag')
 
   sample_name, sys_name = extract_from_name(histogram_name_wobtag)
+  if sample and sample != sample_name:
+    continue
   if sample_name not in results:
     results[sample_name] = collections.OrderedDict()
   assert(sys_name not in results[sample_name])
@@ -184,7 +240,10 @@ for histogram_name_wobtag in histogram_names:
   }
 
 nof_samples = len(results)
-logging.info("Found b-tagging SF ratios for {} samples".format(nof_samples))
+logging.info("Found b-tagging SF ratios for {} sample(s)".format(nof_samples))
+if sample and nof_samples == 0:
+  raise RuntimeError("No such sample found in file %s: %s" % (sample, input))
+
 for sample_name in results:
     assert('central' in results[sample_name])
     nbins = len(results[sample_name]['central']['ratio']['count'])
@@ -202,52 +261,14 @@ for sample_name in results:
     results[sample_name]['envelopeMax'] = max_ratios
 
 if plot:
-  with backend_pdf.PdfPages(plot) as pdf:
-    for sample_idx, sample_name in enumerate(results.keys()):
-      logging.info("Creating plots for sample {} ({}/{})".format(sample_name, sample_idx + 1, nof_samples))
-
-      fig, ax = plt.subplots(2, 1, sharex = True, figsize = (10, 12), dpi = 100)
-      fig.subplots_adjust(hspace = 0)
-
-      plot_y = results[sample_name]['central']['ratio']['count']
-      plot_yerr = results[sample_name]['central']['ratio']['err']
-      plot_sys_ymin = results[sample_name]['envelopeMin']
-      plot_sys_ymax = results[sample_name]['envelopeMax']
-      nbins = len(plot_y)
-      assert(nbins == len(plot_yerr))
-      plot_x = list(range(nbins))
-
-      ax[0].axhline(y = 1.0, color = 'black', linestyle = '-')
-      ax[0].fill_between(
-        plot_x, plot_sys_ymin, plot_sys_ymax, alpha = 0.2, color = 'green', label = 'Syst unc (JES, JER, btag)'
-      )
-      ax[0].errorbar(plot_x, plot_y, yerr = plot_yerr, fmt = 'o', markersize = 4, label = 'Central + stat unc')
-      ax[0].grid(True)
-      ax[0].set_xticks(np.arange(0, nbins + 1, 1.))
-      ax[0].set_yticks(np.arange(-0.5, 1.5, 0.1))
-      ax[0].set_xlim(-0.5, nbins - 0.5)
-      ax[0].set_ylim(0.2, 1.2)
-      ax[0].set_ylabel(r'$\sum w(\mathrm{no\;btag\;SF}) / \sum w(\mathrm{with\;btag\;SF})$')
-      ax[0].set_title(sample_name)
-      ax[0].legend(loc = 'upper right', fontsize = 8)
-
-      plot_y1 = results[sample_name]['central']['wobtag']['count']
-      plot_y2 = results[sample_name]['central']['wbtag']['count']
-      nbins1 = len(plot_y1)
-      nbins2 = len(plot_y2)
-      assert(nbins == nbins1)
-      assert(nbins == nbins2)
-
-      ax[1].step(plot_x, plot_y1, label = 'Without b-tagging SF (central)', where = 'mid')
-      ax[1].step(plot_x, plot_y2, label = 'With b-tagging SF (central)', where = 'mid')
-      ax[1].set_yscale('log')
-      ax[1].grid(True, which = 'both')
-      ax[1].set_xlabel('# preselected jets')
-      ax[1].set_ylabel('Sum of event weights per bin')
-      ax[1].legend(loc = 'upper right', fontsize = 8)
-
-      plt.savefig(pdf, format = 'pdf', bbox_inches = 'tight')
-      plt.close()
+  if sample:
+    logging.info("Creating the plot for sample {}".format(sample))
+    plot_output(plot)
+  else:
+    with backend_pdf.PdfPages(plot) as pdf:
+      for sample_idx, sample_name in enumerate(results.keys()):
+        logging.info("Creating plots for sample {} ({}/{})".format(sample_name, sample_idx + 1, nof_samples))
+        plot_output(pdf)
 
 out_fptr = ROOT.TFile.Open(output, 'recreate')
 for sample_key in results:
