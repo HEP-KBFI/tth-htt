@@ -41,6 +41,7 @@ REMOVE_INTERMEDIATE=$(python -c "execfile('$SCRIPT'); print(remove_intermediate)
 COMP_TOP_RWGT=$(python -c "execfile('$SCRIPT'); print(compTopRwgt)")
 COMP_HTXS=$(python -c "execfile('$SCRIPT'); print(compHTXS)")
 SPLIT_BY_LHENJET=$(python -c "execfile('$SCRIPT'); print(splitByNlheJet)")
+MLL4WZTO3LNU=$(python -c "execfile('$SCRIPT'); print(mllForWZTo3LNu)")
 
 echo "Found the following file(s): '$FILES'"
 echo "Found the following executable: '$EXECUTABLE'"
@@ -71,6 +72,10 @@ NANO_MODULES_MC="$NANO_MODULES_MC,$NANO_BTAGGING_SF_MODULE"
 
 if [ "$IS_HH_NONRES" == "True" ]; then
   NANO_MODULES_MC="$NANO_MODULES_MC,diHiggsVar_${ERA}"
+fi
+
+if [ "$MLL4WZTO3LNU" == "True" ]; then
+  NANO_MODULES_MC="$NANO_MODULES_MC,mllWZTo3LNu"
 fi
 
 if [ "$IS_MC" == "True" ]; then

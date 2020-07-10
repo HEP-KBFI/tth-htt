@@ -206,6 +206,7 @@ class prodNtupleConfig:
             "compHTXS            = %s" % jobOptions['compHTXS'],
             "isTuneCP5           = %s" % jobOptions['isTuneCP5'],
             "splitByNlheJet      = %s" % jobOptions['splitByNlheJet'],
+            "mllForWZTo3LNu      = %s" % jobOptions['mllForWZTo3LNu'],
         ]
         create_cfg(self.cfgFile_prodNtuple_original, jobOptions['cfgFile_modified'], lines)
 
@@ -340,6 +341,7 @@ class prodNtupleConfig:
                     'compHTXS'         : sample_info['sample_category'].startswith('ttH'),
                     'isTuneCP5'        : (self.era == "2016" and 'TuneCP5' in sample_name),
                     'splitByNlheJet'   : process_name.startswith(('DYToLL_0J', 'DYToLL_1J', 'DYToLL_2J', 'DYJetsToLL_M-50_amcatnloFXFX')),
+                    'mllForWZTo3LNu'   : process_name.startswith('WZTo3LNu') and 'amcatnlo' not in sample_name,
                 }
                 self.createCfg_prodNtuple(jobOptions)
 
