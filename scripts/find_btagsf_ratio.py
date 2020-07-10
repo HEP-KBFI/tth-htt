@@ -121,7 +121,7 @@ def plot_output(plot_or_output):
   ax[0].set_xticks(np.arange(0, nbins + 1, 1.))
   ax[0].set_yticks(np.arange(-0.5, 1.5, 0.1))
   ax[0].set_xlim(-0.5, nbins - 0.5)
-  ax[0].set_ylim(0.2, 1.2)
+  ax[0].set_ylim(0.5, 1.5)
   ax[0].set_ylabel(r'$\sum w(\mathrm{no\;btag\;SF}) / \sum w(\mathrm{with\;btag\;SF})$')
   ax[0].set_title(sample_name)
   ax[0].legend(loc = 'upper right', fontsize = 8)
