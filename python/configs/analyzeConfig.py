@@ -547,7 +547,7 @@ class analyzeConfig(object):
         self.num_jobs['addFakes'] = 0
 
         self.btagSFRatios = {}
-        self.btagSFRatio_useCentralOnly = True
+        self.btagSFRatio_useCentralOnly = False
         if self.btagSFRatio_useCentralOnly:
           self.btagSFRatioFile = os.path.join(
             os.environ['CMSSW_BASE'], "src/tthAnalysis/HiggsToTauTau/data/btagSFRatio_{}.root".format(self.era)
