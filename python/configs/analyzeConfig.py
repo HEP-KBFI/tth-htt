@@ -1253,7 +1253,7 @@ class analyzeConfig(object):
                 btagSFRatio_histogram = sample_dir.Get(sys_name)
                 btagSFRatio_nbins = btagSFRatio_histogram.GetXaxis().GetNbins()
                 btagSFRatio_values = [ btagSFRatio_histogram.GetBinContent(bin_idx) for bin_idx in range(1, btagSFRatio_nbins + 1) ]
-                if sys_name.startswith(('JES', 'JER')):
+                if sys_name.startswith(('JES', 'JER', 'pileup', 'l1PreFire', 'topPtReweighting')):
                     sys_key = 'CMS_ttHl_{}'.format(sys_name).replace(self.era, 'Era')
                 elif sys_name != 'central':
                     sys_key = 'CMS_ttHl_btag_{}'.format(sys_name)

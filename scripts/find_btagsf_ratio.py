@@ -251,7 +251,7 @@ for sample_name in results:
     min_ratios = [ +1e+3 ] * nbins
     max_ratios = [ -1e+3 ] * nbins
     for sys_name in results[sample_name]:
-        if not sys_name or sys_name.startswith(('pileup', 'l1PreFire', 'topPtReweighting')):
+        if not sys_name:
             continue
         ratios = results[sample_name][sys_name]['ratio']['count']
         assert(len(ratios) == nbins)
