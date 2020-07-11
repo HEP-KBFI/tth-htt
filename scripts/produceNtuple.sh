@@ -53,6 +53,7 @@ echo "Remove intermediate file? '$REMOVE_INTERMEDIATE'"
 echo "Compute SFs for top reweighting? '$COMP_TOP_RWGT'"
 echo "Count events in bins of Higgs pT? '$COMP_HTXS'"
 echo "Splitting event counts by # LHE jets? '$SPLIT_BY_LHENJET'"
+echo "Finding mll for WZTo3LNu? '$MLL4WZTO3LNU'"
 
 if [[ -z $(which "$EXECUTABLE" 2>/dev/null) ]]; then
   echo "Executable '$EXECUTABLE' not in \$PATH";
