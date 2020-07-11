@@ -546,11 +546,14 @@ class analyzeConfig(object):
         self.num_jobs['addBackgrounds'] = 0
         self.num_jobs['addFakes'] = 0
 
-        self.btagSFRatioFile = os.path.join(
-          os.environ['CMSSW_BASE'], "src/tthAnalysis/HiggsToTauTau/data/btagSFRatio_{}.root".format(self.era)
-        )
         self.btagSFRatios = {}
         self.btagSFRatio_useCentralOnly = True
+        if self.btagSFRatio_useCentralOnly:
+          self.btagSFRatioFile = os.path.join(
+            os.environ['CMSSW_BASE'], "src/tthAnalysis/HiggsToTauTau/data/btagSFRatio_{}.root".format(self.era)
+          )
+        else:
+          self.btagSFRatioFile = "/hdfs/local/karl/ttHBtagsfProjection/{era}/2020Jul09_all/btagSF_{era}_fullSys.root".format(era = self.era)
 
         self.leptonFakeRateWeight_histogramName_e = None
         self.leptonFakeRateWeight_histogramName_mu = None
@@ -900,6 +903,7 @@ class analyzeConfig(object):
             jobOptions['leptonFakeRateWeight.applyNonClosureCorrection'] = self.apply_nc_correction
         if 'applyBtagSFRatio' not in jobOptions:
             jobOptions['applyBtagSFRatio'] = False # disable by default
+            #jobOptions['applyBtagSFRatio'] = 'hh' in self.channel and 'DYctrl' not in self.channel and not jobOptions['apply_DYMCNormScaleFactors']
 
         jobOptions['applyBtagSFRatio'] &= jobOptions["isMC"]
         btagSFRatio_args = {}
