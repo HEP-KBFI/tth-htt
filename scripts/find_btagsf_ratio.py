@@ -238,6 +238,7 @@ for histogram_name_wobtag in histogram_names:
       'err'   : ratio_errs,
     },
   }
+fptr.Close()
 
 nof_samples = len(results)
 logging.info("Found b-tagging SF ratios for {} sample(s)".format(nof_samples))
@@ -250,7 +251,7 @@ for sample_name in results:
     min_ratios = [ +1e+3 ] * nbins
     max_ratios = [ -1e+3 ] * nbins
     for sys_name in results[sample_name]:
-        if not sys_name:
+        if not sys_name or sys_name.startswith(('pileup', 'l1PreFire', 'topPtReweighting')):
             continue
         ratios = results[sample_name][sys_name]['ratio']['count']
         assert(len(ratios) == nbins)
