@@ -207,6 +207,7 @@ class prodNtupleConfig:
             "isTuneCP5           = %s" % jobOptions['isTuneCP5'],
             "splitByNlheJet      = %s" % jobOptions['splitByNlheJet'],
             "mllForWZTo3LNu      = %s" % jobOptions['mllForWZTo3LNu'],
+            "WZTo3LNu_mllmin01   = %s" % jobOptions['WZTo3LNu_mllmin01']
         ]
         create_cfg(self.cfgFile_prodNtuple_original, jobOptions['cfgFile_modified'], lines)
 
@@ -328,20 +329,21 @@ class prodNtupleConfig:
                 hlt_paths = sample_info["hlt_paths"] if not is_mc else []
                 hlt_cuts = list(Triggers(self.era).triggers_flat) if self.preselection_cuts["applyHLTcut"] else []
                 jobOptions = {
-                    'inputFiles'       : self.inputFiles[key_file],
-                    'cfgFile_modified' : self.cfgFiles_prodNtuple_modified[key_file],
-                    'outputFile'       : self.outputFiles[key_file],
-                    'is_mc'            : is_mc,
-                    'random_seed'      : jobId,
-                    'process_name'     : process_name,
-                    'category_name'    : sample_info["sample_category"],
-                    'triggers'         : hlt_paths,
-                    'HLTcuts'          : hlt_cuts,
-                    'compTopRwgt'      : sample_name.startswith('/TTTo'),
-                    'compHTXS'         : sample_info['sample_category'].startswith('ttH'),
-                    'isTuneCP5'        : (self.era == "2016" and 'TuneCP5' in sample_name),
-                    'splitByNlheJet'   : process_name.startswith(('DYToLL_0J', 'DYToLL_1J', 'DYToLL_2J', 'DYJetsToLL_M-50_amcatnloFXFX')),
-                    'mllForWZTo3LNu'   : process_name.startswith('WZTo3LNu') and 'amcatnlo' not in sample_name,
+                    'inputFiles'              : self.inputFiles[key_file],
+                    'cfgFile_modified'        : self.cfgFiles_prodNtuple_modified[key_file],
+                    'outputFile'              : self.outputFiles[key_file],
+                    'is_mc'                   : is_mc,
+                    'random_seed'             : jobId,
+                    'process_name'            : process_name,
+                    'category_name'           : sample_info["sample_category"],
+                    'triggers'                : hlt_paths,
+                    'HLTcuts'                 : hlt_cuts,
+                    'compTopRwgt'             : sample_name.startswith('/TTTo'),
+                    'compHTXS'                : sample_info['sample_category'].startswith('ttH'),
+                    'isTuneCP5'               : (self.era == "2016" and 'TuneCP5' in sample_name),
+                    'splitByNlheJet'          : process_name.startswith(('DYToLL_0J', 'DYToLL_1J', 'DYToLL_2J', 'DYJetsToLL_M-50_amcatnloFXFX')),
+                    'mllForWZTo3LNu'          : process_name.startswith('WZTo3LNu') and 'amcatnlo' not in sample_name,
+                    'mllForWZTo3LNu_mllmin01' : process_name.startswith('WZTo3LNu_mllmin01'),
                 }
                 self.createCfg_prodNtuple(jobOptions)
 
