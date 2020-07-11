@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2020-06-23 12:06:47 with the following command:
+# file generated at 2020-07-11 17:00:03 with the following command:
 # find_samples.py -V -i ../NanoAOD/test/datasets/txt/datasets_mc_2016_RunIISummer16MiniAODv3.txt -m python/samples/metaDict_2016_mc.py -s ../NanoAOD/test/datasets/txt/sum_datasets_2016_RunIISummer16MiniAODv3.txt -c python/samples/sampleLocations_2016_nanoAOD.txt
 
 meta_dictionary = OD()
@@ -50,6 +50,7 @@ sum_events = {
   ("WJetsToLNu_HT1200To2500", "WJetsToLNu_HT1200To2500_ext1"),
   ("WJetsToLNu_HT2500ToInf", "WJetsToLNu_HT2500ToInf_ext1"),
   ("WWToLNuQQ", "WWToLNuQQ_ext1"),
+  ("ZZTo4L", "ZZTo4L_ext1"),
   ("ZZTo2L2Nu", "ZZTo2L2Nu_ext1"),
   ("QCD_Pt30to50_EMEnriched", "QCD_Pt30to50_EMEnriched_ext1"),
   ("QCD_Pt50to80_EMEnriched", "QCD_Pt50to80_EMEnriched_ext1"),
@@ -2289,6 +2290,19 @@ meta_dictionary["/ZZTo4L_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17
   ("comment",               "100.0%; status: VALID; size: 206.41GB; nevents: 6.67M; release: 9_4_9; last modified: 2018-10-04 05:09:35"),
 ])
 
+meta_dictionary["/ZZTo4L_13TeV_powheg_pythia8_ext1/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] =  OD([
+  ("crab_string",           "2016v3_2020Jul10_ZZTo4L_13TeV_powheg_pythia8_ext1__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2"),
+  ("sample_category",       "ZZ"),
+  ("process_name_specific", "ZZTo4L_ext1"),
+  ("nof_db_events",         96451124),
+  ("nof_db_files",          717),
+  ("fsize_db",              2982855311494),
+  ("xsection",              1.256),
+  ("use_it",                True),
+  ("genWeight",             True),
+  ("comment",               "100.0%; status: VALID; size: 2.98TB; nevents: 96.45M; release: 9_4_9; last modified: 2019-02-18 17:51:34"),
+])
+
 meta_dictionary["/ZZTo4L_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"] =  OD([
   ("crab_string",           "2016v3_2019Sep30_ZZTo4L_13TeV-amcatnloFXFX-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2"),
   ("sample_category",       "ZZ"),
@@ -2984,6 +2998,6 @@ meta_dictionary["/QCD_Pt-1000toInf_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunI
 # EWK:        1.62G
 # WW:         17.90M
 # WZ:         92.26M
-# ZZ:         95.37M
+# ZZ:         191.82M
 # QCD:        593.70M
 
