@@ -207,7 +207,7 @@ class prodNtupleConfig:
             "isTuneCP5           = %s" % jobOptions['isTuneCP5'],
             "splitByNlheJet      = %s" % jobOptions['splitByNlheJet'],
             "mllForWZTo3LNu      = %s" % jobOptions['mllForWZTo3LNu'],
-            "WZTo3LNu_mllmin01   = %s" % jobOptions['WZTo3LNu_mllmin01']
+            "mllForWZTo3LNu_mllmin01   = %s" % jobOptions['mllForWZTo3LNu_mllmin01']
         ]
         create_cfg(self.cfgFile_prodNtuple_original, jobOptions['cfgFile_modified'], lines)
 
