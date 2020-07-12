@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2020-07-05 10:40:47 with the following command:
+# file generated at 2020-07-12 11:13:40 with the following command:
 # create_dictionary.py -m python/samples/metaDict_2016.py -p python/samples/sampleLocations_2016.txt -N samples_2016 -E 2016 -o python/samples -g tthAnalyzeSamples_2016_base.py -M
 
 samples_2016 = OD()
@@ -39184,6 +39184,57 @@ samples_2016["/ZZTo4L_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94
   ]),
 ])
 
+samples_2016["/ZZTo4L_13TeV_powheg_pythia8_ext1/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "ZZ"),
+  ("process_name_specific",           "ZZTo4L_ext1"),
+  ("nof_files",                       387),
+  ("nof_db_files",                    717),
+  ("nof_events",                      {
+    'Count'                                                                          : [     96451124, ],
+    'CountWeighted'                                                                  : [     96452417,     96457589,     96443544, ],
+    'CountWeightedLHEWeightScale'                                                    : [     92288838,     98720690,    102818592,     89499296,     96452417,    101244210,     87303095,     94680842,    100057897, ],
+    'CountWeightedLHEEnvelope'                                                       : [    103384128,     87754848, ],
+    'CountWeightedL1PrefireNom'                                                      : [     95559074,     95560412,     95554135, ],
+    'CountWeightedL1Prefire'                                                         : [     95559074,     95316738,     95798937, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom'                                        : [     91403945,     97808504,    101887659,     88636377,     95559074,    100328983,     86458131,     93803091,     99155467, ],
+    'CountWeightedLHEEnvelopeL1PrefireNom'                                           : [    102451530,     86905973, ],
+  }),
+  ("nof_tree_events",                 96451124),
+  ("nof_db_events",                   96451124),
+  ("fsize_local",                     212542827894), # 212.54GB, avg file size 549.21MB
+  ("fsize_db",                        2982855311494), # 2.98TB, avg file size 4.16GB
+  ("use_it",                          True),
+  ("xsection",                        1.256),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("nof_PSweights",                   1),
+  ("LHE_set",                         "LHA IDs 260001 - 260100 -> NNPDF30_nlo_as_0118 PDF set, expecting 101 weights (counted 100 weights)"),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2020Jul11_woPresel_nom_all/ntuples/ZZTo4L_ext1"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
 samples_2016["/ZZTo4L_13TeV-amcatnloFXFX-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"] = OD([
   ("type",                            "mc"),
   ("sample_category",                 "ZZ"),
@@ -41714,11 +41765,12 @@ samples_2016["sum_events"] = [
   [ 'WplusH_HToBB_WToLNu',                             'WplusH_HToBB_WToLNu_ext1',                         ],
   [ 'QCD_Pt80to120_Mu5',                               'QCD_Pt80to120_Mu5_ext1',                           ],
   [ 'DYToLL_1J_ext1',                                  'DYToLL_1J_backup',                                 ],
+  [ 'QCD_Pt50to80_EMEnriched',                         'QCD_Pt50to80_EMEnriched_ext1',                     ],
   [ 'DYJetsToLL_M-10to50_amcatnloFXFX',                'DYJetsToLL_M-10to50_amcatnloFXFX_ext1',            ],
   [ 'THW_ctcvcp',                                      'THW_ctcvcp_CP5',                                   ],
   [ 'WminusH_HToBB_WToLNu',                            'WminusH_HToBB_WToLNu_ext1',                        ],
   [ 'W2JetsToLNu',                                     'W2JetsToLNu_ext1',                                 ],
-  [ 'QCD_Pt50to80_EMEnriched',                         'QCD_Pt50to80_EMEnriched_ext1',                     ],
+  [ 'ZZTo4L',                                          'ZZTo4L_ext1',                                      ],
   [ 'VBFHToBB_M125',                                   'VBFHToBB_M125_ext1',                               ],
   [ 'WJetsToLNu_HT400To600',                           'WJetsToLNu_HT400To600_ext1',                       ],
   [ 'WJetsToLNu_HT200To400',                           'WJetsToLNu_HT200To400_ext1',                      'WJetsToLNu_HT200To400_ext2',                       ],
