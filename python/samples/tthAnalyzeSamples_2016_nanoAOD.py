@@ -32532,6 +32532,92 @@ samples_2016["/WZTo3LNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16Min
   ]),
 ])
 
+samples_2016["/WZTo3LNu_mllmin01_13TeV-powheg-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "WZ"),
+  ("process_name_specific",           "WZTo3LNu_mllmin01"),
+  ("nof_files",                       20),
+  ("nof_db_files",                    9),
+  ("nof_events",                      {
+  }),
+  ("nof_tree_events",                 990980),
+  ("nof_db_events",                   990980),
+  ("fsize_local",                     1160439859), # 1.16GB, avg file size 58.02MB
+  ("fsize_db",                        28118235276), # 28.12GB, avg file size 3.12GB
+  ("use_it",                          False),
+  ("xsection",                        4.43),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("nof_PSweights",                   1),
+  ("LHE_set",                         "LHA IDs 260001 - 260100 -> NNPDF30_nlo_as_0118 PDF set, expecting 101 weights (counted 100 weights)"),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2020Jul11/WZTo3LNu_mllmin01_13TeV-powheg-pythia8/2016v3_2020Jul11_WZTo3LNu_mllmin01_13TeV-powheg-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/200711_154123"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
+samples_2016["/WZTo3LNu_mllmin01_13TeV-powheg-pythia8_ext1/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "WZ"),
+  ("process_name_specific",           "WZTo3LNu_mllmin01_ext1"),
+  ("nof_files",                       625),
+  ("nof_db_files",                    625),
+  ("nof_events",                      {
+  }),
+  ("nof_tree_events",                 85858212),
+  ("nof_db_events",                   87598784),
+  ("fsize_local",                     97554018930), # 97.55GB, avg file size 156.09MB
+  ("fsize_db",                        2481950857860), # 2.48TB, avg file size 3.97GB
+  ("use_it",                          False),
+  ("xsection",                        4.43),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("nof_PSweights",                   1),
+  ("LHE_set",                         "LHA IDs 260001 - 260100 -> NNPDF30_nlo_as_0118 PDF set, expecting 101 weights (counted 100 weights)"),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2020Jul11/WZTo3LNu_mllmin01_13TeV-powheg-pythia8_ext1/2016v3_2020Jul11_WZTo3LNu_mllmin01_13TeV-powheg-pythia8_ext1__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/200711_162947"),
+        ("selection", "*"),
+        ("blacklist", [98, 100, 389, 404, 411, 418, 435, 438, 439, 497, 503, 614]),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
 samples_2016["/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/MINIAODSIM"] = OD([
   ("type",                            "mc"),
   ("sample_category",                 "WZ"),
@@ -35392,6 +35478,7 @@ samples_2016["sum_events"] = [
   [ 'DYJetsToLL_M50_HT200to400',                       'DYJetsToLL_M50_HT200to400_ext1',                   ],
   [ 'DYToLL_2J',                                       'DYToLL_2J_ext1',                                   ],
   [ 'TTZToLL_M10_ext2',                                'TTZToLL_M10_ext3',                                 ],
+  [ 'QCD_Pt300to470_Mu5',                              'QCD_Pt300to470_Mu5_ext1',                         'QCD_Pt300to470_Mu5_ext2',                          ],
   [ 'DYJetsToLL_M-5to50_HT-400to600',                  'DYJetsToLL_M-5to50_HT-400to600_ext1',              ],
   [ 'THQ_ctcvcp',                                      'THQ_ctcvcp_CP5',                                   ],
   [ 'WGToLNuG_ext1',                                   'WGToLNuG_ext2',                                   'WGToLNuG_ext3',                                    ],
@@ -35407,7 +35494,7 @@ samples_2016["sum_events"] = [
   [ 'WJetsToLNu',                                      'WJetsToLNu_ext2',                                  ],
   [ 'WJetsToLNu_HT800To1200',                          'WJetsToLNu_HT800To1200_ext1',                      ],
   [ 'TTJets_SingleLeptFromT',                          'TTJets_SingleLeptFromT_ext1',                      ],
-  [ 'QCD_Pt300to470_Mu5',                              'QCD_Pt300to470_Mu5_ext1',                         'QCD_Pt300to470_Mu5_ext2',                          ],
+  [ 'WZTo3LNu_mllmin01',                               'WZTo3LNu_mllmin01_ext1',                           ],
   [ 'QCD_Pt1000toInf_Mu5',                             'QCD_Pt1000toInf_Mu5_ext1',                         ],
   [ 'QCD_Pt30to50_EMEnriched',                         'QCD_Pt30to50_EMEnriched_ext1',                     ],
   [ 'WJetsToLNu_HT600To800',                           'WJetsToLNu_HT600To800_ext1',                       ],
