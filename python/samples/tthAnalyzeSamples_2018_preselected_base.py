@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2020-07-11 17:38:18 with the following command:
+# file generated at 2020-07-13 18:04:11 with the following command:
 # create_dictionary.py -m python/samples/metaDict_2018.py -p python/samples/sampleLocations_2018_preselected.txt -N samples_2018 -E 2018 -o python/samples -g tthAnalyzeSamples_2018_preselected_base.py -M
 
 samples_2018 = OD()
@@ -21798,6 +21798,55 @@ samples_2018["/WZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18MiniAOD-
   ]),
 ])
 
+samples_2018["/WZTo3LNu_mllmin01_NNPDF31_TuneCP5_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "WZ"),
+  ("process_name_specific",           "WZTo3LNu_mllmin01"),
+  ("nof_files",                       7),
+  ("nof_db_files",                    1306),
+  ("nof_events",                      {
+    'Count'                                                                          : [     10959093, ],
+    'CountWeighted'                                                                  : [     10841186,     10840828,     10841649, ],
+    'CountWeightedLHEWeightScale'                                                    : [     10795001,     11126397,     11331699,     10466959,     10840834,     11093027,     10197933,     10606945,     10897007, ],
+    'CountWeightedLHEEnvelope'                                                       : [     11481989,     10146203, ],
+    'CountWeightedPSWeight'                                                          : [     10840686,     10838037,     13912967,     10841824,     10845385,      7985874, ],
+    'CountWeightedPSWeightOriginalXWGTUP'                                            : [    109600405,    109600200,    109600444,    109600405,    109589343,    109589064, ],
+  }),
+  ("nof_tree_events",                 2296579),
+  ("nof_db_events",                   89702600),
+  ("fsize_local",                     7264017403), # 7.26GB, avg file size 1.04GB
+  ("fsize_db",                        3524962010660), # 3.52TB, avg file size 2.70GB
+  ("use_it",                          False),
+  ("xsection",                        4.43),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("nof_PSweights",                   4),
+  ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Jul13_wPresel_nom_all/ntuples/WZTo3LNu_mllmin01"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
 samples_2018["/WZTo3LNu_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/MINIAODSIM"] = OD([
   ("type",                            "mc"),
   ("sample_category",                 "WZ"),
@@ -24334,6 +24383,7 @@ samples_2018["sum_events"] = [
   [ 'ggZZTo4e',                                        'ggZZTo4e_ext1',                                    ],
   [ 'WZTo3LNu',                                        'WZTo3LNu_ext1',                                    ],
   [ 'QCD_Pt470to600_Mu5',                              'QCD_Pt470to600_Mu5_ext1',                          ],
+  [ 'WZTo3LNu_powheg_ext1',                            'WZTo3LNu_mllmin01',                                ],
   [ 'WminusH_HToBB_WToLNu',                            'WminusH_HToBB_WToLNu_ext1',                        ],
   [ 'DYJetsToLL_M-50_amcatnloFXFX',                    'DYJetsToLL_M-50_amcatnloFXFX_ext2',                ],
   [ 'TTZToQQ',                                         'TTZToQQ_ext1',                                     ],

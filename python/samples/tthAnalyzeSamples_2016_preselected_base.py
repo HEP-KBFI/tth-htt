@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2020-07-12 13:17:26 with the following command:
+# file generated at 2020-07-13 18:33:01 with the following command:
 # create_dictionary.py -m python/samples/metaDict_2016.py -p python/samples/sampleLocations_2016_preselected.txt -N samples_2016 -E 2016 -o python/samples -g tthAnalyzeSamples_2016_preselected_base.py -M
 
 samples_2016 = OD()
@@ -38572,6 +38572,108 @@ samples_2016["/WZTo3LNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16Min
   ]),
 ])
 
+samples_2016["/WZTo3LNu_mllmin01_13TeV-powheg-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "WZ"),
+  ("process_name_specific",           "WZTo3LNu_mllmin01"),
+  ("nof_files",                       1),
+  ("nof_db_files",                    9),
+  ("nof_events",                      {
+    'Count'                                                                          : [       125845, ],
+    'CountWeighted'                                                                  : [       125785,       125787,       125796, ],
+    'CountWeightedLHEWeightScale'                                                    : [       125156,       129487,       132518,       121017,       125785,       129232,       117630,       122777,       126580, ],
+    'CountWeightedLHEEnvelope'                                                       : [       133872,       117229, ],
+    'CountWeightedL1PrefireNom'                                                      : [       124459,       124453,       124477, ],
+    'CountWeightedL1Prefire'                                                         : [       124459,       124108,       124808, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom'                                        : [       123797,       128109,       131128,       119712,       124459,       127892,       116370,       121494,       125281, ],
+    'CountWeightedLHEEnvelopeL1PrefireNom'                                           : [       132464,       115979, ],
+  }),
+  ("nof_tree_events",                 26715),
+  ("nof_db_events",                   990980),
+  ("fsize_local",                     90721485), # 90.72MB, avg file size 90.72MB
+  ("fsize_db",                        28118235276), # 28.12GB, avg file size 3.12GB
+  ("use_it",                          False),
+  ("xsection",                        4.43),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("nof_PSweights",                   1),
+  ("LHE_set",                         "LHA IDs 260001 - 260100 -> NNPDF30_nlo_as_0118 PDF set, expecting 101 weights (counted 100 weights)"),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2020Jul13_wPresel_nom_all/ntuples/WZTo3LNu_mllmin01"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
+samples_2016["/WZTo3LNu_mllmin01_13TeV-powheg-pythia8_ext1/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "WZ"),
+  ("process_name_specific",           "WZTo3LNu_mllmin01_ext1"),
+  ("nof_files",                       7),
+  ("nof_db_files",                    625),
+  ("nof_events",                      {
+    'Count'                                                                          : [     11136165, ],
+    'CountWeighted'                                                                  : [     11135806,     11136292,     11135893, ],
+    'CountWeightedLHEWeightScale'                                                    : [     11080098,     11462526,     11726821,     10713277,     11135806,     11437937,     10413709,     10869732,     11205087, ],
+    'CountWeightedLHEEnvelope'                                                       : [     11848928,     10377667, ],
+    'CountWeightedL1PrefireNom'                                                      : [     11017302,     11017458,     11017547, ],
+    'CountWeightedL1Prefire'                                                         : [     11017302,     10986049,     11048326, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom'                                        : [     10958713,     11339484,     11602680,     10596633,     11017302,     11318161,     10300976,     10754986,     11088906, ],
+    'CountWeightedLHEEnvelopeL1PrefireNom'                                           : [     11723227,     10265865, ],
+  }),
+  ("nof_tree_events",                 2372687),
+  ("nof_db_events",                   87598784),
+  ("fsize_local",                     7918142829), # 7.92GB, avg file size 1.13GB
+  ("fsize_db",                        2481950857860), # 2.48TB, avg file size 3.97GB
+  ("use_it",                          False),
+  ("xsection",                        4.43),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("nof_PSweights",                   1),
+  ("LHE_set",                         "LHA IDs 260001 - 260100 -> NNPDF30_nlo_as_0118 PDF set, expecting 101 weights (counted 100 weights)"),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2016/2020Jul13_wPresel_nom_all/ntuples/WZTo3LNu_mllmin01_ext1"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
 samples_2016["/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/MINIAODSIM"] = OD([
   ("type",                            "mc"),
   ("sample_category",                 "WZ"),
@@ -41792,6 +41894,7 @@ samples_2016["sum_events"] = [
   [ 'QCD_Pt170to300_Mu5',                              'QCD_Pt170to300_Mu5_ext1',                         'QCD_Pt170to300_Mu5_backup',                        ],
   [ 'WJetsToLNu_HT1200To2500',                         'WJetsToLNu_HT1200To2500_ext1',                     ],
   [ 'DYToLL_0J_ext1',                                  'DYToLL_0J_backup',                                 ],
+  [ 'WZTo3LNu_powheg_ext1',                            'WZTo3LNu_mllmin01',                               'WZTo3LNu_mllmin01_ext1',                           ],
   [ 'TTJets_SingleLeptFromTbar',                       'TTJets_SingleLeptFromTbar_ext1',                   ],
   [ 'QCD_Pt800to1000_Mu5',                             'QCD_Pt800to1000_Mu5_ext1',                        'QCD_Pt800to1000_Mu5_ext2',                         ],
   [ 'WJetsToLNu',                                      'WJetsToLNu_ext2',                                  ],
