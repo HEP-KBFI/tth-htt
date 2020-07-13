@@ -50,7 +50,7 @@ sum_events = {
   ("WJetsToLNu_HT1200To2500", "WJetsToLNu_HT1200To2500_ext1"),
   ("WJetsToLNu_HT2500ToInf", "WJetsToLNu_HT2500ToInf_ext1"),
   ("WWToLNuQQ", "WWToLNuQQ_ext1"),
-  ("WZTo3LNu_mllmin01", "WZTo3LNu_mllmin01_ext1"),
+  ("WZTo3LNu_powheg_ext1", "WZTo3LNu_mllmin01", "WZTo3LNu_mllmin01_ext1"),
   ("ZZTo4L", "ZZTo4L_ext1"),
   ("ZZTo2L2Nu", "ZZTo2L2Nu_ext1"),
   ("QCD_Pt30to50_EMEnriched", "QCD_Pt30to50_EMEnriched_ext1"),

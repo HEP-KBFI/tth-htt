@@ -48,6 +48,7 @@ sum_events = {
   ("WWTo2L2Nu", "WWTo2L2Nu_PSweights_ext1"),
   ("WWToLNuQQ", "WWToLNuQQ_ext1", "WWToLNuQQ_PSweights_ext1"),
   ("WWTo4Q", "WWTo4Q_PSweights_ext1"),
+  ("WZTo3LNu_powheg", "WZTo3LNu_mllmin01"),
   ("ZZTo4L", "ZZTo4L_ext1", "ZZTo4L_ext2"),
   ("ggZZTo4tau", "ggZZTo4tau_ext1"),
   ("ggZZTo4mu", "ggZZTo4mu_ext1", "ggZZTo4mu_ext2"),

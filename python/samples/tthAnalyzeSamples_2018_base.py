@@ -25083,6 +25083,7 @@ samples_2018["sum_events"] = [
   [ 'ggZZTo4e',                                        'ggZZTo4e_ext1',                                    ],
   [ 'WZTo3LNu',                                        'WZTo3LNu_ext1',                                    ],
   [ 'QCD_Pt470to600_Mu5',                              'QCD_Pt470to600_Mu5_ext1',                          ],
+  [ 'WZTo3LNu_powheg_ext1',                            'WZTo3LNu_mllmin01',                                ],
   [ 'WminusH_HToBB_WToLNu',                            'WminusH_HToBB_WToLNu_ext1',                        ],
   [ 'DYJetsToLL_M-50_amcatnloFXFX',                    'DYJetsToLL_M-50_amcatnloFXFX_ext2',                ],
   [ 'TTZToQQ',                                         'TTZToQQ_ext1',                                     ],

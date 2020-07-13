@@ -18,6 +18,7 @@ sum_events = {
   ("DYJetsToLL_M-50_amcatnloFXFX", "DYJetsToLL_M-50_amcatnloFXFX_ext2"),
   ("DYJetsToLL_M50_HT400to600_PSweights", "DYJetsToLL_M50_HT400to600_PSweights_ext2"),
   ("WZTo3LNu", "WZTo3LNu_ext1"),
+  ("WZTo3LNu_powheg_ext1", "WZTo3LNu_mllmin01"),
   ("ZZTo4L_ext1", "ZZTo4L_ext2"),
   ("ZZTo2L2Nu_ext1", "ZZTo2L2Nu_ext2"),
   ("ggZZTo4mu", "ggZZTo4mu_ext1"),
