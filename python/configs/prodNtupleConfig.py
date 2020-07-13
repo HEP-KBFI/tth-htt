@@ -192,22 +192,22 @@ class prodNtupleConfig:
             "process.produceNtuple.genMatchingByIndex         = cms.bool(%s)"     % self.gen_matching_by_index,
             "process.produceNtuple.branchNames_triggers       = cms.vstring(%s)"  % jobOptions['triggers'],
             "process.fwliteInput.fileNames                    = cms.vstring(%s)"  % inputFiles_prepended,
-            "executable          = 'produceNtuple'",
-            "inputFiles          = %s" % jobOptions['inputFiles'],
-            "isMC                = %s" % str(jobOptions['is_mc']),
-            "isHHnonRes          = %s" % str(is_hh_nonres(jobOptions)),
-            "era                 = %s" % str(self.era),
-            "pileup              = '%s'" % self.pileup,
-            "golden_json         = '%s'" % self.golden_json,
-            "process_name        = '%s'" % jobOptions['process_name'],
-            "skip_tools_step     = %s" % self.skip_tools_step,
-            "remove_intermediate = %s" % (not self.do_sync),
-            "compTopRwgt         = %s" % jobOptions['compTopRwgt'],
-            "compHTXS            = %s" % jobOptions['compHTXS'],
-            "isTuneCP5           = %s" % jobOptions['isTuneCP5'],
-            "splitByNlheJet      = %s" % jobOptions['splitByNlheJet'],
-            "mllForWZTo3LNu      = %s" % jobOptions['mllForWZTo3LNu'],
-            "mllForWZTo3LNu_mllmin01   = %s" % jobOptions['mllForWZTo3LNu_mllmin01']
+            "executable              = 'produceNtuple'",
+            "inputFiles              = %s" % jobOptions['inputFiles'],
+            "isMC                    = %s" % str(jobOptions['is_mc']),
+            "isHHnonRes              = %s" % str(is_hh_nonres(jobOptions)),
+            "era                     = %s" % str(self.era),
+            "pileup                  = '%s'" % self.pileup,
+            "golden_json             = '%s'" % self.golden_json,
+            "process_name            = '%s'" % jobOptions['process_name'],
+            "skip_tools_step         = %s" % self.skip_tools_step,
+            "remove_intermediate     = %s" % (not self.do_sync),
+            "compTopRwgt             = %s" % jobOptions['compTopRwgt'],
+            "compHTXS                = %s" % jobOptions['compHTXS'],
+            "isTuneCP5               = %s" % jobOptions['isTuneCP5'],
+            "splitByNlheJet          = %s" % jobOptions['splitByNlheJet'],
+            "mllForWZTo3LNu          = %s" % jobOptions['mllForWZTo3LNu'],
+            "mllForWZTo3LNu_mllmin01 = %s" % jobOptions['mllForWZTo3LNu_mllmin01']
         ]
         create_cfg(self.cfgFile_prodNtuple_original, jobOptions['cfgFile_modified'], lines)
 
@@ -342,7 +342,7 @@ class prodNtupleConfig:
                     'compHTXS'                : sample_info['sample_category'].startswith('ttH'),
                     'isTuneCP5'               : (self.era == "2016" and 'TuneCP5' in sample_name),
                     'splitByNlheJet'          : process_name.startswith(('DYToLL_0J', 'DYToLL_1J', 'DYToLL_2J', 'DYJetsToLL_M-50_amcatnloFXFX')),
-                    'mllForWZTo3LNu'          : process_name.startswith('WZTo3LNu') and 'amcatnlo' not in sample_name,
+                    'mllForWZTo3LNu'          : process_name.startswith('WZTo3LNu') and 'amcatnlo' not in sample_name and 'mllmin01' not in sample_name,
                     'mllForWZTo3LNu_mllmin01' : process_name.startswith('WZTo3LNu_mllmin01'),
                 }
                 self.createCfg_prodNtuple(jobOptions)
