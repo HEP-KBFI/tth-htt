@@ -28569,6 +28569,57 @@ samples_2017["/WZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17MiniAODv2-
   ]),
 ])
 
+samples_2017["/WZTo3LNu_mllmin01_NNPDF31_TuneCP5_13TeV_powheg_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v4/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "WZ"),
+  ("process_name_specific",           "WZTo3LNu_mllmin01"),
+  ("nof_files",                       281),
+  ("nof_db_files",                    1679),
+  ("nof_events",                      {
+    'Count'                                                                          : [      8569246, ],
+    'CountWeighted'                                                                  : [      8474509,      8475371,      8474031, ],
+    'CountWeightedLHEWeightScale'                                                    : [      8437825,      8697594,      8858691,      8181442,      8474156,      8672095,      7971233,      8291411,      8518805, ],
+    'CountWeightedLHEEnvelope'                                                       : [      8975548,      7931239, ],
+    'CountWeightedL1PrefireNom'                                                      : [      8327927,      8328468,      8327739, ],
+    'CountWeightedL1Prefire'                                                         : [      8327927,      8290961,      8363933, ],
+    'CountWeightedLHEWeightScaleL1PrefireNom'                                        : [      8287721,      8545716,      8705696,      8036849,      8327602,      8524159,      7831205,      8149195,      8375065, ],
+    'CountWeightedLHEEnvelopeL1PrefireNom'                                           : [      8820594,      7792416, ],
+  }),
+  ("nof_tree_events",                 8569246),
+  ("nof_db_events",                   81866838),
+  ("fsize_local",                     20512780500), # 20.51GB, avg file size 73.00MB
+  ("fsize_db",                        3283174355042), # 3.28TB, avg file size 1.96GB
+  ("use_it",                          False),
+  ("xsection",                        4.43),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("nof_PSweights",                   1),
+  ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2020Jul13_woPresel_nom_all/ntuples/WZTo3LNu_mllmin01"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
 samples_2017["/WZTo3LNu_13TeV-powheg-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/MINIAODSIM"] = OD([
   ("type",                            "mc"),
   ("sample_category",                 "WZ"),
