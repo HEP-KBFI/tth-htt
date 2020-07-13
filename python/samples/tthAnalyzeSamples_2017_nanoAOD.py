@@ -23144,9 +23144,9 @@ samples_2017["/WZTo3LNu_mllmin01_NNPDF31_TuneCP5_13TeV_powheg_pythia8/RunIIFall1
   ("nof_db_files",                    1679),
   ("nof_events",                      {
   }),
-  ("nof_tree_events",                 69732096),
+  ("nof_tree_events",                 69931752),
   ("nof_db_events",                   81866838),
-  ("fsize_local",                     76363795416), # 76.36GB, avg file size 54.47MB
+  ("fsize_local",                     76582414253), # 76.58GB, avg file size 54.62MB
   ("fsize_db",                        3283174355042), # 3.28TB, avg file size 1.96GB
   ("use_it",                          False),
   ("xsection",                        4.43),
@@ -23161,7 +23161,7 @@ samples_2017["/WZTo3LNu_mllmin01_NNPDF31_TuneCP5_13TeV_powheg_pythia8/RunIIFall1
       OD([
         ("path",      "/hdfs/cms/store/user/kaehatah/2017v2_2020Jul11/WZTo3LNu_mllmin01_NNPDF31_TuneCP5_13TeV_powheg_pythia8/2017v2_2020Jul11_WZTo3LNu_mllmin01_NNPDF31_TuneCP5_13TeV_powheg_pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v4/200711_154408"),
         ("selection", "*"),
-        ("blacklist", [557, 728, 755, 756]),
+        ("blacklist", []),
       ]),
     ]
   ),

@@ -2158,7 +2158,7 @@ meta_dictionary["/WZTo3LNu_mllmin01_13TeV-powheg-pythia8_ext1/RunIISummer16MiniA
   ("xsection",              4.43),
   ("use_it",                False),
   ("genWeight",             True),
-  ("comment",               "97.0%; status: VALID; size: 2.48TB; nevents: 87.60M; release: 9_4_9; last modified: 2019-01-14 21:15:29"),
+  ("comment",               "100.0%; status: VALID; size: 2.48TB; nevents: 87.60M; release: 9_4_9; last modified: 2019-01-14 21:15:29"),
 ])
 
 meta_dictionary["/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/MINIAODSIM"] =  OD([

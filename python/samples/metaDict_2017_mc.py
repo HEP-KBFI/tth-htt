@@ -2018,7 +2018,7 @@ meta_dictionary["/WZTo3LNu_mllmin01_NNPDF31_TuneCP5_13TeV_powheg_pythia8/RunIIFa
   ("xsection",              4.43),
   ("use_it",                False),
   ("genWeight",             True),
-  ("comment",               "99.7%; status: VALID; size: 3.28TB; nevents: 81.87M; release: 9_4_6_patch1; last modified: 2019-04-21 19:56:07"),
+  ("comment",               "100.0%; status: VALID; size: 3.28TB; nevents: 81.87M; release: 9_4_6_patch1; last modified: 2019-04-21 19:56:07"),
 ])
 
 meta_dictionary["/WZTo3LNu_13TeV-powheg-pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/MINIAODSIM"] =  OD([

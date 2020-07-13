@@ -32583,9 +32583,9 @@ samples_2016["/WZTo3LNu_mllmin01_13TeV-powheg-pythia8_ext1/RunIISummer16MiniAODv
   ("nof_db_files",                    625),
   ("nof_events",                      {
   }),
-  ("nof_tree_events",                 85858212),
+  ("nof_tree_events",                 87598784),
   ("nof_db_events",                   87598784),
-  ("fsize_local",                     97554018930), # 97.55GB, avg file size 156.09MB
+  ("fsize_local",                     99531015479), # 99.53GB, avg file size 159.25MB
   ("fsize_db",                        2481950857860), # 2.48TB, avg file size 3.97GB
   ("use_it",                          False),
   ("xsection",                        4.43),
@@ -32600,7 +32600,7 @@ samples_2016["/WZTo3LNu_mllmin01_13TeV-powheg-pythia8_ext1/RunIISummer16MiniAODv
       OD([
         ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2020Jul11/WZTo3LNu_mllmin01_13TeV-powheg-pythia8_ext1/2016v3_2020Jul11_WZTo3LNu_mllmin01_13TeV-powheg-pythia8_ext1__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/200711_162947"),
         ("selection", "*"),
-        ("blacklist", [98, 100, 389, 404, 411, 418, 435, 438, 439, 497, 503, 614]),
+        ("blacklist", []),
       ]),
     ]
   ),
