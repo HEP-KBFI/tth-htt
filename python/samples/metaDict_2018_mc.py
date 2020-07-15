@@ -18,6 +18,7 @@ sum_events = {
   ("DYJetsToLL_M-50_amcatnloFXFX", "DYJetsToLL_M-50_amcatnloFXFX_ext2"),
   ("DYJetsToLL_M50_HT400to600_PSweights", "DYJetsToLL_M50_HT400to600_PSweights_ext2"),
   ("WZTo3LNu", "WZTo3LNu_ext1"),
+  ("WZTo3LNu_powheg_ext1", "WZTo3LNu_mllmin01"),
   ("ZZTo4L_ext1", "ZZTo4L_ext2"),
   ("ZZTo2L2Nu_ext1", "ZZTo2L2Nu_ext2"),
   ("ggZZTo4mu", "ggZZTo4mu_ext1"),
@@ -1576,6 +1577,19 @@ meta_dictionary["/WZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18MiniA
   ("comment",               "100.0%; status: VALID; size: 486.64GB; nevents: 11.25M; release: 10_2_5; last modified: 2019-01-11 20:43:05"),
 ])
 
+meta_dictionary["/WZTo3LNu_mllmin01_NNPDF31_TuneCP5_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM"] =  OD([
+  ("crab_string",           "2018_2020Jul11_WZTo3LNu_mllmin01_NNPDF31_TuneCP5_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1"),
+  ("sample_category",       "WZ"),
+  ("process_name_specific", "WZTo3LNu_mllmin01"),
+  ("nof_db_events",         89702600),
+  ("nof_db_files",          1306),
+  ("fsize_db",              3524962010660),
+  ("xsection",              4.43),
+  ("use_it",                False),
+  ("genWeight",             True),
+  ("comment",               "100.0%; status: VALID; size: 3.52TB; nevents: 89.70M; release: 10_2_5; last modified: 2019-04-01 01:14:20"),
+])
+
 meta_dictionary["/WZTo3LNu_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/MINIAODSIM"] =  OD([
   ("crab_string",           "2018_2019Sep29_WZTo3LNu_TuneCP5_13TeV-powheg-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2"),
   ("sample_category",       "WZ"),
@@ -1596,7 +1610,7 @@ meta_dictionary["/WZTo3LNu_0Jets_MLL-4to50_TuneCP5_13TeV-madgraphMLM-pythia8/Run
   ("nof_db_events",         549864),
   ("nof_db_files",          21),
   ("fsize_db",              23763774844),
-  ("xsection",              2.3986),
+  ("xsection",              2.55036),
   ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 23.76GB; nevents: 549.86k; release: 10_2_5; last modified: 2019-01-14 18:19:42"),
@@ -1609,7 +1623,7 @@ meta_dictionary["/WZTo3LNu_0Jets_MLL-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIA
   ("nof_db_events",         496707),
   ("nof_db_files",          33),
   ("fsize_db",              24329724502),
-  ("xsection",              0.6067),
+  ("xsection",              0.64507),
   ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 24.33GB; nevents: 496.71k; release: 10_2_5; last modified: 2019-01-14 19:04:52"),
@@ -1622,7 +1636,7 @@ meta_dictionary["/WZTo3LNu_1Jets_MLL-4to50_TuneCP5_13TeV-madgraphMLM-pythia8/Run
   ("nof_db_events",         565620),
   ("nof_db_files",          41),
   ("fsize_db",              26462658315),
-  ("xsection",              0.46107),
+  ("xsection",              0.49025),
   ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 26.46GB; nevents: 565.62k; release: 10_2_5; last modified: 2019-02-02 00:02:28"),
@@ -1635,7 +1649,7 @@ meta_dictionary["/WZTo3LNu_1Jets_MLL-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIA
   ("nof_db_events",         497831),
   ("nof_db_files",          28),
   ("fsize_db",              26295965016),
-  ("xsection",              0.3226),
+  ("xsection",              0.34301),
   ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 26.30GB; nevents: 497.83k; release: 10_2_5; last modified: 2019-02-02 05:34:10"),
@@ -1648,7 +1662,7 @@ meta_dictionary["/WZTo3LNu_2Jets_MLL-4to50_TuneCP5_13TeV-madgraphMLM-pythia8/Run
   ("nof_db_events",         1409762),
   ("nof_db_files",          62),
   ("fsize_db",              71473530181),
-  ("xsection",              0.15607),
+  ("xsection",              0.16595),
   ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 71.47GB; nevents: 1.41M; release: 10_2_5; last modified: 2019-03-10 23:02:07"),
@@ -1661,7 +1675,7 @@ meta_dictionary["/WZTo3LNu_2Jets_MLL-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIA
   ("nof_db_events",         1855668),
   ("nof_db_files",          96),
   ("fsize_db",              108440817033),
-  ("xsection",              0.06314),
+  ("xsection",              0.06714),
   ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "89.47%; status: VALID; size: 108.44GB; nevents: 1.86M; release: 10_2_5; last modified: 2019-02-10 16:38:26"),
@@ -1674,7 +1688,7 @@ meta_dictionary["/WZTo3LNu_3Jets_MLL-4to50_TuneCP5_13TeV-madgraphMLM-pythia8/Run
   ("nof_db_events",         2160519),
   ("nof_db_files",          93),
   ("fsize_db",              121018445179),
-  ("xsection",              0.06769),
+  ("xsection",              0.07198),
   ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 121.02GB; nevents: 2.16M; release: 10_2_5; last modified: 2019-02-02 05:45:01"),
@@ -1687,7 +1701,7 @@ meta_dictionary["/WZTo3LNu_3Jets_MLL-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIA
   ("nof_db_events",         1788755),
   ("nof_db_files",          77),
   ("fsize_db",              111719583774),
-  ("xsection",              0.090512),
+  ("xsection",              0.09624),
   ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 111.72GB; nevents: 1.79M; release: 10_2_5; last modified: 2019-02-02 05:39:27"),
@@ -2296,7 +2310,7 @@ meta_dictionary["/QCD_Pt-1000toInf_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutu
 # VH:         21.15M
 # EWK:        1.08G
 # WW:         35.45M
-# WZ:         80.39M
+# WZ:         170.09M
 # ZZ:         195.41M
 # QCD:        408.14M
 

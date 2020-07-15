@@ -94,6 +94,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/EvtWeightManager.h" // EvtWeightManager
 #include "tthAnalysis/HiggsToTauTau/interface/weightAuxFunctions.h" // get_tH_weight_str()
 #include "tthAnalysis/HiggsToTauTau/interface/EvtWeightRecorder.h" // EvtWeightRecorder
+#include "tthAnalysis/HiggsToTauTau/interface/BtagSFRatioFacility.h" // BtagSFRatioFacility
 #include "tthAnalysis/HiggsToTauTau/interface/HHWeightInterface.h" // HHWeightInterface
 
 #include <boost/algorithm/string/replace.hpp> // boost::replace_all_copy()
@@ -260,6 +261,7 @@ int main(int argc, char* argv[])
   std::string apply_topPtReweighting_str = cfg_analyze.getParameter<std::string>("apply_topPtReweighting");
   bool apply_topPtReweighting = ! apply_topPtReweighting_str.empty();
   bool apply_l1PreFireWeight = cfg_analyze.getParameter<bool>("apply_l1PreFireWeight");
+  bool apply_btagSFRatio = cfg_analyze.getParameter<bool>("applyBtagSFRatio");
   bool apply_hlt_filter = cfg_analyze.getParameter<bool>("apply_hlt_filter");
   bool apply_met_filters = cfg_analyze.getParameter<bool>("apply_met_filters");
   edm::ParameterSet cfgMEtFilter = cfg_analyze.getParameter<edm::ParameterSet>("cfgMEtFilter");
@@ -470,6 +472,13 @@ int main(int argc, char* argv[])
   {
     l1PreFiringWeightReader = new L1PreFiringWeightReader(era);
     inputTree->registerReader(l1PreFiringWeightReader);
+  }
+
+  BtagSFRatioFacility * btagSFRatioFacility = nullptr;
+  if(apply_btagSFRatio)
+  {
+    const edm::ParameterSet btagSFRatio = cfg_analyze.getParameterSet("btagSFRatio");
+    btagSFRatioFacility = new BtagSFRatioFacility(btagSFRatio);
   }
 
 //--- declare particle collections
@@ -1382,6 +1391,10 @@ int main(int argc, char* argv[])
 //   (using the method "Event reweighting using scale factors calculated with a tag and probe method",
 //    described on the BTV POG twiki https://twiki.cern.ch/twiki/bin/view/CMS/BTagShapeCalibration )
       evtWeightRecorder.record_btagWeight(selJets);
+      if(btagSFRatioFacility)
+      {
+        evtWeightRecorder.record_btagSFRatio(btagSFRatioFacility, selJets.size());
+      }
 
       if(isMC_EWK)
       {
@@ -1442,22 +1455,19 @@ int main(int argc, char* argv[])
       evtWeightRecorder.record_jetToTau_FR_lead(jetToTauFakeRateInterface, selHadTau);
     }
 
-    if(! selectBDT)
+    if(applyFakeRateWeights == kFR_4L)
     {
-      if(applyFakeRateWeights == kFR_4L)
-      {
-        evtWeightRecorder.compute_FR_3l1tau(
-          passesTight_lepton_lead, passesTight_lepton_sublead, passesTight_lepton_third, passesTight_hadTau
-        );
-      }
-      else if( applyFakeRateWeights == kFR_3lepton)
-      {
-        evtWeightRecorder.compute_FR_3l(passesTight_lepton_lead, passesTight_lepton_sublead, passesTight_lepton_third);
-      }
-      else if(applyFakeRateWeights == kFR_1tau)
-      {
-        evtWeightRecorder.compute_FR_1tau(passesTight_hadTau);
-      }
+      evtWeightRecorder.compute_FR_3l1tau(
+        passesTight_lepton_lead, passesTight_lepton_sublead, passesTight_lepton_third, passesTight_hadTau
+      );
+    }
+    else if( applyFakeRateWeights == kFR_3lepton)
+    {
+      evtWeightRecorder.compute_FR_3l(passesTight_lepton_lead, passesTight_lepton_sublead, passesTight_lepton_third);
+    }
+    else if(applyFakeRateWeights == kFR_1tau)
+    {
+      evtWeightRecorder.compute_FR_1tau(passesTight_hadTau);
     }
 
     // CV: apply data/MC ratio for jet->tau fake-rates in case data-driven "fake" background estimation is applied to leptons only

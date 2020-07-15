@@ -13,6 +13,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/EvtWeightManager.h"
 #include "tthAnalysis/HiggsToTauTau/interface/DYMCNormScaleFactors.h"
 #include "tthAnalysis/HiggsToTauTau/interface/DYMCReweighting.h"
+#include "tthAnalysis/HiggsToTauTau/interface/BtagSFRatioFacility.h"
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h"
 #include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h"
 #include "tthAnalysis/HiggsToTauTau/interface/fakeBackgroundAuxFunctions.h"
@@ -104,6 +105,16 @@ EvtWeightRecorder::get_lumiScale(const std::string & central_or_shift,
       throw cmsException(this, __func__, __LINE__) << "No such bin found in lumiscale map: '" << bin << '\'';
     }
     return lumiScale_.at(central_or_shift).at(bin);
+  }
+  return 1.;
+}
+
+double
+EvtWeightRecorder::get_btagSFRatio(const std::string & central_or_shift) const
+{
+  if(isMC_ && btagSFRatio_.count(central_or_shift))
+  {
+    return btagSFRatio_.at(central_or_shift);
   }
   return 1.;
 }
@@ -295,7 +306,8 @@ EvtWeightRecorder::get_data_to_MC_correction(const std::string & central_or_shif
 {
   return isMC_ ? get_sf_triggerEff(central_or_shift) * get_leptonSF() * get_leptonIDSF(central_or_shift) *
                  get_tauSF(central_or_shift) * get_btag(central_or_shift) * get_dy_norm(central_or_shift) *
-                 get_toppt_rwgt(central_or_shift) * get_ewk_jet(central_or_shift) * get_ewk_bjet(central_or_shift)
+                 get_toppt_rwgt(central_or_shift) * get_ewk_jet(central_or_shift) * get_ewk_bjet(central_or_shift) *
+                 get_btagSFRatio(central_or_shift)
                : 1.
   ;
 }
@@ -452,6 +464,19 @@ EvtWeightRecorder::record_lumiScale(const edm::VParameterSet & lumiScales)
       lumiScale_[central_or_shift] = lumiScale_.at(central_or_shift_);
     }
   }
+}
+
+void
+EvtWeightRecorder::record_btagSFRatio(const BtagSFRatioFacility * const btagSFRatioFacility,
+                                      int nselJets)
+{
+  assert(isMC_);
+  btagSFRatio_.clear();
+  for(const std::string & central_or_shift: central_or_shifts_)
+  {
+    btagSFRatio_[central_or_shift] = btagSFRatioFacility->get_btagSFRatio(central_or_shift, nselJets);
+  }
+  assert(btagSFRatio_.count(central_or_shift_));
 }
 
 void
@@ -1326,6 +1351,7 @@ operator<<(std::ostream & os,
           "  BM weight             = " << evtWeightRecorder.get_bmWeight()                                << "\n"
           "  stitching weight      = " << evtWeightRecorder.get_auxWeight(central_or_shift)               << "\n"
           "  lumiScale             = " << evtWeightRecorder.get_lumiScale(central_or_shift)               << "\n"
+          "  btag SF ratio         = " << evtWeightRecorder.get_btagSFRatio(central_or_shift)             << "\n"
           "  nominal tH weight     = " << evtWeightRecorder.get_nom_tH_weight(central_or_shift)           << "\n"
           "  PU weight             = " << evtWeightRecorder.get_puWeight(central_or_shift)                << "\n"
           "  L1 prefiring weight   = " << evtWeightRecorder.get_l1PreFiringWeight(central_or_shift)       << "\n"

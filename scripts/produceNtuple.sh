@@ -41,6 +41,8 @@ REMOVE_INTERMEDIATE=$(python -c "execfile('$SCRIPT'); print(remove_intermediate)
 COMP_TOP_RWGT=$(python -c "execfile('$SCRIPT'); print(compTopRwgt)")
 COMP_HTXS=$(python -c "execfile('$SCRIPT'); print(compHTXS)")
 SPLIT_BY_LHENJET=$(python -c "execfile('$SCRIPT'); print(splitByNlheJet)")
+MLL4WZTO3LNU=$(python -c "execfile('$SCRIPT'); print(mllForWZTo3LNu)")
+MLL4WZTO3LNU_MLLMIN01=$(python -c "execfile('$SCRIPT'); print(mllForWZTo3LNu_mllmin01)")
 
 echo "Found the following file(s): '$FILES'"
 echo "Found the following executable: '$EXECUTABLE'"
@@ -52,6 +54,8 @@ echo "Remove intermediate file? '$REMOVE_INTERMEDIATE'"
 echo "Compute SFs for top reweighting? '$COMP_TOP_RWGT'"
 echo "Count events in bins of Higgs pT? '$COMP_HTXS'"
 echo "Splitting event counts by # LHE jets? '$SPLIT_BY_LHENJET'"
+echo "Finding mll for WZTo3LNu? '$MLL4WZTO3LNU'"
+echo "Finding mll for WZTo3LNu (mllmin01)? '$MLL4WZTO3LNU_MLLMIN01'"
 
 if [[ -z $(which "$EXECUTABLE" 2>/dev/null) ]]; then
   echo "Executable '$EXECUTABLE' not in \$PATH";
@@ -71,6 +75,15 @@ NANO_MODULES_MC="$NANO_MODULES_MC,$NANO_BTAGGING_SF_MODULE"
 
 if [ "$IS_HH_NONRES" == "True" ]; then
   NANO_MODULES_MC="$NANO_MODULES_MC,diHiggsVar_${ERA}"
+fi
+
+if [ "$MLL4WZTO3LNU" == "True" ]; then
+  NANO_MODULES_MC="$NANO_MODULES_MC,mllWZTo3LNu"
+fi
+
+if [ "$MLL4WZTO3LNU_MLLMIN01" == "True" ]; then
+  # run the module before everything else, because it also skims the events
+  NANO_MODULES_MC="mllWZTo3LNu_mllmin01,$NANO_MODULES_MC"
 fi
 
 if [ "$IS_MC" == "True" ]; then

@@ -28463,7 +28463,7 @@ samples_2016["/WGToLNuG_01J_5f_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISumm
   ("xsection",                        191.6),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
-  ("has_LHE",                         True),
+  ("has_LHE",                         False),
   ("nof_PSweights",                   1),
   ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
   ("nof_reweighting",                 0),
@@ -32532,6 +32532,92 @@ samples_2016["/WZTo3LNu_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/RunIISummer16Min
   ]),
 ])
 
+samples_2016["/WZTo3LNu_mllmin01_13TeV-powheg-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "WZ"),
+  ("process_name_specific",           "WZTo3LNu_mllmin01"),
+  ("nof_files",                       20),
+  ("nof_db_files",                    9),
+  ("nof_events",                      {
+  }),
+  ("nof_tree_events",                 990980),
+  ("nof_db_events",                   990980),
+  ("fsize_local",                     1160439859), # 1.16GB, avg file size 58.02MB
+  ("fsize_db",                        28118235276), # 28.12GB, avg file size 3.12GB
+  ("use_it",                          False),
+  ("xsection",                        4.43),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("nof_PSweights",                   1),
+  ("LHE_set",                         "LHA IDs 260001 - 260100 -> NNPDF30_nlo_as_0118 PDF set, expecting 101 weights (counted 100 weights)"),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2020Jul11/WZTo3LNu_mllmin01_13TeV-powheg-pythia8/2016v3_2020Jul11_WZTo3LNu_mllmin01_13TeV-powheg-pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/200711_154123"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
+samples_2016["/WZTo3LNu_mllmin01_13TeV-powheg-pythia8_ext1/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "WZ"),
+  ("process_name_specific",           "WZTo3LNu_mllmin01_ext1"),
+  ("nof_files",                       625),
+  ("nof_db_files",                    625),
+  ("nof_events",                      {
+  }),
+  ("nof_tree_events",                 87598784),
+  ("nof_db_events",                   87598784),
+  ("fsize_local",                     99531015479), # 99.53GB, avg file size 159.25MB
+  ("fsize_db",                        2481950857860), # 2.48TB, avg file size 3.97GB
+  ("use_it",                          False),
+  ("xsection",                        4.43),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("nof_PSweights",                   1),
+  ("LHE_set",                         "LHA IDs 260001 - 260100 -> NNPDF30_nlo_as_0118 PDF set, expecting 101 weights (counted 100 weights)"),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2020Jul11/WZTo3LNu_mllmin01_13TeV-powheg-pythia8_ext1/2016v3_2020Jul11_WZTo3LNu_mllmin01_13TeV-powheg-pythia8_ext1__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/200711_162947"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
 samples_2016["/WZTo3LNu_TuneCUETP8M1_13TeV-powheg-pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/MINIAODSIM"] = OD([
   ("type",                            "mc"),
   ("sample_category",                 "WZ"),
@@ -32588,7 +32674,7 @@ samples_2016["/WZTo3LNu_0Jets_MLL-4To50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/R
   ("fsize_local",                     535003351), # 535.00MB, avg file size 89.17MB
   ("fsize_db",                        14858474111), # 14.86GB, avg file size 2.97GB
   ("use_it",                          False),
-  ("xsection",                        2.3986),
+  ("xsection",                        2.55036),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -32631,7 +32717,7 @@ samples_2016["/WZTo3LNu_0Jets_MLL-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunI
   ("fsize_local",                     702150938), # 702.15MB, avg file size 140.43MB
   ("fsize_db",                        16240886055), # 16.24GB, avg file size 3.25GB
   ("use_it",                          False),
-  ("xsection",                        0.6067),
+  ("xsection",                        0.64507),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -32674,7 +32760,7 @@ samples_2016["/WZTo3LNu_1Jets_MLL-4To50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/R
   ("fsize_local",                     626247089), # 626.25MB, avg file size 125.25MB
   ("fsize_db",                        15275534008), # 15.28GB, avg file size 3.06GB
   ("use_it",                          False),
-  ("xsection",                        0.46107),
+  ("xsection",                        0.49025),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -32717,7 +32803,7 @@ samples_2016["/WZTo3LNu_1Jets_MLL-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunI
   ("fsize_local",                     816159693), # 816.16MB, avg file size 163.23MB
   ("fsize_db",                        17028271215), # 17.03GB, avg file size 4.26GB
   ("use_it",                          False),
-  ("xsection",                        0.3226),
+  ("xsection",                        0.34301),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -32760,7 +32846,7 @@ samples_2016["/WZTo3LNu_2Jets_MLL-4To50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/R
   ("fsize_local",                     3940216607), # 3.94GB, avg file size 157.61MB
   ("fsize_db",                        89887588430), # 89.89GB, avg file size 4.73GB
   ("use_it",                          False),
-  ("xsection",                        0.15607),
+  ("xsection",                        0.16595),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -32803,7 +32889,7 @@ samples_2016["/WZTo3LNu_2Jets_MLL-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunI
   ("fsize_local",                     4920195640), # 4.92GB, avg file size 213.92MB
   ("fsize_db",                        95514909835), # 95.51GB, avg file size 5.62GB
   ("use_it",                          False),
-  ("xsection",                        0.06314),
+  ("xsection",                        0.06714),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -32846,7 +32932,7 @@ samples_2016["/WZTo3LNu_3Jets_MLL-4To50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/R
   ("fsize_local",                     5342939721), # 5.34GB, avg file size 213.72MB
   ("fsize_db",                        102029703019), # 102.03GB, avg file size 4.08GB
   ("use_it",                          False),
-  ("xsection",                        0.06769),
+  ("xsection",                        0.07198),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -32889,7 +32975,7 @@ samples_2016["/WZTo3LNu_3Jets_MLL-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunI
   ("fsize_local",                     5913043797), # 5.91GB, avg file size 328.50MB
   ("fsize_db",                        113650549747), # 113.65GB, avg file size 6.31GB
   ("use_it",                          False),
-  ("xsection",                        0.090512),
+  ("xsection",                        0.09624),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
@@ -33029,6 +33115,49 @@ samples_2016["/ZZTo4L_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94
     [
       OD([
         ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2019Sep30/ZZTo4L_13TeV_powheg_pythia8/2016v3_2019Sep30_ZZTo4L_13TeV_powheg_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/190930_233449"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
+samples_2016["/ZZTo4L_13TeV_powheg_pythia8_ext1/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "ZZ"),
+  ("process_name_specific",           "ZZTo4L_ext1"),
+  ("nof_files",                       1935),
+  ("nof_db_files",                    717),
+  ("nof_events",                      {
+  }),
+  ("nof_tree_events",                 96451124),
+  ("nof_db_events",                   96451124),
+  ("fsize_local",                     131127714041), # 131.13GB, avg file size 67.77MB
+  ("fsize_db",                        2982855311494), # 2.98TB, avg file size 4.16GB
+  ("use_it",                          True),
+  ("xsection",                        1.256),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("nof_PSweights",                   1),
+  ("LHE_set",                         "LHA IDs 260001 - 260100 -> NNPDF30_nlo_as_0118 PDF set, expecting 101 weights (counted 100 weights)"),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2020Jul10/ZZTo4L_13TeV_powheg_pythia8_ext1/2016v3_2020Jul10_ZZTo4L_13TeV_powheg_pythia8_ext1__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/200710_182013"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -35332,11 +35461,12 @@ samples_2016["sum_events"] = [
   [ 'WplusH_HToBB_WToLNu',                             'WplusH_HToBB_WToLNu_ext1',                         ],
   [ 'QCD_Pt80to120_Mu5',                               'QCD_Pt80to120_Mu5_ext1',                           ],
   [ 'DYToLL_1J_ext1',                                  'DYToLL_1J_backup',                                 ],
+  [ 'QCD_Pt50to80_EMEnriched',                         'QCD_Pt50to80_EMEnriched_ext1',                     ],
   [ 'DYJetsToLL_M-10to50_amcatnloFXFX',                'DYJetsToLL_M-10to50_amcatnloFXFX_ext1',            ],
   [ 'THW_ctcvcp',                                      'THW_ctcvcp_CP5',                                   ],
   [ 'WminusH_HToBB_WToLNu',                            'WminusH_HToBB_WToLNu_ext1',                        ],
   [ 'W2JetsToLNu',                                     'W2JetsToLNu_ext1',                                 ],
-  [ 'QCD_Pt50to80_EMEnriched',                         'QCD_Pt50to80_EMEnriched_ext1',                     ],
+  [ 'ZZTo4L',                                          'ZZTo4L_ext1',                                      ],
   [ 'VBFHToBB_M125',                                   'VBFHToBB_M125_ext1',                               ],
   [ 'WJetsToLNu_HT400To600',                           'WJetsToLNu_HT400To600_ext1',                       ],
   [ 'WJetsToLNu_HT200To400',                           'WJetsToLNu_HT200To400_ext1',                      'WJetsToLNu_HT200To400_ext2',                       ],
@@ -35358,6 +35488,7 @@ samples_2016["sum_events"] = [
   [ 'QCD_Pt170to300_Mu5',                              'QCD_Pt170to300_Mu5_ext1',                         'QCD_Pt170to300_Mu5_backup',                        ],
   [ 'WJetsToLNu_HT1200To2500',                         'WJetsToLNu_HT1200To2500_ext1',                     ],
   [ 'DYToLL_0J_ext1',                                  'DYToLL_0J_backup',                                 ],
+  [ 'WZTo3LNu_powheg_ext1',                            'WZTo3LNu_mllmin01',                               'WZTo3LNu_mllmin01_ext1',                           ],
   [ 'TTJets_SingleLeptFromTbar',                       'TTJets_SingleLeptFromTbar_ext1',                   ],
   [ 'QCD_Pt800to1000_Mu5',                             'QCD_Pt800to1000_Mu5_ext1',                        'QCD_Pt800to1000_Mu5_ext2',                         ],
   [ 'WJetsToLNu',                                      'WJetsToLNu_ext2',                                  ],

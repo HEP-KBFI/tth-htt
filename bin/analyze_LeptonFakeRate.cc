@@ -41,6 +41,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RunLumiEventSelector.h" // RunLumiEventSelector
 #include "tthAnalysis/HiggsToTauTau/interface/EvtWeightManager.h" // EvtWeightManager
 #include "tthAnalysis/HiggsToTauTau/interface/EvtWeightRecorder.h" // EvtWeightRecorder
+#include "tthAnalysis/HiggsToTauTau/interface/BtagSFRatioFacility.h" // BtagSFRatioFacility
 
 #include "tthAnalysis/HiggsToTauTau/interface/convert_to_ptrs.h" // convert_to_ptrs()
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Era::k2017, getBTagWeight_option()
@@ -187,6 +188,7 @@ main(int argc,
   const bool apply_DYMCReweighting      = cfg_analyze.getParameter<bool>("apply_DYMCReweighting");
   const bool apply_DYMCNormScaleFactors = cfg_analyze.getParameter<bool>("apply_DYMCNormScaleFactors");
   const bool apply_l1PreFireWeight      = cfg_analyze.getParameter<bool>("apply_l1PreFireWeight");
+  const bool apply_btagSFRatio          = cfg_analyze.getParameter<bool>("applyBtagSFRatio");
   const bool fillGenEvtHistograms       = cfg_analyze.getParameter<bool>("fillGenEvtHistograms");
   const bool jetCleaningByIndex         = cfg_analyze.getParameter<bool>("jetCleaningByIndex");
   const bool redoGenMatching            = cfg_analyze.getParameter<bool>("redoGenMatching");
@@ -427,6 +429,13 @@ main(int argc,
   {
     l1PreFiringWeightReader = new L1PreFiringWeightReader(era);
     inputTree->registerReader(l1PreFiringWeightReader);
+  }
+
+  BtagSFRatioFacility * btagSFRatioFacility = nullptr;
+  if(apply_btagSFRatio)
+  {
+    const edm::ParameterSet btagSFRatio = cfg_analyze.getParameterSet("btagSFRatio");
+    btagSFRatioFacility = new BtagSFRatioFacility(btagSFRatio);
   }
 
 //--- declare particle collections
@@ -1252,6 +1261,10 @@ main(int argc,
 //   (using the method "Event reweighting using scale factors calculated with a tag and probe method",
 //    described on the BTV POG twiki https://twiki.cern.ch/twiki/bin/view/CMS/BTagShapeCalibration )
       evtWeightRecorder.record_btagWeight(selJets);
+      if(btagSFRatioFacility)
+      {
+        evtWeightRecorder.record_btagSFRatio(btagSFRatioFacility, selJets.size());
+      }
 
       double prob_all_trigger_fail = 1.0;
       for(const hltPath_LeptonFakeRate * const hltPath_iter: triggers_all)

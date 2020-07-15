@@ -39,7 +39,7 @@ DYMCNormScaleFactors::getWeight(const std::vector<GenParticle> & genTauLeptons,
 
   double weight = 1.;
   double weight_error = 0.;
-  if(genTauLeptonPlus && genTauLeptonMinus)
+  if(genTauLeptonPlus && genTauLeptonMinus && genTauLeptons.size() == 2)
   {
     const Particle::LorentzVector dileptonP4 = genTauLeptonPlus->p4() + genTauLeptonMinus->p4();
     const double dileptonMass = dileptonP4.mass();

@@ -106,12 +106,11 @@ class analyzeConfig_2lss(analyzeConfig):
     self.lepton_charge_selections = lepton_charge_selections
     self.hadTauVeto_selection_part2 = hadTauVeto_selection
     self.applyFakeRateWeights = applyFakeRateWeights
-    run_mcClosure = 'central' not in self.central_or_shifts or len(central_or_shifts) > 1 or self.do_sync
 
     self.apply_leptonGenMatching = None
     if applyFakeRateWeights == "2lepton":
       self.apply_leptonGenMatching = True
-      if run_mcClosure:
+      if self.run_mcClosure:
         self.lepton_selections.extend([ "Fakeable_mcClosure_e", "Fakeable_mcClosure_m" ])
       self.central_or_shifts_fr = systematics.FRe_shape + systematics.FRm_shape
     else:
@@ -241,7 +240,7 @@ class analyzeConfig_2lss(analyzeConfig):
                   else:
                     self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
                       "_".join([ lepton_selection_and_frWeight, lepton_charge_selection ]), process_name_or_dummy)
-    for subdirectory in [ "addBackgrounds", "addBackgroundLeptonFakes", "addBackgroundLeptonFlips", "prepareDatacards", "addSystFakeRates", "makePlots" ]:
+    for subdirectory in [ "addBackgrounds", "addBackgroundLeptonFakes", "addBackgroundLeptonFlips", "prepareDatacards", "addSystFakeRates", "makePlots", "stxs" ]:
       key_dir = getKey(subdirectory)
       for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT ]:
         initDict(self.dirs, [ key_dir, dir_type ])
@@ -668,6 +667,14 @@ class analyzeConfig_2lss(analyzeConfig):
         })
       self.createCfg_add_syst_fakerate(self.jobOptions_add_syst_fakerate[key_add_syst_fakerate_job])
 
+      self.jobOptions_mergeHTXS[key_add_syst_fakerate_job] = {
+        'inputDatacard' : self.jobOptions_add_syst_fakerate[key_add_syst_fakerate_job]['outputFile'],
+        'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2_job],
+        'outputFile' : os.path.join(self.dirs['stxs'][DKEY_DCRD], "stxs_%s_%s.root" % add_syst_fakerate_job_tuple),
+        'histogramDir': histogramDir_nominal,
+        'histogramToFit' : histogramToFit,
+      }
+
       logging.info("Creating configuration files to run 'makePlots'")
       key_hadd_stage2_job = getKey(get_lepton_selection_and_frWeight("Tight", "disabled"), "SS")
       key_makePlots_dir = getKey("makePlots")
@@ -738,6 +745,7 @@ class analyzeConfig_2lss(analyzeConfig):
     self.addToMakefile_add_syst_fakerate(lines_makefile)
     self.addToMakefile_make_plots(lines_makefile)
     self.addToMakefile_validate(lines_makefile)
+    self.addToMakefile_mergeHTXS(lines_makefile)
     self.createMakefile(lines_makefile)
 
     logging.info("Done.")

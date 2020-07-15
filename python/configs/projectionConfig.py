@@ -17,7 +17,6 @@ DKEY_HISTO      = "histograms"
 DKEY_PLOTS      = "plots"
 DKEY_LOGS       = "logs"
 DKEY_HADD_RT    = "hadd_cfg_rt"
-MAKEFILE_TARGET = "sbatch_puProfile"
 
 def validate_pu(output_file, samples):
     error_code = 0
@@ -56,8 +55,8 @@ def validate_pu(output_file, samples):
         logging.error("Validation failed!")
     return error_code
 
-class puHistogramConfig:
-    """Configuration metadata needed to run PU profile production.
+class projectionConfig:
+    """Configuration metadata needed to run projection jobs
 
     Args:
         configDir:             The root config dir -- all configuration files are stored in its subdirectories
@@ -74,9 +73,11 @@ class puHistogramConfig:
             outputDir,
             output_file,
             executable,
+            projection_module,
             samples,
             max_files_per_job,
             era,
+            plot,
             check_output_files,
             running_method,
             num_parallel_jobs,
@@ -90,10 +91,12 @@ class puHistogramConfig:
         self.configDir             = configDir
         self.outputDir             = outputDir
         self.executable            = executable
+        self.projection_module     = projection_module
         self.max_num_jobs          = 200000
         self.samples               = samples
         self.max_files_per_job     = max_files_per_job
         self.era                   = era
+        self.plot                  = plot
         self.check_output_files    = check_output_files
         self.verbose               = verbose
         self.dry_run               = dry_run
@@ -104,7 +107,7 @@ class puHistogramConfig:
         self.running_method    = running_method
         self.is_sbatch         = self.running_method.lower() == "sbatch"
         self.is_makefile       = not self.is_sbatch
-        self.makefile          = os.path.join(self.configDir, "Makefile_puProfile")
+        self.makefile          = os.path.join(self.configDir, "Makefile_{}".format(self.projection_module))
         self.num_parallel_jobs = num_parallel_jobs
         self.pool_id           = pool_id if pool_id else uuid.uuid4()
 
@@ -118,21 +121,21 @@ class puHistogramConfig:
         create_if_not_exists(self.configDir)
         create_if_not_exists(self.outputDir)
         self.output_file      = os.path.join(self.outputDir, output_file)
-        self.stdout_file_path = os.path.join(self.configDir, "stdout_puProfile.log")
-        self.stderr_file_path = os.path.join(self.configDir, "stderr_puProfile.log")
-        self.sw_ver_file_cfg  = os.path.join(self.configDir, "VERSION_puProfile.log")
-        self.sw_ver_file_out  = os.path.join(self.outputDir, "VERSION_puProfile.log")
+        self.stdout_file_path = os.path.join(self.configDir, "stdout_{}.log".format(self.projection_module))
+        self.stderr_file_path = os.path.join(self.configDir, "stderr_{}.log".format(self.projection_module))
+        self.sw_ver_file_cfg  = os.path.join(self.configDir, "VERSION_{}.log".format(self.projection_module))
+        self.sw_ver_file_out  = os.path.join(self.outputDir, "VERSION_{}.log".format(self.projection_module))
         self.submission_out   = os.path.join(self.configDir, "SUBMISSION.log")
         self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out, self.submission_out = get_log_version((
             self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out, self.submission_out
         ))
         check_submission_cmd(self.submission_out, submission_cmd)
 
-        self.sbatchFile_puProfile = os.path.join(self.configDir, "sbatch_puProfile.py")
-        self.cfgFiles_puProfile    = {}
-        self.logFiles_puProfile    = {}
-        self.scriptFiles_puProfile = {}
-        self.jobOptions_sbatch     = {}
+        self.sbatchFile_projection = os.path.join(self.configDir, "sbatch_{}.py".format(self.projection_module))
+        self.cfgFiles_projection    = {}
+        self.logFiles_projection    = {}
+        self.scriptFiles_projection = {}
+        self.jobOptions_sbatch      = {}
 
         self.inputFiles      = {}
         self.outputFiles_tmp = {}
@@ -141,6 +144,8 @@ class puHistogramConfig:
         self.phoniesToAdd = []
         self.filesToClean = []
         self.targets = []
+
+        self.makefile_target = "sbatch_{}".format(self.projection_module)
 
         self.dirs = {}
         all_dirs = [ DKEY_CFGS, DKEY_HISTO_TMP, DKEY_HISTO, DKEY_PLOTS, DKEY_LOGS, DKEY_SCRIPTS, DKEY_HADD_RT ]
@@ -165,21 +170,21 @@ class puHistogramConfig:
 
         self.cvmfs_error_log = {}
         self.num_jobs = {
-            'hadd'      : 0,
-            'puProfile' : 0,
-            'plot'      : 0,
+            'hadd'    : 0,
+            'project' : 0,
+            'plot'    : 0,
         }
 
 
-    def createCfg_puProfile(self, jobOptions):
-        """Create python configuration file for the puProfile.sh script
+    def createCfg_project(self, jobOptions):
+        """Create python configuration file for the projection script
 
         Args:
           inputFiles: list of input files (Ntuples)
           outputFile: output file of the job -- a ROOT file containing histogram
         """
         lines = jobOptions['inputFiles'] + \
-                [ '', '%s %s %s' % (self.era, jobOptions['histName'], jobOptions['outputFile']) ]
+                [ '', '%s %s %s %s' % (self.projection_module, self.era, jobOptions['histName'], jobOptions['outputFile']) ]
         assert(len(lines) >= 3)
         createFile(jobOptions['cfgFile_path'], lines, nofNewLines = 1)
 
@@ -243,19 +248,19 @@ class puHistogramConfig:
         )
         return sbatch_hadd_file
 
-    def addToMakefile_puProfile(self, lines_makefile):
+    def addToMakefile_project(self, lines_makefile):
         """Adds the commands to Makefile that are necessary for running the PU profile production code
         """
         if self.is_sbatch:
             lines_makefile.extend([
-                "%s:" % MAKEFILE_TARGET,
-                "\t%s %s" % ("python", self.sbatchFile_puProfile),
+                "%s:" % self.makefile_target,
+                "\t%s %s" % ("python", self.sbatchFile_projection),
                 "",
             ])
         for key_file, output_file in self.outputFiles_tmp.items():
-            cfg_file = self.cfgFiles_puProfile[key_file]
+            cfg_file = self.cfgFiles_projection[key_file]
             if self.is_makefile:
-                log_file = self.logFiles_puProfile[key_file]
+                log_file = self.logFiles_projection[key_file]
                 lines_makefile.extend([
                     "%s:" % output_file,
                     "\t%s %s &> %s" % (self.executable, cfg_file, log_file),
@@ -263,12 +268,12 @@ class puHistogramConfig:
                 ])
             elif self.is_sbatch:
                 lines_makefile.extend([
-                    "%s: %s" % (output_file, MAKEFILE_TARGET),
+                    "%s: %s" % (output_file, self.makefile_target),
                     "\t%s" % ":",
                     "",
                 ])
             self.filesToClean.append(output_file)
-        self.phoniesToAdd.append(MAKEFILE_TARGET)
+        self.phoniesToAdd.append(self.makefile_target)
 
     def addToMakefile_hadd(self, lines_makefile):
         scriptFiles = {}
@@ -433,40 +438,41 @@ class puHistogramConfig:
                     )
                     continue
 
-                self.cfgFiles_puProfile[key_file] = os.path.join(
-                    self.dirs[key_dir][DKEY_CFGS], "puProfile_%s_%i_cfg.txt" % (process_name, jobId)
+                self.cfgFiles_projection[key_file] = os.path.join(
+                    self.dirs[key_dir][DKEY_CFGS], "project_%s_%i_cfg.txt" % (process_name, jobId)
                 )
                 self.outputFiles_tmp[key_file] = os.path.join(
                     self.dirs[key_dir][DKEY_HISTO_TMP], "histogram_%i.root" % jobId
                 )
-                self.logFiles_puProfile[key_file] = os.path.join(
-                    self.dirs[key_dir][DKEY_LOGS], "puProfile_%s_%i.log" % (process_name, jobId)
+                self.logFiles_projection[key_file] = os.path.join(
+                    self.dirs[key_dir][DKEY_LOGS], "project_%s_%i.log" % (process_name, jobId)
                 )
-                self.scriptFiles_puProfile[key_file] = os.path.join(
-                    self.dirs[key_dir][DKEY_CFGS], "puProfile_%s_%i_cfg.sh" % (process_name, jobId)
+                self.scriptFiles_projection[key_file] = os.path.join(
+                    self.dirs[key_dir][DKEY_CFGS], "project_%s_%i_cfg.sh" % (process_name, jobId)
                 )
                 self.jobOptions_sbatch[key_file] = {
                     'histName'     : process_name,
                     'inputFiles'   : self.inputFiles[key_file],
-                    'cfgFile_path' : self.cfgFiles_puProfile[key_file],
+                    'cfgFile_path' : self.cfgFiles_projection[key_file],
                     'outputFile'   : self.outputFiles_tmp[key_file],
-                    'logFile'      : self.logFiles_puProfile[key_file],
-                    'scriptFile'   : self.scriptFiles_puProfile[key_file],
+                    'logFile'      : self.logFiles_projection[key_file],
+                    'scriptFile'   : self.scriptFiles_projection[key_file],
                 }
-                self.createCfg_puProfile(self.jobOptions_sbatch[key_file])
+                self.createCfg_project(self.jobOptions_sbatch[key_file])
                 self.outputFiles[process_name]['inputFiles'].append(self.outputFiles_tmp[key_file])
 
         if self.is_sbatch:
           logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable)
-          self.num_jobs['puProfile'] += self.createScript_sbatch(
-              self.executable, self.sbatchFile_puProfile, self.jobOptions_sbatch
+          self.num_jobs['project'] += self.createScript_sbatch(
+              self.executable, self.sbatchFile_projection, self.jobOptions_sbatch
           )
 
         logging.info("Creating Makefile")
         lines_makefile = []
-        self.addToMakefile_puProfile(lines_makefile)
+        self.addToMakefile_project(lines_makefile)
         self.addToMakefile_hadd(lines_makefile)
-        self.addToMakefile_plot(lines_makefile)
+        if self.plot:
+            self.addToMakefile_plot(lines_makefile)
         self.addToMakefile_finalHadd(lines_makefile)
         self.createMakefile(lines_makefile)
         logging.info("Done")

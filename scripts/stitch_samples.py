@@ -776,15 +776,15 @@ do_wjet_parts = args.do_wjet_parts
 
 if not output:
   output = os.path.join(
-    os.environ['CMSSW_BASE'], 'src', 'tthAnalysis', 'HiggsToTauTau', 'data', 'stitched_weights_{}.root'.format(era)
+    os.environ['CMSSW_BASE'], 'src', 'tthAnalysis', 'HiggsToTauTau', 'data', 'stitched_weights_lo_{}.root'.format(era)
   )
 
 if era == '2016':
-  from tthAnalysis.HiggsToTauTau.samples.stitch import samples_to_stitch_2016 as samples_to_stitch
+  from tthAnalysis.HiggsToTauTau.samples.stitch import samples_to_stitch_lo_2016 as samples_to_stitch
 elif era == '2017':
-  from tthAnalysis.HiggsToTauTau.samples.stitch import samples_to_stitch_2017 as samples_to_stitch
+  from tthAnalysis.HiggsToTauTau.samples.stitch import samples_to_stitch_lo_2017 as samples_to_stitch
 elif era == '2018':
-  from tthAnalysis.HiggsToTauTau.samples.stitch import samples_to_stitch_2018 as samples_to_stitch
+  from tthAnalysis.HiggsToTauTau.samples.stitch import samples_to_stitch_lo_2018 as samples_to_stitch
 else:
   raise RuntimeError("Invalid era: %s" % era)
 

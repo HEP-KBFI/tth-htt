@@ -16,6 +16,21 @@ LeptonFakeRateInterface::LeptonFakeRateInterface(const edm::ParameterSet & cfg)
   const std::string histogramName_e  = cfg.getParameter<std::string>("histogramName_e");
   const std::string histogramName_mu = cfg.getParameter<std::string>("histogramName_mu");
 
+  std::vector<int> central_or_shift_enums;
+  if(cfg.exists("central_or_shifts"))
+  {
+    const std::vector<std::string> central_or_shifts = cfg.getParameter<std::vector<std::string>>("central_or_shifts");
+    for(const std::string & central_or_shift: central_or_shifts)
+    {
+      const int jetToLeptonFR_option = getJetToLeptonFR_option(central_or_shift);
+      if(std::find(central_or_shift_enums.cbegin(), central_or_shift_enums.cend(), jetToLeptonFR_option) == central_or_shift_enums.cend())
+      {
+        central_or_shift_enums.push_back(jetToLeptonFR_option);
+      }
+    }
+    assert(! central_or_shift_enums.empty());
+  }
+
   if(applyNonClosureCorrection_)
   {
     const Era era = get_era(cfg.getParameter<std::string>("era"));
@@ -30,6 +45,11 @@ LeptonFakeRateInterface::LeptonFakeRateInterface(const edm::ParameterSet & cfg)
 
   for(int FR_option = kFRl_central; FR_option <= kFRm_shape_eta_barrelDown; ++FR_option)
   {
+    if(! central_or_shift_enums.empty() &&
+       std::find(central_or_shift_enums.cbegin(), central_or_shift_enums.cend(), FR_option) == central_or_shift_enums.cend())
+    {
+      continue;
+    }
     std::string suffix = "";
     if(FR_option == kFRl_central || (FR_option >= kFRe_shape_ptUp && FR_option <= kFRe_shape_eta_barrelDown))
     {

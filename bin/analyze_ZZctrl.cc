@@ -84,6 +84,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/EvtWeightManager.h" // EvtWeightManager
 #include "tthAnalysis/HiggsToTauTau/interface/weightAuxFunctions.h" // get_tH_weight_str()
 #include "tthAnalysis/HiggsToTauTau/interface/EvtWeightRecorder.h" // EvtWeightRecorder
+#include "tthAnalysis/HiggsToTauTau/interface/BtagSFRatioFacility.h" // BtagSFRatioFacility
 
 #include <boost/algorithm/string/replace.hpp> // boost::replace_all_copy()
 #include <boost/math/special_functions/sign.hpp> // boost::math::sign()
@@ -230,6 +231,7 @@ int main(int argc, char* argv[])
   std::string apply_topPtReweighting_str = cfg_analyze.getParameter<std::string>("apply_topPtReweighting");
   bool apply_topPtReweighting = ! apply_topPtReweighting_str.empty();
   bool apply_l1PreFireWeight = cfg_analyze.getParameter<bool>("apply_l1PreFireWeight");
+  bool apply_btagSFRatio = cfg_analyze.getParameter<bool>("applyBtagSFRatio");
   bool apply_hlt_filter = cfg_analyze.getParameter<bool>("apply_hlt_filter");
   bool apply_met_filters = cfg_analyze.getParameter<bool>("apply_met_filters");
   edm::ParameterSet cfgMEtFilter = cfg_analyze.getParameter<edm::ParameterSet>("cfgMEtFilter");
@@ -409,6 +411,13 @@ int main(int argc, char* argv[])
   {
     l1PreFiringWeightReader = new L1PreFiringWeightReader(era);
     inputTree->registerReader(l1PreFiringWeightReader);
+  }
+
+  BtagSFRatioFacility * btagSFRatioFacility = nullptr;
+  if(apply_btagSFRatio)
+  {
+    const edm::ParameterSet btagSFRatio = cfg_analyze.getParameterSet("btagSFRatio");
+    btagSFRatioFacility = new BtagSFRatioFacility(btagSFRatio);
   }
 
 //--- declare particle collections
@@ -1214,6 +1223,10 @@ int main(int argc, char* argv[])
 //   (using the method "Event reweighting using scale factors calculated with a tag and probe method",
 //    described on the BTV POG twiki https://twiki.cern.ch/twiki/bin/view/CMS/BTagShapeCalibration )
       evtWeightRecorder.record_btagWeight(selJets);
+      if(btagSFRatioFacility)
+      {
+        evtWeightRecorder.record_btagSFRatio(btagSFRatioFacility, selJets.size());
+      }
 
       if(isMC_EWK)
       {
@@ -1251,18 +1264,16 @@ int main(int argc, char* argv[])
       }
     }
 
-    if ( !selectBDT ) {
-      if ( applyFakeRateWeights == kFR_4lepton ) {
-        bool passesTight_lepton_lead = isMatched(*selLepton_lead, tightElectrons) || isMatched(*selLepton_lead, tightMuons);
-        bool passesTight_lepton_sublead = isMatched(*selLepton_sublead, tightElectrons) || isMatched(*selLepton_sublead, tightMuons);
-        bool passesTight_lepton_third = isMatched(*selLepton_third, tightElectrons) || isMatched(*selLepton_third, tightMuons);
-        bool passesTight_lepton_fourth = isMatched(*selLepton_fourth, tightElectrons) || isMatched(*selLepton_fourth, tightMuons);
-        evtWeightRecorder.record_jetToLepton_FR_lead(leptonFakeRateInterface, selLepton_lead);
-        evtWeightRecorder.record_jetToLepton_FR_sublead(leptonFakeRateInterface, selLepton_sublead);
-        evtWeightRecorder.record_jetToLepton_FR_third(leptonFakeRateInterface, selLepton_third);
-        evtWeightRecorder.record_jetToLepton_FR_fourth(leptonFakeRateInterface, selLepton_fourth);
-        evtWeightRecorder.compute_FR_4l(passesTight_lepton_lead, passesTight_lepton_sublead, passesTight_lepton_third, passesTight_lepton_fourth);
-      }
+    if ( applyFakeRateWeights == kFR_4lepton ) {
+      bool passesTight_lepton_lead = isMatched(*selLepton_lead, tightElectrons) || isMatched(*selLepton_lead, tightMuons);
+      bool passesTight_lepton_sublead = isMatched(*selLepton_sublead, tightElectrons) || isMatched(*selLepton_sublead, tightMuons);
+      bool passesTight_lepton_third = isMatched(*selLepton_third, tightElectrons) || isMatched(*selLepton_third, tightMuons);
+      bool passesTight_lepton_fourth = isMatched(*selLepton_fourth, tightElectrons) || isMatched(*selLepton_fourth, tightMuons);
+      evtWeightRecorder.record_jetToLepton_FR_lead(leptonFakeRateInterface, selLepton_lead);
+      evtWeightRecorder.record_jetToLepton_FR_sublead(leptonFakeRateInterface, selLepton_sublead);
+      evtWeightRecorder.record_jetToLepton_FR_third(leptonFakeRateInterface, selLepton_third);
+      evtWeightRecorder.record_jetToLepton_FR_fourth(leptonFakeRateInterface, selLepton_fourth);
+      evtWeightRecorder.compute_FR_4l(passesTight_lepton_lead, passesTight_lepton_sublead, passesTight_lepton_third, passesTight_lepton_fourth);
     }
 
 //--- apply HLT filter

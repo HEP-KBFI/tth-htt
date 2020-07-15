@@ -25,7 +25,7 @@ parser.add_files_per_job()
 parser.add_use_home()
 parser.add_jet_cleaning()
 parser.add_gen_matching(default_gen_matching = 'by_dr')
-parser.add_stitched()
+parser.add_stitched([ 'dy_lo', 'wjets' ])
 args = parser.parse_args()
 
 # Common arguments
@@ -60,7 +60,7 @@ jet_cleaning_by_index = (jet_cleaning == 'by_index')
 gen_matching_by_index = (gen_matching == 'by_index')
 
 samples = load_samples(era, suffix = "preselected" if use_preselected else "")
-samples = load_samples_stitched(samples, era, load_dy = 'dy' in use_stitched, load_wjets = 'wjets' in use_stitched)
+samples = load_samples_stitched(samples, era, use_stitched)
 
 for sample_name, sample_info in samples.items():
   if sample_name == 'sum_events':

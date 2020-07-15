@@ -109,27 +109,26 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     self.hadTau_selection_part2 = hadTau_selection
     self.hadTau_selection_veto = hadTau_selection_veto
     self.applyFakeRateWeights = applyFakeRateWeights
-    run_mcClosure = 'central' not in self.central_or_shifts or len(central_or_shifts) > 1 or self.do_sync
 
     self.apply_leptonGenMatching = None
     self.apply_hadTauGenMatching = None
     if self.applyFakeRateWeights == "3L":
       self.apply_leptonGenMatching = True
       self.apply_hadTauGenMatching = True
-      if run_mcClosure:
+      if self.run_mcClosure:
         self.lepton_and_hadTau_selections.extend([ "Fakeable_mcClosure_e", "Fakeable_mcClosure_m", "Fakeable_mcClosure_t" ])
       self.central_or_shifts_fr = systematics.FR_all
     elif applyFakeRateWeights == "2lepton":
       self.apply_leptonGenMatching = True
       self.apply_hadTauGenMatching = False
-      if run_mcClosure:
+      if self.run_mcClosure:
         self.lepton_and_hadTau_selections.extend([ "Fakeable_mcClosure_e", "Fakeable_mcClosure_m" ])
       # in this regime data-to-MC SFs of jet-to-tau FR are applied and therefore the relevant systematics have to be preserved
       self.central_or_shifts_fr = systematics.FR_all
     elif applyFakeRateWeights == "1tau":
       self.apply_leptonGenMatching = False
       self.apply_hadTauGenMatching = True
-      if run_mcClosure:
+      if self.run_mcClosure:
         self.lepton_and_hadTau_selections.extend([ "Fakeable_mcClosure_t" ])
       self.central_or_shifts_fr = systematics.FR_t
     else:
@@ -286,7 +285,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
                     else:
                       self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel,
                         "_".join([ lepton_and_hadTau_selection_and_frWeight, lepton_charge_selection, chargeSumSelection ]), process_name_or_dummy)
-    for subdirectory in [ "addBackgrounds", "addBackgroundLeptonFakes", "addBackgroundLeptonFlips", "prepareDatacards", "addSystFakeRates", "makePlots" ]:
+    for subdirectory in [ "addBackgrounds", "addBackgroundLeptonFakes", "addBackgroundLeptonFlips", "prepareDatacards", "addSystFakeRates", "makePlots", "stxs" ]:
       key_dir = getKey(subdirectory)
       for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT ]:
         initDict(self.dirs, [ key_dir, dir_type ])
@@ -758,6 +757,14 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
             'histogramName_mcClosure_%s' % lepton_and_hadTau_type : "%s/sel/evt/fakes_mc/%s" % (histogramDir_mcClosure, histogramToFit),
           })
         self.createCfg_add_syst_fakerate(self.jobOptions_add_syst_fakerate[key_add_syst_fakerate_job])
+        
+        self.jobOptions_mergeHTXS[key_add_syst_fakerate_job] = {
+          'inputDatacard' : self.jobOptions_add_syst_fakerate[key_add_syst_fakerate_job]['outputFile'],
+          'inputFile' : self.outputFile_hadd_stage2[key_hadd_stage2_job],
+          'outputFile' : os.path.join(self.dirs['stxs'][DKEY_DCRD], "stxs_%s_sum%s_%s.root" % add_syst_fakerate_job_tuple),
+          'histogramDir': self.histogramDir_prep_dcard % chargeSumSelection,
+          'histogramToFit' : histogramToFit,
+        }
 
       logging.info("Creating configuration files to run 'makePlots'")
       key_hadd_stage2_job = getKey(get_lepton_and_hadTau_selection_and_frWeight("Tight", "disabled"), "SS", chargeSumSelection)
@@ -828,6 +835,7 @@ class analyzeConfig_2lss_1tau(analyzeConfig):
     self.addToMakefile_add_syst_fakerate(lines_makefile)
     self.addToMakefile_make_plots(lines_makefile)
     self.addToMakefile_validate(lines_makefile)
+    self.addToMakefile_mergeHTXS(lines_makefile)
     self.createMakefile(lines_makefile)
 
     logging.info("Done.")
