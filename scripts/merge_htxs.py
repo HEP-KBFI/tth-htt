@@ -98,7 +98,10 @@ if __name__ == '__main__':
       ptbin_name = ptbin_name.replace('Gt', '')
       ptbin_name += '_infty'
 
-    histogram_name_base = 'ttH_{}_{}'.format(ptbin_name, '_'.join(htxs_dirname_noprefix_split[2:]))
+    if htxs_dirname_noprefix_split:
+      histogram_name_base = 'ttH_{}_{}'.format(ptbin_name, '_'.join(htxs_dirname_noprefix_split[2:]))
+    else:
+      histogram_name_base = 'ttH_{}'.format(ptbin_name)
 
     histogram_names = [ key.GetName() for key in htxs_dir.GetListOfKeys() if key.GetName().endswith(fitvar) ]
     if not histogram_names:
