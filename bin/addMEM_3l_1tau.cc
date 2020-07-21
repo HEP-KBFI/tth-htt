@@ -1,5 +1,5 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h" // edm::ParameterSet
-#include "FWCore/PythonParameterSet/interface/MakeParameterSets.h" // edm::readPSetsFrom()
+#include <FWCore/ParameterSetReader/interface/ParameterSetReader.h> // edm::readPSetsFrom()
 #include "FWCore/Utilities/interface/Exception.h" // cms::Exception
 #include "PhysicsTools/FWLite/interface/TFileService.h" // fwlite::TFileService
 #include "DataFormats/FWLite/interface/InputSource.h" // fwlite::InputSource

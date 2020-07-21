@@ -8,7 +8,7 @@
  */
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/PythonParameterSet/interface/MakeParameterSets.h"
+#include <FWCore/ParameterSetReader/interface/ParameterSetReader.h> // edm::readPSetsFrom()
 #include "FWCore/PluginManager/interface/PluginManager.h"
 #include "FWCore/PluginManager/interface/standard.h"
 
@@ -70,10 +70,9 @@ int main(int argc, char* argv[])
 
   std::string pluginType = cfgMakePlots.getParameter<std::string>("pluginType");
   edmplugin::PluginManager::configure(edmplugin::standard::config());
-  PlotterPluginBase* plugin = PlotterPluginFactory::get()->create(pluginType, inputFile, cfgMakePlots);
+  std::unique_ptr<PlotterPluginBase> plugin = PlotterPluginFactory::get()->create(pluginType, inputFile, cfgMakePlots);
   plugin->makePlots();
   
-  delete plugin;
   delete inputFile;
   
   clock.Show("makePlots");

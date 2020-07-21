@@ -53,12 +53,11 @@
 #include "tthAnalysis/HiggsToTauTau/interface/jetToTauFakeRateAuxFunctions.h" // getEtaBin(), getPtBin()
 #include "tthAnalysis/HiggsToTauTau/interface/leptonTypes.h" // kElectron, kMuon
 
-#include <FWCore/PythonParameterSet/interface/MakeParameterSets.h> // edm::readPSetsFrom()
+#include <FWCore/ParameterSetReader/interface/ParameterSetReader.h> // edm::readPSetsFrom()
 #include <PhysicsTools/FWLite/interface/TFileService.h> // fwlite::TFileService
 #include <DataFormats/FWLite/interface/InputSource.h> // fwlite::InputSource
 #include <DataFormats/FWLite/interface/OutputFiles.h> // fwlite::OutputFiles
 #include <DataFormats/Math/interface/deltaR.h>
-
 
 #include <TRandom3.h> // TRandom3
 #include <TBenchmark.h> // TBenchmark

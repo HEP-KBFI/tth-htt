@@ -45,7 +45,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionCleanerSubJets.h" // RecoJetCollectionCleanerAK8SubJets
 
 #include <FWCore/ParameterSet/interface/ParameterSet.h> // edm::ParameterSet
-#include <FWCore/PythonParameterSet/interface/MakeParameterSets.h> // edm::readPSetsFrom()
+#include <FWCore/ParameterSetReader/interface/ParameterSetReader.h> // edm::readPSetsFrom()
 #include <DataFormats/FWLite/interface/InputSource.h> // fwlite::InputSource
 #include <DataFormats/Math/interface/deltaR.h> // deltaR()
 

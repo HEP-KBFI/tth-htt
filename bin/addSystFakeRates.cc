@@ -14,7 +14,7 @@
  */
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/PythonParameterSet/interface/MakeParameterSets.h"
+#include <FWCore/ParameterSetReader/interface/ParameterSetReader.h> // edm::readPSetsFrom()
 
 #include "FWCore/Utilities/interface/Exception.h"
 #include "tthAnalysis/HiggsToTauTau/interface/LocalFileInPath.h"
