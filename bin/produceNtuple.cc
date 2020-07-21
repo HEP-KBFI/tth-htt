@@ -43,8 +43,13 @@
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h"
 #include "tthAnalysis/HiggsToTauTau/interface/TTreeWrapper.h" // TTreeWrapper
 
+#if __has_include (<FWCore/ParameterSetReader/interface/ParameterSetReader.h>)
+#  include <FWCore/ParameterSetReader/interface/ParameterSetReader.h> // edm::readPSetsFrom()
+#else
+#  include <FWCore/PythonParameterSet/interface/MakeParameterSets.h> // edm::readPSetsFrom()
+#endif
+
 #include <FWCore/ParameterSet/interface/ParameterSet.h> // edm::ParameterSet
-#include <FWCore/ParameterSetReader/interface/ParameterSetReader.h> // edm::readPSetsFrom()
 #include <PhysicsTools/FWLite/interface/TFileService.h> // fwlite::TFileService
 #include <DataFormats/FWLite/interface/InputSource.h> // fwlite::InputSource
 #include <DataFormats/FWLite/interface/OutputFiles.h> // fwlite::OutputFiles

@@ -8,9 +8,14 @@
  */
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include <FWCore/ParameterSetReader/interface/ParameterSetReader.h> // edm::readPSetsFrom()
 #include "FWCore/PluginManager/interface/PluginManager.h"
 #include "FWCore/PluginManager/interface/standard.h"
+
+#if __has_include (<FWCore/ParameterSetReader/interface/ParameterSetReader.h>)
+#  include <FWCore/ParameterSetReader/interface/ParameterSetReader.h> // edm::readPSetsFrom()
+#else
+#  include <FWCore/PythonParameterSet/interface/MakeParameterSets.h> // edm::readPSetsFrom()
+#endif
 
 #include "FWCore/Utilities/interface/Exception.h"
 
@@ -70,7 +75,7 @@ int main(int argc, char* argv[])
 
   std::string pluginType = cfgMakePlots.getParameter<std::string>("pluginType");
   edmplugin::PluginManager::configure(edmplugin::standard::config());
-  std::unique_ptr<PlotterPluginBase> plugin = PlotterPluginFactory::get()->create(pluginType, inputFile, cfgMakePlots);
+  auto plugin = PlotterPluginFactory::get()->create(pluginType, inputFile, cfgMakePlots);
   plugin->makePlots();
   
   delete inputFile;

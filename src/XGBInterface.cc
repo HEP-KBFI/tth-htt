@@ -54,6 +54,7 @@ XGBInterface::XGBInterface(const std::string & mvaFileName,
   // https://stackoverflow.com/questions/4060221/how-to-reliably-open-a-file-in-the-same-directory-as-a-python-script
   // https://gist.github.com/rjzak/5681680
   Py_SetProgramName(const_cast<char *>("applicationLoad"));
+  Py_Initialize();
   moduleMainString_ = PyString_FromString("__main__");
   moduleMain_ = PyImport_Import(moduleMainString_);
   PyRun_SimpleString(applicationLoadStr.c_str());
@@ -110,6 +111,7 @@ XGBInterface::XGBInterface(const std::string & mvaFileName_odd,
   // https://stackoverflow.com/questions/4060221/how-to-reliably-open-a-file-in-the-same-directory-as-a-python-script
   // https://gist.github.com/rjzak/5681680
   Py_SetProgramName(const_cast<char *>("applicationLoad"));
+  Py_Initialize();
   // moduleMainString_ = PyString_FromString("__main__");
   // moduleMain_ = PyImport_Import(moduleMainString_);
 
