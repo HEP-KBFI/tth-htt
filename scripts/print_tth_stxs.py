@@ -36,5 +36,5 @@ print('{:<12} -> {:>8}   {:>8}   {:>8}'.format('BIN', *(era for era in sorted(no
 print('-' * 46)
 for count_key in sorted(nof_events['2016'].keys()):
   print('{:<12} -> {:.6f}   {:.6f}   {:.6f}'.format(
-    count_key, *(nof_events[era][count_key] * xs / event_sums[era] for era in nof_events)
+    count_key, *(nof_events[era][count_key] * xs / event_sums[era] for era in sorted(nof_events.keys()))
   ))
