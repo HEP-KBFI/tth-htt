@@ -32,7 +32,7 @@ for era in list(map(str, range(2016, 2019))):
       nof_events[era][count_key_new] = sample_info['nof_events'][count_key][0]
 
 assert(xs > 0.)
-print('{:<12} -> {:>8}   {:>8}   {:>8}'.format('BIN', *(era for era in nof_events)))
+print('{:<12} -> {:>8}   {:>8}   {:>8}'.format('BIN', *(era for era in sorted(nof_events.keys()))))
 print('-' * 46)
 for count_key in sorted(nof_events['2016'].keys()):
   print('{:<12} -> {:.6f}   {:.6f}   {:.6f}'.format(
