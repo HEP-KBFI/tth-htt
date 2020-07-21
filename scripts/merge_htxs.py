@@ -123,9 +123,11 @@ if __name__ == '__main__':
   output.cd()
 
   for histogram_name in histograms:
-    histograms[histogram_name].SetName(histogram_name)
-    histograms[histogram_name].SetTitle(histogram_name)
-    histograms[histogram_name].Write()
+    histogram = ROOT.TH1F()
+    histograms[histogram_name].Copy(histogram)
+    histogram.SetName(histogram_name)
+    histogram.SetTitle(histogram_name)
+    histogram.Write()
 
   output.Close()
   input_hadd2.Close()
