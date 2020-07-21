@@ -5,6 +5,7 @@
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wshadow"
+#pragma GCC diagnostic ignored "-Wswitch-enum"
 #include "PhysicsTools/TensorFlow/interface/TensorFlow.h"
 #pragma GCC diagnostic pop
 

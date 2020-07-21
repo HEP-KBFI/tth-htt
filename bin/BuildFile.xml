@@ -1,6 +1,7 @@
 <bin file="analyze_0l_2tau.cc" name="analyze_0l_2tau">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/ParameterSetReader"/>
   <use   name="FWCore/PythonParameterSet"/>
   <use   name="FWCore/Utilities"/>
   <use   name="DataFormats/FWLite"/>
@@ -16,6 +17,7 @@
 <bin file="analyze_1l_1tau.cc" name="analyze_1l_1tau">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/ParameterSetReader"/>
   <use   name="FWCore/PythonParameterSet"/>
   <use   name="FWCore/Utilities"/>
   <use   name="DataFormats/FWLite"/>
@@ -31,6 +33,7 @@
 <bin file="analyze_1l_2tau.cc" name="analyze_1l_2tau">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/ParameterSetReader"/>
   <use   name="FWCore/PythonParameterSet"/>
   <use   name="FWCore/Utilities"/>
   <use   name="DataFormats/FWLite"/>
@@ -45,6 +48,7 @@
 <bin file="produceNtuple.cc" name="produceNtuple">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/ParameterSetReader"/>
   <use   name="FWCore/PythonParameterSet"/>
   <use   name="FWCore/Utilities"/>
   <use   name="DataFormats/FWLite"/>
@@ -59,6 +63,7 @@
 <bin file="analyze_2lss.cc" name="analyze_2lss">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/ParameterSetReader"/>
   <use   name="FWCore/PythonParameterSet"/>
   <use   name="FWCore/Utilities"/>
   <use   name="DataFormats/FWLite"/>
@@ -73,6 +78,7 @@
 <bin file="addMEM_2lss_1tau.cc" name="addMEM_2lss_1tau">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/ParameterSetReader"/>
   <use   name="FWCore/PythonParameterSet"/>
   <use   name="FWCore/Utilities"/>
   <use   name="DataFormats/FWLite"/>
@@ -87,6 +93,7 @@
 <bin file="analyze_2lss_1tau.cc" name="analyze_2lss_1tau">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/ParameterSetReader"/>
   <use   name="FWCore/PythonParameterSet"/>
   <use   name="FWCore/Utilities"/>
   <use   name="DataFormats/FWLite"/>
@@ -101,6 +108,7 @@
 <bin file="analyze_2los_1tau.cc" name="analyze_2los_1tau">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/ParameterSetReader"/>
   <use   name="FWCore/PythonParameterSet"/>
   <use   name="FWCore/Utilities"/>
   <use   name="DataFormats/FWLite"/>
@@ -115,6 +123,7 @@
 <bin file="addMEM_3l.cc" name="addMEM_3l">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/ParameterSetReader"/>
   <use   name="FWCore/PythonParameterSet"/>
   <use   name="FWCore/Utilities"/>
   <use   name="DataFormats/FWLite"/>
@@ -129,6 +138,7 @@
 <bin file="analyze_3l.cc" name="analyze_3l">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/ParameterSetReader"/>
   <use   name="FWCore/PythonParameterSet"/>
   <use   name="FWCore/Utilities"/>
   <use   name="DataFormats/FWLite"/>
@@ -143,6 +153,7 @@
 <bin file="addMEM_3l_1tau.cc" name="addMEM_3l_1tau">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/ParameterSetReader"/>
   <use   name="FWCore/PythonParameterSet"/>
   <use   name="FWCore/Utilities"/>
   <use   name="DataFormats/FWLite"/>
@@ -157,6 +168,7 @@
 <bin file="analyze_3l_1tau.cc" name="analyze_3l_1tau">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/ParameterSetReader"/>
   <use   name="FWCore/PythonParameterSet"/>
   <use   name="FWCore/Utilities"/>
   <use   name="DataFormats/FWLite"/>
@@ -171,6 +183,7 @@
 <bin file="analyze_2l_2tau.cc" name="analyze_2l_2tau">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/ParameterSetReader"/>
   <use   name="FWCore/PythonParameterSet"/>
   <use   name="FWCore/Utilities"/>
   <use   name="DataFormats/FWLite"/>
@@ -185,6 +198,7 @@
 <bin file="analyze_4l.cc" name="analyze_4l">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/ParameterSetReader"/>
   <use   name="FWCore/PythonParameterSet"/>
   <use   name="FWCore/Utilities"/>
   <use   name="DataFormats/FWLite"/>
@@ -199,6 +213,7 @@
 <bin file="analyze_ZZctrl.cc" name="analyze_ZZctrl">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/ParameterSetReader"/>
   <use   name="FWCore/PythonParameterSet"/>
   <use   name="FWCore/Utilities"/>
   <use   name="DataFormats/FWLite"/>
@@ -212,6 +227,7 @@
 </bin>
 <bin file="analyze_inclusive.cc" name="analyze_inclusive">
   <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/ParameterSetReader"/>
   <use   name="FWCore/PythonParameterSet"/>
   <use   name="DataFormats/FWLite"/>
   <use   name="DataFormats/Math"/>
@@ -223,6 +239,7 @@
 <bin file="addBackground_LeptonFakeRate.cc" name="addBackground_LeptonFakeRate">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/ParameterSetReader"/>
   <use   name="FWCore/PythonParameterSet"/>
   <use   name="FWCore/Utilities"/>
   <use   name="DataFormats/Candidate"/>
@@ -236,6 +253,7 @@
 <bin file="addBackgroundLeptonFakes.cc" name="addBackgroundLeptonFakes">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/ParameterSetReader"/>
   <use   name="FWCore/PythonParameterSet"/>
   <use   name="FWCore/Utilities"/>
   <use   name="DataFormats/Candidate"/>
@@ -249,6 +267,7 @@
 <bin file="addBackgroundLeptonFlips.cc" name="addBackgroundLeptonFlips">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/ParameterSetReader"/>
   <use   name="FWCore/PythonParameterSet"/>
   <use   name="FWCore/Utilities"/>
   <use   name="DataFormats/Candidate"/>
@@ -262,6 +281,7 @@
 <bin file="prepareDatacards.cc" name="prepareDatacards">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/ParameterSetReader"/>
   <use   name="FWCore/PythonParameterSet"/>
   <use   name="FWCore/Utilities"/>
   <use   name="DataFormats/Candidate"/>
@@ -275,6 +295,7 @@
 <bin file="addSystDatacards.cc" name="addSystDatacards">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/ParameterSetReader"/>
   <use   name="FWCore/PythonParameterSet"/>
   <use   name="FWCore/Utilities"/>
   <use   name="DataFormats/Candidate"/>
@@ -289,6 +310,7 @@
   <use   name="libpng"/>
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/ParameterSetReader"/>
   <use   name="FWCore/PythonParameterSet"/>
   <use   name="FWCore/Utilities"/>
   <use   name="DataFormats/Candidate"/>
@@ -302,6 +324,7 @@
 <bin file="addBackgrounds.cc" name="addBackgrounds">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/ParameterSetReader"/>
   <use   name="FWCore/PythonParameterSet"/>
   <use   name="FWCore/Utilities"/>
   <use   name="DataFormats/Candidate"/>
@@ -315,6 +338,7 @@
 <bin file="addBackgrounds_recursively.cc" name="addBackgrounds_recursively">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/ParameterSetReader"/>
   <use   name="FWCore/PythonParameterSet"/>
   <use   name="FWCore/Utilities"/>
   <use   name="DataFormats/Candidate"/>
@@ -329,6 +353,7 @@
   <use   name="libpng"/>
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/ParameterSetReader"/>
   <use   name="FWCore/PythonParameterSet"/>
   <use   name="FWCore/Utilities"/>
   <use   name="DataFormats/Candidate"/>
@@ -342,6 +367,7 @@
 <bin file="analyze_jetToTauFakeRateTTemu.cc" name="analyze_jetToTauFakeRateTTemu">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/ParameterSetReader"/>
   <use   name="FWCore/PythonParameterSet"/>
   <use   name="FWCore/Utilities"/>
   <use   name="DataFormats/FWLite"/>
@@ -356,6 +382,7 @@
 <bin file="analyze_jetToTauFakeRateDYmumu.cc" name="analyze_jetToTauFakeRateDYmumu">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/ParameterSetReader"/>
   <use   name="FWCore/PythonParameterSet"/>
   <use   name="FWCore/Utilities"/>
   <use   name="DataFormats/FWLite"/>
@@ -371,6 +398,7 @@
   <use   name="libpng"/>
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/ParameterSetReader"/>
   <use   name="FWCore/PythonParameterSet"/>
   <use   name="FWCore/Utilities"/>
   <use   name="DataFormats/Candidate"/>
@@ -385,6 +413,7 @@
   <use   name="libpng"/>
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/ParameterSetReader"/>
   <use   name="FWCore/PythonParameterSet"/>
   <use   name="FWCore/Utilities"/>
   <use   name="DataFormats/Candidate"/>
@@ -398,6 +427,7 @@
 <bin file="compShapeSyst.cc" name="compShapeSyst">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/ParameterSetReader"/>
   <use   name="FWCore/PythonParameterSet"/>
   <use   name="FWCore/Utilities"/>
   <use   name="DataFormats/Candidate"/>
@@ -411,6 +441,7 @@
 <bin file="analyze_charge_flip.cc" name="analyze_charge_flip">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/ParameterSetReader"/>
   <use   name="FWCore/PythonParameterSet"/>
   <use   name="FWCore/Utilities"/>
   <use   name="DataFormats/FWLite"/>
@@ -422,6 +453,7 @@
 <bin file="analyze_charge_flip_mu.cc" name="analyze_charge_flip_mu">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/ParameterSetReader"/>
   <use   name="FWCore/PythonParameterSet"/>
   <use   name="FWCore/Utilities"/>
   <use   name="DataFormats/FWLite"/>
@@ -433,6 +465,7 @@
 <bin file="analyze_WZctrl.cc" name="analyze_WZctrl">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/ParameterSetReader"/>
   <use   name="FWCore/PythonParameterSet"/>
   <use   name="FWCore/Utilities"/>
   <use   name="DataFormats/FWLite"/>
@@ -447,6 +480,7 @@
 <bin file="analyze_ttWctrl.cc" name="analyze_ttWctrl">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/ParameterSetReader"/>
   <use   name="FWCore/PythonParameterSet"/>
   <use   name="FWCore/Utilities"/>
   <use   name="DataFormats/FWLite"/>
@@ -461,6 +495,7 @@
 <bin file="analyze_ttZctrl.cc" name="analyze_ttZctrl">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/ParameterSetReader"/>
   <use   name="FWCore/PythonParameterSet"/>
   <use   name="FWCore/Utilities"/>
   <use   name="DataFormats/FWLite"/>
@@ -475,6 +510,7 @@
 <bin file="write_csv.cc" name="write_csv">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/ParameterSetReader"/>
   <use   name="FWCore/PythonParameterSet"/>
   <use   name="FWCore/Utilities"/>
   <use   name="PhysicsTools/FWLite"/>
@@ -486,6 +522,7 @@
 <bin file="analyze_LeptonFakeRate.cc" name="analyze_LeptonFakeRate">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/ParameterSetReader"/>
   <use   name="FWCore/PythonParameterSet"/>
   <use   name="FWCore/Utilities"/>
   <use   name="DataFormats/FWLite"/>
@@ -500,6 +537,7 @@
 <bin file="analyze_hadTopTagger.cc" name="analyze_hadTopTagger">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/ParameterSetReader"/>
   <use   name="FWCore/PythonParameterSet"/>
   <use   name="FWCore/Utilities"/>
   <use   name="DataFormats/FWLite"/>
@@ -524,6 +562,7 @@
 <bin file="copyHistograms_recursively.cc" name="copyHistograms_recursively">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/ParameterSetReader"/>
   <use   name="FWCore/PythonParameterSet"/>
   <use   name="FWCore/Utilities"/>
   <use   name="DataFormats/Candidate"/>
@@ -537,6 +576,7 @@
 <bin file="analyze_genTopPt.cc" name="analyze_genTopPt">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/ParameterSetReader"/>
   <use   name="FWCore/PythonParameterSet"/>
   <use   name="FWCore/Utilities"/>
   <use   name="DataFormats/FWLite"/>
@@ -551,6 +591,7 @@
 <bin file="analyze_jetResolution.cc" name="analyze_jetResolution">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/ParameterSetReader"/>
   <use   name="FWCore/PythonParameterSet"/>
   <use   name="FWCore/Utilities"/>
   <use   name="DataFormats/FWLite"/>
