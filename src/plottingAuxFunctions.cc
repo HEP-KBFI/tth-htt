@@ -3,8 +3,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h"
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 
-#include <FWCore/PythonParameterSet/interface/MakeParameterSets.h>
-
 #include <TH1.h>
 #include <TDirectory.h>
 #include <TPRegexp.h>
