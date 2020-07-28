@@ -1,11 +1,16 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h" // edm::ParameterSet
-#include "FWCore/PythonParameterSet/interface/MakeParameterSets.h" // edm::readPSetsFrom()
 #include "FWCore/Utilities/interface/Exception.h" // cms::Exception
 #include "PhysicsTools/FWLite/interface/TFileService.h" // fwlite::TFileService
 #include "DataFormats/FWLite/interface/InputSource.h" // fwlite::InputSource
 #include "DataFormats/FWLite/interface/OutputFiles.h" // fwlite::OutputFiles
 #include "DataFormats/Math/interface/LorentzVector.h" // math::PtEtaPhiMLorentzVector
 #include "DataFormats/Math/interface/deltaR.h" // deltaR
+
+#if __has_include (<FWCore/ParameterSetReader/interface/ParameterSetReader.h>)
+#  include <FWCore/ParameterSetReader/interface/ParameterSetReader.h> // edm::readPSetsFrom()
+#else
+#  include <FWCore/PythonParameterSet/interface/MakeParameterSets.h> // edm::readPSetsFrom()
+#endif
 
 #include <TLorentzVector.h> // TLorentzVector
 #include <TVector3.h>

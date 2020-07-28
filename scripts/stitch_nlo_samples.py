@@ -148,7 +148,7 @@ def merge_samples(sample_list, sample_dict):
           assert(len(sample_yields_agg[count_key][bin_key]) == len(sample_yields_final[count_key][bin_key]))
           for bin_idx, bin_value in enumerate(sample_yields_agg[count_key][bin_key]):
             sample_yields_final[count_key][bin_key][bin_idx] += bin_value
-    return sample_yields_final, sample_xsec_final
+  return sample_yields_final, sample_xsec_final
 
 inclusive_count, inclusive_xsec = merge_samples(samples_to_stitch['inclusive']['samples'], samples)
 exclusive_counts = []
