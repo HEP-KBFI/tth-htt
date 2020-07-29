@@ -88,10 +88,6 @@ class prodNtupleConfig:
         if running_method.lower() not in ["sbatch", "makefile"]:
           raise ValueError("Invalid running method: %s" % running_method)
 
-        if not os.path.isfile(self.pileup):
-            raise ValueError('No such file: %s' % self.pileup)
-        self.pileup_histograms = get_pileup_histograms(self.pileup)
-
         if not os.path.isfile(self.golden_json):
             raise ValueError('No such file: %s' % self.golden_json)
 
@@ -103,6 +99,12 @@ class prodNtupleConfig:
         self.skip_tools_step   = skip_tools_step
         self.do_sync           = do_sync
         self.pool_id           = pool_id if pool_id else uuid.uuid4()
+
+        self.pileup_histograms = []
+        if not self.skip_tools_step:
+            if not os.path.isfile(self.pileup):
+                raise ValueError('No such file: %s' % self.pileup)
+            self.pileup_histograms = get_pileup_histograms(self.pileup)
 
         self.workingDir = os.getcwd()
         logging.info("Working directory is: %s" % self.workingDir)
@@ -294,7 +296,7 @@ class prodNtupleConfig:
             process_name = sample_info["process_name_specific"]
             is_mc = (sample_info["type"] == "mc")
 
-            if is_mc and process_name not in self.pileup_histograms:
+            if is_mc and not self.skip_tools_step and process_name not in self.pileup_histograms:
                 raise ValueError("Missing PU distribution for %s in file %s" % (process_name, self.pileup))
 
             logging.info("Creating configuration files to run '%s' for sample %s" % (self.executable, process_name))
