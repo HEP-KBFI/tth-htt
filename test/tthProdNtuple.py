@@ -170,6 +170,7 @@ if preselection:
       'maxNumBJets_medium'         : -1,
       'applyJetEtaCut'             : True,
       'applyHLTcut'                : True,
+      'listHLT'                    : [ '1e', '1mu' ],
     }
   else:
     preselection_cuts = {
@@ -183,6 +184,7 @@ if preselection:
       'maxNumBJets_medium'         : -1,
       'applyJetEtaCut'             : False,
       'applyHLTcut'                : True,
+      'listHLT'                    : [],
     }
   leptonSelection = 'Fakeable'
   hadTauWP = 'dR03mvaVLoose&deepVSjVVLoose' # override user preference
@@ -198,6 +200,7 @@ else:
     'maxNumBJets_medium'        : -1,
     'applyJetEtaCut'            : False,
     'applyHLTcut'               : False,
+    'listHLT'                   : [],
   }
   leptonSelection = 'Loose'
   hadTauWP = args.tau_id_wp

@@ -329,7 +329,15 @@ class prodNtupleConfig:
                     self.dirs[key_dir][DKEY_LOGS], "produceNtuple_%s_%i.log" % (process_name, jobId)
                 )
                 hlt_paths = sample_info["hlt_paths"] if not is_mc else []
-                hlt_cuts = list(Triggers(self.era).triggers_flat) if self.preselection_cuts["applyHLTcut"] else []
+                hlt_cuts = []
+                if self.preselection_cuts["applyHLTcut"]:
+                    if not self.preselection_cuts["listHLT"]:
+                        hlt_cuts = list(Triggers(self.era).triggers_flat)
+                    else:
+                        hlt_cuts = [
+                            hlt_path for hlt_paths in self.preselection_cuts["listHLT"] \
+                            for hlt_path in Triggers(self.era).triggers_all[hlt_paths]
+                        ]
                 jobOptions = {
                     'inputFiles'              : self.inputFiles[key_file],
                     'cfgFile_modified'        : self.cfgFiles_prodNtuple_modified[key_file],
