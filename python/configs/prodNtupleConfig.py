@@ -335,8 +335,8 @@ class prodNtupleConfig:
                         hlt_cuts = list(Triggers(self.era).triggers_flat)
                     else:
                         hlt_cuts = [
-                            hlt_path for hlt_paths in self.preselection_cuts["listHLT"] \
-                            for hlt_path in Triggers(self.era).triggers_all[hlt_paths]
+                            hlt_path for hlt_pair in self.preselection_cuts["listHLT"] \
+                            for hlt_path in Triggers(self.era).triggers_all[hlt_pair]
                         ]
                 jobOptions = {
                     'inputFiles'              : self.inputFiles[key_file],
