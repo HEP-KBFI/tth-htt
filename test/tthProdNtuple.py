@@ -12,8 +12,8 @@ import getpass
 # E.g.: ./test/tthProdNtuple.py -v 2017Dec13 -m all -e 2017 -p
 
 mode_choices = [
-  'all', 'all_except_forBDTtraining', 'forBDTtraining', 'sync', 'leptonFR_sync', 'hh', 'hh_bbww', 'hh_bkg',
-  'hh_bbww_sync', 'hh_bbww_ttbar', 'hh_bbww_sync_ttbar',
+  'all', 'all_except_forBDTtraining', 'forBDTtraining', 'sync', 'leptonFR_sync', 'hh', 'hh_bbww',
+  'hh_bbww_sync', 'hh_bbww_ttbar', 'hh_bbww_sync_ttbar', 'hh_bbww_sl',
 ]
 
 parser = tthAnalyzeParser()
@@ -120,6 +120,11 @@ elif mode == 'hh_bbww_ttbar':
   pileup = os.path.join(
     os.environ['CMSSW_BASE'], 'src/hhAnalysis/bbww/data/pileup_hh_{}_ttbar.root'.format(era)
   )
+elif mode == 'hh_bbww_sl':
+  if not preselection:
+    raise ValueError("Mode %s only if preselection is enabled" % mode)
+
+  samples = load_samples(era, True, base = 'hh_bbww')
 else:
   samples = load_samples(era, preselection, suffix = 'base' if preselection else '')
 
@@ -135,33 +140,52 @@ else:
 if 'sum_events' in samples:
   del samples['sum_events']
 for sample_name, sample_entry in samples.items():
-  if mode == 'all' or mode == 'hh_bkg':
+  process_name = sample_entry['process_name_specific']
+  is_hh = process_name.startswith('signal') and 'hh' in process_name
+  if mode == 'all':
     sample_entry['use_it'] = True
+  elif mode == 'hh_bbww_sl':
+    sample_entry['use_it'] = not is_hh
   elif mode == 'forBDTtraining':
     sample_entry['use_it'] = not sample_entry['use_it']
   elif mode.startswith('hh') and 'ttbar' not in mode:
-    sample_entry['use_it'] = sample_entry['process_name_specific'].startswith('signal') and \
-                             'hh' in sample_entry['process_name_specific']
+    sample_entry['use_it'] = is_hh
   elif mode.startswith('hh') and 'ttbar' in mode:
-    sample_entry['use_it'] = sample_entry['process_name_specific'].startswith('TTTo')
+    sample_entry['use_it'] = process_name.startswith('TTTo')
   elif do_sync or mode == 'all_except_forBDTtraining':
     pass
   else:
     raise ValueError("Invalid mode: %s" % mode)
 
 if preselection:
-  preselection_cuts = {
-    'minNumLeptons'              : -1,
-    'minNumHadTaus'              : -1,
-    'minNumLeptons_and_HadTaus'  :  2,
-    'minNumJets'                 : -1,
-    'minNumBJets_loose'          : -1,
-    'minNumBJets_medium'         : -1,
-    'maxNumBJets_loose'          : -1,
-    'maxNumBJets_medium'         : -1,
-    'applyJetEtaCut'             : False,
-    'applyHLTcut'                : True,
-  }
+  if mode == 'hh_bbww_sl':
+    preselection_cuts = {
+      'minNumLeptons'              : 1,
+      'minNumHadTaus'              : -1,
+      'minNumLeptons_and_HadTaus'  : -1,
+      'minNumJets'                 : -1,
+      'minNumBJets_loose'          : -1,
+      'minNumBJets_medium'         : -1,
+      'maxNumBJets_loose'          : -1,
+      'maxNumBJets_medium'         : -1,
+      'applyJetEtaCut'             : True,
+      'applyHLTcut'                : True,
+      'listHLT'                    : [ '1e', '1mu' ],
+    }
+  else:
+    preselection_cuts = {
+      'minNumLeptons'              : -1,
+      'minNumHadTaus'              : -1,
+      'minNumLeptons_and_HadTaus'  :  2,
+      'minNumJets'                 : -1,
+      'minNumBJets_loose'          : -1,
+      'minNumBJets_medium'         : -1,
+      'maxNumBJets_loose'          : -1,
+      'maxNumBJets_medium'         : -1,
+      'applyJetEtaCut'             : False,
+      'applyHLTcut'                : True,
+      'listHLT'                    : [],
+    }
   leptonSelection = 'Fakeable'
   hadTauWP = 'dR03mvaVLoose&deepVSjVVLoose' # override user preference
 else:
@@ -176,6 +200,7 @@ else:
     'maxNumBJets_medium'        : -1,
     'applyJetEtaCut'            : False,
     'applyHLTcut'               : False,
+    'listHLT'                   : [],
   }
   leptonSelection = 'Loose'
   hadTauWP = args.tau_id_wp
