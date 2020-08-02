@@ -16815,6 +16815,49 @@ samples_2017["/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAODv2
   ]),
 ])
 
+samples_2017["/ttHJetTobb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "ttH"),
+  ("process_name_specific",           "ttHJetTobb_M125"),
+  ("nof_files",                       101),
+  ("nof_db_files",                    212),
+  ("nof_events",                      {
+  }),
+  ("nof_tree_events",                 7459151),
+  ("nof_db_events",                   10055168),
+  ("fsize_local",                     23031817017), # 23.03GB, avg file size 228.04MB
+  ("fsize_db",                        651382274350), # 651.38GB, avg file size 3.07GB
+  ("use_it",                          False),
+  ("xsection",                        0.2953),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("nof_PSweights",                   1),
+  ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/kaehatah/2017v2_2020Jul24/ttHJetTobb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/2017v2_2020Jul24_ttHJetTobb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8__RunIIFall17MiniAODv2-PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1/200724_181811"),
+        ("selection", "*"),
+        ("blacklist", [4, 6, 11, 13, 18, 19, 24, 26, 27, 30, 36, 43, 45, 47, 50, 51, 52, 57, 58, 63, 72, 80, 84, 86, 90, 94]),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
 samples_2017["/TTH_4f_ctcvcp_TuneCP5_13TeV_madgraph_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/MINIAODSIM"] = OD([
   ("type",                            "mc"),
   ("sample_category",                 "ttH_ctcvcp"),

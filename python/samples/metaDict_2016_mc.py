@@ -94,6 +94,19 @@ meta_dictionary["/ttHToNonbb_M125_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8/
   ("comment",               "100.0%; status: VALID; size: 208.88GB; nevents: 3.98M; release: 9_4_9; last modified: 2018-11-22 07:18:07"),
 ])
 
+meta_dictionary["/ttHJetTobb_M125_13TeV_amcatnloFXFX_madspin_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext3-v2/MINIAODSIM"] =  OD([
+  ("crab_string",           "2016v3_2020Jul24_ttHJetTobb_M125_13TeV_amcatnloFXFX_madspin_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext3-v2"),
+  ("sample_category",       "ttH"),
+  ("process_name_specific", "ttHJetTobb_M125_ext3"),
+  ("nof_db_events",         9664614),
+  ("nof_db_files",          84),
+  ("fsize_db",              515433646973),
+  ("xsection",              0.2953),
+  ("use_it",                False),
+  ("genWeight",             True),
+  ("comment",               "91.75%; status: VALID; size: 515.43GB; nevents: 9.66M; release: 9_4_9; last modified: 2019-05-05 15:16:57"),
+])
+
 meta_dictionary["/ttH_4f_ctcvcp_TuneCP5_13TeV_madgraph_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"] =  OD([
   ("crab_string",           "2016v3_2020Feb29_ttH_4f_ctcvcp_TuneCP5_13TeV_madgraph_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1"),
   ("sample_category",       "ttH_ctcvcp"),
@@ -3008,7 +3021,7 @@ meta_dictionary["/QCD_Pt-1000toInf_MuEnrichedPt5_TuneCUETP8M1_13TeV_pythia8/RunI
 
 
 # event statistics by sample category:
-# ttH:        14.04M
+# ttH:        23.7M
 # ttH_ctcvcp: 9.57M
 # tHq:        23.05M
 # tHW:        11.48M

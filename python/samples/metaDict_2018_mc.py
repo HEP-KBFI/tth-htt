@@ -56,6 +56,19 @@ meta_dictionary["/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18Mini
   ("comment",               "99.34%; status: VALID; size: 469.87GB; nevents: 7.53M; release: 10_2_5; last modified: 2018-12-25 21:13:06"),
 ])
 
+meta_dictionary["/ttHJetTobb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM"] =  OD([
+  ("crab_string",           "2018_2020Jul24_ttHJetTobb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1"),
+  ("sample_category",       "ttH"),
+  ("process_name_specific", "ttHJetTobb_M125"),
+  ("nof_db_events",         10069708),
+  ("nof_db_files",          261),
+  ("fsize_db",              647202462083),
+  ("xsection",              0.2953),
+  ("use_it",                False),
+  ("genWeight",             True),
+  ("comment",               "84.31%; status: VALID; size: 647.20GB; nevents: 10.07M; release: 10_2_5; last modified: 2019-08-11 08:35:40"),
+])
+
 meta_dictionary["/TTH_4f_ctcvcp_TuneCP5_13TeV_madgraph_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM"] =  OD([
   ("crab_string",           "2018_2020Feb29_TTH_4f_ctcvcp_TuneCP5_13TeV_madgraph_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1"),
   ("sample_category",       "ttH_ctcvcp"),
@@ -2294,7 +2307,7 @@ meta_dictionary["/QCD_Pt-1000toInf_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutu
 
 
 # event statistics by sample category:
-# ttH:        17.21M
+# ttH:        27.28M
 # ttH_ctcvcp: 29.09M
 # tHq:        29.68M
 # tHW:        15.00M
