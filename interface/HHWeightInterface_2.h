@@ -16,13 +16,13 @@ public:
   ~HHWeightInterface_2();
 
   /**
-   * @brief TBD
+   * @brief Get HH weight names
    */
   std::vector<std::string>
   get_weight_names() const;
 
   /**
-   * @brief TBD
+   * @brief Get HH BM names
    */
   std::vector<std::string>
   get_bm_names() const;
