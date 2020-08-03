@@ -495,6 +495,17 @@ class analyzeConfig(object):
               "kl_" + str("{:3.2f}".format(kl_value)).replace(".", "p").replace("-", "m")
             ]
         self.BM_weights = [ 'SM' ] + [ 'BM{}'.format(idx) for idx in range(1, 13) ]
+        self.c2_weights = []
+        self.c2_scan_file = "hhAnalysis/multilepton/data/c2_scan.dat"
+        with open(os.path.join(os.environ["CMSSW_BASE"], "src", self.c2_scan_file), "r") as c2_file:
+          for line in c2_file:
+            c2_value = float(line.split()[2])
+            if c2_value == 1.0:
+              # SM
+              continue
+            self.c2_weights += [
+              "c2_" + str("{:3.2f}".format(c2_value)).replace(".", "p").replace("-", "m")
+            ]
 
         self.jobOptions_analyze = {}
         self.inputFiles_hadd_stage1 = {}
@@ -681,11 +692,10 @@ class analyzeConfig(object):
           jobOptions['hhWeight_cfg.denominator_file'] = 'hhAnalysis/{}/data/denom_{}.root'.format(hhWeight_base, self.era)
           jobOptions['hhWeight_cfg.histtitle'] = sample_info[sample_category_to_check]
           jobOptions['hhWeight_cfg.do_ktscan'] = not ('hh' in self.channel or 'ctrl' in self.channel)
-          if jobOptions['hhWeight_cfg.do_ktscan']:
-            jobOptions['hhWeight_cfg.ktScan_file'] = self.kt_scan_file
-          else:
-            jobOptions['hhWeight_cfg.klScan_file'] = self.kl_scan_file
-
+          jobOptions['hhWeight_cfg.ktScan_file'] = self.kt_scan_file
+          jobOptions['hhWeight_cfg.klScan_file'] = self.kl_scan_file
+          jobOptions['hhWeight_cfg.c2Scan_file'] = self.c2_scan_file
+          
           jobOptions['hhWeight_cfg.apply_rwgt'] = 'hh' in self.channel
 
         sample_category_ttbar = sample_info["sample_category"].replace("TT_", "")
@@ -1016,6 +1026,9 @@ class analyzeConfig(object):
             'hhWeight_cfg.do_ktscan',
             'hhWeight_cfg.klScan_file',
             'hhWeight_cfg.ktScan_file',
+            'hhWeight_cfg.c2Scan_file',
+            'hhWeight_cfg.cgScan_file',
+            'hhWeight_cfg.c2gScan_file',
             'hhWeight_cfg.apply_rwgt',
             'minNumJets',
             'skipEvery',
