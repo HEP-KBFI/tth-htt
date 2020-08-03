@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2020-07-19 15:23:32 with the following command:
+# file generated at 2020-08-03 18:18:21 with the following command:
 # create_dictionary.py -m python/samples/metaDict_2018.py -p python/samples/sampleLocations_2018_preselected.txt -N samples_2018 -E 2018 -o python/samples -g tthAnalyzeSamples_2018_preselected_base.py -M
 
 samples_2018 = OD()
@@ -14248,6 +14248,103 @@ samples_2018["/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD
     [
       OD([
         ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Jul18_wPresel_nom_all/ntuples/ttHToNonbb_M125_powheg"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
+samples_2018["/ttHJetTobb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "ttH"),
+  ("process_name_specific",           "ttHJetTobb_M125"),
+  ("nof_files",                       5),
+  ("nof_db_files",                    261),
+  ("nof_events",                      {
+    'Count'                                                                          : [      8475633, ],
+    'CountWeighted'                                                                  : [      2951646,      2950949,      2952509, ],
+    'CountWeightedLHEWeightScale'                                                    : [      3020499,      3073121,      3123124,      2996764,      2951512,      2915411,      2806989,      2715987,      2639666, ],
+    'CountWeightedLHEEnvelope'                                                       : [      3492826,      2321820, ],
+    'CountWeightedPSWeight'                                                          : [      3011124,      2953986,      4469093,      2880160,      2939397,      1596489, ],
+    'CountWeightedPSWeightOriginalXWGTUP'                                            : [     24661238,     24410401,     36124226,     23992037,     23032271,     12824808, ],
+    'Count_fwd'                                                                      : [       100126, ],
+    'CountWeighted_fwd'                                                              : [        38663,        38682,        38620, ],
+    'CountWeightedLHEWeightScale_fwd'                                                : [        40002,        40424,        40752,        39476,        38662,        37955,        37075,        35675,        34492, ],
+    'CountWeightedLHEEnvelope_fwd'                                                   : [        46397,        30292, ],
+    'CountWeightedPSWeight_fwd'                                                      : [        39493,        38531,        57408,        37677,        38888,        21959, ],
+    'CountWeightedPSWeightOriginalXWGTUP_fwd'                                        : [       291800,       287917,       420916,       282484,       275248,       158095, ],
+    'Count_pt0to60'                                                                  : [      1814679, ],
+    'CountWeighted_pt0to60'                                                          : [       658673,       658391,       659029, ],
+    'CountWeightedLHEWeightScale_pt0to60'                                            : [       683590,       689794,       697454,       669916,       658663,       650142,       623676,       604413,       588488, ],
+    'CountWeightedLHEEnvelope_pt0to60'                                               : [       781228,       523090, ],
+    'CountWeightedPSWeight_pt0to60'                                                  : [       673962,       658687,       994549,       640163,       656714,       358872, ],
+    'CountWeightedPSWeightOriginalXWGTUP_pt0to60'                                    : [      5292277,      5223987,      7716993,      5120744,      4940205,      2765309, ],
+    'Count_pt60to120'                                                                : [      2941180, ],
+    'CountWeighted_pt60to120'                                                        : [      1029797,      1029492,      1030137, ],
+    'CountWeightedLHEWeightScale_pt60to120'                                          : [      1053360,      1071401,      1090043,      1044096,      1029767,      1019019,       977061,       947590,       923153, ],
+    'CountWeightedLHEEnvelope_pt60to120'                                             : [      1219461,       811095, ],
+    'CountWeightedPSWeight_pt60to120'                                                : [      1051145,      1029725,      1558328,      1004001,      1027446,       558413, ],
+    'CountWeightedPSWeightOriginalXWGTUP_pt60to120'                                  : [      8564880,      8470439,     12529093,      8319344,      8003590,      4464417, ],
+    'Count_pt120to200'                                                               : [      2216006, ],
+    'CountWeighted_pt120to200'                                                       : [       755214,       755094,       755411, ],
+    'CountWeightedLHEWeightScale_pt120to200'                                         : [       766475,       782906,       797925,       765849,       755201,       746562,       719627,       696207,       676516, ],
+    'CountWeightedLHEEnvelope_pt120to200'                                            : [       891959,       591552, ],
+    'CountWeightedPSWeight_pt120to200'                                               : [       769342,       756422,      1143766,       738268,       750028,       407158, ],
+    'CountWeightedPSWeightOriginalXWGTUP_pt120to200'                                 : [      6441945,      6385970,      9453659,      6282544,      6014944,      3343252, ],
+    'Count_pt200to300'                                                               : [       950588, ],
+    'CountWeighted_pt200to300'                                                       : [       319942,       320060,       319843, ],
+    'CountWeightedLHEWeightScale_pt200to300'                                         : [       325389,       332830,       338653,       325237,       319935,       315189,       305888,       294560,       284875, ],
+    'CountWeightedLHEEnvelope_pt200to300'                                            : [       377455,       250063, ],
+    'CountWeightedPSWeight_pt200to300'                                               : [       325509,       320739,       486409,       313293,       317932,       171282, ],
+    'CountWeightedPSWeightOriginalXWGTUP_pt200to300'                                 : [      2757555,      2736212,      4061981,      2698637,      2576050,      1423251, ],
+    'Count_ptGt300'                                                                  : [       453054, ],
+    'CountWeighted_ptGt300'                                                          : [       149405,       149331,       149500, ],
+    'CountWeightedLHEWeightScale_ptGt300'                                            : [       151682,       155767,       158296,       152189,       149401,       146544,       143659,       137541,       132143, ],
+    'CountWeightedLHEEnvelope_ptGt300'                                               : [       176329,       115730, ],
+    'CountWeightedPSWeight_ptGt300'                                                  : [       151674,       149883,       228637,       146757,       148388,        78803, ],
+    'CountWeightedPSWeightOriginalXWGTUP_ptGt300'                                    : [      1312794,      1305902,      1941652,      1288308,      1222344,       670492, ],
+    'Count_pt300to450'                                                               : [       351629, ],
+    'CountWeighted_pt300to450'                                                       : [       116712,       116613,       116834, ],
+    'CountWeightedLHEWeightScale_pt300to450'                                         : [       118603,       121669,       123688,       118826,       116709,       114604,       112043,       107414,       103359, ],
+    'CountWeightedLHEEnvelope_pt300to450'                                            : [       137750,        90583, ],
+    'CountWeightedPSWeight_pt300to450'                                               : [       118567,       117146,       178428,       114553,       115896,        61727, ],
+    'CountWeightedPSWeightOriginalXWGTUP_pt300to450'                                 : [      1020028,      1014237,      1507632,       999935,       950382,       521896, ],
+    'Count_ptGt450'                                                                  : [       101425, ],
+    'CountWeighted_ptGt450'                                                          : [        32693,        32719,        32666, ],
+    'CountWeightedLHEWeightScale_ptGt450'                                            : [        33079,        34098,        34608,        33363,        32692,        31940,        31616,        30127,        28784, ],
+    'CountWeightedLHEEnvelope_ptGt450'                                               : [        38580,        25146, ],
+    'CountWeightedPSWeight_ptGt450'                                                  : [        33108,        32736,        50209,        32204,        32492,        17076, ],
+    'CountWeightedPSWeightOriginalXWGTUP_ptGt450'                                    : [       292766,       291665,       434020,       288373,       271962,       148595, ],
+  }),
+  ("nof_tree_events",                 863363),
+  ("nof_db_events",                   10069708),
+  ("fsize_local",                     5089143630), # 5.09GB, avg file size 1.02GB
+  ("fsize_db",                        647202462083), # 647.20GB, avg file size 2.48GB
+  ("use_it",                          False),
+  ("xsection",                        0.2953),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("nof_PSweights",                   4),
+  ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Aug03_wPresel_nom_all/ntuples/ttHJetTobb_M125"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
