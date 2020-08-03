@@ -203,7 +203,7 @@ namespace aux
                          vLutWrapperBase & effTrigger_1e_mc,
                          std::map<std::string, TFile *> & inputFiles)
   {
-    const std::vector<double> etaBinEdges_1e = { -1., 1.48, 2.1 };
+    const std::vector<double> etaBinEdges_1e = { -1., 1.0, 1.48, 1.65, 2.1 };
     assert(etaBinEdges_1e.size() > 0);
     const std::size_t numEtaBins_1e = etaBinEdges_1e.size() - 1;
     for(std::size_t idxEtaBin = 0; idxEtaBin < numEtaBins_1e; ++idxEtaBin)
@@ -211,16 +211,17 @@ namespace aux
       const double etaMin = etaBinEdges_1e[idxEtaBin];
       const double etaMax = etaBinEdges_1e[idxEtaBin + 1];
       const std::string etaBinLabel = aux::getEtaBinLabel(etaMin, etaMax);
+      // https://github.com/CMS-HTT/LeptonEfficiencies/raw/master/Electron/Run2016_legacy/Electron_Run2016_legacy_Ele25.root
       effTrigger_1e_data.push_back(new lutWrapperTGraph(
         inputFiles,
-        "tthAnalysis/HiggsToTauTau/data/triggerSF/2016/Electron_Ele25WPTight_eff.root",
+        "tthAnalysis/HiggsToTauTau/data/triggerSF/2016/Electron_Run2016_legacy_Ele25.root",
         Form("ZMassEta%s_Data", etaBinLabel.data()),
         lut::kXptYabsEta,
         -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
       ));
       effTrigger_1e_mc.push_back(new lutWrapperTGraph(
         inputFiles,
-        "tthAnalysis/HiggsToTauTau/data/triggerSF/2016/Electron_Ele25WPTight_eff.root",
+        "tthAnalysis/HiggsToTauTau/data/triggerSF/2016/Electron_Run2016_legacy_Ele25.root",
         Form("ZMassEta%s_MC", etaBinLabel.data()),
         lut::kXptYabsEta,
         -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
@@ -263,7 +264,7 @@ namespace aux
                          vLutWrapperBase & effTrigger_1m_mc,
                          std::map<std::string, TFile *> & inputFiles)
   {
-    const std::vector<double> etaBinEdges_1m = { -1., 0.9, 1.2, 2.1 };
+    const std::vector<double> etaBinEdges_1m = { -1., 0.9, 1.2, 2.1, -1. };
     assert(etaBinEdges_1m.size() > 0);
     const std::size_t numEtaBins_1m = etaBinEdges_1m.size() - 1;
     for(std::size_t idxEtaBin = 0; idxEtaBin < numEtaBins_1m; ++idxEtaBin)
@@ -271,15 +272,17 @@ namespace aux
       const double etaMin = etaBinEdges_1m[idxEtaBin];
       const double etaMax = etaBinEdges_1m[idxEtaBin + 1];
       const std::string etaBinLabel = aux::getEtaBinLabel(etaMin, etaMax);
+      // https://github.com/CMS-HTT/LeptonEfficiencies/raw/master/Muon/Run2016_legacy/Muon_Run2016_legacy_IsoMu22.root
       effTrigger_1m_data.push_back(new lutWrapperTGraph(
         inputFiles,
-        "tthAnalysis/HiggsToTauTau/data/triggerSF/2016/Muon_Mu22OR_eta2p1_eff.root", Form("ZMassEta%s_Data", etaBinLabel.data()),
+        "tthAnalysis/HiggsToTauTau/data/triggerSF/2016/Muon_Run2016_legacy_IsoMu22.root",
+        Form("ZMassEta%s_Data", etaBinLabel.data()),
         lut::kXptYabsEta,
         -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
       ));
       effTrigger_1m_mc.push_back(new lutWrapperTGraph(
         inputFiles,
-        "tthAnalysis/HiggsToTauTau/data/triggerSF/2016/Muon_Mu22OR_eta2p1_eff.root",
+        "tthAnalysis/HiggsToTauTau/data/triggerSF/2016/Muon_Run2016_legacy_IsoMu22.root",
         Form("ZMassEta%s_MC", etaBinLabel.data()),
         lut::kXptYabsEta,
         -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
