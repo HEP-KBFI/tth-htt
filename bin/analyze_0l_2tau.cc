@@ -1430,13 +1430,16 @@ int main(int argc, char* argv[])
     cutFlowTable.update("HLT filter matching", evtWeightRecorder.get(central_or_shift_main));
     cutFlowHistManager->fillHistograms("HLT filter matching", evtWeightRecorder.get(central_or_shift_main));
 
-    if(applyFakeRateWeights == kFR_2tau)
+    if(! selectBDT)
     {
-      evtWeightRecorder.record_jetToTau_FR_lead(jetToTauFakeRateInterface, selHadTau_lead);
-      evtWeightRecorder.record_jetToTau_FR_sublead(jetToTauFakeRateInterface, selHadTau_sublead);
-      bool passesTight_hadTau_lead = isMatched(*selHadTau_lead, tightHadTausFull);
-      bool passesTight_hadTau_sublead = isMatched(*selHadTau_sublead, tightHadTausFull);
-      evtWeightRecorder.compute_FR_2tau(passesTight_hadTau_lead, passesTight_hadTau_sublead);
+      if(applyFakeRateWeights == kFR_2tau)
+      {
+        evtWeightRecorder.record_jetToTau_FR_lead(jetToTauFakeRateInterface, selHadTau_lead);
+        evtWeightRecorder.record_jetToTau_FR_sublead(jetToTauFakeRateInterface, selHadTau_sublead);
+        const bool passesTight_hadTau_lead = isMatched(*selHadTau_lead, tightHadTausFull);
+        const bool passesTight_hadTau_sublead = isMatched(*selHadTau_sublead, tightHadTausFull);
+        evtWeightRecorder.compute_FR_2tau(passesTight_hadTau_lead, passesTight_hadTau_sublead);
+      }
     }
 
     double mTauTauVis = (selHadTau_lead->p4() + selHadTau_sublead->p4()).mass();
@@ -2002,6 +2005,9 @@ int main(int argc, char* argv[])
         Particle::LorentzVector leadFwdJet = selJetsForward[0]-> p4();
         min_Deta_leadfwdJet_jet = min_Deta_fwdJet_jet(leadFwdJet, selJets);
       }
+      const double tau1_frWeight = selHadTau_lead->isGenMatched(false) ? 1. : evtWeightRecorder.get_jetToTau_FR_lead(central_or_shift_main);
+      const double tau2_frWeight = selHadTau_lead->isGenMatched(false) ? 1. : evtWeightRecorder.get_jetToTau_FR_sublead(central_or_shift_main);
+      const double evt_frWeight = tau1_frWeight * tau2_frWeight;
 
       bdt_filler -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })
           ("mindr_tau1_jet", TMath::Min(10., comp_mindr_jet(*selHadTau_lead, selJets)))
@@ -2024,7 +2030,7 @@ int main(int argc, char* argv[])
           ("mTauTau",        mTauTau)
           ("lumiScale",      evtWeightRecorder.get_lumiScale(central_or_shift_main))
           ("genWeight",      eventInfo.genWeight)
-          ("evtWeight",      evtWeightRecorder.get(central_or_shift_main))
+          ("evtWeight",      evtWeightRecorder.get(central_or_shift_main) * evt_frWeight)
           ("nJet",           selJets.size())
           ("nBJetLoose",     selBJets_loose.size())
           ("nBJetMedium",    selBJets_medium.size())

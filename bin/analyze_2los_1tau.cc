@@ -1444,17 +1444,20 @@ int main(int argc, char* argv[])
       evtWeightRecorder.record_jetToTau_FR_lead(jetToTauFakeRateInterface, selHadTau);
     }
 
-    if(applyFakeRateWeights == kFR_3L)
+    if(! selectBDT)
     {
-      evtWeightRecorder.compute_FR_2l1tau(passesTight_lepton_lead, passesTight_lepton_sublead, passesTight_hadTau);
-    }
-    else if(applyFakeRateWeights == kFR_2lepton)
-    {
-      evtWeightRecorder.compute_FR_2l(passesTight_lepton_lead, passesTight_lepton_sublead);
-    }
-    else if(applyFakeRateWeights == kFR_1tau)
-    {
-      evtWeightRecorder.compute_FR_1tau(passesTight_hadTau);
+      if(applyFakeRateWeights == kFR_3L)
+      {
+        evtWeightRecorder.compute_FR_2l1tau(passesTight_lepton_lead, passesTight_lepton_sublead, passesTight_hadTau);
+      }
+      else if(applyFakeRateWeights == kFR_2lepton)
+      {
+        evtWeightRecorder.compute_FR_2l(passesTight_lepton_lead, passesTight_lepton_sublead);
+      }
+      else if(applyFakeRateWeights == kFR_1tau)
+      {
+        evtWeightRecorder.compute_FR_1tau(passesTight_hadTau);
+      }
     }
 
       // CV: apply data/MC ratio for jet->tau fake-rates in case data-driven "fake" background estimation is applied to leptons only
@@ -1961,6 +1964,12 @@ int main(int argc, char* argv[])
     const double mTauTauVis2_sel = (selLepton_sublead->cone_p4() + selHadTau->p4()).mass();
 
     if ( bdt_filler ) {
+
+      const double lep1_frWeight = selLepton_lead->isGenMatched(false) ? 1. : evtWeightRecorder.get_jetToLepton_FR_lead(central_or_shift_main);
+      const double lep2_frWeight = selLepton_sublead->isGenMatched(false) ? 1. : evtWeightRecorder.get_jetToLepton_FR_sublead(central_or_shift_main);
+      const double tau_frWeight = selHadTau->isGenMatched(false) ? 1. : evtWeightRecorder.get_jetToTau_FR_lead(central_or_shift_main);
+      const double evt_frWeight = lep1_frWeight * lep2_frWeight * tau_frWeight;
+
       bdt_filler -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })
           ("lep1_pt",              selLepton_lead -> pt())
           ("lep1_conePt",          comp_lep_conePt(*selLepton_lead))
@@ -1992,14 +2001,14 @@ int main(int argc, char* argv[])
           ("genTopPt_CSVsort4rd",  genTopPt_CSVsort4rd)
           ("dr_leps",              deltaR(selLepton_lead -> p4(), selLepton_sublead -> p4()))
           ("mTauTauVis" ,          mTauTauVis_sel)
-          ("lep1_genLepPt",        ( selLepton_lead->genLepton() != 0 ) ? selLepton_lead->genLepton()->pt() : 0.)
-          ("lep2_genLepPt",        ( selLepton_sublead->genLepton() != 0 ) ? selLepton_sublead->genLepton()->pt() : 0.)
-          ("tau_genTauPt",         ( selHadTau->genHadTau() != 0 ) ? selHadTau->genHadTau()->pt() : 0.)
-          ("lep1_fake_prob",       ( selLepton_lead->genLepton() != 0 ) ? 1.0 : evtWeightRecorder.get_jetToLepton_FR_lead(central_or_shift_main) )
-          ("lep2_fake_prob",       ( selLepton_sublead->genLepton() != 0 ) ? 1.0 : evtWeightRecorder.get_jetToLepton_FR_sublead(central_or_shift_main))
-          ("tau_fake_prob",        ( selHadTau->genHadTau() != 0 || selHadTau->genLepton() != 0 ) ? 1.0 : evtWeightRecorder.get_jetToTau_FR_lead(central_or_shift_main) )
+          ("lep1_genLepPt",        selLepton_lead->isGenMatched(false) ? selLepton_lead->genLepton()->pt() : 0.)
+          ("lep2_genLepPt",        selLepton_sublead->isGenMatched(false) ? selLepton_sublead->genLepton()->pt() : 0.)
+          ("tau_genTauPt",         selHadTau->isGenMatched(false) ? selHadTau->genHadTau()->pt() : 0.)
+          ("lep1_fake_prob",       lep1_frWeight)
+          ("lep2_fake_prob",       lep2_frWeight)
+          ("tau_fake_prob",        tau_frWeight)
           ("genWeight",            eventInfo.genWeight)
-          ("evtWeight",            evtWeightRecorder.get(central_or_shift_main))
+          ("evtWeight",            evtWeightRecorder.get(central_or_shift_main) * evt_frWeight)
           ("nJet",                 selJets.size())
           ("nBJetLoose",           selBJets_loose.size())
           ("nBJetMedium",          selBJets_medium.size())

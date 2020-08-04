@@ -1503,18 +1503,22 @@ int main(int argc, char* argv[])
       evtWeightRecorder.record_jetToTau_FR_lead(jetToTauFakeRateInterface, selHadTau);
     }
 
-    if(applyFakeRateWeights == kFR_3L)
+    if(! selectBDT)
     {
-      evtWeightRecorder.compute_FR_2l1tau(passesTight_lepton_lead, passesTight_lepton_sublead, passesTight_hadTau);
+      if(applyFakeRateWeights == kFR_3L)
+      {
+        evtWeightRecorder.compute_FR_2l1tau(passesTight_lepton_lead, passesTight_lepton_sublead, passesTight_hadTau);
+      }
+      else if(applyFakeRateWeights == kFR_2lepton)
+      {
+        evtWeightRecorder.compute_FR_2l(passesTight_lepton_lead, passesTight_lepton_sublead);
+      }
+      else if (applyFakeRateWeights == kFR_1tau)
+      {
+        evtWeightRecorder.compute_FR_1tau(passesTight_hadTau);
+      }
     }
-    else if(applyFakeRateWeights == kFR_2lepton)
-    {
-      evtWeightRecorder.compute_FR_2l(passesTight_lepton_lead, passesTight_lepton_sublead);
-    }
-    else if (applyFakeRateWeights == kFR_1tau)
-    {
-      evtWeightRecorder.compute_FR_1tau(passesTight_hadTau);
-    }
+
     // CV: apply data/MC ratio for jet->tau fake-rates in case data-driven "fake" background estimation is applied to leptons only
     if(isMC && apply_hadTauFakeRateSF && hadTauSelection == kTight && !(selHadTau->genHadTau() || selHadTau->genLepton()))
     {
@@ -2332,6 +2336,11 @@ int main(int argc, char* argv[])
       double lep2_genLepPt=( selLepton_sublead->genLepton() != 0 ) ? selLepton_sublead->genLepton()->pt() : 0.;
       double tau_genTauPt=( selHadTau->genHadTau() != 0 ) ? selHadTau->genHadTau()->pt() : 0.;
 
+      const double lep1_frWeight = selLepton_lead->isGenMatched(true) ? 1. : evtWeightRecorder.get_jetToLepton_FR_lead(central_or_shift_main);
+      const double lep2_frWeight = selLepton_sublead->isGenMatched(true) ? 1. : evtWeightRecorder.get_jetToLepton_FR_sublead(central_or_shift_main);
+      const double tau_frWeight = selHadTau->isGenMatched(true) ? 1. : evtWeightRecorder.get_jetToTau_FR_lead(central_or_shift_main);
+      const double evt_frWeight = lep1_frWeight * lep2_frWeight * tau_frWeight;
+
       bdt_filler -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })
           ("lep1_pt",                        selLepton_lead->pt())
           ("lep1_conePt",                    lep1_conePt)
@@ -2371,10 +2380,9 @@ int main(int argc, char* argv[])
           ("lep1_genLepPt",                  lep1_genLepPt)
           ("lep2_genLepPt",                  lep2_genLepPt)
           ("tau_genTauPt",                   tau_genTauPt)
-          //("lep1_fake_prob",                 selLepton_lead->genLepton() ? 1.0 : evtWeightRecorder.get_jetToLepton_FR_lead(central_or_shift_main))
-          //("lep2_fake_prob",                 selLepton_sublead->genLepton()? 1.0 : evtWeightRecorder.get_jetToLepton_FR_sublead(central_or_shift_main))
-          //("tau_fake_prob",                  selHadTau->genHadTau() || selHadTau->genLepton() ? 1.0 : evtWeightRecorder.get_jetToTau_FR_lead(central_or_shift_main))
-          //("tau_fake_test",                  selHadTau->genHadTau() ? 1.0 : evtWeightRecorder.get_jetToTau_FR_lead(central_or_shift_main))
+          ("lep1_fake_prob",                 lep1_frWeight)
+          ("lep2_fake_prob",                 lep2_frWeight)
+          ("tau_fake_prob",                  tau_frWeight)
 
           ("hadtruth",               hadtruth)
           ("bWj1Wj2_isGenMatched_CSVsort4rd",              max_truth_HTT_CSVsort4rd)
@@ -2383,7 +2391,7 @@ int main(int argc, char* argv[])
           ("genTopPt_CSVsort4rd",             genTopPt_CSVsort4rd)
 
           ("genWeight",                      eventInfo.genWeight)
-          ("evtWeight",                      evtWeightRecorder.get(central_or_shift_main))
+          ("evtWeight",                      evtWeightRecorder.get(central_or_shift_main) * evt_frWeight)
           ("nJet",                           nJet25_Recl)
           ("nLep",                           selLeptons.size())
           ("nTau",                           selHadTaus.size())

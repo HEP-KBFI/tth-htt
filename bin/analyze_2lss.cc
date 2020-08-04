@@ -1478,16 +1478,21 @@ int main(int argc, char* argv[])
       }
     }
 
-    if(applyFakeRateWeights == kFR_2lepton)
+    const bool passesTight_lepton_lead = isMatched(*selLepton_lead, tightElectrons) || isMatched(*selLepton_lead, tightMuons);
+    const bool passesTight_lepton_sublead = isMatched(*selLepton_sublead, tightElectrons) || isMatched(*selLepton_sublead, tightMuons);
+
+    if(leptonFakeRateInterface)
     {
-
-      bool passesTight_lepton_lead = isMatched(*selLepton_lead, tightElectrons) || isMatched(*selLepton_lead, tightMuons);
-      bool passesTight_lepton_sublead = isMatched(*selLepton_sublead, tightElectrons) || isMatched(*selLepton_sublead, tightMuons);
-
       evtWeightRecorder.record_jetToLepton_FR_lead(leptonFakeRateInterface, selLepton_lead);
       evtWeightRecorder.record_jetToLepton_FR_sublead(leptonFakeRateInterface, selLepton_sublead);
+    }
 
-      evtWeightRecorder.compute_FR_2l(passesTight_lepton_lead, passesTight_lepton_sublead);
+    if(! selectBDT)
+    {
+      if(applyFakeRateWeights == kFR_2lepton)
+      {
+        evtWeightRecorder.compute_FR_2l(passesTight_lepton_lead, passesTight_lepton_sublead);
+      }
     }
 
     // require exactly two leptons passing tight selection criteria, to avoid overlap with other channels
@@ -2221,10 +2226,12 @@ int main(int argc, char* argv[])
 
     if ( bdt_filler ) {
 
-      double lep1_genLepPt=( selLepton_lead->genLepton() != 0 ) ? selLepton_lead->genLepton()->pt() : 0.;
-      double lep2_genLepPt=( selLepton_sublead->genLepton() != 0 ) ? selLepton_sublead->genLepton()->pt() : 0.;
-      double prob_fake_lepton_lead = evtWeightRecorder.get_jetToLepton_FR_lead(central_or_shift_main);
-      double prob_fake_lepton_sublead = evtWeightRecorder.get_jetToLepton_FR_sublead(central_or_shift_main);
+      const double lep1_frWeight = selLepton_lead->isGenMatched(true) ? 1. : evtWeightRecorder.get_jetToLepton_FR_lead(central_or_shift_main);
+      const double lep2_frWeight = selLepton_sublead->isGenMatched(true) ? 1. : evtWeightRecorder.get_jetToLepton_FR_sublead(central_or_shift_main);
+      const double evt_frWeight = lep1_frWeight * lep2_frWeight;
+
+      double lep1_genLepPt = selLepton_lead->genLepton() ? selLepton_lead->genLepton()->pt() : 0.;
+      double lep2_genLepPt = selLepton_sublead->genLepton() ? selLepton_sublead->genLepton()->pt() : 0.;
 
       bdt_filler -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })
           ("lep1_pt",                selLepton_lead -> pt())
@@ -2251,15 +2258,15 @@ int main(int argc, char* argv[])
           ("dr_leps",                deltaR(selLepton_lead -> p4(), selLepton_sublead -> p4()))
           ("lep1_genLepPt",          lep1_genLepPt)
           ("lep2_genLepPt",          lep2_genLepPt)
-          ("lep1_frWeight",          lep1_genLepPt > 0 ? 1.0 : prob_fake_lepton_lead)
-          ("lep2_frWeight",          lep2_genLepPt > 0 ? 1.0 : prob_fake_lepton_sublead)
+          ("lep1_frWeight",          lep1_frWeight)
+          ("lep2_frWeight",          lep2_frWeight)
           ("mvaOutput_2lss_ttV",     mvaOutput_2lss_ttV)
           ("mvaOutput_2lss_ttbar",   mvaOutput_2lss_ttbar)
           ("mvaDiscr_2lss",          mvaDiscr_2lss)
           ("Hj_tagger",              mvaOutput_Hj_tagger)
           ("lumiScale",              evtWeightRecorder.get_lumiScale(central_or_shift_main))
           ("genWeight",              eventInfo.genWeight)
-          ("evtWeight",              evtWeightRecorder.get(central_or_shift_main))
+          ("evtWeight",              evtWeightRecorder.get(central_or_shift_main) * evt_frWeight)
           ("nJet",                   selJets.size())
           ("nLep",                   selLeptons.size())
           ("nBJetLoose",             selBJets_loose.size())
