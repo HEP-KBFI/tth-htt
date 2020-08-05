@@ -915,8 +915,7 @@ class analyzeConfig(object):
         if 'leptonFakeRateWeight.applyNonClosureCorrection' not in jobOptions and '0l' not in self.channel:
             jobOptions['leptonFakeRateWeight.applyNonClosureCorrection'] = self.apply_nc_correction
         if 'applyBtagSFRatio' not in jobOptions:
-            jobOptions['applyBtagSFRatio'] = False # disable by default
-            #jobOptions['applyBtagSFRatio'] = 'hh' in self.channel and 'DYctrl' not in self.channel and not jobOptions['apply_DYMCNormScaleFactors']
+            jobOptions['applyBtagSFRatio'] = not jobOptions['apply_DYMCNormScaleFactors']
 
         jobOptions['applyBtagSFRatio'] &= jobOptions["isMC"]
         btagSFRatio_args = {}
