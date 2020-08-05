@@ -210,7 +210,7 @@ namespace aux
     {
       const double etaMin = etaBinEdges_1e[idxEtaBin];
       const double etaMax = etaBinEdges_1e[idxEtaBin + 1];
-      const std::string etaBinLabel = aux::getEtaBinLabel(etaMin, etaMax);
+      const std::string etaBinLabel = aux::getEtaBinLabel(etaMin, etaMax, true);
       // https://github.com/CMS-HTT/LeptonEfficiencies/raw/master/Electron/Run2016_legacy/Electron_Run2016_legacy_Ele25.root
       effTrigger_1e_data.push_back(new lutWrapperTGraph(
         inputFiles,
@@ -271,7 +271,7 @@ namespace aux
     {
       const double etaMin = etaBinEdges_1m[idxEtaBin];
       const double etaMax = etaBinEdges_1m[idxEtaBin + 1];
-      const std::string etaBinLabel = aux::getEtaBinLabel(etaMin, etaMax);
+      const std::string etaBinLabel = aux::getEtaBinLabel(etaMin, etaMax, true);
       // https://github.com/CMS-HTT/LeptonEfficiencies/raw/master/Muon/Run2016_legacy/Muon_Run2016_legacy_IsoMu22.root
       effTrigger_1m_data.push_back(new lutWrapperTGraph(
         inputFiles,
