@@ -311,6 +311,8 @@ class analyzeConfig(object):
         self.topPtRwgtChoice = "Quadratic" # alternatives: "TOP16011", "Linear", "Quadratic", "HighPt"
         self.do_stxs = do_stxs
         self.run_mcClosure = systematics.mcClosure_str in self.central_or_shifts or self.do_sync
+        if self.run_mcClosure:
+          self.central_or_shifts.remove(systematics.mcClosure_str)
 
         samples_to_stitch = []
         if self.era == '2016':
