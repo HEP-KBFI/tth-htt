@@ -64,6 +64,15 @@
 #include <DataFormats/FWLite/interface/OutputFiles.h> // fwlite::OutputFiles
 #include <DataFormats/Math/interface/deltaR.h>
 
+// ---------- NEW MULTI-LEPTON ID DEFINITIONS -------
+#include "hhAnalysis/multilepton/interface/RecoMuonCollectionSelectorFakeable_hh_multilepton.h"
+#include "hhAnalysis/multilepton/interface/RecoElectronCollectionSelectorFakeable_hh_multilepton.h"
+#include "hhAnalysis/multilepton/interface/RecoMuonCollectionSelectorTight_hh_multilepton.h"
+#include "hhAnalysis/multilepton/interface/RecoElectronCollectionSelectorTight_hh_multilepton.h"
+
+
+
+
 #include <TRandom3.h> // TRandom3
 #include <TBenchmark.h> // TBenchmark
 #include <TH1.h> // TH1, TH1D
@@ -447,8 +456,10 @@ main(int argc,
   inputTree->registerReader(muonReader);
   RecoMuonCollectionGenMatcher muonGenMatcher;
   RecoMuonCollectionSelectorLoose preselMuonSelector(era);
-  RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era);
-  RecoMuonCollectionSelectorTight tightMuonSelector(era);
+  //RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era); // DEF LINES
+  //RecoMuonCollectionSelectorTight tightMuonSelector(era);       // DEF LINES
+  RecoMuonCollectionSelectorFakeable_hh_multilepton fakeableMuonSelector(era); // SIDDESH DEF.S
+  RecoMuonCollectionSelectorTight_hh_multilepton tightMuonSelector(era);       // SIDDESH DEF.S
   muonReader->set_mvaTTH_wp(lep_mva_cut_mu);
 
   RecoElectronReader * electronReader = new RecoElectronReader(era, branchName_electrons, isMC, readGenObjects);
@@ -457,8 +468,10 @@ main(int argc,
   RecoElectronCollectionGenMatcher electronGenMatcher;
   RecoElectronCollectionCleaner electronCleaner(0.3);
   RecoElectronCollectionSelectorLoose preselElectronSelector(era);
-  RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era);
-  RecoElectronCollectionSelectorTight tightElectronSelector(era);
+  //RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era); // DEF LINES
+  //RecoElectronCollectionSelectorTight tightElectronSelector(era);       // DEF LINES
+  RecoElectronCollectionSelectorFakeable_hh_multilepton fakeableElectronSelector(era);   // SIDDESH DEF.S
+  RecoElectronCollectionSelectorTight_hh_multilepton tightElectronSelector(era);         // SIDDESH DEF.S
   electronReader->set_mvaTTH_wp(lep_mva_cut_e);
   fakeableElectronSelector.enable_offline_e_trigger_cuts();
   tightElectronSelector.enable_offline_e_trigger_cuts();
