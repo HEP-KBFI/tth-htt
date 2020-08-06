@@ -327,7 +327,7 @@ HHWeightInterface_2::getReWeightMap(double mHH,
   double smWeight = weights[0];
   std::map<std::string, double> weight_map;
   for (unsigned int i = 0; i < bmName_.size(); i++){
-    (bmName_[i] == "SM") ? 1 : weight_map[bmName_[i]] = weights[i]/smWeight;
+    (bmName_[i] == "SM") ? weight_map[bmName_[i]] = 1. : weight_map[bmName_[i]] = weights[i]/smWeight;
   }
   return weight_map;
 }
