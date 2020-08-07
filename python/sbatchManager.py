@@ -441,7 +441,7 @@ class sbatchManager:
 
         two_pow_sixteen = 65536
         random.seed((abs(hash(command_line_parameter))) % two_pow_sixteen)
-        max_delay = 300
+        max_delay = 60
         random_delay = random.randint(0, max_delay)
 
         script = jinja2.Template(job_template).render(

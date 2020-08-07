@@ -72,9 +72,6 @@ run_wrapped_executable() {
     echo "Hostname: `hostname`"
     echo "Current directory: `pwd`"
 
-    echo "Sleeping for $RANDOM_SLEEP seconds"
-    sleep $RANDOM_SLEEP
-
     OUTPUT_DIR="{{ outputDir }}"
     cp_cmd=cp;
     st_cmd="stat --printf='%s'"
@@ -143,6 +140,9 @@ run_wrapped_executable() {
     echo "Current directory: $PWD"
     echo "Contents of current directory:"
     ls -l $PWD
+
+    echo "Sleeping for $RANDOM_SLEEP seconds"
+    sleep $RANDOM_SLEEP
 
     echo "Time is: `date`"
 
