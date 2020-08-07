@@ -60,10 +60,9 @@ SPLITVAR = 'LHE_Njets'
 COUNT_LHENJET = 'LHENjet'
 COUNT_NAME_KEY = 'weight'
 COUNT_BIN_KEY = 'bin'
-COUNT_SIGN_KEY = 'sign'
 COUNT_REGEX = re.compile(
-  '(?P<{}>\w+)_{}(?P<{}>\d)_(?P<{}>(pos|neg))'.format(
-    COUNT_NAME_KEY, COUNT_LHENJET, COUNT_BIN_KEY, COUNT_SIGN_KEY
+  '(?P<{}>\w+)_{}(?P<{}>\d)'.format(
+    COUNT_NAME_KEY, COUNT_LHENJET, COUNT_BIN_KEY
   )
 )
 assert(SPLITVAR in samples_to_stitch)
@@ -93,28 +92,16 @@ def get_sample_stats(sample_name, sample_dict):
       continue
     sample_count_name = sample_count_match.group(COUNT_NAME_KEY)
     sample_count_bin = int(sample_count_match.group(COUNT_BIN_KEY))
-    sample_count_sign = sample_count_match.group(COUNT_SIGN_KEY)
     if sample_count_name == 'Count':
       # skip unweighted counts
       continue
     if sample_count_name == 'CountWeightedPSWeightOriginalXWGTUP':
       # mega hack: in 2018 the numbers are bogus, easier to skip because these counts will be ignored anyways
       continue
-    if sample_count_name != 'Count':
-      if sample_count_sign == 'pos':
-        assert(all(count > 0 for count in sample_yields[sample_count]))
-      elif sample_count_sign == 'neg':
-        assert(all(count < 0 for count in sample_yields[sample_count]))
-      else:
-        assert(False)
     if sample_count_name not in sample_yields_agg:
       sample_yields_agg[sample_count_name] = {}
-    if sample_count_bin not in sample_yields_agg[sample_count_name]:
-      sample_yields_agg[sample_count_name][sample_count_bin] = copy.deepcopy(sample_yields[sample_count])
-    else:
-      assert(len(sample_yields_agg[sample_count_name][sample_count_bin]) == len(sample_yields[sample_count]))
-      for bin_idx, bin_count in enumerate(sample_yields[sample_count]):
-        sample_yields_agg[sample_count_name][sample_count_bin][bin_idx] += bin_count
+    assert(sample_count_bin not in sample_yields_agg[sample_count_name])
+    sample_yields_agg[sample_count_name][sample_count_bin] = copy.deepcopy(sample_yields[sample_count])
   return sample_yields_agg, sample_xsec
 
 def merge_samples(sample_list, sample_dict):
