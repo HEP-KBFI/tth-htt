@@ -547,7 +547,15 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
   is_data = meta_dict[key]['sample_category'] == 'data_obs'
   is_rwgt = meta_dict[key]['sample_category'] in [ "tHq", "tHW", "ttH_ctcvcp" ]
   is_htxs = meta_dict[key]['sample_category'].startswith('ttH')
-  is_njet = meta_dict[key]['process_name_specific'].startswith(('DYToLL_0J', 'DYToLL_1J', 'DYToLL_2J', 'DYJetsToLL_M-50_amcatnloFXFX'))
+  process_name = meta_dict[key]['process_name_specific']
+  is_lo = 'amcatnlo' not in key
+  is_njet = process_name.startswith(
+    tuple('DYToLL_{}J'.format(i) for i in range(3)) + ('DYJetsToLL_M-50_amcatnloFXFX', 'WJetsToLNu_HT', 'DYJetsToLL_M50_HT')
+  )
+  is_ht = process_name.startswith(
+    tuple('W{}JetsToLNu'.format(i) for i in range(1, 5)) + tuple('DY{}JetsToLL_M-50'.format(i) for i in range(1, 5))
+  )
+  is_njet_ht = process_name.startswith('WJetsToLNu_madgraphMLM') or (process_name.startswith('DYJetsToLL_M-50') and is_lo)
   assert(not (is_htxs and is_njet))
 
   lheScaleArr = copy.deepcopy(LHESCALEARR)
@@ -555,10 +563,23 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
   if is_rwgt:
     th_arr.extend(TH_INDICES)
   aux_arr = [ "" ]
+
+  ht_arr = [ 0, 70, 100, 200, 400, 600, 800, 1200, 2500 ]
+  aux_njet_arr = [ "LHENjet{}".format(njet) for njet in range(5) ]
+  aux_ht_arr = [ "LHEHT{}to{}".format(ht_arr[ht_idx], ht_arr[ht_idx + 1]) for ht_idx in range(len(ht_arr) - 1) ] + \
+               [ "LHEHT{}toInf".format(ht_arr[-1]) ]
+
   if is_htxs:
     aux_arr.extend(HTXS_BINS)
   elif is_njet:
-    aux_arr.extend("LHENjet{}_{}".format(njet, pos_neg) for njet in range(4) for pos_neg in [ "pos", "neg"])
+    aux_arr.extend(aux_njet_arr)
+  elif is_ht:
+    aux_arr.extend(aux_ht_arr)
+  elif is_njet_ht:
+    for aux_njet_bin in aux_njet_arr:
+      for aux_ht_bin in aux_ht_arr:
+        aux_arr.append("{}_{}".format(aux_njet_bin, aux_ht_bin))
+
   histogram_names = collections.OrderedDict([ ( HISTOGRAM_COUNT, -1 ) ])
   if not is_data:
     for tH_idx in th_arr:
