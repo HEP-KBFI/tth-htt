@@ -256,6 +256,7 @@ class PathEntry:
   def __init__(self, path, indices, histogram_names):
     self.path            = path
     self.indices         = indices
+    self.is_presel       = 'wPresel' in self.path
 
     nof_events_transposed = {
       histogram_name : [ [] for _ in range(nBins) ] \
@@ -336,31 +337,33 @@ def get_array_type(tree, branch_name, array_multiplier = 1):
 
 def process_paths(meta_dict, key):
   local_paths = meta_dict[key]['paths']
-
-  nof_files = max([path_entry.nof_files for path_entry in local_paths])
-
-  meta_dict[key]['nof_files']   = nof_files
-  meta_dict[key]['local_paths'] = []
+  nof_events = max(path_entry.nof_tree_events for path_entry in local_paths)
+  is_presel_list = [ path_entry.is_presel for path_entry in local_paths ]
+  assert(all(is_presel_list) or all(not flag for flag in is_presel_list))
+  is_presel = all(is_presel_list)
 
   # build the blacklists for all the paths
   for local_path in local_paths:
     local_path.blacklist = list(sorted(
-      list(set(range(1, nof_files + 1)) - set(local_path.indices.keys()))
+      list(set(range(1, local_path.nof_files + 1)) - set(local_path.indices.keys()))
     ))
 
   if len(local_paths) > 1:
-    # sort the paths by the largest coverage
+    # sort the paths by the largest coverage only if the Ntuples are unskimmed
     local_paths_sorted = list(sorted(
       local_paths,
-      key     = lambda local_path: nof_files - len(local_path.blacklist),
+      key     = lambda local_path: local_path.nof_tree_events,
       reverse = True,
     ))
 
     local_path_cand_idxs = []
-    for local_path_cand_idx, local_path_sorted in enumerate(local_paths_sorted):
-      if nof_files == len(local_paths_sorted[local_path_cand_idx].indices):
-        # the path with the largest coverage already spans all possible files
-        local_path_cand_idxs.append(local_path_cand_idx)
+    if not is_presel:
+      for local_path_cand_idx, local_path_sorted in enumerate(local_paths_sorted):
+        if nof_events == local_paths_sorted[local_path_cand_idx].nof_tree_events:
+          # the path with the largest coverage already spans all possible files
+          local_path_cand_idxs.append(local_path_cand_idx)
+    else:
+      local_path_cand_idxs = list(range(len(local_paths_sorted)))
     assert(local_path_cand_idxs)
     # if there are multiple paths with the same coverage, pick the later one
     local_paths_sorted_by_date = sorted(
@@ -371,81 +374,37 @@ def process_paths(meta_dict, key):
     local_paths_sorted = [ local_paths_sorted[local_paths_sorted_by_date[0]] ]
   elif len(local_paths) == 1:
     local_paths_sorted = local_paths
-
-  if len(local_paths_sorted) == 1:
-    # let's compute the number of files, events and the list of blacklisted files
-    nof_events = collections.OrderedDict()
-    histogram_names = meta_dict[key]['histogram_names']
-    for histogram_name, nBins in histogram_names.items():
-      if nBins < 0:
-        continue
-      nof_events[histogram_name] = []
-      for idxBin in range(nBins):
-        nof_events_sum = math.fsum(
-          index_entry[HISTOGRAM_COUNT_KEY][histogram_name][idxBin] for index_entry in local_paths_sorted[0].indices.values() \
-          if histogram_name in index_entry[HISTOGRAM_COUNT_KEY]
-        )
-        nof_events[histogram_name].append(int(round(nof_events_sum)))
-
-    nof_tree_events = sum(index_entry[TREE_COUNT_KEY] for index_entry in local_paths_sorted[0].indices.values())
-    fsize           = sum(index_entry[FSIZE_KEY]      for index_entry in local_paths_sorted[0].indices.values())
-
-    meta_dict[key]['nof_events']      = nof_events
-    meta_dict[key]['nof_tree_events'] = nof_tree_events
-    meta_dict[key]['fsize_local']     = fsize
-    meta_dict[key]['local_paths'] = [{
-      'path'      : local_paths_sorted[0].path,
-      'selection' : '*',
-      'blacklist' : local_paths_sorted[0].blacklist,
-    }]
-  elif len(local_paths_sorted) > 1:
-      # determine which files to select in secondary storages
-      for blacklisted_idx in local_paths_sorted[0].blacklist:
-        for local_path in local_paths_sorted[1:]:
-          if blacklisted_idx not in local_path.blacklist and blacklisted_idx < local_path.nof_files:
-            local_path.selection.append(blacklisted_idx)
-
-      # only keep the first two paths and ignore the rest
-      local_paths_sorted = local_paths_sorted[0:2]
-
-      # compute the nof events by summing the nof events in the primary storage and adding the nof events
-      # in the selected files part of the secondary storage
-      sum_of_events = {}
-      histogram_names = meta_dict[key]['histogram_names']
-      for histogram_name, nBins in histogram_names.items():
-        if nBins < 0:
-          continue
-        sum_of_events[histogram_name] = []
-        for idxBin in range(nBins):
-          nof_events_sum = math.fsum(
-            local_paths_sorted[1].indices[sel_idx][HISTOGRAM_COUNT_KEY][histogram_name][idxBin]
-            for sel_idx in local_paths_sorted[1].selection
-          ) + local_paths_sorted[0].nof_events[histogram_name][idxBin]
-          sum_of_events[histogram_name].append(int(round(nof_events_sum)))
-      sum_of_tree_events = local_paths_sorted[0].nof_tree_events + sum(
-        local_paths_sorted[1].indices[sel_idx][TREE_COUNT_KEY]
-        for sel_idx in local_paths_sorted[1].selection
-      )
-      sum_of_fsize = local_paths_sorted[0].fsize + sum(
-        local_paths_sorted[1].indices[sel_idx][FSIZE_KEY]
-        for sel_idx in local_paths_sorted[1].selection
-      )
-      meta_dict[key]['nof_events']      = sum_of_events
-      meta_dict[key]['nof_tree_events'] = sum_of_tree_events
-      meta_dict[key]['fsize_local']     = sum_of_fsize
-
-      # do not print out the blacklist of the secondary storage since it might include many-many files
-      local_paths_sorted[1].blacklist = []
-
-      for local_path in local_paths_sorted:
-        meta_dict[key]['local_paths'].append({
-          'path'      : local_path.path,
-          'selection' : '*' if not local_path.selection else ",".join(map(str, local_path.selection)),
-          'blacklist' : local_path.blacklist,
-        })
-
   else:
-    raise ValueError("Not enough paths to locate for %s" % key)
+    assert(False)
+
+  assert(len(local_paths_sorted) == 1)
+  local_path_choice = local_paths_sorted[0]
+  # let's compute the number of files, events and the list of blacklisted files
+  nof_events = collections.OrderedDict()
+  histogram_names = meta_dict[key]['histogram_names']
+  for histogram_name, nBins in histogram_names.items():
+    if nBins < 0:
+      continue
+    nof_events[histogram_name] = []
+    for idxBin in range(nBins):
+      nof_events_sum = math.fsum(
+        index_entry[HISTOGRAM_COUNT_KEY][histogram_name][idxBin] for index_entry in local_path_choice.indices.values() \
+        if histogram_name in index_entry[HISTOGRAM_COUNT_KEY]
+      )
+      nof_events[histogram_name].append(int(round(nof_events_sum)))
+
+  nof_tree_events = sum(index_entry[TREE_COUNT_KEY] for index_entry in local_path_choice.indices.values())
+  fsize           = sum(index_entry[FSIZE_KEY]      for index_entry in local_path_choice.indices.values())
+
+  meta_dict[key]['nof_events']      = nof_events
+  meta_dict[key]['nof_tree_events'] = nof_tree_events
+  meta_dict[key]['fsize_local']     = fsize
+  meta_dict[key]['local_paths'] = [{
+    'path'      : local_path_choice.path,
+    'selection' : '*',
+    'blacklist' : local_path_choice.blacklist,
+  }]
+  meta_dict[key]['nof_files'] = local_path_choice.nof_files
 
 def get_lhe_set(tree):
   lhe_branch = tree.GetBranch(BRANCH_LHEPDFWEIGHT)
