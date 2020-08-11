@@ -156,6 +156,8 @@ class analyzeConfig(object):
             if len(nof_events) == 0:
               nof_events = copy.deepcopy(samples[dbs_key]['nof_events'])
             else:
+              if any(excl in evt_key for excl in [ 'LHEHT', 'LHENjet' ] for evt_key in samples[dbs_key]['nof_events']):
+                continue
               sample_nof_events_set = set(evt_key for evt_key in samples[dbs_key]['nof_events'] if 'PSWeight' not in evt_key)
               nof_events_set = set(evt_key for evt_key in nof_events.keys() if 'PSWeight' not in evt_key)
               if sample_nof_events_set != nof_events_set:
