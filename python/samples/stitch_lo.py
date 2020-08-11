@@ -23,18 +23,18 @@ samples_to_stitch_DYJets_LO_2016 = [
       { 'value' : [ 2500., 100000. ], 'samples' : [ 'DYJetsToLL_M50_HT2500toInf'                                  ] },
     ],
   },
-  {
-    'inclusive' : {
-      'samples' : [ 'DYJetsToLL_M-10to50' ],
-      'LHE_HT'  : [ 0., 100000. ]
-    },
-    'LHE_Njets'    : [
-      { 'value' : [ 1, 2 ], 'samples' : [ 'DY1JetsToLL_M-10to50' ] },
-      { 'value' : [ 2, 3 ], 'samples' : [ 'DY2JetsToLL_M-10to50' ] },
-      { 'value' : [ 3, 4 ], 'samples' : [ 'DY3JetsToLL_M-10to50' ] },
-      { 'value' : [ 4, 5 ], 'samples' : [ 'DY4JetsToLL_M-10to50' ] },
-    ],
-  }
+  # {
+  #   'inclusive' : {
+  #     'samples' : [ 'DYJetsToLL_M-10to50' ],
+  #     'LHE_HT'  : [ 0., 100000. ]
+  #   },
+  #   'LHE_Njets'    : [
+  #     { 'value' : [ 1, 2 ], 'samples' : [ 'DY1JetsToLL_M-10to50' ] },
+  #     { 'value' : [ 2, 3 ], 'samples' : [ 'DY2JetsToLL_M-10to50' ] },
+  #     { 'value' : [ 3, 4 ], 'samples' : [ 'DY3JetsToLL_M-10to50' ] },
+  #     { 'value' : [ 4, 5 ], 'samples' : [ 'DY4JetsToLL_M-10to50' ] },
+  #   ],
+  # }
 ]
 
 samples_to_stitch_WJets_2016 = [
