@@ -31339,7 +31339,7 @@ samples_2017["/ZZTo4L_13TeV_powheg_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018
       OD([
         ("path",      "/hdfs/local/karl/ttHNtupleProduction/2017/2020Apr15_wPresel_nom_all/ntuples/ZZTo4L_ext2"),
         ("selection", "*"),
-        ("blacklist", []),
+        ("blacklist", [33]),
       ]),
     ]
   ),
