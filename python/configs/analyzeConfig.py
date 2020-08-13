@@ -584,7 +584,12 @@ class analyzeConfig(object):
         self.lep_mva_cut_mu = self.lep_mva_cut_map['mu']
         self.lep_mva_cut_e = self.lep_mva_cut_map['e']
 
-        self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva_{}_CERN_2019Jul08.root".format(self.era)
+        if self.lep_mva_wp == 'default':
+            self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva_{}_CERN_2019Jul08.root".format(self.era)
+        elif self.lep_mva_wp == 'hh_multilepton':
+            self.leptonFakeRateWeight_inputFile = "hhAnalysis/multilepton/data/FR_lep_ttH_mva_{}.root".format(self.era)
+        else:
+            raise RuntimeError("No FR files available for the following choice of prompt lepton MVA WP: %s" % self.lep_mva_wp)
         if not os.path.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', self.leptonFakeRateWeight_inputFile)):
             raise ValueError("No such file: 'leptonFakeRateWeight_inputFile' = %s" % self.leptonFakeRateWeight_inputFile)
 
