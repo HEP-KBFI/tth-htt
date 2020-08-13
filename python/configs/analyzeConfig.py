@@ -929,9 +929,9 @@ class analyzeConfig(object):
             jobOptions['leptonFakeRateWeight.applyNonClosureCorrection'] = self.apply_nc_correction
         if 'applyBtagSFRatio' not in jobOptions:
             jobOptions['applyBtagSFRatio'] = jobOptions["isMC"]
-        if 'lep_mva_cut_e' not in jobOptions and self.lep_mva_wp != 'default':
+        if 'lep_mva_cut_e' not in jobOptions:
             jobOptions['lep_mva_cut_e'] = float(self.lep_mva_cut_e)
-        if 'lep_mva_cut_mu' not in jobOptions and self.lep_mva_wp != 'default':
+        if 'lep_mva_cut_mu' not in jobOptions:
             jobOptions['lep_mva_cut_mu'] = float(self.lep_mva_cut_mu)
 
         btagSFRatio_args = {}
