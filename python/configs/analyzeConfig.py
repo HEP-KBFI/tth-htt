@@ -19,8 +19,10 @@ import copy
 import collections
 
 LEP_MVA_WPS = {
-  'default' : 'mu=0.85;e=0.80',
-  'ttZctrl' : 'mu=0.85;e=0.50',
+  'default'        : 'mu=0.85;e=0.80',
+  'ttZctrl'        : 'mu=0.85;e=0.50',
+  'hh_multilepton' : 'mu=0.40;e=0.30', # slide 14 in [*]
+  # [*] https://indico.cern.ch/event/945228/contributions/3972723/attachments/2086024/3506137/HHTo4W_3l_Update_20200807_v2.pdf
 }
 
 DKEY_CFGS    = "cfgs"        # dir for python configuration and batch script files for each analysis job
@@ -920,6 +922,10 @@ class analyzeConfig(object):
             jobOptions['leptonFakeRateWeight.applyNonClosureCorrection'] = self.apply_nc_correction
         if 'applyBtagSFRatio' not in jobOptions:
             jobOptions['applyBtagSFRatio'] = jobOptions["isMC"]
+        if 'lep_mva_cut_e' not in jobOptions and self.lep_mva_wp != 'default':
+            jobOptions['lep_mva_cut_e'] = float(self.lep_mva_cut_e)
+        if 'lep_mva_cut_mu' not in jobOptions and self.lep_mva_wp != 'default':
+            jobOptions['lep_mva_cut_mu'] = float(self.lep_mva_cut_mu)
 
         btagSFRatio_args = {}
         if jobOptions['applyBtagSFRatio']:
