@@ -342,7 +342,8 @@ class prodNtupleConfig:
                         ]
                 is_lo = 'amcatnlo' not in sample_name
                 splitByNlheJet = process_name.startswith(
-                    tuple('DYToLL_{}J'.format(i) for i in range(3)) + ('DYJetsToLL_M-50_amcatnloFXFX', 'WJetsToLNu_HT', 'DYJetsToLL_M50_HT')
+                    tuple('DYToLL_{}J'.format(i) for i in range(3)) + \
+                    ('DYJetsToLL_M-50_amcatnloFXFX', 'WJetsToLNu_HT', 'DYJetsToLL_M50_HT', 'DYJetsToLL_M-10to50')
                 )
                 splitByNlheHT = process_name.startswith(
                     tuple('W{}JetsToLNu'.format(i) for i in range(1, 5)) + \
