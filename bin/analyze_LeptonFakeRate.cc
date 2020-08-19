@@ -450,10 +450,8 @@ main(int argc,
   inputTree->registerReader(muonReader);
   RecoMuonCollectionGenMatcher muonGenMatcher;
   RecoMuonCollectionSelectorLoose preselMuonSelector(era);
-  RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era); // DEF LINES
-  RecoMuonCollectionSelectorTight tightMuonSelector(era);       // DEF LINES
-  //RecoMuonCollectionSelectorFakeable_hh_multilepton fakeableMuonSelector(era); // SIDDESH DEF.S
-  //RecoMuonCollectionSelectorTight_hh_multilepton tightMuonSelector(era);       // SIDDESH DEF.S
+  RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era);
+  RecoMuonCollectionSelectorTight tightMuonSelector(era);       
   muonReader->set_mvaTTH_wp(lep_mva_cut_mu);
 
   RecoElectronReader * electronReader = new RecoElectronReader(era, branchName_electrons, isMC, readGenObjects);
@@ -462,10 +460,8 @@ main(int argc,
   RecoElectronCollectionGenMatcher electronGenMatcher;
   RecoElectronCollectionCleaner electronCleaner(0.3);
   RecoElectronCollectionSelectorLoose preselElectronSelector(era);
-  RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era); // DEF LINES
-  RecoElectronCollectionSelectorTight tightElectronSelector(era);       // DEF LINES
-  //RecoElectronCollectionSelectorFakeable_hh_multilepton fakeableElectronSelector(era);   // SIDDESH DEF.S
-  //RecoElectronCollectionSelectorTight_hh_multilepton tightElectronSelector(era);         // SIDDESH DEF.S
+  RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era);
+  RecoElectronCollectionSelectorTight tightElectronSelector(era); 
   electronReader->set_mvaTTH_wp(lep_mva_cut_e);
   fakeableElectronSelector.enable_offline_e_trigger_cuts();
   tightElectronSelector.enable_offline_e_trigger_cuts();
