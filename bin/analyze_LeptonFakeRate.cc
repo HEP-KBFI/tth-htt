@@ -65,15 +65,6 @@
 #include <DataFormats/FWLite/interface/OutputFiles.h> // fwlite::OutputFiles
 #include <DataFormats/Math/interface/deltaR.h>
 
-// ---------- NEW MULTI-LEPTON ID DEFINITIONS -------
-#include "hhAnalysis/multilepton/interface/RecoMuonCollectionSelectorFakeable_hh_multilepton.h"
-#include "hhAnalysis/multilepton/interface/RecoElectronCollectionSelectorFakeable_hh_multilepton.h"
-#include "hhAnalysis/multilepton/interface/RecoMuonCollectionSelectorTight_hh_multilepton.h"
-#include "hhAnalysis/multilepton/interface/RecoElectronCollectionSelectorTight_hh_multilepton.h"
-
-
-
-
 #include <TRandom3.h> // TRandom3
 #include <TBenchmark.h> // TBenchmark
 #include <TH1.h> // TH1, TH1D

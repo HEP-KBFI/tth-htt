@@ -384,8 +384,6 @@ class analyzeConfig_ttZctrl(analyzeConfig):
                 'syncRLE'                  : syncRLE,
                 'useNonNominal'            : self.use_nonnominal,
                 'apply_hlt_filter'         : self.hlt_filter,
-                'lep_mva_cut_e'            : float(self.lep_mva_cut_e),
-                'lep_mva_cut_mu'           : float(self.lep_mva_cut_mu),
                 'syncGenMatch'             : syncGenMatch,
               }
               self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info, lepton_selection)

@@ -19,8 +19,10 @@ import copy
 import collections
 
 LEP_MVA_WPS = {
-  'default' : 'mu=0.85;e=0.80',
-  'ttZctrl' : 'mu=0.85;e=0.50',
+  'default'        : 'mu=0.85;e=0.80',
+  'ttZctrl'        : 'mu=0.85;e=0.50',
+  'hh_multilepton' : 'mu=0.40;e=0.30', # slide 14 in [*]
+  # [*] https://indico.cern.ch/event/945228/contributions/3972723/attachments/2086024/3506137/HHTo4W_3l_Update_20200807_v2.pdf
 }
 
 DKEY_CFGS    = "cfgs"        # dir for python configuration and batch script files for each analysis job
@@ -582,9 +584,16 @@ class analyzeConfig(object):
         self.lep_mva_cut_mu = self.lep_mva_cut_map['mu']
         self.lep_mva_cut_e = self.lep_mva_cut_map['e']
 
-        self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva_{}_CERN_2019Jul08.root".format(self.era)
-        if not os.path.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', self.leptonFakeRateWeight_inputFile)):
-            raise ValueError("No such file: 'leptonFakeRateWeight_inputFile' = %s" % self.leptonFakeRateWeight_inputFile)
+        self.leptonFakeRateWeight_inputFile = ''
+        if self.channel != 'LeptonFakeRate':
+          if self.lep_mva_wp == 'default':
+              self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva_{}_CERN_2019Jul08.root".format(self.era)
+          elif self.lep_mva_wp == 'hh_multilepton':
+              self.leptonFakeRateWeight_inputFile = "hhAnalysis/multilepton/data/FR_lep_ttH_mva_{}.root".format(self.era)
+          else:
+              raise RuntimeError("No FR files available for the following choice of prompt lepton MVA WP: %s" % self.lep_mva_wp)
+          if not os.path.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', self.leptonFakeRateWeight_inputFile)):
+              raise ValueError("No such file: 'leptonFakeRateWeight_inputFile' = %s" % self.leptonFakeRateWeight_inputFile)
 
         self.use_dymumu_tau_fr = use_dymumu_tau_fr
         self.hadTau_selection_relaxed = None
@@ -920,6 +929,10 @@ class analyzeConfig(object):
             jobOptions['leptonFakeRateWeight.applyNonClosureCorrection'] = self.apply_nc_correction
         if 'applyBtagSFRatio' not in jobOptions:
             jobOptions['applyBtagSFRatio'] = jobOptions["isMC"]
+        if 'lep_mva_cut_e' not in jobOptions:
+            jobOptions['lep_mva_cut_e'] = float(self.lep_mva_cut_e)
+        if 'lep_mva_cut_mu' not in jobOptions:
+            jobOptions['lep_mva_cut_mu'] = float(self.lep_mva_cut_mu)
 
         btagSFRatio_args = {}
         if jobOptions['applyBtagSFRatio']:

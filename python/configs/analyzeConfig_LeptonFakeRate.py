@@ -500,8 +500,6 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
             'fillGenEvtHistograms'     : self.fillGenEvtHistograms,
             'triggers_mu_cfg'          : "leptonFR_triggers['{}']['{}']".format(self.era, 'mu'),
             'triggers_e_cfg'           : "leptonFR_triggers['{}']['{}']".format(self.era, 'e'),
-            'lep_mva_cut_e'            : float(self.lep_mva_cut_e),
-            'lep_mva_cut_mu'           : float(self.lep_mva_cut_mu),
           }
           self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info)
 
