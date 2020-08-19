@@ -509,7 +509,8 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
   process_name = meta_dict[key]['process_name_specific']
   is_lo = 'amcatnlo' not in key
   is_njet = process_name.startswith(
-    tuple('DYToLL_{}J'.format(i) for i in range(3)) + ('DYJetsToLL_M-50_amcatnloFXFX', 'WJetsToLNu_HT', 'DYJetsToLL_M50_HT')
+    tuple('DYToLL_{}J'.format(i) for i in range(3)) + \
+    ('DYJetsToLL_M-50_amcatnloFXFX', 'WJetsToLNu_HT', 'DYJetsToLL_M50_HT', 'DYJetsToLL_M-10to50')
   )
   is_ht = process_name.startswith(
     tuple('W{}JetsToLNu'.format(i) for i in range(1, 5)) + tuple('DY{}JetsToLL_M-50'.format(i) for i in range(1, 5))
