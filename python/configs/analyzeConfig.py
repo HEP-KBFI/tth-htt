@@ -158,14 +158,21 @@ class analyzeConfig(object):
             if len(nof_events) == 0:
               nof_events = copy.deepcopy(samples[dbs_key]['nof_events'])
             else:
-              if any(excl in evt_key for excl in [ 'LHEHT', 'LHENjet' ] for evt_key in samples[dbs_key]['nof_events']):
-                continue
-              sample_nof_events_set = set(evt_key for evt_key in samples[dbs_key]['nof_events'] if 'PSWeight' not in evt_key)
-              nof_events_set = set(evt_key for evt_key in nof_events.keys() if 'PSWeight' not in evt_key)
+              excl_count_type = [ 'LHEHT', 'LHENjet', 'PSWeight' ]
+              sample_nof_events_set = set(
+                evt_key for evt_key in samples[dbs_key]['nof_events'] \
+                if not any(excl_evt_key in evt_key for excl_evt_key in excl_count_type)
+              )
+              nof_events_set = set(
+                evt_key for evt_key in nof_events.keys() \
+                if not any(excl_evt_key in evt_key for excl_evt_key in excl_count_type)
+              )
               if sample_nof_events_set != nof_events_set:
                 raise ValueError('Mismatching event counts for samples: %s' % dbs_list_human)
               for count_type, count_array in samples[dbs_key]['nof_events'].items():
-                if count_type not in nof_events and 'PSWeight' in count_type:
+                if count_type not in nof_events and \
+                   any(excl_evt_key in count_type for excl_evt_key in excl_count_type):
+                  # initialize event counts with 0s that don't necessarily exist in the samples covering the same phase space
                   nof_events[count_type] = [ 0 ] * len(count_array)
                 if len(nof_events[count_type]) != len(count_array):
                   raise ValueError(
