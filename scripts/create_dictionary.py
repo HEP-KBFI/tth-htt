@@ -190,7 +190,7 @@ dictionary_entry_str = """{{ dict_name }}["{{ dbs_name }}"] = OD([
   ("nof_files",                       {{ nof_files }}),
   ("nof_db_files",                    {{ nof_db_files }}),
   ("nof_events",                      { {%- for histogram_name, event_counts in nof_events.items() %}
-    {{ "%-80s"|format("'%s'"|format(histogram_name)) }} : [ {% for event_count in event_counts -%}{{ '%12d'|format(event_count) }}, {% endfor %}],
+    {{ "%-80s"|format("'%s'"|format(histogram_name)) }} : [ {% for event_count in event_counts -%}{{ event_count }}, {% endfor %}],
   {%- endfor %}
   }),
   ("nof_tree_events",                 {{ nof_tree_events }}),
@@ -391,7 +391,14 @@ def process_paths(meta_dict, key):
         index_entry[HISTOGRAM_COUNT_KEY][histogram_name][idxBin] for index_entry in local_path_choice.indices.values() \
         if histogram_name in index_entry[HISTOGRAM_COUNT_KEY]
       )
-      nof_events[histogram_name].append(int(round(nof_events_sum)))
+      if histogram_name == HISTOGRAM_COUNT or histogram_name.startswith('{}_'.format(HISTOGRAM_COUNT)):
+        nof_events_sum_str = str(int(nof_events_sum))
+      else:
+        nof_events_sum_str = '{:.8e}'.format(nof_events_sum)
+      if nof_events_sum == 0:
+        nof_events_sum_str = 0.
+      assert(nof_events_sum_str)
+      nof_events[histogram_name].append(nof_events_sum_str)
 
   nof_tree_events = sum(index_entry[TREE_COUNT_KEY] for index_entry in local_path_choice.indices.values())
   fsize           = sum(index_entry[FSIZE_KEY]      for index_entry in local_path_choice.indices.values())
