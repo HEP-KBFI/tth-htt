@@ -208,6 +208,8 @@ class prodNtupleConfig:
             "compHTXS                = %s" % jobOptions['compHTXS'],
             "isTuneCP5               = %s" % jobOptions['isTuneCP5'],
             "splitByNlheJet          = %s" % jobOptions['splitByNlheJet'],
+            "splitByNlheHT           = %s" % jobOptions['splitByNlheHT'],
+            "splitByNlheJetHT        = %s" % jobOptions['splitByNlheJetHT'],
             "mllForWZTo3LNu          = %s" % jobOptions['mllForWZTo3LNu'],
             "mllForWZTo3LNu_mllmin01 = %s" % jobOptions['mllForWZTo3LNu_mllmin01']
         ]
@@ -338,6 +340,19 @@ class prodNtupleConfig:
                             hlt_path for hlt_pair in self.preselection_cuts["listHLT"] \
                             for hlt_path in Triggers(self.era).triggers_all[hlt_pair]
                         ]
+                is_lo = 'amcatnlo' not in sample_name
+                splitByNlheJet = process_name.startswith(
+                    tuple('DYToLL_{}J'.format(i) for i in range(3)) + \
+                    ('DYJetsToLL_M-50_amcatnloFXFX', 'WJetsToLNu_HT', 'DYJetsToLL_M50_HT', 'DYJetsToLL_M-10to50')
+                )
+                splitByNlheHT = process_name.startswith(
+                    tuple('W{}JetsToLNu'.format(i) for i in range(1, 5)) + \
+                    tuple('DY{}JetsToLL_M-50'.format(i) for i in range(1, 5))
+                )
+                splitByNlheJetHT = process_name.startswith('WJetsToLNu_madgraphMLM') or (process_name.startswith('DYJetsToLL_M-50') and is_lo)
+                mllForWZTo3LNu = process_name.startswith('WZTo3LNu') and is_lo and 'mllmin01' not in sample_name
+                mllForWZTo3LNu_mllmin01 = process_name.startswith('WZTo3LNu_mllmin01')
+
                 jobOptions = {
                     'inputFiles'              : self.inputFiles[key_file],
                     'cfgFile_modified'        : self.cfgFiles_prodNtuple_modified[key_file],
@@ -351,9 +366,11 @@ class prodNtupleConfig:
                     'compTopRwgt'             : sample_name.startswith('/TTTo'),
                     'compHTXS'                : sample_info['sample_category'].startswith('ttH'),
                     'isTuneCP5'               : (self.era == "2016" and 'TuneCP5' in sample_name),
-                    'splitByNlheJet'          : process_name.startswith(('DYToLL_0J', 'DYToLL_1J', 'DYToLL_2J', 'DYJetsToLL_M-50_amcatnloFXFX')),
-                    'mllForWZTo3LNu'          : process_name.startswith('WZTo3LNu') and 'amcatnlo' not in sample_name and 'mllmin01' not in sample_name,
-                    'mllForWZTo3LNu_mllmin01' : process_name.startswith('WZTo3LNu_mllmin01'),
+                    'splitByNlheJet'          : splitByNlheJet,
+                    'splitByNlheHT'           : splitByNlheHT,
+                    'splitByNlheJetHT'        : splitByNlheJetHT,
+                    'mllForWZTo3LNu'          : mllForWZTo3LNu,
+                    'mllForWZTo3LNu_mllmin01' : mllForWZTo3LNu_mllmin01,
                 }
                 self.createCfg_prodNtuple(jobOptions)
 

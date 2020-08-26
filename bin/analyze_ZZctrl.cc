@@ -1269,16 +1269,25 @@ int main(int argc, char* argv[])
       }
     }
 
-    if ( applyFakeRateWeights == kFR_4lepton ) {
-      bool passesTight_lepton_lead = isMatched(*selLepton_lead, tightElectrons) || isMatched(*selLepton_lead, tightMuons);
-      bool passesTight_lepton_sublead = isMatched(*selLepton_sublead, tightElectrons) || isMatched(*selLepton_sublead, tightMuons);
-      bool passesTight_lepton_third = isMatched(*selLepton_third, tightElectrons) || isMatched(*selLepton_third, tightMuons);
-      bool passesTight_lepton_fourth = isMatched(*selLepton_fourth, tightElectrons) || isMatched(*selLepton_fourth, tightMuons);
+    const bool passesTight_lepton_lead = isMatched(*selLepton_lead, tightElectrons) || isMatched(*selLepton_lead, tightMuons);
+    const bool passesTight_lepton_sublead = isMatched(*selLepton_sublead, tightElectrons) || isMatched(*selLepton_sublead, tightMuons);
+    const bool passesTight_lepton_third = isMatched(*selLepton_third, tightElectrons) || isMatched(*selLepton_third, tightMuons);
+    const bool passesTight_lepton_fourth = isMatched(*selLepton_fourth, tightElectrons) || isMatched(*selLepton_fourth, tightMuons);
+
+    if(leptonFakeRateInterface)
+    {
       evtWeightRecorder.record_jetToLepton_FR_lead(leptonFakeRateInterface, selLepton_lead);
       evtWeightRecorder.record_jetToLepton_FR_sublead(leptonFakeRateInterface, selLepton_sublead);
       evtWeightRecorder.record_jetToLepton_FR_third(leptonFakeRateInterface, selLepton_third);
       evtWeightRecorder.record_jetToLepton_FR_fourth(leptonFakeRateInterface, selLepton_fourth);
-      evtWeightRecorder.compute_FR_4l(passesTight_lepton_lead, passesTight_lepton_sublead, passesTight_lepton_third, passesTight_lepton_fourth);
+    }
+
+    if(! selectBDT)
+    {
+      if(applyFakeRateWeights == kFR_4lepton)
+      {
+        evtWeightRecorder.compute_FR_4l(passesTight_lepton_lead, passesTight_lepton_sublead, passesTight_lepton_third, passesTight_lepton_fourth);
+      }
     }
 
 //--- apply HLT filter
@@ -1534,15 +1543,12 @@ int main(int argc, char* argv[])
     ;
 
     if ( bdt_filler ) {
-      double lep1_genLepPt = ( selLepton_lead->genLepton()    ) ? selLepton_lead->genLepton()->pt()    : 0.;
-      double lep2_genLepPt = ( selLepton_sublead->genLepton() ) ? selLepton_sublead->genLepton()->pt() : 0.;
-      double lep3_genLepPt = ( selLepton_third->genLepton()   ) ? selLepton_third->genLepton()->pt()   : 0.;
-      double lep4_genLepPt = ( selLepton_fourth->genLepton()  ) ? selLepton_fourth->genLepton()->pt()  : 0.;
 
-      double prob_fake_lepton_lead = evtWeightRecorder.get_jetToLepton_FR_lead(central_or_shift_main);
-      double prob_fake_lepton_sublead = evtWeightRecorder.get_jetToLepton_FR_sublead(central_or_shift_main);
-      double prob_fake_lepton_third = evtWeightRecorder.get_jetToLepton_FR_third(central_or_shift_main);
-      double prob_fake_lepton_fourth = evtWeightRecorder.get_jetToLepton_FR_fourth(central_or_shift_main);
+      const double lep1_frWeight = selLepton_lead->isGenMatched(false) ? 1. : evtWeightRecorder.get_jetToLepton_FR_lead(central_or_shift_main);
+      const double lep2_frWeight = selLepton_sublead->isGenMatched(false) ? 1. : evtWeightRecorder.get_jetToLepton_FR_sublead(central_or_shift_main);
+      const double lep3_frWeight = selLepton_third->isGenMatched(false) ? 1. : evtWeightRecorder.get_jetToLepton_FR_third(central_or_shift_main);
+      const double lep4_frWeight = selLepton_fourth->isGenMatched(false) ? 1. : evtWeightRecorder.get_jetToLepton_FR_fourth(central_or_shift_main);
+      const double evt_frWeight = lep1_frWeight * lep2_frWeight * lep3_frWeight * lep4_frWeight;
 
       bdt_filler -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })
           ("lep1_pt",             selLepton_lead -> pt())
@@ -1577,17 +1583,13 @@ int main(int argc, char* argv[])
           ("lep2_genLepPt",       (selLepton_sublead->genLepton() != 0) ? selLepton_sublead->genLepton() ->pt() : 0.)
           ("lep3_genLepPt",       (selLepton_third->genLepton() != 0) ? selLepton_third->genLepton() ->pt() : 0.)
           ("lep4_genLepPt",       (selLepton_fourth->genLepton() != 0) ? selLepton_fourth->genLepton() ->pt() : 0.)
-          ("lep1_frWeight",       lep1_genLepPt > 0 ? 1.0 : prob_fake_lepton_lead)
-          ("lep2_frWeight",       lep2_genLepPt > 0 ? 1.0 : prob_fake_lepton_sublead)
-          ("lep3_frWeight",       lep3_genLepPt > 0 ? 1.0 : prob_fake_lepton_third)
-          ("lep4_frWeight",       lep4_genLepPt > 0 ? 1.0 : prob_fake_lepton_fourth)
-          ("lep1_fake_prob",      prob_fake_lepton_lead)
-          ("lep2_fake_prob",      prob_fake_lepton_sublead)
-          ("lep3_fake_prob",      prob_fake_lepton_third)
-          ("lep4_fake_prob",      prob_fake_lepton_fourth)
+          ("lep1_frWeight",       lep1_frWeight)
+          ("lep2_frWeight",       lep2_frWeight)
+          ("lep3_frWeight",       lep3_frWeight)
+          ("lep4_frWeight",       lep3_frWeight)
           ("lumiScale",           evtWeightRecorder.get_lumiScale(central_or_shift_main))
           ("genWeight",           eventInfo.genWeight)
-          ("evtWeight",           evtWeightRecorder.get(central_or_shift_main))
+          ("evtWeight",           evtWeightRecorder.get(central_or_shift_main) * evt_frWeight)
           ("mbb_loose",           selBJets_loose.size()>1 ?  (selBJets_loose[0]->p4()+selBJets_loose[1]->p4()).mass() : -1000 )
           ("mbb_medium",          selBJets_medium.size()>1 ?  (selBJets_medium[0]->p4()+selBJets_medium[1]->p4()).mass() : -1000 )
           ("nJet",                selJets.size())

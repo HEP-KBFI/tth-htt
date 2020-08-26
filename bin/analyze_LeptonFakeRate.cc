@@ -37,6 +37,7 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/EventInfo.h" // EventInfo
 #include "tthAnalysis/HiggsToTauTau/interface/cutFlowTable.h" // cutFlowTableType
+#include "tthAnalysis/HiggsToTauTau/interface/NtupleFillerBDT.h" // NtupleFillerBDT
 #include "tthAnalysis/HiggsToTauTau/interface/TTreeWrapper.h" // TTreeWrapper
 #include "tthAnalysis/HiggsToTauTau/interface/RunLumiEventSelector.h" // RunLumiEventSelector
 #include "tthAnalysis/HiggsToTauTau/interface/EvtWeightManager.h" // EvtWeightManager
@@ -211,6 +212,8 @@ main(int argc,
   const bool use_triggers_2e  = cfg_analyze.getParameter<bool>("use_triggers_2e");
   const bool use_triggers_1mu = cfg_analyze.getParameter<bool>("use_triggers_1mu");
   const bool use_triggers_2mu = cfg_analyze.getParameter<bool>("use_triggers_2mu");
+
+  const bool fillNtuple = ( cfg_analyze.exists("fillNtuple") ) ? cfg_analyze.getParameter<bool>("fillNtuple") : false;
 
   edm::ParameterSet triggerWhiteList;
   if(! isMC)
@@ -448,7 +451,7 @@ main(int argc,
   RecoMuonCollectionGenMatcher muonGenMatcher;
   RecoMuonCollectionSelectorLoose preselMuonSelector(era);
   RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era);
-  RecoMuonCollectionSelectorTight tightMuonSelector(era);
+  RecoMuonCollectionSelectorTight tightMuonSelector(era);       
   muonReader->set_mvaTTH_wp(lep_mva_cut_mu);
 
   RecoElectronReader * electronReader = new RecoElectronReader(era, branchName_electrons, isMC, readGenObjects);
@@ -458,7 +461,7 @@ main(int argc,
   RecoElectronCollectionCleaner electronCleaner(0.3);
   RecoElectronCollectionSelectorLoose preselElectronSelector(era);
   RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era);
-  RecoElectronCollectionSelectorTight tightElectronSelector(era);
+  RecoElectronCollectionSelectorTight tightElectronSelector(era); 
   electronReader->set_mvaTTH_wp(lep_mva_cut_e);
   fakeableElectronSelector.enable_offline_e_trigger_cuts();
   tightElectronSelector.enable_offline_e_trigger_cuts();
@@ -715,6 +718,40 @@ main(int argc,
   TH1 * histogram_met_pt  = fs.make<TH1D>("met_pt",  "met_pt",   40, 0., 200.);
   TH1 * histogram_met_phi = fs.make<TH1D>("met_phi", "met_phi",  36, -TMath::Pi(), +TMath::Pi());
   
+
+//---fill Ntuple for fakeable tuning
+  NtupleFillerBDT<float, int>* bdt_filler_e = nullptr;
+  NtupleFillerBDT<float, int>* bdt_filler_mu = nullptr;
+  typedef std::remove_pointer<decltype(bdt_filler_e)>::type::float_type float_type_e;
+  typedef std::remove_pointer<decltype(bdt_filler_e)>::type::int_type   int_type_e;
+  typedef std::remove_pointer<decltype(bdt_filler_mu)>::type::float_type float_type_mu;
+  typedef std::remove_pointer<decltype(bdt_filler_mu)>::type::int_type   int_type_mu;
+  if( fillNtuple ) {
+    bdt_filler_e = new std::remove_pointer<decltype(bdt_filler_e)>::type(
+	    makeHistManager_cfg(process_string, Form("LeptonFakeRate_ntuple/%s", "electron"), era_string, central_or_shift)
+    );
+    bdt_filler_e->register_variable<float_type_e>(
+						  "cone_pt", "pt",  "eta", "dxy", "dz", "sip3d", "iso", "sigma_ieie", "HbyE",
+						  "1byEminus1byP", "JetRelIso", "tth_mva", "DeepJet_WP", "mT", "mT_fix", "evtWeight"
+    );
+    bdt_filler_e->register_variable<int_type_e>(
+						"EGamma_MVA_WP", "Conv_reject", "miss_hits", "isTight", "isFakeable"
+    );
+    bdt_filler_mu = new std::remove_pointer<decltype(bdt_filler_mu)>::type(
+	    makeHistManager_cfg(process_string, Form("LeptonFakeRate_ntuple/%s", "muon"), era_string, central_or_shift)
+    );
+    bdt_filler_mu->register_variable<float_type_mu>(
+						    "cone_pt", "pt", "eta", "dxy", "dz", "sip3d", "iso", "JetRelIso", 
+						    "tth_mva", "DeepJet_WP", "assocJet_pt", "mT", "mT_fix", "evtWeight"
+    );
+    bdt_filler_mu->register_variable<int_type_mu>(
+						  "PFMuon_WP", "isTight", "isFakeable"
+    );
+    bdt_filler_e->bookTree(fs);
+    bdt_filler_mu->bookTree(fs);
+  }
+//----------------------------------------
+
 
   int analyzedEntries = 0;
   int selectedEntries = 0;
@@ -1299,6 +1336,38 @@ main(int argc,
 	std::cout<< "mT " << mT_fix << std::endl;
 	std::cout<< "mT_fix " << mT_fix << std::endl;
       }
+      
+      //----Fill the Ntuples for preselMuon
+      int PFMuon_WP = 0;
+      if(preselMuon.passesLooseIdPOG()){
+	PFMuon_WP = 1;
+      }	
+      if(preselMuon.passesMediumIdPOG()){
+	PFMuon_WP = 2;
+      }
+      if(bdt_filler_mu){
+	// FILL THE MUON BRANCHES
+	bdt_filler_mu->operator()({eventInfo.run, eventInfo.lumi, eventInfo.event})
+	  ("mT_fix", mT_fix)
+	  ("mT", mT)
+	  ("cone_pt", preselMuon.cone_pt())
+	  ("pt", preselMuon.pt())
+	  ("eta", preselMuon.eta())
+	  ("dxy", preselMuon.dxy())
+	  ("dz", preselMuon.dz())
+	  ("sip3d", preselMuon.sip3d())
+	  ("iso", preselMuon.relIso())
+	  ("JetRelIso", preselMuon.jetRelIso())
+	  ("tth_mva", preselMuon.mvaRawTTH())
+	  ("PFMuon_WP", PFMuon_WP)
+	  ("assocJet_pt", preselMuon.assocJet_pt())
+	  ("DeepJet_WP", preselMuon.jetBtagCSV(false))
+	  ("evtWeight", evtWeightRecorder.get(central_or_shift))
+	  ("isTight", preselMuon.isTight() ? 1 : 0)
+	  ("isFakeable", preselMuon.isFakeable() ? 1 : 0)
+	  .fill();
+      }
+
       // numerator histograms
       numerator_and_denominatorHistManagers * histograms_incl_beforeCuts_num = nullptr;
       numerator_and_denominatorHistManagers * histograms_incl_afterCuts_num  = nullptr;
@@ -1392,6 +1461,44 @@ main(int argc,
 	std::cout<< "mT " << mT_fix << std::endl;
 	std::cout<< "mT_fix " << mT_fix << std::endl;
       }
+
+      int EGamma_MVA_WP = 0;
+      if(preselElectron.mvaID_POG(EGammaWP::WPL)){
+	EGamma_MVA_WP = 1;
+      }
+
+      if(preselElectron.mvaID_POG(EGammaWP::WP80)){
+	EGamma_MVA_WP = 2;
+      }
+
+      //----Fill the Ntuples for preselElectron
+      if(bdt_filler_e){
+	// FILL THE ELECTRON BRANCHES
+	bdt_filler_e->operator()({eventInfo.run, eventInfo.lumi, eventInfo.event})
+	  ("mT_fix", mT_fix)
+	  ("mT", mT)
+	  ("cone_pt", preselElectron.cone_pt())
+	  ("pt", preselElectron.pt())
+	  ("eta", preselElectron.eta())
+	  ("dxy", preselElectron.dxy())
+	  ("dz", preselElectron.dz())
+	  ("sip3d", preselElectron.sip3d())
+	  ("iso", preselElectron.relIso())
+	  ("sigma_ieie", preselElectron.sigmaEtaEta())
+	  ("HbyE", preselElectron.HoE())
+	  ("1byEminus1byP", preselElectron.OoEminusOoP())
+	  ("JetRelIso", preselElectron.jetRelIso())
+	  ("tth_mva", preselElectron.mvaRawTTH())
+	  ("Conv_reject", preselElectron.passesConversionVeto() ? 1 : 0)
+	  ("miss_hits", preselElectron.nLostHits())
+	  ("EGamma_MVA_WP", EGamma_MVA_WP)
+	  ("DeepJet_WP", preselElectron.jetBtagCSV(false))
+	  ("evtWeight", evtWeightRecorder.get(central_or_shift))
+	  ("isTight", preselElectron.isTight() ? 1 : 0)
+	  ("isFakeable", preselElectron.isFakeable() ? 1 : 0)
+	  .fill();
+      }
+
       numerator_and_denominatorHistManagers * histograms_incl_beforeCuts_num = nullptr;
       numerator_and_denominatorHistManagers * histograms_incl_afterCuts_num  = nullptr;
       std::vector<numerator_and_denominatorHistManagers *> * histograms_binned_beforeCuts_num = nullptr;
@@ -1534,6 +1641,8 @@ main(int argc,
   delete genJetReader;
   delete lheInfoReader;
   delete metFilterReader;
+  delete bdt_filler_e;
+  delete bdt_filler_mu;
 
   delete genEvtHistManager_beforeCuts;
   delete genEvtHistManager_afterCuts;

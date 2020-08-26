@@ -1450,19 +1450,22 @@ int main(int argc, char* argv[])
       evtWeightRecorder.record_jetToTau_FR_sublead(jetToTauFakeRateInterface, selHadTau_sublead);
     }
 
-    if(applyFakeRateWeights == kFR_4L)
+    if(! selectBDT)
     {
-      evtWeightRecorder.compute_FR_2l2tau(
-        passesTight_lepton_lead, passesTight_lepton_sublead, passesTight_hadTau_lead, passesTight_hadTau_sublead
-      );
-    }
-    else if(applyFakeRateWeights == kFR_2lepton)
-    {
-      evtWeightRecorder.compute_FR_2l(passesTight_lepton_lead, passesTight_lepton_sublead);
-    }
-    else if(applyFakeRateWeights == kFR_2tau)
-    {
-      evtWeightRecorder.compute_FR_2tau(passesTight_hadTau_lead, passesTight_hadTau_sublead);
+      if(applyFakeRateWeights == kFR_4L)
+      {
+        evtWeightRecorder.compute_FR_2l2tau(
+          passesTight_lepton_lead, passesTight_lepton_sublead, passesTight_hadTau_lead, passesTight_hadTau_sublead
+        );
+      }
+      else if(applyFakeRateWeights == kFR_2lepton)
+      {
+        evtWeightRecorder.compute_FR_2l(passesTight_lepton_lead, passesTight_lepton_sublead);
+      }
+      else if(applyFakeRateWeights == kFR_2tau)
+      {
+        evtWeightRecorder.compute_FR_2tau(passesTight_hadTau_lead, passesTight_hadTau_sublead);
+      }
     }
 
     // CV: apply data/MC ratio for jet->tau fake-rates in case data-driven "fake" background estimation is applied to leptons only
@@ -1855,6 +1858,12 @@ int main(int argc, char* argv[])
         cosThetaS_GenTau = comp_cosThetaStar(selHadTau_lead->genHadTau()->p4(), selHadTau_sublead->genHadTau()->p4());
       }
 
+      const double lep1_frWeight = selLepton_lead->isGenMatched(false) ? 1. : evtWeightRecorder.get_jetToLepton_FR_lead(central_or_shift_main);
+      const double lep2_frWeight = selLepton_sublead->isGenMatched(false) ? 1. : evtWeightRecorder.get_jetToLepton_FR_sublead(central_or_shift_main);
+      const double tau1_frWeight = selHadTau_lead->isGenMatched(false) ? 1. : evtWeightRecorder.get_jetToTau_FR_lead(central_or_shift_main);
+      const double tau2_frWeight = selHadTau_sublead->isGenMatched(false) ? 1. : evtWeightRecorder.get_jetToTau_FR_sublead(central_or_shift_main);
+      const double evt_frWeight = lep1_frWeight * lep2_frWeight * tau1_frWeight * tau2_frWeight;
+
       bdt_filler -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })
           ("lep1_pt",              selLepton_lead->pt())
           ("lep1_conePt",          lep1_conePt)
@@ -1910,7 +1919,7 @@ int main(int argc, char* argv[])
           ("mbb_medium",           selBJets_medium.size() > 1 ? (selBJets_medium[0]->p4() + selBJets_medium[1]->p4()).mass() : -1000)
           ("lumiScale",            evtWeightRecorder.get_lumiScale(central_or_shift_main))
           ("genWeight",            eventInfo.genWeight)
-          ("evtWeight",            evtWeightRecorder.get(central_or_shift_main))
+          ("evtWeight",            evtWeightRecorder.get(central_or_shift_main) * evt_frWeight)
           ("nJet",                 nJet)
           ("nBJetLoose",           nBJetLoose)
           ("nBJetMedium",          nBJetMedium)

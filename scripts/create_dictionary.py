@@ -190,7 +190,7 @@ dictionary_entry_str = """{{ dict_name }}["{{ dbs_name }}"] = OD([
   ("nof_files",                       {{ nof_files }}),
   ("nof_db_files",                    {{ nof_db_files }}),
   ("nof_events",                      { {%- for histogram_name, event_counts in nof_events.items() %}
-    {{ "%-80s"|format("'%s'"|format(histogram_name)) }} : [ {% for event_count in event_counts -%}{{ '%12d'|format(event_count) }}, {% endfor %}],
+    {{ "%-80s"|format("'%s'"|format(histogram_name)) }} : [ {% for event_count in event_counts -%}{{ event_count }}, {% endfor %}],
   {%- endfor %}
   }),
   ("nof_tree_events",                 {{ nof_tree_events }}),
@@ -256,6 +256,7 @@ class PathEntry:
   def __init__(self, path, indices, histogram_names):
     self.path            = path
     self.indices         = indices
+    self.is_presel       = 'wPresel' in self.path
 
     nof_events_transposed = {
       histogram_name : [ [] for _ in range(nBins) ] \
@@ -336,31 +337,33 @@ def get_array_type(tree, branch_name, array_multiplier = 1):
 
 def process_paths(meta_dict, key):
   local_paths = meta_dict[key]['paths']
-
-  nof_files = max([path_entry.nof_files for path_entry in local_paths])
-
-  meta_dict[key]['nof_files']   = nof_files
-  meta_dict[key]['local_paths'] = []
+  nof_events = max(path_entry.nof_tree_events for path_entry in local_paths)
+  is_presel_list = [ path_entry.is_presel for path_entry in local_paths ]
+  assert(all(is_presel_list) or all(not flag for flag in is_presel_list))
+  is_presel = all(is_presel_list)
 
   # build the blacklists for all the paths
   for local_path in local_paths:
     local_path.blacklist = list(sorted(
-      list(set(range(1, nof_files + 1)) - set(local_path.indices.keys()))
+      list(set(range(1, local_path.nof_files + 1)) - set(local_path.indices.keys()))
     ))
 
   if len(local_paths) > 1:
-    # sort the paths by the largest coverage
+    # sort the paths by the largest coverage only if the Ntuples are unskimmed
     local_paths_sorted = list(sorted(
       local_paths,
-      key     = lambda local_path: nof_files - len(local_path.blacklist),
+      key     = lambda local_path: local_path.nof_tree_events,
       reverse = True,
     ))
 
     local_path_cand_idxs = []
-    for local_path_cand_idx, local_path_sorted in enumerate(local_paths_sorted):
-      if nof_files == len(local_paths_sorted[local_path_cand_idx].indices):
-        # the path with the largest coverage already spans all possible files
-        local_path_cand_idxs.append(local_path_cand_idx)
+    if not is_presel:
+      for local_path_cand_idx, local_path_sorted in enumerate(local_paths_sorted):
+        if nof_events == local_paths_sorted[local_path_cand_idx].nof_tree_events:
+          # the path with the largest coverage already spans all possible files
+          local_path_cand_idxs.append(local_path_cand_idx)
+    else:
+      local_path_cand_idxs = list(range(len(local_paths_sorted)))
     assert(local_path_cand_idxs)
     # if there are multiple paths with the same coverage, pick the later one
     local_paths_sorted_by_date = sorted(
@@ -371,81 +374,44 @@ def process_paths(meta_dict, key):
     local_paths_sorted = [ local_paths_sorted[local_paths_sorted_by_date[0]] ]
   elif len(local_paths) == 1:
     local_paths_sorted = local_paths
-
-  if len(local_paths_sorted) == 1:
-    # let's compute the number of files, events and the list of blacklisted files
-    nof_events = collections.OrderedDict()
-    histogram_names = meta_dict[key]['histogram_names']
-    for histogram_name, nBins in histogram_names.items():
-      if nBins < 0:
-        continue
-      nof_events[histogram_name] = []
-      for idxBin in range(nBins):
-        nof_events_sum = math.fsum(
-          index_entry[HISTOGRAM_COUNT_KEY][histogram_name][idxBin] for index_entry in local_paths_sorted[0].indices.values() \
-          if histogram_name in index_entry[HISTOGRAM_COUNT_KEY]
-        )
-        nof_events[histogram_name].append(int(round(nof_events_sum)))
-
-    nof_tree_events = sum(index_entry[TREE_COUNT_KEY] for index_entry in local_paths_sorted[0].indices.values())
-    fsize           = sum(index_entry[FSIZE_KEY]      for index_entry in local_paths_sorted[0].indices.values())
-
-    meta_dict[key]['nof_events']      = nof_events
-    meta_dict[key]['nof_tree_events'] = nof_tree_events
-    meta_dict[key]['fsize_local']     = fsize
-    meta_dict[key]['local_paths'] = [{
-      'path'      : local_paths_sorted[0].path,
-      'selection' : '*',
-      'blacklist' : local_paths_sorted[0].blacklist,
-    }]
-  elif len(local_paths_sorted) > 1:
-      # determine which files to select in secondary storages
-      for blacklisted_idx in local_paths_sorted[0].blacklist:
-        for local_path in local_paths_sorted[1:]:
-          if blacklisted_idx not in local_path.blacklist and blacklisted_idx < local_path.nof_files:
-            local_path.selection.append(blacklisted_idx)
-
-      # only keep the first two paths and ignore the rest
-      local_paths_sorted = local_paths_sorted[0:2]
-
-      # compute the nof events by summing the nof events in the primary storage and adding the nof events
-      # in the selected files part of the secondary storage
-      sum_of_events = {}
-      histogram_names = meta_dict[key]['histogram_names']
-      for histogram_name, nBins in histogram_names.items():
-        if nBins < 0:
-          continue
-        sum_of_events[histogram_name] = []
-        for idxBin in range(nBins):
-          nof_events_sum = math.fsum(
-            local_paths_sorted[1].indices[sel_idx][HISTOGRAM_COUNT_KEY][histogram_name][idxBin]
-            for sel_idx in local_paths_sorted[1].selection
-          ) + local_paths_sorted[0].nof_events[histogram_name][idxBin]
-          sum_of_events[histogram_name].append(int(round(nof_events_sum)))
-      sum_of_tree_events = local_paths_sorted[0].nof_tree_events + sum(
-        local_paths_sorted[1].indices[sel_idx][TREE_COUNT_KEY]
-        for sel_idx in local_paths_sorted[1].selection
-      )
-      sum_of_fsize = local_paths_sorted[0].fsize + sum(
-        local_paths_sorted[1].indices[sel_idx][FSIZE_KEY]
-        for sel_idx in local_paths_sorted[1].selection
-      )
-      meta_dict[key]['nof_events']      = sum_of_events
-      meta_dict[key]['nof_tree_events'] = sum_of_tree_events
-      meta_dict[key]['fsize_local']     = sum_of_fsize
-
-      # do not print out the blacklist of the secondary storage since it might include many-many files
-      local_paths_sorted[1].blacklist = []
-
-      for local_path in local_paths_sorted:
-        meta_dict[key]['local_paths'].append({
-          'path'      : local_path.path,
-          'selection' : '*' if not local_path.selection else ",".join(map(str, local_path.selection)),
-          'blacklist' : local_path.blacklist,
-        })
-
   else:
-    raise ValueError("Not enough paths to locate for %s" % key)
+    assert(False)
+
+  assert(len(local_paths_sorted) == 1)
+  local_path_choice = local_paths_sorted[0]
+  # let's compute the number of files, events and the list of blacklisted files
+  nof_events = collections.OrderedDict()
+  histogram_names = meta_dict[key]['histogram_names']
+  for histogram_name, nBins in histogram_names.items():
+    if nBins < 0:
+      continue
+    nof_events[histogram_name] = []
+    for idxBin in range(nBins):
+      nof_events_sum = math.fsum(
+        index_entry[HISTOGRAM_COUNT_KEY][histogram_name][idxBin] for index_entry in local_path_choice.indices.values() \
+        if histogram_name in index_entry[HISTOGRAM_COUNT_KEY]
+      )
+      if histogram_name == HISTOGRAM_COUNT or histogram_name.startswith('{}_'.format(HISTOGRAM_COUNT)):
+        nof_events_sum_str = str(int(nof_events_sum))
+      else:
+        nof_events_sum_str = '{:.8e}'.format(nof_events_sum)
+      if nof_events_sum == 0:
+        nof_events_sum_str = 0.
+      assert(nof_events_sum_str)
+      nof_events[histogram_name].append(nof_events_sum_str)
+
+  nof_tree_events = sum(index_entry[TREE_COUNT_KEY] for index_entry in local_path_choice.indices.values())
+  fsize           = sum(index_entry[FSIZE_KEY]      for index_entry in local_path_choice.indices.values())
+
+  meta_dict[key]['nof_events']      = nof_events
+  meta_dict[key]['nof_tree_events'] = nof_tree_events
+  meta_dict[key]['fsize_local']     = fsize
+  meta_dict[key]['local_paths'] = [{
+    'path'      : local_path_choice.path,
+    'selection' : '*',
+    'blacklist' : local_path_choice.blacklist,
+  }]
+  meta_dict[key]['nof_files'] = local_path_choice.nof_files
 
 def get_lhe_set(tree):
   lhe_branch = tree.GetBranch(BRANCH_LHEPDFWEIGHT)
@@ -547,7 +513,16 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
   is_data = meta_dict[key]['sample_category'] == 'data_obs'
   is_rwgt = meta_dict[key]['sample_category'] in [ "tHq", "tHW", "ttH_ctcvcp" ]
   is_htxs = meta_dict[key]['sample_category'].startswith('ttH')
-  is_njet = meta_dict[key]['process_name_specific'].startswith(('DYToLL_0J', 'DYToLL_1J', 'DYToLL_2J', 'DYJetsToLL_M-50_amcatnloFXFX'))
+  process_name = meta_dict[key]['process_name_specific']
+  is_lo = 'amcatnlo' not in key
+  is_njet = process_name.startswith(
+    tuple('DYToLL_{}J'.format(i) for i in range(3)) + \
+    ('DYJetsToLL_M-50_amcatnloFXFX', 'WJetsToLNu_HT', 'DYJetsToLL_M50_HT', 'DYJetsToLL_M-10to50')
+  )
+  is_ht = process_name.startswith(
+    tuple('W{}JetsToLNu'.format(i) for i in range(1, 5)) + tuple('DY{}JetsToLL_M-50'.format(i) for i in range(1, 5))
+  )
+  is_njet_ht = process_name.startswith('WJetsToLNu_madgraphMLM') or (process_name.startswith('DYJetsToLL_M-50') and is_lo)
   assert(not (is_htxs and is_njet))
 
   lheScaleArr = copy.deepcopy(LHESCALEARR)
@@ -555,10 +530,23 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
   if is_rwgt:
     th_arr.extend(TH_INDICES)
   aux_arr = [ "" ]
+
+  ht_arr = [ 0, 70, 100, 200, 400, 600, 800, 1200, 2500 ]
+  aux_njet_arr = [ "LHENjet{}".format(njet) for njet in range(5) ]
+  aux_ht_arr = [ "LHEHT{}to{}".format(ht_arr[ht_idx], ht_arr[ht_idx + 1]) for ht_idx in range(len(ht_arr) - 1) ] + \
+               [ "LHEHT{}toInf".format(ht_arr[-1]) ]
+
   if is_htxs:
     aux_arr.extend(HTXS_BINS)
   elif is_njet:
-    aux_arr.extend("LHENjet{}_{}".format(njet, pos_neg) for njet in range(4) for pos_neg in [ "pos", "neg"])
+    aux_arr.extend(aux_njet_arr)
+  elif is_ht:
+    aux_arr.extend(aux_ht_arr)
+  elif is_njet_ht:
+    for aux_njet_bin in aux_njet_arr:
+      for aux_ht_bin in aux_ht_arr:
+        aux_arr.append("{}_{}".format(aux_njet_bin, aux_ht_bin))
+
   histogram_names = collections.OrderedDict([ ( HISTOGRAM_COUNT, -1 ) ])
   if not is_data:
     for tH_idx in th_arr:

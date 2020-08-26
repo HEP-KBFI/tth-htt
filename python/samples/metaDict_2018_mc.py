@@ -56,6 +56,19 @@ meta_dictionary["/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18Mini
   ("comment",               "99.34%; status: VALID; size: 469.87GB; nevents: 7.53M; release: 10_2_5; last modified: 2018-12-25 21:13:06"),
 ])
 
+meta_dictionary["/ttHJetTobb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM"] =  OD([
+  ("crab_string",           "2018_2020Jul24_ttHJetTobb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1"),
+  ("sample_category",       "ttH"),
+  ("process_name_specific", "ttHJetTobb_M125"),
+  ("nof_db_events",         10069708),
+  ("nof_db_files",          261),
+  ("fsize_db",              647202462083),
+  ("xsection",              0.2953),
+  ("use_it",                False),
+  ("genWeight",             True),
+  ("comment",               "84.31%; status: VALID; size: 647.20GB; nevents: 10.07M; release: 10_2_5; last modified: 2019-08-11 08:35:40"),
+])
+
 meta_dictionary["/TTH_4f_ctcvcp_TuneCP5_13TeV_madgraph_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM"] =  OD([
   ("crab_string",           "2018_2020Feb29_TTH_4f_ctcvcp_TuneCP5_13TeV_madgraph_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1"),
   ("sample_category",       "ttH_ctcvcp"),
@@ -1042,71 +1055,6 @@ meta_dictionary["/DYJetsToLL_M-10to50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAut
   ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 1.38TB; nevents: 39.39M; release: 10_2_5; last modified: 2018-12-20 18:51:21"),
-])
-
-meta_dictionary["/DYJetsToLL_M-4to50_HT-70to100_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           "2018_2019Sep29_DYJetsToLL_M-4to50_HT-70to100_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1"),
-  ("sample_category",       "EWK"),
-  ("process_name_specific", "DYJetsToLL_M-4to50_HT-70to100_PSweights"),
-  ("nof_db_events",         9048204),
-  ("nof_db_files",          254),
-  ("fsize_db",              413835231519),
-  ("xsection",              172.34),
-  ("use_it",                False),
-  ("genWeight",             True),
-  ("comment",               "100.0%; status: VALID; size: 413.84GB; nevents: 9.05M; release: 10_2_5; last modified: 2019-04-21 19:40:05"),
-])
-
-meta_dictionary["/DYJetsToLL_M-4to50_HT-100to200_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           "2018_2019Oct22_DYJetsToLL_M-4to50_HT-100to200_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1"),
-  ("sample_category",       "EWK"),
-  ("process_name_specific", "DYJetsToLL_M-4to50_HT-100to200_PSweights"),
-  ("nof_db_events",         9018837),
-  ("nof_db_files",          258),
-  ("fsize_db",              396566011694),
-  ("xsection",              239.04),
-  ("use_it",                False),
-  ("genWeight",             True),
-  ("comment",               "100.0%; status: VALID; size: 396.57GB; nevents: 9.02M; release: 10_2_5; last modified: 2019-04-15 18:15:29"),
-])
-
-meta_dictionary["/DYJetsToLL_M-4to50_HT-200to400_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           "2018_2019Sep29_DYJetsToLL_M-4to50_HT-200to400_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1"),
-  ("sample_category",       "EWK"),
-  ("process_name_specific", "DYJetsToLL_M-4to50_HT-200to400_PSweights"),
-  ("nof_db_events",         1939010),
-  ("nof_db_files",          76),
-  ("fsize_db",              93803281281),
-  ("xsection",              63.72),
-  ("use_it",                False),
-  ("genWeight",             True),
-  ("comment",               "100.0%; status: VALID; size: 93.80GB; nevents: 1.94M; release: 10_2_5; last modified: 2019-03-20 23:53:58"),
-])
-
-meta_dictionary["/DYJetsToLL_M-4to50_HT-400to600_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           "2018_2019Sep29_DYJetsToLL_M-4to50_HT-400to600_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1"),
-  ("sample_category",       "EWK"),
-  ("process_name_specific", "DYJetsToLL_M-4to50_HT-400to600_PSweights"),
-  ("nof_db_events",         2008779),
-  ("nof_db_files",          95),
-  ("fsize_db",              109073531454),
-  ("xsection",              6.729),
-  ("use_it",                False),
-  ("genWeight",             True),
-  ("comment",               "100.0%; status: VALID; size: 109.07GB; nevents: 2.01M; release: 10_2_5; last modified: 2019-03-17 20:41:20"),
-])
-
-meta_dictionary["/DYJetsToLL_M-4to50_HT-600toInf_TuneCP5_PSWeights_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           "2018_2019Sep29_DYJetsToLL_M-4to50_HT-600toInf_TuneCP5_PSWeights_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1"),
-  ("sample_category",       "EWK"),
-  ("process_name_specific", "DYJetsToLL_M-4to50_HT-600toInf_PSWeights"),
-  ("nof_db_events",         1975490),
-  ("nof_db_files",          102),
-  ("fsize_db",              117216307528),
-  ("xsection",              2.1692),
-  ("use_it",                False),
-  ("genWeight",             True),
-  ("comment",               "90.0%; status: VALID; size: 117.22GB; nevents: 1.98M; release: 10_2_5; last modified: 2019-03-16 18:41:58"),
 ])
 
 meta_dictionary["/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM"] =  OD([
@@ -2294,7 +2242,7 @@ meta_dictionary["/QCD_Pt-1000toInf_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutu
 
 
 # event statistics by sample category:
-# ttH:        17.21M
+# ttH:        27.28M
 # ttH_ctcvcp: 29.09M
 # tHq:        29.68M
 # tHW:        15.00M

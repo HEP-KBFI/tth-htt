@@ -46,48 +46,48 @@ DYMCNormScaleFactors::getWeight(const std::vector<GenParticle> & genTauLeptons,
 
     if(era_ == Era::k2016)
     {
-      if     (nBMedium >= 2 && nJets >= 4)                 { weight = 0.868; weight_error = 0.141; }
-      else if(nBMedium >= 2 && nJets == 3)                 { weight = 0.779; weight_error = 0.066; }
-      else if(nBMedium >= 2 && nJets == 2)                 { weight = 0.754; weight_error = 0.080; }
-      else if(nBMedium == 1 && nBLoose >= 2 && nJets >= 4) { weight = 1.062; weight_error = 0.058; }
-      else if(nBMedium == 1 && nBLoose >= 2 && nJets == 3) { weight = 0.864; weight_error = 0.104; }
-      else if(nBMedium == 1 && nBLoose >= 2 && nJets == 2) { weight = 0.785; weight_error = 0.028; }
-      else if(nBMedium == 1 && nBLoose == 1 && nJets >= 4) { weight = 1.098; weight_error = 0.049; }
-      else if(nBMedium == 1 && nBLoose == 1 && nJets == 3) { weight = 0.960; weight_error = 0.032; }
-      else if(nBMedium == 1 && nBLoose == 1 && nJets == 2) { weight = 0.894; weight_error = 0.011; }
-      else if(nBMedium == 0 && nBLoose >= 2 && nJets >= 4) { weight = 1.031; weight_error = 0.021; }
-      else if(nBMedium == 0 && nBLoose >= 2 && nJets == 3) { weight = 0.853; weight_error = 0.056; }
-      else if(nBMedium == 0 && nBLoose >= 2 && nJets == 2) { weight = 0.800; weight_error = 0.007; }
+      if     (nBMedium >= 2 && nJets >= 4)                 { weight = 0.974; weight_error = 0.096; }
+      else if(nBMedium >= 2 && nJets == 3)                 { weight = 0.757; weight_error = 0.101; }
+      else if(nBMedium >= 2 && nJets == 2)                 { weight = 0.728; weight_error = 0.073; }
+      else if(nBMedium == 1 && nBLoose >= 2 && nJets >= 4) { weight = 1.117; weight_error = 0.030; }
+      else if(nBMedium == 1 && nBLoose >= 2 && nJets == 3) { weight = 0.896; weight_error = 0.015; }
+      else if(nBMedium == 1 && nBLoose >= 2 && nJets == 2) { weight = 0.788; weight_error = 0.032; }
+      else if(nBMedium == 1 && nBLoose == 1 && nJets >= 4) { weight = 1.165; weight_error = 0.050; }
+      else if(nBMedium == 1 && nBLoose == 1 && nJets == 3) { weight = 0.980; weight_error = 0.018; }
+      else if(nBMedium == 1 && nBLoose == 1 && nJets == 2) { weight = 0.892; weight_error = 0.004; }
+      else if(nBMedium == 0 && nBLoose >= 2 && nJets >= 4) { weight = 1.094; weight_error = 0.023; }
+      else if(nBMedium == 0 && nBLoose >= 2 && nJets == 3) { weight = 0.878; weight_error = 0.033; }
+      else if(nBMedium == 0 && nBLoose >= 2 && nJets == 2) { weight = 0.797; weight_error = 0.010; }
     }
     else if(era_ == Era::k2017)
     {
-      if     (nBMedium >= 2 && nJets >= 4)                 { weight = 1.453; weight_error = 0.081; }
-      else if(nBMedium >= 2 && nJets == 3)                 { weight = 1.054; weight_error = 0.036; }
-      else if(nBMedium >= 2 && nJets == 2)                 { weight = 0.884; weight_error = 0.033; }
-      else if(nBMedium == 1 && nBLoose >= 2 && nJets >= 4) { weight = 1.361; weight_error = 0.035; }
-      else if(nBMedium == 1 && nBLoose >= 2 && nJets == 3) { weight = 1.091; weight_error = 0.066; }
-      else if(nBMedium == 1 && nBLoose >= 2 && nJets == 2) { weight = 0.904; weight_error = 0.013; }
-      else if(nBMedium == 1 && nBLoose == 1 && nJets >= 4) { weight = 1.432; weight_error = 0.032; }
-      else if(nBMedium == 1 && nBLoose == 1 && nJets == 3) { weight = 1.145; weight_error = 0.030; }
-      else if(nBMedium == 1 && nBLoose == 1 && nJets == 2) { weight = 0.979; weight_error = 0.006; }
-      else if(nBMedium == 0 && nBLoose >= 2 && nJets >= 4) { weight = 1.296; weight_error = 0.034; }
-      else if(nBMedium == 0 && nBLoose >= 2 && nJets == 3) { weight = 1.053; weight_error = 0.023; }
-      else if(nBMedium == 0 && nBLoose >= 2 && nJets == 2) { weight = 0.950; weight_error = 0.020; }
+      if     (nBMedium >= 2 && nJets >= 4)                 { weight = 1.871; weight_error = 0.167; }
+      else if(nBMedium >= 2 && nJets == 3)                 { weight = 1.165; weight_error = 0.052; }
+      else if(nBMedium >= 2 && nJets == 2)                 { weight = 0.883; weight_error = 0.022; }
+      else if(nBMedium == 1 && nBLoose >= 2 && nJets >= 4) { weight = 1.598; weight_error = 0.026; }
+      else if(nBMedium == 1 && nBLoose >= 2 && nJets == 3) { weight = 1.166; weight_error = 0.040; }
+      else if(nBMedium == 1 && nBLoose >= 2 && nJets == 2) { weight = 0.931; weight_error = 0.012; }
+      else if(nBMedium == 1 && nBLoose == 1 && nJets >= 4) { weight = 1.682; weight_error = 0.028; }
+      else if(nBMedium == 1 && nBLoose == 1 && nJets == 3) { weight = 1.229; weight_error = 0.021; }
+      else if(nBMedium == 1 && nBLoose == 1 && nJets == 2) { weight = 0.998; weight_error = 0.009; }
+      else if(nBMedium == 0 && nBLoose >= 2 && nJets >= 4) { weight = 1.535; weight_error = 0.019; }
+      else if(nBMedium == 0 && nBLoose >= 2 && nJets == 3) { weight = 1.143; weight_error = 0.010; }
+      else if(nBMedium == 0 && nBLoose >= 2 && nJets == 2) { weight = 0.996; weight_error = 0.039; }
     }
     else if(era_ == Era::k2018)
     {
-      if     (nBMedium >= 2 && nJets >= 4)                 { weight = 1.329; weight_error = 0.140; }
-      else if(nBMedium >= 2 && nJets == 3)                 { weight = 1.012; weight_error = 0.046; }
-      else if(nBMedium >= 2 && nJets == 2)                 { weight = 0.822; weight_error = 0.021; }
-      else if(nBMedium == 1 && nBLoose >= 2 && nJets >= 4) { weight = 1.444; weight_error = 0.043; }
-      else if(nBMedium == 1 && nBLoose >= 2 && nJets == 3) { weight = 1.049; weight_error = 0.023; }
-      else if(nBMedium == 1 && nBLoose >= 2 && nJets == 2) { weight = 0.886; weight_error = 0.009; }
-      else if(nBMedium == 1 && nBLoose == 1 && nJets >= 4) { weight = 1.493; weight_error = 0.046; }
-      else if(nBMedium == 1 && nBLoose == 1 && nJets == 3) { weight = 1.110; weight_error = 0.025; }
-      else if(nBMedium == 1 && nBLoose == 1 && nJets == 2) { weight = 0.941; weight_error = 0.006; }
-      else if(nBMedium == 0 && nBLoose >= 2 && nJets >= 4) { weight = 1.424; weight_error = 0.025; }
-      else if(nBMedium == 0 && nBLoose >= 2 && nJets == 3) { weight = 1.082; weight_error = 0.025; }
-      else if(nBMedium == 0 && nBLoose >= 2 && nJets == 2) { weight = 0.927; weight_error = 0.018; }
+      if     (nBMedium >= 2 && nJets >= 4)                 { weight = 1.999; weight_error = 0.237; }
+      else if(nBMedium >= 2 && nJets == 3)                 { weight = 1.202; weight_error = 0.031; }
+      else if(nBMedium >= 2 && nJets == 2)                 { weight = 0.915; weight_error = 0.017; }
+      else if(nBMedium == 1 && nBLoose >= 2 && nJets >= 4) { weight = 1.763; weight_error = 0.031; }
+      else if(nBMedium == 1 && nBLoose >= 2 && nJets == 3) { weight = 1.116; weight_error = 0.054; }
+      else if(nBMedium == 1 && nBLoose >= 2 && nJets == 2) { weight = 0.910; weight_error = 0.021; }
+      else if(nBMedium == 1 && nBLoose == 1 && nJets >= 4) { weight = 1.860; weight_error = 0.038; }
+      else if(nBMedium == 1 && nBLoose == 1 && nJets == 3) { weight = 1.231; weight_error = 0.048; }
+      else if(nBMedium == 1 && nBLoose == 1 && nJets == 2) { weight = 0.995; weight_error = 0.004; }
+      else if(nBMedium == 0 && nBLoose >= 2 && nJets >= 4) { weight = 1.704; weight_error = 0.065; }
+      else if(nBMedium == 0 && nBLoose >= 2 && nJets == 3) { weight = 1.136; weight_error = 0.017; }
+      else if(nBMedium == 0 && nBLoose >= 2 && nJets == 2) { weight = 0.946; weight_error = 0.005; }
     }
     else
     {

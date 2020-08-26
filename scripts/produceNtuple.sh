@@ -41,6 +41,8 @@ REMOVE_INTERMEDIATE=$(python -c "execfile('$SCRIPT'); print(remove_intermediate)
 COMP_TOP_RWGT=$(python -c "execfile('$SCRIPT'); print(compTopRwgt)")
 COMP_HTXS=$(python -c "execfile('$SCRIPT'); print(compHTXS)")
 SPLIT_BY_LHENJET=$(python -c "execfile('$SCRIPT'); print(splitByNlheJet)")
+SPLIT_BY_LHEHT=$(python -c "execfile('$SCRIPT'); print(splitByNlheHT)")
+SPLIT_BY_LHENJETHT=$(python -c "execfile('$SCRIPT'); print(splitByNlheJetHT)")
 MLL4WZTO3LNU=$(python -c "execfile('$SCRIPT'); print(mllForWZTo3LNu)")
 MLL4WZTO3LNU_MLLMIN01=$(python -c "execfile('$SCRIPT'); print(mllForWZTo3LNu_mllmin01)")
 
@@ -54,6 +56,8 @@ echo "Remove intermediate file? '$REMOVE_INTERMEDIATE'"
 echo "Compute SFs for top reweighting? '$COMP_TOP_RWGT'"
 echo "Count events in bins of Higgs pT? '$COMP_HTXS'"
 echo "Splitting event counts by # LHE jets? '$SPLIT_BY_LHENJET'"
+echo "Splitting event counts by LHE HT? '$SPLIT_BY_LHEHT'"
+echo "Splitting event counts by # LHE jets and LHE HT? '$SPLIT_BY_LHENJETHT'"
 echo "Finding mll for WZTo3LNu? '$MLL4WZTO3LNU'"
 echo "Finding mll for WZTo3LNu (mllmin01)? '$MLL4WZTO3LNU_MLLMIN01'"
 
@@ -111,6 +115,10 @@ if [ "$SKIP_TOOLS_STEP" == "False" ]; then
         COUNTHISTOGRAM_MODULE="${COUNTHISTOGRAM_MODULE}CompHTXS";
       elif [ "$SPLIT_BY_LHENJET" == "True" ]; then
         COUNTHISTOGRAM_MODULE="${COUNTHISTOGRAM_MODULE}SplitByLHENjet";
+      elif [ "$SPLIT_BY_LHEHT" == "True" ]; then
+        COUNTHISTOGRAM_MODULE="${COUNTHISTOGRAM_MODULE}SplitByLHEHT";
+      elif [ "$SPLIT_BY_LHENJETHT" == "True" ]; then
+        COUNTHISTOGRAM_MODULE="${COUNTHISTOGRAM_MODULE}SplitByLHENjetHT";
       fi
       nano_postproc.py -s i -I tthAnalysis.NanoAODTools.postprocessing.tthModules $COUNTHISTOGRAM_MODULE \
                        . $F_i

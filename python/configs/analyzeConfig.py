@@ -19,8 +19,10 @@ import copy
 import collections
 
 LEP_MVA_WPS = {
-  'default' : 'mu=0.85;e=0.80',
-  'ttZctrl' : 'mu=0.85;e=0.50',
+  'default'        : 'mu=0.85;e=0.80',
+  'ttZctrl'        : 'mu=0.85;e=0.50',
+  'hh_multilepton' : 'mu=0.40;e=0.30', # slide 14 in [*]
+  # [*] https://indico.cern.ch/event/945228/contributions/3972723/attachments/2086024/3506137/HHTo4W_3l_Update_20200807_v2.pdf
 }
 
 DKEY_CFGS    = "cfgs"        # dir for python configuration and batch script files for each analysis job
@@ -156,12 +158,21 @@ class analyzeConfig(object):
             if len(nof_events) == 0:
               nof_events = copy.deepcopy(samples[dbs_key]['nof_events'])
             else:
-              sample_nof_events_set = set(evt_key for evt_key in samples[dbs_key]['nof_events'] if 'PSWeight' not in evt_key)
-              nof_events_set = set(evt_key for evt_key in nof_events.keys() if 'PSWeight' not in evt_key)
+              excl_count_type = [ 'LHEHT', 'LHENjet', 'PSWeight' ]
+              sample_nof_events_set = set(
+                evt_key for evt_key in samples[dbs_key]['nof_events'] \
+                if not any(excl_evt_key in evt_key for excl_evt_key in excl_count_type)
+              )
+              nof_events_set = set(
+                evt_key for evt_key in nof_events.keys() \
+                if not any(excl_evt_key in evt_key for excl_evt_key in excl_count_type)
+              )
               if sample_nof_events_set != nof_events_set:
                 raise ValueError('Mismatching event counts for samples: %s' % dbs_list_human)
               for count_type, count_array in samples[dbs_key]['nof_events'].items():
-                if count_type not in nof_events and 'PSWeight' in count_type:
+                if count_type not in nof_events and \
+                   any(excl_evt_key in count_type for excl_evt_key in excl_count_type):
+                  # initialize event counts with 0s that don't necessarily exist in the samples covering the same phase space
                   nof_events[count_type] = [ 0 ] * len(count_array)
                 if len(nof_events[count_type]) != len(count_array):
                   raise ValueError(
@@ -311,6 +322,8 @@ class analyzeConfig(object):
         self.topPtRwgtChoice = "Quadratic" # alternatives: "TOP16011", "Linear", "Quadratic", "HighPt"
         self.do_stxs = do_stxs
         self.run_mcClosure = systematics.mcClosure_str in self.central_or_shifts or self.do_sync
+        if self.run_mcClosure:
+          self.central_or_shifts.remove(systematics.mcClosure_str)
 
         samples_to_stitch = []
         if self.era == '2016':
@@ -495,6 +508,17 @@ class analyzeConfig(object):
               "kl_" + str("{:3.2f}".format(kl_value)).replace(".", "p").replace("-", "m")
             ]
         self.BM_weights = [ 'SM' ] + [ 'BM{}'.format(idx) for idx in range(1, 13) ]
+        self.c2_weights = []
+        self.c2_scan_file = "hhAnalysis/multilepton/data/c2_scan.dat"
+        with open(os.path.join(os.environ["CMSSW_BASE"], "src", self.c2_scan_file), "r") as c2_file:
+          for line in c2_file:
+            c2_value = float(line.split()[2])
+            if c2_value == 1.0:
+              # SM
+              continue
+            self.c2_weights += [
+              "c2_" + str("{:3.2f}".format(c2_value)).replace(".", "p").replace("-", "m")
+            ]
 
         self.jobOptions_analyze = {}
         self.inputFiles_hadd_stage1 = {}
@@ -567,9 +591,16 @@ class analyzeConfig(object):
         self.lep_mva_cut_mu = self.lep_mva_cut_map['mu']
         self.lep_mva_cut_e = self.lep_mva_cut_map['e']
 
-        self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva_{}_CERN_2019Jul08.root".format(self.era)
-        if not os.path.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', self.leptonFakeRateWeight_inputFile)):
-            raise ValueError("No such file: 'leptonFakeRateWeight_inputFile' = %s" % self.leptonFakeRateWeight_inputFile)
+        self.leptonFakeRateWeight_inputFile = ''
+        if self.channel != 'LeptonFakeRate':
+          if self.lep_mva_wp == 'default':
+              self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva_{}_CERN_2019Jul08.root".format(self.era)
+          elif self.lep_mva_wp == 'hh_multilepton':
+              self.leptonFakeRateWeight_inputFile = "hhAnalysis/multilepton/data/FR_lep_ttH_mva_{}.root".format(self.era)
+          else:
+              raise RuntimeError("No FR files available for the following choice of prompt lepton MVA WP: %s" % self.lep_mva_wp)
+          if not os.path.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', self.leptonFakeRateWeight_inputFile)):
+              raise ValueError("No such file: 'leptonFakeRateWeight_inputFile' = %s" % self.leptonFakeRateWeight_inputFile)
 
         self.use_dymumu_tau_fr = use_dymumu_tau_fr
         self.hadTau_selection_relaxed = None
@@ -681,11 +712,10 @@ class analyzeConfig(object):
           jobOptions['hhWeight_cfg.denominator_file'] = 'hhAnalysis/{}/data/denom_{}.root'.format(hhWeight_base, self.era)
           jobOptions['hhWeight_cfg.histtitle'] = sample_info[sample_category_to_check]
           jobOptions['hhWeight_cfg.do_ktscan'] = not ('hh' in self.channel or 'ctrl' in self.channel)
-          if jobOptions['hhWeight_cfg.do_ktscan']:
-            jobOptions['hhWeight_cfg.ktScan_file'] = self.kt_scan_file
-          else:
-            jobOptions['hhWeight_cfg.klScan_file'] = self.kl_scan_file
-
+          jobOptions['hhWeight_cfg.ktScan_file'] = self.kt_scan_file
+          jobOptions['hhWeight_cfg.klScan_file'] = self.kl_scan_file
+          jobOptions['hhWeight_cfg.c2Scan_file'] = self.c2_scan_file
+          
           jobOptions['hhWeight_cfg.apply_rwgt'] = 'hh' in self.channel
 
         sample_category_ttbar = sample_info["sample_category"].replace("TT_", "")
@@ -905,10 +935,12 @@ class analyzeConfig(object):
         if 'leptonFakeRateWeight.applyNonClosureCorrection' not in jobOptions and '0l' not in self.channel:
             jobOptions['leptonFakeRateWeight.applyNonClosureCorrection'] = self.apply_nc_correction
         if 'applyBtagSFRatio' not in jobOptions:
-            jobOptions['applyBtagSFRatio'] = False # disable by default
-            #jobOptions['applyBtagSFRatio'] = 'hh' in self.channel and 'DYctrl' not in self.channel and not jobOptions['apply_DYMCNormScaleFactors']
+            jobOptions['applyBtagSFRatio'] = jobOptions["isMC"]
+        if 'lep_mva_cut_e' not in jobOptions:
+            jobOptions['lep_mva_cut_e'] = float(self.lep_mva_cut_e)
+        if 'lep_mva_cut_mu' not in jobOptions:
+            jobOptions['lep_mva_cut_mu'] = float(self.lep_mva_cut_mu)
 
-        jobOptions['applyBtagSFRatio'] &= jobOptions["isMC"]
         btagSFRatio_args = {}
         if jobOptions['applyBtagSFRatio']:
           if not self.btagSFRatios:
@@ -1016,6 +1048,9 @@ class analyzeConfig(object):
             'hhWeight_cfg.do_ktscan',
             'hhWeight_cfg.klScan_file',
             'hhWeight_cfg.ktScan_file',
+            'hhWeight_cfg.c2Scan_file',
+            'hhWeight_cfg.cgScan_file',
+            'hhWeight_cfg.c2gScan_file',
             'hhWeight_cfg.apply_rwgt',
             'minNumJets',
             'skipEvery',

@@ -74,9 +74,6 @@ run_wrapped_executable() {
     echo "Hostname: `hostname`"
     echo "Current directory: `pwd`"
 
-    echo "Sleeping for $RANDOM_SLEEP seconds"
-    sleep $RANDOM_SLEEP
-
     # change cp, stat and ls commands in case the output directory is on /hdfs
     OUTPUT_DIR="{{ outputDir }}"
     cp_cmd=cp;
@@ -158,6 +155,9 @@ run_wrapped_executable() {
     mkdir -p $EXECUTABLE_LOG_DIR
 
     cd $JOB_DIR
+
+    echo "Sleeping for $RANDOM_SLEEP seconds"
+    sleep $RANDOM_SLEEP
 
     echo "Time is: `date`"
     echo "Current directory: $PWD"

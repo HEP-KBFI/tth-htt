@@ -31,10 +31,19 @@ def evaluate(vec_values, vec_names, pkldata):
   data = pandas.DataFrame(columns = list(new_dict.keys()))
   data = data.append(new_dict, ignore_index = True)
   result = -20
-  try:
-    proba = pkldata.predict_proba(data[data.columns.values.tolist()].values  )
-  except:
-    print('Caught error:', sys.exc_info()[0])
+  if 'XGBClassifier' in str(type(pkldata)):
+    try:
+      proba = pkldata.predict_proba(data[data.columns.values.tolist()].values  )
+    except:
+      print('Caught error:', sys.exc_info()[0])
+    else:
+      result = proba[:,1][0]
   else:
-    result = proba[:,1][0]
+    try:
+      matrix = xgboost.DMatrix(data,feature_names=new_dict.keys())
+      proba = pkldata.predict(matrix)
+    except:
+      print('Caught error:', sys.exc_info()[0])
+    else:
+      result = proba[:,1][0]
   return result

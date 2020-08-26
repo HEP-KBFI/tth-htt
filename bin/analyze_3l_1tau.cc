@@ -1460,19 +1460,22 @@ int main(int argc, char* argv[])
       evtWeightRecorder.record_jetToTau_FR_lead(jetToTauFakeRateInterface, selHadTau);
     }
 
-    if(applyFakeRateWeights == kFR_4L)
+    if(! selectBDT)
     {
-      evtWeightRecorder.compute_FR_3l1tau(
-        passesTight_lepton_lead, passesTight_lepton_sublead, passesTight_lepton_third, passesTight_hadTau
-      );
-    }
-    else if( applyFakeRateWeights == kFR_3lepton)
-    {
-      evtWeightRecorder.compute_FR_3l(passesTight_lepton_lead, passesTight_lepton_sublead, passesTight_lepton_third);
-    }
-    else if(applyFakeRateWeights == kFR_1tau)
-    {
-      evtWeightRecorder.compute_FR_1tau(passesTight_hadTau);
+      if(applyFakeRateWeights == kFR_4L)
+      {
+        evtWeightRecorder.compute_FR_3l1tau(
+          passesTight_lepton_lead, passesTight_lepton_sublead, passesTight_lepton_third, passesTight_hadTau
+        );
+      }
+      else if( applyFakeRateWeights == kFR_3lepton)
+      {
+        evtWeightRecorder.compute_FR_3l(passesTight_lepton_lead, passesTight_lepton_sublead, passesTight_lepton_third);
+      }
+      else if(applyFakeRateWeights == kFR_1tau)
+      {
+        evtWeightRecorder.compute_FR_1tau(passesTight_hadTau);
+      }
     }
 
     // CV: apply data/MC ratio for jet->tau fake-rates in case data-driven "fake" background estimation is applied to leptons only
@@ -1962,6 +1965,12 @@ int main(int argc, char* argv[])
         dr_tau_lss=deltaR(selHadTau  -> p4(), selLepton_sublead -> p4());
       }
 
+      const double lep1_frWeight = selLepton_lead->isGenMatched(false) ? 1. : evtWeightRecorder.get_jetToLepton_FR_lead(central_or_shift_main);
+      const double lep2_frWeight = selLepton_sublead->isGenMatched(false) ? 1. : evtWeightRecorder.get_jetToLepton_FR_sublead(central_or_shift_main);
+      const double lep3_frWeight = selLepton_third->isGenMatched(false) ? 1. : evtWeightRecorder.get_jetToLepton_FR_third(central_or_shift_main);
+      const double tau_frWeight = selHadTau->isGenMatched(false) ? 1. : evtWeightRecorder.get_jetToTau_FR_lead(central_or_shift_main);
+      const double evt_frWeight = lep1_frWeight * lep2_frWeight * lep3_frWeight * tau_frWeight;
+
       bdt_filler -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })
           ("lep1_pt",             selLepton_lead->pt())
           ("lep1_conePt",         lep1_conePt)
@@ -1999,19 +2008,14 @@ int main(int argc, char* argv[])
           ("lep2_genLepPt",       selLepton_sublead->genLepton() ? selLepton_sublead->genLepton() ->pt() : 0.)
           ("lep3_genLepPt",       selLepton_third->genLepton() ? selLepton_third->genLepton() ->pt() : 0.)
           ("tau_genTauPt",        selHadTau->genHadTau() ? selHadTau->genHadTau()->pt() : 0.)
-          //("lep1_frWeight",       lep1_genLepPt > 0 ? 1.0 : evtWeightRecorder.get_jetToLepton_FR_lead(central_or_shift_main))
-          //("lep2_frWeight",       lep2_genLepPt > 0 ? 1.0 : evtWeightRecorder.get_jetToLepton_FR_sublead(central_or_shift_main))
-          //("lep3_frWeight",       lep3_genLepPt > 0 ? 1.0 : evtWeightRecorder.get_jetToLepton_FR_third(central_or_shift_main))
-          //("tau_frWeight",        tau_genTauPt > 0 ? 1.0 : evtWeightRecorder.get_jetToTau_FR_lead(central_or_shift_main))
-          //("lep1_fake_prob",      selLepton_lead->genLepton() ? 1.0 : evtWeightRecorder.get_jetToLepton_FR_lead(central_or_shift_main))
-          //("lep2_fake_prob",      selLepton_sublead->genLepton() ? 1.0 : evtWeightRecorder.get_jetToLepton_FR_sublead(central_or_shift_main))
-          //("lep3_fake_prob",      selLepton_third->genLepton() ? 1.0 : evtWeightRecorder.get_jetToLepton_FR_third(central_or_shift_main))
-          //("tau_fake_prob",       selHadTau->genHadTau() || selHadTau->genLepton() ? 1.0 : evtWeightRecorder.get_jetToTau_FR_lead(central_or_shift_main))
-          //("tau_fake_prob_test",  selHadTau->genHadTau() ? 1.0 : evtWeightRecorder.get_jetToTau_FR_lead(central_or_shift_main))
+          ("lep1_frWeight",       lep1_frWeight)
+          ("lep2_frWeight",       lep2_frWeight)
+          ("lep3_frWeight",       lep3_frWeight)
+          ("tau_frWeight",        tau_frWeight)
           ("weight_fakeRate",     evtWeightRecorder.get_FR(central_or_shift_main))
           ("lumiScale",           evtWeightRecorder.get_lumiScale(central_or_shift_main))
           ("genWeight",           eventInfo.genWeight)
-          ("evtWeight",           evtWeightRecorder.get(central_or_shift_main))
+          ("evtWeight",           evtWeightRecorder.get(central_or_shift_main) * evt_frWeight)
           ("mbb_loose",           mbb_loose)
           ("mbb_medium",          selBJets_medium.size() > 1 ?  (selBJets_medium[0]->p4() + selBJets_medium[1]->p4()).mass() : -1000)
           ("nJet",                nJet)
