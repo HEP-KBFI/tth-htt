@@ -96,6 +96,13 @@ RecoJet::bRegCorr() const
   return bRegCorr_;
 }
 
+Particle::LorentzVector  
+RecoJet::p4_bRegCorr() const
+{
+  Particle::LorentzVector p4 = this->p4();
+  return Particle::LorentzVector(p4.pt()*bRegCorr_, p4.eta(), p4.phi(), p4.mass());
+}
+
 Double_t
 RecoJet::bRegRes() const
 {
