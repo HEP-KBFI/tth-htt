@@ -96,6 +96,12 @@ RecoJet::bRegCorr() const
   return bRegCorr_;
 }
 
+math::PtEtaPhiMLorentzVector
+RecoJet::p4_bRegCorr() const
+{
+  return math::PtEtaPhiMLorentzVector(this->pt()*bRegCorr_, this->eta(), this->phi(), this->mass());
+}
+
 Double_t
 RecoJet::bRegRes() const
 {

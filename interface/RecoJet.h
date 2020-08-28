@@ -52,6 +52,7 @@ public:
   Double_t BtagWeight(Btag btag, int central_or_shift) const;
   Double_t QGDiscr() const;
   Double_t bRegCorr() const;
+  math::PtEtaPhiMLorentzVector p4_bRegCorr() const;
   Double_t bRegRes() const;
   Double_t pullEta() const;
   Double_t pullPhi() const;
