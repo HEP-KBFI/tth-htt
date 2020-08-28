@@ -69,7 +69,7 @@ for sample_name, sample_info in samples.items():
     continue
   if sample_info["type"] == "mc":
     sample_info["triggers"] = [ "1e", "2e" ]
-  if re.match("/DY(\d)?Jets", sample_name):
+  if re.match("/DY(\d)?Jets", sample_name) or sample_info["process_name_specific"].startswith("DYToLL"):
     sample_info["sample_category"] = "DY"
   elif sample_info["process_name_specific"].startswith(("TTTo", "TTJets")):
     sample_info["sample_category"] = "TTbar"

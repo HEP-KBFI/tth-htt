@@ -9,11 +9,21 @@ import copy
 import os
 import argparse
 
+def is_valid_event_type(nof_key):
+  return 'PSWeight' not in nof_key and '_' not in nof_key
+
+def copy_nof_events(sample_entry):
+  return {
+      nof_key : sample_entry['nof_events'][nof_key] \
+        for nof_key in sample_entry['nof_events'] \
+        if is_valid_event_type(nof_key)
+    }
+
 def comp_weights_1(f, samples, samples_to_stitch, split_var, apply_sf = True):
   inclusive_samples  = samples_to_stitch['inclusive']['samples']
   inclusive_binning  = samples_to_stitch['inclusive'][split_var]
 
-  split_dict       = samples_to_stitch[split_var]
+  split_dict       = samples_to_stitch['exclusive'][split_var]
   split_binning    = [ sample['value'] for sample in split_dict ]
   complete_binning = list(sorted(list(
     map(float, set(inclusive_binning) | set(list(itertools.chain.from_iterable(split_binning))))
@@ -32,10 +42,13 @@ def comp_weights_1(f, samples, samples_to_stitch, split_var, apply_sf = True):
     if sample_key == 'sum_events': continue
     if sample_entry['process_name_specific'] in inclusive_samples:
       if not inclusive_nof_events:
-        inclusive_nof_events = copy.deepcopy(sample_entry['nof_events'])
+        inclusive_nof_events = copy_nof_events(sample_entry)
       else:
-        assert(set(sample_entry['nof_events'].keys()) == set(inclusive_nof_events))
+        nof_events_keys = set(nof_key for nof_key in sample_entry['nof_events'] if is_valid_event_type(nof_key))
+        assert(nof_events_keys == set(inclusive_nof_events))
         for nof_key, nof_arr in sample_entry['nof_events'].items():
+          if not is_valid_event_type(nof_key):
+            continue
           assert(len(nof_arr) == len(inclusive_nof_events[nof_key]))
           for idx, nof in enumerate(nof_arr):
             assert(nof > 0)
@@ -49,13 +62,16 @@ def comp_weights_1(f, samples, samples_to_stitch, split_var, apply_sf = True):
       if sample_key == 'sum_events': continue
       if sample_entry['process_name_specific'] in binned_sample['samples']:
         if not nof_events:
-          nof_events = copy.deepcopy(sample_entry['nof_events'])
-          inclusive_nof_events_type = set(event_type for event_type in inclusive_nof_events.keys() if 'PSWeight' not in event_type)
-          nof_events_type = set(event_type for event_type in nof_events.keys() if 'PSWeight' not in event_type)
+          nof_events = copy_nof_events(sample_entry)
+          inclusive_nof_events_type = set(event_type for event_type in inclusive_nof_events.keys() if is_valid_event_type(event_type))
+          nof_events_type = set(event_type for event_type in nof_events.keys() if is_valid_event_type(event_type))
           assert(inclusive_nof_events_type == nof_events_type)
         else:
-          assert(set(sample_entry['nof_events'].keys()) == set(nof_events.keys()))
+          nof_events_keys = set(nof_key for nof_key in sample_entry['nof_events'] if is_valid_event_type(nof_key))
+          assert(nof_events_keys == set(nof_events.keys()))
           for nof_key, nof_arr in sample_entry['nof_events'].items():
+            if not is_valid_event_type(nof_key):
+              continue
             assert(len(nof_arr) == len(nof_events[nof_key]))
             for idx, nof in enumerate(nof_arr):
               assert(nof > 0)
@@ -95,7 +111,7 @@ def comp_weights_1(f, samples, samples_to_stitch, split_var, apply_sf = True):
     histogram_dir.cd()
 
     for nof_key, lumi_arr in inclusive_lumis.items():
-      if 'PSWeight' in nof_key:
+      if not is_valid_event_type(nof_key):
         continue
       for idx, lumi_incl in enumerate(lumi_arr):
         histogram_name = '%s_%d' % (nof_key, idx)
@@ -110,7 +126,7 @@ def comp_weights_1(f, samples, samples_to_stitch, split_var, apply_sf = True):
             for binned_sample in split_dict:
               if split_idx == binned_sample['idx']:
                 lumi_split = binned_sample['lumis'][nof_key][idx]
-                if binning[split_idx] > inclusive_binning[1] or \
+                if binning[split_idx] > inclusive_binning[-1] or \
                    binning[split_idx] < inclusive_binning[0]:
                   lumi_incl_calc = 0.
                 else:
@@ -140,7 +156,7 @@ def comp_weights_1(f, samples, samples_to_stitch, split_var, apply_sf = True):
       histogram_dir.cd()
 
       for nof_key, lumi_arr in inclusive_lumis.items():
-        if 'PSWeight' in nof_key:
+        if not is_valid_event_type(nof_key):
           continue
         for idx, lumi_incl in enumerate(lumi_arr):
 
@@ -154,7 +170,7 @@ def comp_weights_1(f, samples, samples_to_stitch, split_var, apply_sf = True):
           for split_idx in range(1, len(binning)):
             if split_idx == binned_sample['idx']:
               lumi_split = binned_sample['lumis'][nof_key][idx]
-              if binning[split_idx] > inclusive_binning[1] or \
+              if binning[split_idx] > inclusive_binning[-1] or \
                  binning[split_idx] < inclusive_binning[0]:
                 weight = 1.
               else:
@@ -179,8 +195,8 @@ def comp_weights_2(f, samples, samples_to_stitch, split_var_1, split_var_2, appl
   inclusive_binning_1 = samples_to_stitch['inclusive'][split_var_1]
   inclusive_binning_2 = samples_to_stitch['inclusive'][split_var_2]
 
-  split_dict_1 = samples_to_stitch[split_var_1]
-  split_dict_2 = samples_to_stitch[split_var_2]
+  split_dict_1 = samples_to_stitch['exclusive'][split_var_1]
+  split_dict_2 = samples_to_stitch['exclusive'][split_var_2]
   split_binning_1 = [ sample['value'] for sample in split_dict_1 ]
   split_binning_2 = [ sample['value'] for sample in split_dict_2 ]
   complete_binning_1 = list(sorted(list(
@@ -203,10 +219,13 @@ def comp_weights_2(f, samples, samples_to_stitch, split_var_1, split_var_2, appl
     if sample_key == 'sum_events': continue
     if sample_entry['process_name_specific'] in inclusive_samples:
       if not inclusive_nof_events:
-        inclusive_nof_events = copy.deepcopy(sample_entry['nof_events'])
+        inclusive_nof_events = copy_nof_events(sample_entry)
       else:
-        assert(set(sample_entry['nof_events'].keys()) == set(inclusive_nof_events))
+        nof_events_keys = set(nof_key for nof_key in sample_entry['nof_events'] if is_valid_event_type(nof_key))
+        assert(nof_events_keys == set(inclusive_nof_events))
         for nof_key, nof_arr in sample_entry['nof_events'].items():
+          if not is_valid_event_type(nof_key):
+            continue
           assert(len(nof_arr) == len(inclusive_nof_events[nof_key]))
           for idx, nof in enumerate(nof_arr):
             assert(nof > 0)
@@ -220,13 +239,16 @@ def comp_weights_2(f, samples, samples_to_stitch, split_var_1, split_var_2, appl
       if sample_key == 'sum_events': continue
       if sample_entry['process_name_specific'] in binned_sample['samples']:
         if not nof_events:
-          nof_events = copy.deepcopy(sample_entry['nof_events'])
-          inclusive_nof_events_type = set(event_type for event_type in inclusive_nof_events.keys() if 'PSWeight' not in event_type)
-          nof_events_type = set(event_type for event_type in nof_events.keys() if 'PSWeight' not in event_type)
+          nof_events = copy_nof_events(sample_entry)
+          inclusive_nof_events_type = set(event_type for event_type in inclusive_nof_events.keys() if is_valid_event_type(event_type))
+          nof_events_type = set(event_type for event_type in nof_events.keys() if is_valid_event_type(event_type))
           assert(inclusive_nof_events_type == nof_events_type)
         else:
-          assert(set(sample_entry['nof_events'].keys()) == set(nof_events.keys()))
+          nof_events_keys = set(nof_key for nof_key in sample_entry['nof_events'] if is_valid_event_type(nof_key))
+          assert(nof_events_keys == set(nof_events.keys()))
           for nof_key, nof_arr in sample_entry['nof_events'].items():
+            if not is_valid_event_type(nof_key):
+              continue
             assert(len(nof_arr) == len(nof_events[nof_key]))
             for idx, nof in enumerate(nof_arr):
               assert(nof > 0)
@@ -249,13 +271,16 @@ def comp_weights_2(f, samples, samples_to_stitch, split_var_1, split_var_2, appl
       if sample_key == 'sum_events': continue
       if sample_entry['process_name_specific'] in binned_sample['samples']:
         if not nof_events:
-          nof_events = copy.deepcopy(sample_entry['nof_events'])
-          inclusive_nof_events_type = set(event_type for event_type in inclusive_nof_events.keys() if 'PSWeight' not in event_type)
-          nof_events_type = set(event_type for event_type in nof_events.keys() if 'PSWeight' not in event_type)
+          nof_events = copy_nof_events(sample_entry)
+          inclusive_nof_events_type = set(event_type for event_type in inclusive_nof_events.keys() if is_valid_event_type(event_type))
+          nof_events_type = set(event_type for event_type in nof_events.keys() if is_valid_event_type(event_type))
           assert(inclusive_nof_events_type == nof_events_type)
         else:
-          assert(set(sample_entry['nof_events'].keys()) == set(nof_events.keys()))
+          nof_events_keys = set(nof_key for nof_key in sample_entry['nof_events'] if is_valid_event_type(nof_key))
+          assert(nof_events_keys == set(nof_events.keys()))
           for nof_key, nof_arr in sample_entry['nof_events'].items():
+            if not is_valid_event_type(nof_key):
+              continue
             assert(len(nof_arr) == len(nof_events[nof_key]))
             for idx, nof in enumerate(nof_arr):
               assert(nof > 0)
@@ -301,7 +326,7 @@ def comp_weights_2(f, samples, samples_to_stitch, split_var_1, split_var_2, appl
     histogram_dir.cd()
 
     for nof_key, lumi_arr in inclusive_lumis.items():
-      if 'PSWeight' in nof_key:
+      if not is_valid_event_type(nof_key):
         continue
       for idx, lumi_incl in enumerate(lumi_arr):
 
@@ -331,9 +356,9 @@ def comp_weights_2(f, samples, samples_to_stitch, split_var_1, split_var_2, appl
                   lumi_split_2 = binned_sample['lumis'][nof_key][idx]
                   break
 
-            if binning_1[split_idx_1] > inclusive_binning_1[1] or \
+            if binning_1[split_idx_1] > inclusive_binning_1[-1] or \
                binning_1[split_idx_1] < inclusive_binning_1[0] or \
-               binning_2[split_idx_2] > inclusive_binning_2[1] or \
+               binning_2[split_idx_2] > inclusive_binning_2[-1] or \
                binning_2[split_idx_2] < inclusive_binning_2[0]:
               weight = 0.
             else:
@@ -367,7 +392,7 @@ def comp_weights_2(f, samples, samples_to_stitch, split_var_1, split_var_2, appl
       histogram_dir.cd()
 
       for nof_key, lumi_arr in inclusive_lumis.items():
-        if 'PSWeight' in nof_key:
+        if not is_valid_event_type(nof_key):
           continue
         for idx, lumi_incl in enumerate(lumi_arr):
 
@@ -392,9 +417,9 @@ def comp_weights_2(f, samples, samples_to_stitch, split_var_1, split_var_2, appl
                   if split_idx_2 == binned_sample_2['idx']:
                     lumi_split_2 = binned_sample_2['lumis'][nof_key][idx]
                     break
-                if binning_1[split_idx_1] > inclusive_binning_1[1] or \
+                if binning_1[split_idx_1] > inclusive_binning_1[-1] or \
                    binning_1[split_idx_1] < inclusive_binning_1[0] or \
-                   binning_2[split_idx_2] > inclusive_binning_2[1] or \
+                   binning_2[split_idx_2] > inclusive_binning_2[-1] or \
                    binning_2[split_idx_2] < inclusive_binning_2[0]:
                   if lumi_split_2 == 0.:
                     weight = 1.
@@ -442,7 +467,7 @@ def comp_weights_2(f, samples, samples_to_stitch, split_var_1, split_var_2, appl
       histogram_dir.cd()
 
       for nof_key, lumi_arr in inclusive_lumis.items():
-        if 'PSWeight' in nof_key:
+        if not is_valid_event_type(nof_key):
           continue
         for idx, lumi_incl in enumerate(lumi_arr):
 
@@ -467,9 +492,9 @@ def comp_weights_2(f, samples, samples_to_stitch, split_var_1, split_var_2, appl
                   if split_idx_1 == binned_sample_1['idx']:
                     lumi_split_1 = binned_sample_1['lumis'][nof_key][idx]
                     break
-                if binning_1[split_idx_1] > inclusive_binning_1[1] or \
+                if binning_1[split_idx_1] > inclusive_binning_1[-1] or \
                    binning_1[split_idx_1] < inclusive_binning_1[0] or \
-                   binning_2[split_idx_2] > inclusive_binning_2[1] or \
+                   binning_2[split_idx_2] > inclusive_binning_2[-1] or \
                    binning_2[split_idx_2] < inclusive_binning_2[0]:
                   if lumi_split_1 == 0.:
                     weight = 1.
@@ -507,8 +532,8 @@ def comp_weights_2_wo_inclusive(f, samples, samples_to_stitch, split_var_1, spli
   inclusive_binning_1 = samples_to_stitch['inclusive'][split_var_1]
   inclusive_binning_2 = samples_to_stitch['inclusive'][split_var_2]
 
-  split_dict_1 = samples_to_stitch[split_var_1]
-  split_dict_2 = samples_to_stitch[split_var_2]
+  split_dict_1 = samples_to_stitch['exclusive'][split_var_1]
+  split_dict_2 = samples_to_stitch['exclusive'][split_var_2]
   split_binning_1 = [ sample['value'] for sample in split_dict_1 ]
   split_binning_2 = [ sample['value'] for sample in split_dict_2 ]
   complete_binning_1 = list(sorted(list(
@@ -531,10 +556,13 @@ def comp_weights_2_wo_inclusive(f, samples, samples_to_stitch, split_var_1, spli
     if sample_key == 'sum_events': continue
     if sample_entry['process_name_specific'] in inclusive_samples:
       if not inclusive_nof_events:
-        inclusive_nof_events = copy.deepcopy(sample_entry['nof_events'])
+        inclusive_nof_events = copy_nof_events(sample_entry)
       else:
-        assert(set(sample_entry['nof_events'].keys()) == set(inclusive_nof_events))
+        nof_events_keys = set(nof_key for nof_key in sample_entry['nof_events'] if is_valid_event_type(nof_key))
+        assert(nof_events_keys == set(inclusive_nof_events))
         for nof_key, nof_arr in sample_entry['nof_events'].items():
+          if not is_valid_event_type(nof_key):
+            continue
           assert(len(nof_arr) == len(inclusive_nof_events[nof_key]))
           for idx, nof in enumerate(nof_arr):
             assert(nof > 0)
@@ -548,13 +576,16 @@ def comp_weights_2_wo_inclusive(f, samples, samples_to_stitch, split_var_1, spli
       if sample_key == 'sum_events': continue
       if sample_entry['process_name_specific'] in binned_sample['samples']:
         if not nof_events:
-          nof_events = copy.deepcopy(sample_entry['nof_events'])
-          inclusive_nof_events_type = set(event_type for event_type in inclusive_nof_events.keys() if 'PSWeight' not in event_type)
-          nof_events_type = set(event_type for event_type in nof_events.keys() if 'PSWeight' not in event_type)
+          nof_events = copy_nof_events(sample_entry)
+          inclusive_nof_events_type = set(event_type for event_type in inclusive_nof_events.keys() if is_valid_event_type(event_type))
+          nof_events_type = set(event_type for event_type in nof_events.keys() if is_valid_event_type(event_type))
           assert(inclusive_nof_events_type == nof_events_type)
         else:
-          assert(set(sample_entry['nof_events'].keys()) == set(nof_events.keys()))
+          nof_events_keys = set(nof_key for nof_key in sample_entry['nof_events'] if is_valid_event_type(nof_key))
+          assert(nof_events_keys == set(nof_events.keys()))
           for nof_key, nof_arr in sample_entry['nof_events'].items():
+            if not is_valid_event_type(nof_key):
+              continue
             assert(len(nof_arr) == len(nof_events[nof_key]))
             for idx, nof in enumerate(nof_arr):
               assert(nof > 0)
@@ -577,13 +608,16 @@ def comp_weights_2_wo_inclusive(f, samples, samples_to_stitch, split_var_1, spli
       if sample_key == 'sum_events': continue
       if sample_entry['process_name_specific'] in binned_sample['samples']:
         if not nof_events:
-          nof_events = copy.deepcopy(sample_entry['nof_events'])
-          inclusive_nof_events_type = set(event_type for event_type in inclusive_nof_events.keys() if 'PSWeight' not in event_type)
-          nof_events_type = set(event_type for event_type in nof_events.keys() if 'PSWeight' not in event_type)
+          nof_events = copy_nof_events(sample_entry)
+          inclusive_nof_events_type = set(event_type for event_type in inclusive_nof_events.keys() if is_valid_event_type(event_type))
+          nof_events_type = set(event_type for event_type in nof_events.keys() if is_valid_event_type(event_type))
           assert(inclusive_nof_events_type == nof_events_type)
         else:
-          assert(set(sample_entry['nof_events'].keys()) == set(nof_events.keys()))
+          nof_events_keys = set(nof_key for nof_key in sample_entry['nof_events'] if is_valid_event_type(nof_key))
+          assert(nof_events_keys == set(nof_events.keys()))
           for nof_key, nof_arr in sample_entry['nof_events'].items():
+            if not is_valid_event_type(nof_key):
+              continue
             assert(len(nof_arr) == len(nof_events[nof_key]))
             for idx, nof in enumerate(nof_arr):
               assert(nof > 0)
@@ -630,7 +664,7 @@ def comp_weights_2_wo_inclusive(f, samples, samples_to_stitch, split_var_1, spli
       histogram_dir.cd()
 
       for nof_key, lumi_arr in inclusive_lumis.items():
-        if 'PSWeight' in nof_key:
+        if not is_valid_event_type(nof_key):
           continue
         for idx, lumi_incl in enumerate(lumi_arr):
 
@@ -655,9 +689,9 @@ def comp_weights_2_wo_inclusive(f, samples, samples_to_stitch, split_var_1, spli
                   if split_idx_2 == binned_sample_2['idx']:
                     lumi_split_2 = binned_sample_2['lumis'][nof_key][idx]
                     break
-                if binning_1[split_idx_1] > inclusive_binning_1[1] or \
+                if binning_1[split_idx_1] > inclusive_binning_1[-1] or \
                    binning_1[split_idx_1] < inclusive_binning_1[0] or \
-                   binning_2[split_idx_2] > inclusive_binning_2[1] or \
+                   binning_2[split_idx_2] > inclusive_binning_2[-1] or \
                    binning_2[split_idx_2] < inclusive_binning_2[0]:
                   if lumi_split_2 == 0.:
                     weight = 1.
@@ -699,7 +733,7 @@ def comp_weights_2_wo_inclusive(f, samples, samples_to_stitch, split_var_1, spli
       histogram_dir.cd()
 
       for nof_key, lumi_arr in inclusive_lumis.items():
-        if 'PSWeight' in nof_key:
+        if not is_valid_event_type(nof_key):
           continue
         for idx, lumi_incl in enumerate(lumi_arr):
 
@@ -724,9 +758,9 @@ def comp_weights_2_wo_inclusive(f, samples, samples_to_stitch, split_var_1, spli
                   if split_idx_1 == binned_sample_1['idx']:
                     lumi_split_1 = binned_sample_1['lumis'][nof_key][idx]
                     break
-                if binning_1[split_idx_1] > inclusive_binning_1[1] or \
+                if binning_1[split_idx_1] > inclusive_binning_1[-1] or \
                    binning_1[split_idx_1] < inclusive_binning_1[0] or \
-                   binning_2[split_idx_2] > inclusive_binning_2[1] or \
+                   binning_2[split_idx_2] > inclusive_binning_2[-1] or \
                    binning_2[split_idx_2] < inclusive_binning_2[0]:
                   if lumi_split_1 == 0.:
                     weight = 1.
@@ -764,15 +798,10 @@ parser.add_argument('-o', '--output',
   type = str, dest = 'output', metavar = 'path', required = False,
   help = 'R|Output file name',
 )
-parser.add_argument('-w', '--do-wjet-parts',
-  dest = 'do_wjet_parts', action = 'store_true', default = False,
-  help = 'R|Stitch W+jets samples split in half',
-)
 args = parser.parse_args()
 
 era = args.era
 output = args.output
-do_wjet_parts = args.do_wjet_parts
 
 if not output:
   output = os.path.join(
@@ -788,15 +817,12 @@ elif era == '2018':
 else:
   raise RuntimeError("Invalid era: %s" % era)
 
-if do_wjet_parts:
-  samples = load_samples(era, base = 'hh_multilepton', suffix = 'wjets')
-else:
-  samples = load_samples(era)
+samples = load_samples(era)
 
 apply_sf = True
 fp = ROOT.TFile.Open(output, 'recreate')
 for sample_to_stitch in samples_to_stitch:
-  binning_vars = [ var for var in sample_to_stitch if var != 'inclusive' ]
+  binning_vars = sorted([ var for var in sample_to_stitch['exclusive'] ], reverse = True)
   if len(binning_vars) == 1:
     comp_weights_1(fp, samples, sample_to_stitch, binning_vars[0], apply_sf)
   elif len(binning_vars) == 2:
