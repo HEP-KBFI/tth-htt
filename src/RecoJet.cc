@@ -96,7 +96,7 @@ RecoJet::bRegCorr() const
   return bRegCorr_;
 }
 
-math::PtEtaPhiMLorentzVector
+Particle::LorentzVector
 RecoJet::p4_bRegCorr() const
 {
   return math::PtEtaPhiMLorentzVector(this->pt()*bRegCorr_, this->eta(), this->phi(), this->mass());
