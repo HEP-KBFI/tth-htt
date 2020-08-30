@@ -210,6 +210,18 @@ EvtWeightManager::has_central_or_shift(const std::string & central_or_shift) con
   return binnedHistogram_1var_.count(central_or_shift) || binnedHistogram_2var_.count(central_or_shift);
 }
 
+std::string
+EvtWeightManager::get_x_var() const
+{
+  return binnedHistogram_varName_x_;
+}
+
+std::string
+EvtWeightManager::get_y_var() const
+{
+  return binnedHistogram_varName_y_;
+}
+
 double
 EvtWeightManager::getWeight() const
 {

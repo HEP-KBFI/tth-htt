@@ -62,6 +62,12 @@ public:
   bool
   has_central_or_shift(const std::string & central_or_shift) const;
 
+  std::string
+  get_x_var() const;
+
+  std::string
+  get_y_var() const;
+
 protected:
   std::string binnedHistogram_varName_x_;
   std::string binnedHistogram_varName_y_;

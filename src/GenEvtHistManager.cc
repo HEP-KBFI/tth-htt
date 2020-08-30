@@ -18,6 +18,7 @@ GenEvtHistManager::GenEvtHistManager(const edm::ParameterSet & cfg)
   , maxGenPhotonAbsEta_(2.7)
   , minGenJetPt_(20.)
   , maxGenJetAbsEta_(2.7)
+  , bookRecoHistograms_(false)
   , histogram_evtWeightManager_1D_(nullptr)
   , histogram_evtWeightManager_1D_counter_(nullptr)
   , histogram_evtWeightManager_2D_(nullptr)
@@ -125,10 +126,12 @@ GenEvtHistManager::fillHistograms(const std::vector<GenLepton> & genElectrons,
 
 void
 GenEvtHistManager::bookHistograms(TFileDirectory & dir,
-                                  const EvtWeightManager * const eventWeightManager)
+                                  const EvtWeightManager * const eventWeightManager,
+                                  bool bookRecoHistograms)
 {
   assert(eventWeightManager);
   const int histogramDimension = eventWeightManager->getDimension();
+  bookRecoHistograms_ = bookRecoHistograms;
 
   TDirectory * const subdir = createHistogramSubdirectory(dir);
   subdir->cd();
@@ -160,6 +163,25 @@ GenEvtHistManager::bookHistograms(TFileDirectory & dir,
       histogram_evtWeightManager_1D_counter_->SetTitle(Form("%s_counter", histogram_evtWeightManager_1D_->GetTitle()));
       book1D(subdir, histogram_evtWeightManager_1D_);
       book1D(subdir, histogram_evtWeightManager_1D_counter_);
+
+      if(bookRecoHistograms_)
+      {
+        const int nbins = histogram_evtWeightManager_1D_->GetXaxis()->GetNbins();
+        for(int bin_idx = 0; bin_idx <= nbins + 1; ++bin_idx)
+        {
+          const std::string bin_name = Form("%s%d_%s",
+            eventWeightManager->get_x_var().data(), bin_idx,
+            histogram_evtWeightManager_1D_->GetTitle()
+          );
+          const std::string numJets_title = Form("%s_%s", bin_name.data(), "numJets");
+          const std::string ht_title      = Form("%s_%s", bin_name.data(), "HT");
+          histogram_evtWeightManager_numJets_[bin_name] = book1D(dir, numJets_title, numJets_title,  20, -0.5, +19.5);
+          histogram_evtWeightManager_HT_     [bin_name] = book1D(dir, ht_title,      ht_title,      150,  0., 1500.);
+          book1D(subdir, histogram_evtWeightManager_numJets_[bin_name]);
+          book1D(subdir, histogram_evtWeightManager_HT_[bin_name]);
+        }
+      }
+
       break;
     }
     case 2:
@@ -187,8 +209,32 @@ GenEvtHistManager::bookHistograms(TFileDirectory & dir,
       histogram_evtWeightManager_2D_counter_->SetName(Form("%s_counter",  histogram_evtWeightManager_2D_->GetName()));
       histogram_evtWeightManager_2D_counter_->SetTitle(Form("%s_counter", histogram_evtWeightManager_2D_->GetTitle()));
       histogram_evtWeightManager_2D_counter_->SetOption("col text");
-      book1D(subdir, histogram_evtWeightManager_2D_);
-      book1D(subdir, histogram_evtWeightManager_2D_counter_);
+      book2D(subdir, histogram_evtWeightManager_2D_);
+      book2D(subdir, histogram_evtWeightManager_2D_counter_);
+
+      if(bookRecoHistograms_)
+      {
+        const int nbins_x = histogram_evtWeightManager_2D_->GetXaxis()->GetNbins();
+        const int nbins_y = histogram_evtWeightManager_2D_->GetYaxis()->GetNbins();
+        for(int bin_idx_x = 0; bin_idx_x <= nbins_x + 1; ++bin_idx_x)
+        {
+          for(int bin_idx_y = 0; bin_idx_y <= nbins_y + 1; ++bin_idx_y)
+          {
+            const std::string bin_name = Form("%s%d_%s%d_%s",
+              eventWeightManager->get_x_var().data(), bin_idx_x,
+              eventWeightManager->get_y_var().data(), bin_idx_y,
+              histogram_evtWeightManager_2D_->GetTitle()
+            );
+            const std::string numJets_title = Form("%s_%s", bin_name.data(), "numJets");
+            const std::string ht_title      = Form("%s_%s", bin_name.data(), "HT");
+            histogram_evtWeightManager_numJets_[bin_name] = book1D(dir, numJets_title, numJets_title,  20, -0.5, +19.5);
+            histogram_evtWeightManager_HT_     [bin_name] = book1D(dir, ht_title,      ht_title,      150,  0., 1500.);
+            book1D(subdir, histogram_evtWeightManager_numJets_[bin_name]);
+            book1D(subdir, histogram_evtWeightManager_HT_[bin_name]);
+          }
+        }
+      }
+
       break;
     }
     default: throw cmsException(this, __func__, __LINE__) << "Invalid dimension = " << histogramDimension;
@@ -197,7 +243,9 @@ GenEvtHistManager::bookHistograms(TFileDirectory & dir,
 
 void
 GenEvtHistManager::fillHistograms(const EvtWeightManager * const eventWeightManager,
-                                  double evtWeight)
+                                  double evtWeight,
+                                  int numJets,
+                                  double ht)
 {
   assert(eventWeightManager);
   if(histogram_evtWeightManager_1D_)
@@ -209,6 +257,22 @@ GenEvtHistManager::fillHistograms(const EvtWeightManager * const eventWeightMana
     const double binCenter_x = histogram_evtWeightManager_1D_->GetXaxis()->GetBinCenter(bin_x);
     histogram_evtWeightManager_1D_->Fill(binCenter_x, evtWeight);
     histogram_evtWeightManager_1D_counter_->Fill(binCenter_x, 1.);
+
+    if(bookRecoHistograms_)
+    {
+      const std::string bin_name = Form("%s%d_%s",
+        eventWeightManager->get_x_var().data(), bin_x,
+        histogram_evtWeightManager_1D_->GetTitle()
+      );
+      if(! histogram_evtWeightManager_numJets_.count(bin_name) ||
+         ! histogram_evtWeightManager_HT_.count(bin_name))
+      {
+        throw cmsException(this, __func__, __LINE__) << "Histogram with the name '" << bin_name << "' has not been booked";
+      }
+      fillWithOverFlow(histogram_evtWeightManager_numJets_[bin_name], numJets, evtWeight);
+      fillWithOverFlow(histogram_evtWeightManager_HT_     [bin_name], ht,      evtWeight);
+    }
+
   }
   else if(histogram_evtWeightManager_2D_)
   {
@@ -220,6 +284,23 @@ GenEvtHistManager::fillHistograms(const EvtWeightManager * const eventWeightMana
     const double binCenter_y = histogram_evtWeightManager_2D_->GetYaxis()->GetBinCenter(bin_xy.second);
     histogram_evtWeightManager_2D_->Fill(binCenter_x, binCenter_y, evtWeight);
     histogram_evtWeightManager_2D_counter_->Fill(binCenter_x, binCenter_y, 1.);
+
+    if(bookRecoHistograms_)
+    {
+      const std::string bin_name = Form("%s%d_%s%d_%s",
+        eventWeightManager->get_x_var().data(), bin_xy.first,
+        eventWeightManager->get_y_var().data(), bin_xy.second,
+        histogram_evtWeightManager_2D_->GetTitle()
+      );
+      if(! histogram_evtWeightManager_numJets_.count(bin_name) ||
+         ! histogram_evtWeightManager_HT_.count(bin_name))
+      {
+        throw cmsException(this, __func__, __LINE__) << "Histogram with the name '" << bin_name << "' has not been booked";
+      }
+      fillWithOverFlow(histogram_evtWeightManager_numJets_[bin_name], numJets, evtWeight);
+      fillWithOverFlow(histogram_evtWeightManager_HT_     [bin_name], ht,      evtWeight);
+    }
+
   }
   else
   {
