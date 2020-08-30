@@ -184,7 +184,7 @@ HTML_TEMPLATE = '''
 '''
 
 CAPTIONS_BASE = [
-  "Dataset info", "Binned event counts", "Lumiscale by bin", "Stitching weights"
+  "Dataset info", "Binned event counts", "Lumiscale by bin", "Stitching weights", "Fraction of events per bin"
 ]
 
 def rfmt(nr, force_scientific = False):
@@ -754,6 +754,61 @@ def print_stitching_weights(samples_to_stitch, era, count_var = '', count_idx = 
 
   return table.get_html_string()
 
+def get_ratios(samples_to_stitch, era, inclusive_xs, count_var = '', count_idx = 0):
+  if not count_var:
+    count_var = 'CountWeighted' if era == '2018' else 'CountWeightedL1PrefireNom'
+
+  ratios = collections.OrderedDict()
+
+  if 'inclusive' in samples_to_stitch:
+    assert (inclusive_xs == samples_to_stitch['inclusive']['xsec'])
+    for bin_key in samples_to_stitch['inclusive']['binned_counts']:
+      ratio = samples_to_stitch['inclusive']['binned_counts'][bin_key][count_var][count_idx] / \
+              samples_to_stitch['inclusive']['counts'][count_var][count_idx]
+      ratios[bin_key] = collections.OrderedDict([('inclusive', [ ratio ])])
+
+  for split_var in samples_to_stitch['exclusive']:
+    bin_keys = list(samples_to_stitch['exclusive'][split_var][0]['binned_counts'].keys())
+    for bin_key in bin_keys:
+      if bin_key not in ratios:
+        ratios[bin_key] = collections.OrderedDict()
+      if split_var not in ratios[bin_key]:
+        ratios[bin_key][split_var] = []
+      for sample_idx in range(len(samples_to_stitch['exclusive'][split_var])):
+        ratio = samples_to_stitch['exclusive'][split_var][sample_idx]['binned_counts'][bin_key][count_var][count_idx] / \
+                samples_to_stitch['exclusive'][split_var][sample_idx]['counts'][count_var][count_idx] * \
+                samples_to_stitch['exclusive'][split_var][sample_idx]['xsec'] / \
+                inclusive_xs
+        ratios[bin_key][split_var].append(ratio)
+  return ratios
+
+def get_ratio_table(samples_to_stitch, era, inclusive_xs):
+  ratios = get_ratios(samples_to_stitch, era, inclusive_xs)
+  header = [ 'Bin' ]
+  rows = collections.OrderedDict()
+  for bin_key in ratios:
+    nonzero_weights = []
+    row = []
+    for sample_type in ratios[bin_key]:
+      if sample_type not in header:
+        header.append(sample_type)
+      weight_sum = sum(ratios[bin_key][sample_type])
+      nof_nonzero_contrib = len([val for val in ratios[bin_key][sample_type] if abs(val) != 0.])
+      if nof_nonzero_contrib:
+        nonzero_weights.append(weight_sum)
+      row.append(weight_sum)
+    stitch_avg = sum(nonzero_weights) / len(nonzero_weights) if nonzero_weights else 0.
+    if 'stitched' not in header:
+      header.append('stitched')
+    row.append(stitch_avg)
+    rows[bin_key] = row
+
+  ratio_table = prettytable.PrettyTable(header)
+  for bin_key in rows:
+    row = [ bin_key, ] + [ rfmt(bin_content, force_scientific = True) for bin_content in rows[bin_key] ]
+    ratio_table.add_row(row)
+  return ratio_table.get_html_string()
+
 def write_report(output_fn, content):
   meta = 'File generated on: {}'.format(str(datetime.datetime.now()))
   with open(output_fn, 'w') as html_out:
@@ -763,6 +818,7 @@ def write_report(output_fn, content):
   return
 
 def run_stitch(era, samples_to_stitch_orig, del_var, counter = -1):
+  inclusive_xs = samples_to_stitch_orig['inclusive']['xsec']
   samples_to_stitch = copy.deepcopy(samples_to_stitch_orig)
   if del_var:
     if del_var == 'inclusive':
@@ -793,11 +849,13 @@ def run_stitch(era, samples_to_stitch_orig, del_var, counter = -1):
   samples_to_stitch_wstitching = comp_stitching_weights(samples_to_stitch_wbinnedcounts, binstat)
   stitching_table = print_stitching_weights(samples_to_stitch_wstitching, era)
 
+  ratio_table = get_ratio_table(samples_to_stitch_wstitching, era, inclusive_xs)
+
   content_entries = []
   block_title = ''
   if counter >= 0:
     tables = [
-      lumiscale_table, binned_count_table, binstats_table, stitching_table
+      lumiscale_table, binned_count_table, binstats_table, stitching_table, ratio_table
     ]
     exclude_str = ''
     if del_var:
@@ -812,7 +870,7 @@ def run_stitch(era, samples_to_stitch_orig, del_var, counter = -1):
       '{} ({})'.format(caption_base, block_title) for caption_base in CAPTIONS_BASE
     ]
 
-    for content_idx in range(4):
+    for content_idx in range(len(tables)):
       content_entries.append([
         tables[content_idx], captions[content_idx]
       ])
