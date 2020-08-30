@@ -158,8 +158,8 @@ GenEvtHistManager::bookHistograms(TFileDirectory & dir,
       histogram_evtWeightManager_1D_counter_ = static_cast<TH1 *>(histogram_evtWeightManager_1D_->Clone());
       histogram_evtWeightManager_1D_counter_->SetName(Form("%s_counter",  histogram_evtWeightManager_1D_->GetName()));
       histogram_evtWeightManager_1D_counter_->SetTitle(Form("%s_counter", histogram_evtWeightManager_1D_->GetTitle()));
-      histograms_.push_back(histogram_evtWeightManager_1D_);
-      histograms_.push_back(histogram_evtWeightManager_1D_counter_);
+      book1D(subdir, histogram_evtWeightManager_1D_);
+      book1D(subdir, histogram_evtWeightManager_1D_counter_);
       break;
     }
     case 2:
@@ -182,11 +182,13 @@ GenEvtHistManager::bookHistograms(TFileDirectory & dir,
         central_or_shift_.empty() || central_or_shift_ == "central" ? "" : Form("%s_", central_or_shift_.data()),
         histogram_evtWeightManager_2D_->GetTitle()
       ));
+      histogram_evtWeightManager_2D_->SetOption("col text");
       histogram_evtWeightManager_2D_counter_ = static_cast<TH2 *>(histogram_evtWeightManager_2D_->Clone());
       histogram_evtWeightManager_2D_counter_->SetName(Form("%s_counter",  histogram_evtWeightManager_2D_->GetName()));
       histogram_evtWeightManager_2D_counter_->SetTitle(Form("%s_counter", histogram_evtWeightManager_2D_->GetTitle()));
-      histograms_.push_back(histogram_evtWeightManager_2D_);
-      histograms_.push_back(histogram_evtWeightManager_2D_counter_);
+      histogram_evtWeightManager_2D_counter_->SetOption("col text");
+      book1D(subdir, histogram_evtWeightManager_2D_);
+      book1D(subdir, histogram_evtWeightManager_2D_counter_);
       break;
     }
     default: throw cmsException(this, __func__, __LINE__) << "Invalid dimension = " << histogramDimension;
