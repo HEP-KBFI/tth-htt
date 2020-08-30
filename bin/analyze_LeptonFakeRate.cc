@@ -735,7 +735,8 @@ main(int argc,
 						  "1byEminus1byP", "JetRelIso", "tth_mva", "DeepJet_WP", "mT", "mT_fix", "evtWeight"
     );
     bdt_filler_e->register_variable<int_type_e>(
-						"EGamma_MVA_WP", "Conv_reject", "miss_hits", "isTight", "isFakeable", "lep_isgenMatchedFake"
+						"EGamma_MVA_WP", "Conv_reject", "miss_hits", "isTight", "isFakeable", "lep_isgenMatchedFake",
+						"lep_isgenMatchedToLepton", "lep_isgenMatchedToPhoton", "lep_isgenMatchedToTau"
     );
     bdt_filler_mu = new std::remove_pointer<decltype(bdt_filler_mu)>::type(
 	    makeHistManager_cfg(process_string, Form("LeptonFakeRate_ntuple/%s", "muon"), era_string, central_or_shift)
@@ -745,7 +746,8 @@ main(int argc,
 						    "tth_mva", "DeepJet_WP", "assocJet_pt", "mT", "mT_fix", "evtWeight"
     );
     bdt_filler_mu->register_variable<int_type_mu>(
-						  "PFMuon_WP", "isTight", "isFakeable", "lep_isgenMatchedFake"
+						  "PFMuon_WP", "isTight", "isFakeable", "lep_isgenMatchedFake",
+						  "lep_isgenMatchedToLepton", "lep_isgenMatchedToTau"
     );
     bdt_filler_e->bookTree(fs);
     bdt_filler_mu->bookTree(fs);
@@ -1367,6 +1369,8 @@ main(int argc,
 	  ("isTight", preselMuon.isTight() ? 1 : 0)
 	  ("isFakeable", preselMuon.isFakeable() ? 1 : 0)
 	  ("lep_isgenMatchedFake", (!(preselMuon.genLepton() || preselMuon.genHadTau())) ? 1 : 0)
+	  ("lep_isgenMatchedToLepton", preselMuon.genLepton() ? 1 : 0)
+	  ("lep_isgenMatchedToTau", preselMuon.genHadTau() ? 1 : 0)
 	  .fill();
       }
 
@@ -1499,6 +1503,9 @@ main(int argc,
 	  ("isTight", preselElectron.isTight() ? 1 : 0)
 	  ("isFakeable", preselElectron.isFakeable() ? 1 : 0)
 	  ("lep_isgenMatchedFake", (!(preselElectron.genLepton() || preselElectron.genHadTau() || preselElectron.genPhoton())) ? 1 : 0)
+	  ("lep_isgenMatchedToLepton", preselElectron.genLepton() ? 1 : 0)
+	  ("lep_isgenMatchedToTau", preselElectron.genHadTau() ? 1 : 0)
+	  ("lep_isgenMatchedToPhoton", preselElectron.genPhoton() ? 1 : 0)
 	  .fill();
       }
 
