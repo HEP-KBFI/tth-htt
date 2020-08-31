@@ -1050,6 +1050,7 @@ def save_root(content, required_era, output_fn):
             histogram.GetXaxis().SetBinLabel(bin_idx + 1, bin_label)
           for bin_idx, bin_label in enumerate(ylabels):
             histogram.GetYaxis().SetBinLabel(bin_idx + 1, bin_label)
+          histogram.SetOption("col text")
 
           for xidx in range(len(xlabels)):
             for yidx in range(len(ylabels)):
