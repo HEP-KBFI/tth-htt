@@ -131,6 +131,14 @@ HistManagerBase::book1D(TFileDirectory & dir,
   return this->book1D(dir, distribution, distribution, numBins, binning);
 }
 
+void
+HistManagerBase::book1D(TDirectory * dir,
+                        TH1 * histogram)
+{
+  histograms_.push_back(histogram);
+  gHistograms_[dir].push_back(histogram);
+}
+
 TH2 *
 HistManagerBase::book2D(TFileDirectory & dir,
                         const std::string & distribution,
@@ -244,6 +252,14 @@ HistManagerBase::book2D(TFileDirectory & dir,
                         const double * binningY)
 {
   return this->book2D(dir, distribution, distribution, numBinsX, binningX, numBinsY, binningY);
+}
+
+void
+HistManagerBase::book2D(TDirectory * dir,
+                        TH2 * histogram)
+{
+  histograms_2d_.push_back(histogram);
+  gHistograms_[dir].push_back(histogram);
 }
 
 bool 

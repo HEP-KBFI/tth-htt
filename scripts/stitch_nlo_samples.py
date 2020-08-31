@@ -45,13 +45,16 @@ if not output:
 samples = load_samples(era)
 
 if era == '2016':
-  from tthAnalysis.HiggsToTauTau.samples.stitch_nlo import samples_to_stitch_DYJets_NLO_2016 as samples_to_stitch
+  from tthAnalysis.HiggsToTauTau.samples.stitch_nlo import samples_to_stitch_nlo_2016 as samples_to_stitch_arr
 elif era == '2017':
-  from tthAnalysis.HiggsToTauTau.samples.stitch_nlo import samples_to_stitch_DYJets_NLO_2017 as samples_to_stitch
+  from tthAnalysis.HiggsToTauTau.samples.stitch_nlo import samples_to_stitch_nlo_2017 as samples_to_stitch_arr
 elif era == '2018':
-  from tthAnalysis.HiggsToTauTau.samples.stitch_nlo import samples_to_stitch_DYJets_NLO_2018 as samples_to_stitch
+  from tthAnalysis.HiggsToTauTau.samples.stitch_nlo import samples_to_stitch_nlo_2018 as samples_to_stitch_arr
 else:
   raise RuntimeError("Invalid era: %s" % era)
+
+assert(len(samples_to_stitch_arr) == 1)
+samples_to_stitch = samples_to_stitch_arr[0]
 
 if plot and not plot.endswith('.pdf'):
   raise ValueError("Can only accept the path to plot in pdf format: %s" % plot)

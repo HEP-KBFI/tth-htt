@@ -83,9 +83,10 @@ def load_samples_hh_bbww(era, is_postproc = True, suffix = ''):
   return load_samples(era, is_postproc, "hh_bbww", suffix)
 
 STITCHING_OPTIONS = [
-  'dy_lo',  'dy_lo_incl',  'dy_lo_noincl',
-  'dy_nlo', 'dy_nlo_incl', 'dy_nlo_noincl',
-  'wjets',  'wjets_incl',  'wjets_noincl',
+  'dy_lowmll_lo',  'dy_lowmll_lo_incl',  'dy_lowmll_lo_noincl',
+  'dy_lo',         'dy_lo_incl',         'dy_lo_noincl',
+  'dy_nlo',        'dy_nlo_incl',        'dy_nlo_noincl',
+  'wjets',         'wjets_incl',         'wjets_noincl',
 ]
 
 def load_samples_stitched(samples, era, load = None):
@@ -94,9 +95,10 @@ def load_samples_stitched(samples, era, load = None):
   assert(type(load) == list)
   assert(load_option in STITCHING_OPTIONS for load_option in load)
 
-  load_wjets  = 'wjets'  in load or 'wjets_incl'  in load or 'wjets_noincl'  in load
-  load_nlo_dy = 'dy_nlo' in load or 'dy_nlo_incl' in load or 'dy_nlo_noincl' in load
-  load_lo_dy  = 'dy_lo'  in load or 'dy_lo_incl'  in load or 'dy_lo_noincl'  in load
+  load_wjets         = 'wjets'        in load or 'wjets_incl'        in load or 'wjets_noincl'        in load
+  load_nlo_dy        = 'dy_nlo'       in load or 'dy_nlo_incl'       in load or 'dy_nlo_noincl'       in load
+  load_lo_dy         = 'dy_lo'        in load or 'dy_lo_incl'        in load or 'dy_lo_noincl'        in load
+  load_lowmll_lo_dy  = 'dy_lowmll_lo' in load or 'dy_lowmll_lo_incl' in load or 'dy_lowmll_lo_noincl' in load
 
   if load_wjets:
     if sum(load_option in [ 'wjets', 'wjets_incl', 'wjets_noincl' ] for load_option in load) > 1:
@@ -107,21 +109,30 @@ def load_samples_stitched(samples, era, load = None):
   if load_lo_dy:
     if sum(load_option in [ 'dy_lo', 'dy_lo_incl', 'dy_lo_noincl' ] for load_option in load) > 1:
       raise ValueError("Conflicting options given: %s" % ', '.join(load))
+  if load_lowmll_lo_dy:
+    if sum(load_option in [ 'dy_lowmll_lo', 'dy_lowmll_lo_incl', 'dy_lowmll_lo_noincl' ] for load_option in load) > 1:
+      raise ValueError("Conflicting options given: %s" % ', '.join(load))
 
   if load_nlo_dy and load_lo_dy:
     raise ValueError("Conflictiong options: %s; cannot load LO and NLO DY samples simultaneously" % ', '.join(load))
 
-  sample_module_lo = importlib.import_module('tthAnalysis.HiggsToTauTau.samples.stitch_lo')
-  sample_module_nlo = importlib.import_module('tthAnalysis.HiggsToTauTau.samples.stitch_nlo')
+  sample_module = importlib.import_module('tthAnalysis.HiggsToTauTau.samples.stitch')
+  samples_to_stitch = getattr(sample_module, 'samples_to_stitch_{}'.format(era))
 
   samples_binned = []
   if load_lo_dy:
-    samples_binned.extend(getattr(sample_module_lo, 'samples_to_stitch_DYJets_LO_{}'.format(era)))
+    samples_binned.extend([ sample for sample in samples_to_stitch if sample['order'] == 'LO' and sample['meta'] == 'DY' ])
   elif load_nlo_dy:
-    samples_binned.append(getattr(sample_module_nlo, 'samples_to_stitch_DYJets_NLO_{}'.format(era)))
+    samples_binned.extend([ sample for sample in samples_to_stitch if sample['order'] == 'NLO' and sample['meta'] == 'DY' ])
   if load_wjets:
-    samples_binned.extend(getattr(sample_module_lo, 'samples_to_stitch_WJets_{}'.format(era)))
-  assert(samples_binned)
+    samples_binned.extend([ sample for sample in samples_to_stitch if sample['order'] == 'LO' and sample['meta'] == 'W+jets' ])
+  if load_lowmll_lo_dy:
+    samples_binned.extend([ sample for sample in samples_to_stitch if sample['order'] == 'LO' and sample['meta'] == 'DY (low mll)' ])
+
+  if not (load_lowmll_lo_dy and era != '2016'):
+    assert(samples_binned)
+  if not samples_binned:
+    return samples
 
   sample_names_exclusive = []
   sample_names_inclusive = []
@@ -129,9 +140,10 @@ def load_samples_stitched(samples, era, load = None):
     for sample_key, sample_value in sample_set.items():
       if sample_key == 'inclusive':
         sample_names_inclusive.extend(sample_value['samples'])
-      else:
-        for sample_binned_value in sample_value:
-          sample_names_exclusive.extend(sample_binned_value['samples'])
+      elif sample_key == 'exclusive':
+        for split_var in sample_value:
+          for sample_entry in sample_value[split_var]:
+            sample_names_exclusive.extend(sample_entry['samples'])
   sample_names = sample_names_inclusive + sample_names_exclusive
 
   for sample_key, sample_info in samples.items():
@@ -147,12 +159,23 @@ def load_samples_stitched(samples, era, load = None):
         sample_info["use_it"] = process_name in sample_names_exclusive
       else:
         assert(False)
-    elif (load_lo_dy or load_nlo_dy) and process_name.startswith('DY'):
+    elif (load_lo_dy or load_nlo_dy) and process_name.startswith('DY') and '10to50' not in process_name:
       if 'dy_lo' in load or 'dy_nlo' in load:
         sample_info["use_it"] = process_name in sample_names
       elif 'dy_lo_incl' in load or 'dy_nlo_incl' in load:
         sample_info["use_it"] = process_name in sample_names_inclusive
       elif 'dy_lo_noincl' in load or 'dy_nlo_noincl' in load:
         sample_info["use_it"] = process_name in sample_names_exclusive
+      else:
+        assert(False)
+    elif load_lowmll_lo_dy and process_name.startswith('DY') and '10to50' in process_name:
+      if 'dy_lowmll_lo' in load:
+        sample_info["use_it"] = process_name in sample_names
+      elif 'dy_lowmll_lo_incl' in load:
+        sample_info["use_it"] = process_name in sample_names_inclusive
+      elif 'dy_lowmll_lo_noincl' in load:
+        sample_info["use_it"] = process_name in sample_names_exclusive
+      else:
+        assert(False)
 
   return samples

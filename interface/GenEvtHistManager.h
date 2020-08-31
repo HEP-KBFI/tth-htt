@@ -41,11 +41,14 @@ public:
 
   void
   bookHistograms(TFileDirectory & dir,
-                 const EvtWeightManager * const eventWeightManager);
+                 const EvtWeightManager * const eventWeightManager,
+                 bool bookRecoHistograms = false);
 
   void
   fillHistograms(const EvtWeightManager * const eventWeightManager,
-                 double evtWeight);
+                 double evtWeight,
+                 int numJets = -1,
+                 double ht = -1.);
 
 private:
   double minGenElectronPt_;
@@ -58,6 +61,8 @@ private:
   double maxGenPhotonAbsEta_;
   double minGenJetPt_;
   double maxGenJetAbsEta_;
+
+  bool bookRecoHistograms_;
 
   TH1 * histogram_numGenElectrons_withinAcc_;
   TH1 * histogram_numGenMuons_withinAcc_;
@@ -76,6 +81,8 @@ private:
   TH1 * histogram_evtWeightManager_1D_counter_;
   TH2 * histogram_evtWeightManager_2D_;
   TH2 * histogram_evtWeightManager_2D_counter_;
+  std::map<std::string, TH1 *> histogram_evtWeightManager_numJets_;
+  std::map<std::string, TH1 *> histogram_evtWeightManager_HT_;
 
   std::string central_or_shift_;
 };

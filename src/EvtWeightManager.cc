@@ -210,6 +210,18 @@ EvtWeightManager::has_central_or_shift(const std::string & central_or_shift) con
   return binnedHistogram_1var_.count(central_or_shift) || binnedHistogram_2var_.count(central_or_shift);
 }
 
+std::string
+EvtWeightManager::get_x_var() const
+{
+  return binnedHistogram_varName_x_;
+}
+
+std::string
+EvtWeightManager::get_y_var() const
+{
+  return binnedHistogram_varName_y_;
+}
+
 double
 EvtWeightManager::getWeight() const
 {
@@ -250,6 +262,16 @@ EvtWeightManager::getWeight(const std::string & central_or_shift) const
     throw cmsException(this, __func__, __LINE__)
       << "None of the histograms are initialized for " << central_or_shift
     ;
+  }
+  if(std::fpclassify(weight) == FP_ZERO)
+  {
+    // can only happen if the stitching weight is not computed for a phase space region that has no overlap
+    // with the phase space of other samples
+    if(isDebug_)
+    {
+      std::cout << get_human_line(this, __func__, __LINE__) << ": weight is 0 -> setting it to 1 instead";
+    }
+    weight = 1.;
   }
 
   return weight;

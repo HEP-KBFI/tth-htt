@@ -363,9 +363,9 @@ class analyzeConfig(object):
               inclusive_samples.append(inclusive_sample)
 
             # loop over the binned samples
-            all_present = { key : True for key in samples_to_stitch_entry.keys() if key != 'inclusive' }
+            all_present = { key : True for key in samples_to_stitch_entry['exclusive'].keys() }
             for binning_key in all_present:
-              for binned_samples in samples_to_stitch_entry[binning_key]:
+              for binned_samples in samples_to_stitch_entry['exclusive'][binning_key]:
                 for binned_sample in binned_samples['samples']:
                   # if at least one sample is not enabled, disable all other samples that
                   # are binned by the same variable
@@ -382,17 +382,17 @@ class analyzeConfig(object):
                     binning_key, ', '.join(inclusive_samples)
                   )
                 )
-                for binned_samples in samples_to_stitch_entry[binning_key]:
+                for binned_samples in samples_to_stitch_entry['exclusive'][binning_key]:
                   for binned_sample in binned_samples['samples']:
                     logging.warning('Disabling sample %s' % binned_sample)
                     self.samples[samples_lut[binned_sample]]['use_it'] = False
-                del samples_to_stitch_entry[binning_key]
+                del samples_to_stitch_entry['exclusive'][binning_key]
 
           # construct the list of arguments that need to be propagated to the config files
           # these parameters specify how to access additional weights at the analysis level such
           # that the phase space is modelled accurately
           for samples_to_stitch_entry in samples_to_stitch:
-            binning_vars = [var for var in samples_to_stitch_entry if var != 'inclusive']
+            binning_vars = sorted([ var for var in samples_to_stitch_entry['exclusive'] ], reverse = True)
             histogram_path = ''
             branch_name_xaxis = ''
             branch_name_yaxis = ''
@@ -435,7 +435,7 @@ class analyzeConfig(object):
                 continue
             # loop over the binned samples
             for binning_key in binning_vars:
-              for binned_samples in samples_to_stitch_entry[binning_key]:
+              for binned_samples in samples_to_stitch_entry['exclusive'][binning_key]:
                 for binned_sample in binned_samples['samples']:
                   assert(binned_sample not in self.stitching_args)
                   self.stitching_args[binned_sample] = {

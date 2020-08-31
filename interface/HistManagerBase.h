@@ -73,6 +73,10 @@ class HistManagerBase
          const std::string & distribution,
          int numBins,
          const double * binning);
+  void
+  book1D(TDirectory * dir,
+         TH1 * histogram);
+
   TH2 *
   book2D(TFileDirectory & dir,
          const std::string & distribution,
@@ -123,6 +127,9 @@ class HistManagerBase
          const double * binningX,
          int numBinsY,
          const double * binningY);
+  void
+  book2D(TDirectory * dir,
+         TH2 * histogram);
 
  protected:
   bool 
