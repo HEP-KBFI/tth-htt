@@ -15,12 +15,18 @@
 #include <DataFormats/Math/interface/deltaR.h> // deltaR()
 #include <DataFormats/Math/interface/LorentzVector.h> // math::PtEtaPhiMLorentzVector
 
+#include "tthAnalysis/HiggsToTauTau/interface/TMVAInterface.h" // TMVAInterface
+
 #include <TMath.h> // TMath::Abs()
 
 #include <vector> // std::vector<>
 #include <map> // std::map<,>
 #include <algorithm> // std::copy_n()
 #include <type_traits> // std::underlying_type<>
+
+#include <fstream> // std::ofstream   
+#include <sstream>
+
 
 #define TAU_WP_SEPARATOR   "&"
 #define TAU_WP_SEPARATOR_C '&'
@@ -748,4 +754,14 @@ recompute_met(const RecoMEt & met_uncorr,
               int met_option,
               bool isDEBUG = false);
 
+std::map<std::string, double>
+InitializeInputVarMap(std::map<std::string, double> & AllVars_Map,
+		      std::vector<std::string> & BDTInputVariables);
+
+std::map<std::string, double>
+CreateBDTOutputMap(std::vector<double> & gen_mHH,
+		   TMVAInterface* BDT_SUM,
+		   std::map<std::string, double>& BDTInputs_SUM,
+		   std::string label = "",
+		   int event_number = -1);
 #endif
