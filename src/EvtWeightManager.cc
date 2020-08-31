@@ -263,6 +263,16 @@ EvtWeightManager::getWeight(const std::string & central_or_shift) const
       << "None of the histograms are initialized for " << central_or_shift
     ;
   }
+  if(std::fpclassify(weight) == FP_ZERO)
+  {
+    // can only happen if the stitching weight is not computed for a phase space region that has no overlap
+    // with the phase space of other samples
+    if(isDebug_)
+    {
+      std::cout << get_human_line(this, __func__, __LINE__) << ": weight is 0 -> setting it to 1 instead";
+    }
+    weight = 1.;
+  }
 
   return weight;
 }
