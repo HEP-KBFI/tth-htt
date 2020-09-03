@@ -103,6 +103,18 @@ TH1* normalizeHistogram(const TH1* histogram)
   return histogram_normalized;
 }
 
+void dumpHistogram(TH1* histogram)
+{
+  std::cout << "<dumpHistogram>:" << std::endl;
+  std::cout << " histogram: name = " << histogram->GetName() << ", title = " << histogram->GetTitle() << std::endl;
+  TAxis* xAxis = histogram->GetXaxis();
+  int numBins = xAxis->GetNbins();
+  for ( int iBin = 1; iBin <= numBins; ++iBin ) {
+    std::cout << "bin #" << iBin << " (x = " << xAxis->GetBinLowEdge(iBin) << ".." << xAxis->GetBinUpEdge(iBin) << "):" 
+              << " " << histogram->GetBinContent(iBin) << " + " << histogram->GetBinErrorUp(iBin) << " - " << histogram->GetBinErrorLow(iBin) << std::endl;
+  }
+}
+
 void addLabel_CMS_simulation(double x0, double y0)
 {
   TPaveText* label_cms = new TPaveText(x0, y0 + 0.0075, x0 + 0.0800, y0 + 0.0725, "NDC");
@@ -305,7 +317,11 @@ void makeBJetPlots_for_HIG_19_008()
 
     if ( (*plot) == "genBJetPt" || (*plot) == "genBJetEta" ) {
       histogram_signal = normalizeHistogram(histogram_signal);
+      std::cout << "histogram_signal: mean = " << histogram_signal->GetMean() << " +/- " << histogram_signal->GetMeanError() << std::endl;
+      dumpHistogram(histogram_signal);
       TH1* histogram_background = sumHistograms(histogram_background_fake, histogram_background_nonfake);
+      std::cout << "histogram_background: mean = " << histogram_background->GetMean() << " +/- " << histogram_background->GetMeanError() << std::endl;
+      dumpHistogram(histogram_background);
       histogram_background = normalizeHistogram(histogram_background);
       makePlot(
         histogram_signal,             "t#bar{t}H",
