@@ -136,6 +136,276 @@ void CheckGenParticleMatch(const RecoElectron & preselElectron, std::vector<GenP
  
 }
 
+void
+FillNtuples(const RecoLepton* preselLepton, 
+	    EventInfo eventInfo,
+	    double evtWeight,
+	    const double mT, 
+	    const double mT_fix,
+	    NtupleFillerBDT<float, int>* bdt_filler = 0)
+{
+  if(preselLepton->is_electron())
+    {
+      const RecoElectron* preselElectron_ptr  = dynamic_cast<const RecoElectron*>(preselLepton);
+      const RecoElectron & preselElectron = *preselElectron_ptr;
+
+      int EGamma_MVA_WP = 0;
+      if(preselElectron.mvaID_POG(EGammaWP::WPL)){
+        EGamma_MVA_WP = 1;
+      }
+
+      if(preselElectron.mvaID_POG(EGammaWP::WP80)){
+        EGamma_MVA_WP = 2;
+      }
+
+      //----Fill the Ntuples for preselElectron
+      if(bdt_filler)
+	{
+	  // FILL THE ELECTRON BRANCHES
+	  bdt_filler->operator()({eventInfo.run, eventInfo.lumi, eventInfo.event})
+	    ("mT_fix", mT_fix)
+	    ("mT", mT)
+	    ("cone_pt", preselElectron.cone_pt())
+	    ("pt", preselElectron.pt())
+	    ("eta", preselElectron.eta())
+	    ("dxy", preselElectron.dxy())
+	    ("dz", preselElectron.dz())
+	    ("sip3d", preselElectron.sip3d())
+	    ("iso", preselElectron.relIso())
+	    ("sigma_ieie", preselElectron.sigmaEtaEta())
+	    ("HbyE", preselElectron.HoE())
+	    ("1byEminus1byP", preselElectron.OoEminusOoP())
+	    ("JetRelIso", preselElectron.jetRelIso())
+	    ("tth_mva", preselElectron.mvaRawTTH())
+	    ("Conv_reject", preselElectron.passesConversionVeto() ? 1 : 0)
+	    ("miss_hits", preselElectron.nLostHits())
+	    ("EGamma_MVA_WP", EGamma_MVA_WP)
+	    ("DeepJet_WP", preselElectron.jetBtagCSV(false))
+	    ("evtWeight", evtWeight)
+	    ("isTight", preselElectron.isTight() ? 1 : 0)
+	    ("isFakeable", preselElectron.isFakeable() ? 1 : 0)
+	    ("lep_isgenMatchedFake", (!(preselElectron.genLepton() || preselElectron.genHadTau() || preselElectron.genPhoton())) ? 1 : 0)
+	    ("lep_isgenMatchedToLepton", preselElectron.genLepton() ? 1 : 0)
+	    ("lep_isgenMatchedToTau", preselElectron.genHadTau() ? 1 : 0)
+	    ("lep_isgenMatchedToPhoton", preselElectron.genPhoton() ? 1 : 0)
+	    .fill();
+      }
+    }
+
+  if(preselLepton->is_muon())
+    {
+      const RecoMuon* preselMuon_ptr  = dynamic_cast<const RecoMuon*>(preselLepton);
+      const RecoMuon & preselMuon = *preselMuon_ptr;
+
+      int PFMuon_WP = 0;
+      if(preselMuon.passesLooseIdPOG()){
+        PFMuon_WP = 1;
+      }
+      if(preselMuon.passesMediumIdPOG()){
+        PFMuon_WP = 2;
+      }
+
+      if(bdt_filler){
+        // FILL THE MUON BRANCHES
+	bdt_filler->operator()({eventInfo.run, eventInfo.lumi, eventInfo.event})
+          ("mT_fix", mT_fix)
+          ("mT", mT)
+          ("cone_pt", preselMuon.cone_pt())
+          ("pt", preselMuon.pt())
+          ("eta", preselMuon.eta())
+          ("dxy", preselMuon.dxy())
+          ("dz", preselMuon.dz())
+          ("sip3d", preselMuon.sip3d())
+          ("iso", preselMuon.relIso())
+          ("JetRelIso", preselMuon.jetRelIso())
+          ("tth_mva", preselMuon.mvaRawTTH())
+          ("PFMuon_WP", PFMuon_WP)
+          ("assocJet_pt", preselMuon.assocJet_pt())
+          ("DeepJet_WP", preselMuon.jetBtagCSV(false))
+          ("evtWeight", evtWeight)
+          ("isTight", preselMuon.isTight() ? 1 : 0)
+          ("isFakeable", preselMuon.isFakeable() ? 1 : 0)
+          ("lep_isgenMatchedFake", (!(preselMuon.genLepton() || preselMuon.genHadTau())) ? 1 : 0)
+          ("lep_isgenMatchedToLepton", preselMuon.genLepton() ? 1 : 0)
+          ("lep_isgenMatchedToTau", preselMuon.genHadTau() ? 1 : 0)
+          .fill();
+      }
+    }
+  
+}
+
+
+int 
+DiLeptonSS(std::vector<const RecoLepton*> preselLeptonsFull, 
+	   const GenMEt genmet, 
+	   const RecoMEt met, 
+	   const double METScaleSyst, 
+	   const METSyst metSyst_option,
+	   numerator_and_denominatorHistManagers * histograms_e_numerator_incl_diLeptSS,
+	   std::vector<numerator_and_denominatorHistManagers *> histograms_e_numerator_binned_diLeptSS,
+	   numerator_and_denominatorHistManagers * histograms_e_denominator_incl_diLeptSS,
+	   std::vector<numerator_and_denominatorHistManagers *> histograms_e_denominator_binned_diLeptSS,
+	   numerator_and_denominatorHistManagers * histograms_mu_numerator_incl_diLeptSS,
+	   std::vector<numerator_and_denominatorHistManagers *> histograms_mu_numerator_binned_diLeptSS,
+	   numerator_and_denominatorHistManagers * histograms_mu_denominator_incl_diLeptSS,
+	   std::vector<numerator_and_denominatorHistManagers *> histograms_mu_denominator_binned_diLeptSS,
+	   double evtWeight,
+	   EventInfo eventInfo,
+	   NtupleFillerBDT<float, int>* bdt_filler_e_diLeptSS = 0,
+	   NtupleFillerBDT<float, int>* bdt_filler_mu_diLeptSS = 0,
+	   bool isDEBUG = false,
+	   cutFlowTableType* cutFlowTable_e = 0,
+	   cutFlowTableType* cutFlowTable_mu = 0)
+	   
+{
+  int TagLeptonIndex = -1;
+  int ProbeLeptonIndex = -1;
+  bool TagLeptonExists = false;
+  bool ProbeLeptonExists = false;
+  if(preselLeptonsFull.size() == 2)
+    { // 2 Loose/Presel Leptons cond.
+
+      cutFlowTable_e->update("= 2 presel/Loose leptons", evtWeight);
+      cutFlowTable_mu->update("= 2 presel/Loose leptons", evtWeight);
+
+      for(unsigned int i = 0; i < preselLeptonsFull.size(); i++)
+	{ // loop over preselleptons
+	  if( (preselLeptonsFull[i]->genLepton()) && (preselLeptonsFull[i]->isTight()) )
+	    {
+	      cutFlowTable_e->update("Gen-matched lepton (Tag) exists", evtWeight);
+	      cutFlowTable_mu->update("Gen-matched lepton (Tag) exists", evtWeight);
+	      //std::cout << "Tag found " << std::endl;
+	      TagLeptonExists = true;
+	      TagLeptonIndex = i;
+	    }
+	  if((preselLeptonsFull[i]->is_electron()) 
+	     && !((preselLeptonsFull[i]->genLepton())
+		  || (preselLeptonsFull[i]->genHadTau())
+		  || (preselLeptonsFull[i]->genPhoton())))
+	    {
+	      //std::cout << "Probe found and it is an electron " << std::endl;
+	      ProbeLeptonExists = true;
+	      ProbeLeptonIndex = i;
+	    }
+	  if((preselLeptonsFull[i]->is_muon()) 
+	     && !((preselLeptonsFull[i]->genLepton())
+		  || (preselLeptonsFull[i]->genHadTau())) )
+	    {
+	      //std::cout << "Probe found and it is a muon " << std::endl;
+	      ProbeLeptonExists = true;
+	      ProbeLeptonIndex = i;
+	    }
+	} // loop over preselleptons ends
+      
+      if(TagLeptonExists && ProbeLeptonExists)
+	{// Both Tag and probe exists
+	  if((preselLeptonsFull[TagLeptonIndex]->charge()*preselLeptonsFull[ProbeLeptonIndex]->charge()) > 0)
+	    {// Same Sign cond.
+
+	      cutFlowTable_e->update("Both presel/Loose leptons are Same Sign", evtWeight);
+	      cutFlowTable_mu->update("Both presel/Loose leptons are Same Sign", evtWeight);
+
+	      //electron block
+    	      if(preselLeptonsFull[ProbeLeptonIndex]->is_electron())
+    		{ // Fill electron histograms
+		  cutFlowTable_e->update("Probe lepton exists and is an electron", evtWeight);
+		  const RecoLepton & preselElectron = *(preselLeptonsFull[ProbeLeptonIndex]);
+		  const RecoMEt met_mod = METSystComp_LeptonFakeRate(preselLeptonsFull[ProbeLeptonIndex], genmet, met, METScaleSyst, metSyst_option, isDEBUG);
+		  const double mT     = comp_mT(preselElectron, met_mod.pt(), met_mod.phi());
+		  const double mT_fix = comp_mT_fix(preselElectron, met_mod.pt(), met_mod.phi());
+
+		  // Fill Ntuples for electron
+		  FillNtuples(preselLeptonsFull[ProbeLeptonIndex], eventInfo, evtWeight, mT, mT_fix, bdt_filler_e_diLeptSS);
+
+		  // numerator histograms
+    		  numerator_and_denominatorHistManagers * histograms_incl_num = nullptr;
+    		  std::vector<numerator_and_denominatorHistManagers *> * histograms_binned_num = nullptr;
+		  // denominator histograms
+    		  numerator_and_denominatorHistManagers * histograms_incl_den = nullptr;
+    		  std::vector<numerator_and_denominatorHistManagers *> * histograms_binned_den = nullptr;
+
+		  if(preselElectron.isTight())
+    		    {// numerator e histograms filled
+		      histograms_incl_num = histograms_e_numerator_incl_diLeptSS;
+    		      histograms_binned_num = &histograms_e_numerator_binned_diLeptSS;
+		      if(histograms_incl_num != nullptr && histograms_binned_num != nullptr)
+    			{
+    			  histograms_incl_num->fillHistograms(preselElectron, met.pt(), mT, mT_fix, evtWeight); 
+    			  fillHistograms(*histograms_binned_num, preselElectron, met.pt(), mT, mT_fix, evtWeight, cutFlowTable_e); 
+    			}
+		    }
+
+		  //if(preselElectron.isFakeable()) // CERN group logic
+		  if(preselElectron.isFakeable() && !preselElectron.isTight()) // Tallinn Group logic
+    		    {// denominator e histograms filled
+    		      histograms_incl_den = histograms_e_denominator_incl_diLeptSS;
+    		      histograms_binned_den = &histograms_e_denominator_binned_diLeptSS;
+     		      if(histograms_incl_den != nullptr && histograms_binned_den != nullptr)
+    			{
+    			  histograms_incl_den->fillHistograms(preselElectron, met.pt(), mT, mT_fix, evtWeight); 
+    			  fillHistograms(*histograms_binned_den, preselElectron, met.pt(), mT, mT_fix, evtWeight, cutFlowTable_e);
+    		        }
+    		    }	
+		  return 4; 
+		} // electron block ends
+	      
+	      // muon block
+	      if(preselLeptonsFull[ProbeLeptonIndex]->is_muon())
+		{ // Fill muon histograms
+		  cutFlowTable_mu->update("Probe lepton exists and is a muon", evtWeight);
+		  const RecoLepton & preselMuon = *(preselLeptonsFull[ProbeLeptonIndex]);
+		  const RecoMEt met_mod = METSystComp_LeptonFakeRate(preselLeptonsFull[ProbeLeptonIndex], genmet, met, METScaleSyst, metSyst_option, isDEBUG);
+		  const double mT     = comp_mT(preselMuon, met_mod.pt(), met_mod.phi());
+		  const double mT_fix = comp_mT_fix(preselMuon, met_mod.pt(), met_mod.phi());
+
+		  // Fill Ntuples for muon
+		  FillNtuples(preselLeptonsFull[ProbeLeptonIndex], eventInfo, evtWeight, mT, mT_fix, bdt_filler_mu_diLeptSS);
+
+		  // numerator histograms
+		  numerator_and_denominatorHistManagers * histograms_incl_num = nullptr;
+		  std::vector<numerator_and_denominatorHistManagers *> * histograms_binned_num = nullptr;
+		  // denominator histograms
+		  numerator_and_denominatorHistManagers * histograms_incl_den = nullptr;
+		  std::vector<numerator_and_denominatorHistManagers *> * histograms_binned_den = nullptr;
+
+    		    if(preselMuon.isTight())
+    		      {// numerator mu histograms filled
+    			histograms_incl_num = histograms_mu_numerator_incl_diLeptSS;
+    			histograms_binned_num = &histograms_mu_numerator_binned_diLeptSS;
+			if(histograms_incl_num != nullptr && histograms_binned_num != nullptr)
+    			  {
+    			    histograms_incl_num->fillHistograms(preselMuon, met.pt(), mT, mT_fix, evtWeight); 
+    			    fillHistograms(*histograms_binned_num, preselMuon, met.pt(), mT, mT_fix, evtWeight, cutFlowTable_mu); 
+    			  }
+    		      }
+
+    		    //if(preselMuon.isFakeable())  // CERN group logic
+    		    if(preselMuon.isFakeable() && !preselMuon.isTight()) // Tallinn Group logic
+    		      {// denominator mu histograms filled
+    			histograms_incl_den = histograms_mu_denominator_incl_diLeptSS;
+    			histograms_binned_den = &histograms_mu_denominator_binned_diLeptSS;
+			if(histograms_incl_den != nullptr && histograms_binned_den != nullptr)
+    			  {
+    			    histograms_incl_den->fillHistograms(preselMuon, met.pt(), mT, mT_fix, evtWeight); 
+    			    fillHistograms(*histograms_binned_den, preselMuon, met.pt(), mT, mT_fix, evtWeight, cutFlowTable_mu);
+    		          }
+
+    		      }
+		    return 5; 
+		} // muon block ends	      
+
+	    }else{ // Same Sign cond. not satisfied
+	    return 3; 
+	  }
+	}else{ // Both Tag and probe exists cond. not satisfied
+	return 2; 
+      }
+    }else{// 2 Loose/Presel Leptons cond. not satisfied
+    return 1; 
+  }
+  return 0;
+}// func ends
+
 
 int
 main(int argc,
@@ -391,6 +661,15 @@ main(int argc,
   fwlite::OutputFiles outputFile(cfg);
   fwlite::TFileService fs = fwlite::TFileService(outputFile.file().data());
 
+  std::string OutputFileName = outputFile.file().data();
+  std::cout<< "OutputFileName " << OutputFileName << std::endl;
+  bool isMC_TT_SL = false;
+  if(OutputFileName.find("SingleLeptFromT") != std::string::npos)
+  {// handle for semileptonic TTbar MC samples
+    isMC_TT_SL = true;
+  }
+
+
 //--- declare event-level variables
   EventInfo eventInfo(isMC, false, false, apply_topPtReweighting);
   const std::vector<edm::ParameterSet> tHweights = cfg_analyze.getParameterSetVector("tHweights");
@@ -568,6 +847,12 @@ main(int argc,
   };
 
 //--- book histograms for electron numerator and denominator
+  auto histograms_e_numerator_incl_diLeptSS = get_num_den_hist_managers("numerator/diLeptSS/electrons_tight", kElectron); // NEW !
+  histograms_e_numerator_incl_diLeptSS->bookHistograms(fs); // NEW !
+
+  auto histograms_e_denominator_incl_diLeptSS = get_num_den_hist_managers("denominator/diLeptSS/electrons_fakeable", kElectron); // NEW !
+  histograms_e_denominator_incl_diLeptSS->bookHistograms(fs); // NEW !
+
   auto histograms_e_numerator_incl_beforeCuts = get_num_den_hist_managers("numerator/electrons_tight", kElectron);
   histograms_e_numerator_incl_beforeCuts->bookHistograms(fs);
 
@@ -584,6 +869,9 @@ main(int argc,
   );
   histograms_e_denominator_incl_afterCuts->bookHistograms(fs);
 
+
+  std::vector<numerator_and_denominatorHistManagers *> histograms_e_numerator_binned_diLeptSS;   // NEW !
+  std::vector<numerator_and_denominatorHistManagers *> histograms_e_denominator_binned_diLeptSS; // NEW !
   std::vector<numerator_and_denominatorHistManagers *> histograms_e_numerator_binned_beforeCuts;
   std::vector<numerator_and_denominatorHistManagers *> histograms_e_denominator_binned_beforeCuts;
   std::vector<numerator_and_denominatorHistManagers *> histograms_e_numerator_binned_afterCuts;
@@ -600,6 +888,18 @@ main(int argc,
     {
       const double minPt_e = ptBins_e[idxPtBin_e];
       const double maxPt_e = ptBins_e[idxPtBin_e + 1];
+
+      auto histograms_numerator_diLeptSS = get_num_den_hist_managers(
+	"numerator/diLeptSS/electrons_tight", kElectron, minAbsEta_e, maxAbsEta_e, minPt_e, maxPt_e
+      ); // NEW !
+      histograms_numerator_diLeptSS->bookHistograms(fs); // NEW !
+      histograms_e_numerator_binned_diLeptSS.push_back(histograms_numerator_diLeptSS); // NEW !
+
+      auto histograms_denominator_diLeptSS = get_num_den_hist_managers(
+        "denominator/diLeptSS/electrons_fakeable", kElectron, minAbsEta_e, maxAbsEta_e, minPt_e, maxPt_e
+      ); // NEW !
+      histograms_denominator_diLeptSS->bookHistograms(fs); // NEW !
+      histograms_e_denominator_binned_diLeptSS.push_back(histograms_denominator_diLeptSS); // NEW !
 
       auto histograms_numerator_beforeCuts = get_num_den_hist_managers(
         "numerator/electrons_tight", kElectron, minAbsEta_e, maxAbsEta_e, minPt_e, maxPt_e
@@ -628,6 +928,12 @@ main(int argc,
   }
 
 //--- book histograms for muon numerator and denominator
+  auto histograms_mu_numerator_incl_diLeptSS = get_num_den_hist_managers("numerator/diLeptSS/muons_tight", kMuon);   // NEW !
+  histograms_mu_numerator_incl_diLeptSS->bookHistograms(fs); // NEW !
+
+  auto histograms_mu_denominator_incl_diLeptSS = get_num_den_hist_managers("denominator/diLeptSS/muons_fakeable", kMuon); // NEW !
+  histograms_mu_denominator_incl_diLeptSS->bookHistograms(fs); // NEW !
+
   auto histograms_mu_numerator_incl_beforeCuts = get_num_den_hist_managers("numerator/muons_tight", kMuon);
   histograms_mu_numerator_incl_beforeCuts->bookHistograms(fs);
 
@@ -644,6 +950,8 @@ main(int argc,
   );
   histograms_mu_denominator_incl_afterCuts->bookHistograms(fs);
 
+  std::vector<numerator_and_denominatorHistManagers *> histograms_mu_numerator_binned_diLeptSS; // NEW !
+  std::vector<numerator_and_denominatorHistManagers *> histograms_mu_denominator_binned_diLeptSS; // NEW !
   std::vector<numerator_and_denominatorHistManagers *> histograms_mu_numerator_binned_beforeCuts;
   std::vector<numerator_and_denominatorHistManagers *> histograms_mu_denominator_binned_beforeCuts;
   std::vector<numerator_and_denominatorHistManagers *> histograms_mu_numerator_binned_afterCuts;
@@ -660,6 +968,18 @@ main(int argc,
     {
       const double minPt_mu = ptBins_mu[idxPtBin_mu];
       const double maxPt_mu = ptBins_mu[idxPtBin_mu + 1];
+
+      auto histograms_numerator_diLeptSS = get_num_den_hist_managers(
+        "numerator/diLeptSS/muons_tight", kMuon, minAbsEta_mu, maxAbsEta_mu, minPt_mu, maxPt_mu
+      ); // NEW !
+      histograms_numerator_diLeptSS->bookHistograms(fs); // NEW !
+      histograms_mu_numerator_binned_diLeptSS.push_back(histograms_numerator_diLeptSS); // NEW !
+
+      auto histograms_denominator_diLeptSS = get_num_den_hist_managers(
+        "denominator/diLeptSS/muons_fakeable", kMuon, minAbsEta_mu, maxAbsEta_mu, minPt_mu, maxPt_mu
+      ); // NEW !
+      histograms_denominator_diLeptSS->bookHistograms(fs); // NEW !
+      histograms_mu_denominator_binned_diLeptSS.push_back(histograms_denominator_diLeptSS); // NEW !
 
       auto histograms_numerator_beforeCuts = get_num_den_hist_managers(
         "numerator/muons_tight", kMuon, minAbsEta_mu, maxAbsEta_mu, minPt_mu, maxPt_mu
@@ -720,13 +1040,31 @@ main(int argc,
   
 
 //---fill Ntuple for fakeable tuning
+  NtupleFillerBDT<float, int>* bdt_filler_e_diLeptSS = nullptr;
+  NtupleFillerBDT<float, int>* bdt_filler_mu_diLeptSS = nullptr;
   NtupleFillerBDT<float, int>* bdt_filler_e = nullptr;
   NtupleFillerBDT<float, int>* bdt_filler_mu = nullptr;
+  typedef std::remove_pointer<decltype(bdt_filler_e_diLeptSS)>::type::float_type float_type_e;
+  typedef std::remove_pointer<decltype(bdt_filler_e_diLeptSS)>::type::int_type   int_type_e;
+  typedef std::remove_pointer<decltype(bdt_filler_mu_diLeptSS)>::type::float_type float_type_mu;
+  typedef std::remove_pointer<decltype(bdt_filler_mu_diLeptSS)>::type::int_type   int_type_mu;
   typedef std::remove_pointer<decltype(bdt_filler_e)>::type::float_type float_type_e;
   typedef std::remove_pointer<decltype(bdt_filler_e)>::type::int_type   int_type_e;
   typedef std::remove_pointer<decltype(bdt_filler_mu)>::type::float_type float_type_mu;
   typedef std::remove_pointer<decltype(bdt_filler_mu)>::type::int_type   int_type_mu;
   if( fillNtuple ) {
+    bdt_filler_e_diLeptSS = new std::remove_pointer<decltype(bdt_filler_e_diLeptSS)>::type(
+	    makeHistManager_cfg(process_string, Form("LeptonFakeRate_ntuple_diLeptSS/%s", "electron"), era_string, central_or_shift)
+    );
+    bdt_filler_e_diLeptSS->register_variable<float_type_e>(
+						  "cone_pt", "pt",  "eta", "dxy", "dz", "sip3d", "iso", "sigma_ieie", "HbyE",
+						  "1byEminus1byP", "JetRelIso", "tth_mva", "DeepJet_WP", "mT", "mT_fix", "evtWeight"
+    );
+    bdt_filler_e_diLeptSS->register_variable<int_type_e>(
+						"EGamma_MVA_WP", "Conv_reject", "miss_hits", "isTight", "isFakeable", "lep_isgenMatchedFake",
+						"lep_isgenMatchedToLepton", "lep_isgenMatchedToPhoton", "lep_isgenMatchedToTau"
+    );
+
     bdt_filler_e = new std::remove_pointer<decltype(bdt_filler_e)>::type(
 	    makeHistManager_cfg(process_string, Form("LeptonFakeRate_ntuple/%s", "electron"), era_string, central_or_shift)
     );
@@ -738,6 +1076,19 @@ main(int argc,
 						"EGamma_MVA_WP", "Conv_reject", "miss_hits", "isTight", "isFakeable", "lep_isgenMatchedFake",
 						"lep_isgenMatchedToLepton", "lep_isgenMatchedToPhoton", "lep_isgenMatchedToTau"
     );
+
+    bdt_filler_mu_diLeptSS = new std::remove_pointer<decltype(bdt_filler_mu_diLeptSS)>::type(
+	    makeHistManager_cfg(process_string, Form("LeptonFakeRate_ntuple_diLeptSS/%s", "muon"), era_string, central_or_shift)
+    );
+    bdt_filler_mu_diLeptSS->register_variable<float_type_mu>(
+						    "cone_pt", "pt", "eta", "dxy", "dz", "sip3d", "iso", "JetRelIso", 
+						    "tth_mva", "DeepJet_WP", "assocJet_pt", "mT", "mT_fix", "evtWeight"
+    );
+    bdt_filler_mu_diLeptSS->register_variable<int_type_mu>(
+						  "PFMuon_WP", "isTight", "isFakeable", "lep_isgenMatchedFake",
+						  "lep_isgenMatchedToLepton", "lep_isgenMatchedToTau"
+    );
+
     bdt_filler_mu = new std::remove_pointer<decltype(bdt_filler_mu)>::type(
 	    makeHistManager_cfg(process_string, Form("LeptonFakeRate_ntuple/%s", "muon"), era_string, central_or_shift)
     );
@@ -749,7 +1100,9 @@ main(int argc,
 						  "PFMuon_WP", "isTight", "isFakeable", "lep_isgenMatchedFake",
 						  "lep_isgenMatchedToLepton", "lep_isgenMatchedToTau"
     );
+    bdt_filler_e_diLeptSS->bookTree(fs);
     bdt_filler_e->bookTree(fs);
+    bdt_filler_mu_diLeptSS->bookTree(fs);
     bdt_filler_mu->bookTree(fs);
   }
 //----------------------------------------
@@ -760,6 +1113,23 @@ main(int argc,
   double selectedEntries_weighted = 0.;
   TH1 * histogram_analyzedEntries = fs.make<TH1D>("analyzedEntries", "analyzedEntries", 1, -0.5, +0.5);
   TH1 * histogram_selectedEntries = fs.make<TH1D>("selectedEntries", "selectedEntries", 1, -0.5, +0.5);
+
+  cutFlowTableType cutFlowTable_e_diLeptSS({}, isDEBUG);
+  initializeCutFlowTable(cutFlowTable_e_diLeptSS, "= 2 presel/Loose leptons");
+  initializeCutFlowTable(cutFlowTable_e_diLeptSS, "Both presel/Loose leptons are Same Sign");
+  initializeCutFlowTable(cutFlowTable_e_diLeptSS, "Gen-matched lepton (Tag) exists");
+  initializeCutFlowTable(cutFlowTable_e_diLeptSS, "Probe lepton exists and is an electron");
+  initializeCutFlowTable(cutFlowTable_e_diLeptSS, histograms_e_numerator_binned_diLeptSS);
+  initializeCutFlowTable(cutFlowTable_e_diLeptSS, histograms_e_denominator_binned_diLeptSS);
+
+  cutFlowTableType cutFlowTable_mu_diLeptSS({}, isDEBUG);
+  initializeCutFlowTable(cutFlowTable_mu_diLeptSS, "= 2 presel/Loose leptons");
+  initializeCutFlowTable(cutFlowTable_mu_diLeptSS, "Both presel/Loose leptons are Same Sign");
+  initializeCutFlowTable(cutFlowTable_mu_diLeptSS, "Gen-matched lepton (Tag) exists");
+  initializeCutFlowTable(cutFlowTable_mu_diLeptSS, "Probe lepton exists and is a muon");
+  initializeCutFlowTable(cutFlowTable_mu_diLeptSS, histograms_mu_numerator_binned_diLeptSS);
+  initializeCutFlowTable(cutFlowTable_mu_diLeptSS, histograms_mu_denominator_binned_diLeptSS);
+
 
   cutFlowTableType cutFlowTable_e({}, isDEBUG);
   initializeCutFlowTable(cutFlowTable_e, ">= 1 presel/Loose electron");
@@ -1016,7 +1386,38 @@ main(int argc,
       printCollection("uncleaned jets", jet_ptrs);
       printCollection("selJets_dR07", selJets_dR07);
     }
-  
+
+    int DileptSS_result = -1;
+    if(isMC && isMC_TT_SL)
+      {
+	std::vector<const RecoLepton*> preselLeptonsFull = mergeLeptonCollections(preselElectrons, preselMuons, isHigherConePt); // The format which mergeLeptonCollections gives
+	DileptSS_result = DiLeptonSS(preselLeptonsFull, 
+				     genmet, 
+				     met, 
+				     METScaleSyst, 
+				     metSyst_option,
+				     histograms_e_numerator_incl_diLeptSS,
+				     histograms_e_numerator_binned_diLeptSS,
+				     histograms_e_denominator_incl_diLeptSS,
+				     histograms_e_denominator_binned_diLeptSS,
+				     histograms_mu_numerator_incl_diLeptSS,
+				     histograms_mu_numerator_binned_diLeptSS,
+				     histograms_mu_denominator_incl_diLeptSS,
+				     histograms_mu_denominator_binned_diLeptSS,
+				     evtWeightRecorder.get(central_or_shift),
+				     eventInfo,
+				     bdt_filler_e_diLeptSS,
+				     bdt_filler_mu_diLeptSS,
+				     isDEBUG,
+				     &cutFlowTable_e_diLeptSS,
+				     &cutFlowTable_mu_diLeptSS);
+
+	if(DileptSS_result == 4) cutFlowTable_e.update ("SS Di-Lepton event with Probe Lepton = e", evtWeightRecorder.get(central_or_shift));
+	if(DileptSS_result == 5) cutFlowTable_mu.update ("SS Di-Lepton event with Probe Lepton = mu", evtWeightRecorder.get(central_or_shift));
+      }
+    //std::cout<< "DileptSS_result " << DileptSS_result << std::endl;
+
+
 //--- require exactly one Loose lepton
     if((preselElectrons.size() + preselMuons.size()) != 1) // Giovanni's pre-selection
     {
@@ -1171,7 +1572,7 @@ main(int argc,
             ;
           }
           continue;
-        }
+	   }
 
         const std::vector<const RecoElectron *> tmp_leptons = { preselElectron_ptr };
         cleanedJets = jetCleaner_dR07(jet_ptrs, tmp_leptons);
@@ -1246,8 +1647,6 @@ main(int argc,
       }
       continue;
     }
-
-
     //--- rank triggers by priority and ignore triggers of lower priority if a trigger of higher priority has fired for given event;
     //    the ranking of the triggers is as follows: 2mu, 2e, 1mu, 1e
     // CV: this logic is necessary to avoid that the same event is selected multiple times when processing different primary datasets
@@ -1320,7 +1719,6 @@ main(int argc,
       evtWeightRecorder.record_prescale(1.0 - prob_all_trigger_fail);
     }
 
-
     // fill histograms for muons
     for(const RecoMuon * const preselMuon_ptr: preselMuons) // loop over preselMuons
     {
@@ -1339,40 +1737,9 @@ main(int argc,
 	std::cout<< "mT_fix " << mT_fix << std::endl;
       }
       
-      //----Fill the Ntuples for preselMuon
-      int PFMuon_WP = 0;
-      if(preselMuon.passesLooseIdPOG()){
-	PFMuon_WP = 1;
-      }	
-      if(preselMuon.passesMediumIdPOG()){
-	PFMuon_WP = 2;
-      }
-
-      if(bdt_filler_mu){
-	// FILL THE MUON BRANCHES
-	bdt_filler_mu->operator()({eventInfo.run, eventInfo.lumi, eventInfo.event})
-	  ("mT_fix", mT_fix)
-	  ("mT", mT)
-	  ("cone_pt", preselMuon.cone_pt())
-	  ("pt", preselMuon.pt())
-	  ("eta", preselMuon.eta())
-	  ("dxy", preselMuon.dxy())
-	  ("dz", preselMuon.dz())
-	  ("sip3d", preselMuon.sip3d())
-	  ("iso", preselMuon.relIso())
-	  ("JetRelIso", preselMuon.jetRelIso())
-	  ("tth_mva", preselMuon.mvaRawTTH())
-	  ("PFMuon_WP", PFMuon_WP)
-	  ("assocJet_pt", preselMuon.assocJet_pt())
-	  ("DeepJet_WP", preselMuon.jetBtagCSV(false))
-	  ("evtWeight", evtWeightRecorder.get(central_or_shift))
-	  ("isTight", preselMuon.isTight() ? 1 : 0)
-	  ("isFakeable", preselMuon.isFakeable() ? 1 : 0)
-	  ("lep_isgenMatchedFake", (!(preselMuon.genLepton() || preselMuon.genHadTau())) ? 1 : 0)
-	  ("lep_isgenMatchedToLepton", preselMuon.genLepton() ? 1 : 0)
-	  ("lep_isgenMatchedToTau", preselMuon.genHadTau() ? 1 : 0)
-	  .fill();
-      }
+      // Fill the Ntuples needed for cut fakeable selection optimization for electron
+      const RecoLepton* preselLepton = dynamic_cast<const RecoLepton*>(preselMuon_ptr); 
+      FillNtuples(preselLepton, eventInfo, evtWeightRecorder.get(central_or_shift), mT, mT_fix, bdt_filler_mu);
 
       // numerator histograms
       numerator_and_denominatorHistManagers * histograms_incl_beforeCuts_num = nullptr;
@@ -1449,7 +1816,6 @@ main(int argc,
       }
     }
     
-
     // fill histograms for electrons
     for(const RecoElectron * const preselElectron_ptr: preselElectrons) // loop over preselElectrons
     {
@@ -1468,46 +1834,9 @@ main(int argc,
 	std::cout<< "mT_fix " << mT_fix << std::endl;
       }
 
-      int EGamma_MVA_WP = 0;
-      if(preselElectron.mvaID_POG(EGammaWP::WPL)){
-	EGamma_MVA_WP = 1;
-      }
-
-      if(preselElectron.mvaID_POG(EGammaWP::WP80)){
-	EGamma_MVA_WP = 2;
-      }
-
-      //----Fill the Ntuples for preselElectron
-      if(bdt_filler_e){
-	// FILL THE ELECTRON BRANCHES
-	bdt_filler_e->operator()({eventInfo.run, eventInfo.lumi, eventInfo.event})
-	  ("mT_fix", mT_fix)
-	  ("mT", mT)
-	  ("cone_pt", preselElectron.cone_pt())
-	  ("pt", preselElectron.pt())
-	  ("eta", preselElectron.eta())
-	  ("dxy", preselElectron.dxy())
-	  ("dz", preselElectron.dz())
-	  ("sip3d", preselElectron.sip3d())
-	  ("iso", preselElectron.relIso())
-	  ("sigma_ieie", preselElectron.sigmaEtaEta())
-	  ("HbyE", preselElectron.HoE())
-	  ("1byEminus1byP", preselElectron.OoEminusOoP())
-	  ("JetRelIso", preselElectron.jetRelIso())
-	  ("tth_mva", preselElectron.mvaRawTTH())
-	  ("Conv_reject", preselElectron.passesConversionVeto() ? 1 : 0)
-	  ("miss_hits", preselElectron.nLostHits())
-	  ("EGamma_MVA_WP", EGamma_MVA_WP)
-	  ("DeepJet_WP", preselElectron.jetBtagCSV(false))
-	  ("evtWeight", evtWeightRecorder.get(central_or_shift))
-	  ("isTight", preselElectron.isTight() ? 1 : 0)
-	  ("isFakeable", preselElectron.isFakeable() ? 1 : 0)
-	  ("lep_isgenMatchedFake", (!(preselElectron.genLepton() || preselElectron.genHadTau() || preselElectron.genPhoton())) ? 1 : 0)
-	  ("lep_isgenMatchedToLepton", preselElectron.genLepton() ? 1 : 0)
-	  ("lep_isgenMatchedToTau", preselElectron.genHadTau() ? 1 : 0)
-	  ("lep_isgenMatchedToPhoton", preselElectron.genPhoton() ? 1 : 0)
-	  .fill();
-      }
+      // Fill the Ntuples needed for cut fakeable selection optimization for electron
+      const RecoLepton* preselLepton = dynamic_cast<const RecoLepton*>(preselElectron_ptr); 
+      FillNtuples(preselLepton, eventInfo, evtWeightRecorder.get(central_or_shift), mT, mT_fix, bdt_filler_e);
 
       numerator_and_denominatorHistManagers * histograms_incl_beforeCuts_num = nullptr;
       numerator_and_denominatorHistManagers * histograms_incl_afterCuts_num  = nullptr;
@@ -1553,7 +1882,7 @@ main(int argc,
       }
 
 
-      //if(preselElectron.isFakeable())                              // applying (isFakeable) condition [GIOVANNI'S METHOD]
+      //if(preselElectron.isFakeable())                              // applying (isFakeable) condition [GIOVANNI'S/CERN METHOD]
       if(preselElectron.isFakeable() && !(preselElectron.isTight())) // applying (isFakeable && !(isTight)) condition [TALLINN METHOD]
 	{
 
@@ -1633,6 +1962,14 @@ main(int argc,
                "cut-flow table for electron events\n" << cutFlowTable_e  << "\n"
                "cut-flow table for muon events\n"     << cutFlowTable_mu << '\n';
 
+
+  if(isMC_TT_SL){
+    std::cout << "Di-Lepton SS sideband Info" << std::endl;
+    std::cout << "cut-flow table for electron events\n" << cutFlowTable_e_diLeptSS  << "\n"
+                 "cut-flow table for muon events\n"     << cutFlowTable_mu_diLeptSS << '\n';
+  }
+
+
 //--- manually write histograms to output file
   fs.file().cd();
   //histogram_analyzedEntries->Write();
@@ -1653,6 +1990,8 @@ main(int argc,
   delete metFilterReader;
   delete bdt_filler_e;
   delete bdt_filler_mu;
+  delete bdt_filler_e_diLeptSS;
+  delete bdt_filler_mu_diLeptSS;
 
   delete genEvtHistManager_beforeCuts;
   delete genEvtHistManager_afterCuts;
@@ -1664,10 +2003,15 @@ main(int argc,
   hltPaths_LeptonFakeRate_delete(triggers_e);
   hltPaths_LeptonFakeRate_delete(triggers_mu);
 
+
+  delete histograms_e_numerator_incl_diLeptSS; // NEW !
+  delete histograms_e_denominator_incl_diLeptSS; // NEW !
   delete histograms_e_numerator_incl_beforeCuts;
   delete histograms_e_denominator_incl_beforeCuts;
   delete histograms_e_numerator_incl_afterCuts;
   delete histograms_e_denominator_incl_afterCuts;
+  delete histograms_mu_numerator_incl_diLeptSS; // NEW !
+  delete histograms_mu_denominator_incl_diLeptSS; // NEW !
   delete histograms_mu_numerator_incl_beforeCuts;
   delete histograms_mu_denominator_incl_beforeCuts;
   delete histograms_mu_numerator_incl_afterCuts;
@@ -1675,10 +2019,14 @@ main(int argc,
 
   for(const std::vector<numerator_and_denominatorHistManagers *> & histVector:
       {
+        histograms_e_numerator_binned_diLeptSS, // NEW !
+        histograms_e_denominator_binned_diLeptSS, // NEW !
         histograms_e_numerator_binned_beforeCuts,
         histograms_e_denominator_binned_beforeCuts,
         histograms_e_numerator_binned_afterCuts,
         histograms_e_denominator_binned_afterCuts,
+        histograms_mu_numerator_binned_diLeptSS, // NEW !
+        histograms_mu_denominator_binned_diLeptSS, // NEW !
         histograms_mu_numerator_binned_beforeCuts,
         histograms_mu_denominator_binned_beforeCuts,
         histograms_mu_numerator_binned_afterCuts,
