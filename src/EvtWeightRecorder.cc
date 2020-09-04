@@ -27,7 +27,8 @@ EvtWeightRecorder::EvtWeightRecorder()
 
 EvtWeightRecorder::EvtWeightRecorder(const std::vector<std::string> & central_or_shifts,
                                      const std::string & central_or_shift,
-                                     bool isMC)
+                                     bool isMC, 
+                                     bool isDEBUG)
   : isMC_(isMC)
   , genWeight_(1.)
   , leptonSF_(1.)
@@ -37,6 +38,7 @@ EvtWeightRecorder::EvtWeightRecorder(const std::vector<std::string> & central_or
   , rescaling_(1.)
   , central_or_shift_(central_or_shift)
   , central_or_shifts_(central_or_shifts)
+  , isDEBUG_(isDEBUG)
 {
   for(const std::string & central_or_shift_option: central_or_shifts_)
   {
@@ -49,21 +51,46 @@ double
 EvtWeightRecorder::get(const std::string & central_or_shift,
                        const std::string & bin) const
 {
-  return (isMC_ ? get_inclusive(central_or_shift, bin) * get_data_to_MC_correction(central_or_shift) * prescale_ : 1.) *
+  double retVal = (isMC_ ? get_inclusive(central_or_shift, bin) * get_data_to_MC_correction(central_or_shift) * prescale_ : 1.) *
          get_FR(central_or_shift) * chargeMisIdProb_
   ;
+  if ( isDEBUG_ ) 
+  {
+    std::cout << "<EvtWeightRecorder::get>:" << std::endl;
+    if ( isMC_ ) 
+    {
+      std::cout << " genWeight = " << get_genWeight() << std::endl;
+      std::cout << " bmWeight = " << get_bmWeight() << std::endl;
+      std::cout << " auxWeight = " << get_auxWeight(central_or_shift) << std::endl;
+      std::cout << " lumiScale = " << get_lumiScale(central_or_shift, bin) << std::endl;
+      std::cout << " nom_tH_weight = " << get_nom_tH_weight(central_or_shift) << std::endl;
+      std::cout << " puWeight = " << get_puWeight(central_or_shift) << std::endl;
+      std::cout << " l1PreFiringWeight = " << get_l1PreFiringWeight(central_or_shift) << std::endl;
+      std::cout << " lheScaleWeight = " << get_lheScaleWeight(central_or_shift) << std::endl;
+      std::cout << " dy_rwgt = " << get_dy_rwgt(central_or_shift) << std::endl;
+      std::cout << " rescaling = " << get_rescaling() << std::endl;
+      std::cout << " psWeight = " << get_psWeight(central_or_shift) << std::endl;
+      std::cout << " data_to_MC_correction = " << get_data_to_MC_correction(central_or_shift) << std::endl;
+      std::cout << " prescale = " << prescale_ << std::endl;
+    }
+    std::cout << " FR = " << get_FR(central_or_shift) << std::endl;
+    std::cout << " chargeMisIdProb = " << chargeMisIdProb_ << std::endl;
+    std::cout << "--> evtWeight = " << retVal << std::endl;
+  }
+  return retVal;
 }
 
 double
 EvtWeightRecorder::get_inclusive(const std::string & central_or_shift,
                                  const std::string & bin) const
 {
-  return isMC_ ? get_genWeight() * get_bmWeight() * get_auxWeight(central_or_shift) * get_lumiScale(central_or_shift, bin) *
+  double retVal = isMC_ ? get_genWeight() * get_bmWeight() * get_auxWeight(central_or_shift) * get_lumiScale(central_or_shift, bin) *
                  get_nom_tH_weight(central_or_shift) * get_puWeight(central_or_shift) *
                  get_l1PreFiringWeight(central_or_shift) * get_lheScaleWeight(central_or_shift) *
                  get_dy_rwgt(central_or_shift) * get_rescaling() * get_psWeight(central_or_shift)
                : 1.
   ;
+  return retVal;
 }
 
 double

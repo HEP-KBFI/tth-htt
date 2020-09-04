@@ -1070,7 +1070,7 @@ main(int argc,
     );
     bdt_filler_e->register_variable<float_type_e>(
 						  "cone_pt", "pt",  "eta", "dxy", "dz", "sip3d", "iso", "sigma_ieie", "HbyE",
-						  "1byEminus1byP", "JetRelIso", "tth_mva", "DeepJet_WP", "mT", "mT_fix", "evtWeight"
+						  "OnebyEminusOnebyP", "JetRelIso", "tth_mva", "DeepJet_WP", "assocJet_pt", "mT", "mT_fix", "evtWeight"
     );
     bdt_filler_e->register_variable<int_type_e>(
 						"EGamma_MVA_WP", "Conv_reject", "miss_hits", "isTight", "isFakeable", "lep_isgenMatchedFake",

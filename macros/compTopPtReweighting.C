@@ -180,13 +180,21 @@ void process(const std::string& era,
   fitFunction2->SetLineStyle(7);
   fitFunction2->Draw("same");
 
-  TF1* fitFunction_Top_PAG = new TF1("fitFunction_Top_PAG", "TMath::Exp([0] + [1]*TMath::Min(550., x))", xMin, xMax); 
-  fitFunction_Top_PAG->SetParameter(0,  0.0615);
-  fitFunction_Top_PAG->SetParameter(1, -0.0005);
-  
-  fitFunction_Top_PAG->SetLineColor(4);
-  fitFunction_Top_PAG->SetLineWidth(2);
-  fitFunction_Top_PAG->Draw("same");
+  TF1* fitFunction_Top_PAG_old = new TF1("fitFunction_Top_PAG_old", "TMath::Exp([0] + [1]*TMath::Min(550., x))", xMin, xMax); 
+  fitFunction_Top_PAG_old->SetParameter(0,  0.0615);
+  fitFunction_Top_PAG_old->SetParameter(1, -0.0005);
+  fitFunction_Top_PAG_old->SetLineColor(4);
+  fitFunction_Top_PAG_old->SetLineWidth(2);
+  fitFunction_Top_PAG_old->Draw("same");
+
+  TF1* fitFunction_Top_PAG_new = new TF1("fitFunction_Top_PAG_new", "[0]*TMath::Exp([1]*x) + [2]*x + [3]", xMin, xMax); 
+  fitFunction_Top_PAG_new->SetParameter(0,  0.103);
+  fitFunction_Top_PAG_new->SetParameter(1, -0.0118);
+  fitFunction_Top_PAG_new->SetParameter(2, -0.000134);
+  fitFunction_Top_PAG_new->SetParameter(3,  0.973);
+  fitFunction_Top_PAG_new->SetLineColor(8);
+  fitFunction_Top_PAG_new->SetLineWidth(2);
+  fitFunction_Top_PAG_new->Draw("same");
 
   graph->SetMarkerColor(1);
   graph->SetMarkerStyle(20);
@@ -196,14 +204,15 @@ void process(const std::string& era,
   graph->SetLineWidth(1);
   graph->Draw("P");
 
-  TLegend* legend = new TLegend(0.58, 0.56, 0.89, 0.89, "", "brNDC"); 
+  TLegend* legend = new TLegend(0.51, 0.56, 0.89, 0.89, "", "brNDC"); 
   legend->SetBorderSize(0);
   legend->SetFillColor(0);
   legend->SetTextSize(0.045);
   legend->AddEntry(graph, "HIG-19-008 ratio", "p");
   legend->AddEntry(fitFunction1, "HIG-19-008 fit1", "l");
   legend->AddEntry(fitFunction2, "HIG-19-008 fit2", "l");
-  legend->AddEntry(fitFunction_Top_PAG, "Fit by Top PAG", "l");
+  legend->AddEntry(fitFunction_Top_PAG_old, "Fit by Top PAG (old)", "l");
+  legend->AddEntry(fitFunction_Top_PAG_new, "Fit by Top PAG (new)", "l");
   legend->Draw();
 
   canvas->Update();
@@ -218,7 +227,8 @@ void process(const std::string& era,
   delete graph;
   delete fitFunction1;
   delete fitFunction2;
-  delete fitFunction_Top_PAG;
+  delete fitFunction_Top_PAG_old;
+  delete fitFunction_Top_PAG_new;
   delete legend;
   delete canvas;
 }
@@ -321,6 +331,11 @@ void compTopPtReweighting()
 
     delete inputFile;
   }
+
+  TFile* outputFile_forDennis = new TFile("compTopPtReweighting_forDennis.root", "RECREATE");
+  histogram_allEras->Write();
+  histogram_fine_binning_allEras->Write();
+  delete outputFile_forDennis;
 
   std::string outputFileName_allEras = Form("compTopPtReweighting_allEras.png");
   process("allEras", histogram_allEras, histogram_fine_binning_allEras, histogram_theory, outputFileName_allEras);
