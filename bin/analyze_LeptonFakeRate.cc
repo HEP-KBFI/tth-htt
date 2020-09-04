@@ -154,8 +154,12 @@ FillNtuples(const RecoLepton* preselLepton,
         EGamma_MVA_WP = 1;
       }
 
-      if(preselElectron.mvaID_POG(EGammaWP::WP80)){
+      if(preselElectron.mvaID_POG(EGammaWP::WP90)){
         EGamma_MVA_WP = 2;
+      }
+
+      if(preselElectron.mvaID_POG(EGammaWP::WP80)){
+        EGamma_MVA_WP = 3;
       }
 
       //----Fill the Ntuples for preselElectron
@@ -174,13 +178,14 @@ FillNtuples(const RecoLepton* preselLepton,
 	    ("iso", preselElectron.relIso())
 	    ("sigma_ieie", preselElectron.sigmaEtaEta())
 	    ("HbyE", preselElectron.HoE())
-	    ("1byEminus1byP", preselElectron.OoEminusOoP())
+	    ("OnebyEminusOnebyP", preselElectron.OoEminusOoP())
 	    ("JetRelIso", preselElectron.jetRelIso())
 	    ("tth_mva", preselElectron.mvaRawTTH())
 	    ("Conv_reject", preselElectron.passesConversionVeto() ? 1 : 0)
 	    ("miss_hits", preselElectron.nLostHits())
 	    ("EGamma_MVA_WP", EGamma_MVA_WP)
 	    ("DeepJet_WP", preselElectron.jetBtagCSV(false))
+	    ("assocJet_pt", preselElectron.assocJet_pt())
 	    ("evtWeight", evtWeight)
 	    ("isTight", preselElectron.isTight() ? 1 : 0)
 	    ("isFakeable", preselElectron.isFakeable() ? 1 : 0)
@@ -1058,7 +1063,7 @@ main(int argc,
     );
     bdt_filler_e_diLeptSS->register_variable<float_type_e>(
 						  "cone_pt", "pt",  "eta", "dxy", "dz", "sip3d", "iso", "sigma_ieie", "HbyE",
-						  "1byEminus1byP", "JetRelIso", "tth_mva", "DeepJet_WP", "mT", "mT_fix", "evtWeight"
+						  "OnebyEminusOnebyP", "JetRelIso", "tth_mva", "DeepJet_WP", "assocJet_pt", "mT", "mT_fix", "evtWeight"
     );
     bdt_filler_e_diLeptSS->register_variable<int_type_e>(
 						"EGamma_MVA_WP", "Conv_reject", "miss_hits", "isTight", "isFakeable", "lep_isgenMatchedFake",
