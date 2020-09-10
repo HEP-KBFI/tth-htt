@@ -137,6 +137,12 @@ EvtWeightRecorder::get_lumiScale(const std::string & central_or_shift,
 }
 
 double
+EvtWeightRecorder::get_prescaleWeight() const
+{
+  return prescale_;
+}
+
+double
 EvtWeightRecorder::get_btagSFRatio(const std::string & central_or_shift) const
 {
   if(isMC_ && btagSFRatio_.count(central_or_shift))
@@ -1378,6 +1384,7 @@ operator<<(std::ostream & os,
           "  BM weight             = " << evtWeightRecorder.get_bmWeight()                                << "\n"
           "  stitching weight      = " << evtWeightRecorder.get_auxWeight(central_or_shift)               << "\n"
           "  lumiScale             = " << evtWeightRecorder.get_lumiScale(central_or_shift)               << "\n"
+          "  prescale weight       = " << evtWeightRecorder.get_prescaleWeight()                          << "\n"
           "  btag SF ratio         = " << evtWeightRecorder.get_btagSFRatio(central_or_shift)             << "\n"
           "  nominal tH weight     = " << evtWeightRecorder.get_nom_tH_weight(central_or_shift)           << "\n"
           "  PU weight             = " << evtWeightRecorder.get_puWeight(central_or_shift)                << "\n"

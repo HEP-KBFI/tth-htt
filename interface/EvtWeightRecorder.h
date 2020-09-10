@@ -69,6 +69,9 @@ public:
                 const std::string & bin = "") const;
 
   double
+  get_prescaleWeight() const; 
+  
+  double
   get_btagSFRatio(const std::string & central_or_shift) const;
 
   double

@@ -80,6 +80,8 @@
 typedef std::vector<std::string> vstring;
 typedef std::vector<double> vdouble;
 
+int printLevel = 0; // set to 1 to add eventWeight recorder
+
 void CheckPhotonMatch(const RecoElectron & preselElectron, std::vector<GenPhoton> genPhotons, double dR = 0.5)
 {
 
@@ -362,12 +364,15 @@ PrescaleAndJetExtractor(std::vector<const RecoLepton*> preselLeptonsFull,
 	    }
 	}
     }
-  JetAndTrigPrescaleCollector_ptr = new JetAndTrigPrescaleCollector(selJets, selBJets_loose, selBJets_medium, prob_all_trigger_fail, isTrigFired);
+  //JetAndTrigPrescaleCollector_ptr = new JetAndTrigPrescaleCollector(selJets, selBJets_loose, selBJets_medium, prob_all_trigger_fail, isTrigFired);
+  double prescale_weight = 1 - prob_all_trigger_fail;  
+  JetAndTrigPrescaleCollector_ptr = new JetAndTrigPrescaleCollector(selJets, selBJets_loose, selBJets_medium, prescale_weight, isTrigFired);
+  //printf("PrescaleAndJetExtractor():: prescale_weight %e,  prob_all_trigger_fail %e \n",prescale_weight,prob_all_trigger_fail);
   return JetAndTrigPrescaleCollector_ptr;
 }
 
 void ApplyDYNormSF2(JetAndTrigPrescaleCollector* JetAndTrigPrescaleCollector_ptr,
-		    EvtWeightRecorder evtWeightRecorder,
+		    EvtWeightRecorder &evtWeightRecorder,
 		    const bool isMC,
 		    const bool apply_DYMCNormScaleFactors,
 		    const bool apply_DYMCReweighting,
@@ -392,7 +397,7 @@ void ApplyDYNormSF2(JetAndTrigPrescaleCollector* JetAndTrigPrescaleCollector_ptr
 }
 
 void ApplyBTagSF2(std::vector<const RecoJet*> selJets,
-		 EvtWeightRecorder evtWeightRecorder,
+		 EvtWeightRecorder &evtWeightRecorder,
 		 const bool isMC,
 		 BtagSFRatioFacility* btagSFRatioFacility)
 {
@@ -403,6 +408,7 @@ void ApplyBTagSF2(std::vector<const RecoJet*> selJets,
       if(btagSFRatioFacility)
 	{
 	  evtWeightRecorder.record_btagSFRatio(btagSFRatioFacility, selJets.size());
+	  //std::cout << "ApplyBTagSF2():: evtWeightRecorder: " << evtWeightRecorder << std::endl;
 	}
 
     }
@@ -670,12 +676,12 @@ LeptonPlusJet(std::vector<const RecoLepton*> preselLeptonsFull,
 				   selBJets_medium.size());
 		    prescale_weight = JetAndTrigPrescaleCollector_ptr->Get_prescaleWeight();
 		    passTrigger = JetAndTrigPrescaleCollector_ptr->Get_TrigDecision();
-		    //std::cout<< "prescale_weight " << prescale_weight << std::endl;
+		    //std::cout<< "LeptonPlusJet():: prescale_weight " << prescale_weight << std::endl;
 		  }
 		  double evtWeight_wo_TrigPrescale = evtWeightRecorder_copy.get(central_or_shift); // Electron Event weight (w/o Trigger prescale) defined here
 		  evtWeightRecorder_copy.record_prescale(prescale_weight); //Applying prescale weight
 		  double evtWeight = evtWeightRecorder_copy.get(central_or_shift); // Electron Event weight (w Trigger prescale) defined here
-		  //std::cout<< "evtWeight " << evtWeight << " evtWeight_wo_TrigPrescale " << evtWeight_wo_TrigPrescale << std::endl;
+		  //std::cout<< "LeptonPlusJet():: evtWeight " << evtWeight << " evtWeight_wo_TrigPrescale " << evtWeight_wo_TrigPrescale << std::endl;
 
 		  int passesMETandTrigger = (passMETFilter && passTrigger) ? 1 : 0;
 
@@ -716,7 +722,11 @@ LeptonPlusJet(std::vector<const RecoLepton*> preselLeptonsFull,
 			  histograms_incl_den->fillHistograms(preselElectron, met.pt(), mT, mT_fix, evtWeight_wo_TrigPrescale); 
 			  fillHistograms(*histograms_binned_den, preselElectron, met.pt(), mT, mT_fix, evtWeight_wo_TrigPrescale, cutFlowTable_e);
 			}
-		    }	
+		    }
+
+		  if (printLevel==1 && passesMETandTrigger) {
+		    std::cout << "LeptonPlusJet():: FR LeptonPlusJet() electron:: " << evtWeightRecorder_copy << "\nevtWt: " << evtWeightRecorder_copy.get(central_or_shift)<< '\n';
+		  }
 		  return 2; 
 	      }else{ // no jet is found dR=0.7 away from electron
 		return 3;
@@ -791,7 +801,7 @@ LeptonPlusJet(std::vector<const RecoLepton*> preselLeptonsFull,
 
 		    prescale_weight = JetAndTrigPrescaleCollector_ptr->Get_prescaleWeight();
 		    passTrigger = JetAndTrigPrescaleCollector_ptr->Get_TrigDecision();
-		    //std::cout<< "prescale_weight " << prescale_weight << std::endl;
+		    //std::cout<< "LeptonPlusJet():: prescale_weight " << prescale_weight << std::endl;
 		  }
 		double evtWeight_wo_TrigPrescale = evtWeightRecorder_copy.get(central_or_shift); // Muon Event weight (w/o Trigger prescale) defined here
 		evtWeightRecorder_copy.record_prescale(prescale_weight); //Applying prescale weight
@@ -836,7 +846,11 @@ LeptonPlusJet(std::vector<const RecoLepton*> preselLeptonsFull,
 			histograms_incl_den->fillHistograms(preselMuon, met.pt(), mT, mT_fix, evtWeight_wo_TrigPrescale); 
 			fillHistograms(*histograms_binned_den, preselMuon, met.pt(), mT, mT_fix, evtWeight_wo_TrigPrescale, cutFlowTable_mu);
 		      }
-		  }	
+		  }
+
+		if (printLevel==1 && passesMETandTrigger) {
+		  std::cout << "LeptonPlusJet():: FR LeptonPlusJet() muon:: " << evtWeightRecorder_copy << "\nevtWt: " << evtWeightRecorder_copy.get(central_or_shift) << '\n';
+		}		
 		return 4; 
 	      }else{// no jet is found dR=0.7 away from muon
 		return 5; 
@@ -1917,9 +1931,11 @@ main(int argc,
   }
   initializeCutFlowTable(cutFlowTable_e, "electron+jet pair passing trigger bit");
   initializeCutFlowTable(cutFlowTable_e, "electron+jet pair passing trigger bit && prescale");
+  initializeCutFlowTable(cutFlowTable_e, "GoodElectronJetPair passing trigger and MEt filter");
+  initializeCutFlowTable(cutFlowTable_e, "mT_fix(electron, MET) < 15 GeV (before cut)");
   initializeCutFlowTable(cutFlowTable_e, histograms_e_numerator_binned_beforeCuts);
   initializeCutFlowTable(cutFlowTable_e, histograms_e_denominator_binned_beforeCuts);
-  initializeCutFlowTable(cutFlowTable_e, "mT_fix(electron, MET) < 15 GeV");
+  initializeCutFlowTable(cutFlowTable_e, "mT_fix(electron, MET) < 15 GeV (after cut)");
   initializeCutFlowTable(cutFlowTable_e, histograms_e_numerator_binned_afterCuts);
   initializeCutFlowTable(cutFlowTable_e, histograms_e_denominator_binned_afterCuts);
 
@@ -1931,9 +1947,11 @@ main(int argc,
   }
   initializeCutFlowTable(cutFlowTable_mu, "muon+jet pair passing trigger bit");
   initializeCutFlowTable(cutFlowTable_mu, "muon+jet pair passing trigger bit && prescale");
+  initializeCutFlowTable(cutFlowTable_mu, "GoodElectronJetPair passing trigger and MEt filter");
+  initializeCutFlowTable(cutFlowTable_mu, "mT_fix(muon, MET) < 15 GeV (before cut)");
   initializeCutFlowTable(cutFlowTable_mu, histograms_mu_numerator_binned_beforeCuts);
   initializeCutFlowTable(cutFlowTable_mu, histograms_mu_denominator_binned_beforeCuts);
-  initializeCutFlowTable(cutFlowTable_mu, "mT_fix(muon, MET) < 15 GeV");
+  initializeCutFlowTable(cutFlowTable_mu, "mT_fix(muon, MET) < 15 GeV (after cut)");
   initializeCutFlowTable(cutFlowTable_mu, histograms_mu_numerator_binned_afterCuts);
   initializeCutFlowTable(cutFlowTable_mu, histograms_mu_denominator_binned_afterCuts);
 
@@ -2166,7 +2184,12 @@ main(int argc,
     }
 
 
-
+    if (printLevel==1) {
+      std::cout << "processing Entry " << inputTree -> getCurrentMaxEventIdx()
+                << " or " << inputTree -> getCurrentEventIdx() << " entry in #"
+                << (inputTree -> getProcessedFileCount() - 1) << " ("
+                << eventInfo << ") file (" << selectedEntries << " Entries selected)\n";
+    }
 //********* Ntuple filling occurs here
     // ---Making a copy of the evtweightRecorder of the original workflow 
     // ---for the evtWeight of the MC Ntuples
@@ -2299,6 +2322,9 @@ main(int argc,
           }
         cutFlowTable_e.update ("MEt filter", evtWeightRecorder.get(central_or_shift));
         cutFlowTable_mu.update("MEt filter", evtWeightRecorder.get(central_or_shift));
+	if(preselElectrons.size() >= 1) cutFlowTable_e.update ("MEt filter, for e", evtWeightRecorder.get(central_or_shift));
+	if(preselMuons.size()     >= 1) cutFlowTable_mu.update("MEt filter, for mu",     evtWeightRecorder.get(central_or_shift));
+
       }
 
     bool isTriggered_1e = false;
@@ -2573,7 +2599,17 @@ main(int argc,
       }
       evtWeightRecorder.record_prescale(1.0 - prob_all_trigger_fail);
     }
-
+    if(preselElectrons.size() >= 1) cutFlowTable_e.update ("pass triggers for e", evtWeightRecorder.get(central_or_shift));
+    if(preselMuons.size()     >= 1) cutFlowTable_mu.update("pass triggers for mu",     evtWeightRecorder.get(central_or_shift));
+    if (isGoodElectronJetPair) cutFlowTable_e.update("GoodElectronJetPair passing trigger and MEt filter",     evtWeightRecorder.get(central_or_shift));
+    if (isGoodMuonJetPair) cutFlowTable_mu.update("GoodElectronJetPair passing trigger and MEt filter",     evtWeightRecorder.get(central_or_shift));
+    if (printLevel==1) {
+      std::cout << "FR default: " << evtWeightRecorder << "\nevtWt: " << evtWeightRecorder.get(central_or_shift) << '\n';
+      //std::cout << "And evtWeightRecorder_copy: " << evtWeightRecorder_copy << "\nevtWt: " << evtWeightRecorder_copy.get(central_or_shift) << '\n';
+      std::cout << "evtWt: " << evtWeightRecorder.get(central_or_shift) << ",   prescale wt: " << evtWeightRecorder.get_prescaleWeight() << std::endl;
+    }
+    
+    
     // fill histograms for muons
     for(const RecoMuon * const preselMuon_ptr: preselMuons) // loop over preselMuons
     {
@@ -2623,12 +2659,13 @@ main(int argc,
       if(histograms_incl_beforeCuts_num != nullptr && histograms_incl_afterCuts_num != nullptr &&
          histograms_binned_beforeCuts_num != nullptr && histograms_binned_afterCuts_num != nullptr)
       {
+	cutFlowTable_mu.update("mT_fix(muon, MET) < 15 GeV (before cut)", evtWeightRecorder.get(central_or_shift));
         histograms_incl_beforeCuts_num->fillHistograms(preselMuon, met.pt(), mT, mT_fix, evtWeightRecorder.get(central_or_shift));
         fillHistograms(*histograms_binned_beforeCuts_num, preselMuon, met.pt(), mT, mT_fix, evtWeightRecorder.get(central_or_shift), &cutFlowTable_mu);
 
         if(mT_fix < 15.)
         {
-          cutFlowTable_mu.update("mT_fix(muon, MET) < 15 GeV", evtWeightRecorder.get(central_or_shift));
+          cutFlowTable_mu.update("mT_fix(muon, MET) < 15 GeV (after cut)", evtWeightRecorder.get(central_or_shift));
           histograms_incl_afterCuts_num->fillHistograms(preselMuon, met.pt(), mT, mT_fix, evtWeightRecorder.get(central_or_shift));
           fillHistograms(*histograms_binned_afterCuts_num, preselMuon, met.pt(), mT, mT_fix, evtWeightRecorder.get(central_or_shift), &cutFlowTable_mu);
         }
@@ -2655,12 +2692,13 @@ main(int argc,
       if(histograms_incl_beforeCuts_den != nullptr && histograms_incl_afterCuts_den != nullptr &&
          histograms_binned_beforeCuts_den != nullptr && histograms_binned_afterCuts_den != nullptr)
       {
+	cutFlowTable_mu.update("mT_fix(muon, MET) < 15 GeV (before cut)", evtWeightRecorder.get(central_or_shift));
         histograms_incl_beforeCuts_den->fillHistograms(preselMuon, met.pt(), mT, mT_fix, evtWeightRecorder.get(central_or_shift));
         fillHistograms(*histograms_binned_beforeCuts_den, preselMuon, met.pt(), mT, mT_fix, evtWeightRecorder.get(central_or_shift), &cutFlowTable_mu);
 
         if(mT_fix < 15.)
         {
-          cutFlowTable_mu.update("mT_fix(muon, MET) < 15 GeV", evtWeightRecorder.get(central_or_shift));
+          cutFlowTable_mu.update("mT_fix(muon, MET) < 15 GeV (after cut)", evtWeightRecorder.get(central_or_shift));
           histograms_incl_afterCuts_den->fillHistograms(preselMuon, met.pt(), mT, mT_fix, evtWeightRecorder.get(central_or_shift));
           fillHistograms(*histograms_binned_afterCuts_den, preselMuon, met.pt(), mT, mT_fix, evtWeightRecorder.get(central_or_shift), &cutFlowTable_mu);
         }
@@ -2717,12 +2755,13 @@ main(int argc,
       if(histograms_incl_beforeCuts_num != nullptr && histograms_incl_afterCuts_num != nullptr &&
          histograms_binned_beforeCuts_num != nullptr && histograms_binned_afterCuts_num != nullptr)
       {
+	cutFlowTable_e.update("mT_fix(electron, MET) < 15 GeV (before cut)", evtWeightRecorder.get(central_or_shift));
         histograms_incl_beforeCuts_num->fillHistograms(preselElectron, met.pt(), mT, mT_fix, evtWeightRecorder.get(central_or_shift));
         fillHistograms(*histograms_binned_beforeCuts_num, preselElectron, met.pt(), mT, mT_fix, evtWeightRecorder.get(central_or_shift), &cutFlowTable_e);
 
         if(mT_fix < 15.)
         {
-          cutFlowTable_e.update("mT_fix(electron, MET) < 15 GeV", evtWeightRecorder.get(central_or_shift));
+          cutFlowTable_e.update("mT_fix(electron, MET) < 15 GeV (after cut)", evtWeightRecorder.get(central_or_shift));
           histograms_incl_afterCuts_num->fillHistograms(preselElectron, met.pt(), mT, mT_fix, evtWeightRecorder.get(central_or_shift));
           fillHistograms(*histograms_binned_afterCuts_num, preselElectron, met.pt(), mT, mT_fix, evtWeightRecorder.get(central_or_shift), &cutFlowTable_e);
         }
@@ -2751,12 +2790,13 @@ main(int argc,
       if(histograms_incl_beforeCuts_den != nullptr && histograms_incl_afterCuts_den != nullptr &&
          histograms_binned_beforeCuts_den != nullptr && histograms_binned_afterCuts_den != nullptr)
       {
+	cutFlowTable_e.update("mT_fix(electron, MET) < 15 GeV (before cut)", evtWeightRecorder.get(central_or_shift));
         histograms_incl_beforeCuts_den->fillHistograms(preselElectron, met.pt(), mT, mT_fix, evtWeightRecorder.get(central_or_shift));
         fillHistograms(*histograms_binned_beforeCuts_den, preselElectron, met.pt(), mT, mT_fix, evtWeightRecorder.get(central_or_shift), &cutFlowTable_e);
 
         if(mT_fix < 15.)
         {
-          cutFlowTable_e.update("mT_fix(electron, MET) < 15 GeV", evtWeightRecorder.get(central_or_shift));
+          cutFlowTable_e.update("mT_fix(electron, MET) < 15 GeV (after cut)", evtWeightRecorder.get(central_or_shift));
           histograms_incl_afterCuts_den->fillHistograms(preselElectron, met.pt(), mT, mT_fix, evtWeightRecorder.get(central_or_shift));
           fillHistograms(*histograms_binned_afterCuts_den, preselElectron, met.pt(), mT, mT_fix, evtWeightRecorder.get(central_or_shift), &cutFlowTable_e);
         }
@@ -2777,6 +2817,7 @@ main(int argc,
     fillWithOverFlow(histogram_met_pt,  met.pt(),  evtWeightRecorder.get(central_or_shift));
     fillWithOverFlow(histogram_met_phi, met.phi(), evtWeightRecorder.get(central_or_shift));
 
+    
 //--- fill generator level histograms (after cuts)
     if(isMC)
     {
