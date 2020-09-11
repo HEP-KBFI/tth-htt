@@ -21,7 +21,7 @@ import collections
 LEP_MVA_WPS = {
   'default'        : 'mu=0.85;e=0.80',
   'ttZctrl'        : 'mu=0.85;e=0.50',
-  'hh_multilepton' : 'mu=0.40;e=0.30', # slide 14 in [*]
+  'hh_multilepton' : 'mu=0.50;e=0.30', # slide 14 in [*]
   # [*] https://indico.cern.ch/event/945228/contributions/3972723/attachments/2086024/3506137/HHTo4W_3l_Update_20200807_v2.pdf
 }
 
@@ -596,7 +596,8 @@ class analyzeConfig(object):
           if self.lep_mva_wp == 'default':
               self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva_{}_CERN_2019Jul08.root".format(self.era)
           elif self.lep_mva_wp == 'hh_multilepton':
-              self.leptonFakeRateWeight_inputFile = "hhAnalysis/multilepton/data/FR_lep_ttH_mva_{}.root".format(self.era)
+              #self.leptonFakeRateWeight_inputFile = "hhAnalysis/multilepton/data/FR_lep_ttH_mva_{}.root".format(self.era)
+			  self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva_{}_CERN_2019Jul08.root".format(self.era)
           else:
               raise RuntimeError("No FR files available for the following choice of prompt lepton MVA WP: %s" % self.lep_mva_wp)
           if not os.path.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', self.leptonFakeRateWeight_inputFile)):
@@ -627,8 +628,10 @@ class analyzeConfig(object):
         suffix = 'QCD' if 'mcClosure' in lepton_and_hadTau_selection else 'data_comb'
 
         # e.g. FR_mva080_el_QCD_NC, FR_mva085_mu_data_comb
-        self.leptonFakeRateWeight_histogramName_e = "FR_mva%s_el_%s_NC" % (convert_lep_wp(self.lep_mva_cut_e), suffix)
-        self.leptonFakeRateWeight_histogramName_mu = "FR_mva%s_mu_%s" % (convert_lep_wp(self.lep_mva_cut_mu), suffix)
+        #self.leptonFakeRateWeight_histogramName_e = "FR_mva%s_el_%s_NC" % (convert_lep_wp(self.lep_mva_cut_e), suffix)
+        #self.leptonFakeRateWeight_histogramName_mu = "FR_mva%s_mu_%s" % (convert_lep_wp(self.lep_mva_cut_mu), suffix)
+        self.leptonFakeRateWeight_histogramName_e = "FR_mva%s_el_%s_NC" % ('080', suffix)
+        self.leptonFakeRateWeight_histogramName_mu = "FR_mva%s_mu_%s" % ('085', suffix)
 
     def set_BDT_training(self, hadTau_selection_relaxed):
         """Run analysis with loose selection criteria for leptons and hadronic taus,
