@@ -16,9 +16,11 @@
 #include "tthAnalysis/HiggsToTauTau/interface/ObjectMultiplicityReader.h" // ObjectMultiplicityReader
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorLoose.h" // RecoElectronCollectionSelectorLoose
+#include "hhAnalysis/multilepton/interface/RecoElectronCollectionSelectorFakeable_hh_multilepton.h" // RecoElectronCollectionSelectorFakeable_hh_multilepton
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorFakeable.h" // RecoElectronCollectionSelectorFakeable
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorTight.h" // RecoElectronCollectionSelectorTight
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorLoose.h" // RecoMuonCollectionSelectorLoose
+#include "hhAnalysis/multilepton/interface/RecoMuonCollectionSelectorFakeable_hh_multilepton.h" // RecoMuonCollectionSelectorFakeable_hh_multilepton
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorFakeable.h" // RecoMuonCollectionSelectorFakeable
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorTight.h" // RecoMuonCollectionSelectorTight
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelector.h" // RecoJetCollectionSelector
@@ -144,8 +146,8 @@ struct JetAndTrigPrescaleCollector
   JetAndTrigPrescaleCollector(const std::vector<const RecoJet *>& selJets,
 			      const std::vector<const RecoJet *>& selBJets_loose,
 			      const std::vector<const RecoJet*>& selBJets_medium,
-			      double prescaleWeight,
-			      bool isTrigFired)
+			      const double prescaleWeight,
+			      const bool isTrigFired)
     : selJets_(selJets)
     , selBJets_loose_(selBJets_loose)
     , selBJets_medium_(selBJets_medium)
@@ -161,33 +163,33 @@ struct JetAndTrigPrescaleCollector
   const std::vector<const RecoJet *>& selJets_;
   const std::vector<const RecoJet *>& selBJets_loose_;
   const std::vector<const RecoJet *>& selBJets_medium_;
-  double prescaleWeight_;
-  bool isTrigFired_;
+  const double prescaleWeight_;
+  const bool isTrigFired_;
   int selJets_size_;
   int selBJets_loose_size_;
   int selBJets_medium_size_;
 
-  double Get_prescaleWeight()
+  double Get_prescaleWeight() const
   {
     return prescaleWeight_;
   }
 
-  int Get_selJets_size()
+  int Get_selJets_size() const
   {
     return selJets_size_;
   }
 
-  int Get_selBJets_loose_size()
+  int Get_selBJets_loose_size() const
   {
     return selBJets_loose_size_;
   }
 
-  int Get_selBJets_medium_size()
+  int Get_selBJets_medium_size() const
   {
     return selBJets_medium_size_;
   }
 
-  bool Get_TrigDecision()
+  bool Get_TrigDecision() const
   {
     return isTrigFired_;
   }
@@ -198,7 +200,6 @@ PrescaleAndJetExtractor(std::vector<const RecoLepton*> preselLeptonsFull,
 			std::vector<const RecoJet*> jet_ptrs,
 			std::vector<hltPath_LeptonFakeRate *> triggers_mu,
 			std::vector<hltPath_LeptonFakeRate *> triggers_e,
-			std::vector<hltPath_LeptonFakeRate *> triggers_all,
 			const std::string era_string,
 			const double minConePt_global_e,
 			const double minRecoPt_global_e,
@@ -351,12 +352,18 @@ PrescaleAndJetExtractor(std::vector<const RecoLepton*> preselLeptonsFull,
   //------------------------
 
   bool isTrigFired = (selTrigger_1e || selTrigger_2e || selTrigger_1mu || selTrigger_2mu) ? true : false;
-  double prob_all_trigger_fail = 1.0;
+
+  std::vector<hltPath_LeptonFakeRate *> triggers_all_current;
+  triggers_all_current.insert(triggers_all_current.end(), triggers_e.begin(), triggers_e.end());
+  triggers_all_current.insert(triggers_all_current.end(), triggers_mu.begin(), triggers_mu.end());  
+
+  
   // prescale weight
+  double prob_all_trigger_fail = 1.0;
   if(isMC)
     {
 
-      for(const hltPath_LeptonFakeRate * const hltPath_iter: triggers_all)
+      for(const hltPath_LeptonFakeRate * const hltPath_iter: triggers_all_current)
 	{
 	  if(hltPath_iter->isTriggered())
 	    {
@@ -366,6 +373,7 @@ PrescaleAndJetExtractor(std::vector<const RecoLepton*> preselLeptonsFull,
     }
   //JetAndTrigPrescaleCollector_ptr = new JetAndTrigPrescaleCollector(selJets, selBJets_loose, selBJets_medium, prob_all_trigger_fail, isTrigFired);
   double prescale_weight = 1 - prob_all_trigger_fail;  
+  //std::cout<< "Function prescale_weight " << prescale_weight << std::endl;
   JetAndTrigPrescaleCollector_ptr = new JetAndTrigPrescaleCollector(selJets, selBJets_loose, selBJets_medium, prescale_weight, isTrigFired);
   //printf("PrescaleAndJetExtractor():: prescale_weight %e,  prob_all_trigger_fail %e \n",prescale_weight,prob_all_trigger_fail);
   return JetAndTrigPrescaleCollector_ptr;
@@ -565,7 +573,6 @@ LeptonPlusJet(std::vector<const RecoLepton*> preselLeptonsFull,
 	      EventInfo eventInfo,
 	      std::vector<hltPath_LeptonFakeRate *> triggers_mu,
 	      std::vector<hltPath_LeptonFakeRate *> triggers_e,
-	      std::vector<hltPath_LeptonFakeRate *> triggers_all,
 	      const double minConePt_global_e,
 	      const double minRecoPt_global_e,
 	      const double minConePt_global_mu,
@@ -632,6 +639,7 @@ LeptonPlusJet(std::vector<const RecoLepton*> preselLeptonsFull,
 	    }// loop over jets ends
 
 	      if(jetindex != -1){// Jet is found
+		//std::cout<<" Jet is found dR=0.7 away from electron "<<std::endl;
 		cutFlowTable_e->update("Jet found at a dist. dR=0.7 from electron", evtWeight_wo_TrigPrescale_BTag_DY_SFs);
 		// Fill the electron histograms
 		const RecoLepton & preselElectron = *(preselLeptonsFull[0]);
@@ -645,7 +653,6 @@ LeptonPlusJet(std::vector<const RecoLepton*> preselLeptonsFull,
 									  jet_ptrs,
 									  triggers_mu,
 									  triggers_e,
-									  triggers_all,
 									  era_string,
 									  minConePt_global_e,
 									  minRecoPt_global_e,
@@ -757,6 +764,7 @@ LeptonPlusJet(std::vector<const RecoLepton*> preselLeptonsFull,
 	    }// loop over jets ends
 
 	      if(jetindex != -1){// Jet is found
+		//std::cout<<" Jet is found dR=0.7 away from muon "<<std::endl;
 		cutFlowTable_mu->update("Jet found at a dist. dR=0.7 from muon", evtWeight_wo_TrigPrescale_BTag_DY_SFs);
 		const RecoLepton & preselMuon = *(preselLeptonsFull[0]);
 		const RecoMEt met_mod = METSystComp_LeptonFakeRate(preselLeptonsFull[0], genmet, met, METScaleSyst, metSyst_option, isDEBUG);
@@ -769,7 +777,6 @@ LeptonPlusJet(std::vector<const RecoLepton*> preselLeptonsFull,
 									  jet_ptrs,
 									  triggers_mu,
 									  triggers_e,
-									  triggers_all,
 									  era_string,
 									  minConePt_global_e,
 									  minRecoPt_global_e,
@@ -888,7 +895,6 @@ DiLeptonSS(std::vector<const RecoLepton*> preselLeptonsFull,
 	   EventInfo eventInfo,
 	   std::vector<hltPath_LeptonFakeRate *> triggers_mu,
 	   std::vector<hltPath_LeptonFakeRate *> triggers_e,
-	   std::vector<hltPath_LeptonFakeRate *> triggers_all,
 	   const double minConePt_global_e,
 	   const double minRecoPt_global_e,
 	   const double minConePt_global_mu,
@@ -986,7 +992,6 @@ DiLeptonSS(std::vector<const RecoLepton*> preselLeptonsFull,
 									jet_ptrs,
 									triggers_mu,
 									triggers_e,
-									triggers_all,
 									era_string,
 									minConePt_global_e,
 									minRecoPt_global_e,
@@ -1017,7 +1022,7 @@ DiLeptonSS(std::vector<const RecoLepton*> preselLeptonsFull,
 				 selBJets_medium.size());
 		  prescale_weight = JetAndTrigPrescaleCollector_ptr->Get_prescaleWeight();
 		  passTrigger = JetAndTrigPrescaleCollector_ptr->Get_TrigDecision();
-		  //std::cout<< "prescale_weight " << prescale_weight << std::endl;
+		  //std::cout<< "DiLeptonSS()::prescale_weight " << prescale_weight << std::endl;
 		}
 	      double evtWeight_wo_TrigPrescale = evtWeightRecorder_copy.get(central_or_shift); // Event weight (w/o Trigger prescale) defined here
 	      evtWeightRecorder_copy.record_prescale(prescale_weight); //Applying prescale weight
@@ -1462,7 +1467,8 @@ main(int argc,
   inputTree->registerReader(muonReader);
   RecoMuonCollectionGenMatcher muonGenMatcher;
   RecoMuonCollectionSelectorLoose preselMuonSelector(era);
-  RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era);
+  //RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era); // DEFAULT FAKE DEF. USED IN TTH ANALYSIS
+  RecoMuonCollectionSelectorFakeable_hh_multilepton fakeableMuonSelector(era); // NEW HH OPTIMIZED FAKE DEFINITION
   RecoMuonCollectionSelectorTight tightMuonSelector(era);       
   muonReader->set_mvaTTH_wp(lep_mva_cut_mu);
 
@@ -1472,7 +1478,8 @@ main(int argc,
   RecoElectronCollectionGenMatcher electronGenMatcher;
   RecoElectronCollectionCleaner electronCleaner(0.3);
   RecoElectronCollectionSelectorLoose preselElectronSelector(era);
-  RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era);
+  //RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era); // DEFAULT FAKE DEF. USED IN TTH ANALYSIS
+  RecoElectronCollectionSelectorFakeable_hh_multilepton fakeableElectronSelector(era); // NEW HH OPTIMIZED FAKE DEFINITION
   RecoElectronCollectionSelectorTight tightElectronSelector(era); 
   electronReader->set_mvaTTH_wp(lep_mva_cut_e);
   fakeableElectronSelector.enable_offline_e_trigger_cuts();
@@ -2222,7 +2229,6 @@ main(int argc,
 				     eventInfo,
 				     triggers_mu,
 				     triggers_e,
-				     triggers_all,
 				     minConePt_global_e,
 				     minRecoPt_global_e,
 				     minConePt_global_mu,
@@ -2270,7 +2276,6 @@ main(int argc,
 					     eventInfo,
 					     triggers_mu,
 					     triggers_e,
-					     triggers_all,
 					     minConePt_global_e,
 					     minRecoPt_global_e,
 					     minConePt_global_mu,
@@ -2598,6 +2603,8 @@ main(int argc,
         }
       }
       evtWeightRecorder.record_prescale(1.0 - prob_all_trigger_fail);
+      //std::cout<< "Data:: prescale_weight " << (1.0 - prob_all_trigger_fail) << std::endl;
+
     }
     if(preselElectrons.size() >= 1) cutFlowTable_e.update ("pass triggers for e", evtWeightRecorder.get(central_or_shift));
     if(preselMuons.size()     >= 1) cutFlowTable_mu.update("pass triggers for mu",     evtWeightRecorder.get(central_or_shift));

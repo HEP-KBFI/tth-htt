@@ -344,58 +344,79 @@ void readPrefit(TFile* inputFile_stage2, TFile* inputFile_stage1_5, std::map<std
     if ( fitResult->second->minAbsEta_ == -1. && fitResult->second->maxAbsEta_ == -1. ) continue;
     std::string histogramName = "LeptonFakeRate";
     std::string histogramName2 = "LeptonFakeRate";
+    std::string histogramName3 = "LeptonFakeRate"; // For QCD w/o requiring Trigger-prescale and Trigger requirements
     histogramName.append("/");
     histogramName2.append("/");
+    histogramName3.append("/");
     if( fitResult->second->pass_or_fail_ == fitResultType::kPass )
       { 
 	histogramName.append("numerator");
 	histogramName2.append("numerator");
+	histogramName3.append("numerator");
       }else if( fitResult->second->pass_or_fail_ == fitResultType::kFail )
       { 
 	histogramName.append("denominator");
 	histogramName2.append("denominator");
+	histogramName3.append("denominator");
       }else assert(0);
     histogramName.append("/");
     histogramName2.append("/");
+    histogramName3.append("/");
     if( fitResult->second->lepton_type_ == fitResultType::kElectron )
       { 
 	histogramName.append("electrons");
 	histogramName2.append("diLeptSS/electrons");
+	histogramName3.append("LeptonPlusJet/electrons");
       }else if( fitResult->second->lepton_type_ == fitResultType::kMuon )
       { 
 	histogramName.append("muons");
 	histogramName2.append("diLeptSS/muons");
+	histogramName3.append("LeptonPlusJet/muons");
     }else assert(0);
     histogramName.append("_");
     histogramName2.append("_");
+    histogramName3.append("_");
     if( fitResult->second->pass_or_fail_ == fitResultType::kPass )
       { 
 	histogramName.append("tight");
 	histogramName2.append("tight");
+	histogramName3.append("tight");
       }else if ( fitResult->second->pass_or_fail_ == fitResultType::kFail )
       {
 	histogramName.append("fakeable");
 	histogramName2.append("fakeable");
+	histogramName3.append("fakeable");
       }else assert(0);
     histogramName.append("/");
     histogramName2.append("/");
+    histogramName3.append("/");
     histogramName.append(getEtaBin(fitResult->second->minAbsEta_, fitResult->second->maxAbsEta_));
     histogramName2.append(getEtaBin(fitResult->second->minAbsEta_, fitResult->second->maxAbsEta_));
+    histogramName3.append(getEtaBin(fitResult->second->minAbsEta_, fitResult->second->maxAbsEta_));
     histogramName.append("/");
     histogramName2.append("/");
+    histogramName3.append("/");
     histogramName.append(getPtBin(fitResult->second->minPt_, fitResult->second->maxPt_));
     histogramName2.append(getPtBin(fitResult->second->minPt_, fitResult->second->maxPt_));
+    histogramName3.append(getPtBin(fitResult->second->minPt_, fitResult->second->maxPt_));
     histogramName.append("/");
     histogramName2.append("/");
-    std::string histogramName_TT_fakes = histogramName;  // Copying path for TTbar fakes 
-    std::string histogramName_TT_fakes2 = histogramName2;  // Copying path for DiLeptSS TTbar fakes 
-    std::string histogramName_QCD_fakes = histogramName; // Copying path for QCD fakes 
-    std::string histogramName_QCD_fakes_Conv_Corrected = histogramName; // Copying path for QCD fakes (Conv Corr.)
-
+    histogramName3.append("/");
+    
+    // --- TTbar Histograms
+    std::string histogramName_TT_fakes = histogramName;  // Copying path for TTbar fakes (w Lep+Jet cuts "like data" and w Trigger prescale weights and Trigger cuts)
     std::string histogramName_TT_fakes_copy = histogramName;
     std::string histogramName_TTg = histogramName;
-    histogramName_TT_fakes_copy.append("TTj");                                                                                                                                                                                                                       
-     
+    std::string histogramName_TT_fakes2 = histogramName2;  // Copying path for TTbar fakes (in DiLeptSS sideband w/o Trigger prescale weights and Trigger cuts)
+
+    
+    // ----QCD Histograms
+    //std::string histogramName_QCD_fakes = histogramName; // Copying path for QCD fakes (w Trigger prescale weights and Trigger cuts)
+    //std::string histogramName_QCD_fakes_Conv_Corrected = histogramName; // Copying path for QCD fakes (Conv Corr.) (w Trigger prescale weights and Trigger cuts)
+    std::string histogramName_QCD_fakes = histogramName3; // Copying path for QCD fakes (w/o Trigger prescale weights and Trigger cuts)
+    std::string histogramName_QCD_fakes_Conv_Corrected = histogramName3; // Copying path for QCD fakes (Conv Corr.) (w/o Trigger prescale weights and Trigger cuts)
+
+    histogramName_TT_fakes_copy.append("TTj");                                                                                                                     
     histogramName_TTg.append("TTg"); 
     histogramName_TT_fakes_copy.append("/");
     histogramName_TTg.append("/");   
@@ -454,27 +475,12 @@ void readPrefit(TFile* inputFile_stage2, TFile* inputFile_stage1_5, std::map<std
 
     double integral_QCD_fakes_Conv_Corrected = 0.;
     double integralErr2_QCD_fakes_Conv_Corrected = 0.; 
-    FixHistBinIntegral(histogramName_QCD_fakes_Conv_Corrected, inputFile_stage2, "QCD", variable_den, integral_QCD_fakes_Conv_Corrected, integralErr2_QCD_fakes_Conv_Corrected);
+    //FixHistBinIntegral(histogramName_QCD_fakes_Conv_Corrected, inputFile_stage2, "QCD", variable_den, integral_QCD_fakes_Conv_Corrected, integralErr2_QCD_fakes_Conv_Corrected); // for QCD fakes (w Trigger prescale weights and Trigger cuts)   
+    FixHistBinIntegral(histogramName_QCD_fakes_Conv_Corrected, inputFile_stage1_5, "QCD", variable_den, integral_QCD_fakes_Conv_Corrected, integralErr2_QCD_fakes_Conv_Corrected); // for QCD fakes (w/o Trigger prescale weights and Trigger cuts)   
     double integralErr_QCD_fakes_Conv_Corrected = TMath::Sqrt(integralErr2_QCD_fakes_Conv_Corrected);
     fitResult->second->norm_QCD_fakes_Conv_Corrected_ = integral_QCD_fakes_Conv_Corrected;
     fitResult->second->normErr_QCD_fakes_Conv_Corrected_ = integralErr_QCD_fakes_Conv_Corrected;
 
-    /*
-    histogramName.append("data_fakes");
-    histogramName.append("/");
-    histogramName.append(variable_den);
- 
-
-    std::cout << "loading histogram = '" << histogramName << "'" << std::endl;
-    TH1* histogram = dynamic_cast<TH1*>(inputFile_stage2->Get(histogramName.data()));
-    if ( !histogram ) throw cms::Exception("fillHistogram")
-    << "Failed to load histogram = '" << histogramName << "' from file = '" << inputFile_stage2->GetName() << "' !!\n";
-    ComputeHistBinIntegral(histogram, integral_data_fakes, integralErr2_data_fakes);
-
-    double integralErr_data_fakes = TMath::Sqrt(integralErr2_data_fakes);
-    fitResult->second->norm_data_fakes_prefit_ = integral_data_fakes;
-    fitResult->second->normErr_data_fakes_prefit_ = integralErr_data_fakes;
-    */
   }
 }
 
@@ -983,9 +989,14 @@ int main(int argc, char* argv[])
     std::string outputFileName_plot = std::string(outputFileName, 0, outputFileName.find_last_of('.'));
     outputFileName_plot.append(Form("_e_%s.png", getEtaBin(minAbsEta, maxAbsEta).data()));
 
+    //---- DEFAULT LINES
+    //makeControlPlot(graph_data, graph_mc_QCD_fakes, graph_mc_QCD_fakes_Conv_Corr,  graph_mc_TT_fakes, graph_mc_TTj_minus_TTg_fakes, graph_mc_TT_fakes2, ptBins_e_array, minAbsEta, maxAbsEta, true, outputFileName_plot);
+    //makeControlPlot(graph_data, graph_mc_QCD_fakes, graph_mc_QCD_fakes_Conv_Corr,  graph_mc_TT_fakes, graph_mc_TTj_minus_TTg_fakes, graph_mc_TT_fakes2, ptBins_e_array, minAbsEta, maxAbsEta, false, outputFileName_plot);
 
-    makeControlPlot(graph_data, graph_mc_QCD_fakes, graph_mc_QCD_fakes_Conv_Corr,  graph_mc_TT_fakes, graph_mc_TTj_minus_TTg_fakes, graph_mc_TT_fakes2, ptBins_e_array, minAbsEta, maxAbsEta, true, outputFileName_plot);
-    makeControlPlot(graph_data, graph_mc_QCD_fakes, graph_mc_QCD_fakes_Conv_Corr,  graph_mc_TT_fakes, graph_mc_TTj_minus_TTg_fakes, graph_mc_TT_fakes2, ptBins_e_array, minAbsEta, maxAbsEta, false, outputFileName_plot);
+    // ---- NOT PLOTTING CONV. CORREC. QCD/TTBAR AND OLD (DATA-DRIVEN) TTBAR
+    makeControlPlot(graph_data, graph_mc_QCD_fakes, 0, 0, 0, graph_mc_TT_fakes2, ptBins_e_array, minAbsEta, maxAbsEta, true, outputFileName_plot);
+    makeControlPlot(graph_data, graph_mc_QCD_fakes, 0, 0, 0, graph_mc_TT_fakes2, ptBins_e_array, minAbsEta, maxAbsEta, false, outputFileName_plot);
+
   }  
 
 
@@ -1031,9 +1042,14 @@ int main(int argc, char* argv[])
     std::string outputFileName_plot = std::string(outputFileName, 0, outputFileName.find_last_of('.'));
     outputFileName_plot.append(Form("_mu_%s.png", getEtaBin(minAbsEta, maxAbsEta).data()));
 
+    //---- DEFAULT LINES
+    //makeControlPlot(graph_data, graph_mc_QCD_fakes, graph_mc_QCD_fakes_Conv_Corr,  graph_mc_TT_fakes, graph_mc_TTj_minus_TTg_fakes, graph_mc_TT_fakes2, ptBins_mu_array, minAbsEta, maxAbsEta, true, outputFileName_plot);
+    //makeControlPlot(graph_data, graph_mc_QCD_fakes, graph_mc_QCD_fakes_Conv_Corr,  graph_mc_TT_fakes, graph_mc_TTj_minus_TTg_fakes, graph_mc_TT_fakes2, ptBins_mu_array, minAbsEta, maxAbsEta, false, outputFileName_plot);
 
-    makeControlPlot(graph_data, graph_mc_QCD_fakes, graph_mc_QCD_fakes_Conv_Corr,  graph_mc_TT_fakes, graph_mc_TTj_minus_TTg_fakes, graph_mc_TT_fakes2, ptBins_mu_array, minAbsEta, maxAbsEta, true, outputFileName_plot);
-    makeControlPlot(graph_data, graph_mc_QCD_fakes, graph_mc_QCD_fakes_Conv_Corr,  graph_mc_TT_fakes, graph_mc_TTj_minus_TTg_fakes, graph_mc_TT_fakes2, ptBins_mu_array, minAbsEta, maxAbsEta, false, outputFileName_plot);
+
+    // ---- NOT PLOTTING CONV. CORREC. QCD/TTBAR AND OLD (DATA-DRIVEN) TTBAR
+    makeControlPlot(graph_data, graph_mc_QCD_fakes, 0, 0, 0, graph_mc_TT_fakes2, ptBins_mu_array, minAbsEta, maxAbsEta, true, outputFileName_plot);
+    makeControlPlot(graph_data, graph_mc_QCD_fakes, 0, 0, 0, graph_mc_TT_fakes2, ptBins_mu_array, minAbsEta, maxAbsEta, false, outputFileName_plot);
 
 
   }

@@ -756,12 +756,14 @@ recompute_met(const RecoMEt & met_uncorr,
 
 std::map<std::string, double>
 InitializeInputVarMap(std::map<std::string, double> & AllVars_Map,
-		      std::vector<std::string> & BDTInputVariables);
+		      std::vector<std::string> & BDTInputVariables,
+		      bool isNonRes);
 
 std::map<std::string, double>
-CreateBDTOutputMap(std::vector<double> & gen_mHH,
+CreateBDTOutputMap(std::vector<double> & BDT_params,
 		   TMVAInterface* BDT_SUM,
 		   std::map<std::string, double>& BDTInputs_SUM,
-		   std::string label = "",
-		   int event_number = -1);
+		   int event_number,
+		   bool isNonRes,
+		   std::string label);
 #endif
