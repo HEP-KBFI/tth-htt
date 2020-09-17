@@ -54,6 +54,11 @@
 #include "tthAnalysis/HiggsToTauTau/interface/jetToTauFakeRateAuxFunctions.h" // getEtaBin(), getPtBin()
 #include "tthAnalysis/HiggsToTauTau/interface/leptonTypes.h" // kElectron, kMuon
 
+#include "hhAnalysis/multilepton/interface/RecoElectronCollectionSelectorFakeable_hh_multilepton.h" // RecoElectronCollectionSelectorFakeable
+#include "hhAnalysis/multilepton/interface/RecoMuonCollectionSelectorFakeable_hh_multilepton.h" // RecoMuonCollectionSelectorFakeable
+#include "hhAnalysis/multilepton/interface/RecoElectronCollectionSelectorFakeable_hh_multilepton_Dynamic.h" // RecoElectronCollectionSelectorFakeable
+#include "hhAnalysis/multilepton/interface/RecoMuonCollectionSelectorFakeable_hh_multilepton_Dynamic.h" // RecoMuonCollectionSelectorFakeable
+
 #if __has_include (<FWCore/ParameterSetReader/interface/ParameterSetReader.h>)
 #  include <FWCore/ParameterSetReader/interface/ParameterSetReader.h> // edm::readPSetsFrom()
 #else
@@ -1183,6 +1188,8 @@ main(int argc,
   const bool hasLHE  = cfg_analyze.getParameter<bool>("hasLHE");
   const bool useObjectMultiplicity = cfg_analyze.getParameter<bool>("useObjectMultiplicity");
 
+  
+
   const std::string apply_topPtReweighting_str = cfg_analyze.getParameter<std::string>("apply_topPtReweighting");
   const std::string central_or_shift = cfg_analyze.getParameter<std::string>("central_or_shift");
   edm::VParameterSet lumiScale = cfg_analyze.getParameter<edm::VParameterSet>("lumiScale");
@@ -1296,6 +1303,24 @@ main(int argc,
   const double lep_mva_cut_mu = cfg_analyze.getParameter<double>("lep_mva_cut_mu");
   const double lep_mva_cut_e  = cfg_analyze.getParameter<double>("lep_mva_cut_e");
   const double METScaleSyst   = cfg_analyze.getParameter<double>("METScaleSyst");
+
+  const std::string lep_fakeable_pog_wp_mu_tmp1         = cfg_analyze.getParameter<std::string>("lep_fakeable_pog_wp_mu_tmp1");
+  const std::string lep_fakeable_nearDeepJet_wp_mu_tmp1 = cfg_analyze.getParameter<std::string>("lep_fakeable_nearDeepJet_wp_mu_tmp1");
+  const double      lep_fakeable_jetRelIso_cut_mu_tmp1  = cfg_analyze.getParameter<double>("lep_fakeable_jetRelIso_cut_mu_tmp1");
+  
+  const std::string lep_fakeable_pog_wp_e_tmp1          = cfg_analyze.getParameter<std::string>("lep_fakeable_pog_wp_e_tmp1");
+  const std::string lep_fakeable_nearDeepJet_wp_e_tmp1  = cfg_analyze.getParameter<std::string>("lep_fakeable_nearDeepJet_wp_e_tmp1");
+  const double      lep_fakeable_jetRelIso_cut_e_tmp1   = cfg_analyze.getParameter<double>("lep_fakeable_jetRelIso_cut_e_tmp1");
+  std::cout << "lep_mva_cut_mu: " << lep_mva_cut_mu
+	    << ",  lep_fakeable_pog_wp_mu_tmp1: " << lep_fakeable_pog_wp_mu_tmp1
+	    << ",  lep_fakeable_nearDeepJet_wp_mu_tmp1: " << lep_fakeable_nearDeepJet_wp_mu_tmp1
+	    << ",  lep_fakeable_jetRelIso_cut_mu_tmp1: " << lep_fakeable_jetRelIso_cut_mu_tmp1
+	    << std::endl;
+  std::cout << "lep_mva_cut_e: " << lep_mva_cut_e
+	    << ",  lep_fakeable_pog_wp_e_tmp1: " << lep_fakeable_pog_wp_e_tmp1
+	    << ",  lep_fakeable_nearDeepJet_wp_e_tmp1: " << lep_fakeable_nearDeepJet_wp_e_tmp1
+	    << ",  lep_fakeable_jetRelIso_cut_e_tmp1: " << lep_fakeable_jetRelIso_cut_e_tmp1
+	    << std::endl;
 
   
   const std::string branchName_electrons = cfg_analyze.getParameter<std::string>("branchName_electrons");
@@ -1462,7 +1487,13 @@ main(int argc,
   inputTree->registerReader(muonReader);
   RecoMuonCollectionGenMatcher muonGenMatcher;
   RecoMuonCollectionSelectorLoose preselMuonSelector(era);
-  RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era);
+  //RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era);
+  //RecoMuonCollectionSelectorFakeable_hh_multilepton fakeableMuonSelector(era);
+  RecoMuonCollectionSelectorFakeable_hh_multilepton_Dynamic fakeableMuonSelector(era, -1, isDEBUG);
+  fakeableMuonSelector.set_POGID(lep_fakeable_pog_wp_mu_tmp1);
+  fakeableMuonSelector.set_jetBtagCSV_ID_forFakeable(lep_fakeable_nearDeepJet_wp_mu_tmp1);
+  fakeableMuonSelector.set_jetRelIso_cut(lep_fakeable_jetRelIso_cut_mu_tmp1);
+  fakeableMuonSelector.print_fakeable_consitions();    
   RecoMuonCollectionSelectorTight tightMuonSelector(era);       
   muonReader->set_mvaTTH_wp(lep_mva_cut_mu);
 
@@ -1472,7 +1503,13 @@ main(int argc,
   RecoElectronCollectionGenMatcher electronGenMatcher;
   RecoElectronCollectionCleaner electronCleaner(0.3);
   RecoElectronCollectionSelectorLoose preselElectronSelector(era);
-  RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era);
+  //RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era);
+  //RecoElectronCollectionSelectorFakeable_hh_multilepton fakeableElectronSelector(era);
+  RecoElectronCollectionSelectorFakeable_hh_multilepton_Dynamic fakeableElectronSelector(era, -1, isDEBUG);
+  fakeableElectronSelector.set_POGID_forFakeable(lep_fakeable_pog_wp_e_tmp1);
+  fakeableElectronSelector.set_jetBtagCSV_ID_forFakeable(lep_fakeable_nearDeepJet_wp_e_tmp1);
+  fakeableElectronSelector.set_jetRelIso_cut(lep_fakeable_jetRelIso_cut_e_tmp1);
+  fakeableElectronSelector.print_fakeable_consitions();    
   RecoElectronCollectionSelectorTight tightElectronSelector(era); 
   electronReader->set_mvaTTH_wp(lep_mva_cut_e);
   fakeableElectronSelector.enable_offline_e_trigger_cuts();

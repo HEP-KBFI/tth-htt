@@ -99,6 +99,12 @@ class analyzeConfig(object):
           histograms_to_fit,
           triggers,
           lep_mva_wp                      = "default",
+          lep_fakeable_pog_wp_mu_tmp1         = "",
+          lep_fakeable_nearDeepJet_wp_mu_tmp1 = "",
+          lep_fakeable_jetRelIso_cut_mu_tmp1  = "",
+          lep_fakeable_pog_wp_e_tmp1          = "",
+          lep_fakeable_nearDeepJet_wp_e_tmp1  = "",
+          lep_fakeable_jetRelIso_cut_e_tmp1   = "",                 
           executable_prep_dcard           = "prepareDatacards",
           executable_add_syst_dcard       = "addSystDatacards",
           executable_add_syst_fakerate    = "addSystFakeRates",
@@ -210,6 +216,12 @@ class analyzeConfig(object):
               del sample_info['nof_events'][event_count]
 
         self.lep_mva_wp = lep_mva_wp
+        self.lep_fakeable_pog_wp_mu_tmp1         = lep_fakeable_pog_wp_mu_tmp1
+        self.lep_fakeable_nearDeepJet_wp_mu_tmp1 = lep_fakeable_nearDeepJet_wp_mu_tmp1
+        self.lep_fakeable_jetRelIso_cut_mu_tmp1  = lep_fakeable_jetRelIso_cut_mu_tmp1
+        self.lep_fakeable_pog_wp_e_tmp1          = lep_fakeable_pog_wp_e_tmp1
+        self.lep_fakeable_nearDeepJet_wp_e_tmp1  = lep_fakeable_nearDeepJet_wp_e_tmp1
+        self.lep_fakeable_jetRelIso_cut_e_tmp1   = lep_fakeable_jetRelIso_cut_e_tmp1        
         self.central_or_shifts = central_or_shifts
         if not 'central' in self.central_or_shifts:
             logging.warning('Running with systematic uncertainties, but without central value, is not supported --> adding central value.')
@@ -943,6 +955,18 @@ class analyzeConfig(object):
             jobOptions['lep_mva_cut_e'] = float(self.lep_mva_cut_e)
         if 'lep_mva_cut_mu' not in jobOptions:
             jobOptions['lep_mva_cut_mu'] = float(self.lep_mva_cut_mu)
+        if 'lep_fakeable_pog_wp_mu_tmp1' not in jobOptions:
+            jobOptions['lep_fakeable_pog_wp_mu_tmp1'] = str(self.lep_fakeable_pog_wp_mu_tmp1)
+        if 'lep_fakeable_nearDeepJet_wp_mu_tmp1' not in jobOptions:
+            jobOptions['lep_fakeable_nearDeepJet_wp_mu_tmp1'] = str(self.lep_fakeable_nearDeepJet_wp_mu_tmp1)
+        if 'lep_fakeable_jetRelIso_cut_mu_tmp1' not in jobOptions:
+            jobOptions['lep_fakeable_jetRelIso_cut_mu_tmp1'] = float(self.lep_fakeable_jetRelIso_cut_mu_tmp1)
+        if 'lep_fakeable_pog_wp_e_tmp1' not in jobOptions:
+            jobOptions['lep_fakeable_pog_wp_e_tmp1'] = str(self.lep_fakeable_pog_wp_e_tmp1)
+        if 'lep_fakeable_nearDeepJet_wp_e_tmp1' not in jobOptions:
+            jobOptions['lep_fakeable_nearDeepJet_wp_e_tmp1'] = str(self.lep_fakeable_nearDeepJet_wp_e_tmp1)
+        if 'lep_fakeable_jetRelIso_cut_e_tmp1' not in jobOptions:
+            jobOptions['lep_fakeable_jetRelIso_cut_e_tmp1'] = float(self.lep_fakeable_jetRelIso_cut_e_tmp1)
 
         btagSFRatio_args = {}
         if jobOptions['applyBtagSFRatio']:
@@ -994,6 +1018,12 @@ class analyzeConfig(object):
             'muonSelection',
             'lep_mva_cut_mu',
             'lep_mva_cut_e',
+            'lep_fakeable_pog_wp_mu_tmp1',
+            'lep_fakeable_nearDeepJet_wp_mu_tmp1',
+            'lep_fakeable_jetRelIso_cut_mu_tmp1',          
+            'lep_fakeable_pog_wp_e_tmp1',
+            'lep_fakeable_nearDeepJet_wp_e_tmp1',
+            'lep_fakeable_jetRelIso_cut_e_tmp1',          
             'chargeSumSelection',
             'histogramDir',
             'isControlRegion',
