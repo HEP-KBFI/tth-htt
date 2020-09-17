@@ -1231,7 +1231,7 @@ main(int argc,
   const bool isMC_tH = isMC_tHq || isMC_tHW;
   const bool isSignal = process_string == "ttH" || process_string == "ttH_ctcvcp";
   const bool isMC_QCD = process_string == "QCD";
-
+  const bool isMC_EWK = process_string == "WZ" || process_string == "ZZ"; // Taken from HH 3l
 
   const std::string era_string = cfg_analyze.getParameter<std::string>("era");
   const Era era = get_era(era_string);
@@ -2679,6 +2679,11 @@ main(int argc,
         evtWeightRecorder.record_btagSFRatio(btagSFRatioFacility, selJets.size());
       }
 
+      if(isMC_EWK) // Taken from HH 3l
+	{
+	  evtWeightRecorder.record_ewk_jet(selJets);
+	  evtWeightRecorder.record_ewk_bjet(selBJets_medium);
+	}
 
 //--- Data/MC scale factors ---------
       ApplyDataToMCCorrection(preselLeptonsFull[0], dataToMCcorrectionInterface, evtWeightRecorder);
