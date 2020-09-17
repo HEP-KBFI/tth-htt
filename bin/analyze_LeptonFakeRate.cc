@@ -53,6 +53,9 @@
 #include "tthAnalysis/HiggsToTauTau/interface/leptonFakeRateAuxFunctions.h"
 #include "tthAnalysis/HiggsToTauTau/interface/hltPath_LeptonFakeRate.h" // hltPath_LeptonFakeRate, create_hltPaths_LeptonFakeRate(), hltPaths_LeptonFakeRate_delete()
 #include "tthAnalysis/HiggsToTauTau/interface/hltPathReader.h" // hltPathReader
+#include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface_2016.h" // Taken from HH 3l
+#include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface_2017.h" // Taken from HH 3l
+#include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface_2018.h" // Taken from HH 3l
 #include "tthAnalysis/HiggsToTauTau/interface/jetToTauFakeRateAuxFunctions.h" // getEtaBin(), getPtBin()
 #include "tthAnalysis/HiggsToTauTau/interface/leptonTypes.h" // kElectron, kMuon
 
@@ -423,6 +426,34 @@ void ApplyBTagSF2(std::vector<const RecoJet*> selJets,
 }
 
 
+
+void 
+ApplyDataToMCCorrection(const RecoLepton* preselLepton,
+			Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface,
+			EvtWeightRecorder &evtWeightRecorder)
+{
+
+  int preselLepton_type = getLeptonType(preselLepton->pdgId());
+  dataToMCcorrectionInterface->setLeptons(preselLepton_type, preselLepton->pt(), preselLepton->cone_pt(), preselLepton->eta());
+
+  //--- apply data/MC corrections for trigger efficiency                                                                                                                                        
+  evtWeightRecorder.record_leptonTriggerEff(dataToMCcorrectionInterface);
+
+  //--- apply data/MC corrections for efficiencies for lepton to pass loose identification and isolation criteria                                                                               
+  evtWeightRecorder.record_leptonIDSF_recoToLoose(dataToMCcorrectionInterface);
+
+  //--- apply data/MC corrections for efficiencies of leptons passing the loose identification and isolation criteria                                                                           
+  //    to also pass the tight identification and isolation criteria                                                                                                                            
+  if(preselLepton->isTight()){ // Signal region
+    evtWeightRecorder.record_leptonIDSF_looseToTight(dataToMCcorrectionInterface);    
+  }else if(preselLepton->isFakeable()){ // Fakeable region
+    evtWeightRecorder.record_leptonSF(dataToMCcorrectionInterface->getSF_leptonID_and_Iso_fakeable_to_loose());
+  }
+  //std::cout<<" evtWeightRecorder.get(central): " << evtWeightRecorder.get("central") << std::endl;
+
+}
+
+
 bool METFilterDecision(const bool isMC,
 		       const bool apply_met_filters,
 		       MEtFilter metFilter,
@@ -550,7 +581,8 @@ FillNtuples(const RecoLepton* preselLepton,
 }
 
 int
-LeptonPlusJet(std::vector<const RecoLepton*> preselLeptonsFull, 
+LeptonPlusJet(Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface_ntuple,
+	      std::vector<const RecoLepton*> preselLeptonsFull, 
               std::vector<const RecoJet*> jet_ptrs,
 	      const std::string era_string,
 	      const bool apply_met_filters,
@@ -685,6 +717,12 @@ LeptonPlusJet(std::vector<const RecoLepton*> preselLeptonsFull,
 		    passTrigger = JetAndTrigPrescaleCollector_ptr->Get_TrigDecision();
 		    //std::cout<< "LeptonPlusJet():: prescale_weight " << prescale_weight << std::endl;
 		  }
+		
+		  
+		  // ---- Apply Data-to-mc Corrections
+		  ApplyDataToMCCorrection(preselLeptonsFull[0], dataToMCcorrectionInterface_ntuple, evtWeightRecorder_copy);
+		  //std::cout<< "LeptonPlusJet():: (after corr.): evtWeightRecorder_copy.get(central_or_shift): "<< evtWeightRecorder_copy.get(central_or_shift) << std::endl;
+
 		  double evtWeight_wo_TrigPrescale = evtWeightRecorder_copy.get(central_or_shift); // Electron Event weight (w/o Trigger prescale) defined here
 		  evtWeightRecorder_copy.record_prescale(prescale_weight); //Applying prescale weight
 		  double evtWeight = evtWeightRecorder_copy.get(central_or_shift); // Electron Event weight (w Trigger prescale) defined here
@@ -810,6 +848,12 @@ LeptonPlusJet(std::vector<const RecoLepton*> preselLeptonsFull,
 		    passTrigger = JetAndTrigPrescaleCollector_ptr->Get_TrigDecision();
 		    //std::cout<< "LeptonPlusJet():: prescale_weight " << prescale_weight << std::endl;
 		  }
+
+		// ---- Apply Data-to-mc Corrections
+		ApplyDataToMCCorrection(preselLeptonsFull[0], dataToMCcorrectionInterface_ntuple, evtWeightRecorder_copy);
+		//std::cout<< "LeptonPlusJet():: (after corr.): evtWeightRecorder_copy.get(central_or_shift): "<< evtWeightRecorder_copy.get(central_or_shift) << std::endl;
+
+
 		double evtWeight_wo_TrigPrescale = evtWeightRecorder_copy.get(central_or_shift); // Muon Event weight (w/o Trigger prescale) defined here
 		evtWeightRecorder_copy.record_prescale(prescale_weight); //Applying prescale weight
 		double evtWeight = evtWeightRecorder_copy.get(central_or_shift); // Muon Event weight (w Trigger prescale) defined here
@@ -872,7 +916,8 @@ LeptonPlusJet(std::vector<const RecoLepton*> preselLeptonsFull,
   
 
 int 
-DiLeptonSS(std::vector<const RecoLepton*> preselLeptonsFull,
+DiLeptonSS(Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface_ntuple,
+	   std::vector<const RecoLepton*> preselLeptonsFull,
 	   std::vector<const RecoJet*> jet_ptrs,
 	   const std::string era_string,
 	   const bool apply_met_filters,
@@ -1024,6 +1069,12 @@ DiLeptonSS(std::vector<const RecoLepton*> preselLeptonsFull,
 		  passTrigger = JetAndTrigPrescaleCollector_ptr->Get_TrigDecision();
 		  //std::cout<< "DiLeptonSS()::prescale_weight " << prescale_weight << std::endl;
 		}
+
+	      // ---- Apply Data-to-mc Corrections
+	      ApplyDataToMCCorrection(preselLeptonsFull[ProbeLeptonIndex], dataToMCcorrectionInterface_ntuple, evtWeightRecorder_copy);
+	      //std::cout<< "DiLeptonSS():: (after corr.): evtWeightRecorder_copy.get(central_or_shift): "<< evtWeightRecorder_copy.get(central_or_shift) << std::endl;
+
+
 	      double evtWeight_wo_TrigPrescale = evtWeightRecorder_copy.get(central_or_shift); // Event weight (w/o Trigger prescale) defined here
 	      evtWeightRecorder_copy.record_prescale(prescale_weight); //Applying prescale weight
 	      double evtWeight = evtWeightRecorder_copy.get(central_or_shift); // Event weight (w Trigger prescale) defined here
@@ -1305,6 +1356,7 @@ main(int argc,
   
   const std::string branchName_electrons = cfg_analyze.getParameter<std::string>("branchName_electrons");
   const std::string branchName_muons     = cfg_analyze.getParameter<std::string>("branchName_muons");
+  const std::string branchName_hadTaus   = cfg_analyze.getParameter<std::string>("branchName_hadTaus"); // Taken from HH 3l
   const std::string branchName_jets      = cfg_analyze.getParameter<std::string>("branchName_jets");
   const std::string branchName_met       = cfg_analyze.getParameter<std::string>("branchName_met");
   const std::string branchName_vertex    = cfg_analyze.getParameter<std::string>("branchName_vertex");
@@ -1322,6 +1374,8 @@ main(int argc,
 
   const edm::ParameterSet cfgMEtFilter = cfg_analyze.getParameter<edm::ParameterSet>("cfgMEtFilter");
   const MEtFilterSelector metFilterSelector(cfgMEtFilter, isMC);
+  const bool useNonNominal = cfg_analyze.getParameter<bool>("useNonNominal"); // Added from HH 3l
+  const bool useNonNominal_jetmet = useNonNominal || ! isMC;     // Added from HH 3l
 
   const std::string selEventsFileName_input = cfg_analyze.exists("selEventsFileName_input") ?
                                               cfg_analyze.getParameter<std::string>("selEventsFileName_input") : ""
@@ -1360,10 +1414,10 @@ main(int argc,
   }
 
   checkOptionValidity(central_or_shift, isMC);
-  const int jetPt_option       = getJet_option(central_or_shift, isMC);
-  const int met_option         = getMET_option(central_or_shift, isMC);
-  const int hadTauPt_option    = getHadTauPt_option(central_or_shift);
-  const METSyst metSyst_option = getMETsyst_option(central_or_shift);
+  const int jetPt_option    = useNonNominal_jetmet ? kJetMET_central_nonNominal : getJet_option(central_or_shift, isMC); // Taken from HH 3l
+  const int met_option      = useNonNominal_jetmet ? kJetMET_central_nonNominal : getMET_option(central_or_shift, isMC); // Taken from HH 3l
+  const int hadTauPt_option = useNonNominal_jetmet ? kHadTauPt_uncorrected      : getHadTauPt_option(central_or_shift);  // Taken from HH 3l
+  const METSyst metSyst_option = getMETsyst_option(central_or_shift); // DEFAULT
 
   std::cout
     << "central_or_shift = "    << central_or_shift           << "\n"
@@ -1372,6 +1426,31 @@ main(int argc,
        " -> jetPt_option    = " << jetPt_option               << "\n"
        " -> hadTauPt_option = " << hadTauPt_option            << '\n'
   ;
+
+  // ------ Taken from HH 3l ----------------
+  edm::ParameterSet cfg_dataToMCcorrectionInterface; 
+  cfg_dataToMCcorrectionInterface.addParameter<std::string>("era", era_string);
+  cfg_dataToMCcorrectionInterface.addParameter<std::string>("hadTauSelection", "disabled");
+  cfg_dataToMCcorrectionInterface.addParameter<int>("hadTauSelection_antiElectron", -1);
+  cfg_dataToMCcorrectionInterface.addParameter<int>("hadTauSelection_antiMuon", -1);
+  Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface = nullptr;
+  switch(era)
+    {
+    case Era::k2016: dataToMCcorrectionInterface = new Data_to_MC_CorrectionInterface_2016(cfg_dataToMCcorrectionInterface); break;
+    case Era::k2017: dataToMCcorrectionInterface = new Data_to_MC_CorrectionInterface_2017(cfg_dataToMCcorrectionInterface); break;
+    case Era::k2018: dataToMCcorrectionInterface = new Data_to_MC_CorrectionInterface_2018(cfg_dataToMCcorrectionInterface); break;
+    default: throw cmsException("analyze_LeptonFakeRate", __LINE__) << "Invalid era = " << static_cast<int>(era);
+    }
+  Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface_ntuple = nullptr;
+  switch(era)
+    {
+    case Era::k2016: dataToMCcorrectionInterface_ntuple = new Data_to_MC_CorrectionInterface_2016(cfg_dataToMCcorrectionInterface); break;
+    case Era::k2017: dataToMCcorrectionInterface_ntuple = new Data_to_MC_CorrectionInterface_2017(cfg_dataToMCcorrectionInterface); break;
+    case Era::k2018: dataToMCcorrectionInterface_ntuple = new Data_to_MC_CorrectionInterface_2018(cfg_dataToMCcorrectionInterface); break;
+    default: throw cmsException("analyze_LeptonFakeRate", __LINE__) << "Invalid era = " << static_cast<int>(era);
+    }
+
+  // ---------------------------------------
 
   DYMCReweighting * dyReweighting = nullptr;
   if(apply_DYMCReweighting)
@@ -2197,16 +2276,20 @@ main(int argc,
                 << (inputTree -> getProcessedFileCount() - 1) << " ("
                 << eventInfo << ") file (" << selectedEntries << " Entries selected)\n";
     }
+
+    std::vector<const RecoLepton*> preselLeptonsFull = mergeLeptonCollections(preselElectrons, preselMuons, isHigherConePt); // For The Ntuples
+
 //********* Ntuple filling occurs here
     // ---Making a copy of the evtweightRecorder of the original workflow 
     // ---for the evtWeight of the MC Ntuples
     EvtWeightRecorder evtWeightRecorder_copy = EvtWeightRecorder();
     evtWeightRecorder_copy = evtWeightRecorder; 
 
-    std::vector<const RecoLepton*> preselLeptonsFull = mergeLeptonCollections(preselElectrons, preselMuons, isHigherConePt); // For The Ntuples
+
     if(isMC && isMC_TT_SL)
       {//Runs only for TT_SemiLeptonic MC
-	int DileptSS_result = DiLeptonSS(preselLeptonsFull,
+	int DileptSS_result = DiLeptonSS(dataToMCcorrectionInterface_ntuple,
+				     preselLeptonsFull,
 				     jet_ptrs,
 				     era_string,
 				     apply_met_filters,
@@ -2253,7 +2336,8 @@ main(int argc,
 
     if(isMC && (isMC_TT_HAD || isMC_QCD))
       {// Runs only for QCD and TTToHadronic
-	int LeptonPlusJet_result = LeptonPlusJet(preselLeptonsFull,
+	int LeptonPlusJet_result = LeptonPlusJet(dataToMCcorrectionInterface_ntuple,
+					     preselLeptonsFull,
 					     jet_ptrs,
 					     era_string,
 					     apply_met_filters,
@@ -2302,7 +2386,8 @@ main(int argc,
 
 
 //--- require exactly one Loose lepton
-    if((preselElectrons.size() + preselMuons.size()) != 1) // Giovanni's pre-selection
+    //if((preselElectrons.size() + preselMuons.size()) != 1) // Giovanni's pre-selection
+    if(preselLeptonsFull.size() != 1)  // Giovanni's pre-selection
     {
       if(run_lumi_eventSelector)
       {
@@ -2576,7 +2661,7 @@ main(int argc,
       }
     }
 
-    // prescale weight
+
     if(isMC)
     {
       if(apply_DYMCNormScaleFactors)
@@ -2594,6 +2679,12 @@ main(int argc,
         evtWeightRecorder.record_btagSFRatio(btagSFRatioFacility, selJets.size());
       }
 
+
+//--- Data/MC scale factors ---------
+      ApplyDataToMCCorrection(preselLeptonsFull[0], dataToMCcorrectionInterface, evtWeightRecorder);
+      //std::cout<<"Main Workflow (after corr.): evtWeightRecorder.get(central_or_shift): "<< evtWeightRecorder.get(central_or_shift) << std::endl;
+
+//--- prescale weight      
       double prob_all_trigger_fail = 1.0;
       for(const hltPath_LeptonFakeRate * const hltPath_iter: triggers_all)
       {
@@ -2604,8 +2695,9 @@ main(int argc,
       }
       evtWeightRecorder.record_prescale(1.0 - prob_all_trigger_fail);
       //std::cout<< "Data:: prescale_weight " << (1.0 - prob_all_trigger_fail) << std::endl;
-
     }
+
+
     if(preselElectrons.size() >= 1) cutFlowTable_e.update ("pass triggers for e", evtWeightRecorder.get(central_or_shift));
     if(preselMuons.size()     >= 1) cutFlowTable_mu.update("pass triggers for mu",     evtWeightRecorder.get(central_or_shift));
     if (isGoodElectronJetPair) cutFlowTable_e.update("GoodElectronJetPair passing trigger and MEt filter",     evtWeightRecorder.get(central_or_shift));
@@ -2964,6 +3056,8 @@ main(int argc,
     }
   }
 
+  delete dataToMCcorrectionInterface;
+  delete dataToMCcorrectionInterface_ntuple; 
   delete run_lumi_eventSelector;
 
   clock.Show(argv[0]);
