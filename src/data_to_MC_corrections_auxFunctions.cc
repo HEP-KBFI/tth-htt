@@ -217,14 +217,14 @@ namespace aux
         "tthAnalysis/HiggsToTauTau/data/triggerSF/2016/Electron_Run2016_legacy_Ele25.root",
         Form("ZMassEta%s_Data", etaBinLabel.data()),
         lut::kXptYabsEta,
-        -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
+        10., 100., lut::kLimit, etaMin, etaMax, lut::kCut
       ));
       effTrigger_1e_mc.push_back(new lutWrapperTGraph(
         inputFiles,
         "tthAnalysis/HiggsToTauTau/data/triggerSF/2016/Electron_Run2016_legacy_Ele25.root",
         Form("ZMassEta%s_MC", etaBinLabel.data()),
         lut::kXptYabsEta,
-        -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
+        10., 100., lut::kLimit, etaMin, etaMax, lut::kCut
       ));
     }
   }
@@ -247,14 +247,14 @@ namespace aux
         "tthAnalysis/HiggsToTauTau/data/triggerSF/2016/Electron_Ele24_eff.root",
         Form("ZMassEta%s_Data", etaBinLabel.data()),
         lut::kXptYabsEta,
-        -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
+        10., 100., lut::kLimit, etaMin, etaMax, lut::kCut
       ));
       effTrigger_1e1tau_lepLeg_mc.push_back(new lutWrapperTGraph(
         inputFiles,
         "tthAnalysis/HiggsToTauTau/data/triggerSF/2016/Electron_Ele24_eff.root",
         Form("ZMassEta%s_MC", etaBinLabel.data()),
         lut::kXptYabsEta,
-        -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
+        10., 100., lut::kLimit, etaMin, etaMax, lut::kCut
       ));
     }
   }
@@ -278,14 +278,14 @@ namespace aux
         "tthAnalysis/HiggsToTauTau/data/triggerSF/2016/Muon_Run2016_legacy_IsoMu22.root",
         Form("ZMassEta%s_Data", etaBinLabel.data()),
         lut::kXptYabsEta,
-        -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
+        10., 100., lut::kLimit, etaMin, etaMax, lut::kCut
       ));
       effTrigger_1m_mc.push_back(new lutWrapperTGraph(
         inputFiles,
         "tthAnalysis/HiggsToTauTau/data/triggerSF/2016/Muon_Run2016_legacy_IsoMu22.root",
         Form("ZMassEta%s_MC", etaBinLabel.data()),
         lut::kXptYabsEta,
-        -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
+        10., 100., lut::kLimit, etaMin, etaMax, lut::kCut
       ));
     }
   }
@@ -308,13 +308,14 @@ namespace aux
         "tthAnalysis/HiggsToTauTau/data/triggerSF/2016/Muon_Mu19leg_2016BtoH_eff.root",
         Form("ZMassEta%s_Data", etaBinLabel.data()),
         lut::kXptYabsEta,
-        -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
+        10., 1000., lut::kLimit, etaMin, etaMax, lut::kCut
       ));
       effTrigger_1m1tau_lepLeg_mc.push_back(new lutWrapperTGraph(
         inputFiles,
         "tthAnalysis/HiggsToTauTau/data/triggerSF/2016/Muon_Mu19leg_2016BtoH_eff.root",
         Form("ZMassEta%s_MC", etaBinLabel.data()),
-        lut::kXptYabsEta, -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
+        lut::kXptYabsEta, 
+        10., 1000., lut::kLimit, etaMin, etaMax, lut::kCut
       ));
     }
   }
@@ -338,13 +339,15 @@ namespace aux
         inputFiles,
         "tthAnalysis/HiggsToTauTau/data/triggerSF/2017/Electron_Ele32orEle35_eff.root",
         Form("ZMassEta%s_Data", etaBinLabel.data()),
-        lut::kXptYabsEta, -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
+        lut::kXptYabsEta, 
+        10., 100., lut::kLimit, etaMin, etaMax, lut::kCut
       ));
       effTrigger_1e_mc.push_back(new lutWrapperTGraph(
         inputFiles,
         "tthAnalysis/HiggsToTauTau/data/triggerSF/2017/Electron_Ele32orEle35_eff.root",
         Form("ZMassEta%s_MC", etaBinLabel.data()),
-        lut::kXptYabsEta, -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
+        lut::kXptYabsEta, 
+        10., 100., lut::kLimit, etaMin, etaMax, lut::kCut
       ));
     }
   }
@@ -368,13 +371,15 @@ namespace aux
         inputFiles,
         "tthAnalysis/HiggsToTauTau/data/triggerSF/2017/Electron_EleTau_Ele24_eff.root",
         Form("ZMassEta%s_Data", etaBinLabel.data()),
-        lut::kXptYabsEta, -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
+        lut::kXptYabsEta, 
+        10., 100., lut::kLimit, etaMin, etaMax, lut::kCut
       ));
       effTrigger_1e1tau_lepLeg_mc.push_back(new lutWrapperTGraph(
         inputFiles,
         "tthAnalysis/HiggsToTauTau/data/triggerSF/2017/Electron_EleTau_Ele24_eff.root",
         Form("ZMassEta%s_MC", etaBinLabel.data()),
-        lut::kXptYabsEta, -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
+        lut::kXptYabsEta, 
+        10., 100., lut::kLimit, etaMin, etaMax, lut::kCut
       ));
     }
   }
@@ -398,13 +403,15 @@ namespace aux
         inputFiles,
         "tthAnalysis/HiggsToTauTau/data/triggerSF/2017/Muon_IsoMu24orIsoMu27_eff.root",
         Form("ZMassEta%s_Data", etaBinLabel.data()),
-        lut::kXptYabsEta, -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
+        lut::kXptYabsEta,
+        10., 100., lut::kLimit, etaMin, etaMax, lut::kCut
       ));
       effTrigger_1m_mc.push_back(new lutWrapperTGraph(
         inputFiles,
         "tthAnalysis/HiggsToTauTau/data/triggerSF/2017/Muon_IsoMu24orIsoMu27_eff.root",
         Form("ZMassEta%s_MC", etaBinLabel.data()),
-        lut::kXptYabsEta, -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
+        lut::kXptYabsEta,
+        10., 100., lut::kLimit, etaMin, etaMax, lut::kCut
       ));
     }
   }
@@ -428,13 +435,15 @@ namespace aux
         inputFiles,
         "tthAnalysis/HiggsToTauTau/data/triggerSF/2017/Muon_MuTau_IsoMu20_eff.root",
         Form("ZMassEta%s_Data", etaBinLabel.data()),
-        lut::kXptYabsEta, -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
+        lut::kXptYabsEta,
+        10., 100., lut::kLimit, etaMin, etaMax, lut::kCut
       ));
       effTrigger_1m1tau_lepLeg_mc.push_back(new lutWrapperTGraph(
         inputFiles,
         "tthAnalysis/HiggsToTauTau/data/triggerSF/2017/Muon_MuTau_IsoMu20_eff.root",
         Form("ZMassEta%s_MC", etaBinLabel.data()),
-        lut::kXptYabsEta, -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
+        lut::kXptYabsEta,
+        10., 100., lut::kLimit, etaMin, etaMax, lut::kCut
       ));
     }
   }
@@ -458,13 +467,15 @@ namespace aux
         inputFiles,
         "tthAnalysis/HiggsToTauTau/data/triggerSF/2018/Electron_Run2018_Ele32orEle35.root",
         Form("ZMassEta%s_Data", etaBinLabel.data()),
-        lut::kXptYabsEta, -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
+        lut::kXptYabsEta,
+        10., 100., lut::kLimit, etaMin, etaMax, lut::kCut
       ));
       effTrigger_1e_mc.push_back(new lutWrapperTGraph(
         inputFiles,
         "tthAnalysis/HiggsToTauTau/data/triggerSF/2018/Electron_Run2018_Ele32orEle35.root",
         Form("ZMassEta%s_MC", etaBinLabel.data()),
-        lut::kXptYabsEta, -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
+        lut::kXptYabsEta,
+        10., 100., lut::kLimit, etaMin, etaMax, lut::kCut
       ));
     }
   }
@@ -488,13 +499,15 @@ namespace aux
         inputFiles,
         "tthAnalysis/HiggsToTauTau/data/triggerSF/2018/Electron_Run2018_Ele24.root",
         Form("ZMassEta%s_Data", etaBinLabel.data()),
-        lut::kXptYabsEta, -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
+        lut::kXptYabsEta,
+        10., 100., lut::kLimit, etaMin, etaMax, lut::kCut
       ));
       effTrigger_1e1tau_lepLeg_mc.push_back(new lutWrapperTGraph(
         inputFiles,
         "tthAnalysis/HiggsToTauTau/data/triggerSF/2018/Electron_Run2018_Ele24.root",
         Form("ZMassEta%s_MC", etaBinLabel.data()),
-        lut::kXptYabsEta, -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
+        lut::kXptYabsEta,
+        10., 100., lut::kLimit, etaMin, etaMax, lut::kCut
       ));
     }
   }
@@ -518,13 +531,15 @@ namespace aux
         inputFiles,
         "tthAnalysis/HiggsToTauTau/data/triggerSF/2018/Muon_Run2018_IsoMu24orIsoMu27.root",
         Form("ZMassEta%s_Data", etaBinLabel.data()),
-        lut::kXptYabsEta, -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
+        lut::kXptYabsEta,
+        10., 100., lut::kLimit, etaMin, etaMax, lut::kCut
       ));
       effTrigger_1m_mc.push_back(new lutWrapperTGraph(
         inputFiles,
         "tthAnalysis/HiggsToTauTau/data/triggerSF/2018/Muon_Run2018_IsoMu24orIsoMu27.root",
         Form("ZMassEta%s_MC", etaBinLabel.data()),
-        lut::kXptYabsEta, -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
+        lut::kXptYabsEta,
+        10., 100., lut::kLimit, etaMin, etaMax, lut::kCut
       ));
     }
   }
@@ -548,13 +563,15 @@ namespace aux
         inputFiles,
         "tthAnalysis/HiggsToTauTau/data/triggerSF/2018/Muon_Run2018_IsoMu20.root",
         Form("ZMassEta%s_Data", etaBinLabel.data()),
-        lut::kXptYabsEta, -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
+        lut::kXptYabsEta,
+        10., 100., lut::kLimit, etaMin, etaMax, lut::kCut
       ));
       effTrigger_1m1tau_lepLeg_mc.push_back(new lutWrapperTGraph(
         inputFiles,
         "tthAnalysis/HiggsToTauTau/data/triggerSF/2018/Muon_Run2018_IsoMu20.root",
         Form("ZMassEta%s_MC", etaBinLabel.data()),
-        lut::kXptYabsEta, -1., -1., lut::kLimit, etaMin, etaMax, lut::kCut
+        lut::kXptYabsEta,
+        10., 100., lut::kLimit, etaMin, etaMax, lut::kCut
       ));
     }
   }
