@@ -887,12 +887,19 @@ std::map<std::string, double>InitializeInputVarMap(std::map<std::string, double>
 						   bool isNonRes)
 {
   std::map<std::string, double> BDTInputs_SUM;
-  for(unsigned int i = 0; i < BDTInputVariables.size(); i++){
-    //std::cout<<"Filling Map for Input Var.: " << BDTInputVariables[i] << " with value " << AllVars_Map[BDTInputVariables[i]] << std::endl;
-    BDTInputs_SUM[BDTInputVariables[i]] = AllVars_Map[BDTInputVariables[i]];
-  }
+  
   
   if(isNonRes){// Intialize all Non-Reso. "one-hot encoders" to zero
+    for(unsigned int i = 0; i < BDTInputVariables.size(); i++){
+      if( (BDTInputVariables[i] == "SM") 
+	  || (BDTInputVariables[i].find("BM") != std::string::npos) )
+	{
+	continue;
+	}
+
+      //std::cout<<"Filling Map for Input Var.: " << BDTInputVariables[i] << " with value " << AllVars_Map[BDTInputVariables[i]] << std::endl;
+      BDTInputs_SUM[BDTInputVariables[i]] = AllVars_Map[BDTInputVariables[i]];
+    }
     BDTInputs_SUM["SM"] = 0;
     BDTInputs_SUM["BM1"] = 0;
     BDTInputs_SUM["BM2"] = 0;
@@ -906,6 +913,11 @@ std::map<std::string, double>InitializeInputVarMap(std::map<std::string, double>
     BDTInputs_SUM["BM10"] = 0;
     BDTInputs_SUM["BM11"] = 0;
     BDTInputs_SUM["BM12"] = 0;
+  }else{
+    for(unsigned int i = 0; i < BDTInputVariables.size(); i++){
+      //std::cout<<"Filling Map for Input Var.: " << BDTInputVariables[i] << " with value " << AllVars_Map[BDTInputVariables[i]] << std::endl;
+      BDTInputs_SUM[BDTInputVariables[i]] = AllVars_Map[BDTInputVariables[i]];
+    }
   }
 
   return BDTInputs_SUM;
