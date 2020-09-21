@@ -856,9 +856,7 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update(">= 2 presel leptons", evtWeightRecorder.get(central_or_shift));
     const RecoLepton* preselLepton_lead = preselLeptons[0];
-    int preselLepton_lead_type = getLeptonType(preselLepton_lead->pdgId());
     const RecoLepton* preselLepton_sublead = preselLeptons[1];
-    int preselLepton_sublead_type = getLeptonType(preselLepton_sublead->pdgId());
 
     // require that trigger paths match event category (with event category based on preselLeptons)
     if ( !((preselElectrons.size() >= 2 &&                             selTrigger_1e                                       ) ||
@@ -884,10 +882,7 @@ int main(int argc, char* argv[])
         evtWeightRecorder.record_btagSFRatio(btagSFRatioFacility, selJets.size());
       }
 
-      dataToMCcorrectionInterface->setLeptons(
-        preselLepton_lead_type, preselLepton_lead->pt(), preselLepton_lead->cone_pt(), preselLepton_lead->eta(),
-        preselLepton_sublead_type, preselLepton_sublead->pt(), preselLepton_sublead->cone_pt(), preselLepton_sublead->eta()
-      );
+      dataToMCcorrectionInterface->setLeptons({ preselLepton_lead, preselLepton_sublead });
 
 //--- apply data/MC corrections for trigger efficiency,
 //    and efficiencies for lepton to pass loose identification and isolation criteria
@@ -1084,8 +1079,7 @@ int main(int argc, char* argv[])
 //    and for e->tau and mu->tau misidentification rates
         double evtWeight_denominator = evtWeight;
         dataToMCcorrectionInterface->setHadTauSelection((*denominator)->fakeableHadTauSelector_->get());
-        int preselHadTau_genPdgId = getHadTau_genPdgId(*preselHadTau);
-        dataToMCcorrectionInterface->setHadTaus(preselHadTau_genPdgId, (*preselHadTau)->pt(), (*preselHadTau)->eta());
+        dataToMCcorrectionInterface->setHadTaus({ *preselHadTau });
         evtWeight_denominator *= dataToMCcorrectionInterface->getSF_hadTauID_and_Iso(tauIDSF_option);
 
         (*denominator)->fillHistograms(**preselHadTau, cleanedJet_dRmatched, evtWeight_denominator);
@@ -1099,8 +1093,7 @@ int main(int argc, char* argv[])
 //    and for e->tau and mu->tau misidentification rates
         double evtWeight_numerator = evtWeight;
         dataToMCcorrectionInterface->setHadTauSelection((*numerator)->hadTauSelection_numerator_);
-        int preselHadTau_genPdgId = getHadTau_genPdgId(*preselHadTau);
-        dataToMCcorrectionInterface->setHadTaus(preselHadTau_genPdgId, (*preselHadTau)->pt(), (*preselHadTau)->eta());
+        dataToMCcorrectionInterface->setHadTaus({ *preselHadTau });
         evtWeight_numerator *= dataToMCcorrectionInterface->getSF_hadTauID_and_Iso(tauIDSF_option);
 
         (*numerator)->fillHistograms(**preselHadTau, cleanedJet_dRmatched, evtWeight_numerator);

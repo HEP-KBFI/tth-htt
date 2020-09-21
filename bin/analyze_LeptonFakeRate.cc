@@ -433,8 +433,7 @@ ApplyDataToMCCorrection(const RecoLepton* preselLepton,
 			EvtWeightRecorder &evtWeightRecorder)
 {
 
-  int preselLepton_type = getLeptonType(preselLepton->pdgId());
-  dataToMCcorrectionInterface->setLeptons(preselLepton_type, preselLepton->pt(), preselLepton->cone_pt(), preselLepton->eta());
+  dataToMCcorrectionInterface->setLeptons({ preselLepton });
 
   //--- apply data/MC corrections for trigger efficiency                                                                                                                                        
   evtWeightRecorder.record_leptonTriggerEff(dataToMCcorrectionInterface);
@@ -447,7 +446,7 @@ ApplyDataToMCCorrection(const RecoLepton* preselLepton,
   if(preselLepton->isTight()){ // Signal region
     evtWeightRecorder.record_leptonIDSF_looseToTight(dataToMCcorrectionInterface);    
   }else if(preselLepton->isFakeable()){ // Fakeable region
-    evtWeightRecorder.record_leptonSF(dataToMCcorrectionInterface->getSF_leptonID_and_Iso_fakeable_to_loose());
+    evtWeightRecorder.record_leptonSF(dataToMCcorrectionInterface->getSF_leptonID_and_Iso_looseToFakeable());
   }
   //std::cout<<" evtWeightRecorder.get(central): " << evtWeightRecorder.get("central") << std::endl;
 

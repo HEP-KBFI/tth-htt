@@ -1368,7 +1368,6 @@ int main(int argc, char* argv[])
     cutFlowTable.update(">= 1 sel lepton", evtWeightRecorder.get(central_or_shift_main));
     cutFlowHistManager->fillHistograms(">= 1 sel lepton", evtWeightRecorder.get(central_or_shift_main));
     const RecoLepton* selLepton = selLeptons[0];
-    int selLepton_type = getLeptonType(selLepton->pdgId());
     const leptonGenMatchEntry& selLepton_genMatch = getLeptonGenMatch(leptonGenMatch_definitions, selLepton);
 
     // require exactly one lepton passing tight selection criteria, to avoid overlap with other channels
@@ -1437,20 +1436,11 @@ int main(int argc, char* argv[])
         evtWeightRecorder.record_ewk_bjet(selBJets_medium);
       }
 
-      int selHadTau_lead_genPdgId = getHadTau_genPdgId(selHadTau_lead);
-      int selHadTau_sublead_genPdgId = getHadTau_genPdgId(selHadTau_sublead);
+      dataToMCcorrectionInterface->setLeptons({ selLepton });
+      dataToMCcorrectionInterface->setHadTaus({ selHadTau_lead, selHadTau_sublead });
 
-      dataToMCcorrectionInterface->setLeptons(selLepton_type, selLepton->pt(), selLepton->cone_pt(), selLepton->eta());
-      dataToMCcorrectionInterface->setHadTaus(
-        selHadTau_lead_genPdgId, selHadTau_lead->pt(), selHadTau_lead->eta(),
-        selHadTau_sublead_genPdgId, selHadTau_sublead->pt(), selHadTau_sublead->eta()
-      );
-
-      dataToMCcorrectionInterface_1l_2tau_trigger->setLeptons(selLepton_type, selLepton->pt(), selLepton->eta());
-      dataToMCcorrectionInterface_1l_2tau_trigger->setHadTaus(
-        selHadTau_lead->pt(),    selHadTau_lead->eta(),    selHadTau_lead->phi(),    selHadTau_lead->decayMode(),
-        selHadTau_sublead->pt(), selHadTau_sublead->eta(), selHadTau_sublead->phi(), selHadTau_sublead->decayMode()
-      );
+      dataToMCcorrectionInterface_1l_2tau_trigger->setLepton(selLepton);
+      dataToMCcorrectionInterface_1l_2tau_trigger->setHadTaus(selHadTau_lead, selHadTau_sublead);
       dataToMCcorrectionInterface_1l_2tau_trigger->setTriggerBits(
         isTriggered_1e, isTriggered_1e1tau, isTriggered_1mu, isTriggered_1mu1tau
       );
@@ -1465,7 +1455,7 @@ int main(int argc, char* argv[])
 //    to also pass the tight identification and isolation criteria
       if(electronSelection == kFakeable && muonSelection == kFakeable)
       {
-        evtWeightRecorder.record_leptonSF(dataToMCcorrectionInterface->getSF_leptonID_and_Iso_fakeable_to_loose());
+        evtWeightRecorder.record_leptonSF(dataToMCcorrectionInterface->getSF_leptonID_and_Iso_looseToFakeable());
       }
       else if (electronSelection >= kFakeable && muonSelection >= kFakeable)
       {

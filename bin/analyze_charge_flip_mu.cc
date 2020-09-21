@@ -894,9 +894,7 @@ int main(int argc, char* argv[])
       continue;
     }
     const RecoLepton* preselLepton_lead = preselLeptons[0];
-    int preselLepton_lead_type = getLeptonType(preselLepton_lead->pdgId());
     const RecoLepton* preselLepton_sublead = preselLeptons[1];
-    int preselLepton_sublead_type = getLeptonType(preselLepton_sublead->pdgId());
     
     const leptonGenMatchEntry& preselLepton_genMatch = getLeptonGenMatch(leptonGenMatch_definitions, preselLepton_lead, preselLepton_sublead);
     int idxPreselLepton_genMatch = preselLepton_genMatch.idx_;
@@ -941,10 +939,7 @@ int main(int argc, char* argv[])
         evtWeightRecorder.record_btagSFRatio(btagSFRatioFacility, selJets.size());
       }
 
-      dataToMCcorrectionInterface->setLeptons(
-        preselLepton_lead_type, preselLepton_lead->pt(), preselLepton_lead->cone_pt(), preselLepton_lead->eta(),
-        preselLepton_sublead_type, preselLepton_sublead->pt(), preselLepton_sublead->cone_pt(), preselLepton_sublead->eta()
-      );
+      dataToMCcorrectionInterface->setLeptons({ preselLepton_lead, preselLepton_sublead }, true); // TODO: use corrected 4-momentum
 
 //--- apply data/MC corrections for trigger efficiency,
 //    and efficiencies for lepton to pass loose identification and isolation criteria      
@@ -956,7 +951,7 @@ int main(int argc, char* argv[])
 //    to also pass the tight identification and isolation criteria
       if(leptonSelection == kFakeable)
       {
-        evtWeightRecorder.record_leptonSF(dataToMCcorrectionInterface->getSF_leptonID_and_Iso_fakeable_to_loose());
+        evtWeightRecorder.record_leptonSF(dataToMCcorrectionInterface->getSF_leptonID_and_Iso_looseToFakeable());
       }
       else if(leptonSelection == kTight)
       {

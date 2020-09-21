@@ -5,6 +5,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/data_to_MC_corrections_auxFunctions.h" // aux::
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // get_tau_id_wp_int()
+#include "tthAnalysis/HiggsToTauTau/interface/RecoMuon.h" // RecoMuon
+#include "tthAnalysis/HiggsToTauTau/interface/RecoElectron.h" // RecoElectron
 
 #include "TauPOG/TauIDSFs/interface/TauIDSFTool.h" // TauIDSFTool
 
@@ -46,7 +48,7 @@ Data_to_MC_CorrectionInterface_Base::Data_to_MC_CorrectionInterface_Base(const e
   , numHadTaus_(0)
   , hadTau_genPdgId_(4)
   , hadTau_pt_(4)
-  , hadTau_eta_(4)
+  , hadTau_absEta_(4)
 {
   const std::string hadTauSelection_string = cfg.getParameter<std::string>("hadTauSelection");
   applyHadTauSF_ = hadTauSelection_string != "disabled";
@@ -140,9 +142,54 @@ Data_to_MC_CorrectionInterface_Base::setHadTauSelection(const std::string & hadT
 }
 
 void
-Data_to_MC_CorrectionInterface_Base::setLeptons()
+Data_to_MC_CorrectionInterface_Base::setLeptons(const std::vector<const RecoLepton *> & leptons,
+                                                bool requireChargeMatch)
 {
+  numMuons_ = 0;
+  numElectrons_ = 0;
+
+  muon_pt_.clear();
+  muon_cone_pt_.clear();
+  muon_eta_.clear();
+  muon_isGenMatched_.clear();
+
+  electron_pt_.clear();
+  electron_cone_pt_.clear();
+  electron_eta_.clear();
+  electron_isGenMatched_.clear();
+
+  for(const RecoLepton * const lepton: leptons)
+  {
+    const RecoMuon * const muon = dynamic_cast<const RecoMuon * const>(lepton);
+    const RecoElectron * const electron = dynamic_cast<const RecoElectron * const>(lepton);
+    if(muon)
+    {
+      muon_pt_[numMuons_] = muon->pt();
+      muon_cone_pt_[numMuons_] = muon->cone_pt();
+      muon_eta_[numMuons_] = muon->eta();
+      muon_isGenMatched_[numMuons_] = muon->isGenMatched(requireChargeMatch);
+      ++numMuons_;
+    }
+    else if(electron)
+    {
+      electron_pt_[numElectrons_] = electron->pt();
+      electron_cone_pt_[numElectrons_] = electron->cone_pt();
+      electron_eta_[numElectrons_] = electron->eta();
+      electron_isGenMatched_[numElectrons_] = electron->isGenMatched(requireChargeMatch) && electron->genLepton(); // [*]
+      ++numElectrons_;
+      // [*] isGenMatched() can also return true if the reconstructed electron is matched to a generator level photon
+    }
+    else
+    {
+      assert(0);
+    }
+  }
+
   numLeptons_ = 0;
+  lepton_type_.clear();
+  lepton_pt_.clear();
+  lepton_cone_pt_.clear();
+  lepton_eta_.clear();
   for(std::size_t idxElectron = 0; idxElectron < numElectrons_; ++idxElectron)
   {
     lepton_type_[numLeptons_] = kElectron;
@@ -162,259 +209,19 @@ Data_to_MC_CorrectionInterface_Base::setLeptons()
 }
 
 void
-Data_to_MC_CorrectionInterface_Base::setLeptons(int lepton1_type, double lepton1_pt, double lepton1_cone_pt, double lepton1_eta)
+Data_to_MC_CorrectionInterface_Base::setHadTaus(const std::vector<const RecoHadTau *> & hadTaus)
 {
-  numElectrons_ = 0;
-  if(lepton1_type == kElectron)
+  numHadTaus_ = 0;
+  hadTau_genPdgId_.clear();
+  hadTau_pt_.clear();
+  hadTau_absEta_.clear();
+  for(const RecoHadTau * const hadTau: hadTaus)
   {
-    electron_pt_[numElectrons_] = lepton1_pt;
-    electron_cone_pt_[numElectrons_] = lepton1_cone_pt;
-    electron_eta_[numElectrons_] = lepton1_eta;
-    ++numElectrons_;
+    hadTau_genPdgId_[numHadTaus_] = getHadTau_genPdgId(hadTau);
+    hadTau_pt_[numHadTaus_] = hadTau->pt();
+    hadTau_absEta_[numHadTaus_] = hadTau->absEta();
+    ++numHadTaus_;
   }
-
-  numMuons_ = 0;
-  if(lepton1_type == kMuon)
-  {
-    muon_pt_[numMuons_] = lepton1_pt;
-    muon_cone_pt_[numMuons_] = lepton1_cone_pt;
-    muon_eta_[numMuons_] = lepton1_eta;
-    ++numMuons_;
-  }
-
-  setLeptons();
-}
-
-void
-Data_to_MC_CorrectionInterface_Base::setLeptons(int lepton1_type, double lepton1_pt, double lepton1_cone_pt, double lepton1_eta,
-                                                int lepton2_type, double lepton2_pt, double lepton2_cone_pt, double lepton2_eta)
-{
-  numElectrons_ = 0;
-  if(lepton1_type == kElectron)
-  {
-    electron_pt_[numElectrons_] = lepton1_pt;
-    electron_cone_pt_[numElectrons_] = lepton1_cone_pt;
-    electron_eta_[numElectrons_] = lepton1_eta;
-    ++numElectrons_;
-  }
-  if(lepton2_type == kElectron)
-  {
-    electron_pt_[numElectrons_] = lepton2_pt;
-    electron_cone_pt_[numElectrons_] = lepton2_cone_pt;
-    electron_eta_[numElectrons_] = lepton2_eta;
-    ++numElectrons_;
-  }
-
-  numMuons_ = 0;
-  if(lepton1_type == kMuon)
-  {
-    muon_pt_[numMuons_] = lepton1_pt;
-    muon_cone_pt_[numMuons_] = lepton1_cone_pt;
-    muon_eta_[numMuons_] = lepton1_eta;
-    ++numMuons_;
-  }
-  if(lepton2_type == kMuon)
-  {
-    muon_pt_[numMuons_] = lepton2_pt;
-    muon_cone_pt_[numMuons_] = lepton2_cone_pt;
-    muon_eta_[numMuons_] = lepton2_eta;
-    ++numMuons_;
-  }
-
-  setLeptons();
-}
-
-void
-Data_to_MC_CorrectionInterface_Base::setLeptons(int lepton1_type, double lepton1_pt, double lepton1_cone_pt, double lepton1_eta,
-                                                int lepton2_type, double lepton2_pt, double lepton2_cone_pt, double lepton2_eta,
-                                                int lepton3_type, double lepton3_pt, double lepton3_cone_pt, double lepton3_eta)
-{
-  numElectrons_ = 0;
-  if(lepton1_type == kElectron)
-  {
-    electron_pt_[numElectrons_] = lepton1_pt;
-    electron_cone_pt_[numElectrons_] = lepton1_cone_pt;
-    electron_eta_[numElectrons_] = lepton1_eta;
-    ++numElectrons_;
-  }
-  if(lepton2_type == kElectron)
-  {
-    electron_pt_[numElectrons_] = lepton2_pt;
-    electron_cone_pt_[numElectrons_] = lepton2_cone_pt;
-    electron_eta_[numElectrons_] = lepton2_eta;
-    ++numElectrons_;
-  }
-  if(lepton3_type == kElectron)
-  {
-    electron_pt_[numElectrons_] = lepton3_pt;
-    electron_cone_pt_[numElectrons_] = lepton3_cone_pt;
-    electron_eta_[numElectrons_] = lepton3_eta;
-    ++numElectrons_;
-  }
-
-  numMuons_ = 0;
-  if(lepton1_type == kMuon)
-  {
-    muon_pt_[numMuons_] = lepton1_pt;
-    muon_cone_pt_[numMuons_] = lepton1_cone_pt;
-    muon_eta_[numMuons_] = lepton1_eta;
-    ++numMuons_;
-  }
-  if(lepton2_type == kMuon)
-  {
-    muon_pt_[numMuons_] = lepton2_pt;
-    muon_cone_pt_[numMuons_] = lepton2_cone_pt;
-    muon_eta_[numMuons_] = lepton2_eta;
-    ++numMuons_;
-  }
-  if(lepton3_type == kMuon)
-  {
-    muon_pt_[numMuons_] = lepton3_pt;
-    muon_cone_pt_[numMuons_] = lepton3_cone_pt;
-    muon_eta_[numMuons_] = lepton3_eta;
-    ++numMuons_;
-  }
-
-  setLeptons();
-}
-
-void
-Data_to_MC_CorrectionInterface_Base::setLeptons(int lepton1_type, double lepton1_pt, double lepton1_cone_pt, double lepton1_eta,
-                                                int lepton2_type, double lepton2_pt, double lepton2_cone_pt, double lepton2_eta,
-                                                int lepton3_type, double lepton3_pt, double lepton3_cone_pt, double lepton3_eta,
-                                                int lepton4_type, double lepton4_pt, double lepton4_cone_pt, double lepton4_eta)
-{
-  numElectrons_ = 0;
-  if(lepton1_type == kElectron)
-  {
-    electron_pt_[numElectrons_] = lepton1_pt;
-    electron_cone_pt_[numElectrons_] = lepton1_cone_pt;
-    electron_eta_[numElectrons_] = lepton1_eta;
-    ++numElectrons_;
-  }
-  if(lepton2_type == kElectron)
-  {
-    electron_pt_[numElectrons_] = lepton2_pt;
-    electron_cone_pt_[numElectrons_] = lepton2_cone_pt;
-    electron_eta_[numElectrons_] = lepton2_eta;
-    ++numElectrons_;
-  }
-  if(lepton3_type == kElectron)
-  {
-    electron_pt_[numElectrons_] = lepton3_pt;
-    electron_cone_pt_[numElectrons_] = lepton3_cone_pt;
-    electron_eta_[numElectrons_] = lepton3_eta;
-    ++numElectrons_;
-  }
-  if(lepton4_type == kElectron)
-  {
-    electron_pt_[numElectrons_] = lepton4_pt;
-    electron_cone_pt_[numElectrons_] = lepton4_cone_pt;
-    electron_eta_[numElectrons_] = lepton4_eta;
-    ++numElectrons_;
-  }
-
-  numMuons_ = 0;
-  if(lepton1_type == kMuon)
-  {
-    muon_pt_[numMuons_] = lepton1_pt;
-    muon_cone_pt_[numMuons_] = lepton1_cone_pt;
-    muon_eta_[numMuons_] = lepton1_eta;
-    ++numMuons_;
-  }
-  if(lepton2_type == kMuon)
-  {
-    muon_pt_[numMuons_] = lepton2_pt;
-    muon_cone_pt_[numMuons_] = lepton2_cone_pt;
-    muon_eta_[numMuons_] = lepton2_eta;
-    ++numMuons_;
-  }
-  if(lepton3_type == kMuon)
-  {
-    muon_pt_[numMuons_] = lepton3_pt;
-    muon_cone_pt_[numMuons_] = lepton3_cone_pt;
-    muon_eta_[numMuons_] = lepton3_eta;
-    ++numMuons_;
-  }
-  if(lepton4_type == kMuon)
-  {
-    muon_pt_[numMuons_] = lepton4_pt;
-    muon_cone_pt_[numMuons_] = lepton4_cone_pt;
-    muon_eta_[numMuons_] = lepton4_eta;
-    ++numMuons_;
-  }
-
-  setLeptons();
-}
-
-void
-Data_to_MC_CorrectionInterface_Base::setHadTaus(int hadTau1_genPdgId, double hadTau1_pt, double hadTau1_eta)
-{
-  numHadTaus_ = 1;
-
-  hadTau_genPdgId_[0] = hadTau1_genPdgId;
-  hadTau_pt_[0] = hadTau1_pt;
-  hadTau_eta_[0] = hadTau1_eta;
-}
-
-void
-Data_to_MC_CorrectionInterface_Base::setHadTaus(int hadTau1_genPdgId, double hadTau1_pt, double hadTau1_eta,
-                                                int hadTau2_genPdgId, double hadTau2_pt, double hadTau2_eta)
-{
-  numHadTaus_ = 2;
-
-  hadTau_genPdgId_[0] = hadTau1_genPdgId;
-  hadTau_pt_[0] = hadTau1_pt;
-  hadTau_eta_[0] = hadTau1_eta;
-
-  hadTau_genPdgId_[1] = hadTau2_genPdgId;
-  hadTau_pt_[1] = hadTau2_pt;
-  hadTau_eta_[1] = hadTau2_eta;
-}
-
-void
-Data_to_MC_CorrectionInterface_Base::setHadTaus(int hadTau1_genPdgId, double hadTau1_pt, double hadTau1_eta,
-                                                int hadTau2_genPdgId, double hadTau2_pt, double hadTau2_eta,
-                                                int hadTau3_genPdgId, double hadTau3_pt, double hadTau3_eta)
-{
-  numHadTaus_ = 3;
-
-  hadTau_genPdgId_[0] = hadTau1_genPdgId;
-  hadTau_pt_[0] = hadTau1_pt;
-  hadTau_eta_[0] = hadTau1_eta;
-
-  hadTau_genPdgId_[1] = hadTau2_genPdgId;
-  hadTau_pt_[1] = hadTau2_pt;
-  hadTau_eta_[1] = hadTau2_eta;
-
-  hadTau_genPdgId_[2] = hadTau3_genPdgId;
-  hadTau_pt_[2] = hadTau3_pt;
-  hadTau_eta_[2] = hadTau3_eta;
-}
-
-void
-Data_to_MC_CorrectionInterface_Base::setHadTaus(int hadTau1_genPdgId, double hadTau1_pt, double hadTau1_eta,
-                                                int hadTau2_genPdgId, double hadTau2_pt, double hadTau2_eta,
-                                                int hadTau3_genPdgId, double hadTau3_pt, double hadTau3_eta,
-                                                int hadTau4_genPdgId, double hadTau4_pt, double hadTau4_eta)
-{
-  numHadTaus_ = 4;
-
-  hadTau_genPdgId_[0] = hadTau1_genPdgId;
-  hadTau_pt_[0] = hadTau1_pt;
-  hadTau_eta_[0] = hadTau1_eta;
-
-  hadTau_genPdgId_[1] = hadTau2_genPdgId;
-  hadTau_pt_[1] = hadTau2_pt;
-  hadTau_eta_[1] = hadTau2_eta;
-
-  hadTau_genPdgId_[2] = hadTau3_genPdgId;
-  hadTau_pt_[2] = hadTau3_pt;
-  hadTau_eta_[2] = hadTau3_eta;
-
-  hadTau_genPdgId_[3] = hadTau4_genPdgId;
-  hadTau_pt_[3] = hadTau4_pt;
-  hadTau_eta_[3] = hadTau4_eta;
 }
 
 double
@@ -429,15 +236,18 @@ double
 Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso(std::size_t numLeptons,
                                                             const std::vector<double> & lepton_pt,
                                                             const std::vector<double> & lepton_eta,
+                                                            const std::vector<bool> & lepton_isGenMatched,
                                                             const std::vector<lutWrapperBase *> & corrections,
                                                             int error_shift) const
 {
   double sf = 1.;
   for(std::size_t idxLepton = 0; idxLepton < numLeptons; ++idxLepton)
   {
-    const double pt = lepton_pt[idxLepton];
-    const double eta = lepton_eta[idxLepton];
-    sf *= get_from_lut_err(corrections, pt, eta, error_shift, isDEBUG_);
+    if(! lepton_isGenMatched[idxLepton])
+    {
+      continue;
+    }
+    sf *= get_from_lut_err(corrections, lepton_pt[idxLepton], lepton_eta[idxLepton], error_shift, isDEBUG_);
   }
   return sf;
 }
@@ -544,7 +354,9 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_loose(LeptonIDSFsys 
   {
     sf_el_error = -1;
   }
-  const double sf_el = getSF_leptonID_and_Iso(numElectrons_, electron_pt_, electron_eta_, sfElectronID_and_Iso_loose_, sf_el_error);
+  const double sf_el = getSF_leptonID_and_Iso(
+    numElectrons_, electron_pt_, electron_eta_, electron_isGenMatched_, sfElectronID_and_Iso_loose_, sf_el_error
+  );
   if(isDEBUG_)
   {
     std::cout
@@ -562,7 +374,9 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_loose(LeptonIDSFsys 
   {
     sf_mu_error = -1;
   }
-  const double sf_mu = getSF_leptonID_and_Iso(numMuons_,     muon_pt_,     muon_eta_,     sfMuonID_and_Iso_loose_, sf_mu_error);
+  const double sf_mu = getSF_leptonID_and_Iso(
+    numMuons_, muon_pt_, muon_eta_, muon_isGenMatched_, sfMuonID_and_Iso_loose_, sf_mu_error
+  );
   const double sf = sf_el * sf_mu;
   if(isDEBUG_)
   {
@@ -575,7 +389,7 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_loose(LeptonIDSFsys 
 }
 
 double
-Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_fakeable_to_loose() const
+Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_looseToFakeable() const
 {
   return 1.; // CV: no data/MC corrections for "fakeable" leptons determined yet
 }
@@ -587,18 +401,24 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_tight_to_loose_woTig
   {
     std::cout << get_human_line(this, __func__, __LINE__) << "Computing SF for electrons\n";
   }
-  double sf_el = getSF_leptonID_and_Iso(numElectrons_, electron_pt_, electron_eta_, sfElectronID_and_Iso_tight_to_loose_woTightCharge_, 0);
+  double sf_el = getSF_leptonID_and_Iso(
+    numElectrons_, electron_pt_, electron_eta_, electron_isGenMatched_, sfElectronID_and_Iso_tight_to_loose_woTightCharge_, 0
+  );
   if(isDEBUG_)
   {
     std::cout << get_human_line(this, __func__, __LINE__) << "Computing SF errors for electrons\n";
   }
   if(central_or_shift == LeptonIDSFsys::elTightUp)
   {
-    sf_el *= getSF_leptonID_and_Iso(numElectrons_, electron_pt_, electron_eta_, sfElectronID_and_Iso_tight_to_loose_errors_up_, 0);
+    sf_el *= getSF_leptonID_and_Iso(
+      numElectrons_, electron_pt_, electron_eta_, electron_isGenMatched_, sfElectronID_and_Iso_tight_to_loose_errors_up_, 0
+    );
   }
   else if(central_or_shift == LeptonIDSFsys::elTightDown)
   {
-    sf_el *= getSF_leptonID_and_Iso(numElectrons_, electron_pt_, electron_eta_, sfElectronID_and_Iso_tight_to_loose_errors_down_, 0);
+    sf_el *= getSF_leptonID_and_Iso(
+      numElectrons_, electron_pt_, electron_eta_, electron_isGenMatched_, sfElectronID_and_Iso_tight_to_loose_errors_down_, 0
+    );
   }
   if(isDEBUG_)
   {
@@ -608,18 +428,24 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_tight_to_loose_woTig
     ;
   }
 
-  double sf_mu = getSF_leptonID_and_Iso(numMuons_, muon_pt_, muon_eta_, sfMuonID_and_Iso_tight_to_loose_woTightCharge_, 0);
+  double sf_mu = getSF_leptonID_and_Iso(
+    numMuons_, muon_pt_, muon_eta_, muon_isGenMatched_, sfMuonID_and_Iso_tight_to_loose_woTightCharge_, 0
+  );
   if(isDEBUG_)
   {
     std::cout << get_human_line(this, __func__, __LINE__) << "Computing SF errors for muons\n";
   }
   if(central_or_shift == LeptonIDSFsys::muTightUp)
   {
-    sf_mu *= getSF_leptonID_and_Iso(numMuons_, muon_pt_, muon_eta_, sfMuonID_and_Iso_tight_to_loose_errors_up_, 0);
+    sf_mu *= getSF_leptonID_and_Iso(
+      numMuons_, muon_pt_, muon_eta_, muon_isGenMatched_, sfMuonID_and_Iso_tight_to_loose_errors_up_, 0
+    );
   }
   else if(central_or_shift == LeptonIDSFsys::muTightDown)
   {
-    sf_mu *= getSF_leptonID_and_Iso(numMuons_, muon_pt_, muon_eta_, sfMuonID_and_Iso_tight_to_loose_errors_down_, 0);
+    sf_mu *= getSF_leptonID_and_Iso(
+      numMuons_, muon_pt_, muon_eta_, muon_isGenMatched_, sfMuonID_and_Iso_tight_to_loose_errors_down_, 0
+    );
   }
   const double sf = sf_el * sf_mu;
   if(isDEBUG_)
@@ -639,18 +465,24 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_tight_to_loose_wTigh
   {
     std::cout << get_human_line(this, __func__, __LINE__) << "Computing SF for electrons\n";
   }
-  double sf_el = getSF_leptonID_and_Iso(numElectrons_, electron_pt_, electron_eta_, sfElectronID_and_Iso_tight_to_loose_wTightCharge_, 0);
+  double sf_el = getSF_leptonID_and_Iso(
+    numElectrons_, electron_pt_, electron_eta_, electron_isGenMatched_, sfElectronID_and_Iso_tight_to_loose_wTightCharge_, 0
+  );
   if(isDEBUG_)
   {
     std::cout << get_human_line(this, __func__, __LINE__) << "Computing SF errors for electrons\n";
   }
   if(central_or_shift == LeptonIDSFsys::elTightUp)
   {
-    sf_el *= getSF_leptonID_and_Iso(numElectrons_, electron_pt_, electron_eta_, sfElectronID_and_Iso_tight_to_loose_errors_up_, 0);
+    sf_el *= getSF_leptonID_and_Iso(
+      numElectrons_, electron_pt_, electron_eta_, electron_isGenMatched_, sfElectronID_and_Iso_tight_to_loose_errors_up_, 0
+    );
   }
   else if(central_or_shift == LeptonIDSFsys::elTightDown)
   {
-    sf_el *= getSF_leptonID_and_Iso(numElectrons_, electron_pt_, electron_eta_, sfElectronID_and_Iso_tight_to_loose_errors_down_, 0);
+    sf_el *= getSF_leptonID_and_Iso(
+      numElectrons_, electron_pt_, electron_eta_, electron_isGenMatched_, sfElectronID_and_Iso_tight_to_loose_errors_down_, 0
+    );
   }
   if(isDEBUG_)
   {
@@ -660,18 +492,24 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_tight_to_loose_wTigh
     ;
   }
 
-  double sf_mu = getSF_leptonID_and_Iso(numMuons_, muon_pt_, muon_eta_, sfMuonID_and_Iso_tight_to_loose_wTightCharge_, 0);
+  double sf_mu = getSF_leptonID_and_Iso(
+    numMuons_, muon_pt_, muon_eta_, muon_isGenMatched_, sfMuonID_and_Iso_tight_to_loose_wTightCharge_, 0
+  );
   if(isDEBUG_)
   {
     std::cout << get_human_line(this, __func__, __LINE__) << "Computing SF errors for muons\n";
   }
   if(central_or_shift == LeptonIDSFsys::muTightUp)
   {
-    sf_mu *= getSF_leptonID_and_Iso(numMuons_, muon_pt_, muon_eta_, sfMuonID_and_Iso_tight_to_loose_errors_up_, 0);
+    sf_mu *= getSF_leptonID_and_Iso(
+      numMuons_, muon_pt_, muon_eta_, muon_isGenMatched_, sfMuonID_and_Iso_tight_to_loose_errors_up_, 0
+    );
   }
   else if(central_or_shift == LeptonIDSFsys::muTightDown)
   {
-    sf_mu *= getSF_leptonID_and_Iso(numMuons_, muon_pt_, muon_eta_, sfMuonID_and_Iso_tight_to_loose_errors_down_, 0);
+    sf_mu *= getSF_leptonID_and_Iso(
+      numMuons_, muon_pt_, muon_eta_, muon_isGenMatched_, sfMuonID_and_Iso_tight_to_loose_errors_down_, 0
+    );
   }
   const double sf = sf_el * sf_mu;
   if(isDEBUG_)
@@ -732,13 +570,12 @@ Data_to_MC_CorrectionInterface_Base::getSF_eToTauFakeRate(FRet central_or_shift)
           throw cmsException(this, __func__, __LINE__) << "Anti-e SFs not initalized for WP " << hadTauSelection_antiElectron;
         }
         const TauIDSFTool * const tauIDSF_antiEle = tauIDSFs_antiEle_.at(hadTauSelection_antiElectron);
-        const double hadTau_absEta = std::fabs(hadTau_eta_[idxHadTau]);
 
         switch(central_or_shift)
         {
-          case FRet::shiftUp:   sf *= tauIDSF_antiEle->getSFvsEta(hadTau_absEta, 1, "Up");   break;
-          case FRet::shiftDown: sf *= tauIDSF_antiEle->getSFvsEta(hadTau_absEta, 1, "Down"); break;
-          case FRet::central:   sf *= tauIDSF_antiEle->getSFvsEta(hadTau_absEta, 1);         break;
+          case FRet::shiftUp:   sf *= tauIDSF_antiEle->getSFvsEta(hadTau_absEta_[idxHadTau], 1, "Up");   break;
+          case FRet::shiftDown: sf *= tauIDSF_antiEle->getSFvsEta(hadTau_absEta_[idxHadTau], 1, "Down"); break;
+          case FRet::central:   sf *= tauIDSF_antiEle->getSFvsEta(hadTau_absEta_[idxHadTau], 1);         break;
         }
       }
     }
@@ -763,13 +600,12 @@ Data_to_MC_CorrectionInterface_Base::getSF_muToTauFakeRate(FRmt central_or_shift
           throw cmsException(this, __func__, __LINE__) << "Anti-mu SFs not initalized for WP " << hadTauSelection_antiMuon;
         }
         const TauIDSFTool * const tauIDSF_antiMu = tauIDSFs_antiMu_.at(hadTauSelection_antiMuon);
-        const double hadTau_absEta = std::fabs(hadTau_eta_[idxHadTau]);
 
         switch(central_or_shift)
         {
-          case FRmt::shiftUp:   sf *= tauIDSF_antiMu->getSFvsEta(hadTau_absEta, 2, "Up");   break;
-          case FRmt::shiftDown: sf *= tauIDSF_antiMu->getSFvsEta(hadTau_absEta, 2, "Down"); break;
-          case FRmt::central:   sf *= tauIDSF_antiMu->getSFvsEta(hadTau_absEta, 2);         break;
+          case FRmt::shiftUp:   sf *= tauIDSF_antiMu->getSFvsEta(hadTau_absEta_[idxHadTau], 2, "Up");   break;
+          case FRmt::shiftDown: sf *= tauIDSF_antiMu->getSFvsEta(hadTau_absEta_[idxHadTau], 2, "Down"); break;
+          case FRmt::central:   sf *= tauIDSF_antiMu->getSFvsEta(hadTau_absEta_[idxHadTau], 2);         break;
         }
       }
     }

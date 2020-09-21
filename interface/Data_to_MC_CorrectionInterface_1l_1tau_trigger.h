@@ -25,12 +25,11 @@ public:
   // set lepton type, pT and eta as well as hadTau pT, eta and decay mode
   // (to be called once per event, before calling any of the getSF.. functions)
   void
-  setLeptons(int lepton_type,
-             double lepton_pt,
-             double lepton_eta);
+  setLepton(const RecoLepton * const lepton);
 
   void
-  setHadTaus(double hadTau_pt, double hadTau_eta, double hadTau_phi, int hadTau_decayMode);
+  setHadTau(const RecoHadTau * const lepton);
+
   //-----------------------------------------------------------------------------
 
   //-----------------------------------------------------------------------------
