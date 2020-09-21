@@ -16,6 +16,7 @@
 #include <DataFormats/Math/interface/LorentzVector.h> // math::PtEtaPhiMLorentzVector
 
 #include "tthAnalysis/HiggsToTauTau/interface/TMVAInterface.h" // TMVAInterface
+#include "tthAnalysis/HiggsToTauTau/interface/XGBInterface.h" // XGBInterface
 
 #include <TMath.h> // TMath::Abs()
 
@@ -762,6 +763,14 @@ InitializeInputVarMap(std::map<std::string, double> & AllVars_Map,
 std::map<std::string, double>
 CreateBDTOutputMap(std::vector<double> & BDT_params,
 		   TMVAInterface* BDT_SUM,
+		   std::map<std::string, double>& BDTInputs_SUM,
+		   int event_number,
+		   bool isNonRes,
+		   std::string label);
+
+std::map<std::string, double>
+CreateBDTOutputMap(std::vector<double> & BDT_params,
+		   XGBInterface* BDT_SUM,
 		   std::map<std::string, double>& BDTInputs_SUM,
 		   int event_number,
 		   bool isNonRes,

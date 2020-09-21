@@ -201,6 +201,7 @@ getSF_from_TGraph(TGraph * lut,
                   int __attribute__((unused)) error_shift)
 {
   const TAxis * xAxis = lut->GetXaxis();
+  //std::cout<<"x: " << x << " xAxis->GetXmin(): " << xAxis->GetXmin() << " xAxis->GetXmax(): " << xAxis->GetXmax() << std::endl;
   x = constrainValue(x, xAxis->GetXmin(), xAxis->GetXmax());
   return lut->Eval(x);
 }

@@ -891,28 +891,43 @@ std::map<std::string, double>InitializeInputVarMap(std::map<std::string, double>
   
   if(isNonRes){// Intialize all Non-Reso. "one-hot encoders" to zero
     for(unsigned int i = 0; i < BDTInputVariables.size(); i++){
-      if( (BDTInputVariables[i] == "SM") 
-	  || (BDTInputVariables[i].find("BM") != std::string::npos) )
-	{
-	continue;
-	}
-
-      //std::cout<<"Filling Map for Input Var.: " << BDTInputVariables[i] << " with value " << AllVars_Map[BDTInputVariables[i]] << std::endl;
-      BDTInputs_SUM[BDTInputVariables[i]] = AllVars_Map[BDTInputVariables[i]];
+      //if( (BDTInputVariables[i] == "SM") 
+      //	  || (BDTInputVariables[i].find("BM") != std::string::npos) )
+      //{
+      //continue;
+      //}
+      if(BDTInputVariables[i] == "SM"){ 
+	BDTInputs_SUM["SM"] = 0; 
+      }else if(BDTInputVariables[i] == "BM1"){ 
+	BDTInputs_SUM["BM1"] = 0; 
+      }else if(BDTInputVariables[i] == "BM2"){ 
+	BDTInputs_SUM["BM2"] = 0; 
+      }else if(BDTInputVariables[i] == "BM3"){ 
+	BDTInputs_SUM["BM3"] = 0; 
+      }else if(BDTInputVariables[i] == "BM4"){ 
+	BDTInputs_SUM["BM4"] = 0; 
+      }else if(BDTInputVariables[i] == "BM5"){ 
+	BDTInputs_SUM["BM5"] = 0; 
+      }else if(BDTInputVariables[i] == "BM6"){ 
+	BDTInputs_SUM["BM6"] = 0; 
+      }else if(BDTInputVariables[i] == "BM7"){ 
+	BDTInputs_SUM["BM7"] = 0; 
+      }else if(BDTInputVariables[i] == "BM8"){ 
+	BDTInputs_SUM["BM8"] = 0; 
+      }else if(BDTInputVariables[i] == "BM9"){ 
+	BDTInputs_SUM["BM9"] = 0; 
+      }else if(BDTInputVariables[i] == "BM10"){ 
+	BDTInputs_SUM["BM10"] = 0; 
+      }else if(BDTInputVariables[i] == "BM11"){ 
+	BDTInputs_SUM["BM11"] = 0; 
+      }else if(BDTInputVariables[i] == "BM12"){ 
+	BDTInputs_SUM["BM12"] = 0; 
+      }else{
+	//std::cout<<"Filling Map for Input Var.: " << BDTInputVariables[i] << " with value " << AllVars_Map[BDTInputVariables[i]] << std::endl;
+	BDTInputs_SUM[BDTInputVariables[i]] = AllVars_Map[BDTInputVariables[i]];
+      }
     }
-    BDTInputs_SUM["SM"] = 0;
-    BDTInputs_SUM["BM1"] = 0;
-    BDTInputs_SUM["BM2"] = 0;
-    BDTInputs_SUM["BM3"] = 0;
-    BDTInputs_SUM["BM4"] = 0;
-    BDTInputs_SUM["BM5"] = 0;
-    BDTInputs_SUM["BM6"] = 0;
-    BDTInputs_SUM["BM7"] = 0;
-    BDTInputs_SUM["BM8"] = 0;
-    BDTInputs_SUM["BM9"] = 0;
-    BDTInputs_SUM["BM10"] = 0;
-    BDTInputs_SUM["BM11"] = 0;
-    BDTInputs_SUM["BM12"] = 0;
+
   }else{
     for(unsigned int i = 0; i < BDTInputVariables.size(); i++){
       //std::cout<<"Filling Map for Input Var.: " << BDTInputVariables[i] << " with value " << AllVars_Map[BDTInputVariables[i]] << std::endl;
@@ -922,6 +937,32 @@ std::map<std::string, double>InitializeInputVarMap(std::map<std::string, double>
 
   return BDTInputs_SUM;
 }
+
+std::string DoubleToUInt_Convertor(double BDT_param,
+				   bool isNonRes,
+				   std::string label)
+{
+  std::string key_final = "";
+  unsigned int mass_int = (int)BDT_param; // Conversion from double to unsigned int 
+  std::string key = "";
+  std::ostringstream temp;
+  temp << mass_int;
+  key = temp.str(); // Conversion from unsigned int to string
+
+  if(!isNonRes){ // Resonant 
+    key_final = "BDTOutput_" + key;
+  }else{ // Non-Resonant (Non SM BM Indices)
+    key_final = "BDTOutput_BM" + key;
+  }
+
+  if(!isNonRes && !label.empty()){ // Appending Spin hypothesis to the Output label
+    std::string Label = label;
+    key_final += Label;
+  }
+
+  return key_final;
+}
+
 
 std::map<std::string, double>CreateBDTOutputMap(std::vector<double>& BDT_params,
                                                 TMVAInterface* BDT_SUM,
@@ -935,31 +976,107 @@ std::map<std::string, double>CreateBDTOutputMap(std::vector<double>& BDT_params,
     std::string key_final = "";
     if(!isNonRes){ // Reso. case
       BDTInputs_SUM["gen_mHH"] = BDT_params[i];
-      unsigned int mass_int = (int)BDT_params[i]; // Conversion from double to unsigned int
-      std::string key = "";
-      std::ostringstream temp;
-      temp << mass_int;
-      key = temp.str(); // Conversion from unsigned int to string
-      key_final = "BDTOutput_" + key;
 
-      if(!label.empty()){ // Appending Spin hypothesis to the Output label
-	std::string Label = label;
-	key_final += Label;
-      }
+      //unsigned int mass_int = (int)BDT_params[i]; // Conversion from double to unsigned int
+      //std::string key = "";
+      //std::ostringstream temp;
+      //temp << mass_int;
+      //key = temp.str(); // Conversion from unsigned int to string
+      //key_final = "BDTOutput_" + key;
+
+      //if(!label.empty()){ // Appending Spin hypothesis to the Output label
+      // std::string Label = label;
+      // key_final += Label;
+      //}
+      key_final = DoubleToUInt_Convertor(BDT_params[i], isNonRes, label);
+
 
     }else{ // Non Reso. case
       if(BDT_params[i] == 0){ // SM case
-	key_final = "BDTOutput_SM";
 	BDTInputs_SUM["SM"] = 1;  
-      }else{
+	key_final = "BDTOutput_SM";
+      }else{ // Non SM case
+	BDTInputs_SUM["SM"] = 0;
 	unsigned int bm_index_int = (int)BDT_params[i];
 	std::string key = "";
 	std::ostringstream temp;
 	temp << bm_index_int;
-	key = temp.str(); // Conversion from unsigned int to string   
+	key = temp.str(); // Conversion from unsigned int to string
 	std::string input_BM_index = "BM" + key;
-	BDTInputs_SUM[input_BM_index] = 1;
-	key_final = "BDTOutput_BM" + key;
+	BDTInputs_SUM[input_BM_index] = 1;   
+	key_final = DoubleToUInt_Convertor(BDT_params[i], isNonRes, label);
+	if(i >= 2){
+	    	unsigned int bm_index_int_prev = (int)BDT_params[i-1];
+		std::string key_prev = "";
+		std::ostringstream temp_prev;
+		temp_prev << bm_index_int_prev;
+		key_prev = temp_prev.str(); // Conversion from unsigned int to string
+		std::string input_BM_index_prev = "BM" + key_prev;
+		BDTInputs_SUM[input_BM_index_prev] = 0; // Resetting the prev. hot encoder to zero   
+	}
+      }
+    }
+
+    if(event_number != -1){ // Odd Even method
+      BDTOutput_SUM_Map.insert( std::make_pair(key_final, (*BDT_SUM)(BDTInputs_SUM, event_number)) );
+    }else{ // Same BDT for all events
+      BDTOutput_SUM_Map.insert( std::make_pair(key_final, (*BDT_SUM)(BDTInputs_SUM)) );
+    }
+  }
+  return BDTOutput_SUM_Map;
+}
+
+
+std::map<std::string, double>CreateBDTOutputMap(std::vector<double>& BDT_params,
+                                                XGBInterface* BDT_SUM,
+                                                std::map<std::string, double>& BDTInputs_SUM,
+						int event_number,
+						bool isNonRes,
+						std::string label)
+{
+  std::map<std::string, double> BDTOutput_SUM_Map;
+  for(unsigned int i=0; i<BDT_params.size(); i++){ // Loop over BDT_params: signal mass (Reso.)/BM index (Non Reso.)
+    std::string key_final = "";
+    if(!isNonRes){ // Reso. case
+      BDTInputs_SUM["gen_mHH"] = BDT_params[i];
+
+      //unsigned int mass_int = (int)BDT_params[i]; // Conversion from double to unsigned int
+      //std::string key = "";
+      //std::ostringstream temp;
+      //temp << mass_int;
+      //key = temp.str(); // Conversion from unsigned int to string
+      //key_final = "BDTOutput_" + key;
+
+      //if(!label.empty()){ // Appending Spin hypothesis to the Output label
+      // std::string Label = label;
+      // key_final += Label;
+      //}
+      key_final = DoubleToUInt_Convertor(BDT_params[i], isNonRes, label);
+
+
+    }else{ // Non Reso. case
+      if(BDT_params[i] == 0){ // SM case
+	BDTInputs_SUM["SM"] = 1;  
+	key_final = "BDTOutput_SM";
+      }else{ // Non SM case
+	BDTInputs_SUM["SM"] = 0;
+	unsigned int bm_index_int = (int)BDT_params[i];
+	std::string key = "";
+	std::ostringstream temp;
+	temp << bm_index_int;
+	key = temp.str(); // Conversion from unsigned int to string
+	std::string input_BM_index = "BM" + key;
+	BDTInputs_SUM[input_BM_index] = 1;   
+	key_final = DoubleToUInt_Convertor(BDT_params[i], isNonRes, label);
+	if(i >= 2){
+	    	unsigned int bm_index_int_prev = (int)BDT_params[i-1];
+		std::string key_prev = "";
+		std::ostringstream temp_prev;
+		temp_prev << bm_index_int_prev;
+		key_prev = temp_prev.str(); // Conversion from unsigned int to string
+		std::string input_BM_index_prev = "BM" + key_prev;
+		BDTInputs_SUM[input_BM_index_prev] = 0; // Resetting the prev. hot encoder to zero   
+	}
       }
     }
 
