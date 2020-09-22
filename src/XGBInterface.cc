@@ -405,7 +405,6 @@ double
 XGBInterface::operator()(const std::map<std::string, double> & mvaInputs,
                          int event_number) const
 {
-  std::cout << "event_number " << event_number << std::endl;
   std::map<std::string, double> mvaInputs_final;
 
   if(fitFunctionFileName_ != "")

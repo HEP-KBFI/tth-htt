@@ -267,14 +267,11 @@ TMVAInterface::operator()(const std::map<std::string, double> & mvaInputs,
 
   // Casting mva from "const TMVA::Reader*" to "TMVA::Reader*" (since EvaluateMVA() doesn't accept const input)
   double mvaOutput = (const_cast<TMVA::Reader*>(mva))->EvaluateMVA("BDTG");
-  std::cout << "mvaOutput before transform: " << mvaOutput << '\n';
   if(isBDTTransform_)
   {
     mvaOutput = 1. / (1. + std::sqrt((1. - mvaOutput) / (1. + mvaOutput)));
-    std::cout<< "mvaOutput after transform: " << mvaOutput << std::endl;
   }
 
-  std::cout << "TMVA: mvaOutput " << mvaOutput << '\n';
-
+  //std::cout << "TMVA: mvaOutput " << mvaOutput << '\n';
   return mvaOutput;
 }
