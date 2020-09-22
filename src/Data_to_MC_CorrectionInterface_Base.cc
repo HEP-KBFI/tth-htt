@@ -155,30 +155,27 @@ Data_to_MC_CorrectionInterface_Base::setLeptons(const std::vector<const RecoLept
   {
     lepton_pt_.push_back(lepton->pt());
     lepton_eta_.push_back(lepton->eta());
+    lepton_cone_pt_.push_back(lepton->cone_pt());
     ++numLeptons_;
 
     const RecoMuon * const muon = dynamic_cast<const RecoMuon * const>(lepton);
     const RecoElectron * const electron = dynamic_cast<const RecoElectron * const>(lepton);
     if(muon)
     {
-      const double cone_pt = muon->cone_pt();
       lepton_type_.push_back(kMuon);
-      lepton_cone_pt_.push_back(cone_pt);
 
       muon_pt_.push_back(muon->pt());
-      muon_cone_pt_.push_back(cone_pt);
+      muon_cone_pt_.push_back(muon->cone_pt());
       muon_eta_.push_back(muon->eta());
       muon_isGenMatched_.push_back(muon->isGenMatched(requireChargeMatch));
       ++numMuons_;
     }
     else if(electron)
     {
-      const double cone_pt = electron->cone_pt();
       lepton_type_.push_back(kElectron);
-      lepton_cone_pt_.push_back(cone_pt);
 
       electron_pt_.push_back(electron->pt());
-      electron_cone_pt_.push_back(cone_pt);
+      electron_cone_pt_.push_back(electron->cone_pt());
       electron_eta_.push_back(electron->eta());
       electron_isGenMatched_.push_back(electron->isGenMatched(requireChargeMatch) && electron->genLepton()); // [*]
       ++numElectrons_;
@@ -278,12 +275,12 @@ Data_to_MC_CorrectionInterface_Base::check_triggerSFsys_opt(TriggerSFsys central
      central_or_shift == TriggerSFsys::shift_2lssMuMuUp  ||
      central_or_shift == TriggerSFsys::shift_2lssMuMuDown)
   {
-    return (numElectrons_ + numMuons_) <= 2 && numHadTaus_ <= 2;
+    return numLeptons_ <= 2 && numHadTaus_ <= 2;
   }
   if(central_or_shift == TriggerSFsys::shift_3lUp ||
      central_or_shift == TriggerSFsys::shift_3lDown)
   {
-    return (numElectrons_ + numMuons_) >= 3 && numHadTaus_ <= 1;
+    return numLeptons_ >= 3 && numHadTaus_ <= 1;
   }
   return false;
 }
