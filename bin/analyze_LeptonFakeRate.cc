@@ -711,8 +711,8 @@ LeptonPlusJet(Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface_
 				   selBJets_medium.size());
 		    prescale_weight = JetAndTrigPrescaleCollector_ptr->Get_prescaleWeight();
 		    passTrigger = JetAndTrigPrescaleCollector_ptr->Get_TrigDecision();
-		    std::cout<< "LeptonPlusJet():: prescale_weight " << prescale_weight << std::endl;
-		    std::cout<< "LeptonPlusJet():: passTrigger " << passTrigger << std::endl;
+		    //std::cout<< "LeptonPlusJet():: prescale_weight " << prescale_weight << std::endl;
+		    //std::cout<< "LeptonPlusJet():: passTrigger " << passTrigger << std::endl;
 		  }
 		double evtWeight_wo_TrigPrescale = evtWeightRecorder_copy.get(central_or_shift); // Electron Event weight (w/o Trigger prescale and Data/MC corr.) defined here
 		double evtWeight = 1.0;
@@ -723,7 +723,7 @@ LeptonPlusJet(Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface_
 		    ApplyDataToMCCorrection(preselLeptonsFull[0], dataToMCcorrectionInterface_ntuple, evtWeightRecorder_copy);
 		    evtWeightRecorder_copy.record_prescale(prescale_weight); //Applying prescale weight 
 		    evtWeight = evtWeightRecorder_copy.get(central_or_shift); // Electron Event weight (w Trigger prescale and Data/MC corr.) defined here  
-		    std::cout<< "LeptonPlusJet():: (after corr.): evtWeightRecorder_copy: "<< evtWeightRecorder_copy << std::endl;		      
+		    //std::cout<< "LeptonPlusJet():: (after corr.): evtWeightRecorder_copy: "<< evtWeightRecorder_copy << std::endl;		      
 		    cutFlowTable_e->update("Event passes trigger and MET filters", evtWeight);
 		  }
 
@@ -841,8 +841,8 @@ LeptonPlusJet(Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface_
 
 		    prescale_weight = JetAndTrigPrescaleCollector_ptr->Get_prescaleWeight();
 		    passTrigger = JetAndTrigPrescaleCollector_ptr->Get_TrigDecision();
-		    std::cout<< "LeptonPlusJet():: prescale_weight " << prescale_weight << std::endl;
-		    std::cout<< "LeptonPlusJet():: passTrigger " << passTrigger << std::endl;
+		    //std::cout<< "LeptonPlusJet():: prescale_weight " << prescale_weight << std::endl;
+		    //std::cout<< "LeptonPlusJet():: passTrigger " << passTrigger << std::endl;
 		  }
 		double evtWeight_wo_TrigPrescale = evtWeightRecorder_copy.get(central_or_shift); // Muon Event weight (w/o Trigger prescale and Data/MC corr.) defined here
 		double evtWeight = 1.0;
@@ -853,7 +853,7 @@ LeptonPlusJet(Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface_
 		    ApplyDataToMCCorrection(preselLeptonsFull[0], dataToMCcorrectionInterface_ntuple, evtWeightRecorder_copy);
 		    evtWeightRecorder_copy.record_prescale(prescale_weight); //Applying prescale weight
 		    evtWeight = evtWeightRecorder_copy.get(central_or_shift); // Muon Event weight (w Trigger prescale and Data/MC corr.) defined here  
-		    std::cout<< "LeptonPlusJet():: (after corr.): evtWeightRecorder_copy: "<< evtWeightRecorder_copy << std::endl;		      
+		    //std::cout<< "LeptonPlusJet():: (after corr.): evtWeightRecorder_copy: "<< evtWeightRecorder_copy << std::endl;		      
 		    cutFlowTable_mu->update("Event passes trigger and MET filters", evtWeight);
 		  }
 
@@ -1062,8 +1062,8 @@ DiLeptonSS(Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface_ntu
 				 selBJets_medium.size());
 		  prescale_weight = JetAndTrigPrescaleCollector_ptr->Get_prescaleWeight();
 		  passTrigger = JetAndTrigPrescaleCollector_ptr->Get_TrigDecision();
-		  std::cout<< "DiLeptonSS()::prescale_weight " << prescale_weight << std::endl;
-		  std::cout<< "DiLeptonSS()::passTrigger " << passTrigger << std::endl;
+		  //std::cout<< "DiLeptonSS()::prescale_weight " << prescale_weight << std::endl;
+		  //std::cout<< "DiLeptonSS()::passTrigger " << passTrigger << std::endl;
 		}
 
 	      double evtWeight_wo_TrigPrescale = evtWeightRecorder_copy.get(central_or_shift); // Event weight (w/o Trigger prescale and Data/MC corr.) defined here
@@ -1074,7 +1074,7 @@ DiLeptonSS(Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface_ntu
 		ApplyDataToMCCorrection(preselLeptonsFull[ProbeLeptonIndex], dataToMCcorrectionInterface_ntuple, evtWeightRecorder_copy);
 		evtWeightRecorder_copy.record_prescale(prescale_weight); //Applying prescale weight
 		evtWeight = evtWeightRecorder_copy.get(central_or_shift); // Event weight (w Trigger prescale and Data/MC corr.) defined here
-		std::cout<< "DiLeptonSS():: (after corr.): evtWeightRecorder_copy: "<< evtWeightRecorder_copy << std::endl;
+		//std::cout<< "DiLeptonSS():: (after corr.): evtWeightRecorder_copy: "<< evtWeightRecorder_copy << std::endl;
 		cutFlowTable_e->update ("Event passes trigger and MET filters", evtWeight);
 		cutFlowTable_mu->update ("Event passes trigger and MET filters", evtWeight);
 	      }
@@ -2277,7 +2277,7 @@ main(int argc,
                 << eventInfo << ") file (" << selectedEntries << " Entries selected)\n";
     }
 
-    std::cout << "event: " << eventInfo.str() << std::endl;
+    //std::cout << "event: " << eventInfo.str() << std::endl;
     std::vector<const RecoLepton*> preselLeptonsFull = mergeLeptonCollections(preselElectrons, preselMuons, isHigherConePt); // For The Ntuples
 
 //********* Ntuple filling occurs here
@@ -2704,7 +2704,7 @@ main(int argc,
     }
 
 
-    std::cout<< "Main Workflow evtWeightRecorder: " << evtWeightRecorder << std::endl;
+    //std::cout<< "Main Workflow evtWeightRecorder: " << evtWeightRecorder << std::endl;
 
 
 
