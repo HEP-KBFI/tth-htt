@@ -139,6 +139,11 @@ protected:
   bool applyHadTauSF_;
   bool isDEBUG_;
 
+  std::size_t numLeptons_;
+  std::vector<int> lepton_type_;
+  std::vector<double> lepton_pt_;
+  std::vector<double> lepton_cone_pt_;
+  std::vector<double> lepton_eta_;
   std::size_t numElectrons_;
   std::vector<double> electron_pt_;
   std::vector<double> electron_cone_pt_;

@@ -34,6 +34,7 @@ Data_to_MC_CorrectionInterface_Base::Data_to_MC_CorrectionInterface_Base(const e
   , tauIdSFs_(nullptr)
   , applyHadTauSF_(true)
   , isDEBUG_(cfg.exists("isDEBUG") ? cfg.getParameter<bool>("isDEBUG") : false)
+  , numLeptons_(0)
   , numElectrons_(0)
   , numMuons_(0)
   , numHadTaus_(0)
@@ -133,8 +134,14 @@ void
 Data_to_MC_CorrectionInterface_Base::setLeptons(const std::vector<const RecoLepton *> & leptons,
                                                 bool requireChargeMatch)
 {
+  numLeptons_ = 0;
   numMuons_ = 0;
   numElectrons_ = 0;
+
+  lepton_type_.clear();
+  lepton_pt_.clear();
+  lepton_cone_pt_.clear();
+  lepton_eta_.clear();
 
   muon_pt_.clear();
   muon_cone_pt_.clear();
@@ -148,20 +155,32 @@ Data_to_MC_CorrectionInterface_Base::setLeptons(const std::vector<const RecoLept
 
   for(const RecoLepton * const lepton: leptons)
   {
+    lepton_pt_.push_back(lepton->pt());
+    lepton_eta_.push_back(lepton->eta());
+    ++numLeptons_;
+
     const RecoMuon * const muon = dynamic_cast<const RecoMuon * const>(lepton);
     const RecoElectron * const electron = dynamic_cast<const RecoElectron * const>(lepton);
     if(muon)
     {
+      const double cone_pt = muon->cone_pt();
+      lepton_type_.push_back(kMuon);
+      lepton_cone_pt_.push_back(cone_pt);
+
       muon_pt_.push_back(muon->pt());
-      muon_cone_pt_.push_back(muon->cone_pt());
+      muon_cone_pt_.push_back(cone_pt);
       muon_eta_.push_back(muon->eta());
       muon_isGenMatched_.push_back(muon->isGenMatched(requireChargeMatch));
       ++numMuons_;
     }
     else if(electron)
     {
+      const double cone_pt = electron->cone_pt();
+      lepton_type_.push_back(kElectron);
+      lepton_cone_pt_.push_back(cone_pt);
+
       electron_pt_.push_back(electron->pt());
-      electron_cone_pt_.push_back(electron->cone_pt());
+      electron_cone_pt_.push_back(cone_pt);
       electron_eta_.push_back(electron->eta());
       electron_isGenMatched_.push_back(electron->isGenMatched(requireChargeMatch) && electron->genLepton()); // [*]
       ++numElectrons_;
