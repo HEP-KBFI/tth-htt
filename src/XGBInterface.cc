@@ -435,7 +435,6 @@ XGBInterface::operator()(const std::map<std::string, double> & mvaInputs,
     }
   }
 
-  std::cout<< "I AM HERE 1 " << std::endl;
   PyObject * vectorValues = vectorToTuple_Float(vectorValuesVec);
   PyObject * vecNames = vectorToTuple_String(vectorNamesVec);
   PyObject * func = nullptr;
@@ -443,29 +442,18 @@ XGBInterface::operator()(const std::map<std::string, double> & mvaInputs,
 
   if(event_number % 2)
   {
-    std::cout<< "I AM HERE 2 Odd " << std::endl;
     func = PyObject_GetAttrString(moduleMain_odd_, "evaluate");
     args = PyTuple_Pack(3, vectorValues, vecNames, pkldata_odd_);
   }
   else
   {
-    std::cout<< "I AM HERE 2 Even " << std::endl;
     func = PyObject_GetAttrString(moduleMain_even_, "evaluate");
     args = PyTuple_Pack(3, vectorValues, vecNames, pkldata_even_);
   }
 
-  if(func){std::cout<< "func not NULL"<< std::endl;}
-  if(args){std::cout<< "args not NULL"<< std::endl;}
-  std::cout<< "I AM HERE 3 " << std::endl;
-
   PyObject * result = PyObject_CallObject(func, args);
 
-  if(result){std::cout<< "result not NULL"<< std::endl;}
-  std::cout<< "I AM HERE 3a " << std::endl;
-
   const double mvaOutput = PyFloat_AsDouble(result);
-
-  std::cout<< "I AM HERE 3b " << std::endl;
 
   Py_XDECREF(vectorValues);
   Py_XDECREF(vecNames);
@@ -473,8 +461,6 @@ XGBInterface::operator()(const std::map<std::string, double> & mvaInputs,
   Py_XDECREF(args);
   Py_XDECREF(result);
 
-  std::cout<< "I AM HERE 4 " << std::endl;
-
-  std::cout << "XGB: mvaOutput " << mvaOutput << '\n';
+  //std::cout << "XGB: mvaOutput " << mvaOutput << '\n';
   return mvaOutput;
 }

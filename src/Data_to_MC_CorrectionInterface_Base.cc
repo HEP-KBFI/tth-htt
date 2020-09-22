@@ -162,6 +162,7 @@ Data_to_MC_CorrectionInterface_Base::setLeptons(const std::vector<const RecoLept
 
   for(const RecoLepton * const lepton: leptons)
   {
+
     const RecoMuon * const muon = dynamic_cast<const RecoMuon * const>(lepton);
     const RecoElectron * const electron = dynamic_cast<const RecoElectron * const>(lepton);
     if(muon)
@@ -186,7 +187,6 @@ Data_to_MC_CorrectionInterface_Base::setLeptons(const std::vector<const RecoLept
       assert(0);
     }
   }
-
   numLeptons_ = 0;
   lepton_type_.clear();
   lepton_pt_.clear();
