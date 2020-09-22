@@ -93,28 +93,26 @@ Data_to_MC_CorrectionInterface_1l_2tau_trigger::setTriggerBits(bool isTriggered_
 }
 
 void
-Data_to_MC_CorrectionInterface_1l_2tau_trigger::setLeptons(int lepton_type,
-                                                           double lepton_pt,
-                                                           double lepton_eta)
+Data_to_MC_CorrectionInterface_1l_2tau_trigger::setLepton(const RecoLepton * const lepton)
 {
-  lepton_type_ = lepton_type;
-  lepton_pt_   = lepton_pt;
-  lepton_eta_  = lepton_eta;
+  lepton_type_ = getLeptonType(lepton->pdgId());
+  lepton_pt_   = lepton->pt();
+  lepton_eta_  = lepton->eta();
 }
 
 void
-Data_to_MC_CorrectionInterface_1l_2tau_trigger::setHadTaus(double hadTau1_pt, double hadTau1_eta, double hadTau1_phi, int hadTau1_decayMode,
-                                                           double hadTau2_pt, double hadTau2_eta, double hadTau2_phi, int hadTau2_decayMode)
+Data_to_MC_CorrectionInterface_1l_2tau_trigger::setHadTaus(const RecoHadTau * const hadTau1,
+                                                           const RecoHadTau * const hadTau2)
 {
-  hadTau1_pt_        = hadTau1_pt;
-  hadTau1_eta_       = hadTau1_eta;
-  hadTau1_phi_       = hadTau1_phi;
-  hadTau1_decayMode_ = hadTau1_decayMode;
+  hadTau1_pt_ = hadTau1->pt();
+  hadTau1_eta_ = hadTau1->eta();
+  hadTau1_phi_ = hadTau1->phi();
+  hadTau1_decayMode_ = hadTau1->decayMode();
 
-  hadTau2_pt_        = hadTau2_pt;
-  hadTau2_eta_       = hadTau2_eta;
-  hadTau2_phi_       = hadTau2_phi;
-  hadTau2_decayMode_ = hadTau2_decayMode;
+  hadTau2_pt_ = hadTau2->pt();
+  hadTau2_eta_ = hadTau2->eta();
+  hadTau2_phi_ = hadTau2->phi();
+  hadTau2_decayMode_ = hadTau2->decayMode();
 }
 
 double

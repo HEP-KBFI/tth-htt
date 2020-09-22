@@ -1119,10 +1119,7 @@ int main(int argc, char* argv[])
         evtWeightRecorder.record_ewk_bjet(selBJets_medium);
       }
 
-      dataToMCcorrectionInterface->setLeptons(
-        selLepton_lead_type, selLepton_lead->pt(), selLepton_lead->cone_pt(), selLepton_lead->eta(),
-        selLepton_sublead_type, selLepton_sublead->pt(), selLepton_sublead->cone_pt(), selLepton_sublead->eta()
-      );
+      dataToMCcorrectionInterface->setLeptons({ selLepton_lead, selLepton_sublead }, true);
 
 //--- apply data/MC corrections for trigger efficiency
       evtWeightRecorder.record_leptonTriggerEff(dataToMCcorrectionInterface);
@@ -1134,7 +1131,7 @@ int main(int argc, char* argv[])
 //    to also pass the tight identification and isolation criteria
       if(electronSelection == kFakeable && muonSelection == kFakeable)
       {
-        evtWeightRecorder.record_leptonSF(dataToMCcorrectionInterface->getSF_leptonID_and_Iso_fakeable_to_loose());
+        evtWeightRecorder.record_leptonSF(dataToMCcorrectionInterface->getSF_leptonID_and_Iso_looseToFakeable());
       }
       else if(electronSelection >= kFakeable && muonSelection >= kFakeable)
       {
@@ -1284,10 +1281,10 @@ int main(int argc, char* argv[])
     if(leptonChargeSelection == kOS)
     {
       const double prob_chargeMisId_lead = prob_chargeMisId(
-        era, getLeptonType(selLepton_lead->pdgId()), selLepton_lead->pt(), selLepton_lead->eta()
+        era, selLepton_lead_type, selLepton_lead->pt(), selLepton_lead->eta()
       );
       const double prob_chargeMisId_sublead = prob_chargeMisId(
-        era, getLeptonType(selLepton_sublead->pdgId()), selLepton_sublead->pt(), selLepton_sublead->eta()
+        era, selLepton_sublead_type, selLepton_sublead->pt(), selLepton_sublead->eta()
       );
       const double prob_chargeMisId_sum = (prob_chargeMisId_lead + prob_chargeMisId_sublead);
 

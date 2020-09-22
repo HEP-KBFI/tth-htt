@@ -835,9 +835,7 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update(">= 2 presel muons", evtWeightRecorder.get(central_or_shift));
     const RecoMuon* preselMuon_lead = preselMuons[0];
-    int preselMuon_lead_type = getLeptonType(preselMuon_lead->pdgId());
     const RecoMuon* preselMuon_sublead = preselMuons[1];
-    int preselMuon_sublead_type = getLeptonType(preselMuon_sublead->pdgId());
     
 //--- compute MHT and linear MET discriminant (met_LD)
     const RecoMEt met = metReader->read();
@@ -855,10 +853,7 @@ int main(int argc, char* argv[])
         evtWeightRecorder.record_btagSFRatio(btagSFRatioFacility, selJets.size());
       }
 
-      dataToMCcorrectionInterface->setLeptons(
-        preselMuon_lead_type, preselMuon_lead->pt(), preselMuon_lead->cone_pt(), preselMuon_lead->eta(),
-        preselMuon_sublead_type, preselMuon_sublead->pt(), preselMuon_sublead->cone_pt(), preselMuon_sublead->eta()
-      );
+      dataToMCcorrectionInterface->setLeptons({ preselMuon_lead, preselMuon_sublead });
 
 //--- apply data/MC corrections for trigger efficiency,
 //    and efficiencies for lepton to pass loose identification and isolation criteria
@@ -1007,7 +1002,7 @@ int main(int argc, char* argv[])
         double evtWeight_denominator = evtWeight;
         dataToMCcorrectionInterface->setHadTauSelection((*denominator)->fakeableHadTauSelector_->get());
         int preselHadTau_genPdgId = getHadTau_genPdgId(*preselHadTau);
-        dataToMCcorrectionInterface->setHadTaus(preselHadTau_genPdgId, (*preselHadTau)->pt(), (*preselHadTau)->eta());
+        dataToMCcorrectionInterface->setHadTaus({ *preselHadTau });
         evtWeight_denominator *= dataToMCcorrectionInterface->getSF_hadTauID_and_Iso(tauIDSF_option);
 
         (*denominator)->fillHistograms(**preselHadTau, cleanedJet_dRmatched, evtWeight_denominator);
@@ -1022,7 +1017,7 @@ int main(int argc, char* argv[])
         double evtWeight_numerator = evtWeight;
         dataToMCcorrectionInterface->setHadTauSelection((*numerator)->hadTauSelection_numerator_);
         int preselHadTau_genPdgId = getHadTau_genPdgId(*preselHadTau);
-        dataToMCcorrectionInterface->setHadTaus(preselHadTau_genPdgId, (*preselHadTau)->pt(), (*preselHadTau)->eta());
+        dataToMCcorrectionInterface->setHadTaus({ *preselHadTau });
         evtWeight_numerator *= dataToMCcorrectionInterface->getSF_hadTauID_and_Iso(tauIDSF_option);
 
         (*numerator)->fillHistograms(**preselHadTau, cleanedJet_dRmatched, evtWeight_numerator);
