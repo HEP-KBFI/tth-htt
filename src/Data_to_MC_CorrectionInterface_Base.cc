@@ -34,23 +34,9 @@ Data_to_MC_CorrectionInterface_Base::Data_to_MC_CorrectionInterface_Base(const e
   , tauIdSFs_(nullptr)
   , applyHadTauSF_(true)
   , isDEBUG_(cfg.exists("isDEBUG") ? cfg.getParameter<bool>("isDEBUG") : false)
-  , numLeptons_(0)
-  , lepton_type_(4)
-  , lepton_pt_(4)
-  , lepton_cone_pt_(4)
-  , lepton_eta_(4)
   , numElectrons_(0)
-  , electron_pt_(4)
-  , electron_cone_pt_(4)
-  , electron_eta_(4)
   , numMuons_(0)
-  , muon_pt_(4)
-  , muon_cone_pt_(4)
-  , muon_eta_(4)
   , numHadTaus_(0)
-  , hadTau_genPdgId_(4)
-  , hadTau_pt_(4)
-  , hadTau_absEta_(4)
 {
   const std::string hadTauSelection_string = cfg.getParameter<std::string>("hadTauSelection");
   applyHadTauSF_ = hadTauSelection_string != "disabled";
@@ -162,23 +148,22 @@ Data_to_MC_CorrectionInterface_Base::setLeptons(const std::vector<const RecoLept
 
   for(const RecoLepton * const lepton: leptons)
   {
-
     const RecoMuon * const muon = dynamic_cast<const RecoMuon * const>(lepton);
     const RecoElectron * const electron = dynamic_cast<const RecoElectron * const>(lepton);
     if(muon)
     {
-      muon_pt_[numMuons_] = muon->pt();
-      muon_cone_pt_[numMuons_] = muon->cone_pt();
-      muon_eta_[numMuons_] = muon->eta();
-      muon_isGenMatched_[numMuons_] = muon->isGenMatched(requireChargeMatch);
+      muon_pt_.push_back(muon->pt());
+      muon_cone_pt_.push_back(muon->cone_pt());
+      muon_eta_.push_back(muon->eta());
+      muon_isGenMatched_.push_back(muon->isGenMatched(requireChargeMatch));
       ++numMuons_;
     }
     else if(electron)
     {
-      electron_pt_[numElectrons_] = electron->pt();
-      electron_cone_pt_[numElectrons_] = electron->cone_pt();
-      electron_eta_[numElectrons_] = electron->eta();
-      electron_isGenMatched_[numElectrons_] = electron->isGenMatched(requireChargeMatch) && electron->genLepton(); // [*]
+      electron_pt_.push_back(electron->pt());
+      electron_cone_pt_.push_back(electron->cone_pt());
+      electron_eta_.push_back(electron->eta());
+      electron_isGenMatched_.push_back(electron->isGenMatched(requireChargeMatch) && electron->genLepton()); // [*]
       ++numElectrons_;
       // [*] isGenMatched() can also return true if the reconstructed electron is matched to a generator level photon
     }
@@ -186,27 +171,6 @@ Data_to_MC_CorrectionInterface_Base::setLeptons(const std::vector<const RecoLept
     {
       assert(0);
     }
-  }
-  numLeptons_ = 0;
-  lepton_type_.clear();
-  lepton_pt_.clear();
-  lepton_cone_pt_.clear();
-  lepton_eta_.clear();
-  for(std::size_t idxElectron = 0; idxElectron < numElectrons_; ++idxElectron)
-  {
-    lepton_type_[numLeptons_] = kElectron;
-    lepton_pt_[numLeptons_] = electron_pt_[idxElectron];
-    lepton_cone_pt_[numLeptons_] = electron_cone_pt_[idxElectron];
-    lepton_eta_[numLeptons_] = electron_eta_[idxElectron];
-    ++numLeptons_;
-  }
-  for(std::size_t idxMuon = 0; idxMuon < numMuons_; ++idxMuon)
-  {
-    lepton_type_[numLeptons_] = kMuon;
-    lepton_pt_[numLeptons_] = muon_pt_[idxMuon];
-    lepton_cone_pt_[numLeptons_] = muon_cone_pt_[idxMuon];
-    lepton_eta_[numLeptons_] = muon_eta_[idxMuon];
-    ++numLeptons_;
   }
 }
 
@@ -297,12 +261,12 @@ Data_to_MC_CorrectionInterface_Base::check_triggerSFsys_opt(TriggerSFsys central
      central_or_shift == TriggerSFsys::shift_2lssMuMuUp  ||
      central_or_shift == TriggerSFsys::shift_2lssMuMuDown)
   {
-    return numLeptons_ <= 2 && numHadTaus_ <= 2;
+    return (numElectrons_ + numMuons_) <= 2 && numHadTaus_ <= 2;
   }
   if(central_or_shift == TriggerSFsys::shift_3lUp ||
      central_or_shift == TriggerSFsys::shift_3lDown)
   {
-    return numLeptons_ >= 3 && numHadTaus_ <= 1;
+    return (numElectrons_ + numMuons_) >= 3 && numHadTaus_ <= 1;
   }
   return false;
 }
