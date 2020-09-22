@@ -17,8 +17,6 @@
 
 #include <cassert> // assert()
 
-#include <iostream>
-
 namespace
 {
   constexpr double

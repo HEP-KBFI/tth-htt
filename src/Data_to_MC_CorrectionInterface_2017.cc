@@ -9,8 +9,6 @@
 
 #include <cmath> // std::fabs(), std::sqrt()
 
-//#include <iostream>
-
 Data_to_MC_CorrectionInterface_2017::Data_to_MC_CorrectionInterface_2017(const edm::ParameterSet & cfg)
   : Data_to_MC_CorrectionInterface_Base(cfg)
 {
@@ -143,25 +141,17 @@ Data_to_MC_CorrectionInterface_2017::getSF_leptonTriggerEff(TriggerSFsys central
   {
     if(numElectrons_ == 1)
     {
-      //double eff_data = get_from_lut(effTrigger_1e_data_, lepton_pt_[0], lepton_eta_[0], isDEBUG_); //DEFAULT
-      //double eff_mc   = get_from_lut(effTrigger_1e_mc_,   lepton_pt_[0], lepton_eta_[0], isDEBUG_); //DEFAULT
-      double eff_data = get_from_lut(effTrigger_1e_data_, lepton_pt_[0], lepton_eta_[0], true); 
-      double eff_mc   = get_from_lut(effTrigger_1e_mc_,   lepton_pt_[0], lepton_eta_[0], true);
-      std::cout<< "eff_data: " << eff_data << " eff_mc: " << eff_mc << std::endl;
+      double eff_data = get_from_lut(effTrigger_1e_data_, lepton_pt_[0], lepton_eta_[0], isDEBUG_);
+      double eff_mc   = get_from_lut(effTrigger_1e_mc_,   lepton_pt_[0], lepton_eta_[0], isDEBUG_);
       sf = aux::compSF(eff_data, eff_mc);
       sfErr = 2.;
-      std::cout<< "sf " << sf << " sfErr " << sfErr << std::endl;
     } 
     else if(numMuons_ == 1)
     {
-      //double eff_data = get_from_lut(effTrigger_1m_data_, lepton_pt_[0], lepton_eta_[0], isDEBUG_); //DEFAULT
-      //double eff_mc   = get_from_lut(effTrigger_1m_mc_,   lepton_pt_[0], lepton_eta_[0], isDEBUG_); //DEFAULT
-      double eff_data = get_from_lut(effTrigger_1m_data_, lepton_pt_[0], lepton_eta_[0], true);
-      double eff_mc   = get_from_lut(effTrigger_1m_mc_,   lepton_pt_[0], lepton_eta_[0], true); 
-      std::cout<< "eff_data: " << eff_data << " eff_mc: " << eff_mc << std::endl;
+      double eff_data = get_from_lut(effTrigger_1m_data_, lepton_pt_[0], lepton_eta_[0], isDEBUG_);
+      double eff_mc   = get_from_lut(effTrigger_1m_mc_,   lepton_pt_[0], lepton_eta_[0], isDEBUG_);
       sf = aux::compSF(eff_data, eff_mc);
       sfErr = 2.;
-      std::cout<< "sf " << sf << " sfErr " << sfErr << std::endl;
     } else assert(0);
   }
   else if((numElectrons_ + numMuons_) == 2)
