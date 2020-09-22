@@ -278,12 +278,12 @@ Data_to_MC_CorrectionInterface_Base::check_triggerSFsys_opt(TriggerSFsys central
      central_or_shift == TriggerSFsys::shift_2lssMuMuUp  ||
      central_or_shift == TriggerSFsys::shift_2lssMuMuDown)
   {
-    return (numElectrons_ + numMuons_) <= 2 && numHadTaus_ <= 2;
+    return numLeptons_ <= 2 && numHadTaus_ <= 2;
   }
   if(central_or_shift == TriggerSFsys::shift_3lUp ||
      central_or_shift == TriggerSFsys::shift_3lDown)
   {
-    return (numElectrons_ + numMuons_) >= 3 && numHadTaus_ <= 1;
+    return numLeptons_ >= 3 && numHadTaus_ <= 1;
   }
   return false;
 }
