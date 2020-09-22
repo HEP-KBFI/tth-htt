@@ -18934,7 +18934,7 @@ samples_2017["/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAODv2-PU201
   ("nof_db_events",                   9000000),
   ("fsize_local",                     18929445629), # 18.93GB, avg file size 208.02MB
   ("fsize_db",                        482042390765), # 482.04GB, avg file size 3.15GB
-  ("use_it",                          False),
+  ("use_it",                          True),
   ("xsection",                        88.4),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
@@ -18977,7 +18977,7 @@ samples_2017["/TTTo2L2Nu_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall17MiniA
   ("nof_db_events",                   69155808),
   ("fsize_local",                     145468759293), # 145.47GB, avg file size 209.31MB
   ("fsize_db",                        3693271643807), # 3.69TB, avg file size 3.50GB
-  ("use_it",                          False),
+  ("use_it",                          True),
   ("xsection",                        88.4),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
@@ -19020,7 +19020,7 @@ samples_2017["/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAODv
   ("nof_db_events",                   43732445),
   ("fsize_local",                     96264879189), # 96.26GB, avg file size 218.78MB
   ("fsize_db",                        2384692629872), # 2.38TB, avg file size 2.88GB
-  ("use_it",                          False),
+  ("use_it",                          True),
   ("xsection",                        365.52),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
@@ -19063,7 +19063,7 @@ samples_2017["/TTToSemiLeptonic_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall
   ("nof_db_events",                   110195128),
   ("fsize_local",                     242173168464), # 242.17GB, avg file size 218.96MB
   ("fsize_db",                        6010271289488), # 6.01TB, avg file size 2.76GB
-  ("use_it",                          False),
+  ("use_it",                          True),
   ("xsection",                        365.52),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
@@ -19106,7 +19106,7 @@ samples_2017["/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAODv2-PU
   ("nof_db_events",                   41729120),
   ("fsize_local",                     93665017185), # 93.67GB, avg file size 223.54MB
   ("fsize_db",                        2307611725630), # 2.31TB, avg file size 3.47GB
-  ("use_it",                          False),
+  ("use_it",                          True),
   ("xsection",                        377.85),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
@@ -19149,7 +19149,7 @@ samples_2017["/TTToHadronic_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall17Mi
   ("nof_db_events",                   130262440),
   ("fsize_local",                     293580228441), # 293.58GB, avg file size 224.45MB
   ("fsize_db",                        7191138172968), # 7.19TB, avg file size 3.56GB
-  ("use_it",                          False),
+  ("use_it",                          True),
   ("xsection",                        377.85),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
@@ -19192,7 +19192,7 @@ samples_2017["/TTJets_DiLept_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17MiniAO
   ("nof_db_events",                   28380110),
   ("fsize_local",                     58106332456), # 58.11GB, avg file size 203.17MB
   ("fsize_db",                        1574497543250), # 1.57TB, avg file size 2.62GB
-  ("use_it",                          True),
+  ("use_it",                          False),
   ("xsection",                        88.4),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
@@ -19235,7 +19235,7 @@ samples_2017["/TTJets_SingleLeptFromT_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFal
   ("nof_db_events",                   61947630),
   ("fsize_local",                     132215769999), # 132.22GB, avg file size 213.25MB
   ("fsize_db",                        3422466502202), # 3.42TB, avg file size 3.24GB
-  ("use_it",                          True),
+  ("use_it",                          False),
   ("xsection",                        182.76),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
@@ -19278,7 +19278,7 @@ samples_2017["/TTJets_SingleLeptFromTbar_TuneCP5_13TeV-madgraphMLM-pythia8/RunII
   ("nof_db_events",                   56705550),
   ("fsize_local",                     121740561993), # 121.74GB, avg file size 213.21MB
   ("fsize_db",                        3215810423559), # 3.22TB, avg file size 2.46GB
-  ("use_it",                          True),
+  ("use_it",                          False),
   ("xsection",                        182.76),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),

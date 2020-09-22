@@ -374,10 +374,6 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     """
 
     for sample_name, sample_info in self.samples.items():
-      ###---- FOR SIDDESH
-      if sample_info["process_name_specific"] == "TTToHadronic":
-        sample_info["use_it"] = True
-      ###---------------------
       if not sample_info["use_it"]:
         continue
       process_name = sample_info["process_name_specific"]
@@ -442,10 +438,6 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
 
     inputFileLists = {}
     for sample_name, sample_info in self.samples.items():
-      ###---- FOR SIDDESH
-      if sample_info["process_name_specific"] == "TTToHadronic":
-        sample_info["use_it"] = True
-      ###---------------------
       if not sample_info["use_it"]:
         continue
       logging.info("Checking input files for sample %s" % sample_info["process_name_specific"])
@@ -453,10 +445,6 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
 
     self.inputFileIds = {}
     for sample_name, sample_info in self.samples.items():
-      ###---- FOR SIDDESH
-      if sample_info["process_name_specific"] == "TTToHadronic":
-        sample_info["use_it"] = True
-      ###---------------------
       if not sample_info["use_it"]:
         continue
 

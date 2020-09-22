@@ -643,7 +643,7 @@ meta_dictionary["/TTTo2L2Nu_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIISummer16
   ("nof_db_files",          778),
   ("fsize_db",              2988515757147),
   ("xsection",              88.4),
-  ("use_it",                False),
+  ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 2.99TB; nevents: 67.93M; release: 9_4_9; last modified: 2019-06-05 16:53:03"),
 ])
@@ -656,7 +656,7 @@ meta_dictionary["/TTToSemiLeptonic_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIS
   ("nof_db_files",          1105),
   ("fsize_db",              4847363049070),
   ("xsection",              365.52),
-  ("use_it",                False),
+  ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 4.85TB; nevents: 107.60M; release: 9_4_9; last modified: 2019-06-12 09:39:20"),
 ])
@@ -669,7 +669,7 @@ meta_dictionary["/TTToHadronic_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIISumme
   ("nof_db_files",          772),
   ("fsize_db",              3163848156807),
   ("xsection",              377.85),
-  ("use_it",                False),
+  ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 3.16TB; nevents: 68.52M; release: 9_4_9; last modified: 2019-06-14 17:19:47"),
 ])
@@ -682,7 +682,7 @@ meta_dictionary["/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISumm
   ("nof_db_files",          48),
   ("fsize_db",              258912481730),
   ("xsection",              88.4),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 258.91GB; nevents: 6.07M; release: 9_4_9; last modified: 2018-11-17 21:59:27"),
 ])
@@ -695,7 +695,7 @@ meta_dictionary["/TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISumm
   ("nof_db_files",          208),
   ("fsize_db",              1057101408492),
   ("xsection",              88.4),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 1.06TB; nevents: 24.77M; release: 9_4_9; last modified: 2018-11-18 22:41:36"),
 ])
@@ -708,7 +708,7 @@ meta_dictionary["/TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/
   ("nof_db_files",          97),
   ("fsize_db",              527227071561),
   ("xsection",              182.76),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 527.23GB; nevents: 11.96M; release: 9_4_9; last modified: 2018-11-18 11:36:18"),
 ])
@@ -721,7 +721,7 @@ meta_dictionary["/TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/
   ("nof_db_files",          407),
   ("fsize_db",              2190287845746),
   ("xsection",              182.76),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "99.2%; status: VALID; size: 2.19TB; nevents: 49.66M; release: 9_4_9; last modified: 2018-11-20 10:44:10"),
 ])
@@ -734,7 +734,7 @@ meta_dictionary["/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythi
   ("nof_db_files",          112),
   ("fsize_db",              529159861432),
   ("xsection",              182.76),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 529.16GB; nevents: 11.96M; release: 9_4_9; last modified: 2018-11-19 08:38:57"),
 ])
@@ -747,7 +747,7 @@ meta_dictionary["/TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythi
   ("nof_db_files",          366),
   ("fsize_db",              2131421738428),
   ("xsection",              182.76),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "98.26%; status: VALID; size: 2.13TB; nevents: 48.39M; release: 9_4_9; last modified: 2018-11-19 16:21:22"),
 ])
