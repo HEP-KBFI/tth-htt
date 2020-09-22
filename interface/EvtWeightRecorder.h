@@ -40,8 +40,7 @@ public:
   EvtWeightRecorder();
   EvtWeightRecorder(const std::vector<std::string> & central_or_shifts,
                     const std::string & central_or_shift,
-                    bool isMC, 
-                    bool isDEBUG = false);
+                    bool isMC);
   virtual ~EvtWeightRecorder() {}
 
   double
@@ -379,7 +378,6 @@ protected:
   std::map<std::string, double> weights_FR_;
   std::map<EWKJetSys, double> weights_ewk_jet_;
   std::map<EWKBJetSys, double> weights_ewk_bjet_;
-  bool isDEBUG_;
 };
 
 #endif
