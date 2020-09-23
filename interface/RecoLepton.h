@@ -101,12 +101,6 @@ public:
   lepton_p4() const;
 
   virtual Double_t
-  pt() const;
-
-  virtual const Particle::LorentzVector &
-  p4() const;
-
-  virtual Double_t
   cone_pt() const;
 
   virtual const Particle::LorentzVector &

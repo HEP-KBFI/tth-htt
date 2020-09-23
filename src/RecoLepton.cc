@@ -120,18 +120,6 @@ RecoLepton::lepton_p4() const
 }
 
 Double_t
-RecoLepton::pt() const
-{
-  return pt_;
-}
-
-const Particle::LorentzVector &
-RecoLepton::p4() const
-{
-  return p4_;
-}
-
-Double_t
 RecoLepton::cone_pt() const
 {
   assert(mvaRawTTH_cut_ > 0.);
