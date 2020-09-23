@@ -99,12 +99,12 @@ class analyzeConfig(object):
           histograms_to_fit,
           triggers,
           lep_mva_wp                      = "default",
-          lep_fakeable_pog_wp_mu_tmp1         = "",
-          lep_fakeable_nearDeepJet_wp_mu_tmp1 = "",
-          lep_fakeable_jetRelIso_cut_mu_tmp1  = "",
-          lep_fakeable_pog_wp_e_tmp1          = "",
-          lep_fakeable_nearDeepJet_wp_e_tmp1  = "",
-          lep_fakeable_jetRelIso_cut_e_tmp1   = "",                 
+          lep_fakeable_pog_wp_mu_tmp1         = "default",
+          lep_fakeable_nearDeepJet_wp_mu_tmp1 = "default",
+          lep_fakeable_jetRelIso_cut_mu_tmp1  = "default",
+          lep_fakeable_pog_wp_e_tmp1          = "default",
+          lep_fakeable_nearDeepJet_wp_e_tmp1  = "default",
+          lep_fakeable_jetRelIso_cut_e_tmp1   = "default",                 
           executable_prep_dcard           = "prepareDatacards",
           executable_add_syst_dcard       = "addSystDatacards",
           executable_add_syst_fakerate    = "addSystFakeRates",
@@ -959,17 +959,17 @@ class analyzeConfig(object):
             jobOptions['lep_mva_cut_e'] = float(self.lep_mva_cut_e)
         if 'lep_mva_cut_mu' not in jobOptions:
             jobOptions['lep_mva_cut_mu'] = float(self.lep_mva_cut_mu)
-        if 'lep_fakeable_pog_wp_mu_tmp1' not in jobOptions:
-            jobOptions['lep_fakeable_pog_wp_mu_tmp1'] = str(self.lep_fakeable_pog_wp_mu_tmp1)
-        if 'lep_fakeable_nearDeepJet_wp_mu_tmp1' not in jobOptions:
-            jobOptions['lep_fakeable_nearDeepJet_wp_mu_tmp1'] = str(self.lep_fakeable_nearDeepJet_wp_mu_tmp1)
-        if 'lep_fakeable_jetRelIso_cut_mu_tmp1' not in jobOptions:
-            jobOptions['lep_fakeable_jetRelIso_cut_mu_tmp1'] = float(self.lep_fakeable_jetRelIso_cut_mu_tmp1)
-        if 'lep_fakeable_pog_wp_e_tmp1' not in jobOptions:
-            jobOptions['lep_fakeable_pog_wp_e_tmp1'] = str(self.lep_fakeable_pog_wp_e_tmp1)
-        if 'lep_fakeable_nearDeepJet_wp_e_tmp1' not in jobOptions:
-            jobOptions['lep_fakeable_nearDeepJet_wp_e_tmp1'] = str(self.lep_fakeable_nearDeepJet_wp_e_tmp1)
-        if 'lep_fakeable_jetRelIso_cut_e_tmp1' not in jobOptions:
+        if 'lep_fakeable_pog_wp_mu_tmp1' not in jobOptions and "default" not in self.lep_fakeable_pog_wp_mu_tmp1:
+            jobOptions['lep_fakeable_pog_wp_mu_tmp1'] = str(self.lep_fakeable_pog_wp_mu_tmp1)            
+        if 'lep_fakeable_nearDeepJet_wp_mu_tmp1' not in jobOptions and "default" not in self.lep_fakeable_nearDeepJet_wp_mu_tmp1:
+            jobOptions['lep_fakeable_nearDeepJet_wp_mu_tmp1'] = str(self.lep_fakeable_nearDeepJet_wp_mu_tmp1)            
+        if 'lep_fakeable_jetRelIso_cut_mu_tmp1' not in jobOptions and "default" not in self.lep_fakeable_jetRelIso_cut_mu_tmp1:
+            jobOptions['lep_fakeable_jetRelIso_cut_mu_tmp1'] = float(self.lep_fakeable_jetRelIso_cut_mu_tmp1)            
+        if 'lep_fakeable_pog_wp_e_tmp1' not in jobOptions and "default" not in self.lep_fakeable_pog_wp_e_tmp1:
+            jobOptions['lep_fakeable_pog_wp_e_tmp1'] = str(self.lep_fakeable_pog_wp_e_tmp1)            
+        if 'lep_fakeable_nearDeepJet_wp_e_tmp1' not in jobOptions and "default" not in self.lep_fakeable_nearDeepJet_wp_e_tmp1:
+            jobOptions['lep_fakeable_nearDeepJet_wp_e_tmp1'] = str(self.lep_fakeable_nearDeepJet_wp_e_tmp1)            
+        if 'lep_fakeable_jetRelIso_cut_e_tmp1' not in jobOptions and "default" not in self.lep_fakeable_jetRelIso_cut_e_tmp1:
             jobOptions['lep_fakeable_jetRelIso_cut_e_tmp1'] = float(self.lep_fakeable_jetRelIso_cut_e_tmp1)
 
         btagSFRatio_args = {}
