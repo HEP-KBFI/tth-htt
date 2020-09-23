@@ -739,7 +739,7 @@ meta_dictionary["/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAODv2-PU
   ("nof_db_files",          153),
   ("fsize_db",              482042390765),
   ("xsection",              88.4),
-  ("use_it",                False),
+  ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 482.04GB; nevents: 9.00M; release: 9_4_6_patch1; last modified: 2018-09-10 15:51:32"),
 ])
@@ -752,7 +752,7 @@ meta_dictionary["/TTTo2L2Nu_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall17Mi
   ("nof_db_files",          1056),
   ("fsize_db",              3693271643807),
   ("xsection",              88.4),
-  ("use_it",                False),
+  ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 3.69TB; nevents: 69.16M; release: 9_4_7; last modified: 2018-11-25 13:11:01"),
 ])
@@ -765,7 +765,7 @@ meta_dictionary["/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniA
   ("nof_db_files",          828),
   ("fsize_db",              2384692629872),
   ("xsection",              365.52),
-  ("use_it",                False),
+  ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 2.38TB; nevents: 43.73M; release: 9_4_6_patch1; last modified: 2018-09-23 07:13:45"),
 ])
@@ -778,7 +778,7 @@ meta_dictionary["/TTToSemiLeptonic_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIF
   ("nof_db_files",          2178),
   ("fsize_db",              6010271289488),
   ("xsection",              365.52),
-  ("use_it",                False),
+  ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 6.01TB; nevents: 110.20M; release: 9_4_6_patch1; last modified: 2018-10-26 11:16:09"),
 ])
@@ -791,7 +791,7 @@ meta_dictionary["/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIIFall17MiniAODv2
   ("nof_db_files",          665),
   ("fsize_db",              2307611725630),
   ("xsection",              377.85),
-  ("use_it",                False),
+  ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 2.31TB; nevents: 41.73M; release: 9_4_7; last modified: 2018-10-06 14:41:34"),
 ])
@@ -804,7 +804,7 @@ meta_dictionary["/TTToHadronic_TuneCP5_PSweights_13TeV-powheg-pythia8/RunIIFall1
   ("nof_db_files",          2021),
   ("fsize_db",              7191138172968),
   ("xsection",              377.85),
-  ("use_it",                False),
+  ("use_it",                True),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 7.19TB; nevents: 130.26M; release: 9_4_7; last modified: 2018-10-13 06:14:24"),
 ])
@@ -817,7 +817,7 @@ meta_dictionary["/TTJets_DiLept_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17Min
   ("nof_db_files",          602),
   ("fsize_db",              1574497543250),
   ("xsection",              88.4),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 1.57TB; nevents: 28.38M; release: 9_4_6_patch1; last modified: 2018-09-19 21:13:11"),
 ])
@@ -830,7 +830,7 @@ meta_dictionary["/TTJets_SingleLeptFromT_TuneCP5_13TeV-madgraphMLM-pythia8/RunII
   ("nof_db_files",          1056),
   ("fsize_db",              3422466502202),
   ("xsection",              182.76),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 3.42TB; nevents: 61.95M; release: 9_4_6_patch1; last modified: 2018-04-27 06:06:08"),
 ])
@@ -843,7 +843,7 @@ meta_dictionary["/TTJets_SingleLeptFromTbar_TuneCP5_13TeV-madgraphMLM-pythia8/Ru
   ("nof_db_files",          1306),
   ("fsize_db",              3215810423559),
   ("xsection",              182.76),
-  ("use_it",                True),
+  ("use_it",                False),
   ("genWeight",             True),
   ("comment",               "100.0%; status: VALID; size: 3.22TB; nevents: 56.71M; release: 9_4_6_patch1; last modified: 2018-10-07 05:50:45"),
 ])

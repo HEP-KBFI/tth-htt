@@ -201,6 +201,13 @@ struct JetAndTrigPrescaleCollector
   {
     return isTrigFired_;
   }
+
+  std::vector<const RecoJet *> Get_selJets()
+  {
+    return selJets_;
+  }
+
+
 };
 
 JetAndTrigPrescaleCollector* 
@@ -391,12 +398,8 @@ void ApplyDYNormSF2(JetAndTrigPrescaleCollector* JetAndTrigPrescaleCollector_ptr
 		    EvtWeightRecorder &evtWeightRecorder,
 		    const bool isMC,
 		    const bool apply_DYMCNormScaleFactors,
-		    const bool apply_DYMCReweighting,
 		    DYMCNormScaleFactors* dyNormScaleFactors,
-		    std::vector<GenParticle> genTauLeptons,
-		    int selJets_size,
-		    int selBJets_loose_size,
-		    int selBJets_medium_size)
+		    std::vector<GenParticle> genTauLeptons)
 {
   assert(JetAndTrigPrescaleCollector_ptr != 0);
   if(isMC)
@@ -404,19 +407,22 @@ void ApplyDYNormSF2(JetAndTrigPrescaleCollector* JetAndTrigPrescaleCollector_ptr
       // DY Norm Scale factor weight
       if(apply_DYMCNormScaleFactors)
 	{
-	  evtWeightRecorder.record_dy_norm(dyNormScaleFactors, genTauLeptons, 
-					   selJets_size, selBJets_loose_size, 
-					   selBJets_medium_size);
+	  evtWeightRecorder.record_dy_norm(dyNormScaleFactors, 
+					   genTauLeptons, 
+					   JetAndTrigPrescaleCollector_ptr->Get_selJets_size(), 
+					   JetAndTrigPrescaleCollector_ptr->Get_selBJets_loose_size(), 
+					   JetAndTrigPrescaleCollector_ptr->Get_selBJets_medium_size());
 	}
       
     }
 }
 
-void ApplyBTagSF2(std::vector<const RecoJet*> selJets,
+void ApplyBTagSF2(const std::vector<const RecoJet*> selJets,
 		 EvtWeightRecorder &evtWeightRecorder,
 		 const bool isMC,
 		 BtagSFRatioFacility* btagSFRatioFacility)
 {
+  //std::cout<< "selJets.size(): "<< selJets.size() << std::endl;
   if(isMC)
     {
       //--- compute event-level weight for data/MC correction of b-tagging efficiency and mistag rate
@@ -429,8 +435,6 @@ void ApplyBTagSF2(std::vector<const RecoJet*> selJets,
 
     }
 }
-
-
 
 void 
 ApplyDataToMCCorrection(const RecoLepton* preselLepton,
@@ -601,6 +605,14 @@ LeptonPlusJet(Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface_
 	      std::vector<numerator_and_denominatorHistManagers *> histograms_mu_numerator_binned_LeptonPlusJet,
 	      numerator_and_denominatorHistManagers * histograms_mu_denominator_incl_LeptonPlusJet,
 	      std::vector<numerator_and_denominatorHistManagers *> histograms_mu_denominator_binned_LeptonPlusJet,
+	      numerator_and_denominatorHistManagers * histograms_e_numerator_incl_LeptonPlusJet_woTrigger,
+	      std::vector<numerator_and_denominatorHistManagers *> histograms_e_numerator_binned_LeptonPlusJet_woTrigger,
+	      numerator_and_denominatorHistManagers * histograms_e_denominator_incl_LeptonPlusJet_woTrigger,
+	      std::vector<numerator_and_denominatorHistManagers *> histograms_e_denominator_binned_LeptonPlusJet_woTrigger,
+	      numerator_and_denominatorHistManagers * histograms_mu_numerator_incl_LeptonPlusJet_woTrigger,
+	      std::vector<numerator_and_denominatorHistManagers *> histograms_mu_numerator_binned_LeptonPlusJet_woTrigger,
+	      numerator_and_denominatorHistManagers * histograms_mu_denominator_incl_LeptonPlusJet_woTrigger,
+	      std::vector<numerator_and_denominatorHistManagers *> histograms_mu_denominator_binned_LeptonPlusJet_woTrigger,
 	      EvtWeightRecorder evtWeightRecorder_copy,
 	      const std::string central_or_shift,
 	      EventInfo eventInfo,
@@ -616,7 +628,7 @@ LeptonPlusJet(Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface_
 	      const bool use_triggers_2mu,
 	      const bool isMC,
 	      const bool apply_DYMCNormScaleFactors,
-	      const bool apply_DYMCReweighting,
+	      //const bool apply_DYMCReweighting,
 	      std::vector<GenParticle> genTauLeptons,
 	      DYMCNormScaleFactors * dyNormScaleFactors = 0,
 	      BtagSFRatioFacility * btagSFRatioFacility = 0,
@@ -624,7 +636,9 @@ LeptonPlusJet(Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface_
 	      NtupleFillerBDT<float, int>* bdt_filler_mu_LeptonPlusJet = 0,
 	      bool isDEBUG = false,
 	      cutFlowTableType* cutFlowTable_e = 0,
-	      cutFlowTableType* cutFlowTable_mu = 0)
+	      cutFlowTableType* cutFlowTable_mu = 0,
+	      cutFlowTableType* cutFlowTable_e_woTrigger = 0,
+	      cutFlowTableType* cutFlowTable_mu_woTrigger = 0)
 
 {
   bool passMETFilter = false;
@@ -642,8 +656,8 @@ LeptonPlusJet(Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface_
   RecoJetCollectionSelectorBtagMedium jetSelectorBtagMedium(era);
   std::vector<const RecoJet *> cleanedJets;
   std::vector<const RecoJet *> selJets;
-  std::vector<const RecoJet*> selBJets_loose;
-  std::vector<const RecoJet*> selBJets_medium;
+  //std::vector<const RecoJet*> selBJets_loose;
+  //std::vector<const RecoJet*> selBJets_medium;
   double prescale_weight = 1.0;
   bool passTrigger = false;
 
@@ -652,12 +666,13 @@ LeptonPlusJet(Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface_
       if(preselLeptonsFull[0]->is_electron())
 	{// electron block
 	  cutFlowTable_e->update("= 1 presel/Loose electron", evtWeight_wo_TrigPrescale_BTag_DY_SFs);
+	  cutFlowTable_e_woTrigger->update("= 1 presel/Loose electron", evtWeight_wo_TrigPrescale_BTag_DY_SFs);
 	  const RecoElectron* preselElectron_ptr  = dynamic_cast<const RecoElectron*>(preselLeptonsFull[0]);
 	  const std::vector<const RecoElectron *> tmp_leptons = { preselElectron_ptr };
 	  cleanedJets = jetCleaner_dR07(jet_ptrs, tmp_leptons);
 	  selJets = jetSelector(cleanedJets);
-	  selBJets_loose = jetSelectorBtagLoose(cleanedJets);
-	  selBJets_medium = jetSelectorBtagMedium(cleanedJets);
+	  //selBJets_loose = jetSelectorBtagLoose(cleanedJets);
+	  //selBJets_medium = jetSelectorBtagMedium(cleanedJets);
 
 	  int jetindex  = -1;
 	  for(unsigned int i = 0; i < selJets.size(); i++)
@@ -674,6 +689,7 @@ LeptonPlusJet(Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface_
 	      if(jetindex != -1){// Jet is found
 		//std::cout<<" Jet is found dR=0.7 away from electron "<<std::endl;
 		cutFlowTable_e->update("Jet found at a dist. dR=0.7 from electron", evtWeight_wo_TrigPrescale_BTag_DY_SFs);
+		cutFlowTable_e_woTrigger->update("Jet found at a dist. dR=0.7 from electron", evtWeight_wo_TrigPrescale_BTag_DY_SFs);
 		// Fill the electron histograms
 		const RecoLepton & preselElectron = *(preselLeptonsFull[0]);
 		const RecoMEt met_mod = METSystComp_LeptonFakeRate(preselLeptonsFull[0], genmet, met, METScaleSyst, metSyst_option, isDEBUG);
@@ -699,7 +715,7 @@ LeptonPlusJet(Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface_
 									  isDEBUG);
 
 		if(JetAndTrigPrescaleCollector_ptr)
-		  {
+		  { // All Trigger cond.s applied
 		    ApplyBTagSF2(selJets,
 				 evtWeightRecorder_copy,
 				 isMC,
@@ -708,24 +724,27 @@ LeptonPlusJet(Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface_
 				   evtWeightRecorder_copy,
 				   isMC,
 				   apply_DYMCNormScaleFactors,
-				   apply_DYMCReweighting,
 				   dyNormScaleFactors,
-				   genTauLeptons,
-				   selJets.size(),
-				   selBJets_loose.size(),
-				   selBJets_medium.size());
+				   genTauLeptons);
 		    prescale_weight = JetAndTrigPrescaleCollector_ptr->Get_prescaleWeight();
 		    passTrigger = JetAndTrigPrescaleCollector_ptr->Get_TrigDecision();
 		    //std::cout<< "LeptonPlusJet():: prescale_weight " << prescale_weight << std::endl;
 		    //std::cout<< "LeptonPlusJet():: passTrigger " << passTrigger << std::endl;
 		  }
-		double evtWeight_wo_TrigPrescale = evtWeightRecorder_copy.get(central_or_shift); // Electron Event weight (w/o Trigger prescale and Data/MC corr.) defined here
+		double evtWeight_wo_TrigPrescale = 1.0; // Electron Event weight (w/o Trigger prescale, BTag, DY SFs, Data/MC corr.s) defined here
 		double evtWeight = 1.0;
 		int passesMETandTrigger = (passMETFilter && passTrigger) ? 1 : 0;
-		if(passesMETandTrigger)
+
+		if(passMETFilter)
 		  {
 		    // ---- Apply Data-to-mc Corrections
 		    ApplyDataToMCCorrection(preselLeptonsFull[0], dataToMCcorrectionInterface_ntuple, evtWeightRecorder_copy);
+		    evtWeight_wo_TrigPrescale = evtWeightRecorder_copy.get(central_or_shift);
+		    cutFlowTable_e_woTrigger->update("Event passes MET filters", evtWeight_wo_TrigPrescale);
+		  }
+
+		if(passesMETandTrigger)
+		  {
 		    evtWeightRecorder_copy.record_prescale(prescale_weight); //Applying prescale weight 
 		    evtWeight = evtWeightRecorder_copy.get(central_or_shift); // Electron Event weight (w Trigger prescale and Data/MC corr.) defined here  
 		    //std::cout<< "LeptonPlusJet():: (after corr.): evtWeightRecorder_copy: "<< evtWeightRecorder_copy << std::endl;		      
@@ -738,34 +757,61 @@ LeptonPlusJet(Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface_
 		  // numerator histograms
 		  numerator_and_denominatorHistManagers * histograms_incl_num = nullptr;
 		  std::vector<numerator_and_denominatorHistManagers *> * histograms_binned_num = nullptr;
+		  numerator_and_denominatorHistManagers * histograms_incl_num_woTrigger = nullptr;
+		  std::vector<numerator_and_denominatorHistManagers *> * histograms_binned_num_woTrigger = nullptr;
+
 		  // denominator histograms
 		  numerator_and_denominatorHistManagers * histograms_incl_den = nullptr;
 		  std::vector<numerator_and_denominatorHistManagers *> * histograms_binned_den = nullptr;
+		  numerator_and_denominatorHistManagers * histograms_incl_den_woTrigger = nullptr;
+		  std::vector<numerator_and_denominatorHistManagers *> * histograms_binned_den_woTrigger = nullptr;
 		  
-		  if(passesMETandTrigger && preselElectron.isTight())
+		  if(preselElectron.isTight())
 		    {// numerator e histograms filled
-		      histograms_incl_num = histograms_e_numerator_incl_LeptonPlusJet;
-		      histograms_binned_num = &histograms_e_numerator_binned_LeptonPlusJet;
-		      if(histograms_incl_num != nullptr && histograms_binned_num != nullptr)
-			{
-			  //histograms_incl_num->fillHistograms(preselElectron, met.pt(), mT, mT_fix, evtWeight_wo_TrigPrescale); //(w/o trigger) 
-			  //fillHistograms(*histograms_binned_num, preselElectron, met.pt(), mT, mT_fix, evtWeight_wo_TrigPrescale, cutFlowTable_e); //(w/o trigger) 
-			  histograms_incl_num->fillHistograms(preselElectron, met.pt(), mT, mT_fix, evtWeight); //(w Trigger)
-			  fillHistograms(*histograms_binned_num, preselElectron, met.pt(), mT, mT_fix, evtWeight, cutFlowTable_e); //(w Trigger) 
-			}
+		      if(passMETFilter){ // Passes MET Filters (no Trigger cond. applied)
+			histograms_incl_num_woTrigger = histograms_e_numerator_incl_LeptonPlusJet_woTrigger;
+			histograms_binned_num_woTrigger = &histograms_e_numerator_binned_LeptonPlusJet_woTrigger;
+			if(histograms_incl_num_woTrigger != nullptr && histograms_binned_num_woTrigger != nullptr)
+			  {
+			    histograms_incl_num_woTrigger->fillHistograms(preselElectron, met.pt(), mT, mT_fix, evtWeight_wo_TrigPrescale); //(w/o trigger) 
+			    fillHistograms(*histograms_binned_num_woTrigger, preselElectron, met.pt(), mT, mT_fix, evtWeight_wo_TrigPrescale, cutFlowTable_e_woTrigger); //(w/o trigger) 
+			  }
+		      }
+ 
+		      if(passesMETandTrigger){ // Passes MET Filters (Trigger cond. applied)
+			histograms_incl_num = histograms_e_numerator_incl_LeptonPlusJet;
+			histograms_binned_num = &histograms_e_numerator_binned_LeptonPlusJet;
+			if(histograms_incl_num != nullptr && histograms_binned_num != nullptr)
+			  {
+			    histograms_incl_num->fillHistograms(preselElectron, met.pt(), mT, mT_fix, evtWeight); //(w Trigger)
+			    fillHistograms(*histograms_binned_num, preselElectron, met.pt(), mT, mT_fix, evtWeight, cutFlowTable_e); //(w Trigger) 
+			  }
+		      }
+
 		    }
 
-		  //if(passesMETandTrigger && preselElectron.isFakeable()) // CERN group logic
-		  if(passesMETandTrigger && (preselElectron.isFakeable() && !preselElectron.isTight())) // Tallinn Group logic
+		  //if(preselElectron.isFakeable()) // CERN group logic
+		  if(preselElectron.isFakeable() && !preselElectron.isTight()) // Tallinn Group logic
 		    {// denominator e histograms filled
-		      histograms_incl_den = histograms_e_denominator_incl_LeptonPlusJet;
-		      histograms_binned_den = &histograms_e_denominator_binned_LeptonPlusJet;
-		      if(histograms_incl_den != nullptr && histograms_binned_den != nullptr)
-			{
-			  //histograms_incl_den->fillHistograms(preselElectron, met.pt(), mT, mT_fix, evtWeight_wo_TrigPrescale); //(w/o trigger) 
-			  //fillHistograms(*histograms_binned_den, preselElectron, met.pt(), mT, mT_fix, evtWeight_wo_TrigPrescale, cutFlowTable_e); //(w/o trigger) 
-			  histograms_incl_den->fillHistograms(preselElectron, met.pt(), mT, mT_fix, evtWeight); //(w trigger) 
-			  fillHistograms(*histograms_binned_den, preselElectron, met.pt(), mT, mT_fix, evtWeight, cutFlowTable_e); //(w trigger) 
+		      if(passMETFilter)
+			{ // Passes MET Filters (no Trigger cond. applied)
+			  histograms_incl_den_woTrigger = histograms_e_denominator_incl_LeptonPlusJet_woTrigger;
+			  histograms_binned_den_woTrigger = &histograms_e_denominator_binned_LeptonPlusJet_woTrigger;
+			  if(histograms_incl_den_woTrigger != nullptr && histograms_binned_den_woTrigger != nullptr)
+			    {
+			      histograms_incl_den_woTrigger->fillHistograms(preselElectron, met.pt(), mT, mT_fix, evtWeight_wo_TrigPrescale); //(w/o trigger) 
+			      fillHistograms(*histograms_binned_den_woTrigger, preselElectron, met.pt(), mT, mT_fix, evtWeight_wo_TrigPrescale, cutFlowTable_e_woTrigger); //(w/o trigger) 
+			    }
+			}
+		      if(passesMETandTrigger)
+			{ // Passes MET Filters (Trigger cond. applied)
+			  histograms_incl_den = histograms_e_denominator_incl_LeptonPlusJet;
+			  histograms_binned_den = &histograms_e_denominator_binned_LeptonPlusJet;
+			  if(histograms_incl_den != nullptr && histograms_binned_den != nullptr)
+			    {
+			      histograms_incl_den->fillHistograms(preselElectron, met.pt(), mT, mT_fix, evtWeight); //(w trigger) 
+			      fillHistograms(*histograms_binned_den, preselElectron, met.pt(), mT, mT_fix, evtWeight, cutFlowTable_e); //(w trigger) 
+			    }
 			}
 		    }
 
@@ -781,12 +827,13 @@ LeptonPlusJet(Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface_
       if(preselLeptonsFull[0]->is_muon())
 	{// muon block
 	  cutFlowTable_mu->update("= 1 presel/Loose muon", evtWeight_wo_TrigPrescale_BTag_DY_SFs);
+	  cutFlowTable_mu_woTrigger->update("= 1 presel/Loose muon", evtWeight_wo_TrigPrescale_BTag_DY_SFs);
 	  const RecoMuon* preselMuon_ptr  = dynamic_cast<const RecoMuon*>(preselLeptonsFull[0]);
 	  const std::vector<const RecoMuon *> tmp_leptons = { preselMuon_ptr };
 	  cleanedJets = jetCleaner_dR07(jet_ptrs, tmp_leptons);
 	  selJets = jetSelector(cleanedJets);
-	  selBJets_loose = jetSelectorBtagLoose(cleanedJets);
-	  selBJets_medium = jetSelectorBtagMedium(cleanedJets);
+	  //selBJets_loose = jetSelectorBtagLoose(cleanedJets);
+	  //selBJets_medium = jetSelectorBtagMedium(cleanedJets);
 
 
 	  int jetindex  = -1;
@@ -804,6 +851,7 @@ LeptonPlusJet(Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface_
 	      if(jetindex != -1){// Jet is found
 		//std::cout<<" Jet is found dR=0.7 away from muon "<<std::endl;
 		cutFlowTable_mu->update("Jet found at a dist. dR=0.7 from muon", evtWeight_wo_TrigPrescale_BTag_DY_SFs);
+		cutFlowTable_mu_woTrigger->update("Jet found at a dist. dR=0.7 from muon", evtWeight_wo_TrigPrescale_BTag_DY_SFs);
 		const RecoLepton & preselMuon = *(preselLeptonsFull[0]);
 		const RecoMEt met_mod = METSystComp_LeptonFakeRate(preselLeptonsFull[0], genmet, met, METScaleSyst, metSyst_option, isDEBUG);
 		const double mT     = comp_mT(preselMuon, met_mod.pt(), met_mod.phi());
@@ -828,7 +876,7 @@ LeptonPlusJet(Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface_
 									  isDEBUG);
 		
 		if(JetAndTrigPrescaleCollector_ptr)
-		  {
+		  {// All Trigger cond.s applied
 		    ApplyBTagSF2(selJets,
 				 evtWeightRecorder_copy,
 				 isMC,
@@ -837,30 +885,34 @@ LeptonPlusJet(Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface_
 				   evtWeightRecorder_copy,
 				   isMC,
 				   apply_DYMCNormScaleFactors,
-				   apply_DYMCReweighting,
 				   dyNormScaleFactors,
-				   genTauLeptons,
-				   selJets.size(),
-				   selBJets_loose.size(),
-				   selBJets_medium.size());
-
+				   genTauLeptons);
 		    prescale_weight = JetAndTrigPrescaleCollector_ptr->Get_prescaleWeight();
 		    passTrigger = JetAndTrigPrescaleCollector_ptr->Get_TrigDecision();
 		    //std::cout<< "LeptonPlusJet():: prescale_weight " << prescale_weight << std::endl;
 		    //std::cout<< "LeptonPlusJet():: passTrigger " << passTrigger << std::endl;
 		  }
-		double evtWeight_wo_TrigPrescale = evtWeightRecorder_copy.get(central_or_shift); // Muon Event weight (w/o Trigger prescale and Data/MC corr.) defined here
+		double evtWeight_wo_TrigPrescale = 1.0; // Muon Event weight (w/o Trigger prescale and Data/MC corr.) defined here
 		double evtWeight = 1.0;
 		int passesMETandTrigger = (passMETFilter && passTrigger) ? 1 : 0;
-		if(passesMETandTrigger)
+
+		if(passMETFilter)
 		  {
 		    // ---- Apply Data-to-mc Corrections
 		    ApplyDataToMCCorrection(preselLeptonsFull[0], dataToMCcorrectionInterface_ntuple, evtWeightRecorder_copy);
-		    evtWeightRecorder_copy.record_prescale(prescale_weight); //Applying prescale weight
-		    evtWeight = evtWeightRecorder_copy.get(central_or_shift); // Muon Event weight (w Trigger prescale and Data/MC corr.) defined here  
-		    //std::cout<< "LeptonPlusJet():: (after corr.): evtWeightRecorder_copy: "<< evtWeightRecorder_copy << std::endl;		      
-		    cutFlowTable_mu->update("Event passes trigger and MET filters", evtWeight);
+		    evtWeight_wo_TrigPrescale = evtWeightRecorder_copy.get(central_or_shift);
+		    cutFlowTable_mu_woTrigger->update("Event passes MET filters", evtWeight_wo_TrigPrescale);
 		  }
+
+
+		if(passesMETandTrigger)
+		{
+
+		  evtWeightRecorder_copy.record_prescale(prescale_weight); //Applying prescale weight
+		  evtWeight = evtWeightRecorder_copy.get(central_or_shift); // Muon Event weight (w Trigger prescale and Data/MC corr.) defined here  
+		  //std::cout<< "LeptonPlusJet():: (after corr.): evtWeightRecorder_copy: "<< evtWeightRecorder_copy << std::endl;		      
+		  cutFlowTable_mu->update("Event passes trigger and MET filters", evtWeight);
+		}
 
 		// Fill Ntuples for muon
 		FillNtuples(preselLeptonsFull[0], eventInfo, evtWeight, evtWeight_wo_TrigPrescale, mT, mT_fix, passesMETandTrigger, bdt_filler_mu_LeptonPlusJet);
@@ -868,34 +920,61 @@ LeptonPlusJet(Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface_
 		// numerator histograms
 		numerator_and_denominatorHistManagers * histograms_incl_num = nullptr;
 		std::vector<numerator_and_denominatorHistManagers *> * histograms_binned_num = nullptr;
+		numerator_and_denominatorHistManagers * histograms_incl_num_woTrigger = nullptr;
+		std::vector<numerator_and_denominatorHistManagers *> * histograms_binned_num_woTrigger = nullptr;
 		// denominator histograms
 		numerator_and_denominatorHistManagers * histograms_incl_den = nullptr;
 		std::vector<numerator_and_denominatorHistManagers *> * histograms_binned_den = nullptr;
+		numerator_and_denominatorHistManagers * histograms_incl_den_woTrigger = nullptr;
+		std::vector<numerator_and_denominatorHistManagers *> * histograms_binned_den_woTrigger = nullptr;
 		
-		if(passesMETandTrigger && preselMuon.isTight())
+		if(preselMuon.isTight())
 		  {// numerator mu histograms filled
-		    histograms_incl_num = histograms_mu_numerator_incl_LeptonPlusJet;
-		    histograms_binned_num = &histograms_mu_numerator_binned_LeptonPlusJet;
-		    if(histograms_incl_num != nullptr && histograms_binned_num != nullptr)
-		      {
-			//histograms_incl_num->fillHistograms(preselMuon, met.pt(), mT, mT_fix, evtWeight_wo_TrigPrescale); //(w/o Trigger) 
-			//fillHistograms(*histograms_binned_num, preselMuon, met.pt(), mT, mT_fix, evtWeight_wo_TrigPrescale, cutFlowTable_mu); //(w/o Trigger)  
-			histograms_incl_num->fillHistograms(preselMuon, met.pt(), mT, mT_fix, evtWeight); //(w Trigger) 
-			fillHistograms(*histograms_binned_num, preselMuon, met.pt(), mT, mT_fix, evtWeight, cutFlowTable_mu); //(w Trigger)  
+
+		    if(passMETFilter)
+		      {// Passes MET Filters (no Trigger cond. applied) 
+			histograms_incl_num_woTrigger = histograms_mu_numerator_incl_LeptonPlusJet_woTrigger;
+			histograms_binned_num_woTrigger = &histograms_mu_numerator_binned_LeptonPlusJet_woTrigger;
+			if(histograms_incl_num_woTrigger != nullptr && histograms_binned_num_woTrigger != nullptr)
+			  {
+			    histograms_incl_num_woTrigger->fillHistograms(preselMuon, met.pt(), mT, mT_fix, evtWeight_wo_TrigPrescale); //(w/o trigger) 
+			    fillHistograms(*histograms_binned_num_woTrigger, preselMuon, met.pt(), mT, mT_fix, evtWeight_wo_TrigPrescale, cutFlowTable_mu_woTrigger); //(w/o trigger) 
+			  }
+		      }
+		    if(passesMETandTrigger)
+		      {// Passes MET Filters (Trigger cond. applied) 
+			histograms_incl_num = histograms_mu_numerator_incl_LeptonPlusJet;
+			histograms_binned_num = &histograms_mu_numerator_binned_LeptonPlusJet;
+			if(histograms_incl_num != nullptr && histograms_binned_num != nullptr)
+			  {
+			    histograms_incl_num->fillHistograms(preselMuon, met.pt(), mT, mT_fix, evtWeight); //(w Trigger) 
+			    fillHistograms(*histograms_binned_num, preselMuon, met.pt(), mT, mT_fix, evtWeight, cutFlowTable_mu); //(w Trigger)  
+			  }
 		      }
 		  }
 		
-		//if(passesMETandTrigger && preselMuon.isFakeable()) // CERN group logic
-		if(passesMETandTrigger && (preselMuon.isFakeable() && !preselMuon.isTight())) // Tallinn Group logic
+		//if(preselMuon.isFakeable()) // CERN group logic
+		if(preselMuon.isFakeable() && !preselMuon.isTight()) // Tallinn Group logic
 		  {// denominator mu histograms filled
-		    histograms_incl_den = histograms_mu_denominator_incl_LeptonPlusJet;
-		    histograms_binned_den = &histograms_mu_denominator_binned_LeptonPlusJet;
-		    if(histograms_incl_den != nullptr && histograms_binned_den != nullptr)
-		      {
-			//histograms_incl_den->fillHistograms(preselMuon, met.pt(), mT, mT_fix, evtWeight_wo_TrigPrescale); //(w/o Trigger) 		
-			//fillHistograms(*histograms_binned_den, preselMuon, met.pt(), mT, mT_fix, evtWeight_wo_TrigPrescale, cutFlowTable_mu); //(w/o Trigger)
-			histograms_incl_den->fillHistograms(preselMuon, met.pt(), mT, mT_fix, evtWeight); //(w Trigger)
-			fillHistograms(*histograms_binned_den, preselMuon, met.pt(), mT, mT_fix, evtWeight, cutFlowTable_mu); //(w Trigger)
+		    if(passMETFilter)
+                      {// Passes MET Filters (no Trigger cond. applied)  
+			histograms_incl_den_woTrigger = histograms_mu_denominator_incl_LeptonPlusJet_woTrigger;
+			histograms_binned_den_woTrigger = &histograms_mu_denominator_binned_LeptonPlusJet_woTrigger;
+			if(histograms_incl_den_woTrigger != nullptr && histograms_binned_den_woTrigger != nullptr)
+			  {
+			    histograms_incl_den_woTrigger->fillHistograms(preselMuon, met.pt(), mT, mT_fix, evtWeight_wo_TrigPrescale); //(w/o trigger) 
+			    fillHistograms(*histograms_binned_den_woTrigger, preselMuon, met.pt(), mT, mT_fix, evtWeight_wo_TrigPrescale, cutFlowTable_mu_woTrigger); //(w/o trigger) 
+			  }
+		      }
+		    if(passesMETandTrigger)
+		      { // Passes MET Filters (Trigger cond. applied)  
+			histograms_incl_den = histograms_mu_denominator_incl_LeptonPlusJet;
+			histograms_binned_den = &histograms_mu_denominator_binned_LeptonPlusJet;
+			if(histograms_incl_den != nullptr && histograms_binned_den != nullptr)
+			  {
+			    histograms_incl_den->fillHistograms(preselMuon, met.pt(), mT, mT_fix, evtWeight); //(w Trigger)
+			    fillHistograms(*histograms_binned_den, preselMuon, met.pt(), mT, mT_fix, evtWeight, cutFlowTable_mu); //(w Trigger)
+			  }
 		      }
 		  }
 
@@ -935,6 +1014,14 @@ DiLeptonSS(Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface_ntu
 	   std::vector<numerator_and_denominatorHistManagers *> histograms_mu_numerator_binned_diLeptSS,
 	   numerator_and_denominatorHistManagers * histograms_mu_denominator_incl_diLeptSS,
 	   std::vector<numerator_and_denominatorHistManagers *> histograms_mu_denominator_binned_diLeptSS,
+	   numerator_and_denominatorHistManagers * histograms_e_numerator_incl_diLeptSS_woTrigger,
+	   std::vector<numerator_and_denominatorHistManagers *> histograms_e_numerator_binned_diLeptSS_woTrigger,
+	   numerator_and_denominatorHistManagers * histograms_e_denominator_incl_diLeptSS_woTrigger,
+	   std::vector<numerator_and_denominatorHistManagers *> histograms_e_denominator_binned_diLeptSS_woTrigger,
+	   numerator_and_denominatorHistManagers * histograms_mu_numerator_incl_diLeptSS_woTrigger,
+	   std::vector<numerator_and_denominatorHistManagers *> histograms_mu_numerator_binned_diLeptSS_woTrigger,
+	   numerator_and_denominatorHistManagers * histograms_mu_denominator_incl_diLeptSS_woTrigger,
+	   std::vector<numerator_and_denominatorHistManagers *> histograms_mu_denominator_binned_diLeptSS_woTrigger,
 	   EvtWeightRecorder evtWeightRecorder_copy,
 	   const std::string central_or_shift,
 	   EventInfo eventInfo,
@@ -950,7 +1037,7 @@ DiLeptonSS(Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface_ntu
 	   const bool use_triggers_2mu,
 	   const bool isMC,
 	   const bool apply_DYMCNormScaleFactors,
-	   const bool apply_DYMCReweighting,
+	   //const bool apply_DYMCReweighting,
 	   std::vector<GenParticle> genTauLeptons,
 	   DYMCNormScaleFactors* dyNormScaleFactors = 0,
 	   BtagSFRatioFacility* btagSFRatioFacility = 0,
@@ -958,13 +1045,14 @@ DiLeptonSS(Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface_ntu
 	   NtupleFillerBDT<float, int>* bdt_filler_mu_diLeptSS = 0,
 	   bool isDEBUG = false,
 	   cutFlowTableType* cutFlowTable_e = 0,
-	   cutFlowTableType* cutFlowTable_mu = 0)
+	   cutFlowTableType* cutFlowTable_mu = 0,
+	   cutFlowTableType* cutFlowTable_e_woTrigger = 0,
+	   cutFlowTableType* cutFlowTable_mu_woTrigger = 0)
 	   
 { 
   bool passMETFilter = false;
   passMETFilter = METFilterDecision(isMC, apply_met_filters,
 				      metFilter, cfgMEtFilter);
-
   // Original Event weight (w/o Trigger prescale/BTagSF/DY Corr.s/METFilters) defined below
   double evtWeight_wo_TrigPrescale_BTag_DY_SFs = evtWeightRecorder_copy.get(central_or_shift); 
 
@@ -975,8 +1063,8 @@ DiLeptonSS(Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface_ntu
   RecoJetCollectionSelectorBtagMedium jetSelectorBtagMedium(era);
   std::vector<const RecoJet *> cleanedJets;
   std::vector<const RecoJet *> selJets;
-  std::vector<const RecoJet*> selBJets_loose;
-  std::vector<const RecoJet*> selBJets_medium;
+  //std::vector<const RecoJet*> selBJets_loose;
+  //std::vector<const RecoJet*> selBJets_medium;
   double prescale_weight = 1.0;
   bool passTrigger = false;
 
@@ -990,6 +1078,8 @@ DiLeptonSS(Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface_ntu
 
       cutFlowTable_e->update("= 2 presel/Loose leptons", evtWeight_wo_TrigPrescale_BTag_DY_SFs);
       cutFlowTable_mu->update("= 2 presel/Loose leptons", evtWeight_wo_TrigPrescale_BTag_DY_SFs);
+      cutFlowTable_e_woTrigger->update("= 2 presel/Loose leptons", evtWeight_wo_TrigPrescale_BTag_DY_SFs);
+      cutFlowTable_mu_woTrigger->update("= 2 presel/Loose leptons", evtWeight_wo_TrigPrescale_BTag_DY_SFs);
 
       for(unsigned int i = 0; i < preselLeptonsFull.size(); i++)
 	{ // loop over preselleptons
@@ -997,6 +1087,8 @@ DiLeptonSS(Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface_ntu
 	    {
 	      cutFlowTable_e->update("Gen-matched lepton (Tag) exists", evtWeight_wo_TrigPrescale_BTag_DY_SFs);
 	      cutFlowTable_mu->update("Gen-matched lepton (Tag) exists", evtWeight_wo_TrigPrescale_BTag_DY_SFs);
+	      cutFlowTable_e_woTrigger->update("Gen-matched lepton (Tag) exists", evtWeight_wo_TrigPrescale_BTag_DY_SFs);
+	      cutFlowTable_mu_woTrigger->update("Gen-matched lepton (Tag) exists", evtWeight_wo_TrigPrescale_BTag_DY_SFs);
 	      //std::cout << "Tag found " << std::endl;
 	      TagLeptonExists = true;
 	      TagLeptonIndex = i;
@@ -1027,11 +1119,12 @@ DiLeptonSS(Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface_ntu
 	      //std::cout<< "Both presel/Loose leptons are Same Sign" << std::endl;
 	      cutFlowTable_e->update("Both presel/Loose leptons are Same Sign", evtWeight_wo_TrigPrescale_BTag_DY_SFs);
 	      cutFlowTable_mu->update("Both presel/Loose leptons are Same Sign", evtWeight_wo_TrigPrescale_BTag_DY_SFs);
+	      cutFlowTable_e_woTrigger->update("Both presel/Loose leptons are Same Sign", evtWeight_wo_TrigPrescale_BTag_DY_SFs);
+	      cutFlowTable_mu_woTrigger->update("Both presel/Loose leptons are Same Sign", evtWeight_wo_TrigPrescale_BTag_DY_SFs);
 	      cleanedJets = jetCleaner_dR07(jet_ptrs, preselLeptonsFull); // Cleaning w.r.t both Tag and Probe leptons 
 	      selJets = jetSelector(cleanedJets);
-	      selBJets_loose = jetSelectorBtagLoose(cleanedJets);
-	      selBJets_medium = jetSelectorBtagMedium(cleanedJets);
-
+	      //selBJets_loose = jetSelectorBtagLoose(cleanedJets);
+	      //selBJets_medium = jetSelectorBtagMedium(cleanedJets);
 	      JetAndTrigPrescaleCollector* JetAndTrigPrescaleCollector_ptr = 0;
 	      JetAndTrigPrescaleCollector_ptr = PrescaleAndJetExtractor(preselLeptonsFull, // Demanding trigger either Tag or probe
 									jet_ptrs,
@@ -1050,7 +1143,7 @@ DiLeptonSS(Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface_ntu
 									isDEBUG);
 
 	      if(JetAndTrigPrescaleCollector_ptr)
-		{
+		{	
 		  ApplyBTagSF2(selJets,
 			       evtWeightRecorder_copy,
 			       isMC,
@@ -1059,35 +1152,43 @@ DiLeptonSS(Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface_ntu
 				 evtWeightRecorder_copy,
 				 isMC,
 				 apply_DYMCNormScaleFactors,
-				 apply_DYMCReweighting,
 				 dyNormScaleFactors,
-				 genTauLeptons,
-				 selJets.size(),
-				 selBJets_loose.size(),
-				 selBJets_medium.size());
+				 genTauLeptons);
 		  prescale_weight = JetAndTrigPrescaleCollector_ptr->Get_prescaleWeight();
 		  passTrigger = JetAndTrigPrescaleCollector_ptr->Get_TrigDecision();
-		  //std::cout<< "DiLeptonSS()::prescale_weight " << prescale_weight << std::endl;
-		  //std::cout<< "DiLeptonSS()::passTrigger " << passTrigger << std::endl;
+		  std::cout<< "DiLeptonSS()::prescale_weight " << prescale_weight << std::endl;
+		  std::cout<< "DiLeptonSS()::passTrigger " << passTrigger << std::endl;
 		}
-
-	      double evtWeight_wo_TrigPrescale = evtWeightRecorder_copy.get(central_or_shift); // Event weight (w/o Trigger prescale and Data/MC corr.) defined here
+	      	
+	      double evtWeight_wo_TrigPrescale = 1.0; // Event weight (w/o Trigger prescale and Data/MC corr.) defined here
 	      double evtWeight = 1.0;
 	      int passesMETandTrigger = (passMETFilter && passTrigger) ? 1 : 0;
-	      if(passesMETandTrigger){
-		// ---- Apply Data-to-mc Corrections
-		ApplyDataToMCCorrection(preselLeptonsFull[ProbeLeptonIndex], dataToMCcorrectionInterface_ntuple, evtWeightRecorder_copy);
-		evtWeightRecorder_copy.record_prescale(prescale_weight); //Applying prescale weight
-		evtWeight = evtWeightRecorder_copy.get(central_or_shift); // Event weight (w Trigger prescale and Data/MC corr.) defined here
-		//std::cout<< "DiLeptonSS():: (after corr.): evtWeightRecorder_copy: "<< evtWeightRecorder_copy << std::endl;
-		cutFlowTable_e->update ("Event passes trigger and MET filters", evtWeight);
-		cutFlowTable_mu->update ("Event passes trigger and MET filters", evtWeight);
-	      }
+	      
+	      if(passMETFilter)
+		{
+		  // ---- Apply Data-to-mc Corrections
+		  ApplyDataToMCCorrection(preselLeptonsFull[ProbeLeptonIndex], dataToMCcorrectionInterface_ntuple, evtWeightRecorder_copy);
+		  evtWeight_wo_TrigPrescale = evtWeightRecorder_copy.get(central_or_shift);
+		  cutFlowTable_e_woTrigger->update ("Event passes MET filters", evtWeight_wo_TrigPrescale);
+		  cutFlowTable_mu_woTrigger->update ("Event passes MET filters", evtWeight_wo_TrigPrescale);
+		}
+	      
+	      if(passesMETandTrigger)
+		{
 
+		  evtWeightRecorder_copy.record_prescale(prescale_weight); //Applying prescale weight
+		  evtWeight = evtWeightRecorder_copy.get(central_or_shift); // Event weight (w Trigger prescale and Data/MC corr.) defined here
+		  //std::cout<< "DiLeptonSS():: (after corr.): evtWeightRecorder_copy: "<< evtWeightRecorder_copy << std::endl;
+		  cutFlowTable_e->update ("Event passes trigger and MET filters", evtWeight);
+		  cutFlowTable_mu->update ("Event passes trigger and MET filters", evtWeight);
+		}
+	
 	      //electron block
     	      if(preselLeptonsFull[ProbeLeptonIndex]->is_electron())
     		{ // Fill electron histograms
 		  cutFlowTable_e->update("Probe lepton exists and is an electron", evtWeight);
+		  cutFlowTable_e_woTrigger->update("Probe lepton exists and is an electron", evtWeight_wo_TrigPrescale);
+
 		  const RecoLepton & preselElectron = *(preselLeptonsFull[ProbeLeptonIndex]);
 		  const RecoMEt met_mod = METSystComp_LeptonFakeRate(preselLeptonsFull[ProbeLeptonIndex], genmet, met, METScaleSyst, metSyst_option, isDEBUG);
 		  const double mT     = comp_mT(preselElectron, met_mod.pt(), met_mod.phi());
@@ -1099,35 +1200,60 @@ DiLeptonSS(Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface_ntu
 		  // numerator histograms
     		  numerator_and_denominatorHistManagers * histograms_incl_num = nullptr;
     		  std::vector<numerator_and_denominatorHistManagers *> * histograms_binned_num = nullptr;
+    		  numerator_and_denominatorHistManagers * histograms_incl_num_woTrigger = nullptr;
+    		  std::vector<numerator_and_denominatorHistManagers *> * histograms_binned_num_woTrigger = nullptr;
 		  // denominator histograms
     		  numerator_and_denominatorHistManagers * histograms_incl_den = nullptr;
     		  std::vector<numerator_and_denominatorHistManagers *> * histograms_binned_den = nullptr;
-
-		  if(passesMETandTrigger && preselElectron.isTight())
+    		  numerator_and_denominatorHistManagers * histograms_incl_den_woTrigger = nullptr;
+    		  std::vector<numerator_and_denominatorHistManagers *> * histograms_binned_den_woTrigger = nullptr;
+		  if(preselElectron.isTight())
     		    {// numerator e histograms filled
-		      histograms_incl_num = histograms_e_numerator_incl_diLeptSS;
-    		      histograms_binned_num = &histograms_e_numerator_binned_diLeptSS;
-		      if(histograms_incl_num != nullptr && histograms_binned_num != nullptr)
-    			{
-    			  //histograms_incl_num->fillHistograms(preselElectron, met.pt(), mT, mT_fix, evtWeight_wo_TrigPrescale); //(w/o Trigger)
-    			  //fillHistograms(*histograms_binned_num, preselElectron, met.pt(), mT, mT_fix, evtWeight_wo_TrigPrescale, cutFlowTable_e); //(w/o Trigger) 
-    			  histograms_incl_num->fillHistograms(preselElectron, met.pt(), mT, mT_fix, evtWeight); //(w Trigger)
-    			  fillHistograms(*histograms_binned_num, preselElectron, met.pt(), mT, mT_fix, evtWeight, cutFlowTable_e); //(w Trigger) 
-    			}
+		      if(passMETFilter)
+			{// Passes MET Filter (w/o Trigger cond.)
+			  histograms_incl_num_woTrigger = histograms_e_numerator_incl_diLeptSS_woTrigger;
+			  histograms_binned_num_woTrigger = &histograms_e_numerator_binned_diLeptSS_woTrigger;
+			  if(histograms_incl_num_woTrigger != nullptr && histograms_binned_num_woTrigger != nullptr)
+			    {
+			      histograms_incl_num_woTrigger->fillHistograms(preselElectron, met.pt(), mT, mT_fix, evtWeight_wo_TrigPrescale); //(w/o Trigger)
+			      fillHistograms(*histograms_binned_num_woTrigger, preselElectron, met.pt(), mT, mT_fix, evtWeight_wo_TrigPrescale, cutFlowTable_e_woTrigger); //(w/o Trigger) 			    
+			    }
+			}
+		      if(passesMETandTrigger)
+			{// Passes MET Filter (w Trigger cond.)
+			  histograms_incl_num = histograms_e_numerator_incl_diLeptSS;
+			  histograms_binned_num = &histograms_e_numerator_binned_diLeptSS;
+			  if(histograms_incl_num != nullptr && histograms_binned_num != nullptr)
+			    {
+			      histograms_incl_num->fillHistograms(preselElectron, met.pt(), mT, mT_fix, evtWeight); //(w Trigger)
+			      fillHistograms(*histograms_binned_num, preselElectron, met.pt(), mT, mT_fix, evtWeight, cutFlowTable_e); //(w Trigger) 
+			    }
+			}
 		    }
 
-		  //if(passesMETandTrigger && preselElectron.isFakeable()) // CERN group logic
-		  if(passesMETandTrigger && (preselElectron.isFakeable() && !preselElectron.isTight())) // Tallinn Group logic
+		  //if(preselElectron.isFakeable()) // CERN group logic
+		  if(preselElectron.isFakeable() && !preselElectron.isTight()) // Tallinn Group logic
     		    {// denominator e histograms filled
-    		      histograms_incl_den = histograms_e_denominator_incl_diLeptSS;
-    		      histograms_binned_den = &histograms_e_denominator_binned_diLeptSS;
-     		      if(histograms_incl_den != nullptr && histograms_binned_den != nullptr)
-    			{
-    			  //histograms_incl_den->fillHistograms(preselElectron, met.pt(), mT, mT_fix, evtWeight_wo_TrigPrescale); //(w/o Trigger)
-    			  //fillHistograms(*histograms_binned_den, preselElectron, met.pt(), mT, mT_fix, evtWeight_wo_TrigPrescale, cutFlowTable_e); //(w/o Trigger)
-    			  histograms_incl_den->fillHistograms(preselElectron, met.pt(), mT, mT_fix, evtWeight); //(w Trigger)
-    			  fillHistograms(*histograms_binned_den, preselElectron, met.pt(), mT, mT_fix, evtWeight, cutFlowTable_e); //(w Trigger)
-    		        }
+		      if(passMETFilter)
+			{// Passes MET Filter (w/o Trigger cond.)
+			  histograms_incl_den_woTrigger = histograms_e_denominator_incl_diLeptSS_woTrigger;
+			  histograms_binned_den_woTrigger = &histograms_e_denominator_binned_diLeptSS_woTrigger;
+			  if(histograms_incl_den_woTrigger != nullptr && histograms_binned_den_woTrigger != nullptr)
+			    {
+			      histograms_incl_den_woTrigger->fillHistograms(preselElectron, met.pt(), mT, mT_fix, evtWeight_wo_TrigPrescale); //(w/o Trigger)
+			      fillHistograms(*histograms_binned_den_woTrigger, preselElectron, met.pt(), mT, mT_fix, evtWeight_wo_TrigPrescale, cutFlowTable_e_woTrigger); //(w/o Trigger) 			    
+			    }
+			}
+		      if(passesMETandTrigger)
+			{// Passes MET Filter (w Trigger cond.)
+			  histograms_incl_den = histograms_e_denominator_incl_diLeptSS;
+			  histograms_binned_den = &histograms_e_denominator_binned_diLeptSS;
+			  if(histograms_incl_den != nullptr && histograms_binned_den != nullptr)
+			    {
+			      histograms_incl_den->fillHistograms(preselElectron, met.pt(), mT, mT_fix, evtWeight); //(w Trigger)
+			      fillHistograms(*histograms_binned_den, preselElectron, met.pt(), mT, mT_fix, evtWeight, cutFlowTable_e); //(w Trigger)
+			    }
+			}
     		    }	
 		  return 4; 
 		} // electron block ends
@@ -1136,6 +1262,7 @@ DiLeptonSS(Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface_ntu
 	      if(preselLeptonsFull[ProbeLeptonIndex]->is_muon())
 		{ // Fill muon histograms
 		  cutFlowTable_mu->update("Probe lepton exists and is a muon", evtWeight);
+		  cutFlowTable_mu_woTrigger->update("Probe lepton exists and is a muon", evtWeight_wo_TrigPrescale);
 		  const RecoLepton & preselMuon = *(preselLeptonsFull[ProbeLeptonIndex]);
 		  const RecoMEt met_mod = METSystComp_LeptonFakeRate(preselLeptonsFull[ProbeLeptonIndex], genmet, met, METScaleSyst, metSyst_option, isDEBUG);
 		  const double mT     = comp_mT(preselMuon, met_mod.pt(), met_mod.phi());
@@ -1147,40 +1274,64 @@ DiLeptonSS(Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface_ntu
 		  // numerator histograms
 		  numerator_and_denominatorHistManagers * histograms_incl_num = nullptr;
 		  std::vector<numerator_and_denominatorHistManagers *> * histograms_binned_num = nullptr;
+		  numerator_and_denominatorHistManagers * histograms_incl_num_woTrigger = nullptr;
+		  std::vector<numerator_and_denominatorHistManagers *> * histograms_binned_num_woTrigger = nullptr;
 		  // denominator histograms
 		  numerator_and_denominatorHistManagers * histograms_incl_den = nullptr;
 		  std::vector<numerator_and_denominatorHistManagers *> * histograms_binned_den = nullptr;
+		  numerator_and_denominatorHistManagers * histograms_incl_den_woTrigger = nullptr;
+		  std::vector<numerator_and_denominatorHistManagers *> * histograms_binned_den_woTrigger = nullptr;
+		  if(preselMuon.isTight())
+		    {// numerator mu histograms filled
+		      if(passMETFilter)
+			{// Passes MET Filter (w/o Trigger cond.) 
+			  histograms_incl_num_woTrigger = histograms_mu_numerator_incl_diLeptSS_woTrigger;
+			  histograms_binned_num_woTrigger = &histograms_mu_numerator_binned_diLeptSS_woTrigger;
+			  if(histograms_incl_num_woTrigger != nullptr && histograms_binned_num_woTrigger != nullptr)
+			    {
+			      histograms_incl_num_woTrigger->fillHistograms(preselMuon, met.pt(), mT, mT_fix, evtWeight_wo_TrigPrescale); //(w/o Trigger)
+			      fillHistograms(*histograms_binned_num_woTrigger, preselMuon, met.pt(), mT, mT_fix, evtWeight_wo_TrigPrescale, cutFlowTable_mu_woTrigger); //(w/o Trigger) 			      
+			    }
+			}
+		      if(passesMETandTrigger)
+			{// Passes MET Filter (w Trigger cond.)
+			  histograms_incl_num = histograms_mu_numerator_incl_diLeptSS;
+			  histograms_binned_num = &histograms_mu_numerator_binned_diLeptSS;
+			  if(histograms_incl_num != nullptr && histograms_binned_num != nullptr)
+			    {
+			      histograms_incl_num->fillHistograms(preselMuon, met.pt(), mT, mT_fix, evtWeight); //(w Trigger)
+			      fillHistograms(*histograms_binned_num, preselMuon, met.pt(), mT, mT_fix, evtWeight, cutFlowTable_mu); //(w Trigger) 
+			    }
+			}
+		    }
 
-    		    if(passesMETandTrigger && preselMuon.isTight())
-    		      {// numerator mu histograms filled
-    			histograms_incl_num = histograms_mu_numerator_incl_diLeptSS;
-    			histograms_binned_num = &histograms_mu_numerator_binned_diLeptSS;
-			if(histograms_incl_num != nullptr && histograms_binned_num != nullptr)
-    			  {
-    			    //histograms_incl_num->fillHistograms(preselMuon, met.pt(), mT, mT_fix, evtWeight_wo_TrigPrescale); //(w/o Trigger)
-    			    //fillHistograms(*histograms_binned_num, preselMuon, met.pt(), mT, mT_fix, evtWeight_wo_TrigPrescale, cutFlowTable_mu); //(w/o Trigger) 
-    			    histograms_incl_num->fillHistograms(preselMuon, met.pt(), mT, mT_fix, evtWeight); //(w Trigger)
-    			    fillHistograms(*histograms_binned_num, preselMuon, met.pt(), mT, mT_fix, evtWeight, cutFlowTable_mu); //(w Trigger) 
-    			  }
-    		      }
-
-    		    //if(passesMETandTrigger && preselMuon.isFakeable())  // CERN group logic
-    		    if(passesMETandTrigger && (preselMuon.isFakeable() && !preselMuon.isTight())) // Tallinn Group logic
-    		      {// denominator mu histograms filled
-    			histograms_incl_den = histograms_mu_denominator_incl_diLeptSS;
-    			histograms_binned_den = &histograms_mu_denominator_binned_diLeptSS;
-			if(histograms_incl_den != nullptr && histograms_binned_den != nullptr)
-    			  {
-    			    //histograms_incl_den->fillHistograms(preselMuon, met.pt(), mT, mT_fix, evtWeight_wo_TrigPrescale); //(w/o Trigger) 
-    			    //fillHistograms(*histograms_binned_den, preselMuon, met.pt(), mT, mT_fix, evtWeight_wo_TrigPrescale, cutFlowTable_mu); //(w/o Trigger)
-    			    histograms_incl_den->fillHistograms(preselMuon, met.pt(), mT, mT_fix, evtWeight); //(w Trigger)
-    			    fillHistograms(*histograms_binned_den, preselMuon, met.pt(), mT, mT_fix, evtWeight, cutFlowTable_mu); //(w Trigger)
-    		          }
-
-    		      }
-		    return 5; 
+		  //if(preselMuon.isFakeable())  // CERN group logic
+		  if(preselMuon.isFakeable() && !preselMuon.isTight()) // Tallinn Group logic
+		    {// denominator mu histograms filled
+		      if(passMETFilter)
+			{// Passes MET Filter (w/o Trigger cond.) 
+			  histograms_incl_den_woTrigger = histograms_mu_denominator_incl_diLeptSS_woTrigger;
+			  histograms_binned_den_woTrigger = &histograms_mu_denominator_binned_diLeptSS_woTrigger;
+			  if(histograms_incl_den_woTrigger != nullptr && histograms_binned_den_woTrigger != nullptr)
+			    {
+			      histograms_incl_den_woTrigger->fillHistograms(preselMuon, met.pt(), mT, mT_fix, evtWeight_wo_TrigPrescale); //(w/o Trigger) 
+			      fillHistograms(*histograms_binned_den_woTrigger, preselMuon, met.pt(), mT, mT_fix, evtWeight_wo_TrigPrescale, cutFlowTable_mu_woTrigger); //(w/o Trigger)
+			      }
+			}
+		      if(passesMETandTrigger)
+			{// Passes MET Filter (w Trigger cond.) 
+			  histograms_incl_den = histograms_mu_denominator_incl_diLeptSS;
+			  histograms_binned_den = &histograms_mu_denominator_binned_diLeptSS;
+			  if(histograms_incl_den != nullptr && histograms_binned_den != nullptr)
+			    {
+			      histograms_incl_den->fillHistograms(preselMuon, met.pt(), mT, mT_fix, evtWeight); //(w Trigger)
+				fillHistograms(*histograms_binned_den, preselMuon, met.pt(), mT, mT_fix, evtWeight, cutFlowTable_mu); //(w Trigger)
+			      }
+			}
+		    }
+		  return 5; 
 		} // muon block ends	      
-
+	      
 	    }else{ // Same Sign cond. not satisfied
 	    return 3; 
 	  }
@@ -1701,17 +1852,30 @@ main(int argc,
   };
 
 //--- book histograms for electron numerator and denominator
+
   auto histograms_e_numerator_incl_LeptonPlusJet = get_num_den_hist_managers("numerator/LeptonPlusJet/electrons_tight", kElectron); // NEW !
   histograms_e_numerator_incl_LeptonPlusJet->bookHistograms(fs); // NEW !
+
+  auto histograms_e_numerator_incl_LeptonPlusJet_woTrigger = get_num_den_hist_managers("numerator/LeptonPlusJet_woTrigger/electrons_tight", kElectron); // NEW !
+  histograms_e_numerator_incl_LeptonPlusJet_woTrigger->bookHistograms(fs); // NEW !
 
   auto histograms_e_denominator_incl_LeptonPlusJet = get_num_den_hist_managers("denominator/LeptonPlusJet/electrons_fakeable", kElectron); // NEW !
   histograms_e_denominator_incl_LeptonPlusJet->bookHistograms(fs); // NEW !
 
+  auto histograms_e_denominator_incl_LeptonPlusJet_woTrigger = get_num_den_hist_managers("denominator/LeptonPlusJet_woTrigger/electrons_fakeable", kElectron); // NEW !
+  histograms_e_denominator_incl_LeptonPlusJet_woTrigger->bookHistograms(fs); // NEW !
+
   auto histograms_e_numerator_incl_diLeptSS = get_num_den_hist_managers("numerator/diLeptSS/electrons_tight", kElectron); // NEW !
   histograms_e_numerator_incl_diLeptSS->bookHistograms(fs); // NEW !
 
+  auto histograms_e_numerator_incl_diLeptSS_woTrigger = get_num_den_hist_managers("numerator/diLeptSS_woTrigger/electrons_tight", kElectron); // NEW !
+  histograms_e_numerator_incl_diLeptSS_woTrigger->bookHistograms(fs); // NEW !
+
   auto histograms_e_denominator_incl_diLeptSS = get_num_den_hist_managers("denominator/diLeptSS/electrons_fakeable", kElectron); // NEW !
   histograms_e_denominator_incl_diLeptSS->bookHistograms(fs); // NEW !
+
+  auto histograms_e_denominator_incl_diLeptSS_woTrigger = get_num_den_hist_managers("denominator/diLeptSS_woTrigger/electrons_fakeable", kElectron); // NEW !
+  histograms_e_denominator_incl_diLeptSS_woTrigger->bookHistograms(fs); // NEW !
 
   auto histograms_e_numerator_incl_beforeCuts = get_num_den_hist_managers("numerator/electrons_tight", kElectron);
   histograms_e_numerator_incl_beforeCuts->bookHistograms(fs);
@@ -1730,9 +1894,13 @@ main(int argc,
   histograms_e_denominator_incl_afterCuts->bookHistograms(fs);
 
   std::vector<numerator_and_denominatorHistManagers *> histograms_e_numerator_binned_LeptonPlusJet;   // NEW !
+  std::vector<numerator_and_denominatorHistManagers *> histograms_e_numerator_binned_LeptonPlusJet_woTrigger;   // NEW !
   std::vector<numerator_and_denominatorHistManagers *> histograms_e_denominator_binned_LeptonPlusJet; // NEW !
+  std::vector<numerator_and_denominatorHistManagers *> histograms_e_denominator_binned_LeptonPlusJet_woTrigger; // NEW !
   std::vector<numerator_and_denominatorHistManagers *> histograms_e_numerator_binned_diLeptSS;   // NEW !
+  std::vector<numerator_and_denominatorHistManagers *> histograms_e_numerator_binned_diLeptSS_woTrigger;   // NEW !
   std::vector<numerator_and_denominatorHistManagers *> histograms_e_denominator_binned_diLeptSS; // NEW !
+  std::vector<numerator_and_denominatorHistManagers *> histograms_e_denominator_binned_diLeptSS_woTrigger; // NEW !
   std::vector<numerator_and_denominatorHistManagers *> histograms_e_numerator_binned_beforeCuts;
   std::vector<numerator_and_denominatorHistManagers *> histograms_e_denominator_binned_beforeCuts;
   std::vector<numerator_and_denominatorHistManagers *> histograms_e_numerator_binned_afterCuts;
@@ -1756,11 +1924,23 @@ main(int argc,
       histograms_numerator_LeptonPlusJet->bookHistograms(fs); // NEW !
       histograms_e_numerator_binned_LeptonPlusJet.push_back(histograms_numerator_LeptonPlusJet); // NEW !
 
+      auto histograms_numerator_LeptonPlusJet_woTrigger = get_num_den_hist_managers(
+	"numerator/LeptonPlusJet_woTrigger/electrons_tight", kElectron, minAbsEta_e, maxAbsEta_e, minPt_e, maxPt_e
+      ); // NEW !
+      histograms_numerator_LeptonPlusJet_woTrigger->bookHistograms(fs); // NEW !
+      histograms_e_numerator_binned_LeptonPlusJet_woTrigger.push_back(histograms_numerator_LeptonPlusJet_woTrigger); // NEW !
+
       auto histograms_denominator_LeptonPlusJet = get_num_den_hist_managers(
         "denominator/LeptonPlusJet/electrons_fakeable", kElectron, minAbsEta_e, maxAbsEta_e, minPt_e, maxPt_e
       ); // NEW !
       histograms_denominator_LeptonPlusJet->bookHistograms(fs); // NEW !
       histograms_e_denominator_binned_LeptonPlusJet.push_back(histograms_denominator_LeptonPlusJet); // NEW !
+
+      auto histograms_denominator_LeptonPlusJet_woTrigger = get_num_den_hist_managers(
+        "denominator/LeptonPlusJet_woTrigger/electrons_fakeable", kElectron, minAbsEta_e, maxAbsEta_e, minPt_e, maxPt_e
+      ); // NEW !
+      histograms_denominator_LeptonPlusJet_woTrigger->bookHistograms(fs); // NEW !
+      histograms_e_denominator_binned_LeptonPlusJet_woTrigger.push_back(histograms_denominator_LeptonPlusJet_woTrigger); // NEW !
 
       auto histograms_numerator_diLeptSS = get_num_den_hist_managers(
 	"numerator/diLeptSS/electrons_tight", kElectron, minAbsEta_e, maxAbsEta_e, minPt_e, maxPt_e
@@ -1768,11 +1948,23 @@ main(int argc,
       histograms_numerator_diLeptSS->bookHistograms(fs); // NEW !
       histograms_e_numerator_binned_diLeptSS.push_back(histograms_numerator_diLeptSS); // NEW !
 
+      auto histograms_numerator_diLeptSS_woTrigger = get_num_den_hist_managers(
+	"numerator/diLeptSS_woTrigger/electrons_tight", kElectron, minAbsEta_e, maxAbsEta_e, minPt_e, maxPt_e
+      ); // NEW !
+      histograms_numerator_diLeptSS_woTrigger->bookHistograms(fs); // NEW !
+      histograms_e_numerator_binned_diLeptSS_woTrigger.push_back(histograms_numerator_diLeptSS_woTrigger); // NEW !
+
       auto histograms_denominator_diLeptSS = get_num_den_hist_managers(
         "denominator/diLeptSS/electrons_fakeable", kElectron, minAbsEta_e, maxAbsEta_e, minPt_e, maxPt_e
       ); // NEW !
       histograms_denominator_diLeptSS->bookHistograms(fs); // NEW !
       histograms_e_denominator_binned_diLeptSS.push_back(histograms_denominator_diLeptSS); // NEW !
+
+      auto histograms_denominator_diLeptSS_woTrigger = get_num_den_hist_managers(
+        "denominator/diLeptSS_woTrigger/electrons_fakeable", kElectron, minAbsEta_e, maxAbsEta_e, minPt_e, maxPt_e
+      ); // NEW !
+      histograms_denominator_diLeptSS_woTrigger->bookHistograms(fs); // NEW !
+      histograms_e_denominator_binned_diLeptSS_woTrigger.push_back(histograms_denominator_diLeptSS_woTrigger); // NEW !
 
       auto histograms_numerator_beforeCuts = get_num_den_hist_managers(
         "numerator/electrons_tight", kElectron, minAbsEta_e, maxAbsEta_e, minPt_e, maxPt_e
@@ -1804,14 +1996,26 @@ main(int argc,
   auto histograms_mu_numerator_incl_LeptonPlusJet = get_num_den_hist_managers("numerator/LeptonPlusJet/muons_tight", kMuon);   // NEW !
   histograms_mu_numerator_incl_LeptonPlusJet->bookHistograms(fs); // NEW !
 
+  auto histograms_mu_numerator_incl_LeptonPlusJet_woTrigger = get_num_den_hist_managers("numerator/LeptonPlusJet_woTrigger/muons_tight", kMuon);   // NEW !
+  histograms_mu_numerator_incl_LeptonPlusJet_woTrigger->bookHistograms(fs); // NEW !
+
   auto histograms_mu_denominator_incl_LeptonPlusJet = get_num_den_hist_managers("denominator/LeptonPlusJet/muons_fakeable", kMuon); // NEW !
   histograms_mu_denominator_incl_LeptonPlusJet->bookHistograms(fs); // NEW !
+
+  auto histograms_mu_denominator_incl_LeptonPlusJet_woTrigger = get_num_den_hist_managers("denominator/LeptonPlusJet_woTrigger/muons_fakeable", kMuon); // NEW !
+  histograms_mu_denominator_incl_LeptonPlusJet_woTrigger->bookHistograms(fs); // NEW !
 
   auto histograms_mu_numerator_incl_diLeptSS = get_num_den_hist_managers("numerator/diLeptSS/muons_tight", kMuon);   // NEW !
   histograms_mu_numerator_incl_diLeptSS->bookHistograms(fs); // NEW !
 
+  auto histograms_mu_numerator_incl_diLeptSS_woTrigger = get_num_den_hist_managers("numerator/diLeptSS_woTrigger/muons_tight", kMuon);   // NEW !
+  histograms_mu_numerator_incl_diLeptSS_woTrigger->bookHistograms(fs); // NEW !
+
   auto histograms_mu_denominator_incl_diLeptSS = get_num_den_hist_managers("denominator/diLeptSS/muons_fakeable", kMuon); // NEW !
   histograms_mu_denominator_incl_diLeptSS->bookHistograms(fs); // NEW !
+
+  auto histograms_mu_denominator_incl_diLeptSS_woTrigger = get_num_den_hist_managers("denominator/diLeptSS_woTrigger/muons_fakeable", kMuon); // NEW !
+  histograms_mu_denominator_incl_diLeptSS_woTrigger->bookHistograms(fs); // NEW !
 
   auto histograms_mu_numerator_incl_beforeCuts = get_num_den_hist_managers("numerator/muons_tight", kMuon);
   histograms_mu_numerator_incl_beforeCuts->bookHistograms(fs);
@@ -1830,9 +2034,13 @@ main(int argc,
   histograms_mu_denominator_incl_afterCuts->bookHistograms(fs);
 
   std::vector<numerator_and_denominatorHistManagers *> histograms_mu_numerator_binned_LeptonPlusJet; // NEW !
+  std::vector<numerator_and_denominatorHistManagers *> histograms_mu_numerator_binned_LeptonPlusJet_woTrigger; // NEW !
   std::vector<numerator_and_denominatorHistManagers *> histograms_mu_denominator_binned_LeptonPlusJet; // NEW !
+  std::vector<numerator_and_denominatorHistManagers *> histograms_mu_denominator_binned_LeptonPlusJet_woTrigger; // NEW !
   std::vector<numerator_and_denominatorHistManagers *> histograms_mu_numerator_binned_diLeptSS; // NEW !
+  std::vector<numerator_and_denominatorHistManagers *> histograms_mu_numerator_binned_diLeptSS_woTrigger; // NEW !
   std::vector<numerator_and_denominatorHistManagers *> histograms_mu_denominator_binned_diLeptSS; // NEW !
+  std::vector<numerator_and_denominatorHistManagers *> histograms_mu_denominator_binned_diLeptSS_woTrigger; // NEW !
   std::vector<numerator_and_denominatorHistManagers *> histograms_mu_numerator_binned_beforeCuts;
   std::vector<numerator_and_denominatorHistManagers *> histograms_mu_denominator_binned_beforeCuts;
   std::vector<numerator_and_denominatorHistManagers *> histograms_mu_numerator_binned_afterCuts;
@@ -1856,11 +2064,23 @@ main(int argc,
       histograms_numerator_LeptonPlusJet->bookHistograms(fs); // NEW !
       histograms_mu_numerator_binned_LeptonPlusJet.push_back(histograms_numerator_LeptonPlusJet); // NEW !
 
+      auto histograms_numerator_LeptonPlusJet_woTrigger = get_num_den_hist_managers(
+        "numerator/LeptonPlusJet_woTrigger/muons_tight", kMuon, minAbsEta_mu, maxAbsEta_mu, minPt_mu, maxPt_mu
+      ); // NEW !
+      histograms_numerator_LeptonPlusJet_woTrigger->bookHistograms(fs); // NEW !
+      histograms_mu_numerator_binned_LeptonPlusJet_woTrigger.push_back(histograms_numerator_LeptonPlusJet_woTrigger); // NEW !
+
       auto histograms_denominator_LeptonPlusJet = get_num_den_hist_managers(
         "denominator/LeptonPlusJet/muons_fakeable", kMuon, minAbsEta_mu, maxAbsEta_mu, minPt_mu, maxPt_mu
       ); // NEW !
       histograms_denominator_LeptonPlusJet->bookHistograms(fs); // NEW !
       histograms_mu_denominator_binned_LeptonPlusJet.push_back(histograms_denominator_LeptonPlusJet); // NEW !
+
+      auto histograms_denominator_LeptonPlusJet_woTrigger = get_num_den_hist_managers(
+        "denominator/LeptonPlusJet_woTrigger/muons_fakeable", kMuon, minAbsEta_mu, maxAbsEta_mu, minPt_mu, maxPt_mu
+      ); // NEW !
+      histograms_denominator_LeptonPlusJet_woTrigger->bookHistograms(fs); // NEW !
+      histograms_mu_denominator_binned_LeptonPlusJet_woTrigger.push_back(histograms_denominator_LeptonPlusJet_woTrigger); // NEW !
 
       auto histograms_numerator_diLeptSS = get_num_den_hist_managers(
         "numerator/diLeptSS/muons_tight", kMuon, minAbsEta_mu, maxAbsEta_mu, minPt_mu, maxPt_mu
@@ -1868,11 +2088,23 @@ main(int argc,
       histograms_numerator_diLeptSS->bookHistograms(fs); // NEW !
       histograms_mu_numerator_binned_diLeptSS.push_back(histograms_numerator_diLeptSS); // NEW !
 
+      auto histograms_numerator_diLeptSS_woTrigger = get_num_den_hist_managers(
+        "numerator/diLeptSS_woTrigger/muons_tight", kMuon, minAbsEta_mu, maxAbsEta_mu, minPt_mu, maxPt_mu
+      ); // NEW !
+      histograms_numerator_diLeptSS_woTrigger->bookHistograms(fs); // NEW !
+      histograms_mu_numerator_binned_diLeptSS_woTrigger.push_back(histograms_numerator_diLeptSS_woTrigger); // NEW !
+
       auto histograms_denominator_diLeptSS = get_num_den_hist_managers(
         "denominator/diLeptSS/muons_fakeable", kMuon, minAbsEta_mu, maxAbsEta_mu, minPt_mu, maxPt_mu
       ); // NEW !
       histograms_denominator_diLeptSS->bookHistograms(fs); // NEW !
       histograms_mu_denominator_binned_diLeptSS.push_back(histograms_denominator_diLeptSS); // NEW !
+
+      auto histograms_denominator_diLeptSS_woTrigger = get_num_den_hist_managers(
+        "denominator/diLeptSS_woTrigger/muons_fakeable", kMuon, minAbsEta_mu, maxAbsEta_mu, minPt_mu, maxPt_mu
+      ); // NEW !
+      histograms_denominator_diLeptSS_woTrigger->bookHistograms(fs); // NEW !
+      histograms_mu_denominator_binned_diLeptSS_woTrigger.push_back(histograms_denominator_diLeptSS_woTrigger); // NEW !
 
       auto histograms_numerator_beforeCuts = get_num_den_hist_managers(
         "numerator/muons_tight", kMuon, minAbsEta_mu, maxAbsEta_mu, minPt_mu, maxPt_mu
@@ -2018,6 +2250,13 @@ main(int argc,
   initializeCutFlowTable(cutFlowTable_e_LeptonPlusJet, histograms_e_numerator_binned_LeptonPlusJet);
   initializeCutFlowTable(cutFlowTable_e_LeptonPlusJet, histograms_e_denominator_binned_LeptonPlusJet);
 
+  cutFlowTableType cutFlowTable_e_LeptonPlusJet_woTrigger({}, isDEBUG);
+  initializeCutFlowTable(cutFlowTable_e_LeptonPlusJet_woTrigger, "= 1 presel/Loose electron");
+  initializeCutFlowTable(cutFlowTable_e_LeptonPlusJet_woTrigger, "Jet found at a dist. dR=0.7 from electron");
+  initializeCutFlowTable(cutFlowTable_e_LeptonPlusJet_woTrigger, "Event passes MET filters");
+  initializeCutFlowTable(cutFlowTable_e_LeptonPlusJet_woTrigger, histograms_e_numerator_binned_LeptonPlusJet_woTrigger);
+  initializeCutFlowTable(cutFlowTable_e_LeptonPlusJet_woTrigger, histograms_e_denominator_binned_LeptonPlusJet_woTrigger);
+
   cutFlowTableType cutFlowTable_e_diLeptSS({}, isDEBUG);
   initializeCutFlowTable(cutFlowTable_e_diLeptSS, "= 2 presel/Loose leptons");
   initializeCutFlowTable(cutFlowTable_e_diLeptSS, "Gen-matched lepton (Tag) exists");
@@ -2027,12 +2266,29 @@ main(int argc,
   initializeCutFlowTable(cutFlowTable_e_diLeptSS, histograms_e_numerator_binned_diLeptSS);
   initializeCutFlowTable(cutFlowTable_e_diLeptSS, histograms_e_denominator_binned_diLeptSS);
 
+  cutFlowTableType cutFlowTable_e_diLeptSS_woTrigger({}, isDEBUG);
+  initializeCutFlowTable(cutFlowTable_e_diLeptSS_woTrigger, "= 2 presel/Loose leptons");
+  initializeCutFlowTable(cutFlowTable_e_diLeptSS_woTrigger, "Gen-matched lepton (Tag) exists");
+  initializeCutFlowTable(cutFlowTable_e_diLeptSS_woTrigger, "Both presel/Loose leptons are Same Sign");
+  initializeCutFlowTable(cutFlowTable_e_diLeptSS_woTrigger, "Event passes MET filters");
+  initializeCutFlowTable(cutFlowTable_e_diLeptSS_woTrigger, "Probe lepton exists and is an electron");
+  initializeCutFlowTable(cutFlowTable_e_diLeptSS_woTrigger, histograms_e_numerator_binned_diLeptSS_woTrigger);
+  initializeCutFlowTable(cutFlowTable_e_diLeptSS_woTrigger, histograms_e_denominator_binned_diLeptSS_woTrigger);
+
   cutFlowTableType cutFlowTable_mu_LeptonPlusJet({}, isDEBUG);
   initializeCutFlowTable(cutFlowTable_mu_LeptonPlusJet, "= 1 presel/Loose muon");
   initializeCutFlowTable(cutFlowTable_mu_LeptonPlusJet, "Jet found at a dist. dR=0.7 from muon");
   initializeCutFlowTable(cutFlowTable_mu_LeptonPlusJet, "Event passes trigger and MET filters");
   initializeCutFlowTable(cutFlowTable_mu_LeptonPlusJet, histograms_mu_numerator_binned_LeptonPlusJet);
   initializeCutFlowTable(cutFlowTable_mu_LeptonPlusJet, histograms_mu_denominator_binned_LeptonPlusJet);
+
+  cutFlowTableType cutFlowTable_mu_LeptonPlusJet_woTrigger({}, isDEBUG);
+  initializeCutFlowTable(cutFlowTable_mu_LeptonPlusJet_woTrigger, "= 1 presel/Loose muon");
+  initializeCutFlowTable(cutFlowTable_mu_LeptonPlusJet_woTrigger, "Jet found at a dist. dR=0.7 from muon");
+  initializeCutFlowTable(cutFlowTable_mu_LeptonPlusJet_woTrigger, "Event passes MET filters");
+  initializeCutFlowTable(cutFlowTable_mu_LeptonPlusJet_woTrigger, histograms_mu_numerator_binned_LeptonPlusJet_woTrigger);
+  initializeCutFlowTable(cutFlowTable_mu_LeptonPlusJet_woTrigger, histograms_mu_denominator_binned_LeptonPlusJet_woTrigger);
+
 
   cutFlowTableType cutFlowTable_mu_diLeptSS({}, isDEBUG);
   initializeCutFlowTable(cutFlowTable_mu_diLeptSS, "= 2 presel/Loose leptons");
@@ -2042,6 +2298,16 @@ main(int argc,
   initializeCutFlowTable(cutFlowTable_mu_diLeptSS, "Probe lepton exists and is a muon");
   initializeCutFlowTable(cutFlowTable_mu_diLeptSS, histograms_mu_numerator_binned_diLeptSS);
   initializeCutFlowTable(cutFlowTable_mu_diLeptSS, histograms_mu_denominator_binned_diLeptSS);
+
+
+  cutFlowTableType cutFlowTable_mu_diLeptSS_woTrigger({}, isDEBUG);
+  initializeCutFlowTable(cutFlowTable_mu_diLeptSS_woTrigger, "= 2 presel/Loose leptons");
+  initializeCutFlowTable(cutFlowTable_mu_diLeptSS_woTrigger, "Gen-matched lepton (Tag) exists");
+  initializeCutFlowTable(cutFlowTable_mu_diLeptSS_woTrigger, "Both presel/Loose leptons are Same Sign");
+  initializeCutFlowTable(cutFlowTable_mu_diLeptSS_woTrigger, "Event passes MET filters");
+  initializeCutFlowTable(cutFlowTable_mu_diLeptSS_woTrigger, "Probe lepton exists and is an muon");
+  initializeCutFlowTable(cutFlowTable_mu_diLeptSS_woTrigger, histograms_mu_numerator_binned_diLeptSS_woTrigger);
+  initializeCutFlowTable(cutFlowTable_mu_diLeptSS_woTrigger, histograms_mu_denominator_binned_diLeptSS_woTrigger);
 
 
   cutFlowTableType cutFlowTable_e({}, isDEBUG);
@@ -2343,6 +2609,14 @@ main(int argc,
 				     histograms_mu_numerator_binned_diLeptSS,
 				     histograms_mu_denominator_incl_diLeptSS,
 				     histograms_mu_denominator_binned_diLeptSS,
+				     histograms_e_numerator_incl_diLeptSS_woTrigger,
+				     histograms_e_numerator_binned_diLeptSS_woTrigger,
+				     histograms_e_denominator_incl_diLeptSS_woTrigger,
+				     histograms_e_denominator_binned_diLeptSS_woTrigger,
+				     histograms_mu_numerator_incl_diLeptSS_woTrigger,
+				     histograms_mu_numerator_binned_diLeptSS_woTrigger,
+				     histograms_mu_denominator_incl_diLeptSS_woTrigger,
+				     histograms_mu_denominator_binned_diLeptSS_woTrigger,
 				     evtWeightRecorder_copy,
 				     central_or_shift,
 				     eventInfo,
@@ -2358,7 +2632,7 @@ main(int argc,
 				     use_triggers_2mu,
 				     isMC,
 				     apply_DYMCNormScaleFactors,
-				     apply_DYMCReweighting,
+				     //apply_DYMCReweighting,
 				     genTauLeptons,
 				     dyNormScaleFactors,
 				     btagSFRatioFacility,
@@ -2366,7 +2640,9 @@ main(int argc,
 				     bdt_filler_mu_diLeptSS,
 				     isDEBUG,
 				     &cutFlowTable_e_diLeptSS,
-				     &cutFlowTable_mu_diLeptSS);
+				     &cutFlowTable_mu_diLeptSS,
+				     &cutFlowTable_e_diLeptSS_woTrigger,
+				     &cutFlowTable_mu_diLeptSS_woTrigger);
 
       }
 
@@ -2391,6 +2667,14 @@ main(int argc,
 					     histograms_mu_numerator_binned_LeptonPlusJet,
 					     histograms_mu_denominator_incl_LeptonPlusJet,
 					     histograms_mu_denominator_binned_LeptonPlusJet,
+					     histograms_e_numerator_incl_LeptonPlusJet_woTrigger,
+					     histograms_e_numerator_binned_LeptonPlusJet_woTrigger,
+					     histograms_e_denominator_incl_LeptonPlusJet_woTrigger,
+					     histograms_e_denominator_binned_LeptonPlusJet_woTrigger,
+					     histograms_mu_numerator_incl_LeptonPlusJet_woTrigger,
+					     histograms_mu_numerator_binned_LeptonPlusJet_woTrigger,
+					     histograms_mu_denominator_incl_LeptonPlusJet_woTrigger,
+					     histograms_mu_denominator_binned_LeptonPlusJet_woTrigger,
 					     evtWeightRecorder_copy,
 					     central_or_shift,
 					     eventInfo,
@@ -2406,7 +2690,7 @@ main(int argc,
 					     use_triggers_2mu,
 					     isMC,
 					     apply_DYMCNormScaleFactors,
-					     apply_DYMCReweighting,
+					     //apply_DYMCReweighting,
 					     genTauLeptons,
 					     dyNormScaleFactors,
 					     btagSFRatioFacility,
@@ -2414,7 +2698,9 @@ main(int argc,
 					     bdt_filler_mu_LeptonPlusJet,
 					     isDEBUG,
 					     &cutFlowTable_e_LeptonPlusJet,
-					     &cutFlowTable_mu_LeptonPlusJet);
+					     &cutFlowTable_mu_LeptonPlusJet,
+					     &cutFlowTable_e_LeptonPlusJet_woTrigger,
+					     &cutFlowTable_mu_LeptonPlusJet_woTrigger);
 
       }
 // *************************
@@ -2584,6 +2870,8 @@ main(int argc,
         const std::vector<const RecoElectron *> tmp_leptons = { preselElectron_ptr };
         cleanedJets = jetCleaner_dR07(jet_ptrs, tmp_leptons);
         selJets = jetSelector(cleanedJets);
+	selBJets_loose = jetSelectorBtagLoose(cleanedJets);
+        selBJets_medium = jetSelectorBtagMedium(cleanedJets);
 
         for(const RecoJet * const selJet: selJets)
         {
@@ -2996,16 +3284,24 @@ main(int argc,
 
   if(isMC && isMC_TT_SL)
     {// Runs only for TTJets_SemiLeptonic
-      std::cout << "Di-Lepton SS sideband Info" << std::endl;
+      std::cout << "Di-Lepton SS sideband Info (w MET Filter & Trigger)" << std::endl;
       std::cout << "cut-flow table for electron events\n" << cutFlowTable_e_diLeptSS  << "\n"
 	"cut-flow table for muon events\n"     << cutFlowTable_mu_diLeptSS << '\n';
+
+      std::cout << "Di-Lepton SS sideband Info (w/o Trigger)" << std::endl;
+      std::cout << "cut-flow table for electron events\n" << cutFlowTable_e_diLeptSS_woTrigger << "\n"
+	"cut-flow table for muon events\n"     << cutFlowTable_mu_diLeptSS_woTrigger << '\n';
     }
 
   if(isMC && (isMC_TT_HAD || isMC_QCD))
     {// Runs only for QCD and TTToHadronic
-      std::cout << "Lepton+Jet sideband Info" << std::endl;
+      std::cout << "Lepton+Jet sideband Info (w MET Filter & Trigger)" << std::endl;
       std::cout << "cut-flow table for electron events\n" << cutFlowTable_e_LeptonPlusJet  << "\n"
 	"cut-flow table for muon events\n"     << cutFlowTable_mu_LeptonPlusJet << '\n';
+
+      std::cout << "Lepton+Jet sideband Info (w/o Trigger)" << std::endl;
+      std::cout << "cut-flow table for electron events\n" << cutFlowTable_e_LeptonPlusJet_woTrigger  << "\n"
+	"cut-flow table for muon events\n"     << cutFlowTable_mu_LeptonPlusJet_woTrigger << '\n';
     }
 
 
@@ -3043,19 +3339,27 @@ main(int argc,
   hltPaths_LeptonFakeRate_delete(triggers_e);
   hltPaths_LeptonFakeRate_delete(triggers_mu);
 
-
+  
   delete histograms_e_numerator_incl_LeptonPlusJet; 
   delete histograms_e_denominator_incl_LeptonPlusJet; 
+  delete histograms_e_numerator_incl_LeptonPlusJet_woTrigger; 
+  delete histograms_e_denominator_incl_LeptonPlusJet_woTrigger; 
   delete histograms_e_numerator_incl_diLeptSS; 
   delete histograms_e_denominator_incl_diLeptSS; 
+  delete histograms_e_numerator_incl_diLeptSS_woTrigger; 
+  delete histograms_e_denominator_incl_diLeptSS_woTrigger; 
   delete histograms_e_numerator_incl_beforeCuts;
   delete histograms_e_denominator_incl_beforeCuts;
   delete histograms_e_numerator_incl_afterCuts;
   delete histograms_e_denominator_incl_afterCuts;
   delete histograms_mu_numerator_incl_LeptonPlusJet; 
   delete histograms_mu_denominator_incl_LeptonPlusJet; 
+  delete histograms_mu_numerator_incl_LeptonPlusJet_woTrigger; 
+  delete histograms_mu_denominator_incl_LeptonPlusJet_woTrigger; 
   delete histograms_mu_numerator_incl_diLeptSS; 
   delete histograms_mu_denominator_incl_diLeptSS; 
+  delete histograms_mu_numerator_incl_diLeptSS_woTrigger; 
+  delete histograms_mu_denominator_incl_diLeptSS_woTrigger; 
   delete histograms_mu_numerator_incl_beforeCuts;
   delete histograms_mu_denominator_incl_beforeCuts;
   delete histograms_mu_numerator_incl_afterCuts;
@@ -3065,16 +3369,24 @@ main(int argc,
       {
         histograms_e_numerator_binned_LeptonPlusJet, 
         histograms_e_denominator_binned_LeptonPlusJet, 
+        histograms_e_numerator_binned_LeptonPlusJet_woTrigger, 
+        histograms_e_denominator_binned_LeptonPlusJet_woTrigger, 
         histograms_e_numerator_binned_diLeptSS, 
         histograms_e_denominator_binned_diLeptSS, 
+        histograms_e_numerator_binned_diLeptSS_woTrigger, 
+        histograms_e_denominator_binned_diLeptSS_woTrigger, 
         histograms_e_numerator_binned_beforeCuts,
         histograms_e_denominator_binned_beforeCuts,
         histograms_e_numerator_binned_afterCuts,
         histograms_e_denominator_binned_afterCuts,
         histograms_mu_numerator_binned_LeptonPlusJet, 
         histograms_mu_denominator_binned_LeptonPlusJet, 
+        histograms_mu_numerator_binned_LeptonPlusJet_woTrigger, 
+        histograms_mu_denominator_binned_LeptonPlusJet_woTrigger, 
         histograms_mu_numerator_binned_diLeptSS, 
         histograms_mu_denominator_binned_diLeptSS, 
+        histograms_mu_numerator_binned_diLeptSS_woTrigger, 
+        histograms_mu_denominator_binned_diLeptSS_woTrigger, 
         histograms_mu_numerator_binned_beforeCuts,
         histograms_mu_denominator_binned_beforeCuts,
         histograms_mu_numerator_binned_afterCuts,
