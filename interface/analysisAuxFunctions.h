@@ -313,6 +313,14 @@ bool
 isHigherConePt(const RecoLepton * particle1,
                const RecoLepton * particle2);
 
+template <typename T>
+bool
+isHigherConePtT(const T & particle1,
+                const T & particle2)
+{
+  return particle1.cone_pt() > particle2.cone_pt();
+}
+
 /**
  * @brief Auxiliary function for sorting a collection of RecoJet pointers
  *        by their b-tagging CSV score
@@ -759,11 +767,13 @@ recompute_met(const RecoMEt & met_uncorr,
 
 std::vector<RecoElectron>
 recompute_p4(const std::vector<RecoElectron> & electrons,
-             ElectronPtSys option);
+             ElectronPtSys option,
+             bool (*sortFunction)(const RecoElectron &, const RecoElectron &) = isHigherPtT<RecoElectron>);
 
 std::vector<RecoMuon>
 recompute_p4(const std::vector<RecoMuon> & muons,
-             MuonPtSys option);
+             MuonPtSys option,
+             bool (*sortFunction)(const RecoMuon &, const RecoMuon &) = isHigherPtT<RecoMuon>);
 
 std::map<std::string, double>
 InitializeInputVarMap(std::map<std::string, double> & AllVars_Map,

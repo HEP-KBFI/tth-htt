@@ -643,11 +643,11 @@ int main(int argc, char* argv[])
       }
     }
 
-    bool isTriggered_1e = hltPaths_isTriggered(triggers_1e, triggerWhiteList, eventInfo, isMC);
-    bool isTriggered_2e = hltPaths_isTriggered(triggers_2e, triggerWhiteList, eventInfo, isMC);
+    const bool isTriggered_1e = hltPaths_isTriggered(triggers_1e, triggerWhiteList, eventInfo, isMC);
+    const bool isTriggered_2e = hltPaths_isTriggered(triggers_2e, triggerWhiteList, eventInfo, isMC);
     
-    bool selTrigger_1e = use_triggers_1e && isTriggered_1e;
-    bool selTrigger_2e = use_triggers_2e && isTriggered_2e;
+    const bool selTrigger_1e = use_triggers_1e && isTriggered_1e;
+    const bool selTrigger_2e = use_triggers_2e && isTriggered_2e;
     if ( !(selTrigger_1e || selTrigger_2e) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS trigger selection." << std::endl; 
@@ -871,8 +871,6 @@ int main(int argc, char* argv[])
     const double selElectron_lead_pT = selElectron_lead->pt();
     const double selElectron_lead_eta = selElectron_lead->eta();
     const double selElectron_lead_absEta = std::fabs(selElectron_lead_eta);
-    const double selElectron_lead_phi = selElectron_lead->phi();
-    const double selElectron_lead_mass = selElectron_lead->mass();
 
     const RecoElectron * selElectron_sublead = selElectrons[1];
     const GenLepton * genElectron_sublead = nullptr;
@@ -883,52 +881,34 @@ int main(int argc, char* argv[])
     const double selElectron_sublead_pT = selElectron_sublead->pt();
     const double selElectron_sublead_eta = selElectron_sublead->eta();
     const double selElectron_sublead_absEta = std::fabs(selElectron_sublead_eta);
-    const double selElectron_sublead_phi = selElectron_sublead->phi();
-    const double selElectron_sublead_mass = selElectron_sublead->mass();
 
     const math::PtEtaPhiMLorentzVector selElectron_lead_p4 = selElectron_lead->p4();
-    const RecoElectron* selElectron_lead_tmp = 0;
-    const GenLepton* genElectron_lead_tmp = 0;
     const math::PtEtaPhiMLorentzVector selElectron_sublead_p4 = selElectron_sublead->p4();
-    const RecoElectron* selElectron_sublead_tmp = 0;
-    const GenLepton* genElectron_sublead_tmp = 0;
-    if ( selElectron_sublead_pT > selElectron_lead_pT ) { // CV: leading and subleading electrons have swapped order due to being affected directly by the systematic variations
-                                                          //    (this may happen if the pT of both electrons are similar)
-      selElectron_lead_tmp = selElectron_sublead;
-      genElectron_lead_tmp = genElectron_sublead;
-      selElectron_sublead_tmp = selElectron_lead;
-      genElectron_sublead_tmp = genElectron_lead;
-    } else {
-      selElectron_lead_tmp = selElectron_lead;
-      genElectron_lead_tmp = genElectron_lead;
-      selElectron_sublead_tmp = selElectron_sublead;
-      genElectron_sublead_tmp = genElectron_sublead;
-    }
-    double selElectron_lead_charge = selElectron_lead_tmp->charge();
+    const double selElectron_lead_charge = selElectron_lead->charge();
     Particle::LorentzVector genElectron_lead_p4; // generator-level electron associated to the reconstructed electron of higher pT 
                                                  // (not necessarily the generator-level electron of higher pT!)
     double genElectron_lead_charge = 0.;
     bool isGenElectron_lead = false;
-    if ( genElectron_lead_tmp ) {
-      genElectron_lead_p4 = genElectron_lead_tmp->p4();
-      genElectron_lead_charge = genElectron_lead_tmp->charge();
+    if ( genElectron_lead ) {
+      genElectron_lead_p4 = genElectron_lead->p4();
+      genElectron_lead_charge = genElectron_lead->charge();
       isGenElectron_lead = true;
     }
-    double selElectron_sublead_charge = selElectron_sublead_tmp->charge();
+    const double selElectron_sublead_charge = selElectron_sublead->charge();
     Particle::LorentzVector genElectron_sublead_p4; // generator-level electron associated to the reconstructed electron of lower pT 
                                                     // (not necessarily the generator-level electron of lower pT!)
     double genElectron_sublead_charge = 0.;
     bool isGenElectron_sublead = false;
-    if ( genElectron_sublead_tmp ) {
-      genElectron_sublead_p4 = genElectron_sublead_tmp->p4();
-      genElectron_sublead_charge = genElectron_sublead_tmp->charge();
+    if ( genElectron_sublead ) {
+      genElectron_sublead_p4 = genElectron_sublead->p4();
+      genElectron_sublead_charge = genElectron_sublead->charge();
       isGenElectron_sublead = true;
     }
 
-    double m_ee = (selElectron_lead_p4 + selElectron_sublead_p4).mass();
+    const double m_ee = (selElectron_lead_p4 + selElectron_sublead_p4).mass();
     
-    double minPt_lead = 20.;
-    double minPt_sublead = 10.;
+    const double minPt_lead = 20.;
+    const double minPt_sublead = 10.;
     if ( !(selElectron_lead_pT > minPt_lead && selElectron_sublead_pT > minPt_sublead) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS lepton pT selection." << std::endl;
@@ -977,8 +957,8 @@ int main(int argc, char* argv[])
       cutFlowHistManager->fillHistograms("selectedEvt 1e && 2eTrig", evtWeightRecorder.get(central_or_shift));
     }
               
-    bool isCharge_SS = selElectron_lead_charge*selElectron_sublead_charge > 0;
-    bool isCharge_OS = selElectron_lead_charge*selElectron_sublead_charge < 0;
+    const bool isCharge_SS = selElectron_lead_charge*selElectron_sublead_charge > 0;
+    const bool isCharge_OS = selElectron_lead_charge*selElectron_sublead_charge < 0;
 
     if(isMC)
     {
@@ -1018,10 +998,10 @@ int main(int argc, char* argv[])
 
       if(applyFakeRateWeights == kFR_2lepton)
       {
-        evtWeightRecorder.record_jetToLepton_FR_lead(leptonFakeRateInterface, selElectron_lead_tmp);
-        evtWeightRecorder.record_jetToLepton_FR_sublead(leptonFakeRateInterface, selElectron_sublead_tmp);
-        bool passesTight_electron_lead = isMatched(*selElectron_lead_tmp, tightElectrons);
-        bool passesTight_electron_sublead = isMatched(*selElectron_sublead_tmp, tightElectrons);
+        evtWeightRecorder.record_jetToLepton_FR_lead(leptonFakeRateInterface, selElectron_lead);
+        evtWeightRecorder.record_jetToLepton_FR_sublead(leptonFakeRateInterface, selElectron_sublead);
+        const bool passesTight_electron_lead = isMatched(*selElectron_lead, tightElectrons);
+        const bool passesTight_electron_sublead = isMatched(*selElectron_sublead, tightElectrons);
         evtWeightRecorder.compute_FR_2l(passesTight_electron_lead, passesTight_electron_sublead);
       }
     }

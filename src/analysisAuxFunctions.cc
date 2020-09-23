@@ -884,7 +884,8 @@ recompute_met(const RecoMEt & met_uncorr,
 
 std::vector<RecoElectron>
 recompute_p4(const std::vector<RecoElectron> & electrons,
-             ElectronPtSys option)
+             ElectronPtSys option,
+             bool (*sortFunction)(const RecoElectron &, const RecoElectron &))
 {
   std::vector<RecoElectron> electrons_shifted;
   for(const RecoElectron & electron: electrons)
@@ -909,12 +910,14 @@ recompute_p4(const std::vector<RecoElectron> & electrons,
     electron_copy.set_ptEtaPhiMass(corrFactor * electron.pt(), electron.eta(), electron.phi(), electron.mass());
     electrons_shifted.push_back(electron_copy);
   }
+  std::sort(electrons_shifted.begin(), electrons_shifted.end(), isHigherPtT<RecoElectron>);
   return electrons_shifted;
 }
 
 std::vector<RecoMuon>
 recompute_p4(const std::vector<RecoMuon> & muons,
-             MuonPtSys option)
+             MuonPtSys option,
+             bool (*sortFunction)(const RecoMuon &, const RecoMuon &))
 {
   std::vector<RecoMuon> muons_shifted;
   for(const RecoMuon & muon: muons)
@@ -938,6 +941,7 @@ recompute_p4(const std::vector<RecoMuon> & muons,
     muon_copy.set_ptEtaPhiMass(corrFactor * muon.pt(), muon.eta(), muon.phi(), muon.mass());
     muons_shifted.push_back(muon_copy);
   }
+  std::sort(muons_shifted.begin(), muons_shifted.end(), isHigherPtT<RecoMuon>);
   return muons_shifted;
 }
 
