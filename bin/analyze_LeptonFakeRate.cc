@@ -1652,7 +1652,7 @@ main(int argc,
   std::string OutputFileName = outputFile.file().data();
   std::cout<< "OutputFileName " << OutputFileName << std::endl;
   bool isMC_TT_SL = false;
-  if(OutputFileName.find("SingleLeptFromT") != std::string::npos)
+  if(OutputFileName.find("TTToSemiLeptonic") != std::string::npos)
     {// handle for semileptonic TTbar MC samples
       isMC_TT_SL = true;
     }
