@@ -37,10 +37,10 @@ public:
 
   const Particle::LorentzVector & p4() const;
 
-  void
+  virtual void
   set_p4(const Particle::LorentzVector & p4);
 
-  void
+  virtual void
   set_ptEtaPhiMass(Double_t pt,
                    Double_t eta,
                    Double_t phi,

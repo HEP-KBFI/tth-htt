@@ -154,6 +154,15 @@ public:
 
   void set_mvaRawTTH_cut(Double_t mvaRawTTH_cut);
 
+  virtual void
+  set_p4(const Particle::LorentzVector & p4) override;
+
+  virtual void
+  set_ptEtaPhiMass(Double_t pt,
+                   Double_t eta,
+                   Double_t phi,
+                   Double_t mass) override;
+
   friend class RecoMuonReader;
   friend class RecoElectronReader;
 
@@ -193,6 +202,13 @@ protected:
   mutable bool isLoose_;
   mutable bool isFakeable_;
   mutable bool isTight_;
+
+  void
+  set_assocJet_p4();
+
+  static Double_t
+  get_assocJet_pt(Double_t reco_pt,
+                  Double_t jetPtRatio);
 };
 
 std::ostream &
