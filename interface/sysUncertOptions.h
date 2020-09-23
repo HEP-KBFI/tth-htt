@@ -160,22 +160,23 @@ enum
   kTopPtReweighting_shiftUp, kTopPtReweighting_shiftDown,
 };
 
-enum
+enum class ElectronPtSys
 {
-  kElectronPt_central,
-  kElectronPt_scaleUp_barrel, kElectronPt_scaleDown_barrel,
-  kElectronPt_scaleUp_endcap, kElectronPt_scaleDown_endcap,
-  kElectronPt_resUp,          kElectronPt_resDown,
+  central,
+  scaleUp_barrel, scaleDown_barrel,
+  scaleUp_endcap, scaleDown_endcap,
+  resUp,          resDown,
+  uncorrected
 };
 
-enum
+enum class MuonPtSys
 {
-  kMuon_central,
-  kMuon_ERUp,        kMuon_ERDown,
-  kMuon_ESBarrel1Up, kMuon_ESBarrel1Down,
-  kMuon_ESBarrel2Up, kMuon_ESBarrel2Down,
-  kMuon_ESEndcap1Up, kMuon_ESEndcap1Down,
-  kMuon_ESEndcap2Up, kMuon_ESEndcap2Down,
+  central,
+  ERUp,        ERDown,
+  ESBarrel1Up, ESBarrel1Down,
+  ESBarrel2Up, ESBarrel2Down,
+  ESEndcap1Up, ESEndcap1Down,
+  ESEndcap2Up, ESEndcap2Down,
 };
 
 enum
@@ -292,11 +293,13 @@ getLHEscale_option(const std::string & central_or_shift);
 int
 getPartonShower_option(const std::string & central_or_shift);
 
-int
-getElectronPt_option(const std::string & central_or_shift);
+ElectronPtSys
+getElectronPt_option(const std::string & central_or_shift,
+                     bool isMC);
 
-int
-getMuon_option(const std::string & central_or_shift);
+MuonPtSys
+getMuon_option(const std::string & central_or_shift,
+               bool isMC);
 
 int
 getJetToLeptonFR_option(const std::string & central_or_shift);

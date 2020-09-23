@@ -201,15 +201,15 @@ int main(int argc, char* argv[])
   }
   
   checkOptionValidity(central_or_shift, isMC);
-  const int electronPt_option = getElectronPt_option(central_or_shift);
-  const int jetPt_option      = getJet_option       (central_or_shift, isMC);
-  const int met_option        = getMET_option       (central_or_shift, isMC);
+  const ElectronPtSys electronPt_option = getElectronPt_option(central_or_shift, isMC);
+  const int jetPt_option                = getJet_option       (central_or_shift, isMC);
+  const int met_option                  = getMET_option       (central_or_shift, isMC);
 
   std::cout
-    << "central_or_shift = "      << central_or_shift  << "\n"
-       " -> jetPt_option      = " << jetPt_option      << "\n"
-       " -> met_option        = " << met_option        << "\n"
-       " -> electronPt_option = " << electronPt_option << '\n'
+    << "central_or_shift = "      << central_or_shift              << "\n"
+       " -> jetPt_option      = " << jetPt_option                  << "\n"
+       " -> met_option        = " << met_option                    << "\n"
+       " -> electronPt_option = " << as_integer(electronPt_option) << '\n'
   ;
 
   DYMCReweighting * dyReweighting = nullptr;
@@ -708,7 +708,8 @@ int main(int argc, char* argv[])
     );
 
     const std::vector<RecoElectron> electrons = electronReader->read();
-    const std::vector<const RecoElectron*> electron_ptrs = convert_to_ptrs(electrons);
+    const std::vector<RecoElectron> electrons_shifted = recompute_p4(electrons, electronPt_option);
+    const std::vector<const RecoElectron*> electron_ptrs = convert_to_ptrs(electrons_shifted);
     const std::vector<const RecoElectron*> cleanedElectrons = electronCleaner(electron_ptrs, preselMuons);
     const std::vector<const RecoElectron*> preselElectrons = preselElectronSelector(cleanedElectrons);
     const std::vector<const RecoElectron*> fakeableElectrons = fakeableElectronSelector(preselElectrons);
@@ -861,66 +862,45 @@ int main(int argc, char* argv[])
     cutFlowTable.update("sel electron trigger match", evtWeightRecorder.get(central_or_shift));
     cutFlowHistManager->fillHistograms("sel electron trigger match", evtWeightRecorder.get(central_or_shift));
 
-    const RecoElectron* selElectron_lead = selElectrons[0];
-    const GenLepton* genElectron_lead = 0;
-    if ( selElectron_lead->genLepton() && abs(selElectron_lead->genLepton()->pdgId()) == 11 ) {
+    const RecoElectron * selElectron_lead = selElectrons[0];
+    const GenLepton * genElectron_lead = nullptr;
+    if(selElectron_lead->genLepton() && abs(selElectron_lead->genLepton()->pdgId()) == 11)
+    {
       genElectron_lead = selElectron_lead->genLepton();
     }
-    double selElectron_lead_pT = selElectron_lead->pt();
-    double selElectron_lead_eta = selElectron_lead->eta();
-    double selElectron_lead_absEta = std::fabs(selElectron_lead_eta);
-    double selElectron_lead_phi = selElectron_lead->phi();
-    double selElectron_lead_mass = selElectron_lead->mass();
+    const double selElectron_lead_pT = selElectron_lead->pt();
+    const double selElectron_lead_eta = selElectron_lead->eta();
+    const double selElectron_lead_absEta = std::fabs(selElectron_lead_eta);
+    const double selElectron_lead_phi = selElectron_lead->phi();
+    const double selElectron_lead_mass = selElectron_lead->mass();
 
-    const RecoElectron* selElectron_sublead = selElectrons[1];
-    const GenLepton* genElectron_sublead = 0;
-    if ( selElectron_sublead->genLepton() && abs(selElectron_sublead->genLepton()->pdgId()) == 11 ) {
+    const RecoElectron * selElectron_sublead = selElectrons[1];
+    const GenLepton * genElectron_sublead = nullptr;
+    if(selElectron_sublead->genLepton() && abs(selElectron_sublead->genLepton()->pdgId()) == 11)
+    {
       genElectron_sublead = selElectron_sublead->genLepton();
     }
-    double selElectron_sublead_pT = selElectron_sublead->pt();
-    double selElectron_sublead_eta = selElectron_sublead->eta();
-    double selElectron_sublead_absEta = std::fabs(selElectron_sublead_eta);
-    double selElectron_sublead_phi = selElectron_sublead->phi();
-    double selElectron_sublead_mass = selElectron_sublead->mass();
+    const double selElectron_sublead_pT = selElectron_sublead->pt();
+    const double selElectron_sublead_eta = selElectron_sublead->eta();
+    const double selElectron_sublead_absEta = std::fabs(selElectron_sublead_eta);
+    const double selElectron_sublead_phi = selElectron_sublead->phi();
+    const double selElectron_sublead_mass = selElectron_sublead->mass();
 
-    if ( electronPt_option == kElectronPt_scaleUp_barrel ) {
-      if ( selElectron_lead_absEta    < 1.479 ) selElectron_lead_pT *= 1.01;
-      if ( selElectron_sublead_absEta < 1.479 ) selElectron_sublead_pT *= 1.01;
-    } else if ( electronPt_option == kElectronPt_scaleDown_barrel ) {
-      if ( selElectron_lead_absEta    < 1.479 ) selElectron_lead_pT *= 0.99;
-      if ( selElectron_sublead_absEta < 1.479 ) selElectron_sublead_pT *= 0.99;
-    } else if ( electronPt_option == kElectronPt_scaleUp_endcap ) {
-      if ( selElectron_lead_absEta    > 1.479 ) selElectron_lead_pT *= 1.01;
-      if ( selElectron_sublead_absEta > 1.479 ) selElectron_sublead_pT *= 1.01;
-    } else if ( electronPt_option == kElectronPt_scaleDown_endcap ) {
-      if ( selElectron_lead_absEta    > 1.479 ) selElectron_lead_pT *= 0.99;
-      if ( selElectron_sublead_absEta > 1.479 ) selElectron_sublead_pT *= 0.99;
-    } else if ( electronPt_option == kElectronPt_resUp ) {
-      if ( genElectron_lead    ) selElectron_lead_pT += 0.25*(selElectron_lead_pT - genElectron_lead->pt());
-      if ( genElectron_sublead ) selElectron_sublead_pT += 0.25*(selElectron_sublead_pT - genElectron_sublead->pt());
-    } else if ( electronPt_option == kElectronPt_resDown ) {
-      if ( genElectron_lead    ) selElectron_lead_pT -= 0.25*(selElectron_lead_pT - genElectron_lead->pt());
-      if ( genElectron_sublead ) selElectron_sublead_pT -= 0.25*(selElectron_sublead_pT - genElectron_sublead->pt());
-    }
-    math::PtEtaPhiMLorentzVector selElectron_lead_p4;
+    const math::PtEtaPhiMLorentzVector selElectron_lead_p4 = selElectron_lead->p4();
     const RecoElectron* selElectron_lead_tmp = 0;
     const GenLepton* genElectron_lead_tmp = 0;
-    math::PtEtaPhiMLorentzVector selElectron_sublead_p4;
+    const math::PtEtaPhiMLorentzVector selElectron_sublead_p4 = selElectron_sublead->p4();
     const RecoElectron* selElectron_sublead_tmp = 0;
     const GenLepton* genElectron_sublead_tmp = 0;
     if ( selElectron_sublead_pT > selElectron_lead_pT ) { // CV: leading and subleading electrons have swapped order due to being affected directly by the systematic variations
                                                           //    (this may happen if the pT of both electrons are similar)
-      selElectron_lead_p4 = math::PtEtaPhiMLorentzVector(selElectron_sublead_pT, selElectron_sublead_eta, selElectron_sublead_phi, selElectron_sublead_mass);
       selElectron_lead_tmp = selElectron_sublead;
       genElectron_lead_tmp = genElectron_sublead;
-      selElectron_sublead_p4 = math::PtEtaPhiMLorentzVector(selElectron_lead_pT, selElectron_lead_eta, selElectron_lead_phi, selElectron_lead_mass);
       selElectron_sublead_tmp = selElectron_lead;
       genElectron_sublead_tmp = genElectron_lead;
     } else {
-      selElectron_lead_p4 = math::PtEtaPhiMLorentzVector(selElectron_lead_pT, selElectron_lead_eta, selElectron_lead_phi, selElectron_lead_mass);
       selElectron_lead_tmp = selElectron_lead;
       genElectron_lead_tmp = genElectron_lead;
-      selElectron_sublead_p4 = math::PtEtaPhiMLorentzVector(selElectron_sublead_pT, selElectron_sublead_eta, selElectron_sublead_phi, selElectron_sublead_mass);
       selElectron_sublead_tmp = selElectron_sublead;
       genElectron_sublead_tmp = genElectron_sublead;
     }
@@ -948,7 +928,6 @@ int main(int argc, char* argv[])
     double m_ee = (selElectron_lead_p4 + selElectron_sublead_p4).mass();
     
     double minPt_lead = 20.;
-    //double minPt_sublead = 15.;
     double minPt_sublead = 10.;
     if ( !(selElectron_lead_pT > minPt_lead && selElectron_sublead_pT > minPt_sublead) ) {
       if ( run_lumi_eventSelector ) {
@@ -1072,9 +1051,7 @@ int main(int argc, char* argv[])
 	  
           histogram_prob_charge_flip_gen->FillWeighted(selElectron_lead_charge != genElectron_lead_charge, evtWeight, genElectron_lead_p4.pt(), genElectron_lead_absEta);
           histogram_prob_charge_flip_gen->FillWeighted(selElectron_sublead_charge != genElectron_sublead_charge, evtWeight, genElectron_sublead_p4.pt(), genElectron_sublead_absEta);
-    selElectron_lead_absEta = std::fabs(selElectron_lead_p4.eta());
           histogram_prob_charge_flip_gen_rec->FillWeighted(selElectron_lead_charge != genElectron_lead_charge, evtWeight, selElectron_lead_p4.pt(), selElectron_lead_absEta);
-    selElectron_sublead_absEta = std::fabs(selElectron_sublead_p4.eta());
           histogram_prob_charge_flip_gen_rec->FillWeighted(selElectron_sublead_charge != genElectron_sublead_charge, evtWeight, selElectron_sublead_p4.pt(), selElectron_sublead_absEta);
 	  
 	  int idxBin_lead_gen = getBinIdx_pT_and_absEta(genElectron_lead_p4.pt(), genElectron_lead_absEta);

@@ -40,9 +40,6 @@ public:
   read() const;
 
   void
-  readUncorrected(bool flag);
-
-  void
   set_mvaTTH_wp(double mvaTTH_wp);
 
 protected:
@@ -56,8 +53,6 @@ protected:
 
   std::string branchName_num_;
   std::string branchName_obj_;
-
-  bool readUncorrected_;
 
   RecoLeptonReader * leptonReader_;
 

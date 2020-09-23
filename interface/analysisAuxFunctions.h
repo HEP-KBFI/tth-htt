@@ -43,6 +43,8 @@ class RecoElectron;
 
 enum class EWKJetSys;
 enum class EWKBJetSys;
+enum class ElectronPtSys;
+enum class MuonPtSys;
 
 //--- declare constants
 const double wBosonMass = 80.379; // GeV
@@ -754,6 +756,14 @@ recompute_met(const RecoMEt & met_uncorr,
               const std::vector<RecoJet> & jets,
               int met_option,
               bool isDEBUG = false);
+
+std::vector<RecoElectron>
+recompute_p4(const std::vector<RecoElectron> & electrons,
+             ElectronPtSys option);
+
+std::vector<RecoMuon>
+recompute_p4(const std::vector<RecoMuon> & muons,
+             MuonPtSys option);
 
 std::map<std::string, double>
 InitializeInputVarMap(std::map<std::string, double> & AllVars_Map,

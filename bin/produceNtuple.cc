@@ -410,7 +410,6 @@ main(int argc,
   std::cout << "writing RecoMuon objects to branch = '" << branchName_muons << "'\n";
 
   RecoElectronWriter * const electronWriter = new RecoElectronWriter(era, isMC, branchName_electrons);
-  electronWriter->writeUncorrected(false);
   electronWriter->setBranches(outputTree);
   std::cout << "writing RecoElectron objects to branch = '" << branchName_electrons << "'\n";
 

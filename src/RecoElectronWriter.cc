@@ -23,7 +23,6 @@ RecoElectronWriter::RecoElectronWriter(Era era,
   : era_(era)
   , branchName_num_(branchName_num)
   , branchName_obj_(branchName_obj)
-  , writeUncorrected_(false)
   , leptonWriter_(nullptr)
   , eCorr_(nullptr)
   , sigmaEtaEta_(nullptr)
@@ -123,32 +122,10 @@ RecoElectronWriter::setBranches(TTree * tree)
 }
 
 void
-RecoElectronWriter::writeUncorrected(bool flag)
-{
-  writeUncorrected_ = flag;
-}
-
-void
 RecoElectronWriter::write(const std::vector<const RecoElectron *> & leptons)
 {
   Int_t nLeptons = leptons.size();
-  if(writeUncorrected_)
-  {
-    Double_t * eCorr = new Double_t[nLeptons];
-    std::transform(
-      leptons.begin(), leptons.end(), eCorr,
-      [](const RecoElectron * lepton) -> Double_t
-      {
-        return lepton->eCorr();
-      }
-    );
-    leptonWriter_->write(leptons, eCorr);
-    delete eCorr;
-  }
-  else
-  {
-    leptonWriter_->write(leptons);
-  }
+  leptonWriter_->write(leptons);
   for(Int_t idxLepton = 0; idxLepton < nLeptons; ++idxLepton)
   {
     const RecoElectron * lepton = leptons[idxLepton];
