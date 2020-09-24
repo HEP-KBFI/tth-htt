@@ -976,21 +976,7 @@ std::map<std::string, double>CreateBDTOutputMap(std::vector<double>& BDT_params,
     std::string key_final = "";
     if(!isNonRes){ // Reso. case
       BDTInputs_SUM["gen_mHH"] = BDT_params[i];
-
-      //unsigned int mass_int = (int)BDT_params[i]; // Conversion from double to unsigned int
-      //std::string key = "";
-      //std::ostringstream temp;
-      //temp << mass_int;
-      //key = temp.str(); // Conversion from unsigned int to string
-      //key_final = "BDTOutput_" + key;
-
-      //if(!label.empty()){ // Appending Spin hypothesis to the Output label
-      // std::string Label = label;
-      // key_final += Label;
-      //}
       key_final = DoubleToUInt_Convertor(BDT_params[i], isNonRes, label);
-
-
     }else{ // Non Reso. case
       if(BDT_params[i] == 0){ // SM case
 	BDTInputs_SUM["SM"] = 1;  
@@ -1039,21 +1025,7 @@ std::map<std::string, double>CreateBDTOutputMap(std::vector<double>& BDT_params,
     std::string key_final = "";
     if(!isNonRes){ // Reso. case
       BDTInputs_SUM["gen_mHH"] = BDT_params[i];
-
-      //unsigned int mass_int = (int)BDT_params[i]; // Conversion from double to unsigned int
-      //std::string key = "";
-      //std::ostringstream temp;
-      //temp << mass_int;
-      //key = temp.str(); // Conversion from unsigned int to string
-      //key_final = "BDTOutput_" + key;
-
-      //if(!label.empty()){ // Appending Spin hypothesis to the Output label
-      // std::string Label = label;
-      // key_final += Label;
-      //}
       key_final = DoubleToUInt_Convertor(BDT_params[i], isNonRes, label);
-
-
     }else{ // Non Reso. case
       if(BDT_params[i] == 0){ // SM case
 	BDTInputs_SUM["SM"] = 1;  
