@@ -460,6 +460,6 @@ XGBInterface::operator()(const std::map<std::string, double> & mvaInputs,
   Py_XDECREF(args);
   Py_XDECREF(result);
 
-  std::cout << "XGB: mvaOutput " << mvaOutput << '\n';
+  //std::cout << "XGB: mvaOutput " << mvaOutput << '\n';
   return mvaOutput;
 }
