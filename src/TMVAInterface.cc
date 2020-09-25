@@ -268,13 +268,15 @@ TMVAInterface::operator()(const std::map<std::string, double> & mvaInputs,
     mvamulticlsOutput = (const_cast<TMVA::Reader*>(mva))->EvaluateMulticlass("BDTG");
     return std::distance(mvamulticlsOutput.begin(),std::max_element(mvamulticlsOutput.begin(),mvamulticlsOutput.end()));
   }
+
   // Casting mva from "const TMVA::Reader*" to "TMVA::Reader*" (since EvaluateMVA() doesn't accept const input)
   double mvaOutput = (const_cast<TMVA::Reader*>(mva))->EvaluateMVA("BDTG");
+  std::cout << "TMVA: mvaOutput (bef. transf.) " << mvaOutput << '\n';
   if(isBDTTransform_)
   {
     mvaOutput = 1. / (1. + std::sqrt((1. - mvaOutput) / (1. + mvaOutput)));
   }
 
-  //std::cout << "TMVA: mvaOutput " << mvaOutput << '\n';
+  std::cout << "TMVA: mvaOutput " << mvaOutput << '\n';
   return mvaOutput;
 }
