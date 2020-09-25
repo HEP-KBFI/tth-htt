@@ -606,14 +606,13 @@ class analyzeConfig(object):
         self.leptonFakeRateWeight_inputFile = ''
         if self.channel != 'LeptonFakeRate':
           if self.lep_mva_wp == 'default':
-              self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva_{}_CERN_2019Jul08.root".format(self.era)
+            self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva_{}_CERN_2019Jul08.root".format(self.era)
           elif self.lep_mva_wp == 'hh_multilepton':
-              #self.leptonFakeRateWeight_inputFile = "hhAnalysis/multilepton/data/FR_lep_ttH_mva_{}.root".format(self.era)
-			  self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva_{}_CERN_2019Jul08.root".format(self.era)
+            self.leptonFakeRateWeight_inputFile = "hhAnalysis/multilepton/data/FR_lep_mva_hh_multilepton_{}_KBFI_2020Sep25.root".format(self.era)
           else:
-              raise RuntimeError("No FR files available for the following choice of prompt lepton MVA WP: %s" % self.lep_mva_wp)
+            raise RuntimeError("No FR files available for the following choice of prompt lepton MVA WP: %s" % self.lep_mva_wp)
           if not os.path.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', self.leptonFakeRateWeight_inputFile)):
-              raise ValueError("No such file: 'leptonFakeRateWeight_inputFile' = %s" % self.leptonFakeRateWeight_inputFile)
+            raise ValueError("No such file: 'leptonFakeRateWeight_inputFile' = %s" % self.leptonFakeRateWeight_inputFile)
 
         self.use_dymumu_tau_fr = use_dymumu_tau_fr
         self.hadTau_selection_relaxed = None
@@ -637,7 +636,6 @@ class analyzeConfig(object):
                     logging.error(str(time))
 
     def set_leptonFakeRateWeightHistogramNames(self, central_or_shift, lepton_and_hadTau_selection):
-        #suffix = 'QCD' if 'mcClosure' in lepton_and_hadTau_selection else 'data_comb'
         suffix = 'QCD' if 'mcClosure' in lepton_and_hadTau_selection or self.run_mcClosure else 'data_comb'
         
         # e.g. FR_mva080_el_QCD_NC, FR_mva085_mu_data_comb
@@ -645,12 +643,11 @@ class analyzeConfig(object):
         self.leptonFakeRateWeight_histogramName_mu = "FR_mva%s_mu_%s" % (convert_lep_wp(self.lep_mva_cut_mu), suffix)
         
         if self.lep_mva_wp == 'hh_multilepton':
-            #suffix = 'data_comb_QCD_fakes' if 'mcClosure' in lepton_and_hadTau_selection or self.run_mcClosure else 'data_comb'
-            suffix = 'data_comb_TT_fakes2' if 'mcClosure' in lepton_and_hadTau_selection or self.run_mcClosure else 'data_comb'
-            self.leptonFakeRateWeight_histogramName_e = "FR_mva%s_el_%s" % (convert_lep_wp(self.lep_mva_cut_e),  suffix)
-            self.leptonFakeRateWeight_histogramName_mu = "FR_mva%s_mu_%s" % (convert_lep_wp(self.lep_mva_cut_mu),  suffix)
-            if 'data_comb_TT_fakes2' in suffix:
-                self.leptonFakeRateWeight_histogramName_mu = "FR_mva%s_mu_%s_prefit" % (convert_lep_wp(self.lep_mva_cut_mu),  suffix)
+          suffix = 'data_comb_QCD_fakes' if 'mcClosure' in lepton_and_hadTau_selection or self.run_mcClosure else 'data_comb'
+          
+          self.leptonFakeRateWeight_histogramName_e = "FR_mva%s_el_%s" % (convert_lep_wp(self.lep_mva_cut_e),  suffix)
+          self.leptonFakeRateWeight_histogramName_mu = "FR_mva%s_mu_%s" % (convert_lep_wp(self.lep_mva_cut_mu),  suffix)
+
 
     def set_BDT_training(self, hadTau_selection_relaxed):
         """Run analysis with loose selection criteria for leptons and hadronic taus,

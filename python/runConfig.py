@@ -213,60 +213,6 @@ class tthAnalyzeParser(argparse.ArgumentParser):
       help = 'R|Lepton MVA WP (choices: %s)' % tthAnalyzeParser.cat(list(LEP_MVA_WPS.keys())),
     )
 
-
-  def add_lep_fakeable_pog_wp_mu(self, default_wp = ''):
-    self.add_argument('-L_fakeable_pog_wp_mu', '--lepton-fakeable-pog-wp-mu',
-      type = str, dest = 'lep_fakeable_pog_wp_mu_tmp1', metavar = 'lepton fakeable definition POG WP mu', #choices = list(LEP_MVA_WPS.keys()),
-      required = not bool(default_wp), default = 'WP-L',
-      help = 'R|Lepton fakeable definition POG WP muon (choices: WP-L)'
-    )
-
-  def add_lep_fakeable_nearDeepJet_wp_mu(self, default_wp = ''):
-    self.add_argument('-L_fakeable_nearDeepJet_wp_mu', '--lepton-fakeable-nearDeepJet-wp-mu',
-      type = str, dest = 'lep_fakeable_nearDeepJet_wp_mu_tmp1', metavar = 'lepton fakeable definition DeepJet of nearby jet WP mu', #choices = list(LEP_MVA_WPS.keys()),
-      required = not bool(default_wp), default = 'WP-M',
-      help = 'R|Lepton fakeable definition POG WP muon (choices: WP-M)'
-    )
-
-  def add_lep_fakeable_jetRelIso_cut_mu(self, default_wp = ''):
-    self.add_argument('-L_fakeable_jetRelIso_cut_mu', '--lepton-fakeable-jetRelIso-cut-mu',
-      type = str, dest = 'lep_fakeable_jetRelIso_cut_mu_tmp1', metavar = 'lepton fakeable definition Jet relative isolation cut mu', #choices = list(LEP_MVA_WPS.keys()),
-      required = not bool(default_wp), default = '0.5',
-      help = 'R|Lepton fakeable definition Jet relative isolation cut muon (choices: 0.5)'
-    )
-
-
-
-  def add_lep_fakeable_pog_wp_e(self, default_wp = ''):
-    self.add_argument('-L_fakeable_pog_wp_e', '--lepton-fakeable-pog-wp-e',
-      type = str, dest = 'lep_fakeable_pog_wp_e_tmp1', metavar = 'lepton fakeable definition POG WP e', #choices = list(LEP_MVA_WPS.keys()),
-      required = not bool(default_wp), default = 'WP-L',
-      help = 'R|Lepton fakeable definition POG WP electron (choices: WP-L)'
-    )
-
-  def add_lep_fakeable_nearDeepJet_wp_e(self, default_wp = ''):
-    self.add_argument('-L_fakeable_nearDeepJet_wp_e', '--lepton-fakeable-nearDeepJet-wp-e',
-      type = str, dest = 'lep_fakeable_nearDeepJet_wp_e_tmp1', metavar = 'lepton fakeable definition DeepJet of nearby jet WP e', #choices = list(LEP_MVA_WPS.keys()),
-      required = not bool(default_wp), default = 'WP-M',
-      help = 'R|Lepton fakeable definition POG WP electron (choices: WP-M)'
-    )
-
-  def add_lep_fakeable_jetRelIso_cut_e(self, default_wp = ''):
-    self.add_argument('-L_fakeable_jetRelIso_cut_e', '--lepton-fakeable-jetRelIso-cut-e',
-      type = str, dest = 'lep_fakeable_jetRelIso_cut_e_tmp1', metavar = 'lepton fakeable definition Jet relative isolation cut e', #choices = list(LEP_MVA_WPS.keys()),
-      required = not bool(default_wp), default = '0.7',
-      help = 'R|Lepton fakeable definition Jet relative isolation cut electron (choices: 0.7)'
-    )
-
-  def add_lep_FR_file(self, default_wp = ''):
-    self.add_argument('-L_FR_file', '--lepton-FR-file',
-      type = str, dest = 'lep_FR_file_tmp1', metavar = 'lepton FR input file', #choices = list(LEP_MVA_WPS.keys()),
-      required = not bool(default_wp), default = 'FR_lep_tmp.root',
-      help = 'R|Lepton FR input file (choices: FR_lep_tmp.root)'
-    )
-
-    
-    
   def add_jet_cleaning(self, default_jet_cleaning = 'by_index'):
     choices = [ 'by_index', 'by_dr' ]
     self.add_argument('-q', '--jet-cleaning',
