@@ -5,6 +5,13 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenJet.h" // GenJet
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // cmsException(), as_integer()
 
+Double_t
+RecoLepton::get_assocJet_pt(Double_t reco_pt,
+                            Double_t jetPtRatio)
+{
+  return jetPtRatio > 1.e-3 ? 0.90 * reco_pt / jetPtRatio : reco_pt;
+}
+
 RecoLepton::RecoLepton(const ChargedParticle & lepton,
                        Double_t dxy,
                        Double_t dz,
@@ -40,7 +47,7 @@ RecoLepton::RecoLepton(const ChargedParticle & lepton,
   , genPartFlav_(genPartFlav)
   , genMatchIdx_(genMatchIdx)
   , mvaRawTTH_cut_(-1.)
-  , assocJet_pt_(jetPtRatio_ > 1.e-3 ? 0.90 * pt_ / jetPtRatio_ : pt_)
+  , assocJet_pt_(get_assocJet_pt(pt_, jetPtRatio_))
   , assocJet_p4_(assocJet_pt_, eta_, phi_, mass_)
   , genLepton_(nullptr)
   , genHadTau_(nullptr)
@@ -115,18 +122,6 @@ RecoLepton::lepton_pt() const
 
 const Particle::LorentzVector &
 RecoLepton::lepton_p4() const
-{
-  return p4_;
-}
-
-Double_t
-RecoLepton::pt() const
-{
-  return pt_;
-}
-
-const Particle::LorentzVector &
-RecoLepton::p4() const
 {
   return p4_;
 }
@@ -350,6 +345,30 @@ void
 RecoLepton::set_mvaRawTTH_cut(Double_t mvaRawTTH_cut)
 {
   mvaRawTTH_cut_ = mvaRawTTH_cut;
+}
+
+void
+RecoLepton::set_p4(const Particle::LorentzVector & p4)
+{
+  Particle::set_p4(p4);
+  set_assocJet_p4();
+}
+
+void
+RecoLepton::set_ptEtaPhiMass(Double_t pt,
+                             Double_t eta,
+                             Double_t phi,
+                             Double_t mass)
+{
+  Particle::set_ptEtaPhiMass(pt, eta, phi, mass);
+  set_assocJet_p4();
+}
+
+void
+RecoLepton::set_assocJet_p4()
+{
+  assocJet_pt_ = get_assocJet_pt(pt_, jetPtRatio_);
+  assocJet_p4_ = { assocJet_pt_, eta_, phi_, mass_ };
 }
 
 std::ostream &

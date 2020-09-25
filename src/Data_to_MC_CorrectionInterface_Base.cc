@@ -201,9 +201,9 @@ Data_to_MC_CorrectionInterface_Base::setHadTaus(const std::vector<const RecoHadT
   hadTau_absEta_.clear();
   for(const RecoHadTau * const hadTau: hadTaus)
   {
-    hadTau_genPdgId_[numHadTaus_] = getHadTau_genPdgId(hadTau);
-    hadTau_pt_[numHadTaus_] = hadTau->pt();
-    hadTau_absEta_[numHadTaus_] = hadTau->absEta();
+    hadTau_genPdgId_.push_back(getHadTau_genPdgId(hadTau));
+    hadTau_pt_.push_back(hadTau->pt());
+    hadTau_absEta_.push_back(hadTau->absEta());
     ++numHadTaus_;
   }
 }
