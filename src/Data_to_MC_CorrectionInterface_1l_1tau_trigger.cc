@@ -88,22 +88,20 @@ Data_to_MC_CorrectionInterface_1l_1tau_trigger::setTriggerBits(bool isTriggered_
 }
 
 void
-Data_to_MC_CorrectionInterface_1l_1tau_trigger::setLeptons(int lepton_type,
-                                                           double lepton_pt,
-                                                           double lepton_eta)
+Data_to_MC_CorrectionInterface_1l_1tau_trigger::setLepton(const RecoLepton * const lepton)
 {
-  lepton_type_ = lepton_type;
-  lepton_pt_   = lepton_pt;
-  lepton_eta_  = lepton_eta;
+  lepton_type_ = getLeptonType(lepton->pdgId());
+  lepton_pt_   = lepton->pt();
+  lepton_eta_  = lepton->eta();
 }
 
 void
-Data_to_MC_CorrectionInterface_1l_1tau_trigger::setHadTaus(double hadTau_pt, double hadTau_eta, double hadTau_phi, int hadTau_decayMode)
+Data_to_MC_CorrectionInterface_1l_1tau_trigger::setHadTau(const RecoHadTau * const hadTau)
 {
-  hadTau_pt_        = hadTau_pt;
-  hadTau_eta_       = hadTau_eta;
-  hadTau_phi_       = hadTau_phi;
-  hadTau_decayMode_ = hadTau_decayMode;
+  hadTau_pt_        = hadTau->pt();
+  hadTau_eta_       = hadTau->eta();
+  hadTau_phi_       = hadTau->phi();
+  hadTau_decayMode_ = hadTau->decayMode();
 }
 
 double

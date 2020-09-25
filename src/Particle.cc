@@ -71,6 +71,27 @@ Particle::isValid() const
   return isValid_;
 }
 
+void
+Particle::set_p4(const Particle::LorentzVector & p4)
+{
+  return set_ptEtaPhiMass(p4.pt(), p4.eta(), p4.phi(), p4.mass());
+}
+
+void
+Particle::set_ptEtaPhiMass(Double_t pt,
+                           Double_t eta,
+                           Double_t phi,
+                           Double_t mass)
+{
+  pt_ = pt;
+  eta_ = eta;
+  phi_ = phi;
+  mass_ = mass;
+  absEta_ = std::fabs(eta_);
+  p4_ = { pt_, eta_, phi_, mass_ };
+  isValid_ = pt_ > 0.;
+}
+
 std::ostream &
 operator<<(std::ostream & stream,
            const Particle & particle)

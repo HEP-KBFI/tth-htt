@@ -3,6 +3,8 @@
 #include <cmath> // std::abs()
 #include <cassert> // assert()
 
+#include <iostream>
+
 int
 getLeptonType(int pdgId)
 {

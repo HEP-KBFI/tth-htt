@@ -22,8 +22,8 @@ public:
   // set hadTau pT, eta and decay mode
   // (to be called once per event, before calling any of the getSF.. functions)
   void
-  setHadTaus(double hadTau1_pt, double hadTau1_eta, double hadTau1_phi, int hadTau1_decayMode,
-             double hadTau2_pt, double hadTau2_eta, double hadTau2_phi, int hadTau2_decayMode);
+  setHadTaus(const RecoHadTau * const hadTau1,
+             const RecoHadTau * const hadTau2);
   //-----------------------------------------------------------------------------
 
   //-----------------------------------------------------------------------------

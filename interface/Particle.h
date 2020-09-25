@@ -27,7 +27,7 @@ public:
    * NOTE: get_pt and get_p4 functions needs to be virtual, so that they can be overwritten 
    *       to implement cone_pT logic for fakeable && !tight leptons in RecoLepton class
    */
-  virtual Double_t pt() const;
+  Double_t pt() const;
   Double_t eta() const;
   Double_t phi() const;
   Double_t mass() const;
@@ -35,7 +35,16 @@ public:
 
   bool isValid() const;
 
-  virtual const Particle::LorentzVector & p4() const;
+  const Particle::LorentzVector & p4() const;
+
+  virtual void
+  set_p4(const Particle::LorentzVector & p4);
+
+  virtual void
+  set_ptEtaPhiMass(Double_t pt,
+                   Double_t eta,
+                   Double_t phi,
+                   Double_t mass);
 
 protected:
   Double_t pt_;   ///< pT of the particle

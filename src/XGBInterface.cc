@@ -451,6 +451,7 @@ XGBInterface::operator()(const std::map<std::string, double> & mvaInputs,
   }
 
   PyObject * result = PyObject_CallObject(func, args);
+
   const double mvaOutput = PyFloat_AsDouble(result);
 
   Py_XDECREF(vectorValues);

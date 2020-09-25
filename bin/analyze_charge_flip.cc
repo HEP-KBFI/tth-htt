@@ -1018,9 +1018,7 @@ int main(int argc, char* argv[])
         evtWeightRecorder.record_btagSFRatio(btagSFRatioFacility, selJets.size());
       }
 
-      dataToMCcorrectionInterface->setLeptons(
-        kElectron, selElectron_lead_p4.pt(), selElectron_lead->cone_pt(), selElectron_lead_p4.eta(),
-        kElectron, selElectron_sublead_p4.pt(), selElectron_sublead->cone_pt(), selElectron_sublead_p4.eta());
+      dataToMCcorrectionInterface->setLeptons({ selElectron_lead, selElectron_sublead }, true); // TODO: use corrected 4-momentum
 
 //--- apply data/MC corrections for trigger efficiency,
 //    and efficiencies for lepton to pass loose identification and isolation criteria
@@ -1032,7 +1030,7 @@ int main(int argc, char* argv[])
 //    to also pass the tight identification and isolation criteria
       if(leptonSelection == kFakeable)
       {
-        evtWeightRecorder.record_leptonSF(dataToMCcorrectionInterface->getSF_leptonID_and_Iso_fakeable_to_loose());
+        evtWeightRecorder.record_leptonSF(dataToMCcorrectionInterface->getSF_leptonID_and_Iso_looseToFakeable());
       }
       else if(leptonSelection == kTight)
       {

@@ -79,7 +79,7 @@ for sample_name, sample_info in samples.items():
   if sample_info["sample_category"] == "QCD":
     sample_info["use_it"] = True
     if sample_info["process_name_specific"].endswith("_Mu5"):
-      sample_info["use_it"] = not qcd_inclusive
+      sample_info["use_it"] = qcd_inclusive
     elif sample_info["process_name_specific"] == "QCD_Mu15":
       sample_info["use_it"] = qcd_inclusive
   if sample_name.startswith(('/MuonEG/Run', '/Tau/Run')):

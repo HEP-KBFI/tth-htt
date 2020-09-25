@@ -22,21 +22,27 @@ process.analyze_LeptonFakeRate = cms.PSet(
     treeName = cms.string('Events'),
 
     process = cms.string(''),
-
+    #histogramDir = cms.string(''), ## Not Relevant to the LeptonFakeRate code
     era = cms.string(''),
 
-    use_triggers_1e = cms.bool(True),
-    use_triggers_2e = cms.bool(True),
-    use_triggers_1mu = cms.bool(True),
-    use_triggers_2mu = cms.bool(True),
-
     triggers_1e = cms.vstring(),
+    use_triggers_1e = cms.bool(True),
     triggers_1mu = cms.vstring(),
+    use_triggers_1mu = cms.bool(True),
     triggers_2e = cms.vstring(),
+    use_triggers_2e = cms.bool(True),
     triggers_2mu = cms.vstring(),
-
+    use_triggers_2mu = cms.bool(True),
+    ## ---- Not Relevant to the LeptonFakeRate code-------------------------------------------##
+    ##--- (since not present in tthAnalysis/NanoAOD/python/LeptonFakeRate_trigger_cfi.py) ----## 
+    #triggers_1e1mu = cms.vstring(),      
+    #use_triggers_1e1mu = cms.bool(True), ## Not Relevant to the LeptonFakeRate code 
+    ## ---------------------------------------------------------------------------------------##
     triggers_mu_cfg = cms.VPSet(),
     triggers_e_cfg = cms.VPSet(),
+
+    
+
 
     absEtaBins_e = cms.vdouble(0., 1.479, 9.9),
     ptBins_e = cms.vdouble(15., 20., 30., 45., 65., 100000.),
@@ -55,11 +61,12 @@ process.analyze_LeptonFakeRate = cms.PSet(
     isMC = cms.bool(True),
     central_or_shift = cms.string(''),
     lumiScale = cms.VPSet(),
-    apply_l1PreFireWeight = cms.bool(True),
+
     apply_genWeight = cms.bool(True),
     apply_DYMCReweighting = cms.bool(False),
     apply_DYMCNormScaleFactors = cms.bool(False),
     apply_topPtReweighting = cms.string(''),
+    apply_l1PreFireWeight = cms.bool(True),
     apply_met_filters = cms.bool(True),
     min_PV_ndof = cms.double(100.),
     cfgMEtFilter = cms.PSet(),
@@ -89,6 +96,7 @@ process.analyze_LeptonFakeRate = cms.PSet(
 
     selEventsFileName_input = cms.string(''),
     selEventsFileName_output = cms.string(''),
+    useNonNominal = cms.bool(False), ## Added from HH 3l channel
     isDEBUG = cms.bool(False),
     applyMETFilters = cms.bool(True),
     hasLHE = cms.bool(True),

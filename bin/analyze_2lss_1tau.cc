@@ -1454,10 +1454,7 @@ int main(int argc, char* argv[])
         evtWeightRecorder.record_ewk_bjet(selBJets_medium);
       }
 
-      dataToMCcorrectionInterface->setLeptons(
-        selLepton_lead_type, selLepton_lead->pt(), selLepton_lead->cone_pt(), selLepton_lead->eta(),
-        selLepton_sublead_type, selLepton_sublead->pt(), selLepton_sublead->cone_pt(), selLepton_sublead->eta()
-      );
+      dataToMCcorrectionInterface->setLeptons({ selLepton_lead, selLepton_sublead }, true);
 
 //--- apply data/MC corrections for trigger efficiency
       evtWeightRecorder.record_leptonTriggerEff(dataToMCcorrectionInterface);
@@ -1469,7 +1466,7 @@ int main(int argc, char* argv[])
 //    to also pass the tight identification and isolation criteria
       if(electronSelection == kFakeable && muonSelection == kFakeable)
       {
-        evtWeightRecorder.record_leptonSF(dataToMCcorrectionInterface->getSF_leptonID_and_Iso_fakeable_to_loose());
+        evtWeightRecorder.record_leptonSF(dataToMCcorrectionInterface->getSF_leptonID_and_Iso_looseToFakeable());
       }
       else if(electronSelection >= kFakeable && muonSelection >= kFakeable)
       {
@@ -1483,7 +1480,7 @@ int main(int argc, char* argv[])
 
 //--- apply data/MC corrections for hadronic tau identification efficiency
 //    and for e->tau and mu->tau misidentification rates
-      dataToMCcorrectionInterface->setHadTaus(getHadTau_genPdgId(selHadTau), selHadTau->pt(), selHadTau->eta());
+      dataToMCcorrectionInterface->setHadTaus({ selHadTau });
       evtWeightRecorder.record_hadTauID_and_Iso(dataToMCcorrectionInterface);
       evtWeightRecorder.record_eToTauFakeRate(dataToMCcorrectionInterface);
       evtWeightRecorder.record_muToTauFakeRate(dataToMCcorrectionInterface);
@@ -1664,8 +1661,8 @@ int main(int argc, char* argv[])
       continue;
     }
     if ( leptonChargeSelection == kOS ) {
-      double prob_chargeMisId_lead = prob_chargeMisId(era, getLeptonType(selLepton_lead->pdgId()), selLepton_lead->pt(), selLepton_lead->eta());
-      double prob_chargeMisId_sublead = prob_chargeMisId(era, getLeptonType(selLepton_sublead->pdgId()), selLepton_sublead->pt(), selLepton_sublead->eta());
+      double prob_chargeMisId_lead = prob_chargeMisId(era, selLepton_lead_type, selLepton_lead->pt(), selLepton_lead->eta());
+      double prob_chargeMisId_sublead = prob_chargeMisId(era, selLepton_sublead_type, selLepton_sublead->pt(), selLepton_sublead->eta());
 
       double prob_chargeMisId_applied = 1.;
       if ( apply_lepton_and_hadTauCharge_cut ) {

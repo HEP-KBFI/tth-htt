@@ -7,12 +7,9 @@ bdt_samples = [
   "TTZJets_LO_ext1",
   "TTWJets_LO",
   "TTWJets_LO_ext1",
-  "TTTo2L2Nu",
-  "TTTo2L2Nu_PSweights",
-  "TTToSemiLeptonic",
-  "TTToSemiLeptonic_PSweights",
-  "TTToHadronic",
-  "TTToHadronic_PSweights",
+  "TTJets_DiLept",
+  "TTJets_SingleLeptFromT",
+  "TTJets_SingleLeptFromTbar",
 ]
 
 for sample_name, sample_info in samples_2017.items():
