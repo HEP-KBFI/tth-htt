@@ -75,8 +75,6 @@ protected:
                          const std::vector<double> & lepton_pt,
                          const std::vector<double> & lepton_eta,
                          const std::vector<bool> & lepton_isGenMatched,
-			 const std::vector<bool> & lepton_isTight,
-			 const bool & sfForTightSelection,
                          const std::vector<lutWrapperBase *> & corrections,
                          int error_shift) const;
 
@@ -151,13 +149,11 @@ protected:
   std::vector<double> electron_cone_pt_;
   std::vector<double> electron_eta_;
   std::vector<bool> electron_isGenMatched_;
-  std::vector<bool> electron_isTight_;
   std::size_t numMuons_;
   std::vector<double> muon_pt_;
   std::vector<double> muon_cone_pt_;
   std::vector<double> muon_eta_;
   std::vector<bool> muon_isGenMatched_;
-  std::vector<bool> muon_isTight_;
   std::size_t numHadTaus_;
   std::vector<int> hadTau_genPdgId_;
   std::vector<double> hadTau_pt_;
