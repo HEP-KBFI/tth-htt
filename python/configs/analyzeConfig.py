@@ -645,9 +645,12 @@ class analyzeConfig(object):
         self.leptonFakeRateWeight_histogramName_mu = "FR_mva%s_mu_%s" % (convert_lep_wp(self.lep_mva_cut_mu), suffix)
         
         if self.lep_mva_wp == 'hh_multilepton':
-          suffix = 'data_comb_QCD_fakes' if 'mcClosure' in lepton_and_hadTau_selection or self.run_mcClosure else 'data_comb'
-          self.leptonFakeRateWeight_histogramName_e = "FR_mva%s_el_%s" % (convert_lep_wp(self.lep_mva_cut_e),  suffix)
-          self.leptonFakeRateWeight_histogramName_mu = "FR_mva%s_mu_%s" % (convert_lep_wp(self.lep_mva_cut_mu),  suffix)
+            #suffix = 'data_comb_QCD_fakes' if 'mcClosure' in lepton_and_hadTau_selection or self.run_mcClosure else 'data_comb'
+            suffix = 'data_comb_TT_fakes2' if 'mcClosure' in lepton_and_hadTau_selection or self.run_mcClosure else 'data_comb'
+            self.leptonFakeRateWeight_histogramName_e = "FR_mva%s_el_%s" % (convert_lep_wp(self.lep_mva_cut_e),  suffix)
+            self.leptonFakeRateWeight_histogramName_mu = "FR_mva%s_mu_%s" % (convert_lep_wp(self.lep_mva_cut_mu),  suffix)
+            if 'data_comb_TT_fakes2' in suffix:
+                self.leptonFakeRateWeight_histogramName_mu = "FR_mva%s_mu_%s_prefit" % (convert_lep_wp(self.lep_mva_cut_mu),  suffix)
 
     def set_BDT_training(self, hadTau_selection_relaxed):
         """Run analysis with loose selection criteria for leptons and hadronic taus,
