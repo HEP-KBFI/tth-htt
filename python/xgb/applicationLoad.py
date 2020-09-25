@@ -34,7 +34,7 @@ def evaluate(vec_values, vec_names, pkldata):
   data = pandas.DataFrame(columns = list(new_dict.keys()))
   data = data.append(new_dict, ignore_index = True)
   #data = data[cols_when_model_builds] ## Reordering dataframe columns as per pkl file
-  print("data", data)
+  #print("data", data)
   result = -20
   if 'XGBClassifier' in str(type(pkldata)):
     try:
