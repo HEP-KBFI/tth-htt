@@ -341,17 +341,17 @@ int main(int argc, char* argv[])
   RecoMuonReader* muonReader = new RecoMuonReader(era, branchName_muons, isMC, readGenObjects);
   inputTree->registerReader(muonReader);
   RecoMuonCollectionGenMatcher muonGenMatcher;
-  RecoMuonCollectionSelectorLoose preselMuonSelector(era, isDEBUG);
-  RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era, isDEBUG);
-  RecoMuonCollectionSelectorTight tightMuonSelector(era, isDEBUG);
+  RecoMuonCollectionSelectorLoose preselMuonSelector(era, -1, isDEBUG);
+  RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era, -1, isDEBUG);
+  RecoMuonCollectionSelectorTight tightMuonSelector(era, -1, isDEBUG);
 
   RecoElectronReader* electronReader = new RecoElectronReader(era, branchName_electrons, isMC, readGenObjects);
   inputTree->registerReader(electronReader);
   RecoElectronCollectionGenMatcher electronGenMatcher(isDEBUG);
   RecoElectronCollectionCleaner electronCleaner(0.3, isDEBUG);
-  RecoElectronCollectionSelectorLoose preselElectronSelector(era, isDEBUG);
-  RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era, isDEBUG);
-  RecoElectronCollectionSelectorTight tightElectronSelector(era, isDEBUG);
+  RecoElectronCollectionSelectorLoose preselElectronSelector(era, -1, isDEBUG);
+  RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era, -1, isDEBUG);
+  RecoElectronCollectionSelectorTight tightElectronSelector(era, -1, isDEBUG);
   
   RecoJetReader* jetReader = new RecoJetReader(era, isMC, branchName_jets, readGenObjects);
   jetReader->setPtMass_central_or_shift(jetPt_option);
@@ -359,9 +359,9 @@ int main(int argc, char* argv[])
   inputTree->registerReader(jetReader);
   RecoJetCollectionCleaner jetCleaner(0.4, isDEBUG);
   RecoJetCollectionCleanerByIndex jetCleanerByIndex(isDEBUG);
-  RecoJetCollectionSelector jetSelector(era);
-  RecoJetCollectionSelectorBtagLoose jetSelectorBtagLoose(era, isDEBUG);
-  RecoJetCollectionSelectorBtagMedium jetSelectorBtagMedium(era, isDEBUG);
+  RecoJetCollectionSelector jetSelector(era, -1, isDEBUG);
+  RecoJetCollectionSelectorBtagLoose jetSelectorBtagLoose(era, -1, isDEBUG);
+  RecoJetCollectionSelectorBtagMedium jetSelectorBtagMedium(era, -1, isDEBUG);
 
   GenParticleReader* genTauLeptonReader = nullptr;
   if ( isMC && (apply_DYMCReweighting || apply_DYMCNormScaleFactors)) {
