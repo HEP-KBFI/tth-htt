@@ -51,11 +51,11 @@ public:
 
   double
   operator()(const std::map<std::string, double> & mvaInputs,
-             int event_number) const;
+             int event_number, const bool multiclass = false) const;
 
   double 
   operator()(const std::map<std::string, double> & mvaInputs,
-             const TMVA::Reader * mva) const;
+             const TMVA::Reader * mva, const bool multiclass = false) const;
 
 private:
   enum Mode{
