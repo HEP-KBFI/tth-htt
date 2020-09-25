@@ -1048,6 +1048,7 @@ class analyzeConfig(object):
             'selEventsFileName_output',
             'fillGenEvtHistograms',
             'selectBDT',
+            'secondBDT',
             'useNonNominal',
             'apply_hlt_filter',
             'branchName_memOutput',

@@ -208,7 +208,7 @@ TMVAInterface::disableBDTTransform()
 
 double
 TMVAInterface::operator()(const std::map<std::string, double> & mvaInputs,
-                          int event_number) const
+                          int event_number, const bool multiclass) const
 {
     std::map<std::string, double> mvaInputs_final;
     if(fitFunctionFileName_ != "")
@@ -222,11 +222,11 @@ TMVAInterface::operator()(const std::map<std::string, double> & mvaInputs,
 
     if(event_number % 2)
     {
-      return this->operator()(mvaInputs_final, mva_odd_);
+      return this->operator()(mvaInputs_final, mva_odd_, multiclass);
     }
     else
     {
-      return this->operator()(mvaInputs_final, mva_even_);
+      return this->operator()(mvaInputs_final, mva_even_, multiclass);
     }
 }
 
@@ -248,7 +248,7 @@ TMVAInterface::operator()(const std::map<std::string, double> & mvaInputs) const
 
 double
 TMVAInterface::operator()(const std::map<std::string, double> & mvaInputs,
-                          const TMVA::Reader * mva) const
+                          const TMVA::Reader * mva, const bool multiclass) const
 {
   for(auto & mvaInputVariable: mvaInputVariables_)
   {
@@ -263,8 +263,11 @@ TMVAInterface::operator()(const std::map<std::string, double> & mvaInputs,
     }
   }
 
-
-
+  std::vector<float> mvamulticlsOutput;
+  if ( multiclass ) {
+    mvamulticlsOutput = (const_cast<TMVA::Reader*>(mva))->EvaluateMulticlass("BDTG");
+    return std::distance(mvamulticlsOutput.begin(),std::max_element(mvamulticlsOutput.begin(),mvamulticlsOutput.end()));
+  }
   // Casting mva from "const TMVA::Reader*" to "TMVA::Reader*" (since EvaluateMVA() doesn't accept const input)
   double mvaOutput = (const_cast<TMVA::Reader*>(mva))->EvaluateMVA("BDTG");
   if(isBDTTransform_)
