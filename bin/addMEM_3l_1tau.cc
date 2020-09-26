@@ -265,7 +265,6 @@ int main(int argc,
     muonWriter = new RecoMuonWriter(era, isMC, Form("n%s", branchName_muons.data()), branchName_muons);
     muonWriter->setBranches(outputTree);
     electronWriter = new RecoElectronWriter(era, isMC, Form("n%s", branchName_electrons.data()), branchName_electrons);
-    electronWriter->writeUncorrected(false);
     electronWriter->setBranches(outputTree);
     hadTauWriter = new RecoHadTauWriter(era, isMC, Form("n%s", branchName_hadTaus.data()), branchName_hadTaus);
     hadTauWriter->setBranches(outputTree);

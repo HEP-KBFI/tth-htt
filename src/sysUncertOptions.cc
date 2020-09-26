@@ -290,33 +290,37 @@ getPartonShower_option(const std::string & central_or_shift)
   return central_or_shift_int;
 }
 
-int
-getElectronPt_option(const std::string & central_or_shift)
+ElectronPtSys
+getElectronPt_option(const std::string & central_or_shift,
+                     bool isMC)
 {
-  int central_or_shift_int = kElectronPt_central;
-  if     (central_or_shift == "CMS_ttHl_electronESBarrelUp"  ) central_or_shift_int = kElectronPt_scaleUp_barrel;
-  else if(central_or_shift == "CMS_ttHl_electronESBarrelDown") central_or_shift_int = kElectronPt_scaleDown_barrel;
-  else if(central_or_shift == "CMS_ttHl_electronESEndcapUp"  ) central_or_shift_int = kElectronPt_scaleUp_endcap;
-  else if(central_or_shift == "CMS_ttHl_electronESEndcapDown") central_or_shift_int = kElectronPt_scaleDown_endcap;
-  else if(central_or_shift == "CMS_ttHl_electronERUp"        ) central_or_shift_int = kElectronPt_resUp;
-  else if(central_or_shift == "CMS_ttHl_electronERDown"      ) central_or_shift_int = kElectronPt_resDown;
+  assert(isMC);
+  ElectronPtSys central_or_shift_int = ElectronPtSys::central;
+  if     (central_or_shift == "CMS_ttHl_electronESBarrelUp"  ) central_or_shift_int = ElectronPtSys::scaleUp_barrel;
+  else if(central_or_shift == "CMS_ttHl_electronESBarrelDown") central_or_shift_int = ElectronPtSys::scaleDown_barrel;
+  else if(central_or_shift == "CMS_ttHl_electronESEndcapUp"  ) central_or_shift_int = ElectronPtSys::scaleUp_endcap;
+  else if(central_or_shift == "CMS_ttHl_electronESEndcapDown") central_or_shift_int = ElectronPtSys::scaleDown_endcap;
+  else if(central_or_shift == "CMS_ttHl_electronERUp"        ) central_or_shift_int = ElectronPtSys::resUp;
+  else if(central_or_shift == "CMS_ttHl_electronERDown"      ) central_or_shift_int = ElectronPtSys::resDown;
   return central_or_shift_int;
 }
 
-int
-getMuon_option(const std::string & central_or_shift)
+MuonPtSys
+getMuon_option(const std::string & central_or_shift,
+               bool isMC)
 {
-  int central_or_shift_int = kMuon_central;
-  if     (central_or_shift == "CMS_ttHl_muonERUp"         ) central_or_shift_int = kMuon_ERUp;
-  else if(central_or_shift == "CMS_ttHl_muonERDown"       ) central_or_shift_int = kMuon_ERDown;
-  else if(central_or_shift == "CMS_ttHl_muonESBarrel1Up"  ) central_or_shift_int = kMuon_ESBarrel1Up;
-  else if(central_or_shift == "CMS_ttHl_muonESBarrel1Down") central_or_shift_int = kMuon_ESBarrel1Down;
-  else if(central_or_shift == "CMS_ttHl_muonESBarrel2Up"  ) central_or_shift_int = kMuon_ESBarrel2Up;
-  else if(central_or_shift == "CMS_ttHl_muonESBarrel2Down") central_or_shift_int = kMuon_ESBarrel2Down;
-  else if(central_or_shift == "CMS_ttHl_muonESEndcap1Up"  ) central_or_shift_int = kMuon_ESEndcap1Up;
-  else if(central_or_shift == "CMS_ttHl_muonESEndcap1Down") central_or_shift_int = kMuon_ESEndcap1Down;
-  else if(central_or_shift == "CMS_ttHl_muonESEndcap2Up"  ) central_or_shift_int = kMuon_ESEndcap2Up;
-  else if(central_or_shift == "CMS_ttHl_muonESEndcap2Down") central_or_shift_int = kMuon_ESEndcap2Down;
+  assert(isMC);
+  MuonPtSys central_or_shift_int = MuonPtSys::central;
+  if     (central_or_shift == "CMS_ttHl_muonERUp"         ) central_or_shift_int = MuonPtSys::ERUp;
+  else if(central_or_shift == "CMS_ttHl_muonERDown"       ) central_or_shift_int = MuonPtSys::ERDown;
+  else if(central_or_shift == "CMS_ttHl_muonESBarrel1Up"  ) central_or_shift_int = MuonPtSys::ESBarrel1Up;
+  else if(central_or_shift == "CMS_ttHl_muonESBarrel1Down") central_or_shift_int = MuonPtSys::ESBarrel1Down;
+  else if(central_or_shift == "CMS_ttHl_muonESBarrel2Up"  ) central_or_shift_int = MuonPtSys::ESBarrel2Up;
+  else if(central_or_shift == "CMS_ttHl_muonESBarrel2Down") central_or_shift_int = MuonPtSys::ESBarrel2Down;
+  else if(central_or_shift == "CMS_ttHl_muonESEndcap1Up"  ) central_or_shift_int = MuonPtSys::ESEndcap1Up;
+  else if(central_or_shift == "CMS_ttHl_muonESEndcap1Down") central_or_shift_int = MuonPtSys::ESEndcap1Down;
+  else if(central_or_shift == "CMS_ttHl_muonESEndcap2Up"  ) central_or_shift_int = MuonPtSys::ESEndcap2Up;
+  else if(central_or_shift == "CMS_ttHl_muonESEndcap2Down") central_or_shift_int = MuonPtSys::ESEndcap2Down;
   return central_or_shift_int;
 }
 

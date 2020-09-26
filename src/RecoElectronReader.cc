@@ -22,7 +22,6 @@ RecoElectronReader::RecoElectronReader(Era era,
   : era_(era)
   , branchName_num_(Form("n%s", branchName_obj.data()))
   , branchName_obj_(branchName_obj)
-  , readUncorrected_(false)
   , leptonReader_(new RecoLeptonReader(branchName_obj_, era, isMC, readGenMatching))
   , eCorr_(nullptr)
   , sigmaEtaEta_(nullptr)
@@ -152,12 +151,6 @@ RecoElectronReader::setBranchAddresses(TTree * tree)
   }
 }
 
-void
-RecoElectronReader::readUncorrected(bool flag)
-{
-  readUncorrected_ = flag;
-}
-
 std::vector<RecoElectron>
 RecoElectronReader::read() const
 {
@@ -183,11 +176,10 @@ RecoElectronReader::read() const
     {
       if(std::abs(gLeptonReader->pdgId_[idxLepton]) == 11)
       {
-        const double ptCorr = readUncorrected_ ? gElectronReader->eCorr_[idxLepton] : 1.;
         electrons.push_back({
           {
             {
-              gLeptonReader->pt_[idxLepton] / ptCorr,
+              gLeptonReader->pt_[idxLepton],
               gLeptonReader->eta_[idxLepton],
               gLeptonReader->phi_[idxLepton],
               gLeptonReader->mass_[idxLepton],

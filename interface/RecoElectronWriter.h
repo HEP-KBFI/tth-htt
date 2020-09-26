@@ -42,9 +42,6 @@ public:
   void
   write(const std::vector<const RecoElectron *>& leptons);
 
-  void
-  writeUncorrected(bool flag);
-
 protected:
  /**
    * @brief Initialize names of branches to be written to tree
@@ -56,8 +53,6 @@ protected:
 
   std::string branchName_num_;
   std::string branchName_obj_;
-
-  bool writeUncorrected_;
 
   RecoLeptonWriter * leptonWriter_;
 
