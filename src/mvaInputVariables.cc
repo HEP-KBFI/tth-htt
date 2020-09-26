@@ -260,7 +260,7 @@ comp_cosThetaStar(const Particle::LorentzVector & daughterP4_lead,
   const TLorentzVector motherP4 = daughterP4tlv_lead + daughterP4tlv_sublead;
   TLorentzVector daughterBoost = daughterP4tlv_lead; // can be subleading, too, doesn't matter
   daughterBoost.Boost(-motherP4.BoostVector());
-  return std::fabs(daughterBoost.CosTheta());
+  return daughterBoost.CosTheta();
 }
 
 double deltaPhi_rf(const Particle::LorentzVector & daughter1P4, const Particle::LorentzVector & daughter2P4, const Particle::LorentzVector & motherP4)
