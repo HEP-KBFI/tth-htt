@@ -59,6 +59,9 @@
 #include "tthAnalysis/HiggsToTauTau/interface/jetToTauFakeRateAuxFunctions.h" // getEtaBin(), getPtBin()
 #include "tthAnalysis/HiggsToTauTau/interface/leptonTypes.h" // kElectron, kMuon, getLeptonType
 
+#include "hhAnalysis/multilepton/interface/RecoElectronCollectionSelectorFakeable_hh_multilepton.h" // RecoElectronCollectionSelectorFakeable
+#include "hhAnalysis/multilepton/interface/RecoMuonCollectionSelectorFakeable_hh_multilepton.h" // RecoMuonCollectionSelectorFakeable
+
 #if __has_include (<FWCore/ParameterSetReader/interface/ParameterSetReader.h>)
 #  include <FWCore/ParameterSetReader/interface/ParameterSetReader.h> // edm::readPSetsFrom()
 #else
@@ -1390,6 +1393,8 @@ main(int argc,
   const bool hasLHE  = cfg_analyze.getParameter<bool>("hasLHE");
   const bool useObjectMultiplicity = cfg_analyze.getParameter<bool>("useObjectMultiplicity");
 
+  
+
   const std::string apply_topPtReweighting_str = cfg_analyze.getParameter<std::string>("apply_topPtReweighting");
   const std::string central_or_shift = cfg_analyze.getParameter<std::string>("central_or_shift");
   edm::VParameterSet lumiScale = cfg_analyze.getParameter<edm::VParameterSet>("lumiScale");
@@ -1697,8 +1702,8 @@ main(int argc,
   inputTree->registerReader(muonReader);
   RecoMuonCollectionGenMatcher muonGenMatcher;
   RecoMuonCollectionSelectorLoose preselMuonSelector(era);
-  //RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era); // DEFAULT FAKE DEF. USED IN TTH ANALYSIS
-  RecoMuonCollectionSelectorFakeable_hh_multilepton fakeableMuonSelector(era); // NEW HH OPTIMIZED FAKE DEFINITION
+  //RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era);  // DEFAULT FAKE DEF. USED IN TTH ANALYSIS 
+  RecoMuonCollectionSelectorFakeable_hh_multilepton fakeableMuonSelector(era); // NEW HH OPTIMIZED FAKE DEFINITION;    
   RecoMuonCollectionSelectorTight tightMuonSelector(era);       
   muonReader->set_mvaTTH_wp(lep_mva_cut_mu);
 
@@ -1709,7 +1714,7 @@ main(int argc,
   RecoElectronCollectionCleaner electronCleaner(0.3);
   RecoElectronCollectionSelectorLoose preselElectronSelector(era);
   //RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era); // DEFAULT FAKE DEF. USED IN TTH ANALYSIS
-  RecoElectronCollectionSelectorFakeable_hh_multilepton fakeableElectronSelector(era); // NEW HH OPTIMIZED FAKE DEFINITION
+  RecoElectronCollectionSelectorFakeable_hh_multilepton fakeableElectronSelector(era); // NEW HH OPTIMIZED FAKE DEFINITION     
   RecoElectronCollectionSelectorTight tightElectronSelector(era); 
   electronReader->set_mvaTTH_wp(lep_mva_cut_e);
   fakeableElectronSelector.enable_offline_e_trigger_cuts();
