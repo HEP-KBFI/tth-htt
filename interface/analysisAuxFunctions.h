@@ -765,10 +765,10 @@ recompute_met(const RecoMEt & met_uncorr,
               int met_option,
               bool isDEBUG = false);
 
-std::vector<RecoElectron>
-recompute_p4(const std::vector<RecoElectron> & electrons,
+std::vector<const RecoElectron *>
+recompute_p4(const std::vector<const RecoElectron *> & electrons,
              ElectronPtSys option,
-             bool (*sortFunction)(const RecoElectron &, const RecoElectron &) = isHigherPtT<RecoElectron>);
+             bool (*sortFunction)(const Particle *, const Particle *) = isHigherPt);
 
 std::vector<RecoMuon>
 recompute_p4(const std::vector<RecoMuon> & muons,

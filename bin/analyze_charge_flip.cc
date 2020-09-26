@@ -694,40 +694,6 @@ int main(int argc, char* argv[])
       fakeableElectronSelector.enable_offline_e_trigger_cuts();
       tightElectronSelector.enable_offline_e_trigger_cuts();
     } 
-    
-//--- build collections of electrons, muons and hadronic taus;
-//    resolve overlaps in order of priority: muon, electron,
-    const std::vector<RecoMuon> muons = muonReader->read();
-    const std::vector<const RecoMuon*> muon_ptrs = convert_to_ptrs(muons);
-    const std::vector<const RecoMuon*> cleanedMuons = muon_ptrs; // CV: no cleaning needed for muons, as they have the highest priority in the overlap removal
-    const std::vector<const RecoMuon*> preselMuons = preselMuonSelector(cleanedMuons);
-    const std::vector<const RecoMuon*> fakeableMuons = fakeableMuonSelector(preselMuons);
-    const std::vector<const RecoMuon*> tightMuons = tightMuonSelector(preselMuons);
-    const std::vector<const RecoMuon*> selMuons = selectObjects(
-      leptonSelection, preselMuons, fakeableMuons, tightMuons
-    );
-
-    const std::vector<RecoElectron> electrons = electronReader->read();
-    const std::vector<RecoElectron> electrons_shifted = recompute_p4(electrons, electronPt_option);
-    const std::vector<const RecoElectron*> electron_ptrs = convert_to_ptrs(electrons_shifted);
-    const std::vector<const RecoElectron*> cleanedElectrons = electronCleaner(electron_ptrs, preselMuons);
-    const std::vector<const RecoElectron*> preselElectrons = preselElectronSelector(cleanedElectrons);
-    const std::vector<const RecoElectron*> fakeableElectrons = fakeableElectronSelector(preselElectrons);
-    const std::vector<const RecoElectron*> tightElectrons = tightElectronSelector(preselElectrons);
-    const std::vector<const RecoElectron*> selElectrons = selectObjects(
-      leptonSelection, preselElectrons, fakeableElectrons, tightElectrons
-    );
-
-//--- build collections of jets and select subset of jets passing b-tagging criteria
-    const std::vector<RecoJet> jets = jetReader->read();
-    const std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
-    const std::vector<const RecoJet*> cleanedJets = jetCleaningByIndex ?
-      jetCleanerByIndex(jet_ptrs, fakeableMuons, fakeableElectrons) :
-      jetCleaner       (jet_ptrs, fakeableMuons, fakeableElectrons)
-    ;
-    const std::vector<const RecoJet*> selJets = jetSelector(cleanedJets);
-    const std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets, isHigherPt);
-    const std::vector<const RecoJet*> selBJets_medium = jetSelectorBtagMedium(cleanedJets, isHigherPt);
 
 //--- build collections of generator level particles (after some cuts are applied, to safe computing time)
     if(isMC && redoGenMatching && ! fillGenEvtHistograms)
@@ -754,7 +720,19 @@ int main(int argc, char* argv[])
       if(genMatchToElectronReader) electronGenMatch = genMatchToElectronReader->read();
     }
 
-//--- match reconstructed to generator level particles
+//--- build collections of electrons, muons and hadronic taus;
+//    resolve overlaps in order of priority: muon, electron,
+    const std::vector<RecoMuon> muons = muonReader->read();
+    const std::vector<const RecoMuon*> muon_ptrs = convert_to_ptrs(muons);
+    const std::vector<const RecoMuon*> cleanedMuons = muon_ptrs; // CV: no cleaning needed for muons, as they have the highest priority in the overlap removal
+    const std::vector<const RecoMuon*> preselMuons = preselMuonSelector(cleanedMuons);
+    const std::vector<const RecoMuon*> fakeableMuons = fakeableMuonSelector(preselMuons);
+    const std::vector<const RecoMuon*> tightMuons = tightMuonSelector(preselMuons);
+    const std::vector<const RecoMuon*> selMuons = selectObjects(
+      leptonSelection, preselMuons, fakeableMuons, tightMuons
+    );
+
+//--- match reconstructed muons to generator level particles
     if(isMC && redoGenMatching)
     {
       if(genMatchingByIndex)
@@ -762,18 +740,33 @@ int main(int argc, char* argv[])
         muonGenMatcher.addGenLeptonMatchByIndex(preselMuons, muonGenMatch, GenParticleType::kGenMuon);
         muonGenMatcher.addGenHadTauMatch       (preselMuons, genHadTaus);
         muonGenMatcher.addGenJetMatch          (preselMuons, genJets);
-
-        electronGenMatcher.addGenLeptonMatchByIndex(preselElectrons, electronGenMatch, GenParticleType::kGenElectron);
-        electronGenMatcher.addGenPhotonMatchByIndex(preselElectrons, electronGenMatch);
-        electronGenMatcher.addGenHadTauMatch       (preselElectrons, genHadTaus);
-        electronGenMatcher.addGenJetMatch          (preselElectrons, genJets);
       }
       else
       {
         muonGenMatcher.addGenLeptonMatch(preselMuons, genMuons);
         muonGenMatcher.addGenHadTauMatch(preselMuons, genHadTaus);
         muonGenMatcher.addGenJetMatch   (preselMuons, genJets);
+      }
+    }
 
+    const std::vector<RecoElectron> electrons = electronReader->read();
+    const std::vector<const RecoElectron*> electron_ptrs = convert_to_ptrs(electrons);
+    const std::vector<const RecoElectron*> cleanedElectrons = electronCleaner(electron_ptrs, preselMuons);
+
+//--- match reconstructed electrons to generator level particles
+//    we need to find the gen matches of cleaned electrons instead of loose electrons because shifts in energy resolution
+//    change the acceptance of the loose selection, and gen matching can modify the energy resolution
+    if(isMC && redoGenMatching)
+    {
+      if(genMatchingByIndex)
+      {
+        electronGenMatcher.addGenLeptonMatchByIndex(cleanedElectrons, electronGenMatch, GenParticleType::kGenElectron);
+        electronGenMatcher.addGenPhotonMatchByIndex(cleanedElectrons, electronGenMatch);
+        electronGenMatcher.addGenHadTauMatch       (cleanedElectrons, genHadTaus);
+        electronGenMatcher.addGenJetMatch          (cleanedElectrons, genJets);
+      }
+      else
+      {
         // Some of the electron pT may be carried away by bremsstrahlung photon at the generator level. Altough
         // the bremsstrahlung photon is included in the reconstruction of the electron, the generator level
         // electrons that are considered in the gen matching are final state electrons which have already undergone
@@ -782,12 +775,30 @@ int main(int argc, char* argv[])
         // the pT of reconstructed electrons to be four times as high as the pT of gen electrons for them to be gen-matched.
         // This matches with the previous implementation of our gen-matching, where we required the ratio of gen pT
         // to reco pT be greater than 0.25.
-        electronGenMatcher.addGenLeptonMatch(preselElectrons, genElectrons, 0.3, -0.5, 3.00);
-        electronGenMatcher.addGenPhotonMatch(preselElectrons, genPhotons);
-        electronGenMatcher.addGenHadTauMatch(preselElectrons, genHadTaus);
-        electronGenMatcher.addGenJetMatch   (preselElectrons, genJets);
+        electronGenMatcher.addGenLeptonMatch(cleanedElectrons, genElectrons, 0.3, -0.5, 3.00);
+        electronGenMatcher.addGenPhotonMatch(cleanedElectrons, genPhotons);
+        electronGenMatcher.addGenHadTauMatch(cleanedElectrons, genHadTaus);
+        electronGenMatcher.addGenJetMatch   (cleanedElectrons, genJets);
       }
     }
+    const std::vector<const RecoElectron*> electrons_shifted = recompute_p4(cleanedElectrons, electronPt_option);
+    const std::vector<const RecoElectron*> preselElectrons = preselElectronSelector(electrons_shifted);
+    const std::vector<const RecoElectron*> fakeableElectrons = fakeableElectronSelector(preselElectrons);
+    const std::vector<const RecoElectron*> tightElectrons = tightElectronSelector(preselElectrons);
+    const std::vector<const RecoElectron*> selElectrons = selectObjects(
+      leptonSelection, preselElectrons, fakeableElectrons, tightElectrons
+    );
+
+//--- build collections of jets and select subset of jets passing b-tagging criteria
+    const std::vector<RecoJet> jets = jetReader->read();
+    const std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
+    const std::vector<const RecoJet*> cleanedJets = jetCleaningByIndex ?
+      jetCleanerByIndex(jet_ptrs, fakeableMuons, fakeableElectrons) :
+      jetCleaner       (jet_ptrs, fakeableMuons, fakeableElectrons)
+    ;
+    const std::vector<const RecoJet*> selJets = jetSelector(cleanedJets);
+    const std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets, isHigherPt);
+    const std::vector<const RecoJet*> selBJets_medium = jetSelectorBtagMedium(cleanedJets, isHigherPt);
 
 //--- apply preselection
     

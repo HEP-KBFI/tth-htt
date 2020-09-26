@@ -882,35 +882,35 @@ recompute_met(const RecoMEt & met_uncorr,
   return met;
 }
 
-std::vector<RecoElectron>
-recompute_p4(const std::vector<RecoElectron> & electrons,
+std::vector<const RecoElectron *>
+recompute_p4(const std::vector<const RecoElectron *> & electrons,
              ElectronPtSys option,
-             bool (*sortFunction)(const RecoElectron &, const RecoElectron &))
+             bool (*sortFunction)(const Particle *, const Particle *))
 {
-  std::vector<RecoElectron> electrons_shifted;
-  for(const RecoElectron & electron: electrons)
+  std::vector<const RecoElectron *> electrons_shifted;
+  for(const RecoElectron * electron: electrons)
   {
     double corrFactor = 1.;
     switch(option)
     {
-      case ElectronPtSys::central:                                                               break;
-      case ElectronPtSys::scaleUp_barrel:   corrFactor = electron.absEta() <  1.479 ? 1.01 : 1.; break;
-      case ElectronPtSys::scaleDown_barrel: corrFactor = electron.absEta() <  1.479 ? 0.99 : 1.; break;
-      case ElectronPtSys::scaleUp_endcap:   corrFactor = electron.absEta() >= 1.479 ? 1.01 : 1.; break;
-      case ElectronPtSys::scaleDown_endcap: corrFactor = electron.absEta() >= 1.479 ? 0.99 : 1.; break;
-      case ElectronPtSys::resUp:            corrFactor = electron.genLepton() ?
-                                                         1. + (1. - electron.genLepton()->pt() / electron.pt()) / 4. :
-                                                         1.;                                     break;
-      case ElectronPtSys::resDown:          corrFactor = electron.genLepton() ?
-                                                         1. - (1. - electron.genLepton()->pt() / electron.pt()) / 4. :
-                                                         1.;                                     break;
-      case ElectronPtSys::uncorrected:      corrFactor = 1. / electron.eCorr();                  break;
+      case ElectronPtSys::central:                                                                break;
+      case ElectronPtSys::scaleUp_barrel:   corrFactor = electron->absEta() <  1.479 ? 1.01 : 1.; break;
+      case ElectronPtSys::scaleDown_barrel: corrFactor = electron->absEta() <  1.479 ? 0.99 : 1.; break;
+      case ElectronPtSys::scaleUp_endcap:   corrFactor = electron->absEta() >= 1.479 ? 1.01 : 1.; break;
+      case ElectronPtSys::scaleDown_endcap: corrFactor = electron->absEta() >= 1.479 ? 0.99 : 1.; break;
+      case ElectronPtSys::resUp:            corrFactor = electron->genLepton() ?
+                                                         1. + (1. - electron->genLepton()->pt() / electron->pt()) / 4. :
+                                                         1.;                                      break;
+      case ElectronPtSys::resDown:          corrFactor = electron->genLepton() ?
+                                                         1. - (1. - electron->genLepton()->pt() / electron->pt()) / 4. :
+                                                         1.;                                      break;
+      case ElectronPtSys::uncorrected:      corrFactor = 1. / electron->eCorr();                  break;
     }
-    RecoElectron electron_copy = electron;
-    electron_copy.set_ptEtaPhiMass(corrFactor * electron.pt(), electron.eta(), electron.phi(), electron.mass());
-    electrons_shifted.push_back(electron_copy);
+    RecoElectron * electron_nonConst = const_cast<RecoElectron *>(electron);
+    electron_nonConst->set_ptEtaPhiMass(corrFactor * electron->pt(), electron->eta(), electron->phi(), electron->mass());
+    electrons_shifted.push_back(electron_nonConst);
   }
-  std::sort(electrons_shifted.begin(), electrons_shifted.end(), isHigherPtT<RecoElectron>);
+  std::sort(electrons_shifted.begin(), electrons_shifted.end(), sortFunction);
   return electrons_shifted;
 }
 
@@ -941,7 +941,7 @@ recompute_p4(const std::vector<RecoMuon> & muons,
     muon_copy.set_ptEtaPhiMass(corrFactor * muon.pt(), muon.eta(), muon.phi(), muon.mass());
     muons_shifted.push_back(muon_copy);
   }
-  std::sort(muons_shifted.begin(), muons_shifted.end(), isHigherPtT<RecoMuon>);
+  std::sort(muons_shifted.begin(), muons_shifted.end(), sortFunction);
   return muons_shifted;
 }
 
