@@ -67,7 +67,7 @@ import os
 import sys
 import getpass
 
-sys_choices     = [ "full", "internal" ] + systematics.an_inclusive_opts
+sys_choices     = [ "full", "internal", systematics.mcClosure_str ] + systematics.an_inclusive_opts
 channel_choices = [
   '0l_2tau', '1l_1tau', '1l_2tau', '2lss', '2lss_1tau', '2los_1tau', '2l_2tau', '3l', '3l_1tau', '4l', 'inclusive',
   'ttWctrl', 'ttZctrl', 'WZctrl','ZZctrl',
@@ -82,7 +82,7 @@ parser.add_tau_id()
 parser.add_use_home()
 parser.add_jet_cleaning()
 parser.add_gen_matching()
-parser.add_sys(sys_choices)
+parser.add_sys(sys_choices, default_choice = systematics.mcClosure_str)
 parser.enable_regrouped_jerc()
 parser.add_preselect()
 parser.add_argument('-c', '--channels',
