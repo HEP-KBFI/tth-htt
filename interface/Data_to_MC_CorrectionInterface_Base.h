@@ -75,8 +75,8 @@ protected:
                          const std::vector<double> & lepton_pt,
                          const std::vector<double> & lepton_eta,
                          const std::vector<bool> & lepton_isGenMatched,
-			 const std::vector<bool> & lepton_isTight,
-			 const bool & sfForTightSelection,
+                         const std::vector<bool> & lepton_isTight,
+                         bool sfForTightSelection,
                          const std::vector<lutWrapperBase *> & corrections,
                          int error_shift) const;
 

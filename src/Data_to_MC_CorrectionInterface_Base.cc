@@ -221,24 +221,24 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso(std::size_t numLepto
                                                             const std::vector<double> & lepton_pt,
                                                             const std::vector<double> & lepton_eta,
                                                             const std::vector<bool> & lepton_isGenMatched,
-							    const std::vector<bool> & lepton_isTight,
-							    const bool & sfForTightSelection,
+                                                            const std::vector<bool> & lepton_isTight,
+                                                            bool sfForTightSelection,
                                                             const std::vector<lutWrapperBase *> & corrections,
                                                             int error_shift) const
 {
   if(isDEBUG_)
   {
-    std::cout << get_human_line(this, __func__, __LINE__) << "getSF_leptonID_and_Iso::  ";
-    std::cout << "sfForTightSelection: " << sfForTightSelection << std::endl;
+    std::cout << get_human_line(this, __func__, __LINE__) << ": sfForTightSelection = " << sfForTightSelection << '\n';
   }
   double sf = 1.;
   for(std::size_t idxLepton = 0; idxLepton < numLeptons; ++idxLepton)
   {
     if(isDEBUG_)
     {
-      std::cout << get_human_line(this, __func__, __LINE__) << "getSF_leptonID_and_Iso::  ";
-      std::cout << "lepton_isGenMatched[idxLepton]: " << lepton_isGenMatched[idxLepton]
-		<< ", lepton_isTight[idxLepton]:" << lepton_isTight[idxLepton] << std::endl;
+      std::cout << get_human_line(this, __func__, __LINE__)
+                << "lepton_isGenMatched[idxLepton]: " << lepton_isGenMatched[idxLepton]
+                << ", lepton_isTight[idxLepton]:" << lepton_isTight[idxLepton] << '\n'
+      ;
     }
     if(! lepton_isGenMatched[idxLepton])
     {
@@ -345,8 +345,9 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_loose(LeptonIDSFsys 
   const bool sfForTightSelection = false;
   if(isDEBUG_)
   {
-    std::cout << get_human_line(this, __func__, __LINE__) << "Computing SF for electrons\n";
-    std::cout << "sfForTightSelection: " << sfForTightSelection << std::endl;
+    std::cout << get_human_line(this, __func__, __LINE__) << "Computing SF for electrons\n"
+                "sfForTightSelection: " << sfForTightSelection << '\n'
+    ;
   }
   int sf_el_error = 0;
   if(central_or_shift == LeptonIDSFsys::elLooseUp)
@@ -403,8 +404,9 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_tight_to_loose_woTig
   const bool sfForTightSelection = true;
   if(isDEBUG_)
   {
-    std::cout << get_human_line(this, __func__, __LINE__) << "Computing SF for electrons\n";
-    std::cout << "sfForTightSelection: " << sfForTightSelection << std::endl;
+    std::cout << get_human_line(this, __func__, __LINE__) << "Computing SF for electrons\n"
+                "sfForTightSelection: " << sfForTightSelection << '\n'
+    ;
   }
   double sf_el = getSF_leptonID_and_Iso(
     numElectrons_, electron_pt_, electron_eta_, electron_isGenMatched_, electron_isTight_, sfForTightSelection, sfElectronID_and_Iso_tight_to_loose_woTightCharge_, 0
