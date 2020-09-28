@@ -28,12 +28,14 @@ def load(pklfile):
   return pkldata
 
 def evaluate(vec_values, vec_names, pkldata):
-  #cols_when_model_builds =  pkldata.get_booster().feature_names
-  print("cols_when_model_builds: ", cols_when_model_builds)
+  #cols_when_model_builds =  pkldata.get_booster().feature_names ## Take column names from pkl file
+  #print("cols_when_model_builds: ", cols_when_model_builds)
   new_dict = collections.OrderedDict(itertools.izip(vec_names, vec_values))
+  print("new_dict", new_dict)
   data = pandas.DataFrame(columns = list(new_dict.keys()))
   data = data.append(new_dict, ignore_index = True)
-  #data = data[cols_when_model_builds] ## Reordering columns
+  #data = data[cols_when_model_builds] ## Reordering dataframe columns as per pkl file
+  #print("data", data)
   result = -20
   if 'XGBClassifier' in str(type(pkldata)):
     try:

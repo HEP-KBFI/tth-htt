@@ -183,15 +183,15 @@ int main(int argc, char* argv[])
   }
 
   checkOptionValidity(central_or_shift, isMC);
-  const int jetPt_option = getJet_option (central_or_shift, isMC);
-  const int met_option   = getMET_option (central_or_shift, isMC);
-  const int muon_option  = getMuon_option(central_or_shift);
+  const int jetPt_option      = getJet_option (central_or_shift, isMC);
+  const int met_option        = getMET_option (central_or_shift, isMC);
+  const MuonPtSys muon_option = getMuon_option(central_or_shift, isMC);
 
   std::cout
-    << "central_or_shift = " << central_or_shift << "\n"
-       " -> jetPt_option = " << jetPt_option     << "\n"
-       " -> met_option   = " << met_option       << "\n"
-       " -> muon_option  = " << muon_option      << '\n'
+    << "central_or_shift = " << central_or_shift        << "\n"
+       " -> jetPt_option = " << jetPt_option            << "\n"
+       " -> met_option   = " << met_option              << "\n"
+       " -> muon_option  = " << as_integer(muon_option) << '\n'
   ;
 
   DYMCReweighting * dyReweighting = nullptr;
@@ -789,7 +789,8 @@ int main(int argc, char* argv[])
 //--- build collections of electrons, muons and hadronic taus;
 //    resolve overlaps in order of priority: muon, electron,
     const std::vector<RecoMuon> muons = muonReader->read();
-    const std::vector<const RecoMuon*> muon_ptrs = convert_to_ptrs(muons);
+    const std::vector<RecoMuon> muons_shifted = recompute_p4(muons, muon_option);
+    const std::vector<const RecoMuon*> muon_ptrs = convert_to_ptrs(muons_shifted);
     const std::vector<const RecoMuon*> cleanedMuons = muon_ptrs; // CV: no cleaning needed for muons, as they have the highest priority in the overlap removal
     const std::vector<const RecoMuon*> preselMuons = preselMuonSelector(cleanedMuons);
     const std::vector<const RecoMuon*> fakeableMuons = fakeableMuonSelector(preselMuons);
@@ -1015,50 +1016,9 @@ int main(int argc, char* argv[])
     Double_t etaL0 = std::fabs(selLepton_lead->eta());
     Double_t etaL1 = std::fabs(selLepton_sublead->eta());
     
-    double pt0, pt1;
     //std::cout << "Before " << selLepton_lead->pt() << ", " << selLepton_sublead->pt() << "   " << central_or_shift << std::endl;
-    pt0 = selLepton_lead->pt();
-    pt1 = selLepton_sublead->pt();
-    if(muon_option == kMuon_ESBarrel1Up)
-    {
-      if (etaL0 < 0.9) pt0 *= 1.02;
-      if (etaL1 < 0.9) pt1 *= 1.02;
-    }
-    else if(muon_option == kMuon_ESBarrel1Down)
-    {
-      if (etaL0 < 0.9) pt0 *= 0.98;
-      if (etaL1 < 0.9) pt1 *= 0.98;
-    }
-    else if(muon_option == kMuon_ESBarrel2Up)
-    {
-      if (etaL0 >= 0.9 && etaL0 < 1.2) pt0 *= 1.02;
-      if (etaL1 >= 0.9 && etaL1 < 1.2) pt1 *= 1.02;
-    }
-    else if(muon_option == kMuon_ESBarrel2Down)
-    {
-      if (etaL0 >= 0.9 && etaL0 < 1.2) pt0 *= 0.98;
-      if (etaL1 >= 0.9 && etaL1 < 1.2) pt1 *= 0.98;
-    }
-    else if(muon_option == kMuon_ESEndcap1Up)
-    {
-      if (etaL0 >= 1.2 && etaL0 < 2.1) pt0 *= 1.02;
-      if (etaL1 >= 1.2 && etaL1 < 2.1) pt1 *= 1.02;
-    }
-    else if(muon_option == kMuon_ESEndcap1Down)
-    {
-      if (etaL0 >= 1.2 && etaL0 < 2.1) pt0 *= 0.98;
-      if (etaL1 >= 1.2 && etaL1 < 2.1) pt1 *= 0.98;
-    }
-    else if(muon_option == kMuon_ESEndcap2Up)
-    {
-      if (etaL0 >= 2.1) pt0 *= 1.02;
-      if (etaL1 >= 2.1) pt1 *= 1.02;
-    }
-    else if(muon_option == kMuon_ESEndcap2Down)
-    {
-      if (etaL0 >= 2.1) pt0 *= 0.98;
-      if (etaL1 >= 2.1) pt1 *= 0.98;
-    }
+    double pt0 = selLepton_lead->pt();
+    double pt1 = selLepton_sublead->pt();
     //std::cout << "After: " << pt0 << ", " << pt1 << std::endl;
     
     if(pt1 > pt0){ //Lepton pt order changed due to systematic
@@ -1180,11 +1140,11 @@ int main(int argc, char* argv[])
         //Adjust central value to better match data shape
         if (isCharge_OS)
         {
-          if (muon_option == kMuon_ERDown)
+          if (muon_option == MuonPtSys::ERDown)
           {
             mass_ll = mass_ll - 0.5 * (mass_ll - mass_ll_gen);
           }
-          else if(muon_option == kMuon_ERUp)
+          else if(muon_option == MuonPtSys::ERUp)
           {
             mass_ll = mass_ll + 0.5 * (mass_ll - mass_ll_gen);
           }
@@ -1213,7 +1173,7 @@ int main(int argc, char* argv[])
           histos[charge_cat]["total"]["DY"]["nBJetsMedium"]->Fill(nBJetsMedium, evtWeight);
         }
       }
-      else if (muon_option != kMuon_ERUp && muon_option != kMuon_ERDown)
+      else if (muon_option != MuonPtSys::ERUp && muon_option != MuonPtSys::ERDown)
       {
         histos[charge_cat][category.data()]["DY_fake"]["mass_ll"]->Fill(mass_ll, evtWeight);
         histos[charge_cat]["total"]["DY_fake"]["mass_ll"]->Fill(mass_ll, evtWeight);

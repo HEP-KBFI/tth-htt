@@ -201,15 +201,15 @@ int main(int argc, char* argv[])
   }
   
   checkOptionValidity(central_or_shift, isMC);
-  const int electronPt_option = getElectronPt_option(central_or_shift);
-  const int jetPt_option      = getJet_option       (central_or_shift, isMC);
-  const int met_option        = getMET_option       (central_or_shift, isMC);
+  const ElectronPtSys electronPt_option = getElectronPt_option(central_or_shift, isMC);
+  const int jetPt_option                = getJet_option       (central_or_shift, isMC);
+  const int met_option                  = getMET_option       (central_or_shift, isMC);
 
   std::cout
-    << "central_or_shift = "      << central_or_shift  << "\n"
-       " -> jetPt_option      = " << jetPt_option      << "\n"
-       " -> met_option        = " << met_option        << "\n"
-       " -> electronPt_option = " << electronPt_option << '\n'
+    << "central_or_shift = "      << central_or_shift              << "\n"
+       " -> jetPt_option      = " << jetPt_option                  << "\n"
+       " -> met_option        = " << met_option                    << "\n"
+       " -> electronPt_option = " << as_integer(electronPt_option) << '\n'
   ;
 
   DYMCReweighting * dyReweighting = nullptr;
@@ -341,17 +341,17 @@ int main(int argc, char* argv[])
   RecoMuonReader* muonReader = new RecoMuonReader(era, branchName_muons, isMC, readGenObjects);
   inputTree->registerReader(muonReader);
   RecoMuonCollectionGenMatcher muonGenMatcher;
-  RecoMuonCollectionSelectorLoose preselMuonSelector(era);
-  RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era);
-  RecoMuonCollectionSelectorTight tightMuonSelector(era);
+  RecoMuonCollectionSelectorLoose preselMuonSelector(era, -1, isDEBUG);
+  RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era, -1, isDEBUG);
+  RecoMuonCollectionSelectorTight tightMuonSelector(era, -1, isDEBUG);
 
   RecoElectronReader* electronReader = new RecoElectronReader(era, branchName_electrons, isMC, readGenObjects);
   inputTree->registerReader(electronReader);
   RecoElectronCollectionGenMatcher electronGenMatcher(isDEBUG);
-  RecoElectronCollectionCleaner electronCleaner(0.3);
-  RecoElectronCollectionSelectorLoose preselElectronSelector(era);
-  RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era);
-  RecoElectronCollectionSelectorTight tightElectronSelector(era);
+  RecoElectronCollectionCleaner electronCleaner(0.3, isDEBUG);
+  RecoElectronCollectionSelectorLoose preselElectronSelector(era, -1, isDEBUG);
+  RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era, -1, isDEBUG);
+  RecoElectronCollectionSelectorTight tightElectronSelector(era, -1, isDEBUG);
   
   RecoJetReader* jetReader = new RecoJetReader(era, isMC, branchName_jets, readGenObjects);
   jetReader->setPtMass_central_or_shift(jetPt_option);
@@ -359,9 +359,9 @@ int main(int argc, char* argv[])
   inputTree->registerReader(jetReader);
   RecoJetCollectionCleaner jetCleaner(0.4, isDEBUG);
   RecoJetCollectionCleanerByIndex jetCleanerByIndex(isDEBUG);
-  RecoJetCollectionSelector jetSelector(era);
-  RecoJetCollectionSelectorBtagLoose jetSelectorBtagLoose(era);
-  RecoJetCollectionSelectorBtagMedium jetSelectorBtagMedium(era);
+  RecoJetCollectionSelector jetSelector(era, -1, isDEBUG);
+  RecoJetCollectionSelectorBtagLoose jetSelectorBtagLoose(era, -1, isDEBUG);
+  RecoJetCollectionSelectorBtagMedium jetSelectorBtagMedium(era, -1, isDEBUG);
 
   GenParticleReader* genTauLeptonReader = nullptr;
   if ( isMC && (apply_DYMCReweighting || apply_DYMCNormScaleFactors)) {
@@ -643,11 +643,11 @@ int main(int argc, char* argv[])
       }
     }
 
-    bool isTriggered_1e = hltPaths_isTriggered(triggers_1e, triggerWhiteList, eventInfo, isMC);
-    bool isTriggered_2e = hltPaths_isTriggered(triggers_2e, triggerWhiteList, eventInfo, isMC);
+    const bool isTriggered_1e = hltPaths_isTriggered(triggers_1e, triggerWhiteList, eventInfo, isMC);
+    const bool isTriggered_2e = hltPaths_isTriggered(triggers_2e, triggerWhiteList, eventInfo, isMC);
     
-    bool selTrigger_1e = use_triggers_1e && isTriggered_1e;
-    bool selTrigger_2e = use_triggers_2e && isTriggered_2e;
+    const bool selTrigger_1e = use_triggers_1e && isTriggered_1e;
+    const bool selTrigger_2e = use_triggers_2e && isTriggered_2e;
     if ( !(selTrigger_1e || selTrigger_2e) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS trigger selection." << std::endl; 
@@ -694,39 +694,6 @@ int main(int argc, char* argv[])
       fakeableElectronSelector.enable_offline_e_trigger_cuts();
       tightElectronSelector.enable_offline_e_trigger_cuts();
     } 
-    
-//--- build collections of electrons, muons and hadronic taus;
-//    resolve overlaps in order of priority: muon, electron,
-    const std::vector<RecoMuon> muons = muonReader->read();
-    const std::vector<const RecoMuon*> muon_ptrs = convert_to_ptrs(muons);
-    const std::vector<const RecoMuon*> cleanedMuons = muon_ptrs; // CV: no cleaning needed for muons, as they have the highest priority in the overlap removal
-    const std::vector<const RecoMuon*> preselMuons = preselMuonSelector(cleanedMuons);
-    const std::vector<const RecoMuon*> fakeableMuons = fakeableMuonSelector(preselMuons);
-    const std::vector<const RecoMuon*> tightMuons = tightMuonSelector(preselMuons);
-    const std::vector<const RecoMuon*> selMuons = selectObjects(
-      leptonSelection, preselMuons, fakeableMuons, tightMuons
-    );
-
-    const std::vector<RecoElectron> electrons = electronReader->read();
-    const std::vector<const RecoElectron*> electron_ptrs = convert_to_ptrs(electrons);
-    const std::vector<const RecoElectron*> cleanedElectrons = electronCleaner(electron_ptrs, preselMuons);
-    const std::vector<const RecoElectron*> preselElectrons = preselElectronSelector(cleanedElectrons);
-    const std::vector<const RecoElectron*> fakeableElectrons = fakeableElectronSelector(preselElectrons);
-    const std::vector<const RecoElectron*> tightElectrons = tightElectronSelector(preselElectrons);
-    const std::vector<const RecoElectron*> selElectrons = selectObjects(
-      leptonSelection, preselElectrons, fakeableElectrons, tightElectrons
-    );
-
-//--- build collections of jets and select subset of jets passing b-tagging criteria
-    const std::vector<RecoJet> jets = jetReader->read();
-    const std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
-    const std::vector<const RecoJet*> cleanedJets = jetCleaningByIndex ?
-      jetCleanerByIndex(jet_ptrs, fakeableMuons, fakeableElectrons) :
-      jetCleaner       (jet_ptrs, fakeableMuons, fakeableElectrons)
-    ;
-    const std::vector<const RecoJet*> selJets = jetSelector(cleanedJets);
-    const std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets, isHigherPt);
-    const std::vector<const RecoJet*> selBJets_medium = jetSelectorBtagMedium(cleanedJets, isHigherPt);
 
 //--- build collections of generator level particles (after some cuts are applied, to safe computing time)
     if(isMC && redoGenMatching && ! fillGenEvtHistograms)
@@ -753,7 +720,19 @@ int main(int argc, char* argv[])
       if(genMatchToElectronReader) electronGenMatch = genMatchToElectronReader->read();
     }
 
-//--- match reconstructed to generator level particles
+//--- build collections of electrons, muons and hadronic taus;
+//    resolve overlaps in order of priority: muon, electron,
+    const std::vector<RecoMuon> muons = muonReader->read();
+    const std::vector<const RecoMuon*> muon_ptrs = convert_to_ptrs(muons);
+    const std::vector<const RecoMuon*> cleanedMuons = muon_ptrs; // CV: no cleaning needed for muons, as they have the highest priority in the overlap removal
+    const std::vector<const RecoMuon*> preselMuons = preselMuonSelector(cleanedMuons);
+    const std::vector<const RecoMuon*> fakeableMuons = fakeableMuonSelector(preselMuons);
+    const std::vector<const RecoMuon*> tightMuons = tightMuonSelector(preselMuons);
+    const std::vector<const RecoMuon*> selMuons = selectObjects(
+      leptonSelection, preselMuons, fakeableMuons, tightMuons
+    );
+
+//--- match reconstructed muons to generator level particles
     if(isMC && redoGenMatching)
     {
       if(genMatchingByIndex)
@@ -761,18 +740,33 @@ int main(int argc, char* argv[])
         muonGenMatcher.addGenLeptonMatchByIndex(preselMuons, muonGenMatch, GenParticleType::kGenMuon);
         muonGenMatcher.addGenHadTauMatch       (preselMuons, genHadTaus);
         muonGenMatcher.addGenJetMatch          (preselMuons, genJets);
-
-        electronGenMatcher.addGenLeptonMatchByIndex(preselElectrons, electronGenMatch, GenParticleType::kGenElectron);
-        electronGenMatcher.addGenPhotonMatchByIndex(preselElectrons, electronGenMatch);
-        electronGenMatcher.addGenHadTauMatch       (preselElectrons, genHadTaus);
-        electronGenMatcher.addGenJetMatch          (preselElectrons, genJets);
       }
       else
       {
         muonGenMatcher.addGenLeptonMatch(preselMuons, genMuons);
         muonGenMatcher.addGenHadTauMatch(preselMuons, genHadTaus);
         muonGenMatcher.addGenJetMatch   (preselMuons, genJets);
+      }
+    }
 
+    const std::vector<RecoElectron> electrons = electronReader->read();
+    const std::vector<const RecoElectron*> electron_ptrs = convert_to_ptrs(electrons);
+    const std::vector<const RecoElectron*> cleanedElectrons = electronCleaner(electron_ptrs, preselMuons);
+
+//--- match reconstructed electrons to generator level particles
+//    we need to find the gen matches of cleaned electrons instead of loose electrons because shifts in energy resolution
+//    change the acceptance of the loose selection, and gen matching can modify the energy resolution
+    if(isMC && redoGenMatching)
+    {
+      if(genMatchingByIndex)
+      {
+        electronGenMatcher.addGenLeptonMatchByIndex(cleanedElectrons, electronGenMatch, GenParticleType::kGenElectron);
+        electronGenMatcher.addGenPhotonMatchByIndex(cleanedElectrons, electronGenMatch);
+        electronGenMatcher.addGenHadTauMatch       (cleanedElectrons, genHadTaus);
+        electronGenMatcher.addGenJetMatch          (cleanedElectrons, genJets);
+      }
+      else
+      {
         // Some of the electron pT may be carried away by bremsstrahlung photon at the generator level. Altough
         // the bremsstrahlung photon is included in the reconstruction of the electron, the generator level
         // electrons that are considered in the gen matching are final state electrons which have already undergone
@@ -781,12 +775,30 @@ int main(int argc, char* argv[])
         // the pT of reconstructed electrons to be four times as high as the pT of gen electrons for them to be gen-matched.
         // This matches with the previous implementation of our gen-matching, where we required the ratio of gen pT
         // to reco pT be greater than 0.25.
-        electronGenMatcher.addGenLeptonMatch(preselElectrons, genElectrons, 0.3, -0.5, 3.00);
-        electronGenMatcher.addGenPhotonMatch(preselElectrons, genPhotons);
-        electronGenMatcher.addGenHadTauMatch(preselElectrons, genHadTaus);
-        electronGenMatcher.addGenJetMatch   (preselElectrons, genJets);
+        electronGenMatcher.addGenLeptonMatch(cleanedElectrons, genElectrons, 0.3, -0.5, 3.00);
+        electronGenMatcher.addGenPhotonMatch(cleanedElectrons, genPhotons);
+        electronGenMatcher.addGenHadTauMatch(cleanedElectrons, genHadTaus);
+        electronGenMatcher.addGenJetMatch   (cleanedElectrons, genJets);
       }
     }
+    const std::vector<const RecoElectron*> electrons_shifted = recompute_p4(cleanedElectrons, electronPt_option);
+    const std::vector<const RecoElectron*> preselElectrons = preselElectronSelector(electrons_shifted);
+    const std::vector<const RecoElectron*> fakeableElectrons = fakeableElectronSelector(preselElectrons);
+    const std::vector<const RecoElectron*> tightElectrons = tightElectronSelector(preselElectrons);
+    const std::vector<const RecoElectron*> selElectrons = selectObjects(
+      leptonSelection, preselElectrons, fakeableElectrons, tightElectrons
+    );
+
+//--- build collections of jets and select subset of jets passing b-tagging criteria
+    const std::vector<RecoJet> jets = jetReader->read();
+    const std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
+    const std::vector<const RecoJet*> cleanedJets = jetCleaningByIndex ?
+      jetCleanerByIndex(jet_ptrs, fakeableMuons, fakeableElectrons) :
+      jetCleaner       (jet_ptrs, fakeableMuons, fakeableElectrons)
+    ;
+    const std::vector<const RecoJet*> selJets = jetSelector(cleanedJets);
+    const std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets, isHigherPt);
+    const std::vector<const RecoJet*> selBJets_medium = jetSelectorBtagMedium(cleanedJets, isHigherPt);
 
 //--- apply preselection
     
@@ -861,95 +873,53 @@ int main(int argc, char* argv[])
     cutFlowTable.update("sel electron trigger match", evtWeightRecorder.get(central_or_shift));
     cutFlowHistManager->fillHistograms("sel electron trigger match", evtWeightRecorder.get(central_or_shift));
 
-    const RecoElectron* selElectron_lead = selElectrons[0];
-    const GenLepton* genElectron_lead = 0;
-    if ( selElectron_lead->genLepton() && abs(selElectron_lead->genLepton()->pdgId()) == 11 ) {
+    const RecoElectron * selElectron_lead = selElectrons[0];
+    const GenLepton * genElectron_lead = nullptr;
+    if(selElectron_lead->genLepton() && abs(selElectron_lead->genLepton()->pdgId()) == 11)
+    {
       genElectron_lead = selElectron_lead->genLepton();
     }
-    double selElectron_lead_pT = selElectron_lead->pt();
-    double selElectron_lead_eta = selElectron_lead->eta();
-    double selElectron_lead_absEta = std::fabs(selElectron_lead_eta);
-    double selElectron_lead_phi = selElectron_lead->phi();
-    double selElectron_lead_mass = selElectron_lead->mass();
+    const double selElectron_lead_pT = selElectron_lead->pt();
+    const double selElectron_lead_eta = selElectron_lead->eta();
+    const double selElectron_lead_absEta = std::fabs(selElectron_lead_eta);
 
-    const RecoElectron* selElectron_sublead = selElectrons[1];
-    const GenLepton* genElectron_sublead = 0;
-    if ( selElectron_sublead->genLepton() && abs(selElectron_sublead->genLepton()->pdgId()) == 11 ) {
+    const RecoElectron * selElectron_sublead = selElectrons[1];
+    const GenLepton * genElectron_sublead = nullptr;
+    if(selElectron_sublead->genLepton() && abs(selElectron_sublead->genLepton()->pdgId()) == 11)
+    {
       genElectron_sublead = selElectron_sublead->genLepton();
     }
-    double selElectron_sublead_pT = selElectron_sublead->pt();
-    double selElectron_sublead_eta = selElectron_sublead->eta();
-    double selElectron_sublead_absEta = std::fabs(selElectron_sublead_eta);
-    double selElectron_sublead_phi = selElectron_sublead->phi();
-    double selElectron_sublead_mass = selElectron_sublead->mass();
+    const double selElectron_sublead_pT = selElectron_sublead->pt();
+    const double selElectron_sublead_eta = selElectron_sublead->eta();
+    const double selElectron_sublead_absEta = std::fabs(selElectron_sublead_eta);
 
-    if ( electronPt_option == kElectronPt_scaleUp_barrel ) {
-      if ( selElectron_lead_absEta    < 1.479 ) selElectron_lead_pT *= 1.01;
-      if ( selElectron_sublead_absEta < 1.479 ) selElectron_sublead_pT *= 1.01;
-    } else if ( electronPt_option == kElectronPt_scaleDown_barrel ) {
-      if ( selElectron_lead_absEta    < 1.479 ) selElectron_lead_pT *= 0.99;
-      if ( selElectron_sublead_absEta < 1.479 ) selElectron_sublead_pT *= 0.99;
-    } else if ( electronPt_option == kElectronPt_scaleUp_endcap ) {
-      if ( selElectron_lead_absEta    > 1.479 ) selElectron_lead_pT *= 1.01;
-      if ( selElectron_sublead_absEta > 1.479 ) selElectron_sublead_pT *= 1.01;
-    } else if ( electronPt_option == kElectronPt_scaleDown_endcap ) {
-      if ( selElectron_lead_absEta    > 1.479 ) selElectron_lead_pT *= 0.99;
-      if ( selElectron_sublead_absEta > 1.479 ) selElectron_sublead_pT *= 0.99;
-    } else if ( electronPt_option == kElectronPt_resUp ) {
-      if ( genElectron_lead    ) selElectron_lead_pT += 0.25*(selElectron_lead_pT - genElectron_lead->pt());
-      if ( genElectron_sublead ) selElectron_sublead_pT += 0.25*(selElectron_sublead_pT - genElectron_sublead->pt());
-    } else if ( electronPt_option == kElectronPt_resDown ) {
-      if ( genElectron_lead    ) selElectron_lead_pT -= 0.25*(selElectron_lead_pT - genElectron_lead->pt());
-      if ( genElectron_sublead ) selElectron_sublead_pT -= 0.25*(selElectron_sublead_pT - genElectron_sublead->pt());
-    }
-    math::PtEtaPhiMLorentzVector selElectron_lead_p4;
-    const RecoElectron* selElectron_lead_tmp = 0;
-    const GenLepton* genElectron_lead_tmp = 0;
-    math::PtEtaPhiMLorentzVector selElectron_sublead_p4;
-    const RecoElectron* selElectron_sublead_tmp = 0;
-    const GenLepton* genElectron_sublead_tmp = 0;
-    if ( selElectron_sublead_pT > selElectron_lead_pT ) { // CV: leading and subleading electrons have swapped order due to being affected directly by the systematic variations
-                                                          //    (this may happen if the pT of both electrons are similar)
-      selElectron_lead_p4 = math::PtEtaPhiMLorentzVector(selElectron_sublead_pT, selElectron_sublead_eta, selElectron_sublead_phi, selElectron_sublead_mass);
-      selElectron_lead_tmp = selElectron_sublead;
-      genElectron_lead_tmp = genElectron_sublead;
-      selElectron_sublead_p4 = math::PtEtaPhiMLorentzVector(selElectron_lead_pT, selElectron_lead_eta, selElectron_lead_phi, selElectron_lead_mass);
-      selElectron_sublead_tmp = selElectron_lead;
-      genElectron_sublead_tmp = genElectron_lead;
-    } else {
-      selElectron_lead_p4 = math::PtEtaPhiMLorentzVector(selElectron_lead_pT, selElectron_lead_eta, selElectron_lead_phi, selElectron_lead_mass);
-      selElectron_lead_tmp = selElectron_lead;
-      genElectron_lead_tmp = genElectron_lead;
-      selElectron_sublead_p4 = math::PtEtaPhiMLorentzVector(selElectron_sublead_pT, selElectron_sublead_eta, selElectron_sublead_phi, selElectron_sublead_mass);
-      selElectron_sublead_tmp = selElectron_sublead;
-      genElectron_sublead_tmp = genElectron_sublead;
-    }
-    double selElectron_lead_charge = selElectron_lead_tmp->charge();
+    const math::PtEtaPhiMLorentzVector selElectron_lead_p4 = selElectron_lead->p4();
+    const math::PtEtaPhiMLorentzVector selElectron_sublead_p4 = selElectron_sublead->p4();
+    const double selElectron_lead_charge = selElectron_lead->charge();
     Particle::LorentzVector genElectron_lead_p4; // generator-level electron associated to the reconstructed electron of higher pT 
                                                  // (not necessarily the generator-level electron of higher pT!)
     double genElectron_lead_charge = 0.;
     bool isGenElectron_lead = false;
-    if ( genElectron_lead_tmp ) {
-      genElectron_lead_p4 = genElectron_lead_tmp->p4();
-      genElectron_lead_charge = genElectron_lead_tmp->charge();
+    if ( genElectron_lead ) {
+      genElectron_lead_p4 = genElectron_lead->p4();
+      genElectron_lead_charge = genElectron_lead->charge();
       isGenElectron_lead = true;
     }
-    double selElectron_sublead_charge = selElectron_sublead_tmp->charge();
+    const double selElectron_sublead_charge = selElectron_sublead->charge();
     Particle::LorentzVector genElectron_sublead_p4; // generator-level electron associated to the reconstructed electron of lower pT 
                                                     // (not necessarily the generator-level electron of lower pT!)
     double genElectron_sublead_charge = 0.;
     bool isGenElectron_sublead = false;
-    if ( genElectron_sublead_tmp ) {
-      genElectron_sublead_p4 = genElectron_sublead_tmp->p4();
-      genElectron_sublead_charge = genElectron_sublead_tmp->charge();
+    if ( genElectron_sublead ) {
+      genElectron_sublead_p4 = genElectron_sublead->p4();
+      genElectron_sublead_charge = genElectron_sublead->charge();
       isGenElectron_sublead = true;
     }
 
-    double m_ee = (selElectron_lead_p4 + selElectron_sublead_p4).mass();
+    const double m_ee = (selElectron_lead_p4 + selElectron_sublead_p4).mass();
     
-    double minPt_lead = 20.;
-    //double minPt_sublead = 15.;
-    double minPt_sublead = 10.;
+    const double minPt_lead = 20.;
+    const double minPt_sublead = 10.;
     if ( !(selElectron_lead_pT > minPt_lead && selElectron_sublead_pT > minPt_sublead) ) {
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS lepton pT selection." << std::endl;
@@ -998,8 +968,8 @@ int main(int argc, char* argv[])
       cutFlowHistManager->fillHistograms("selectedEvt 1e && 2eTrig", evtWeightRecorder.get(central_or_shift));
     }
               
-    bool isCharge_SS = selElectron_lead_charge*selElectron_sublead_charge > 0;
-    bool isCharge_OS = selElectron_lead_charge*selElectron_sublead_charge < 0;
+    const bool isCharge_SS = selElectron_lead_charge*selElectron_sublead_charge > 0;
+    const bool isCharge_OS = selElectron_lead_charge*selElectron_sublead_charge < 0;
 
     if(isMC)
     {
@@ -1039,10 +1009,10 @@ int main(int argc, char* argv[])
 
       if(applyFakeRateWeights == kFR_2lepton)
       {
-        evtWeightRecorder.record_jetToLepton_FR_lead(leptonFakeRateInterface, selElectron_lead_tmp);
-        evtWeightRecorder.record_jetToLepton_FR_sublead(leptonFakeRateInterface, selElectron_sublead_tmp);
-        bool passesTight_electron_lead = isMatched(*selElectron_lead_tmp, tightElectrons);
-        bool passesTight_electron_sublead = isMatched(*selElectron_sublead_tmp, tightElectrons);
+        evtWeightRecorder.record_jetToLepton_FR_lead(leptonFakeRateInterface, selElectron_lead);
+        evtWeightRecorder.record_jetToLepton_FR_sublead(leptonFakeRateInterface, selElectron_sublead);
+        const bool passesTight_electron_lead = isMatched(*selElectron_lead, tightElectrons);
+        const bool passesTight_electron_sublead = isMatched(*selElectron_sublead, tightElectrons);
         evtWeightRecorder.compute_FR_2l(passesTight_electron_lead, passesTight_electron_sublead);
       }
     }
@@ -1072,9 +1042,7 @@ int main(int argc, char* argv[])
 	  
           histogram_prob_charge_flip_gen->FillWeighted(selElectron_lead_charge != genElectron_lead_charge, evtWeight, genElectron_lead_p4.pt(), genElectron_lead_absEta);
           histogram_prob_charge_flip_gen->FillWeighted(selElectron_sublead_charge != genElectron_sublead_charge, evtWeight, genElectron_sublead_p4.pt(), genElectron_sublead_absEta);
-    selElectron_lead_absEta = std::fabs(selElectron_lead_p4.eta());
           histogram_prob_charge_flip_gen_rec->FillWeighted(selElectron_lead_charge != genElectron_lead_charge, evtWeight, selElectron_lead_p4.pt(), selElectron_lead_absEta);
-    selElectron_sublead_absEta = std::fabs(selElectron_sublead_p4.eta());
           histogram_prob_charge_flip_gen_rec->FillWeighted(selElectron_sublead_charge != genElectron_sublead_charge, evtWeight, selElectron_sublead_p4.pt(), selElectron_sublead_absEta);
 	  
 	  int idxBin_lead_gen = getBinIdx_pT_and_absEta(genElectron_lead_p4.pt(), genElectron_lead_absEta);

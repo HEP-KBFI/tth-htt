@@ -238,6 +238,18 @@ class analyzeConfig(object):
           self.central_or_shifts = [
             central_or_shift for central_or_shift in self.central_or_shifts if central_or_shift not in central_or_shift_nc
           ]
+        if self.lep_mva_wp == 'hh_multilepton':
+          #TODO remove this if block once we have the capability to provide FR systematics
+          central_or_shift_fr = [
+            central_or_shift for central_or_shift in self.central_or_shifts if central_or_shift in systematics.FRl_shape
+          ]
+          if central_or_shift_fr:
+            logging.warning("Removing the following systematics because these FR variations haven't been measured, yet: {}".format(
+              ", ".join(central_or_shift_fr)
+            ))
+          self.central_or_shifts = [
+            central_or_shift for central_or_shift in self.central_or_shifts if central_or_shift not in central_or_shift_fr
+          ]
         #------------------------------------------------------------------------
         # CV: make sure that 'central' is always first entry in self.central_or_shifts
         #    (logic for building dependencies between analysis, 'hadd', and 'addBackgrounds' jobs in derived classes may abort with KeyError otherwise)
