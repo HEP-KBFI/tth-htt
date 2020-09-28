@@ -896,7 +896,7 @@ int main(int argc, char* argv[])
       //"log_memOutput_ttH",  "log_memOutput_ttZ",  "log_memOutput_ttZ_Zll", "log_memOutput_tt",
       "lep1_genLepPt", "lep2_genLepPt",
       "tau_genTauPt",
-      //"lep1_fake_prob", "lep2_fake_prob",  "tau_fake_prob",
+      "lep1_fake_prob", "lep2_fake_prob",  "tau_fake_prob",
       //"tau_fake_test",
       "genWeight", "evtWeight",
       "mbb_loose", "mbb_medium",
@@ -1719,10 +1719,10 @@ int main(int argc, char* argv[])
       cutFlowHistManager->fillHistograms("sel lepton+tau charge", evtWeightRecorder.get(central_or_shift_main));
     }
 
-    const bool failsZbosonMassVeto = isfailsZbosonMassVeto(preselLeptonsFull) || (
+    const bool failsZbosonMassVeto = isfailsZbosonMassVeto(preselLeptonsFull, false, isDEBUG) || (
         selLepton_lead->is_electron() &&
         selLepton_sublead->is_electron() &&
-        isfailsZbosonMassVeto({ selLepton_lead, selLepton_sublead }, true)
+        isfailsZbosonMassVeto({ selLepton_lead, selLepton_sublead }, true, isDEBUG)
       )
     ;
     if ( failsZbosonMassVeto ) {
@@ -2333,9 +2333,15 @@ int main(int argc, char* argv[])
       double lep2_genLepPt=( selLepton_sublead->genLepton() != 0 ) ? selLepton_sublead->genLepton()->pt() : 0.;
       double tau_genTauPt=( selHadTau->genHadTau() != 0 ) ? selHadTau->genHadTau()->pt() : 0.;
 
-      const double lep1_frWeight = selLepton_lead->isGenMatched(true) ? 1. : evtWeightRecorder.get_jetToLepton_FR_lead(central_or_shift_main);
-      const double lep2_frWeight = selLepton_sublead->isGenMatched(true) ? 1. : evtWeightRecorder.get_jetToLepton_FR_sublead(central_or_shift_main);
-      const double tau_frWeight = selHadTau->isGenMatched(true) ? 1. : evtWeightRecorder.get_jetToTau_FR_lead(central_or_shift_main);
+      const double lep1_frWeight = selLepton_lead->isGenMatched(true) ? 1. :
+                                   (leptonFakeRateInterface ? evtWeightRecorder.get_jetToLepton_FR_lead(central_or_shift_main) : 1.)
+      ;
+      const double lep2_frWeight = selLepton_sublead->isGenMatched(true) ? 1. :
+                                   (leptonFakeRateInterface ? evtWeightRecorder.get_jetToLepton_FR_sublead(central_or_shift_main) : 1.)
+      ;
+      const double tau_frWeight = selHadTau->isGenMatched(true) ? 1. :
+                                  (jetToTauFakeRateInterface ? evtWeightRecorder.get_jetToTau_FR_lead(central_or_shift_main) : 1.)
+      ;
       const double evt_frWeight = lep1_frWeight * lep2_frWeight * tau_frWeight;
 
       bdt_filler -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })

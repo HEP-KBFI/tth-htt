@@ -345,7 +345,7 @@ class analyzeConfig(object):
         self.do_sync = do_sync
         self.topPtRwgtChoice = "Quadratic" # alternatives: "TOP16011", "Linear", "Quadratic", "HighPt"
         self.do_stxs = do_stxs
-        self.run_mcClosure = systematics.mcClosure_str in self.central_or_shifts or self.do_sync
+        self.run_mcClosure = systematics.mcClosure_str in self.central_or_shifts
         if self.run_mcClosure:
           self.central_or_shifts.remove(systematics.mcClosure_str)
 
