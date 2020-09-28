@@ -652,7 +652,8 @@ massL(const std::vector<const RecoLepton *> & Leptons);
 
 bool
 isfailsZbosonMassVeto(const std::vector<const RecoLepton *> & preselLeptons,
-                      bool ignoreOS = false);
+                      bool ignoreOS = false,
+                      bool isDEBUG = false);
 
 int
 countZbosonSFOSpairs(const std::vector<const RecoLepton *> & preselLeptons,

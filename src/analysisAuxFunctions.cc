@@ -508,7 +508,8 @@ massL(const std::vector<const RecoLepton *> & Leptons)
 
 bool
 isfailsZbosonMassVeto(const std::vector<const RecoLepton *> & preselLeptons,
-                      bool ignoreOS)
+                      bool ignoreOS,
+                      bool isDEBUG)
 {
   bool failsZbosonMassVeto = false;
   for(auto lepton1_it = preselLeptons.begin(); lepton1_it != preselLeptons.end(); ++lepton1_it)
@@ -523,6 +524,13 @@ isfailsZbosonMassVeto(const std::vector<const RecoLepton *> & preselLeptons,
         const double mass = (lepton1->p4() + lepton2->p4()).mass();
         if(std::fabs(mass - z_mass) < z_window )
         {
+          if(isDEBUG)
+          {
+            std::cout
+              << "Found a pair of leptons with mass of " << mass << ", thus falling within the Z mass window of ("
+              << z_mass - z_window << ", " << z_mass + z_window << "):\n" << *lepton1 << '\n' << *lepton2 << '\n'
+            ;
+          }
           failsZbosonMassVeto = true;
           break;
         }
