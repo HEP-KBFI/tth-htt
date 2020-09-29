@@ -183,11 +183,11 @@ class tthAnalyzeParser(argparse.ArgumentParser):
     if choices:
       argparse_args['choices'] = choices
     self.add_argument('-w', '--tau-id-wp', **argparse_args)
-
+ 
   def add_tau_id(self, default_id = 'deepVSj'):
     choices = [ 'dR03mva', 'deepVSj' ]
     self.add_argument('-t', '--tau-id',
-      type = str, dest = 'tau_id', metavar = 'tau ID', default = default_id, required = False, choices = choices,
+      type = str, dest = 'tau_id', metavar = 'tau ID', default = default_id, required = False, choices = choices, 
       help = 'R|Tau ID discriminant (choices: %s)' % tthAnalyzeParser.cat(choices),
     )
 

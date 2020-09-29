@@ -99,6 +99,12 @@ class analyzeConfig(object):
           histograms_to_fit,
           triggers,
           lep_mva_wp                      = "default",
+          lep_fakeable_pog_wp_mu_tmp1         = "default",
+          lep_fakeable_nearDeepJet_wp_mu_tmp1 = "default",
+          lep_fakeable_jetRelIso_cut_mu_tmp1  = "default",
+          lep_fakeable_pog_wp_e_tmp1          = "default",
+          lep_fakeable_nearDeepJet_wp_e_tmp1  = "default",
+          lep_fakeable_jetRelIso_cut_e_tmp1   = "default",                 
           executable_prep_dcard           = "prepareDatacards",
           executable_add_syst_dcard       = "addSystDatacards",
           executable_add_syst_fakerate    = "addSystFakeRates",
@@ -210,6 +216,12 @@ class analyzeConfig(object):
               del sample_info['nof_events'][event_count]
 
         self.lep_mva_wp = lep_mva_wp
+        self.lep_fakeable_pog_wp_mu_tmp1         = lep_fakeable_pog_wp_mu_tmp1
+        self.lep_fakeable_nearDeepJet_wp_mu_tmp1 = lep_fakeable_nearDeepJet_wp_mu_tmp1
+        self.lep_fakeable_jetRelIso_cut_mu_tmp1  = lep_fakeable_jetRelIso_cut_mu_tmp1
+        self.lep_fakeable_pog_wp_e_tmp1          = lep_fakeable_pog_wp_e_tmp1
+        self.lep_fakeable_nearDeepJet_wp_e_tmp1  = lep_fakeable_nearDeepJet_wp_e_tmp1
+        self.lep_fakeable_jetRelIso_cut_e_tmp1   = lep_fakeable_jetRelIso_cut_e_tmp1        
         self.central_or_shifts = central_or_shifts
         if not 'central' in self.central_or_shifts:
             logging.warning('Running with systematic uncertainties, but without central value, is not supported --> adding central value.')
@@ -225,6 +237,18 @@ class analyzeConfig(object):
             ))
           self.central_or_shifts = [
             central_or_shift for central_or_shift in self.central_or_shifts if central_or_shift not in central_or_shift_nc
+          ]
+        if self.lep_mva_wp == 'hh_multilepton':
+          #TODO remove this if block once we have the capability to provide FR systematics
+          central_or_shift_fr = [
+            central_or_shift for central_or_shift in self.central_or_shifts if central_or_shift in systematics.FRl_shape
+          ]
+          if central_or_shift_fr:
+            logging.warning("Removing the following systematics because these FR variations haven't been measured, yet: {}".format(
+              ", ".join(central_or_shift_fr)
+            ))
+          self.central_or_shifts = [
+            central_or_shift for central_or_shift in self.central_or_shifts if central_or_shift not in central_or_shift_fr
           ]
         #------------------------------------------------------------------------
         # CV: make sure that 'central' is always first entry in self.central_or_shifts
@@ -321,7 +345,7 @@ class analyzeConfig(object):
         self.do_sync = do_sync
         self.topPtRwgtChoice = "Quadratic" # alternatives: "TOP16011", "Linear", "Quadratic", "HighPt"
         self.do_stxs = do_stxs
-        self.run_mcClosure = systematics.mcClosure_str in self.central_or_shifts or self.do_sync
+        self.run_mcClosure = systematics.mcClosure_str in self.central_or_shifts
         if self.run_mcClosure:
           self.central_or_shifts.remove(systematics.mcClosure_str)
 
@@ -594,14 +618,13 @@ class analyzeConfig(object):
         self.leptonFakeRateWeight_inputFile = ''
         if self.channel != 'LeptonFakeRate':
           if self.lep_mva_wp == 'default':
-              self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva_{}_CERN_2019Jul08.root".format(self.era)
+            self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva_{}_CERN_2019Jul08.root".format(self.era)
           elif self.lep_mva_wp == 'hh_multilepton':
-              #self.leptonFakeRateWeight_inputFile = "hhAnalysis/multilepton/data/FR_lep_ttH_mva_{}.root".format(self.era)
-			  self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva_{}_CERN_2019Jul08.root".format(self.era)
+            self.leptonFakeRateWeight_inputFile = "hhAnalysis/multilepton/data/FR_lep_mva_hh_multilepton_{}_KBFI_2020Sep25.root".format(self.era)
           else:
-              raise RuntimeError("No FR files available for the following choice of prompt lepton MVA WP: %s" % self.lep_mva_wp)
+            raise RuntimeError("No FR files available for the following choice of prompt lepton MVA WP: %s" % self.lep_mva_wp)
           if not os.path.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', self.leptonFakeRateWeight_inputFile)):
-              raise ValueError("No such file: 'leptonFakeRateWeight_inputFile' = %s" % self.leptonFakeRateWeight_inputFile)
+            raise ValueError("No such file: 'leptonFakeRateWeight_inputFile' = %s" % self.leptonFakeRateWeight_inputFile)
 
         self.use_dymumu_tau_fr = use_dymumu_tau_fr
         self.hadTau_selection_relaxed = None
@@ -625,13 +648,18 @@ class analyzeConfig(object):
                     logging.error(str(time))
 
     def set_leptonFakeRateWeightHistogramNames(self, central_or_shift, lepton_and_hadTau_selection):
-        suffix = 'QCD' if 'mcClosure' in lepton_and_hadTau_selection else 'data_comb'
-
+        suffix = 'QCD' if 'mcClosure' in lepton_and_hadTau_selection or self.run_mcClosure else 'data_comb'
+        
         # e.g. FR_mva080_el_QCD_NC, FR_mva085_mu_data_comb
-        #self.leptonFakeRateWeight_histogramName_e = "FR_mva%s_el_%s_NC" % (convert_lep_wp(self.lep_mva_cut_e), suffix)
-        #self.leptonFakeRateWeight_histogramName_mu = "FR_mva%s_mu_%s" % (convert_lep_wp(self.lep_mva_cut_mu), suffix)
-        self.leptonFakeRateWeight_histogramName_e = "FR_mva%s_el_%s_NC" % ('080', suffix)
-        self.leptonFakeRateWeight_histogramName_mu = "FR_mva%s_mu_%s" % ('085', suffix)
+        self.leptonFakeRateWeight_histogramName_e = "FR_mva%s_el_%s_NC" % (convert_lep_wp(self.lep_mva_cut_e), suffix)
+        self.leptonFakeRateWeight_histogramName_mu = "FR_mva%s_mu_%s" % (convert_lep_wp(self.lep_mva_cut_mu), suffix)
+        
+        if self.lep_mva_wp == 'hh_multilepton':
+          suffix = 'data_comb_QCD_fakes' if 'mcClosure' in lepton_and_hadTau_selection or self.run_mcClosure else 'data_comb'
+          
+          self.leptonFakeRateWeight_histogramName_e = "FR_mva%s_el_%s" % (convert_lep_wp(self.lep_mva_cut_e),  suffix)
+          self.leptonFakeRateWeight_histogramName_mu = "FR_mva%s_mu_%s" % (convert_lep_wp(self.lep_mva_cut_mu),  suffix)
+
 
     def set_BDT_training(self, hadTau_selection_relaxed):
         """Run analysis with loose selection criteria for leptons and hadronic taus,
@@ -943,6 +971,18 @@ class analyzeConfig(object):
             jobOptions['lep_mva_cut_e'] = float(self.lep_mva_cut_e)
         if 'lep_mva_cut_mu' not in jobOptions:
             jobOptions['lep_mva_cut_mu'] = float(self.lep_mva_cut_mu)
+        if 'lep_fakeable_pog_wp_mu_tmp1' not in jobOptions and "default" not in self.lep_fakeable_pog_wp_mu_tmp1:
+            jobOptions['lep_fakeable_pog_wp_mu_tmp1'] = str(self.lep_fakeable_pog_wp_mu_tmp1)            
+        if 'lep_fakeable_nearDeepJet_wp_mu_tmp1' not in jobOptions and "default" not in self.lep_fakeable_nearDeepJet_wp_mu_tmp1:
+            jobOptions['lep_fakeable_nearDeepJet_wp_mu_tmp1'] = str(self.lep_fakeable_nearDeepJet_wp_mu_tmp1)            
+        if 'lep_fakeable_jetRelIso_cut_mu_tmp1' not in jobOptions and "default" not in self.lep_fakeable_jetRelIso_cut_mu_tmp1:
+            jobOptions['lep_fakeable_jetRelIso_cut_mu_tmp1'] = float(self.lep_fakeable_jetRelIso_cut_mu_tmp1)            
+        if 'lep_fakeable_pog_wp_e_tmp1' not in jobOptions and "default" not in self.lep_fakeable_pog_wp_e_tmp1:
+            jobOptions['lep_fakeable_pog_wp_e_tmp1'] = str(self.lep_fakeable_pog_wp_e_tmp1)            
+        if 'lep_fakeable_nearDeepJet_wp_e_tmp1' not in jobOptions and "default" not in self.lep_fakeable_nearDeepJet_wp_e_tmp1:
+            jobOptions['lep_fakeable_nearDeepJet_wp_e_tmp1'] = str(self.lep_fakeable_nearDeepJet_wp_e_tmp1)            
+        if 'lep_fakeable_jetRelIso_cut_e_tmp1' not in jobOptions and "default" not in self.lep_fakeable_jetRelIso_cut_e_tmp1:
+            jobOptions['lep_fakeable_jetRelIso_cut_e_tmp1'] = float(self.lep_fakeable_jetRelIso_cut_e_tmp1)
 
         btagSFRatio_args = {}
         if jobOptions['applyBtagSFRatio']:
@@ -994,6 +1034,12 @@ class analyzeConfig(object):
             'muonSelection',
             'lep_mva_cut_mu',
             'lep_mva_cut_e',
+            'lep_fakeable_pog_wp_mu_tmp1',
+            'lep_fakeable_nearDeepJet_wp_mu_tmp1',
+            'lep_fakeable_jetRelIso_cut_mu_tmp1',          
+            'lep_fakeable_pog_wp_e_tmp1',
+            'lep_fakeable_nearDeepJet_wp_e_tmp1',
+            'lep_fakeable_jetRelIso_cut_e_tmp1',          
             'chargeSumSelection',
             'histogramDir',
             'isControlRegion',
@@ -1014,6 +1060,7 @@ class analyzeConfig(object):
             'selEventsFileName_output',
             'fillGenEvtHistograms',
             'selectBDT',
+            'secondBDT',
             'useNonNominal',
             'apply_hlt_filter',
             'branchName_memOutput',

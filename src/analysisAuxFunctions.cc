@@ -508,7 +508,8 @@ massL(const std::vector<const RecoLepton *> & Leptons)
 
 bool
 isfailsZbosonMassVeto(const std::vector<const RecoLepton *> & preselLeptons,
-                      bool ignoreOS)
+                      bool ignoreOS,
+                      bool isDEBUG)
 {
   bool failsZbosonMassVeto = false;
   for(auto lepton1_it = preselLeptons.begin(); lepton1_it != preselLeptons.end(); ++lepton1_it)
@@ -523,6 +524,13 @@ isfailsZbosonMassVeto(const std::vector<const RecoLepton *> & preselLeptons,
         const double mass = (lepton1->p4() + lepton2->p4()).mass();
         if(std::fabs(mass - z_mass) < z_window )
         {
+          if(isDEBUG)
+          {
+            std::cout
+              << "Found a pair of leptons with mass of " << mass << ", thus falling within the Z mass window of ("
+              << z_mass - z_window << ", " << z_mass + z_window << "):\n" << *lepton1 << '\n' << *lepton2 << '\n'
+            ;
+          }
           failsZbosonMassVeto = true;
           break;
         }
@@ -880,6 +888,69 @@ recompute_met(const RecoMEt & met_uncorr,
     std::cout << "Keeping MET at " << met_option << '\n';
   }
   return met;
+}
+
+std::vector<const RecoElectron *>
+recompute_p4(const std::vector<const RecoElectron *> & electrons,
+             ElectronPtSys option,
+             bool (*sortFunction)(const Particle *, const Particle *))
+{
+  std::vector<const RecoElectron *> electrons_shifted;
+  for(const RecoElectron * electron: electrons)
+  {
+    double corrFactor = 1.;
+    switch(option)
+    {
+      case ElectronPtSys::central:                                                                break;
+      case ElectronPtSys::scaleUp_barrel:   corrFactor = electron->absEta() <  1.479 ? 1.01 : 1.; break;
+      case ElectronPtSys::scaleDown_barrel: corrFactor = electron->absEta() <  1.479 ? 0.99 : 1.; break;
+      case ElectronPtSys::scaleUp_endcap:   corrFactor = electron->absEta() >= 1.479 ? 1.01 : 1.; break;
+      case ElectronPtSys::scaleDown_endcap: corrFactor = electron->absEta() >= 1.479 ? 0.99 : 1.; break;
+      case ElectronPtSys::resUp:            corrFactor = electron->genLepton() ?
+                                                         1. + (1. - electron->genLepton()->pt() / electron->pt()) / 4. :
+                                                         1.;                                      break;
+      case ElectronPtSys::resDown:          corrFactor = electron->genLepton() ?
+                                                         1. - (1. - electron->genLepton()->pt() / electron->pt()) / 4. :
+                                                         1.;                                      break;
+      case ElectronPtSys::uncorrected:      corrFactor = 1. / electron->eCorr();                  break;
+    }
+    RecoElectron * electron_nonConst = const_cast<RecoElectron *>(electron);
+    electron_nonConst->set_ptEtaPhiMass(corrFactor * electron->pt(), electron->eta(), electron->phi(), electron->mass());
+    electrons_shifted.push_back(electron_nonConst);
+  }
+  std::sort(electrons_shifted.begin(), electrons_shifted.end(), sortFunction);
+  return electrons_shifted;
+}
+
+std::vector<RecoMuon>
+recompute_p4(const std::vector<RecoMuon> & muons,
+             MuonPtSys option,
+             bool (*sortFunction)(const RecoMuon &, const RecoMuon &))
+{
+  std::vector<RecoMuon> muons_shifted;
+  for(const RecoMuon & muon: muons)
+  {
+    double corrFactor = 1.;
+    switch(option)
+    {
+      case MuonPtSys::central:                                                                             break;
+      case MuonPtSys::ESBarrel1Up:   corrFactor = muon.absEta() < 0.9                         ? 1.02 : 1.; break;
+      case MuonPtSys::ESBarrel1Down: corrFactor = muon.absEta() < 0.9                         ? 0.98 : 1.; break;
+      case MuonPtSys::ESBarrel2Up:   corrFactor = muon.absEta() >= 0.9 && muon.absEta() < 1.2 ? 1.02 : 1.; break;
+      case MuonPtSys::ESBarrel2Down: corrFactor = muon.absEta() >= 0.9 && muon.absEta() < 1.2 ? 0.98 : 1.; break;
+      case MuonPtSys::ESEndcap1Up:   corrFactor = muon.absEta() >= 1.2 && muon.absEta() < 2.1 ? 1.02 : 1.; break;
+      case MuonPtSys::ESEndcap1Down: corrFactor = muon.absEta() >= 1.2 && muon.absEta() < 2.1 ? 0.98 : 1.; break;
+      case MuonPtSys::ESEndcap2Up:   corrFactor = muon.absEta() > 2.1                         ? 1.02 : 1.; break;
+      case MuonPtSys::ESEndcap2Down: corrFactor = muon.absEta() > 2.1                         ? 0.98 : 1.; break;
+      case MuonPtSys::ERUp:          /* has a special meaning in the context of charge flio measurement */ break;
+      case MuonPtSys::ERDown:        /* has a special meaning in the context of charge flio measurement */ break;
+    }
+    RecoMuon muon_copy = muon;
+    muon_copy.set_ptEtaPhiMass(corrFactor * muon.pt(), muon.eta(), muon.phi(), muon.mass());
+    muons_shifted.push_back(muon_copy);
+  }
+  std::sort(muons_shifted.begin(), muons_shifted.end(), sortFunction);
+  return muons_shifted;
 }
 
 std::map<std::string, double>InitializeInputVarMap(std::map<std::string, double>& AllVars_Map,

@@ -12,8 +12,8 @@ import getpass
 
 # E.g.: ./test/tthAnalyzeRun_LeptonFakeRate.py -v 2017Dec13 -e 2017
 
-cmssw_base_dir_combine = os.path.expanduser('~/CMSSW_10_2_13') # immediate parent dir to src folder
-#cmssw_base_dir_combine = os.path.expanduser('/home/ssawant/VHbbNtuples_8_1_x/CMSSW_8_1_0') # immediate parent dir to src folder
+#cmssw_base_dir_combine = os.path.expanduser('~/CMSSW_10_2_13') # immediate parent dir to src folder
+cmssw_base_dir_combine = os.path.expanduser('~/VHbbNtuples_10_x/CMSSW_10_2_13') # immediate parent dir to src folder
 qcd_inclusive = True # set to True if you want to process inclusive muon-enriched sample
 
 mode_choices     = [ 'default', 'sync' ]
@@ -114,7 +114,7 @@ if __name__ == '__main__':
     absEtaBins_mu                            = [ 0., 1.2, 2.4 ],                       ## CERN binning scheme
     ptBins_e                                 = [ 15., 25., 35., 45., 65., 100. ],      ## CERN binning scheme
     ptBins_mu                                = [ 10., 15., 20., 32., 45., 65., 100. ], ## CERN binning scheme
-    lep_mva_wp                               = lep_mva_wp,
+    lep_mva_wp                               = lep_mva_wp,   
     fillGenEvtHistograms                     = False,
     jet_cleaning_by_index                    = jet_cleaning_by_index,
     gen_matching_by_index                    = gen_matching_by_index,

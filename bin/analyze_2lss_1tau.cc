@@ -896,7 +896,7 @@ int main(int argc, char* argv[])
       //"log_memOutput_ttH",  "log_memOutput_ttZ",  "log_memOutput_ttZ_Zll", "log_memOutput_tt",
       "lep1_genLepPt", "lep2_genLepPt",
       "tau_genTauPt",
-      //"lep1_fake_prob", "lep2_fake_prob",  "tau_fake_prob",
+      "lep1_fake_prob", "lep2_fake_prob",  "tau_fake_prob",
       //"tau_fake_test",
       "genWeight", "evtWeight",
       "mbb_loose", "mbb_medium",
@@ -1464,17 +1464,9 @@ int main(int argc, char* argv[])
 
 //--- apply data/MC corrections for efficiencies of leptons passing the loose identification and isolation criteria
 //    to also pass the tight identification and isolation criteria
-      if(electronSelection == kFakeable && muonSelection == kFakeable)
+      if(electronSelection >= kFakeable && muonSelection >= kFakeable)
       {
-        evtWeightRecorder.record_leptonSF(dataToMCcorrectionInterface->getSF_leptonID_and_Iso_looseToFakeable());
-      }
-      else if(electronSelection >= kFakeable && muonSelection >= kFakeable)
-      {
-        // apply loose-to-tight lepton ID SFs if either of the following is true:
-        // 1) both electron and muon selections are tight -> corresponds to SR
-        // 2) electron selection is relaxed to fakeable and muon selection is kept as tight -> corresponds to MC closure w/ relaxed e selection
-        // 3) muon selection is relaxed to fakeable and electron selection is kept as tight -> corresponds to MC closure w/ relaxed mu selection
-        // we allow (2) and (3) so that the MC closure regions would more compatible w/ the SR (1) in comparison
+        // apply looseToTight SF to leptons matched to generator-level prompt leptons and passing Tight selection conditions
         evtWeightRecorder.record_leptonIDSF_looseToTight(dataToMCcorrectionInterface, false);
       }
 
@@ -1719,10 +1711,10 @@ int main(int argc, char* argv[])
       cutFlowHistManager->fillHistograms("sel lepton+tau charge", evtWeightRecorder.get(central_or_shift_main));
     }
 
-    const bool failsZbosonMassVeto = isfailsZbosonMassVeto(preselLeptonsFull) || (
+    const bool failsZbosonMassVeto = isfailsZbosonMassVeto(preselLeptonsFull, false, isDEBUG) || (
         selLepton_lead->is_electron() &&
         selLepton_sublead->is_electron() &&
-        isfailsZbosonMassVeto({ selLepton_lead, selLepton_sublead }, true)
+        isfailsZbosonMassVeto({ selLepton_lead, selLepton_sublead }, true, isDEBUG)
       )
     ;
     if ( failsZbosonMassVeto ) {
@@ -2333,9 +2325,15 @@ int main(int argc, char* argv[])
       double lep2_genLepPt=( selLepton_sublead->genLepton() != 0 ) ? selLepton_sublead->genLepton()->pt() : 0.;
       double tau_genTauPt=( selHadTau->genHadTau() != 0 ) ? selHadTau->genHadTau()->pt() : 0.;
 
-      const double lep1_frWeight = selLepton_lead->isGenMatched(true) ? 1. : evtWeightRecorder.get_jetToLepton_FR_lead(central_or_shift_main);
-      const double lep2_frWeight = selLepton_sublead->isGenMatched(true) ? 1. : evtWeightRecorder.get_jetToLepton_FR_sublead(central_or_shift_main);
-      const double tau_frWeight = selHadTau->isGenMatched(true) ? 1. : evtWeightRecorder.get_jetToTau_FR_lead(central_or_shift_main);
+      const double lep1_frWeight = selLepton_lead->isGenMatched(true) ? 1. :
+                                   (leptonFakeRateInterface ? evtWeightRecorder.get_jetToLepton_FR_lead(central_or_shift_main) : 1.)
+      ;
+      const double lep2_frWeight = selLepton_sublead->isGenMatched(true) ? 1. :
+                                   (leptonFakeRateInterface ? evtWeightRecorder.get_jetToLepton_FR_sublead(central_or_shift_main) : 1.)
+      ;
+      const double tau_frWeight = selHadTau->isGenMatched(true) ? 1. :
+                                  (jetToTauFakeRateInterface ? evtWeightRecorder.get_jetToTau_FR_lead(central_or_shift_main) : 1.)
+      ;
       const double evt_frWeight = lep1_frWeight * lep2_frWeight * tau_frWeight;
 
       bdt_filler -> operator()({ eventInfo.run, eventInfo.lumi, eventInfo.event })
