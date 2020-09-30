@@ -1168,8 +1168,8 @@ for rle in rle_loop:
 
   if not (evt.ele1.ref.isfakeablesel == evt.ele1.test.isfakeablesel and evt.ele2.ref.isfakeablesel == evt.ele2.test.isfakeablesel):
     print('RLE %s' % rle)
-    print evt.ele1.printVars()
-    print evt.ele2.printVars()
+    evt.ele1.printVars()
+    evt.ele2.printVars()
 
 #    continue
 
