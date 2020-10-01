@@ -117,10 +117,16 @@ hltPaths_isTriggered(const std::vector<hltPath *> & hltPaths,
       const std::vector<unsigned int> runs = runRanges.getParameter<std::vector<unsigned int>>(path->getBranchName());
       if(std::find(runs.cbegin(), runs.cend(), eventInfo.run) == runs.cend())
       {
-        std::cout
-          << "  WARNING: path '" << path->getBranchName() << "' is supposedly triggered but it shouldn't exist for run: "
-          << eventInfo.run << " => flipping its trigger bit to FALSE\n"
-        ;
+        // CV: print warning only once for each combination of HLT path and run number
+        static std::map<std::string, std::map<long, bool>> warnings;
+        if ( !warnings[path->getBranchName()][eventInfo.run] )
+        {
+          std::cerr
+            << "  WARNING: path '" << path->getBranchName() << "' is supposedly triggered but it shouldn't exist for run: "
+            << eventInfo.run << " => flipping its trigger bit to FALSE\n"
+          ;
+          warnings[path->getBranchName()][eventInfo.run] = true;
+        }
       }
       else
       {
