@@ -17,7 +17,7 @@ export JOB_DIR="{{ job_dir }}/$SLURM_JOBID"
 # Runs executable, wrapped into failure wrapper
 
 main() {
-    run_failure_wrapped_executable &> "{{ wrapper_log_file }}"
+    run_failure_wrapped_executable &>> "{{ wrapper_log_file }}"
     EXIT_CODE=$?
     return $EXIT_CODE
 }
@@ -146,8 +146,8 @@ run_wrapped_executable() {
 
     echo "Time is: `date`"
 
-    echo "Execute command: /usr/bin/time --verbose {{ exec_name }} {{ command_line_parameter }} &> $EXECUTABLE_LOG_FILE"
-    /usr/bin/time --verbose {{ exec_name }} {{ command_line_parameter }} &> $EXECUTABLE_LOG_FILE
+    echo "Execute command: /usr/bin/time --verbose {{ exec_name }} {{ command_line_parameter }} &>> $EXECUTABLE_LOG_FILE"
+    /usr/bin/time --verbose {{ exec_name }} {{ command_line_parameter }} &>> $EXECUTABLE_LOG_FILE
     EXIT_CODE=$?
     echo "Command /usr/bin/time --verbose {{ exec_name }} exited with code $EXIT_CODE"
 
