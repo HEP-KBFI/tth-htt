@@ -43,6 +43,8 @@ class RecoElectron;
 
 enum class EWKJetSys;
 enum class EWKBJetSys;
+enum class ElectronPtSys;
+enum class MuonPtSys;
 
 //--- declare constants
 const double wBosonMass = 80.379; // GeV
@@ -310,6 +312,14 @@ isHigherPtT(const T & particle1,
 bool
 isHigherConePt(const RecoLepton * particle1,
                const RecoLepton * particle2);
+
+template <typename T>
+bool
+isHigherConePtT(const T & particle1,
+                const T & particle2)
+{
+  return particle1.cone_pt() > particle2.cone_pt();
+}
 
 /**
  * @brief Auxiliary function for sorting a collection of RecoJet pointers
@@ -642,7 +652,8 @@ massL(const std::vector<const RecoLepton *> & Leptons);
 
 bool
 isfailsZbosonMassVeto(const std::vector<const RecoLepton *> & preselLeptons,
-                      bool ignoreOS = false);
+                      bool ignoreOS = false,
+                      bool isDEBUG = false);
 
 int
 countZbosonSFOSpairs(const std::vector<const RecoLepton *> & preselLeptons,
@@ -754,6 +765,16 @@ recompute_met(const RecoMEt & met_uncorr,
               const std::vector<RecoJet> & jets,
               int met_option,
               bool isDEBUG = false);
+
+std::vector<const RecoElectron *>
+recompute_p4(const std::vector<const RecoElectron *> & electrons,
+             ElectronPtSys option,
+             bool (*sortFunction)(const Particle *, const Particle *) = isHigherPt);
+
+std::vector<RecoMuon>
+recompute_p4(const std::vector<RecoMuon> & muons,
+             MuonPtSys option,
+             bool (*sortFunction)(const RecoMuon &, const RecoMuon &) = isHigherPtT<RecoMuon>);
 
 std::map<std::string, double>
 InitializeInputVarMap(std::map<std::string, double> & AllVars_Map,

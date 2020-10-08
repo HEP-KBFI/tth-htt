@@ -62,16 +62,17 @@ PLACEHOLDER = -9999
 # - when investigating a particular problem, there's no need to fire up the documentation page in
 #   order to search for the correct branch names; instead, the user can copy the name from this file
 OBJECTS_MAP = collections.OrderedDict()
-OBJECTS_MAP['mu']       = { 'n' : 2, 'human_name' : 'muon'        }
-OBJECTS_MAP['ele']      = { 'n' : 2, 'human_name' : 'electron'    }
-OBJECTS_MAP['tau']      = { 'n' : 2, 'human_name' : 'tau'         }
-OBJECTS_MAP['jet']      = { 'n' : 4, 'human_name' : 'jet'         }
-OBJECTS_MAP['jetFwd']   = { 'n' : 4, 'human_name' : 'forward jet' }
-OBJECTS_MAP['jetAK8']   = { 'n' : 2, 'human_name' : 'AK8 jet'     }
-OBJECTS_MAP['jetHTTv2'] = { 'n' : 2, 'human_name' : 'HTTv2 jet'   }
-OBJECTS_MAP['ak4Jet']   = { 'n' : 2, 'human_name' : 'ak4 jet'     }
-OBJECTS_MAP['ak8Jet']   = { 'n' : 2, 'human_name' : 'ak8 jet'     }
-OBJECTS_MAP['ak8lsJet'] = { 'n' : 2, 'human_name' : 'ak8 LS jet'  }
+OBJECTS_MAP['mu']        = { 'n' : 2, 'human_name' : 'muon'        }
+OBJECTS_MAP['ele']       = { 'n' : 2, 'human_name' : 'electron'    }
+OBJECTS_MAP['tau']       = { 'n' : 2, 'human_name' : 'tau'         }
+OBJECTS_MAP['jet']       = { 'n' : 4, 'human_name' : 'jet'         }
+OBJECTS_MAP['jetFwd']    = { 'n' : 4, 'human_name' : 'forward jet' }
+OBJECTS_MAP['jetAK8']    = { 'n' : 2, 'human_name' : 'AK8 jet'     }
+OBJECTS_MAP['jetHTTv2']  = { 'n' : 2, 'human_name' : 'HTTv2 jet'   }
+OBJECTS_MAP['ak4Jet']    = { 'n' : 2, 'human_name' : 'ak4 jet'     }
+OBJECTS_MAP['ak4JetVBF'] = { 'n' : 2, 'human_name' : 'ak4 VBF jet' }
+OBJECTS_MAP['ak8Jet']    = { 'n' : 2, 'human_name' : 'ak8 jet'     }
+OBJECTS_MAP['ak8lsJet']  = { 'n' : 2, 'human_name' : 'ak8 LS jet'  }
 
 # For counting the number of preselected objects
 PRESELECTION_COUNTER_BRANCHES = [ 'n_presel_%s' % object_prefix for object_prefix in OBJECTS_MAP ]
@@ -123,6 +124,8 @@ OBJECTS_MAP['jetAK8']['branch_names'] = COMMON_BRANCH_NAMES
 OBJECTS_MAP['jetHTTv2']['branch_names'] = COMMON_BRANCH_NAMES
 
 OBJECTS_MAP['ak4Jet']['branch_names'] = COMMON_BRANCH_NAMES | { 'CSV', }
+
+OBJECTS_MAP['ak4JetVBF']['branch_names'] = COMMON_BRANCH_NAMES | { 'CSV', }
 
 SUBJET_BRANCHES = { 'subjet%d_%s' % (idx, variable) for idx in range(2) for variable in set(COMMON_BRANCH_NAMES | { 'CSV', }) }
 
@@ -939,6 +942,7 @@ args = parent_parser.parse_args()
 
 if args.analysis == 'tth':
   del OBJECTS_MAP['ak4Jet']
+  del OBJECTS_MAP['ak4JetVBF']
   del OBJECTS_MAP['ak8Jet']
   del OBJECTS_MAP['ak8lsJet']
   del OBJECTS_MAP['jetAK8']
@@ -949,6 +953,7 @@ elif args.analysis == 'hh_bbww':
   del OBJECTS_MAP['jetAK8']
   del OBJECTS_MAP['jetHTTv2']
   del OBJECTS_MAP['ak8lsJet']
+  del OBJECTS_MAP['ak4JetVBF']
   del OBJECTS_MAP['tau']
 PRESELECTION_COUNTER_BRANCHES = [ 'n_presel_%s' % object_prefix for object_prefix in OBJECTS_MAP ]
 
@@ -1163,8 +1168,8 @@ for rle in rle_loop:
 
   if not (evt.ele1.ref.isfakeablesel == evt.ele1.test.isfakeablesel and evt.ele2.ref.isfakeablesel == evt.ele2.test.isfakeablesel):
     print('RLE %s' % rle)
-    print evt.ele1.printVars()
-    print evt.ele2.printVars()
+    evt.ele1.printVars()
+    evt.ele2.printVars()
 
 #    continue
 
