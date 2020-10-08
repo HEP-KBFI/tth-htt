@@ -99,6 +99,12 @@ Data_to_MC_CorrectionInterface_2018::Data_to_MC_CorrectionInterface_2018(const e
     initAntiEle_tauIDSFs(tauIDSFTool_era);
     initAntiMu_tauIDSFs(tauIDSFTool_era);
   }
+
+  if(recompTightSF_)
+  {
+    recompTightSF_el_ = 1.; // TODO: update
+    recompTightSF_mu_ = 1.; // TODO: update
+  }
 }
 
 Data_to_MC_CorrectionInterface_2018::~Data_to_MC_CorrectionInterface_2018()

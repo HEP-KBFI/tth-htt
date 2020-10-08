@@ -32,6 +32,9 @@ Data_to_MC_CorrectionInterface_Base::Data_to_MC_CorrectionInterface_Base(const e
   , tauIdSFs_(nullptr)
   , applyHadTauSF_(true)
   , isDEBUG_(cfg.exists("isDEBUG") ? cfg.getParameter<bool>("isDEBUG") : false)
+  , recompTightSF_(cfg.exists("lep_mva_wp") && cfg.getParameter<std::string>("lep_mva_wp") == "hh_multilepton")
+  , recompTightSF_el_(1.)
+  , recompTightSF_mu_(1.)
   , numLeptons_(0)
   , numElectrons_(0)
   , numMuons_(0)
@@ -224,7 +227,8 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso(std::size_t numLepto
                                                             const std::vector<bool> & lepton_isTight,
                                                             bool sfForTightSelection,
                                                             const std::vector<lutWrapperBase *> & corrections,
-                                                            int error_shift) const
+                                                            int error_shift,
+                                                            double recompSF) const
 {
   if(isDEBUG_)
   {
@@ -244,11 +248,25 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso(std::size_t numLepto
     {
       continue;
     }
-    if (sfForTightSelection && (! lepton_isTight[idxLepton]))
+    if(sfForTightSelection && (! lepton_isTight[idxLepton]))
     {
       continue;
     }
-    sf *= get_from_lut_err(corrections, lepton_pt[idxLepton], lepton_eta[idxLepton], error_shift, isDEBUG_);
+    const int error_shift_tmp = recompSF > 0. ? 0 : error_shift;
+    const double sf_tmp = get_from_lut_err(corrections, lepton_pt[idxLepton], lepton_eta[idxLepton], error_shift_tmp, isDEBUG_);
+    assert(sf_tmp > 0.);
+
+    double corrFactor = 1.;
+    if(recompSF > 0.)
+    {
+      // https://indico.cern.ch/event/961689/contributions/4047547/attachments/2114588/3557570/HHTo4W_3l_Updates_20201002_LooseLeptonSFCorrection_1.pdf
+      assert(recompTightSF_);
+      const double sf_recomp_tmp = 1. - (1. - sf_tmp) * recompSF;
+      const double sf_recomp_shift = 0.5 * std::fabs(sf_tmp - sf_recomp_tmp);
+      const double sf_recomp = sf_recomp_tmp + error_shift * sf_recomp_shift;
+      corrFactor = sf_recomp / sf_tmp;
+    }
+    sf *= sf_tmp * corrFactor;
   }
   return sf;
 }
@@ -343,6 +361,7 @@ double
 Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_loose(LeptonIDSFsys central_or_shift) const
 {
   const bool sfForTightSelection = false;
+  const double recompSF = -1.;
   if(isDEBUG_)
   {
     std::cout << get_human_line(this, __func__, __LINE__) << "Computing SF for electrons\n"
@@ -359,7 +378,7 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_loose(LeptonIDSFsys 
     sf_el_error = -1;
   }
   const double sf_el = getSF_leptonID_and_Iso(
-    numElectrons_, electron_pt_, electron_eta_, electron_isGenMatched_, electron_isTight_, sfForTightSelection, sfElectronID_and_Iso_loose_, sf_el_error
+    numElectrons_, electron_pt_, electron_eta_, electron_isGenMatched_, electron_isTight_, sfForTightSelection, sfElectronID_and_Iso_loose_, sf_el_error, recompSF
   );
   if(isDEBUG_)
   {
@@ -379,7 +398,7 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_loose(LeptonIDSFsys 
     sf_mu_error = -1;
   }
   const double sf_mu = getSF_leptonID_and_Iso(
-    numMuons_, muon_pt_, muon_eta_, muon_isGenMatched_, muon_isTight_, sfForTightSelection, sfMuonID_and_Iso_loose_, sf_mu_error
+    numMuons_, muon_pt_, muon_eta_, muon_isGenMatched_, muon_isTight_, sfForTightSelection, sfMuonID_and_Iso_loose_, sf_mu_error, recompSF
   );
   const double sf = sf_el * sf_mu;
   if(isDEBUG_)
@@ -402,14 +421,29 @@ double
 Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_tight_to_loose_woTightCharge(LeptonIDSFsys central_or_shift) const
 {
   const bool sfForTightSelection = true;
+  const double recompSF = -1.;
+  const int error_shift = 0;
   if(isDEBUG_)
   {
     std::cout << get_human_line(this, __func__, __LINE__) << "Computing SF for electrons\n"
                 "sfForTightSelection: " << sfForTightSelection << '\n'
     ;
   }
+  const double recompSF_el = recompTightSF_ ? recompTightSF_el_ : -1.;
+  int error_shift_el = 0;
+  if(recompTightSF_)
+  {
+    if(central_or_shift == LeptonIDSFsys::elTightRecompUp)
+    {
+      error_shift_el = +1;
+    }
+    else if(central_or_shift == LeptonIDSFsys::elTightRecompDown)
+    {
+      error_shift_el = -1;
+    }
+  }
   double sf_el = getSF_leptonID_and_Iso(
-    numElectrons_, electron_pt_, electron_eta_, electron_isGenMatched_, electron_isTight_, sfForTightSelection, sfElectronID_and_Iso_tight_to_loose_woTightCharge_, 0
+    numElectrons_, electron_pt_, electron_eta_, electron_isGenMatched_, electron_isTight_, sfForTightSelection, sfElectronID_and_Iso_tight_to_loose_woTightCharge_, error_shift_el, recompSF_el
   );
   if(isDEBUG_)
   {
@@ -418,13 +452,13 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_tight_to_loose_woTig
   if(central_or_shift == LeptonIDSFsys::elTightUp)
   {
     sf_el *= getSF_leptonID_and_Iso(
-      numElectrons_, electron_pt_, electron_eta_, electron_isGenMatched_, electron_isTight_, sfForTightSelection, sfElectronID_and_Iso_tight_to_loose_errors_up_, 0
+      numElectrons_, electron_pt_, electron_eta_, electron_isGenMatched_, electron_isTight_, sfForTightSelection, sfElectronID_and_Iso_tight_to_loose_errors_up_, error_shift, recompSF
     );
   }
   else if(central_or_shift == LeptonIDSFsys::elTightDown)
   {
     sf_el *= getSF_leptonID_and_Iso(
-      numElectrons_, electron_pt_, electron_eta_, electron_isGenMatched_, electron_isTight_, sfForTightSelection, sfElectronID_and_Iso_tight_to_loose_errors_down_, 0
+      numElectrons_, electron_pt_, electron_eta_, electron_isGenMatched_, electron_isTight_, sfForTightSelection, sfElectronID_and_Iso_tight_to_loose_errors_down_, error_shift, recompSF
     );
   }
   if(isDEBUG_)
@@ -435,8 +469,21 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_tight_to_loose_woTig
     ;
   }
 
+  const double recompSF_mu = recompTightSF_ ? recompTightSF_mu_ : -1.;
+  int error_shift_mu = 0;
+  if(recompTightSF_)
+  {
+    if(central_or_shift == LeptonIDSFsys::muTightRecompUp)
+    {
+      error_shift_mu = +1;
+    }
+    else if(central_or_shift == LeptonIDSFsys::muTightRecompDown)
+    {
+      error_shift_mu = -1;
+    }
+  }
   double sf_mu = getSF_leptonID_and_Iso(
-    numMuons_, muon_pt_, muon_eta_, muon_isGenMatched_, muon_isTight_, sfForTightSelection, sfMuonID_and_Iso_tight_to_loose_woTightCharge_, 0
+    numMuons_, muon_pt_, muon_eta_, muon_isGenMatched_, muon_isTight_, sfForTightSelection, sfMuonID_and_Iso_tight_to_loose_woTightCharge_, error_shift_mu, recompSF_mu
   );
   if(isDEBUG_)
   {
@@ -445,13 +492,13 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_tight_to_loose_woTig
   if(central_or_shift == LeptonIDSFsys::muTightUp)
   {
     sf_mu *= getSF_leptonID_and_Iso(
-      numMuons_, muon_pt_, muon_eta_, muon_isGenMatched_, muon_isTight_, sfForTightSelection, sfMuonID_and_Iso_tight_to_loose_errors_up_, 0
+      numMuons_, muon_pt_, muon_eta_, muon_isGenMatched_, muon_isTight_, sfForTightSelection, sfMuonID_and_Iso_tight_to_loose_errors_up_, error_shift, recompSF
     );
   }
   else if(central_or_shift == LeptonIDSFsys::muTightDown)
   {
     sf_mu *= getSF_leptonID_and_Iso(
-      numMuons_, muon_pt_, muon_eta_, muon_isGenMatched_, muon_isTight_, sfForTightSelection, sfMuonID_and_Iso_tight_to_loose_errors_down_, 0
+      numMuons_, muon_pt_, muon_eta_, muon_isGenMatched_, muon_isTight_, sfForTightSelection, sfMuonID_and_Iso_tight_to_loose_errors_down_, error_shift, recompSF
     );
   }
   const double sf = sf_el * sf_mu;
@@ -469,12 +516,14 @@ double
 Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_tight_to_loose_wTightCharge(LeptonIDSFsys central_or_shift) const
 {
   const bool sfForTightSelection = true;
+  const double recompSF = -1.;
+  const int error_shift = 0;
   if(isDEBUG_)
   {
     std::cout << get_human_line(this, __func__, __LINE__) << "Computing SF for electrons\n";
   }
   double sf_el = getSF_leptonID_and_Iso(
-    numElectrons_, electron_pt_, electron_eta_, electron_isGenMatched_, electron_isTight_, sfForTightSelection, sfElectronID_and_Iso_tight_to_loose_wTightCharge_, 0
+    numElectrons_, electron_pt_, electron_eta_, electron_isGenMatched_, electron_isTight_, sfForTightSelection, sfElectronID_and_Iso_tight_to_loose_wTightCharge_, error_shift, recompSF
   );
   if(isDEBUG_)
   {
@@ -483,13 +532,13 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_tight_to_loose_wTigh
   if(central_or_shift == LeptonIDSFsys::elTightUp)
   {
     sf_el *= getSF_leptonID_and_Iso(
-      numElectrons_, electron_pt_, electron_eta_, electron_isGenMatched_, electron_isTight_, sfForTightSelection, sfElectronID_and_Iso_tight_to_loose_errors_up_, 0
+      numElectrons_, electron_pt_, electron_eta_, electron_isGenMatched_, electron_isTight_, sfForTightSelection, sfElectronID_and_Iso_tight_to_loose_errors_up_, error_shift, recompSF
     );
   }
   else if(central_or_shift == LeptonIDSFsys::elTightDown)
   {
     sf_el *= getSF_leptonID_and_Iso(
-      numElectrons_, electron_pt_, electron_eta_, electron_isGenMatched_, electron_isTight_, sfForTightSelection, sfElectronID_and_Iso_tight_to_loose_errors_down_, 0
+      numElectrons_, electron_pt_, electron_eta_, electron_isGenMatched_, electron_isTight_, sfForTightSelection, sfElectronID_and_Iso_tight_to_loose_errors_down_, error_shift, recompSF
     );
   }
   if(isDEBUG_)
@@ -501,7 +550,7 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_tight_to_loose_wTigh
   }
 
   double sf_mu = getSF_leptonID_and_Iso(
-    numMuons_, muon_pt_, muon_eta_, muon_isGenMatched_, muon_isTight_, sfForTightSelection, sfMuonID_and_Iso_tight_to_loose_wTightCharge_, 0
+    numMuons_, muon_pt_, muon_eta_, muon_isGenMatched_, muon_isTight_, sfForTightSelection, sfMuonID_and_Iso_tight_to_loose_wTightCharge_, error_shift, recompSF
   );
   if(isDEBUG_)
   {
@@ -510,13 +559,13 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_tight_to_loose_wTigh
   if(central_or_shift == LeptonIDSFsys::muTightUp)
   {
     sf_mu *= getSF_leptonID_and_Iso(
-      numMuons_, muon_pt_, muon_eta_, muon_isGenMatched_, muon_isTight_, sfForTightSelection, sfMuonID_and_Iso_tight_to_loose_errors_up_, 0
+      numMuons_, muon_pt_, muon_eta_, muon_isGenMatched_, muon_isTight_, sfForTightSelection, sfMuonID_and_Iso_tight_to_loose_errors_up_, error_shift, recompSF
     );
   }
   else if(central_or_shift == LeptonIDSFsys::muTightDown)
   {
     sf_mu *= getSF_leptonID_and_Iso(
-      numMuons_, muon_pt_, muon_eta_, muon_isGenMatched_, muon_isTight_, sfForTightSelection, sfMuonID_and_Iso_tight_to_loose_errors_down_, 0
+      numMuons_, muon_pt_, muon_eta_, muon_isGenMatched_, muon_isTight_, sfForTightSelection, sfMuonID_and_Iso_tight_to_loose_errors_down_, error_shift, recompSF
     );
   }
   const double sf = sf_el * sf_mu;

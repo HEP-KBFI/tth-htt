@@ -489,6 +489,11 @@ class systematics(object):
 
     full = el_tight + mu_tight + el_loose + mu_loose
 
+  leptonIDSF_hh_recomp = [
+    "CMS_ttHl_lepEff_eltightRecompUp", "CMS_ttHl_lepEff_eltightRecompDown",
+    "CMS_ttHl_lepEff_mutightRecompUp", "CMS_ttHl_lepEff_mutightRecompDown",
+  ]
+
   class Btag(object):
 
     HF       = [ "CMS_ttHl_btag_HFUp",       "CMS_ttHl_btag_HFDown"       ]
@@ -585,12 +590,12 @@ class systematics(object):
   an_inclusive      =    central +  JES +  JER +  tauES +  UnclusteredEn +  btag
   an_inclusive_opts = [ "central", "JES", "JER", "tauES", "UnclusteredEn", "btag" ]
 
-  an_hh_multilepton = an_tth
-  an_opts_hh_multilepton = an_tth_opts
-  an_hh_bbww = an_tth + ttbar + AK8
+  an_hh_multilepton      = an_tth      +    leptonIDSF_hh_recomp
+  an_opts_hh_multilepton = an_tth_opts + [ "leptonIDSF_hh_recomp" ]
+  an_hh_bbww      = an_tth      +    ttbar +  AK8
   an_opts_hh_bbww = an_tth_opts + [ "ttbar", "AK8" ]
 
   an_internal_no_mem = central + leptonIDSF + tauIDSF + btag + FR_t + lhe + triggerSF + PU + L1PreFiring + \
                        FRe_shape + FRm_shape + DYMCReweighting + DYMCNormScaleFactors + topPtReweighting + \
-                       EWK_jet + EWK_bjet + partonShower
+                       EWK_jet + EWK_bjet + partonShower + leptonIDSF_hh_recomp
   an_internal = an_internal_no_mem + MEM + triggerSF_split
