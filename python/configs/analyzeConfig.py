@@ -1049,6 +1049,7 @@ class analyzeConfig(object):
             'fillGenEvtHistograms',
             'selectBDT',
             'secondBDT',
+            'doDataMCPlots',
             'useNonNominal',
             'apply_hlt_filter',
             'branchName_memOutput',
