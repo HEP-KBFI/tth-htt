@@ -89,7 +89,8 @@ protected:
                          const std::vector<bool> & lepton_isTight,
                          bool sfForTightSelection,
                          const std::vector<lutWrapperBase *> & corrections,
-                         int error_shift) const;
+                         int error_shift,
+                         double recompSF) const;
 
   void
   initAntiEle_tauIDSFs(const std::string & era_str);
@@ -165,6 +166,10 @@ protected:
   bool isDEBUG_;
 
   pileupJetID pileupJetId_;
+
+  bool recompTightSF_;
+  double recompTightSF_el_;
+  double recompTightSF_mu_;
 
   std::size_t numLeptons_;
   std::vector<int> lepton_type_;

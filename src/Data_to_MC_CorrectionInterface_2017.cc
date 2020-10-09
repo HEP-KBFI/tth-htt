@@ -118,6 +118,13 @@ Data_to_MC_CorrectionInterface_2017::Data_to_MC_CorrectionInterface_2017(const e
     initAntiEle_tauIDSFs(tauIDSFTool_era);
     initAntiMu_tauIDSFs(tauIDSFTool_era);
   }
+
+  if(recompTightSF_)
+  {
+    // see: https://indico.cern.ch/event/961689/contributions/4047547/attachments/2114588/3557570/HHTo4W_3l_Updates_20201002_LooseLeptonSFCorrection_1.pdf
+    recompTightSF_el_ = (1. - 0.883) / (1. - 0.755);
+    recompTightSF_mu_ = (1. - 0.981) / (1. - 0.882);
+  }
 }
 
 Data_to_MC_CorrectionInterface_2017::~Data_to_MC_CorrectionInterface_2017()

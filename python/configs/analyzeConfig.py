@@ -250,6 +250,17 @@ class analyzeConfig(object):
           self.central_or_shifts = [
             central_or_shift for central_or_shift in self.central_or_shifts if central_or_shift not in central_or_shift_fr
           ]
+        else:
+          central_or_shift_leptonEff = [
+            central_or_shift for central_or_shift in self.central_or_shifts if central_or_shift in systematics.leptonIDSF_hh_recomp
+          ]
+          if central_or_shift_leptonEff:
+            logging.warning("Removing the following systematics because not applying recomputed lepton ID SF: {}".format(
+              ", ".join(central_or_shift_leptonEff)
+            ))
+          self.central_or_shifts = [
+            central_or_shift for central_or_shift in self.central_or_shifts if central_or_shift not in central_or_shift_leptonEff
+          ]
         #------------------------------------------------------------------------
         # CV: make sure that 'central' is always first entry in self.central_or_shifts
         #    (logic for building dependencies between analysis, 'hadd', and 'addBackgrounds' jobs in derived classes may abort with KeyError otherwise)
@@ -306,7 +317,7 @@ class analyzeConfig(object):
             if self.accept_central_or_shift(central_or_shift, sample_info):
               is_central_or_shift_selected = True
               break
-          if not is_central_or_shift_selected:
+          if not is_central_or_shift_selected and central_or_shift != "central":
             central_or_shifts_remove.append(central_or_shift)
         for central_or_shift in central_or_shifts_remove:
           logging.warning("Removing systematics {} because it's never used".format(central_or_shift))
@@ -971,6 +982,8 @@ class analyzeConfig(object):
             jobOptions['lep_mva_cut_e'] = float(self.lep_mva_cut_e)
         if 'lep_mva_cut_mu' not in jobOptions:
             jobOptions['lep_mva_cut_mu'] = float(self.lep_mva_cut_mu)
+        if 'lep_mva_wp' not in jobOptions and self.lep_mva_wp != 'default':
+            jobOptions['lep_mva_wp'] = self.lep_mva_wp
         if 'lep_fakeable_pog_wp_mu_tmp1' not in jobOptions and "default" not in self.lep_fakeable_pog_wp_mu_tmp1:
             jobOptions['lep_fakeable_pog_wp_mu_tmp1'] = str(self.lep_fakeable_pog_wp_mu_tmp1)            
         if 'lep_fakeable_nearDeepJet_wp_mu_tmp1' not in jobOptions and "default" not in self.lep_fakeable_nearDeepJet_wp_mu_tmp1:
@@ -1034,6 +1047,7 @@ class analyzeConfig(object):
             'muonSelection',
             'lep_mva_cut_mu',
             'lep_mva_cut_e',
+            'lep_mva_wp',
             'lep_fakeable_pog_wp_mu_tmp1',
             'lep_fakeable_nearDeepJet_wp_mu_tmp1',
             'lep_fakeable_jetRelIso_cut_mu_tmp1',          
@@ -1061,6 +1075,7 @@ class analyzeConfig(object):
             'fillGenEvtHistograms',
             'selectBDT',
             'secondBDT',
+            'doDataMCPlots',
             'useNonNominal',
             'apply_hlt_filter',
             'branchName_memOutput',
