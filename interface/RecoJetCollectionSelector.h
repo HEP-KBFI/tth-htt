@@ -3,7 +3,7 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionSelector.h" // ParticleCollectionSelector
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h"                    // RecoJet
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h"       // Era
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h"       // Era, pileupJetID
 
 class RecoJetSelector
 {
@@ -19,6 +19,7 @@ public:
   void set_min_pt(double min_pt);
   void set_max_absEta(double max_absEta);
   void set_min_jetId(int min_jetId);
+  void set_pileupJetId(pileupJetID apply_pileupJetId);
 
   /**
    * @brief Get cut thresholds
@@ -26,6 +27,7 @@ public:
   double get_min_pt() const;
   double get_max_absEta() const;
   int get_min_jetId() const;
+  pileupJetID get_pileupJetId() const;
 
   /**
    * @brief Check if jet given as function argument passes pT and eta cuts (pT > 25 GeV and |eta| < 2.4, cf. Section 3.1 of AN-2015/321)
@@ -39,6 +41,7 @@ protected:
   Double_t min_pt_;     ///< lower cut threshold on pT
   Double_t max_absEta_; ///< upper cut threshold on absolute value of eta
   Int_t min_jetId_;     ///< lower cut threshold on jet ID value
+  pileupJetID apply_pileupJetId_;
   bool debug_;
 };
 

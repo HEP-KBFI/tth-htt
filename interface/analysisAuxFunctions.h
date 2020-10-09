@@ -61,9 +61,21 @@ enum class Era
   k2016, k2017, k2018
 };
 
+//--- declare b-tagging algorithms
 enum class Btag
 {
   kDeepJet, kDeepCSV, kCSVv2
+};
+
+//--- declare pileup jet ID working points
+enum pileupJetID { 
+  // The encoding of the pileup jet ID working points is:
+  //   puId==0 means 000: fail all PU ID;
+  //   puId==4 means 100: pass loose ID, fail medium, fail tight;
+  //   puId==6 means 110: pass loose and medium ID, fail tight;
+  //   puId==7 means 111: pass loose, medium, tight ID. 
+  // https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJetID#miniAOD_and_nanoAOD
+  kPileupJetID_disabled = 0, kPileupJetID_loose = 4, kPileupJetID_medium = 2, kPileupJetID_tight = 1 
 };
 
 //--- declare selection criteria for leptons and hadronic taus

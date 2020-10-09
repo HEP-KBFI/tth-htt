@@ -27,6 +27,16 @@ enum
   kBtag_jesUp, kBtag_jesDown,
 };
 
+//--- declare systematic uncertainties on data/MC corrections for
+//    efficiency and mistag rates for jets to pass the pileup jet ID
+enum pileupJetIDSFsys
+{
+  kPileupJetId_central,
+
+  kPileupJetId_effUp,    kPileupJetId_effDown,
+  kPileupJetId_mistagUp, kPileupJetId_mistagDown,
+};
+
 //--- declare systematic uncertainties on data/MC corrections for jet pt & mass and MET pt & phi
 enum
 {
