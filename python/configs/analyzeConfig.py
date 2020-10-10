@@ -1071,6 +1071,7 @@ class analyzeConfig(object):
             'apply_DYMCReweighting',
             'apply_DYMCNormScaleFactors',
             'apply_l1PreFireWeight',
+            'apply_pileupJetID',
             'selEventsFileName_output',
             'fillGenEvtHistograms',
             'selectBDT',
