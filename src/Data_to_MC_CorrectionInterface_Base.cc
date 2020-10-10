@@ -183,6 +183,29 @@ Data_to_MC_CorrectionInterface_Base::Data_to_MC_CorrectionInterface_Base(Era era
     }
   }
   //-----------------------------------------------------------------------------
+  if(recompTightSF_)
+  {
+    if(era_ == Era::k2016)
+    {
+      recompTightSF_el_ = 1.; // TODO
+      recompTightSF_mu_ = 1.; // TODO
+    }
+    else if(era_ == Era::k2017)
+    {
+      // see: https://indico.cern.ch/event/961689/contributions/4047547/attachments/2114588/3557570/HHTo4W_3l_Updates_20201002_LooseLeptonSFCorrection_1.pdf
+      recompTightSF_el_ = (1. - 0.883) / (1. - 0.755);
+      recompTightSF_mu_ = (1. - 0.981) / (1. - 0.882);
+    }
+    else if(era_ == Era::k2018)
+    {
+      recompTightSF_el_ = 1.; // TODO
+      recompTightSF_mu_ = 1.; // TODO
+    }
+    else
+    {
+      throw cmsException(this, __func__, __LINE__) << "Invalid era: " << as_integer(era_);
+    }
+  }
 }
 
 Data_to_MC_CorrectionInterface_Base::~Data_to_MC_CorrectionInterface_Base()
