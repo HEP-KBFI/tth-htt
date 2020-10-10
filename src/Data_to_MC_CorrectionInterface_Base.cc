@@ -338,7 +338,6 @@ Data_to_MC_CorrectionInterface_Base::setJets(const std::vector<const RecoJet *> 
     }
     jet_pt_.push_back(jet->pt());
     jet_eta_.push_back(jet->eta());
-    //jet_isPileup_.push_back(jet->genJet() && jet->genJet()->pt() > 0.50*jet->pt() ? false : true);
     jet_isPileup_.push_back(jet->genJet() ? false : true);
     jet_passesPileupJetId_.push_back(jet->passesPUID(pileupJetId_));
     ++numJets_;
@@ -828,9 +827,9 @@ Data_to_MC_CorrectionInterface_Base::getSF_pileupJetID(pileupJetIDSFsys central_
     }
     double eff = 0.;
     double sf = 0.;
-    if ( jet_isPileup_[idxJet] )
+    if ( ! jet_isPileup_[idxJet] )
     {
-      // apply efficiency to jets originating from hard-scatter interaction
+      // apply efficiency to jets originating from hard-scatter interaction (ie real jets)
       eff = effPileupJetID_->getSF(jet_pt_[idxJet], jet_eta_[idxJet]);
       sf = sfPileupJetID_eff_->getSF(jet_pt_[idxJet], jet_eta_[idxJet]);
       const double sfErr = sfPileupJetID_eff_errors_->getSF(jet_pt_[idxJet], jet_eta_[idxJet]);
