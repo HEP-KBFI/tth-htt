@@ -64,6 +64,7 @@ public:
   Double_t maxPt() const;
 
   bool hasBtag(Btag btag) const;
+  bool passesPUID(int puIdWP) const;
 
   int get_default_systematics() const;
   const Particle::LorentzVector get_systematics_p4(int central_or_shift) const;

@@ -164,6 +164,12 @@ RecoJet::hasBtag(Btag btag) const
   return BtagCSVs_.count(btag);
 }
 
+bool
+RecoJet::passesPUID(int puIdWP) const
+{
+  return this->puId() & puIdWP;
+}
+
 int
 RecoJet::get_default_systematics() const
 {

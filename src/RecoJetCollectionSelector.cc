@@ -120,7 +120,7 @@ RecoJetSelector::operator()(const RecoJet & jet) const
   // https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJetID
   if ( apply_pileupJetId_ != kPileupJetID_disabled && jet.pt() < 50. )
   {
-    if ( !(jet.puId() & apply_pileupJetId_) )
+    if ( ! jet.passesPUID(apply_pileupJetId_) )
     {
       if(debug_)
       {

@@ -40,6 +40,7 @@ Data_to_MC_CorrectionInterface_Base::Data_to_MC_CorrectionInterface_Base(Era era
   , tauIdSFs_(nullptr)
   , applyHadTauSF_(true)
   , isDEBUG_(cfg.exists("isDEBUG") ? cfg.getParameter<bool>("isDEBUG") : false)
+  , pileupJetId_(kPileupJetID_disabled)
   , recompTightSF_(cfg.exists("lep_mva_wp") && cfg.getParameter<std::string>("lep_mva_wp") == "hh_multilepton")
   , recompTightSF_el_(1.)
   , recompTightSF_mu_(1.)
@@ -111,13 +112,7 @@ Data_to_MC_CorrectionInterface_Base::Data_to_MC_CorrectionInterface_Base(Era era
   // https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJetID
   if ( cfg.exists("pileupJetID") )
   {
-    std::string pileupJetId_string = cfg.getParameter<std::string>("pileupJetID");
-    if      ( pileupJetId_string == "disabled" ) pileupJetId_ = kPileupJetID_disabled;
-    else if ( pileupJetId_string == "loose"    ) pileupJetId_ = kPileupJetID_loose;
-    else if ( pileupJetId_string == "medium"   ) pileupJetId_ = kPileupJetID_medium;
-    else if ( pileupJetId_string == "tight"    ) pileupJetId_ = kPileupJetID_tight;
-    else throw cmsException(__func__)
-  	 << "Invalid Configuration parameter 'pileupJetID' = " << pileupJetId_string << "!!";
+    pileupJetId_ = get_pileupJetID(cfg.getParameter<std::string>("pileupJetID"));
     if ( pileupJetId_ != kPileupJetID_disabled )
     {
       const std::string era_string = get_era(era_);
@@ -128,11 +123,11 @@ Data_to_MC_CorrectionInterface_Base::Data_to_MC_CorrectionInterface_Base(Era era
       //   puId==6 means 110: pass loose and medium ID, fail tight;
       //   puId==7 means 111: pass loose, medium, tight ID. 
       // https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJetID#miniAOD_and_nanoAOD
-      if ( pileupJetId_ == kPileupJetID_loose ) 
+      if ( pileupJetId_ == kPileupJetID_loose )
       {
         wp_string = "L";
       }
-      else if ( pileupJetId_ == kPileupJetID_medium ) 
+      else if ( pileupJetId_ == kPileupJetID_medium )
       {
         wp_string = "M";
       }
@@ -341,7 +336,7 @@ Data_to_MC_CorrectionInterface_Base::setJets(const std::vector<const RecoJet *> 
     jet_eta_.push_back(jet->eta());
     //jet_isPileup_.push_back(jet->genJet() && jet->genJet()->pt() > 0.50*jet->pt() ? false : true);
     jet_isPileup_.push_back(jet->genJet() ? false : true);
-    jet_passesPileupJetId_.push_back(jet->puId() & pileupJetId_);
+    jet_passesPileupJetId_.push_back(jet->passesPUID(pileupJetId_));
     ++numJets_;
   }
 }
@@ -813,8 +808,20 @@ Data_to_MC_CorrectionInterface_Base::getSF_pileupJetID(pileupJetIDSFsys central_
   // https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJetID
   double prob_mc = 1.;
   double prob_data = 1.;
+  if(isDEBUG_)
+  {
+    std::cout << get_human_line(this, __func__, __LINE__) << " -> sys unc = " << as_integer(central_or_shift) << '\n';
+  }
   for(std::size_t idxJet = 0; idxJet < numJets_; ++idxJet)
   {
+    if(isDEBUG_)
+    {
+      std::cout
+        << get_human_line(this, __func__, __LINE__)
+        << '#' << idxJet << " jet (pT = " << jet_pt_[idxJet] << ", eta = " << jet_eta_[idxJet] << ", "
+           "is PU? = " << jet_isPileup_[idxJet] << ", passes PU? " << jet_passesPileupJetId_[idxJet] << ") -> "
+      ;
+    }
     double eff = 0.;
     double sf = 0.;
     if ( jet_isPileup_[idxJet] )
@@ -823,6 +830,10 @@ Data_to_MC_CorrectionInterface_Base::getSF_pileupJetID(pileupJetIDSFsys central_
       eff = effPileupJetID_->getSF(jet_pt_[idxJet], jet_eta_[idxJet]);
       sf = sfPileupJetID_eff_->getSF(jet_pt_[idxJet], jet_eta_[idxJet]);
       const double sfErr = sfPileupJetID_eff_errors_->getSF(jet_pt_[idxJet], jet_eta_[idxJet]);
+      if(isDEBUG_)
+      {
+        std::cout << "eff = " << eff << ", sf = " << sf << " +/- " << sfErr;
+      }
       if      ( central_or_shift == pileupJetIDSFsys::effUp   ) sf += sfErr;
       else if ( central_or_shift == pileupJetIDSFsys::effDown ) sf -= sfErr;
     }
@@ -832,11 +843,15 @@ Data_to_MC_CorrectionInterface_Base::getSF_pileupJetID(pileupJetIDSFsys central_
       eff = mistagPileupJetID_->getSF(jet_pt_[idxJet], jet_eta_[idxJet]);
       sf = sfPileupJetID_mistag_->getSF(jet_pt_[idxJet], jet_eta_[idxJet]);
       const double sfErr = sfPileupJetID_mistag_errors_->getSF(jet_pt_[idxJet], jet_eta_[idxJet]);
+      if(isDEBUG_)
+      {
+        std::cout << "mistag = " << eff << ", sf = " << sf << " +/- " << sfErr;
+      }
       if      ( central_or_shift == pileupJetIDSFsys::mistagUp   ) sf += sfErr;
       else if ( central_or_shift == pileupJetIDSFsys::mistagDown ) sf -= sfErr;
     }
     // CV: limit SF to the range [0..5], following the recommendation given by the JetMET POG on the twiki
-    // https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJetID  
+    // https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJetID
     sf = std::clamp(sf, 0., 5.);
     if ( jet_passesPileupJetId_[idxJet] )
     {
@@ -847,8 +862,19 @@ Data_to_MC_CorrectionInterface_Base::getSF_pileupJetID(pileupJetIDSFsys central_
     {
       prob_mc *= (1.0 - eff);
       prob_data *= (1.0 - sf*eff);
-    }    
+    }
+    if(isDEBUG_)
+    {
+      std::cout << " => sf = " << sf << ", prob_mc = " << prob_mc << ", prob_data = " << prob_data << '\n';
+    }
   }
   const double sf = aux::compSF(prob_data, prob_mc);
+  if(isDEBUG_)
+  {
+    std::cout
+      << get_human_line(this, __func__, __LINE__)
+      << "prob_mc = " << prob_mc << ", prob_data = " << prob_data << " => SF = " << sf << '\n'
+    ;
+  }
   return sf;
 }
