@@ -120,11 +120,7 @@ Data_to_MC_CorrectionInterface_Base::Data_to_MC_CorrectionInterface_Base(Era era
   	 << "Invalid Configuration parameter 'pileupJetID' = " << pileupJetId_string << "!!";
     if ( pileupJetId_ != kPileupJetID_disabled )
     {
-      std::string era_string;
-      if      ( era_ == Era::k2016 ) era_string = "2016";
-      else if ( era_ == Era::k2017 ) era_string = "2017";
-      else if ( era_ == Era::k2018 ) era_string = "2018";
-      else assert(0);
+      const std::string era_string = get_era(era_);
       std::string wp_string;
       // The encoding of the pileup jet ID working points is:
       //   puId==0 means 000: fail all PU ID;
@@ -144,7 +140,10 @@ Data_to_MC_CorrectionInterface_Base::Data_to_MC_CorrectionInterface_Base(Era era
       {
         wp_string = "T";
       }
-      else assert(0);
+      else
+      {
+        throw cmsException(this, __func__, __LINE__) << "Option 'pileupJetId_' set to an invalid value: " << pileupJetId_;
+      }
       effPileupJetID_ = new lutWrapperTH2(
         inputFiles_,
         "tthAnalysis/HiggsToTauTau/data/pileupJetIdSF/effcyPUID_81Xtraining.root",
@@ -785,7 +784,7 @@ Data_to_MC_CorrectionInterface_Base::getSF_muToTauFakeRate(FRmt central_or_shift
 }
 
 double
-Data_to_MC_CorrectionInterface_Base::getSF_pileupJetID(pileupJetIDSFsys central_or_shift)
+Data_to_MC_CorrectionInterface_Base::getSF_pileupJetID(pileupJetIDSFsys central_or_shift) const
 {
   // CV: Compute SF for efficiencies and mistag rates for jets to pass the pileup jet ID, following the recipe provided by the JetMET POG
   // https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJetID
@@ -800,23 +799,22 @@ Data_to_MC_CorrectionInterface_Base::getSF_pileupJetID(pileupJetIDSFsys central_
       // apply efficiency to jets originating from hard-scatter interaction
       eff = effPileupJetID_->getSF(jet_pt_[idxJet], jet_eta_[idxJet]);
       sf = sfPileupJetID_eff_->getSF(jet_pt_[idxJet], jet_eta_[idxJet]);
-      double sfErr = sfPileupJetID_eff_errors_->getSF(jet_pt_[idxJet], jet_eta_[idxJet]);
-      if      ( central_or_shift == kPileupJetId_effUp   ) sf += sfErr;
-      else if ( central_or_shift == kPileupJetId_effDown ) sf -= sfErr;
+      const double sfErr = sfPileupJetID_eff_errors_->getSF(jet_pt_[idxJet], jet_eta_[idxJet]);
+      if      ( central_or_shift == pileupJetIDSFsys::effUp   ) sf += sfErr;
+      else if ( central_or_shift == pileupJetIDSFsys::effDown ) sf -= sfErr;
     }
     else
     {
       // apply mistag rate to pileup jets
       eff = mistagPileupJetID_->getSF(jet_pt_[idxJet], jet_eta_[idxJet]);
       sf = sfPileupJetID_mistag_->getSF(jet_pt_[idxJet], jet_eta_[idxJet]);
-      double sfErr = sfPileupJetID_mistag_errors_->getSF(jet_pt_[idxJet], jet_eta_[idxJet]);
-      if      ( central_or_shift == kPileupJetId_mistagUp   ) sf += sfErr;
-      else if ( central_or_shift == kPileupJetId_mistagDown ) sf -= sfErr;
+      const double sfErr = sfPileupJetID_mistag_errors_->getSF(jet_pt_[idxJet], jet_eta_[idxJet]);
+      if      ( central_or_shift == pileupJetIDSFsys::mistagUp   ) sf += sfErr;
+      else if ( central_or_shift == pileupJetIDSFsys::mistagDown ) sf -= sfErr;
     }
     // CV: limit SF to the range [0..5], following the recommendation given by the JetMET POG on the twiki
     // https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJetID  
-    if ( sf < 0. ) sf = 0.;
-    if ( sf > 5. ) sf = 5.;
+    sf = std::clamp(sf, 0., 5.);
     if ( jet_passesPileupJetId_[idxJet] )
     {
       prob_mc *= eff;
@@ -828,6 +826,6 @@ Data_to_MC_CorrectionInterface_Base::getSF_pileupJetID(pileupJetIDSFsys central_
       prob_data *= (1.0 - sf*eff);
     }    
   }
-  double sf = aux::compSF(prob_data, prob_mc);
+  const double sf = aux::compSF(prob_data, prob_mc);
   return sf;
 }

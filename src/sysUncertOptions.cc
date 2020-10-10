@@ -77,6 +77,17 @@ getBTagWeight_option(const std::string & central_or_shift)
   return central_or_shift_int;
 }
 
+pileupJetIDSFsys
+getPileupJetIDSFsys_option(const std::string & central_or_shift)
+{
+  pileupJetIDSFsys central_or_shift_int = pileupJetIDSFsys::central;
+  if     (central_or_shift == "CMS_ttHl_puJetIDEffUp"     ) central_or_shift_int = pileupJetIDSFsys::effUp;
+  else if(central_or_shift == "CMS_ttHl_puJetIDEffDown"   ) central_or_shift_int = pileupJetIDSFsys::effDown;
+  else if(central_or_shift == "CMS_ttHl_puJetIDMistagUp"  ) central_or_shift_int = pileupJetIDSFsys::mistagUp;
+  else if(central_or_shift == "CMS_ttHl_puJetIDMistagDown") central_or_shift_int = pileupJetIDSFsys::mistagDown;
+  return central_or_shift_int;
+}
+
 int
 getJet_option(const std::string & central_or_shift,
               bool isMC)

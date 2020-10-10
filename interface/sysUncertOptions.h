@@ -29,12 +29,11 @@ enum
 
 //--- declare systematic uncertainties on data/MC corrections for
 //    efficiency and mistag rates for jets to pass the pileup jet ID
-enum pileupJetIDSFsys
+enum class pileupJetIDSFsys
 {
-  kPileupJetId_central,
-
-  kPileupJetId_effUp,    kPileupJetId_effDown,
-  kPileupJetId_mistagUp, kPileupJetId_mistagDown,
+  central,
+  effUp,    effDown,
+  mistagUp, mistagDown,
 };
 
 //--- declare systematic uncertainties on data/MC corrections for jet pt & mass and MET pt & phi
@@ -261,6 +260,9 @@ isValidFatJetAttribute(int central_or_shift,
  */
 int
 getBTagWeight_option(const std::string & central_or_shift);
+
+pileupJetIDSFsys
+getPileupJetIDSFsys_option(const std::string & central_or_shift);
 
 int
 getJet_option(const std::string & central_or_shift,
