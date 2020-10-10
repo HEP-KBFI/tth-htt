@@ -332,6 +332,10 @@ Data_to_MC_CorrectionInterface_Base::setJets(const std::vector<const RecoJet *> 
   jet_passesPileupJetId_.clear();
   for(const RecoJet * const jet: jets)
   {
+    if(! jet->is_PUID_taggable())
+    {
+      continue;
+    }
     jet_pt_.push_back(jet->pt());
     jet_eta_.push_back(jet->eta());
     //jet_isPileup_.push_back(jet->genJet() && jet->genJet()->pt() > 0.50*jet->pt() ? false : true);

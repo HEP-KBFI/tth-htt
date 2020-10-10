@@ -116,9 +116,7 @@ RecoJetSelector::operator()(const RecoJet & jet) const
     }
     return false;
   }
-  // CV: apply pileup jet ID to jets of pT < 50 GeV only, following recommendation of JetMET POG
-  // https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJetID
-  if ( apply_pileupJetId_ != kPileupJetID_disabled && jet.pt() < 50. )
+  if ( apply_pileupJetId_ != kPileupJetID_disabled && jet.is_PUID_taggable() )
   {
     if ( ! jet.passesPUID(apply_pileupJetId_) )
     {
