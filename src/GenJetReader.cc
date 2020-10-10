@@ -70,7 +70,7 @@ GenJetReader::read_partonFlavour()
   branchName_pdgId_ = Form("%s_%s", branchName_obj_.data(), "partonFlavour");
 }
 
-void
+std::vector<std::string>
 GenJetReader::setBranchAddresses(TTree * tree)
 {
   if(instances_[branchName_obj_] == this)
@@ -82,7 +82,9 @@ GenJetReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(jet_phi_, branchName_phi_);
     bai.setBranchAddress(jet_mass_, branchName_mass_);
     bai.setBranchAddress(jet_pdgId_, branchName_pdgId_);
+    return bai.getBoundBranchNames();
   }
+  return {};
 }
 
 std::vector<GenJet> GenJetReader::read() const

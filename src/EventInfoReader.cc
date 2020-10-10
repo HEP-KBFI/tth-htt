@@ -35,7 +35,7 @@ EventInfoReader::~EventInfoReader()
   }
 }
 
-void
+std::vector<std::string>
 EventInfoReader::setBranchAddresses(TTree * tree)
 {
   BranchAddressInitializer bai(tree);
@@ -79,6 +79,7 @@ EventInfoReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(info_ -> gen_mHH, branchName_gen_mHH);
     bai.setBranchAddress(info_ -> gen_cosThetaStar, branchName_gen_cosThetaStar);
   }
+  return bai.getBoundBranchNames();
 }
 
 void

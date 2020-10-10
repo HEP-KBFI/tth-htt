@@ -21,7 +21,7 @@ hltPathReader::hltPathReader(const std::vector<std::vector<hltPath *>> & hltPath
   }
 }
 
-void
+std::vector<std::string>
 hltPathReader::setBranchAddresses(TTree * tree) 
 {
   const std::vector<std::string> available_branches = this->get_available_branches(tree);
@@ -38,6 +38,7 @@ hltPathReader::setBranchAddresses(TTree * tree)
       hltPath_->value_ = false;
     }
   }
+  return bai.getBoundBranchNames();
 }
 
 std::vector<std::string>

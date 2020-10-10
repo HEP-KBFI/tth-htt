@@ -18,7 +18,7 @@ public:
   /**
    * @brief Call tree->SetBranchAddress for all MEMOutput_2lss_1tau branches
    */
-  void
+  std::vector<std::string>
   setBranchAddresses(TTree * tree) override;
 
   /**

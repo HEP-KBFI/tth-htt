@@ -69,7 +69,7 @@ PSWeightReader::setBranchNames()
   ++numInstances_[branchName_PSweights_];
 }
 
-void
+std::vector<std::string>
 PSWeightReader::setBranchAddresses(TTree * tree)
 {
   if(instances_[branchName_PSweights_] == this)
@@ -84,7 +84,9 @@ PSWeightReader::setBranchAddresses(TTree * tree)
     {
       bai.setBranchAddress(LHE_nom_, branchName_LHE_nom_, 1.);
     }
+    return bai.getBoundBranchNames();
   }
+  return {};
 }
 
 void

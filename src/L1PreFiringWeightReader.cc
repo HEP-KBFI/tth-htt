@@ -40,7 +40,7 @@ L1PreFiringWeightReader::setBranchNames()
   ++numInstances_[branchName_l1PreFiringWeight_];
 }
 
-void
+std::vector<std::string>
 L1PreFiringWeightReader::setBranchAddresses(TTree * tree)
 {
   if(era_ != Era::k2018)
@@ -49,7 +49,9 @@ L1PreFiringWeightReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(l1PreFiringWeight_nominal_, Form("%s_Nom", branchName_l1PreFiringWeight_.data()), 1.);
     bai.setBranchAddress(l1PreFiringWeight_up_,      Form("%s_Up",  branchName_l1PreFiringWeight_.data()), 1.);
     bai.setBranchAddress(l1PreFiringWeight_down_,    Form("%s_Dn",  branchName_l1PreFiringWeight_.data()), 1.);
+    return bai.getBoundBranchNames();
   }
+  return {};
 }
 
 double

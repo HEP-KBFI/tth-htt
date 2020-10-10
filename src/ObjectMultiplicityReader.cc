@@ -18,7 +18,7 @@ ObjectMultiplicityReader::ObjectMultiplicityReader(ObjectMultiplicity * objectMu
 ObjectMultiplicityReader::~ObjectMultiplicityReader()
 {}
 
-void
+std::vector<std::string>
 ObjectMultiplicityReader::setBranchAddresses(TTree * tree)
 {
   BranchAddressInitializer bai(tree);
@@ -61,6 +61,7 @@ ObjectMultiplicityReader::setBranchAddresses(TTree * tree)
       );
     }
   }
+  return bai.getBoundBranchNames();
 }
 
 void

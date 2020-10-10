@@ -83,7 +83,7 @@ GenPhotonReader::setBranchNames()
   ++numInstances_[branchName_obj_];
 }
 
-void
+std::vector<std::string>
 GenPhotonReader::setBranchAddresses(TTree * tree)
 {
   if(instances_[branchName_obj_] == this)
@@ -98,7 +98,9 @@ GenPhotonReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(photon_status_, branchName_status_);
     bai.setBranchAddress(photon_statusFlags_, branchName_statusFlags_);
     bai.setBranchAddress(photon_genPartFlav_, readGenPartFlav_ ? branchName_genPartFlav_ : "");
+    return bai.getBoundBranchNames();
   }
+  return {};
 }
 
 std::vector<GenPhoton>

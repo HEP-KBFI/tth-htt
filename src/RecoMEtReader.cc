@@ -99,7 +99,7 @@ RecoMEtReader::setBranchNames()
   ++numInstances_[branchName_obj_];
 }
 
-void
+std::vector<std::string>
 RecoMEtReader::setBranchAddresses(TTree * tree)
 {
   if(instances_[branchName_obj_] == this)
@@ -128,7 +128,10 @@ RecoMEtReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(met_.covXX_, branchName_covXX_);
     bai.setBranchAddress(met_.covXY_, branchName_covXY_);
     bai.setBranchAddress(met_.covYY_, branchName_covYY_);
+
+    return bai.getBoundBranchNames();
   }
+  return {};
 }
 
 RecoMEt

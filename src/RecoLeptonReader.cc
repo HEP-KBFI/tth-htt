@@ -168,17 +168,23 @@ RecoLeptonReader::setBranchNames()
   ++numInstances_[branchName_obj_];
 }
 
-void
+std::vector<std::string>
 RecoLeptonReader::setBranchAddresses(TTree * tree)
 {
+  std::vector<std::string> bound_branches;
   if(instances_[branchName_obj_] == this)
   {
     if(readGenMatching_)
     {
-      genLeptonReader_->setBranchAddresses(tree);
-      genHadTauReader_->setBranchAddresses(tree);
-      genPhotonReader_->setBranchAddresses(tree);
-      genJetReader_->setBranchAddresses(tree);
+      const std::vector<std::string> genLeptonBranches = genLeptonReader_->setBranchAddresses(tree);
+      const std::vector<std::string> genHadTauBranches = genHadTauReader_->setBranchAddresses(tree);
+      const std::vector<std::string> genPhotonBranches = genPhotonReader_->setBranchAddresses(tree);
+      const std::vector<std::string> genJetBranches = genJetReader_->setBranchAddresses(tree);
+
+      bound_branches.insert(bound_branches.end(), genLeptonBranches.begin(), genLeptonBranches.end());
+      bound_branches.insert(bound_branches.end(), genHadTauBranches.begin(), genHadTauBranches.end());
+      bound_branches.insert(bound_branches.end(), genPhotonBranches.begin(), genPhotonBranches.end());
+      bound_branches.insert(bound_branches.end(), genJetBranches.begin(), genJetBranches.end());
     }
     BranchAddressInitializer bai(tree, max_nLeptons_);
     bai.setBranchAddress(nLeptons_, branchName_num_);
@@ -212,5 +218,9 @@ RecoLeptonReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(jetIdx_, branchName_jetIdx_);
     bai.setBranchAddress(genPartFlav_, isMC_ ? branchName_genPartFlav_ : "");
     bai.setBranchAddress(genMatchIdx_, isMC_ ? branchName_genMatchIdx_ : "");
+
+    const std::vector<std::string> recoLeptonBranches = bai.getBoundBranchNames();
+    bound_branches.insert(bound_branches.end(), recoLeptonBranches.begin(), recoLeptonBranches.end());
   }
+  return bound_branches;
 }

@@ -27,7 +27,7 @@ public:
   /**
    * @brief Call tree->SetBranchAddress for all branches containing LHE (scale and PDF) information
    */
-  void
+  std::vector<std::string>
   setBranchAddresses(TTree * tree) override;
 
   double

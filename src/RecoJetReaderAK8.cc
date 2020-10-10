@@ -143,13 +143,16 @@ RecoJetReaderAK8::setBranchNames()
   ++numInstances_[branchName_obj_];
 }
 
-void
+std::vector<std::string>
 RecoJetReaderAK8::setBranchAddresses(TTree * tree)
 {
+  std::vector<std::string> bound_branches;
   if(instances_[branchName_obj_] == this)
   {
     BranchAddressInitializer bai(tree, max_nJets_);
-    subjetReader_->setBranchAddresses(tree);
+    const std::vector<std::string> subjetBranches = subjetReader_->setBranchAddresses(tree);
+    bound_branches.insert(bound_branches.end(), subjetBranches.begin(), subjetBranches.end());
+
     bai.setBranchAddress(nJets_, branchName_num_);
     bai.setBranchAddress(jet_pt_systematics_[sysOption_central_],        branchNames_pt_systematics_.at(sysOption_central_));
     bai.setBranchAddress(jet_mass_systematics_[sysOption_central_],      branchNames_mass_systematics_.at(sysOption_central_));
@@ -188,7 +191,11 @@ RecoJetReaderAK8::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(jet_tau3_, branchName_tau3_);
     bai.setBranchAddress(jet_tau4_, branchName_tau4_);
     bai.setBranchAddress(jet_jetId_, branchName_jetId_);
+
+    const std::vector<std::string> recoFatJetBranches = bai.getBoundBranchNames();
+    bound_branches.insert(bound_branches.end(), recoFatJetBranches.begin(), recoFatJetBranches.end());
   }
+  return bound_branches;
 }
 
 namespace

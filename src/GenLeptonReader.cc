@@ -87,7 +87,7 @@ GenLeptonReader::setBranchNames()
   ++numInstances_[branchName_promptLeptons_];
 }
 
-void
+std::vector<std::string>
 GenLeptonReader::setBranchAddresses(TTree * tree)
 {
   if(instances_[branchName_promptLeptons_] == this)
@@ -103,7 +103,9 @@ GenLeptonReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(promptLepton_status_, branchName_promptLepton_status_);
     bai.setBranchAddress(promptLepton_statusFlags_, branchName_promptLepton_statusFlags_);
     bai.setBranchAddress(promptLepton_genPartFlav_, readGenPartFlav_ ? branchName_promptLepton_genPartFlav_ : "");
+    return bai.getBoundBranchNames();
   }
+  return {};
 }
 
 std::vector<GenLepton>

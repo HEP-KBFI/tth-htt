@@ -23,7 +23,7 @@ public:
   /**
    * @brief Call tree->SetBranchAddress for all RecoSubjetAK8 branches
    */
-  void
+  std::vector<std::string>
   setBranchAddresses(TTree * tree) override;
 
   /**

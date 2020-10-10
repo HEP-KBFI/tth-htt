@@ -242,17 +242,22 @@ RecoJetReader::setBranchNames()
   ++numInstances_[branchName_obj_];
 }
 
-void
+std::vector<std::string>
 RecoJetReader::setBranchAddresses(TTree * tree)
 {
+  std::vector<std::string> bound_branches;
   if(instances_[branchName_obj_] == this)
   {
     BranchAddressInitializer bai(tree, max_nJets_);
     if(readGenMatching_)
     {
-      genLeptonReader_->setBranchAddresses(tree);
-      genHadTauReader_->setBranchAddresses(tree);
-      genJetReader_->setBranchAddresses(tree);
+      const std::vector<std::string> genLeptonBranches = genLeptonReader_->setBranchAddresses(tree);
+      const std::vector<std::string> genHadTauBranches = genHadTauReader_->setBranchAddresses(tree);
+      const std::vector<std::string> genJetBranches = genJetReader_->setBranchAddresses(tree);
+
+      bound_branches.insert(bound_branches.end(), genLeptonBranches.begin(), genLeptonBranches.end());
+      bound_branches.insert(bound_branches.end(), genHadTauBranches.begin(), genHadTauBranches.end());
+      bound_branches.insert(bound_branches.end(), genJetBranches.begin(), genJetBranches.end());
     }
     bai.setBranchAddress(jet_pt_systematics_[ptMassOption_branch_],   branchNames_pt_systematics_[ptMassOption_branch_]);
     bai.setBranchAddress(jet_mass_systematics_[ptMassOption_branch_], branchNames_mass_systematics_[ptMassOption_branch_]);
@@ -313,7 +318,11 @@ RecoJetReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(jet_puId_, branchName_puId_);
     bai.setBranchAddress(jet_jetIdx_, branchName_jetIdx_);
     bai.setBranchAddress(jet_genMatchIdx_, isMC_ && branchName_obj_ == "Jet" ? branchName_genMatchIdx_ : "", -1);
+
+    const std::vector<std::string> recoJetBranches = bai.getBoundBranchNames();
+    bound_branches.insert(bound_branches.end(), recoJetBranches.begin(), recoJetBranches.end());
   }
+  return bound_branches;
 }
 
 std::vector<RecoJet>

@@ -77,7 +77,7 @@ RecoSubjetReaderAK8::setBranchNames()
   ++numInstances_[branchName_obj_];
 }
 
-void
+std::vector<std::string>
 RecoSubjetReaderAK8::setBranchAddresses(TTree * tree)
 {
   if(instances_[branchName_obj_] == this)
@@ -89,7 +89,9 @@ RecoSubjetReaderAK8::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(jet_phi_, branchName_phi_);
     bai.setBranchAddress(jet_mass_, branchName_mass_);
     bai.setBranchAddress(jet_BtagCSV_, branchName_BtagCSV_);
+    return bai.getBoundBranchNames();
   }
+  return {};
 }
 
 std::vector<RecoSubjetAK8>

@@ -41,7 +41,7 @@ MEtFilterReader::setBranchNames()
   ++numInstances_;
 }
 
-void
+std::vector<std::string>
 MEtFilterReader::setBranchAddresses(TTree * tree)
 {
   if(instance_ == this)
@@ -66,5 +66,7 @@ MEtFilterReader::setBranchAddresses(TTree * tree)
       }
       bai.setBranchAddress(metFilter_->getFlagRef(flag_enum), metFilterFlagString);
     }
+    return bai.getBoundBranchNames();
   }
+  return {};
 }

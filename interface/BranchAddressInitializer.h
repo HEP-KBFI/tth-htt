@@ -72,6 +72,7 @@ public:
     if(! branchName.empty() && ! (ignoreErrors_ && ! hasBranchName(branchName)))
     {
       tree_ -> SetBranchAddress(branchName.data(), &value);
+      recordBoundBranchName(branchName);
     }
   }
 
@@ -91,6 +92,7 @@ public:
     if(! branchName.empty() && ! (ignoreErrors_ && ! hasBranchName(branchName)))
     {
       tree_ -> SetBranchAddress(branchName.data(), address);
+      recordBoundBranchName(branchName);
     }
   }
 
@@ -99,6 +101,12 @@ public:
   {
     lenVar_ = lenVar;
     return *this;
+  }
+
+  std::vector<std::string>
+  getBoundBranchNames() const
+  {
+    return boundBranchNames_;
   }
 
 protected:
@@ -130,12 +138,23 @@ protected:
     return std::find(inputBranchNames_.cbegin(), inputBranchNames_.cend(), branchName) != inputBranchNames_.cend();
   }
 
+  void
+  recordBoundBranchName(const std::string & branchName)
+  {
+    if(std::find(boundBranchNames_.cbegin(), boundBranchNames_.cend(), branchName) != boundBranchNames_.cend())
+    {
+      throw cmsException(this, __func__, __LINE__) << "Branch name '" << branchName << "' already bound";
+    }
+    boundBranchNames_.push_back(branchName);
+  }
+
   TTree * tree_;
   int lenVar_;
   std::string branchName_n_;
   bool ignoreErrors_;
   bool inputBranchNamesFound_;
   std::vector<std::string> inputBranchNames_;
+  std::vector<std::string> boundBranchNames_;
 };
 
 #endif // BRANCHADDRESSINITIALIZER_H

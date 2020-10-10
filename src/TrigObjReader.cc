@@ -75,7 +75,7 @@ TrigObjReader::setBranchNames()
   ++numInstances_[branchName_obj_];
 }
 
-void
+std::vector<std::string>
 TrigObjReader::setBranchAddresses(TTree * tree)
 {
   if(instances_[branchName_obj_] == this)
@@ -90,7 +90,9 @@ TrigObjReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(trigObj_l1pt_, branchName_l1pt_);
     bai.setBranchAddress(trigObj_l1pt_2_, branchName_l1pt_2_);
     bai.setBranchAddress(trigObj_l1iso_, branchName_l1iso_);
+    return bai.getBoundBranchNames();
   }
+  return {};
 }
 
 std::vector<TrigObj>

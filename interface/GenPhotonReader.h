@@ -21,7 +21,7 @@ public:
   /**
    * @brief Call tree->SetBranchAddress for all GenPhoton branches
    */
-  void
+  std::vector<std::string>
   setBranchAddresses(TTree * tree) override;
 
   /**
