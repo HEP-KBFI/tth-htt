@@ -10,6 +10,7 @@ RecoJetSelector::RecoJetSelector(Era era,
   , min_pt_(25.)
   , max_absEta_(2.4)
   , min_jetId_(-1.e+3)
+  , apply_pileupJetId_(kPileupJetID_disabled)
   , debug_(debug)
 {
   switch(era)
@@ -39,6 +40,12 @@ RecoJetSelector::set_min_jetId(int min_jetId)
   min_jetId_ = min_jetId;
 }
 
+void 
+RecoJetSelector::set_pileupJetId(pileupJetID apply_pileupJetId)
+{
+  apply_pileupJetId_ = apply_pileupJetId;
+}
+
 double
 RecoJetSelector::get_min_pt() const
 {
@@ -55,6 +62,12 @@ int
 RecoJetSelector::get_min_jetId() const
 {
   return min_jetId_;
+}
+
+pileupJetID
+RecoJetSelector::get_pileupJetId() const
+{
+  return apply_pileupJetId_;
 }
 
 bool
@@ -99,9 +112,20 @@ RecoJetSelector::operator()(const RecoJet & jet) const
   {
     if(debug_)
     {
-      std::cout << "FAILS jet ID = " << jet.jetId() << " >= " << min_jetId_ << " cut\n";
+      std::cout << "FAILS PF-jet ID = " << jet.jetId() << " >= " << min_jetId_ << " cut\n";
     }
     return false;
+  }
+  if ( apply_pileupJetId_ != kPileupJetID_disabled && jet.is_PUID_taggable() )
+  {
+    if ( ! jet.passesPUID(apply_pileupJetId_) )
+    {
+      if(debug_)
+      {
+        std::cout << "FAILS PU-jet ID = " << jet.puId() << " & " << apply_pileupJetId_ << " cut\n";
+      }
+      return false;
+    }
   }
   return true;
 }

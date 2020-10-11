@@ -10,7 +10,7 @@
 #include <cmath> // std::fabs(), std::sqrt()
 
 Data_to_MC_CorrectionInterface_2018::Data_to_MC_CorrectionInterface_2018(const edm::ParameterSet & cfg)
-  : Data_to_MC_CorrectionInterface_Base(cfg)
+  : Data_to_MC_CorrectionInterface_Base(Era::k2018, cfg)
 {
   // Reconstruction efficiencies of electrons, measured by EGamma POG
   // https://twiki.cern.ch/twiki/pub/CMS/EgammaIDRecipesRun2/egammaEffi.txt_EGM2D_updatedAll.root

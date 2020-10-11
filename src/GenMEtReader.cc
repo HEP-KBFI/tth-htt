@@ -45,15 +45,17 @@ GenMEtReader::setBranchNames()
   ++numInstances_[branchName_obj_];
 }
 
-void
+std::vector<std::string>
 GenMEtReader::setBranchAddresses(TTree * tree)
 {
   if(instances_[branchName_obj_] == this)
-    {
-      BranchAddressInitializer bai(tree);
-      bai.setBranchAddress(met_.pt_,  branchName_pt_);
-      bai.setBranchAddress(met_.phi_, branchName_phi_);
-    }
+  {
+    BranchAddressInitializer bai(tree);
+    bai.setBranchAddress(met_.pt_,  branchName_pt_);
+    bai.setBranchAddress(met_.phi_, branchName_phi_);
+    return bai.getBoundBranchNames();
+  }
+  return {};
 }
 
 GenMEt

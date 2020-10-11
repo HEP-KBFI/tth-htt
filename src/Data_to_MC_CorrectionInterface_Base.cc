@@ -3,6 +3,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/lutAuxFunctions.h" // get_from_lut()
 #include "tthAnalysis/HiggsToTauTau/interface/leptonTypes.h" // kElectron, kMuon
 #include "tthAnalysis/HiggsToTauTau/interface/data_to_MC_corrections_auxFunctions.h" // aux::
+#include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // pileupJetIDSFsys
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // get_tau_id_wp_int()
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuon.h" // RecoMuon
@@ -26,16 +27,28 @@ namespace
   }
 }
 
-Data_to_MC_CorrectionInterface_Base::Data_to_MC_CorrectionInterface_Base(const edm::ParameterSet & cfg)
-  : hadTauSelection_(-1)
+Data_to_MC_CorrectionInterface_Base::Data_to_MC_CorrectionInterface_Base(Era era, const edm::ParameterSet & cfg)
+  : effPileupJetID_(nullptr)
+  , sfPileupJetID_eff_(nullptr)
+  , sfPileupJetID_eff_errors_(nullptr)
+  , mistagPileupJetID_(nullptr)
+  , sfPileupJetID_mistag_(nullptr)
+  , sfPileupJetID_mistag_errors_(nullptr)
+  , era_(era)
+  , hadTauSelection_(-1)
   , hadTauId_(TauID::DeepTau2017v2VSjet)
   , tauIdSFs_(nullptr)
   , applyHadTauSF_(true)
   , isDEBUG_(cfg.exists("isDEBUG") ? cfg.getParameter<bool>("isDEBUG") : false)
+  , pileupJetId_(kPileupJetID_disabled)
+  , recompTightSF_(cfg.exists("lep_mva_wp") && cfg.getParameter<std::string>("lep_mva_wp") == "hh_multilepton")
+  , recompTightSF_el_(1.)
+  , recompTightSF_mu_(1.)
   , numLeptons_(0)
   , numElectrons_(0)
   , numMuons_(0)
   , numHadTaus_(0)
+  , numJets_(0)
 {
   const std::string hadTauSelection_string = cfg.getParameter<std::string>("hadTauSelection");
   applyHadTauSF_ = hadTauSelection_string != "disabled";
@@ -93,6 +106,101 @@ Data_to_MC_CorrectionInterface_Base::Data_to_MC_CorrectionInterface_Base(const e
       throw cmsException(this, __func__, __LINE__) << "Invalid tau ID: " << as_integer(hadTauId_);
     }
   }
+
+  //-----------------------------------------------------------------------------
+  // Efficiencies and mistag rates for pileup jet ID, provided by JetMET POG
+  // https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJetID
+  if ( cfg.exists("pileupJetID") )
+  {
+    pileupJetId_ = get_pileupJetID(cfg.getParameter<std::string>("pileupJetID"));
+    if ( pileupJetId_ != kPileupJetID_disabled )
+    {
+      const std::string era_string = get_era(era_);
+      std::string wp_string;
+      // The encoding of the pileup jet ID working points is:
+      //   puId==0 means 000: fail all PU ID;
+      //   puId==4 means 100: pass loose ID, fail medium, fail tight;
+      //   puId==6 means 110: pass loose and medium ID, fail tight;
+      //   puId==7 means 111: pass loose, medium, tight ID. 
+      // https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJetID#miniAOD_and_nanoAOD
+      if ( pileupJetId_ == kPileupJetID_loose )
+      {
+        wp_string = "L";
+      }
+      else if ( pileupJetId_ == kPileupJetID_medium )
+      {
+        wp_string = "M";
+      }
+      else if ( pileupJetId_ == kPileupJetID_tight )
+      {
+        wp_string = "T";
+      }
+      else
+      {
+        throw cmsException(this, __func__, __LINE__) << "Option 'pileupJetId_' set to an invalid value: " << pileupJetId_;
+      }
+      effPileupJetID_ = new lutWrapperTH2(
+        inputFiles_,
+        "tthAnalysis/HiggsToTauTau/data/pileupJetIdSF/effcyPUID_81Xtraining.root",
+        Form("h2_eff_mc%s_%s", era_string.data(), wp_string.data()),
+        lut::kXptYeta, 15., 50., lut::kLimit_and_Cut, -5.0, +5.0, lut::kLimit
+      );
+      sfPileupJetID_eff_ = new lutWrapperTH2(
+        inputFiles_,
+        "tthAnalysis/HiggsToTauTau/data/pileupJetIdSF/scalefactorsPUID_81Xtraining.root",
+        Form("h2_eff_sf%s_%s", era_string.data(), wp_string.data()),
+        lut::kXptYeta, 15., 50., lut::kLimit_and_Cut, -5.0, +5.0, lut::kLimit
+      );
+      sfPileupJetID_eff_errors_ = new lutWrapperTH2(
+        inputFiles_,
+        "tthAnalysis/HiggsToTauTau/data/pileupJetIdSF/scalefactorsPUID_81Xtraining.root",
+        Form("h2_eff_sf%s_%s_Systuncty", era_string.data(), wp_string.data()),
+        lut::kXptYeta, 15., 50., lut::kLimit_and_Cut, -5.0, +5.0, lut::kLimit
+      );
+      mistagPileupJetID_ = new lutWrapperTH2(
+        inputFiles_,
+        "tthAnalysis/HiggsToTauTau/data/pileupJetIdSF/effcyPUID_81Xtraining.root",
+        Form("h2_mistag_mc%s_%s", era_string.data(), wp_string.data()),
+        lut::kXptYeta, 15., 50., lut::kLimit_and_Cut, -5.0, +5.0, lut::kLimit
+      );
+      sfPileupJetID_mistag_ = new lutWrapperTH2(
+        inputFiles_,
+        "tthAnalysis/HiggsToTauTau/data/pileupJetIdSF/scalefactorsPUID_81Xtraining.root",
+        Form("h2_mistag_sf%s_%s", era_string.data(), wp_string.data()),
+        lut::kXptYeta, 15., 50., lut::kLimit_and_Cut, -5.0, +5.0, lut::kLimit
+      );
+      sfPileupJetID_mistag_errors_ = new lutWrapperTH2(
+        inputFiles_,
+        "tthAnalysis/HiggsToTauTau/data/pileupJetIdSF/scalefactorsPUID_81Xtraining.root",
+        Form("h2_mistag_sf%s_%s_Systuncty", era_string.data(), wp_string.data()),
+        lut::kXptYeta, 15., 50., lut::kLimit_and_Cut, -5.0, +5.0, lut::kLimit
+      );
+    }
+  }
+  //-----------------------------------------------------------------------------
+  if(recompTightSF_)
+  {
+    if(era_ == Era::k2016)
+    {
+      recompTightSF_el_ = 1.; // TODO
+      recompTightSF_mu_ = 1.; // TODO
+    }
+    else if(era_ == Era::k2017)
+    {
+      // see: https://indico.cern.ch/event/961689/contributions/4047547/attachments/2114588/3557570/HHTo4W_3l_Updates_20201002_LooseLeptonSFCorrection_1.pdf
+      recompTightSF_el_ = (1. - 0.883) / (1. - 0.755);
+      recompTightSF_mu_ = (1. - 0.981) / (1. - 0.882);
+    }
+    else if(era_ == Era::k2018)
+    {
+      recompTightSF_el_ = 1.; // TODO
+      recompTightSF_mu_ = 1.; // TODO
+    }
+    else
+    {
+      throw cmsException(this, __func__, __LINE__) << "Invalid era: " << as_integer(era_);
+    }
+  }
 }
 
 Data_to_MC_CorrectionInterface_Base::~Data_to_MC_CorrectionInterface_Base()
@@ -119,6 +227,12 @@ Data_to_MC_CorrectionInterface_Base::~Data_to_MC_CorrectionInterface_Base()
       delete kv.second;
     }
   }
+  delete effPileupJetID_;
+  delete sfPileupJetID_eff_;
+  delete sfPileupJetID_eff_errors_;
+  delete mistagPileupJetID_;
+  delete sfPileupJetID_mistag_;
+  delete sfPileupJetID_mistag_errors_;
 }
 
 void
@@ -208,6 +322,29 @@ Data_to_MC_CorrectionInterface_Base::setHadTaus(const std::vector<const RecoHadT
   }
 }
 
+void
+Data_to_MC_CorrectionInterface_Base::setJets(const std::vector<const RecoJet *> & jets)
+{
+  numJets_ = 0;
+  jet_pt_.clear();
+  jet_eta_.clear();
+  jet_isPileup_.clear();
+  jet_passesPileupJetId_.clear();
+  for(const RecoJet * const jet: jets)
+  {
+    if(! jet->is_PUID_taggable())
+    {
+      continue;
+    }
+    jet_pt_.push_back(jet->pt());
+    jet_eta_.push_back(jet->eta());
+    jet_isPileup_.push_back(jet->genJet() ? false : true);
+    jet_passesPileupJetId_.push_back(jet->passesPUID(pileupJetId_));
+    ++numJets_;
+  }
+}
+
+
 double
 Data_to_MC_CorrectionInterface_Base::getSF_leptonTriggerEff(TriggerSFsys central_or_shift) const
 {
@@ -224,7 +361,8 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso(std::size_t numLepto
                                                             const std::vector<bool> & lepton_isTight,
                                                             bool sfForTightSelection,
                                                             const std::vector<lutWrapperBase *> & corrections,
-                                                            int error_shift) const
+                                                            int error_shift,
+                                                            double recompSF) const
 {
   if(isDEBUG_)
   {
@@ -244,11 +382,25 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso(std::size_t numLepto
     {
       continue;
     }
-    if (sfForTightSelection && (! lepton_isTight[idxLepton]))
+    if(sfForTightSelection && (! lepton_isTight[idxLepton]))
     {
       continue;
     }
-    sf *= get_from_lut_err(corrections, lepton_pt[idxLepton], lepton_eta[idxLepton], error_shift, isDEBUG_);
+    const int error_shift_tmp = recompSF > 0. ? 0 : error_shift;
+    const double sf_tmp = get_from_lut_err(corrections, lepton_pt[idxLepton], lepton_eta[idxLepton], error_shift_tmp, isDEBUG_);
+    assert(sf_tmp > 0.);
+
+    double corrFactor = 1.;
+    if(recompSF > 0.)
+    {
+      // https://indico.cern.ch/event/961689/contributions/4047547/attachments/2114588/3557570/HHTo4W_3l_Updates_20201002_LooseLeptonSFCorrection_1.pdf
+      assert(recompTightSF_);
+      const double sf_recomp_tmp = 1. - (1. - sf_tmp) * recompSF;
+      const double sf_recomp_shift = 0.5 * std::fabs(sf_tmp - sf_recomp_tmp);
+      const double sf_recomp = sf_recomp_tmp + error_shift * sf_recomp_shift;
+      corrFactor = sf_recomp / sf_tmp;
+    }
+    sf *= sf_tmp * corrFactor;
   }
   return sf;
 }
@@ -343,6 +495,7 @@ double
 Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_loose(LeptonIDSFsys central_or_shift) const
 {
   const bool sfForTightSelection = false;
+  const double recompSF = -1.;
   if(isDEBUG_)
   {
     std::cout << get_human_line(this, __func__, __LINE__) << "Computing SF for electrons\n"
@@ -359,7 +512,7 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_loose(LeptonIDSFsys 
     sf_el_error = -1;
   }
   const double sf_el = getSF_leptonID_and_Iso(
-    numElectrons_, electron_pt_, electron_eta_, electron_isGenMatched_, electron_isTight_, sfForTightSelection, sfElectronID_and_Iso_loose_, sf_el_error
+    numElectrons_, electron_pt_, electron_eta_, electron_isGenMatched_, electron_isTight_, sfForTightSelection, sfElectronID_and_Iso_loose_, sf_el_error, recompSF
   );
   if(isDEBUG_)
   {
@@ -379,7 +532,7 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_loose(LeptonIDSFsys 
     sf_mu_error = -1;
   }
   const double sf_mu = getSF_leptonID_and_Iso(
-    numMuons_, muon_pt_, muon_eta_, muon_isGenMatched_, muon_isTight_, sfForTightSelection, sfMuonID_and_Iso_loose_, sf_mu_error
+    numMuons_, muon_pt_, muon_eta_, muon_isGenMatched_, muon_isTight_, sfForTightSelection, sfMuonID_and_Iso_loose_, sf_mu_error, recompSF
   );
   const double sf = sf_el * sf_mu;
   if(isDEBUG_)
@@ -402,14 +555,29 @@ double
 Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_tight_to_loose_woTightCharge(LeptonIDSFsys central_or_shift) const
 {
   const bool sfForTightSelection = true;
+  const double recompSF = -1.;
+  const int error_shift = 0;
   if(isDEBUG_)
   {
     std::cout << get_human_line(this, __func__, __LINE__) << "Computing SF for electrons\n"
                 "sfForTightSelection: " << sfForTightSelection << '\n'
     ;
   }
+  const double recompSF_el = recompTightSF_ ? recompTightSF_el_ : -1.;
+  int error_shift_el = 0;
+  if(recompTightSF_)
+  {
+    if(central_or_shift == LeptonIDSFsys::elTightRecompUp)
+    {
+      error_shift_el = +1;
+    }
+    else if(central_or_shift == LeptonIDSFsys::elTightRecompDown)
+    {
+      error_shift_el = -1;
+    }
+  }
   double sf_el = getSF_leptonID_and_Iso(
-    numElectrons_, electron_pt_, electron_eta_, electron_isGenMatched_, electron_isTight_, sfForTightSelection, sfElectronID_and_Iso_tight_to_loose_woTightCharge_, 0
+    numElectrons_, electron_pt_, electron_eta_, electron_isGenMatched_, electron_isTight_, sfForTightSelection, sfElectronID_and_Iso_tight_to_loose_woTightCharge_, error_shift_el, recompSF_el
   );
   if(isDEBUG_)
   {
@@ -418,13 +586,13 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_tight_to_loose_woTig
   if(central_or_shift == LeptonIDSFsys::elTightUp)
   {
     sf_el *= getSF_leptonID_and_Iso(
-      numElectrons_, electron_pt_, electron_eta_, electron_isGenMatched_, electron_isTight_, sfForTightSelection, sfElectronID_and_Iso_tight_to_loose_errors_up_, 0
+      numElectrons_, electron_pt_, electron_eta_, electron_isGenMatched_, electron_isTight_, sfForTightSelection, sfElectronID_and_Iso_tight_to_loose_errors_up_, error_shift, recompSF
     );
   }
   else if(central_or_shift == LeptonIDSFsys::elTightDown)
   {
     sf_el *= getSF_leptonID_and_Iso(
-      numElectrons_, electron_pt_, electron_eta_, electron_isGenMatched_, electron_isTight_, sfForTightSelection, sfElectronID_and_Iso_tight_to_loose_errors_down_, 0
+      numElectrons_, electron_pt_, electron_eta_, electron_isGenMatched_, electron_isTight_, sfForTightSelection, sfElectronID_and_Iso_tight_to_loose_errors_down_, error_shift, recompSF
     );
   }
   if(isDEBUG_)
@@ -435,8 +603,21 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_tight_to_loose_woTig
     ;
   }
 
+  const double recompSF_mu = recompTightSF_ ? recompTightSF_mu_ : -1.;
+  int error_shift_mu = 0;
+  if(recompTightSF_)
+  {
+    if(central_or_shift == LeptonIDSFsys::muTightRecompUp)
+    {
+      error_shift_mu = +1;
+    }
+    else if(central_or_shift == LeptonIDSFsys::muTightRecompDown)
+    {
+      error_shift_mu = -1;
+    }
+  }
   double sf_mu = getSF_leptonID_and_Iso(
-    numMuons_, muon_pt_, muon_eta_, muon_isGenMatched_, muon_isTight_, sfForTightSelection, sfMuonID_and_Iso_tight_to_loose_woTightCharge_, 0
+    numMuons_, muon_pt_, muon_eta_, muon_isGenMatched_, muon_isTight_, sfForTightSelection, sfMuonID_and_Iso_tight_to_loose_woTightCharge_, error_shift_mu, recompSF_mu
   );
   if(isDEBUG_)
   {
@@ -445,13 +626,13 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_tight_to_loose_woTig
   if(central_or_shift == LeptonIDSFsys::muTightUp)
   {
     sf_mu *= getSF_leptonID_and_Iso(
-      numMuons_, muon_pt_, muon_eta_, muon_isGenMatched_, muon_isTight_, sfForTightSelection, sfMuonID_and_Iso_tight_to_loose_errors_up_, 0
+      numMuons_, muon_pt_, muon_eta_, muon_isGenMatched_, muon_isTight_, sfForTightSelection, sfMuonID_and_Iso_tight_to_loose_errors_up_, error_shift, recompSF
     );
   }
   else if(central_or_shift == LeptonIDSFsys::muTightDown)
   {
     sf_mu *= getSF_leptonID_and_Iso(
-      numMuons_, muon_pt_, muon_eta_, muon_isGenMatched_, muon_isTight_, sfForTightSelection, sfMuonID_and_Iso_tight_to_loose_errors_down_, 0
+      numMuons_, muon_pt_, muon_eta_, muon_isGenMatched_, muon_isTight_, sfForTightSelection, sfMuonID_and_Iso_tight_to_loose_errors_down_, error_shift, recompSF
     );
   }
   const double sf = sf_el * sf_mu;
@@ -469,12 +650,14 @@ double
 Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_tight_to_loose_wTightCharge(LeptonIDSFsys central_or_shift) const
 {
   const bool sfForTightSelection = true;
+  const double recompSF = -1.;
+  const int error_shift = 0;
   if(isDEBUG_)
   {
     std::cout << get_human_line(this, __func__, __LINE__) << "Computing SF for electrons\n";
   }
   double sf_el = getSF_leptonID_and_Iso(
-    numElectrons_, electron_pt_, electron_eta_, electron_isGenMatched_, electron_isTight_, sfForTightSelection, sfElectronID_and_Iso_tight_to_loose_wTightCharge_, 0
+    numElectrons_, electron_pt_, electron_eta_, electron_isGenMatched_, electron_isTight_, sfForTightSelection, sfElectronID_and_Iso_tight_to_loose_wTightCharge_, error_shift, recompSF
   );
   if(isDEBUG_)
   {
@@ -483,13 +666,13 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_tight_to_loose_wTigh
   if(central_or_shift == LeptonIDSFsys::elTightUp)
   {
     sf_el *= getSF_leptonID_and_Iso(
-      numElectrons_, electron_pt_, electron_eta_, electron_isGenMatched_, electron_isTight_, sfForTightSelection, sfElectronID_and_Iso_tight_to_loose_errors_up_, 0
+      numElectrons_, electron_pt_, electron_eta_, electron_isGenMatched_, electron_isTight_, sfForTightSelection, sfElectronID_and_Iso_tight_to_loose_errors_up_, error_shift, recompSF
     );
   }
   else if(central_or_shift == LeptonIDSFsys::elTightDown)
   {
     sf_el *= getSF_leptonID_and_Iso(
-      numElectrons_, electron_pt_, electron_eta_, electron_isGenMatched_, electron_isTight_, sfForTightSelection, sfElectronID_and_Iso_tight_to_loose_errors_down_, 0
+      numElectrons_, electron_pt_, electron_eta_, electron_isGenMatched_, electron_isTight_, sfForTightSelection, sfElectronID_and_Iso_tight_to_loose_errors_down_, error_shift, recompSF
     );
   }
   if(isDEBUG_)
@@ -501,7 +684,7 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_tight_to_loose_wTigh
   }
 
   double sf_mu = getSF_leptonID_and_Iso(
-    numMuons_, muon_pt_, muon_eta_, muon_isGenMatched_, muon_isTight_, sfForTightSelection, sfMuonID_and_Iso_tight_to_loose_wTightCharge_, 0
+    numMuons_, muon_pt_, muon_eta_, muon_isGenMatched_, muon_isTight_, sfForTightSelection, sfMuonID_and_Iso_tight_to_loose_wTightCharge_, error_shift, recompSF
   );
   if(isDEBUG_)
   {
@@ -510,13 +693,13 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_tight_to_loose_wTigh
   if(central_or_shift == LeptonIDSFsys::muTightUp)
   {
     sf_mu *= getSF_leptonID_and_Iso(
-      numMuons_, muon_pt_, muon_eta_, muon_isGenMatched_, muon_isTight_, sfForTightSelection, sfMuonID_and_Iso_tight_to_loose_errors_up_, 0
+      numMuons_, muon_pt_, muon_eta_, muon_isGenMatched_, muon_isTight_, sfForTightSelection, sfMuonID_and_Iso_tight_to_loose_errors_up_, error_shift, recompSF
     );
   }
   else if(central_or_shift == LeptonIDSFsys::muTightDown)
   {
     sf_mu *= getSF_leptonID_and_Iso(
-      numMuons_, muon_pt_, muon_eta_, muon_isGenMatched_, muon_isTight_, sfForTightSelection, sfMuonID_and_Iso_tight_to_loose_errors_down_, 0
+      numMuons_, muon_pt_, muon_eta_, muon_isGenMatched_, muon_isTight_, sfForTightSelection, sfMuonID_and_Iso_tight_to_loose_errors_down_, error_shift, recompSF
     );
   }
   const double sf = sf_el * sf_mu;
@@ -617,6 +800,84 @@ Data_to_MC_CorrectionInterface_Base::getSF_muToTauFakeRate(FRmt central_or_shift
         }
       }
     }
+  }
+  return sf;
+}
+
+double
+Data_to_MC_CorrectionInterface_Base::getSF_pileupJetID(pileupJetIDSFsys central_or_shift) const
+{
+  // CV: Compute SF for efficiencies and mistag rates for jets to pass the pileup jet ID, following the recipe provided by the JetMET POG
+  // https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJetID
+  double prob_mc = 1.;
+  double prob_data = 1.;
+  if(isDEBUG_)
+  {
+    std::cout << get_human_line(this, __func__, __LINE__) << " -> sys unc = " << as_integer(central_or_shift) << '\n';
+  }
+  for(std::size_t idxJet = 0; idxJet < numJets_; ++idxJet)
+  {
+    if(isDEBUG_)
+    {
+      std::cout
+        << get_human_line(this, __func__, __LINE__)
+        << '#' << idxJet << " jet (pT = " << jet_pt_[idxJet] << ", eta = " << jet_eta_[idxJet] << ", "
+           "is PU? = " << jet_isPileup_[idxJet] << ", passes PU? " << jet_passesPileupJetId_[idxJet] << ") -> "
+      ;
+    }
+    double eff = 0.;
+    double sf = 0.;
+    if ( ! jet_isPileup_[idxJet] )
+    {
+      // apply efficiency to jets originating from hard-scatter interaction (ie real jets)
+      eff = effPileupJetID_->getSF(jet_pt_[idxJet], jet_eta_[idxJet]);
+      sf = sfPileupJetID_eff_->getSF(jet_pt_[idxJet], jet_eta_[idxJet]);
+      const double sfErr = sfPileupJetID_eff_errors_->getSF(jet_pt_[idxJet], jet_eta_[idxJet]);
+      if(isDEBUG_)
+      {
+        std::cout << "eff = " << eff << ", sf = " << sf << " +/- " << sfErr;
+      }
+      if      ( central_or_shift == pileupJetIDSFsys::effUp   ) sf += sfErr;
+      else if ( central_or_shift == pileupJetIDSFsys::effDown ) sf -= sfErr;
+    }
+    else
+    {
+      // apply mistag rate to pileup jets
+      eff = mistagPileupJetID_->getSF(jet_pt_[idxJet], jet_eta_[idxJet]);
+      sf = sfPileupJetID_mistag_->getSF(jet_pt_[idxJet], jet_eta_[idxJet]);
+      const double sfErr = sfPileupJetID_mistag_errors_->getSF(jet_pt_[idxJet], jet_eta_[idxJet]);
+      if(isDEBUG_)
+      {
+        std::cout << "mistag = " << eff << ", sf = " << sf << " +/- " << sfErr;
+      }
+      if      ( central_or_shift == pileupJetIDSFsys::mistagUp   ) sf += sfErr;
+      else if ( central_or_shift == pileupJetIDSFsys::mistagDown ) sf -= sfErr;
+    }
+    // CV: limit SF to the range [0..5], following the recommendation given by the JetMET POG on the twiki
+    // https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJetID
+    sf = std::clamp(sf, 0., 5.);
+    if ( jet_passesPileupJetId_[idxJet] )
+    {
+      prob_mc *= eff;
+      prob_data *= (sf*eff);
+    }
+    else
+    {
+      prob_mc *= (1.0 - eff);
+      prob_data *= (1.0 - sf*eff);
+    }
+    if(isDEBUG_)
+    {
+      std::cout << " => sf = " << sf << ", prob_mc = " << prob_mc << ", prob_data = " << prob_data << '\n';
+    }
+  }
+  const double sf = aux::compSF(prob_data, prob_mc);
+  if(isDEBUG_)
+  {
+    std::cout
+      << get_human_line(this, __func__, __LINE__)
+      << "prob_mc = " << prob_mc << ", prob_data = " << prob_data << " => SF = " << sf << '\n'
+    ;
   }
   return sf;
 }

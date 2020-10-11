@@ -10,7 +10,7 @@
 #include <cmath> // std::fabs(), std::sqrt()
 
 Data_to_MC_CorrectionInterface_2017::Data_to_MC_CorrectionInterface_2017(const edm::ParameterSet & cfg)
-  : Data_to_MC_CorrectionInterface_Base(cfg)
+  : Data_to_MC_CorrectionInterface_Base(Era::k2017, cfg)
 {
   // Reconstruction efficiencies of electrons with pT < 20 GeV, measured by EGamma POG
   // https://twiki.cern.ch/twiki/pub/CMS/Egamma2017DataRecommendations/egammaEffi.txt_EGM2D_runBCDEF_passingRECO_lowEt.root

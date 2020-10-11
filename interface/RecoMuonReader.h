@@ -26,7 +26,7 @@ public:
   /**
    * @brief Call tree->SetBranchAddress for all lepton branches specific to RecoMuons
    */
-  void
+  std::vector<std::string>
   setBranchAddresses(TTree * tree) override;
 
   /**

@@ -936,7 +936,7 @@ int main(int argc, char* argv[])
   int analyzedEntries = 0;
   int selectedEntries = 0;
   double selectedEntries_weighted = 0.;
-  std::map<std::string, int> selectedEntries_byGenMatchType;             // key = process_and_genMatch
+  std::map<std::string, int> selectedEntries_byGenMatchType;                                    // key = process_and_genMatch
   std::map<std::string, std::map<std::string, double>> selectedEntries_weighted_byGenMatchType; // key = central_or_shift, process_and_genMatch
   TH1* histogram_analyzedEntries = fs.make<TH1D>("analyzedEntries", "analyzedEntries", 1, -0.5, +0.5);
   TH1* histogram_selectedEntries = fs.make<TH1D>("selectedEntries", "selectedEntries", 1, -0.5, +0.5);
@@ -1534,16 +1534,16 @@ int main(int argc, char* argv[])
     if(do_sync) passEvents = ttH_like || tH_like;
     if ( !(passEvents) ) {
       if ( run_lumi_eventSelector ) {
-    std::cout << "event " << eventInfo.str() << " FAILS Hadronic selection." << std::endl;
-	//printCollection("selJets", selJets);
-  std::cout << "event " << eventInfo.str()
-  << "\n is_tH_like_and_not_ttH_like = " << is_tH_like_and_not_ttH_like
-  << "\n selJets.size() = " << selJets.size()
-  << "\n selBJets_medium.size() = " << selBJets_medium.size()
-  << "\n selBJets_loose.size() = "<< selBJets_loose.size()
-  << "\n selJetsForward.size()" << selJetsForward.size()
-  << std::endl;
-  printCollection("selJetsForward", selJetsForward);
+        std::cout << "event " << eventInfo.str() << " FAILS Hadronic selection." << std::endl;
+        //printCollection("selJets", selJets);
+        std::cout << "event " << eventInfo.str()
+          << "\n is_tH_like_and_not_ttH_like = " << is_tH_like_and_not_ttH_like
+          << "\n selJets.size() = " << selJets.size()
+          << "\n selBJets_medium.size() = " << selBJets_medium.size()
+          << "\n selBJets_loose.size() = "<< selBJets_loose.size()
+          << "\n selJetsForward.size()" << selJetsForward.size()
+          << std::endl;
+        printCollection("selJetsForward", selJetsForward);
       }
       continue;
     }

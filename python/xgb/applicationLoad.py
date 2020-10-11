@@ -27,19 +27,19 @@ def load(pklfile):
       f.close()
   return pkldata
 
+
 def evaluate(vec_values, vec_names, pkldata):
-  #cols_when_model_builds =  pkldata.get_booster().feature_names ## Take column names from pkl file
-  #print("cols_when_model_builds: ", cols_when_model_builds)
   new_dict = collections.OrderedDict(itertools.izip(vec_names, vec_values))
-  print("new_dict", new_dict)
   data = pandas.DataFrame(columns = list(new_dict.keys()))
   data = data.append(new_dict, ignore_index = True)
-  #data = data[cols_when_model_builds] ## Reordering dataframe columns as per pkl file
-  #print("data", data)
+  if 'f0' in pkldata.get_booster().feature_names: # For nameless features
+    data_to_use = data[data.columns.values.tolist()].values
+  else: # For named features
+    data_to_use = data
   result = -20
   if 'XGBClassifier' in str(type(pkldata)):
     try:
-      proba = pkldata.predict_proba(data[data.columns.values.tolist()].values)
+      proba = pkldata.predict_proba(data_to_use)
     except:
       print('Caught error:', sys.exc_info())
     else:

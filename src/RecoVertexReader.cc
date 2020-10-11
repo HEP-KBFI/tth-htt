@@ -46,7 +46,7 @@ RecoVertexReader::setBranchNames()
   ++numInstances_[branchName_];
 }
 
-void
+std::vector<std::string>
 RecoVertexReader::setBranchAddresses(TTree * tree)
 {
   if(instances_[branchName_] == this)
@@ -60,7 +60,9 @@ RecoVertexReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(vertex_score_, branchName_score_);
     bai.setBranchAddress(vertex_npvs_, branchName_npvs_);
     bai.setBranchAddress(vertex_npvsGood_, branchName_npvsGood_);
+    return bai.getBoundBranchNames();
   }
+  return {};
 }
 
 RecoVertex

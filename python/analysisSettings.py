@@ -98,6 +98,11 @@ class systematics(object):
   AK8_JMR = [ "CMS_ttHl_AK8JMRUp", "CMS_ttHl_AK8JMRDown" ]
   AK8 = AK8_JES + AK8_JER + AK8_JMS + AK8_JMR
 
+  pileupJetID = [
+    "CMS_ttHl_puJetIDEffUp",    "CMS_ttHl_puJetIDEffDown",
+    "CMS_ttHl_puJetIDMistagUp", "CMS_ttHl_puJetIDMistagDown",
+  ]
+
   MEM_3l        = [ "CMS_ttHl_MEM_3l_LRUp",        "CMS_ttHl_MEM_3l_LRDown"        ]
   MEM_2lss_1tau = [ "CMS_ttHl_MEM_2lss_1tau_LRUp", "CMS_ttHl_MEM_2lss_1tau_LRDown" ]
   MEM_3l_1tau   = [ "CMS_ttHl_MEM_3l_1tau_LRUp",   "CMS_ttHl_MEM_3l_1tau_LRDown"   ]
@@ -489,6 +494,11 @@ class systematics(object):
 
     full = el_tight + mu_tight + el_loose + mu_loose
 
+  leptonIDSF_hh_recomp = [
+    "CMS_ttHl_lepEff_eltightRecompUp", "CMS_ttHl_lepEff_eltightRecompDown",
+    "CMS_ttHl_lepEff_mutightRecompUp", "CMS_ttHl_lepEff_mutightRecompDown",
+  ]
+
   class Btag(object):
 
     HF       = [ "CMS_ttHl_btag_HFUp",       "CMS_ttHl_btag_HFDown"       ]
@@ -585,12 +595,12 @@ class systematics(object):
   an_inclusive      =    central +  JES +  JER +  tauES +  UnclusteredEn +  btag
   an_inclusive_opts = [ "central", "JES", "JER", "tauES", "UnclusteredEn", "btag" ]
 
-  an_hh_multilepton = an_tth
-  an_opts_hh_multilepton = an_tth_opts
-  an_hh_bbww = an_tth + ttbar + AK8
-  an_opts_hh_bbww = an_tth_opts + [ "ttbar", "AK8" ]
+  an_hh_multilepton      = an_tth      +    leptonIDSF_hh_recomp
+  an_opts_hh_multilepton = an_tth_opts + [ "leptonIDSF_hh_recomp" ]
+  an_hh_bbww      = an_tth      +    ttbar +  AK8  + pileupJetID
+  an_opts_hh_bbww = an_tth_opts + [ "ttbar", "AK8", "pileupJetID" ]
 
   an_internal_no_mem = central + leptonIDSF + tauIDSF + btag + FR_t + lhe + triggerSF + PU + L1PreFiring + \
                        FRe_shape + FRm_shape + DYMCReweighting + DYMCNormScaleFactors + topPtReweighting + \
-                       EWK_jet + EWK_bjet + partonShower
+                       EWK_jet + EWK_bjet + partonShower + leptonIDSF_hh_recomp + pileupJetID
   an_internal = an_internal_no_mem + MEM + triggerSF_split

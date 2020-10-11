@@ -70,7 +70,7 @@ GenHadTauReader::setBranchNames()
   ++numInstances_[branchName_obj_];
 }
 
-void
+std::vector<std::string>
 GenHadTauReader::setBranchAddresses(TTree * tree)
 {
   if(instances_[branchName_obj_] == this)
@@ -83,7 +83,9 @@ GenHadTauReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(hadTau_mass_, branchName_mass_);
     bai.setBranchAddress(hadTau_charge_, branchName_charge_);
     bai.setBranchAddress(hadTau_status_, branchName_status_);
+    return bai.getBoundBranchNames();
   }
+  return {};
 }
 
 std::vector<GenHadTau>

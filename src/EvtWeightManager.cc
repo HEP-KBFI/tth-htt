@@ -65,7 +65,7 @@ EvtWeightManager::~EvtWeightManager()
   delete histogram_file_;
 }
 
-void
+std::vector<std::string>
 EvtWeightManager::setBranchAddresses(TTree * tree)
 {
   BranchAddressInitializer bai(tree);
@@ -89,6 +89,7 @@ EvtWeightManager::setBranchAddresses(TTree * tree)
       bai.setBranchAddress(var_y_float_, binnedHistogram_varName_y_);
     }
   }
+  return bai.getBoundBranchNames();
 }
 
 int

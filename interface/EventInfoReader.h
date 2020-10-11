@@ -19,7 +19,7 @@ public:
                            bool read_puWeight = true);
   ~EventInfoReader() override;
 
-  void
+  std::vector<std::string>
   setBranchAddresses(TTree * tree) override;
 
   void

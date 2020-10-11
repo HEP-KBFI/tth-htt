@@ -18,7 +18,7 @@ public:
   /**
    * @brief Call tree->SetBranchAddress for all branches containing parton shower (ISR and FSR) information
    */
-  void
+  std::vector<std::string>
   setBranchAddresses(TTree * tree) override;
 
   /**

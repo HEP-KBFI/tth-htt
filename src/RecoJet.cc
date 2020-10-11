@@ -164,6 +164,20 @@ RecoJet::hasBtag(Btag btag) const
   return BtagCSVs_.count(btag);
 }
 
+bool
+RecoJet::passesPUID(int puIdWP) const
+{
+  return this->puId() & puIdWP;
+}
+
+bool
+RecoJet::is_PUID_taggable() const
+{
+  // PU jet ID is applicable only to jets that have pT < 50. GeV
+  // https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupJetID
+  return this->pt() < 50.;
+}
+
 int
 RecoJet::get_default_systematics() const
 {

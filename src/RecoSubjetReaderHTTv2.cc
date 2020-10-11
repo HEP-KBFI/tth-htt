@@ -75,7 +75,7 @@ RecoSubjetReaderHTTv2::setBranchNames()
   ++numInstances_[branchName_obj_];
 }
 
-void
+std::vector<std::string>
 RecoSubjetReaderHTTv2::setBranchAddresses(TTree * tree)
 {
   if(instances_[branchName_obj_] == this)
@@ -89,7 +89,9 @@ RecoSubjetReaderHTTv2::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(jet_IDPassed_, branchName_IDPassed_);
     bai.setBranchAddress(jet_btagDeepB_, branchName_btagDeepB_);
     bai.setBranchAddress(jet_area_, branchName_area_);
+    return bai.getBoundBranchNames();
   }
+  return {};
 }
 
 std::vector<RecoSubjetHTTv2>

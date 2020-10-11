@@ -3,6 +3,8 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // FRet, FRmt
 
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Era, pileupJetID
+
 #include <FWCore/ParameterSet/interface/ParameterSet.h> // edm::ParameterSet
 
 // forward declarations
@@ -14,7 +16,7 @@ enum class TauID;
 class Data_to_MC_CorrectionInterface_Base
 {
 public:
-  Data_to_MC_CorrectionInterface_Base(const edm::ParameterSet & cfg);
+  Data_to_MC_CorrectionInterface_Base(Era era, const edm::ParameterSet & cfg);
   virtual ~Data_to_MC_CorrectionInterface_Base();
 
   //-----------------------------------------------------------------------------
@@ -24,7 +26,7 @@ public:
   //-----------------------------------------------------------------------------
 
   //-----------------------------------------------------------------------------
-  // set lepton type, pT and eta
+  // set leptons, taus, and jets
   // (to be called once per event, before calling any of the getSF.. functions)
   void
   setLeptons(const std::vector<const RecoLepton *> & leptons,
@@ -32,6 +34,9 @@ public:
 
   void
   setHadTaus(const std::vector<const RecoHadTau *> & hadTaus);
+
+  void
+  setJets(const std::vector<const RecoJet *> & jets);
   //-----------------------------------------------------------------------------
 
   //-----------------------------------------------------------------------------
@@ -69,6 +74,12 @@ public:
   getSF_muToTauFakeRate(FRmt central_or_shift) const;
   //-----------------------------------------------------------------------------
 
+  //-----------------------------------------------------------------------------
+  // data/MC corrections for jets to pass pileup jet ID
+  double
+  getSF_pileupJetID(pileupJetIDSFsys central_or_shift) const;
+  //-----------------------------------------------------------------------------
+
 protected:
   double
   getSF_leptonID_and_Iso(std::size_t numLeptons,
@@ -78,7 +89,8 @@ protected:
                          const std::vector<bool> & lepton_isTight,
                          bool sfForTightSelection,
                          const std::vector<lutWrapperBase *> & corrections,
-                         int error_shift) const;
+                         int error_shift,
+                         double recompSF) const;
 
   void
   initAntiEle_tauIDSFs(const std::string & era_str);
@@ -125,6 +137,18 @@ protected:
   std::vector<lutWrapperBase *> sfMuonID_and_Iso_tight_to_loose_errors_down_;
   //-----------------------------------------------------------------------------
 
+  //-----------------------------------------------------------------------------
+  // data/MC corrections for pileup jet ID
+  lutWrapperBase * effPileupJetID_;
+  lutWrapperBase * sfPileupJetID_eff_;
+  lutWrapperBase * sfPileupJetID_eff_errors_;
+  lutWrapperBase * mistagPileupJetID_;
+  lutWrapperBase * sfPileupJetID_mistag_;
+  lutWrapperBase * sfPileupJetID_mistag_errors_;
+  //-----------------------------------------------------------------------------
+
+  Era era_;
+
   std::map<std::string, TFile *> inputFiles_;
 
   int hadTauSelection_;
@@ -140,6 +164,12 @@ protected:
   std::map<int, TauIDSFTool *> tauIDSFs_antiMu_;
   bool applyHadTauSF_;
   bool isDEBUG_;
+
+  pileupJetID pileupJetId_;
+
+  bool recompTightSF_;
+  double recompTightSF_el_;
+  double recompTightSF_mu_;
 
   std::size_t numLeptons_;
   std::vector<int> lepton_type_;
@@ -162,6 +192,11 @@ protected:
   std::vector<int> hadTau_genPdgId_;
   std::vector<double> hadTau_pt_;
   std::vector<double> hadTau_absEta_;
+  std::size_t numJets_;
+  std::vector<double> jet_pt_;
+  std::vector<double> jet_eta_;
+  std::vector<bool> jet_isPileup_;
+  std::vector<bool> jet_passesPileupJetId_;
 };
 
 #endif // tthAnalysis_HiggsToTauTau_data_to_MC_corrections_Base_h

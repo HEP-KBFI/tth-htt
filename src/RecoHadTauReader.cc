@@ -172,16 +172,21 @@ RecoHadTauReader::setBranchNames()
   ++numInstances_[branchName_obj_];
 }
 
-void
+std::vector<std::string>
 RecoHadTauReader::setBranchAddresses(TTree * tree)
 {
+  std::vector<std::string> bound_branches;
   if(instances_[branchName_obj_] == this)
   {
     if(readGenMatching_)
     {
-      genLeptonReader_->setBranchAddresses(tree);
-      genHadTauReader_->setBranchAddresses(tree);
-      genJetReader_->setBranchAddresses(tree);
+      const std::vector<std::string> genLeptonBranches = genLeptonReader_->setBranchAddresses(tree);
+      const std::vector<std::string> genHadTauBranches = genHadTauReader_->setBranchAddresses(tree);
+      const std::vector<std::string> genJetBranches = genJetReader_->setBranchAddresses(tree);
+
+      bound_branches.insert(bound_branches.end(), genLeptonBranches.begin(), genLeptonBranches.end());
+      bound_branches.insert(bound_branches.end(), genHadTauBranches.begin(), genHadTauBranches.end());
+      bound_branches.insert(bound_branches.end(), genJetBranches.begin(), genJetBranches.end());
     }
     BranchAddressInitializer bai(tree, max_nHadTaus_);
     bai.setBranchAddress(nHadTaus_, branchName_num_);
@@ -205,7 +210,11 @@ RecoHadTauReader::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(hadTau_jetIdx_, branchName_jetIdx_);
     bai.setBranchAddress(hadTau_genPartFlav_, isMC_ ? branchName_genPartFlav_ : "");
     bai.setBranchAddress(hadTau_genMatchIdx_, isMC_ ? branchName_genMatchIdx_ : "");
+
+    const std::vector<std::string> recoHadTauBranches = bai.getBoundBranchNames();
+    bound_branches.insert(bound_branches.end(), recoHadTauBranches.begin(), recoHadTauBranches.end());
   }
+  return bound_branches;
 }
 
 std::vector<RecoHadTau>

@@ -92,12 +92,13 @@ hadTauWP_veto_map = {
 }
 hadTau_selection_veto = tau_id + hadTauWP_veto_map[tau_id]
 
+lepton_charge_selections = None
 if sideband == 'disabled':
-  chargeSumSelections = [ "OS" ]
+  lepton_charge_selections = [ "OS" ]
 elif sideband == 'enabled':
-  chargeSumSelections = [ "OS", "SS" ]
+  lepton_charge_selections = [ "OS", "SS" ]
 elif sideband == 'only':
-  chargeSumSelections = [ "SS" ]
+  lepton_charge_selections = [ "SS" ]
 else:
   raise ValueError("Invalid choice for the sideband: %s" % sideband)
 
@@ -128,7 +129,7 @@ if __name__ == '__main__':
     samples                               = samples,
     hadTauVeto_selection                  = hadTau_selection_veto,
     applyFakeRateWeights                  = "4lepton",
-    chargeSumSelections                   = chargeSumSelections,
+    lepton_charge_selections              = lepton_charge_selections,
     jet_cleaning_by_index                 = jet_cleaning_by_index,
     gen_matching_by_index                 = gen_matching_by_index,
     central_or_shifts                     = central_or_shifts,

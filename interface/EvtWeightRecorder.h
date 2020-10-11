@@ -33,6 +33,7 @@ enum class FRet;
 enum class FRmt;
 enum class EWKJetSys;
 enum class EWKBJetSys;
+enum class pileupJetIDSFsys;
 
 class EvtWeightRecorder
 {
@@ -78,6 +79,9 @@ public:
 
   double
   get_puWeight(const std::string & central_or_shift) const;
+
+  double
+  get_pileupJetIDSF(const std::string & central_or_shift) const;
 
   double
   get_l1PreFiringWeight(const std::string & central_or_shift) const;
@@ -196,6 +200,9 @@ public:
 
   void
   record_puWeight(const EventInfo * const eventInfo);
+
+  void
+  record_pileupJetIDSF(const Data_to_MC_CorrectionInterface_Base * const dataToMCcorrectionInterface);
 
   void
   record_btagWeight(const std::vector<const RecoJet *> & jets);
@@ -360,6 +367,7 @@ protected:
   std::map<int, double> weights_dy_rwgt_;
   std::map<int, double> weights_toppt_rwgt_;
   std::map<int, double> weights_btag_;
+  std::map<pileupJetIDSFsys, double> weights_puJetIDSF_;
   std::map<TriggerSFsys, double> weights_leptonTriggerEff_;
   std::map<TriggerSFsys, double> weights_tauTriggerEff_;
   std::map<LeptonIDSFsys, double> weights_leptonID_and_Iso_recoToLoose_;

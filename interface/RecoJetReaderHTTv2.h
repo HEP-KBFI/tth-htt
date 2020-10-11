@@ -24,7 +24,7 @@ public:
   /**
    * @brief Call tree->SetBranchAddress for all RecoJetHTTv2 branches
    */
-  void
+  std::vector<std::string>
   setBranchAddresses(TTree * tree) override;
 
   /**

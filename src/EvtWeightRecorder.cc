@@ -152,6 +152,20 @@ EvtWeightRecorder::get_puWeight(const std::string & central_or_shift) const
 }
 
 double
+EvtWeightRecorder::get_pileupJetIDSF(const std::string & central_or_shift) const
+{
+  if(isMC_)
+  {
+    const pileupJetIDSFsys puJetIDSF_option = getPileupJetIDSFsys_option(central_or_shift);
+    if(weights_puJetIDSF_.count(puJetIDSF_option))
+    {
+      return  weights_puJetIDSF_.at(puJetIDSF_option);
+    }
+  }
+  return 1.;
+}
+
+double
 EvtWeightRecorder::get_l1PreFiringWeight(const std::string & central_or_shift) const
 {
   if(isMC_ && ! weights_l1PreFiring_.empty())
@@ -315,7 +329,7 @@ EvtWeightRecorder::get_data_to_MC_correction(const std::string & central_or_shif
   return isMC_ ? get_sf_triggerEff(central_or_shift) * get_leptonSF() * get_leptonIDSF(central_or_shift) *
                  get_tauSF(central_or_shift) * get_btag(central_or_shift) * get_dy_norm(central_or_shift) *
                  get_toppt_rwgt(central_or_shift) * get_ewk_jet(central_or_shift) * get_ewk_bjet(central_or_shift) *
-                 get_btagSFRatio(central_or_shift)
+                 get_btagSFRatio(central_or_shift) * get_pileupJetIDSF(central_or_shift)
                : 1.
   ;
 }
@@ -676,6 +690,22 @@ EvtWeightRecorder::record_puWeight(const EventInfo * const eventInfo)
       case PUsys::down:    weights_pu_[puSys_option] = eventInfo->pileupWeightDown; break;
       default: assert(0);
     }
+  }
+}
+
+void
+EvtWeightRecorder::record_pileupJetIDSF(const Data_to_MC_CorrectionInterface_Base * const dataToMCcorrectionInterface)
+{
+  assert(isMC_);
+  weights_puJetIDSF_.clear();
+  for(const std::string & central_or_shift: central_or_shifts_)
+  {
+    const pileupJetIDSFsys puJetIDSF_option = getPileupJetIDSFsys_option(central_or_shift);
+    if(weights_puJetIDSF_.count(puJetIDSF_option))
+    {
+      continue;
+    }
+    weights_puJetIDSF_[puJetIDSF_option] = dataToMCcorrectionInterface->getSF_pileupJetID(puJetIDSF_option);
   }
 }
 
@@ -1376,6 +1406,7 @@ operator<<(std::ostream & os,
           "  tau SF                = " << evtWeightRecorder.get_tauSF(central_or_shift)                   << "\n"
           "  DY norm weight        = " << evtWeightRecorder.get_dy_norm(central_or_shift)                 << "\n"
           "  btag weight           = " << evtWeightRecorder.get_btag(central_or_shift)                    << "\n"
+          "  PU jet ID SF          = " << evtWeightRecorder.get_pileupJetIDSF(central_or_shift)           << "\n"
           "  EWK jet weight        = " << evtWeightRecorder.get_ewk_jet(central_or_shift)                 << "\n"
           "  EWK bjet weight       = " << evtWeightRecorder.get_ewk_bjet(central_or_shift)                << "\n"
           "  data/MC correction    = " << evtWeightRecorder.get_data_to_MC_correction(central_or_shift)   << "\n"

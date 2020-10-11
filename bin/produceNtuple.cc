@@ -184,6 +184,7 @@ main(int argc,
   fwlite::TFileService fs = fwlite::TFileService(outputFile.file().data());
 
   TTreeWrapper * inputTree = new TTreeWrapper(treeName.data(), inputFiles.files(), maxEvents);
+  inputTree->setBranchStatus(false);
 
   std::cout
     << "For the input trees, setting the basket size to " << basketSize << "b "

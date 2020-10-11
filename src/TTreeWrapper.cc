@@ -30,6 +30,7 @@ TTreeWrapper::TTreeWrapper(const std::string & treeName,
   , eventCount_(-1)
   , basketSize_(-1)
   , cacheSize_(-1)
+  , setBranchStatus_(true)
 {
   if(! treeName_.empty())
   {
@@ -169,9 +170,19 @@ TTreeWrapper::hasNextEvent(bool getEntry)
       currentTreePtr_->SetCacheSize(cacheSize_);
     }
     // set the branch addresses
+    std::vector<std::string> branches_enable;
     for(ReaderBase * reader: readers_)
     {
-      reader -> setBranchAddresses(currentTreePtr_);
+      const std::vector<std::string> branches_bound = reader -> setBranchAddresses(currentTreePtr_);
+      branches_enable.insert(branches_enable.end(), branches_bound.begin(), branches_bound.end());
+    }
+    if(setBranchStatus_)
+    {
+      currentTreePtr_->SetBranchStatus("*", 0);
+      for(const std::string & branch_enable: branches_enable)
+      {
+        currentTreePtr_->SetBranchStatus(branch_enable.data(), 1);
+      }
     }
 
     // save the total number of events in this file
@@ -221,6 +232,12 @@ void
 TTreeWrapper::setCacheSize(int cacheSize)
 {
   cacheSize_ = cacheSize;
+}
+
+void
+TTreeWrapper::setBranchStatus(bool flag)
+{
+  setBranchStatus_ = flag;
 }
 
 void

@@ -19,7 +19,7 @@ public:
   /**
    * @brief Call tree->SetBranchAddress for all TrigObj branches
    */
-  void
+  std::vector<std::string>
   setBranchAddresses(TTree * tree) override;
 
   /**

@@ -77,6 +77,17 @@ getBTagWeight_option(const std::string & central_or_shift)
   return central_or_shift_int;
 }
 
+pileupJetIDSFsys
+getPileupJetIDSFsys_option(const std::string & central_or_shift)
+{
+  pileupJetIDSFsys central_or_shift_int = pileupJetIDSFsys::central;
+  if     (central_or_shift == "CMS_ttHl_puJetIDEffUp"     ) central_or_shift_int = pileupJetIDSFsys::effUp;
+  else if(central_or_shift == "CMS_ttHl_puJetIDEffDown"   ) central_or_shift_int = pileupJetIDSFsys::effDown;
+  else if(central_or_shift == "CMS_ttHl_puJetIDMistagUp"  ) central_or_shift_int = pileupJetIDSFsys::mistagUp;
+  else if(central_or_shift == "CMS_ttHl_puJetIDMistagDown") central_or_shift_int = pileupJetIDSFsys::mistagDown;
+  return central_or_shift_int;
+}
+
 int
 getJet_option(const std::string & central_or_shift,
               bool isMC)
@@ -203,14 +214,18 @@ LeptonIDSFsys
 getLeptonIDSFsys_option(const std::string & central_or_shift)
 {
   LeptonIDSFsys central_or_shift_int = LeptonIDSFsys::central;
-  if     (central_or_shift == "CMS_ttHl_lepEff_eltightUp"  ) central_or_shift_int = LeptonIDSFsys::elTightUp;
-  else if(central_or_shift == "CMS_ttHl_lepEff_eltightDown") central_or_shift_int = LeptonIDSFsys::elTightDown;
-  else if(central_or_shift == "CMS_ttHl_lepEff_mutightUp"  ) central_or_shift_int = LeptonIDSFsys::muTightUp;
-  else if(central_or_shift == "CMS_ttHl_lepEff_mutightDown") central_or_shift_int = LeptonIDSFsys::muTightDown;
-  else if(central_or_shift == "CMS_ttHl_lepEff_ellooseUp"  ) central_or_shift_int = LeptonIDSFsys::elLooseUp;
-  else if(central_or_shift == "CMS_ttHl_lepEff_ellooseDown") central_or_shift_int = LeptonIDSFsys::elLooseDown;
-  else if(central_or_shift == "CMS_ttHl_lepEff_mulooseUp"  ) central_or_shift_int = LeptonIDSFsys::muLooseUp;
-  else if(central_or_shift == "CMS_ttHl_lepEff_mulooseDown") central_or_shift_int = LeptonIDSFsys::muLooseDown;
+  if     (central_or_shift == "CMS_ttHl_lepEff_eltightUp"        ) central_or_shift_int = LeptonIDSFsys::elTightUp;
+  else if(central_or_shift == "CMS_ttHl_lepEff_eltightDown"      ) central_or_shift_int = LeptonIDSFsys::elTightDown;
+  else if(central_or_shift == "CMS_ttHl_lepEff_mutightUp"        ) central_or_shift_int = LeptonIDSFsys::muTightUp;
+  else if(central_or_shift == "CMS_ttHl_lepEff_mutightDown"      ) central_or_shift_int = LeptonIDSFsys::muTightDown;
+  else if(central_or_shift == "CMS_ttHl_lepEff_ellooseUp"        ) central_or_shift_int = LeptonIDSFsys::elLooseUp;
+  else if(central_or_shift == "CMS_ttHl_lepEff_ellooseDown"      ) central_or_shift_int = LeptonIDSFsys::elLooseDown;
+  else if(central_or_shift == "CMS_ttHl_lepEff_mulooseUp"        ) central_or_shift_int = LeptonIDSFsys::muLooseUp;
+  else if(central_or_shift == "CMS_ttHl_lepEff_mulooseDown"      ) central_or_shift_int = LeptonIDSFsys::muLooseDown;
+  else if(central_or_shift == "CMS_ttHl_lepEff_eltightRecompUp"  ) central_or_shift_int = LeptonIDSFsys::elTightRecompUp;
+  else if(central_or_shift == "CMS_ttHl_lepEff_eltightRecompDown") central_or_shift_int = LeptonIDSFsys::elTightRecompDown;
+  else if(central_or_shift == "CMS_ttHl_lepEff_mutightRecompUp"  ) central_or_shift_int = LeptonIDSFsys::muTightRecompUp;
+  else if(central_or_shift == "CMS_ttHl_lepEff_mutightRecompDown") central_or_shift_int = LeptonIDSFsys::muTightRecompDown;
   return central_or_shift_int;
 }
 
