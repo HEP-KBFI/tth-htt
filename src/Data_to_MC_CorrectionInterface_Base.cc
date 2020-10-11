@@ -182,19 +182,25 @@ Data_to_MC_CorrectionInterface_Base::Data_to_MC_CorrectionInterface_Base(Era era
   {
     if(era_ == Era::k2016)
     {
-      recompTightSF_el_ = 1.; // TODO
-      recompTightSF_mu_ = 1.; // TODO
+      // AvgSF_Def_el = 0.795 +- 0.009;  AvgSF_New_el = 0.876 +- 0.044;
+      // AvgSF_Def_mu = 0.922 +- 0.008;  AvgSF_New_mu = 1.031 +- 0.040;
+      recompTightSF_el_ = (1. - 0.876) / (1. - 0.795); 
+      recompTightSF_mu_ = (1. - 1.031) / (1. - 0.922); 
     }
     else if(era_ == Era::k2017)
     {
       // see: https://indico.cern.ch/event/961689/contributions/4047547/attachments/2114588/3557570/HHTo4W_3l_Updates_20201002_LooseLeptonSFCorrection_1.pdf
-      recompTightSF_el_ = (1. - 0.883) / (1. - 0.755);
-      recompTightSF_mu_ = (1. - 0.981) / (1. - 0.882);
+      // AvgSF_Def_el = 0.755 +- 0.008;  AvgSF_New_el = 0.886 +- 0.040;
+      // AvgSF_Def_mu = 0.881 +- 0.008;  AvgSF_New_mu = 0.988 +- 0.034;
+      recompTightSF_el_ = (1. - 0.886) / (1. - 0.755);
+      recompTightSF_mu_ = (1. - 0.988) / (1. - 0.881);
     }
     else if(era_ == Era::k2018)
     {
-      recompTightSF_el_ = 1.; // TODO
-      recompTightSF_mu_ = 1.; // TODO
+      // AvgSF_Def_el = 0.834 +- 0.007;  AvgSF_New_el = 0.931 +- 0.036;
+      // AvgSF_Def_mu = 0.915 +- 0.006;  AvgSF_New_mu = 0.957 +- 0.028;
+      recompTightSF_el_ = (1. - 0.931) / (1. - 0.834);
+      recompTightSF_mu_ = (1. - 0.957) / (1. - 0.915);
     }
     else
     {
