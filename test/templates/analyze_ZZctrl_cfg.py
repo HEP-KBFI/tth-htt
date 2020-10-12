@@ -73,7 +73,8 @@ process.analyze_ZZctrl = cms.PSet(
         applyNonClosureCorrection = cms.bool(True),
     ),
 
-    minNumJets = cms.int32(2),
+    ##minNumJets = cms.int32(2), # CV: use for ttH multilepton+tau analysis
+    minNumJets = cms.int32(0), # CV: use for HH->multilepton analysis
 
     isMC = cms.bool(True),
     central_or_shift = cms.string(''),
