@@ -24,7 +24,7 @@ class GenMEtReader
   /**
    * @brief Call tree->SetBranchAddress for all RecoMEt branches
    */
-  void
+  std::vector<std::string>
   setBranchAddresses(TTree * tree) override;
 
   /**

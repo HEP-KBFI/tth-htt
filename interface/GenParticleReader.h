@@ -20,7 +20,7 @@ public:
   /**
    * @brief Call tree->SetBranchAddress for all GenParticle branches
    */
-  void
+  std::vector<std::string>
   setBranchAddresses(TTree * tree) override;
 
   /**

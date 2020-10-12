@@ -106,13 +106,16 @@ RecoJetReaderHTTv2::setBranchNames()
   ++numInstances_[branchName_obj_];
 }
 
-void
+std::vector<std::string>
 RecoJetReaderHTTv2::setBranchAddresses(TTree * tree)
 {
+  std::vector<std::string> bound_branches;
   if(instances_[branchName_obj_] == this)
   {
     BranchAddressInitializer bai(tree, max_nJets_);
-    subjetReader_->setBranchAddresses(tree);
+    const std::vector<std::string> subjetBranches = subjetReader_->setBranchAddresses(tree);
+    bound_branches.insert(bound_branches.end(), subjetBranches.begin(), subjetBranches.end());
+
     bai.setBranchAddress(nJets_, branchName_num_);
     bai.setBranchAddress(jet_pt_, branchName_pt_);
     bai.setBranchAddress(jet_eta_, branchName_eta_);
@@ -129,7 +132,11 @@ RecoJetReaderHTTv2::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(jet_tau1_, branchName_tau1_);
     bai.setBranchAddress(jet_tau2_, branchName_tau2_);
     bai.setBranchAddress(jet_tau3_, branchName_tau3_);
+
+    const std::vector<std::string> recoJetHTTv2Branches = bai.getBoundBranchNames();
+    bound_branches.insert(bound_branches.end(), recoJetHTTv2Branches.begin(), recoJetHTTv2Branches.end());
   }
+  return bound_branches;
 }
 
 namespace

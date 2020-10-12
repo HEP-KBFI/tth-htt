@@ -18,7 +18,7 @@ public:
                   Era era);
   ~MEtFilterReader();
 
-  void
+  std::vector<std::string>
   setBranchAddresses(TTree * tree) override;
 
 protected:

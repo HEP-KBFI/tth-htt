@@ -16,7 +16,7 @@ public:
   hltPathReader(const std::vector<std::vector<hltPath *>> & hltPaths);
   ~hltPathReader() {}
 
-  void
+  std::vector<std::string>
   setBranchAddresses(TTree * tree) override;
 
 private:

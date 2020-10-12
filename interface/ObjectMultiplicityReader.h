@@ -15,7 +15,7 @@ public:
   ObjectMultiplicityReader(ObjectMultiplicity * objectMultiplicity);
   ~ObjectMultiplicityReader() override;
 
-  void
+  std::vector<std::string>
   setBranchAddresses(TTree * tree) override;
 
   void

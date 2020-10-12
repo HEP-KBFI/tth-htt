@@ -71,19 +71,25 @@ RecoMuonReader::setBranchNames()
   ++numInstances_[branchName_obj_];
 }
 
-void
+std::vector<std::string>
 RecoMuonReader::setBranchAddresses(TTree * tree)
 {
+  std::vector<std::string> bound_branches;
   if(instances_[branchName_obj_] == this)
   {
-    leptonReader_->setBranchAddresses(tree);
+    const std::vector<std::string> leptonBranches = leptonReader_->setBranchAddresses(tree);
+    bound_branches.insert(bound_branches.end(), leptonBranches.begin(), leptonBranches.end());
 
     const unsigned int max_nLeptons = leptonReader_->max_nLeptons_;
     BranchAddressInitializer bai(tree, max_nLeptons);
     bai.setBranchAddress(mediumIdPOG_, branchName_mediumIdPOG_);
     bai.setBranchAddress(segmentCompatibility_, branchName_segmentCompatibility_);
     bai.setBranchAddress(ptErr_, branchName_ptErr_, -1.);
+
+    const std::vector<std::string> recoMuonBranches = bai.getBoundBranchNames();
+    bound_branches.insert(bound_branches.end(), recoMuonBranches.begin(), recoMuonBranches.end());
   }
+  return bound_branches;
 }
 
 std::vector<RecoMuon>

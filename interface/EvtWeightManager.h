@@ -20,7 +20,7 @@ public:
                    bool isDebug = false);
   ~EvtWeightManager();
 
-  void
+  std::vector<std::string>
   setBranchAddresses(TTree * tree) override;
 
   double

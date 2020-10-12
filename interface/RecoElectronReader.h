@@ -29,7 +29,7 @@ public:
   /**
    * @brief Call tree->SetBranchAddress for all lepton branches specific to RecoElectrons
    */
-  void
+  std::vector<std::string>
   setBranchAddresses(TTree * tree) override;
 
   /**

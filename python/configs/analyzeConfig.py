@@ -104,7 +104,7 @@ class analyzeConfig(object):
           lep_fakeable_jetRelIso_cut_mu_tmp1  = "default",
           lep_fakeable_pog_wp_e_tmp1          = "default",
           lep_fakeable_nearDeepJet_wp_e_tmp1  = "default",
-          lep_fakeable_jetRelIso_cut_e_tmp1   = "default",                 
+          lep_fakeable_jetRelIso_cut_e_tmp1   = "default",
           executable_prep_dcard           = "prepareDatacards",
           executable_add_syst_dcard       = "addSystDatacards",
           executable_add_syst_fakerate    = "addSystFakeRates",
@@ -119,6 +119,7 @@ class analyzeConfig(object):
           submission_cmd                  = None,
           use_dymumu_tau_fr               = False,
           apply_nc_correction             = True,
+          apply_pileupJetID               = 'disabled',
           do_stxs                         = False,
       ):
 
@@ -221,7 +222,11 @@ class analyzeConfig(object):
         self.lep_fakeable_jetRelIso_cut_mu_tmp1  = lep_fakeable_jetRelIso_cut_mu_tmp1
         self.lep_fakeable_pog_wp_e_tmp1          = lep_fakeable_pog_wp_e_tmp1
         self.lep_fakeable_nearDeepJet_wp_e_tmp1  = lep_fakeable_nearDeepJet_wp_e_tmp1
-        self.lep_fakeable_jetRelIso_cut_e_tmp1   = lep_fakeable_jetRelIso_cut_e_tmp1        
+        self.lep_fakeable_jetRelIso_cut_e_tmp1   = lep_fakeable_jetRelIso_cut_e_tmp1
+
+        self.apply_pileupJetID = apply_pileupJetID
+        assert(self.apply_pileupJetID in [ 'disabled', 'loose', 'medium', 'tight' ])
+
         self.central_or_shifts = central_or_shifts
         if not 'central' in self.central_or_shifts:
             logging.warning('Running with systematic uncertainties, but without central value, is not supported --> adding central value.')
@@ -260,6 +265,17 @@ class analyzeConfig(object):
             ))
           self.central_or_shifts = [
             central_or_shift for central_or_shift in self.central_or_shifts if central_or_shift not in central_or_shift_leptonEff
+          ]
+        if self.apply_pileupJetID == 'disabled':
+          central_or_shift_puJetId = [
+            central_or_shift for central_or_shift in self.central_or_shifts if central_or_shift in systematics.pileupJetID
+          ]
+          if central_or_shift_puJetId:
+            logging.warning("Removing the following systematics because not applying PU ID cut on the jets: {}".format(
+              ", ".join(central_or_shift_puJetId)
+            ))
+          self.central_or_shifts = [
+            central_or_shift for central_or_shift in self.central_or_shifts if central_or_shift not in central_or_shift_puJetId
           ]
         #------------------------------------------------------------------------
         # CV: make sure that 'central' is always first entry in self.central_or_shifts
@@ -1071,6 +1087,7 @@ class analyzeConfig(object):
             'apply_DYMCReweighting',
             'apply_DYMCNormScaleFactors',
             'apply_l1PreFireWeight',
+            'apply_pileupJetID',
             'selEventsFileName_output',
             'fillGenEvtHistograms',
             'selectBDT',

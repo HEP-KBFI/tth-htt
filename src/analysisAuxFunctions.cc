@@ -753,6 +753,16 @@ get_htxs_binning(bool isMC_ttH)
   return binning;
 }
 
+pileupJetID
+get_pileupJetID(const std::string & pileupJetID_str)
+{
+  if     (pileupJetID_str == "disabled") return kPileupJetID_disabled;
+  else if(pileupJetID_str == "loose"   ) return kPileupJetID_loose;
+  else if(pileupJetID_str == "medium"  ) return kPileupJetID_medium;
+  else if(pileupJetID_str == "tight"   ) return kPileupJetID_tight;
+  else throw cmsException(__func__, __LINE__) << "Invalid argument: " << pileupJetID_str;
+}
+
 std::vector<const RecoJetBase*>
 convert_to_RecoJetBase(const std::vector<const RecoJet*>& jets_derived)
 {

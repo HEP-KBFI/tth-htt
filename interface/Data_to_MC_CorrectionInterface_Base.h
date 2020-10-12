@@ -77,7 +77,7 @@ public:
   //-----------------------------------------------------------------------------
   // data/MC corrections for jets to pass pileup jet ID
   double
-  getSF_pileupJetID(pileupJetIDSFsys central_or_shift);
+  getSF_pileupJetID(pileupJetIDSFsys central_or_shift) const;
   //-----------------------------------------------------------------------------
 
 protected:

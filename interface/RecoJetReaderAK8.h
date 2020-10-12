@@ -32,7 +32,7 @@ public:
   /**
    * @brief Call tree->SetBranchAddress for all RecoJetAK8 branches
    */
-  void
+  std::vector<std::string>
   setBranchAddresses(TTree * tree) override;
 
   /**

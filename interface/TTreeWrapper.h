@@ -214,6 +214,13 @@ public:
   void
   setCacheSize(int cacheSize);
 
+  /**
+   * @brief Set status to 0 of branches that are never read
+   * @param flag Enable/disable the feature
+   */
+  void
+  setBranchStatus(bool flag);
+
 private:
   unsigned currentFileIdx_;             ///< Index of currently open file
   long long currentEventIdx_;           ///< Index of currently read event (per single file)
@@ -230,6 +237,7 @@ private:
   mutable long long eventCount_;        ///< Total number of events across all files
   int basketSize_;                      ///< Basket size of all branches
   int cacheSize_;                       ///< Cache size
+  bool setBranchStatus_;                ///< Explicitly set the branch status
 
   /**
    * @brief Closes a currently open file, if there is any

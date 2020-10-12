@@ -122,7 +122,7 @@ MEMOutputReader_3l_1tau::setBranchNames()
   ++numInstances_[branchName_obj_];
 }
 
-void
+std::vector<std::string>
 MEMOutputReader_3l_1tau::setBranchAddresses(TTree * tree)
 {
   if(instances_[branchName_obj_] == this)
@@ -153,7 +153,9 @@ MEMOutputReader_3l_1tau::setBranchAddresses(TTree * tree)
     bai.setBranchAddress(realTime_, branchName_realTime_);
     bai.setBranchAddress(errorFlag_, branchName_errorFlag_);
     bai.setBranchAddress(isValid_, branchName_isValid_);
+    return bai.getBoundBranchNames();
   }
+  return {};
 }
 
 std::vector<MEMOutput_3l_1tau>
