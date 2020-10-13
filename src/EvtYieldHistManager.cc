@@ -152,6 +152,7 @@ EvtYieldHistManager::EvtYieldHistManager(const edm::ParameterSet & cfg)
   , isMC_(cfg.getParameter<bool>("isMC"))
   , histogram_evtYield_(nullptr)
   , histogram_luminosity_(nullptr)
+  , histogram_evtYield_full_(nullptr)
   , histogram_rnd_(nullptr)
 {
   const edm::ParameterSet cfg_runPeriods = cfg.getParameter<edm::ParameterSet>("runPeriods");
@@ -170,6 +171,7 @@ EvtYieldHistManager::EvtYieldHistManager(const edm::ParameterSet & cfg)
   // CV: central_or_shiftOptions for "evtYield" and "luminosity" histograms need to be identical
   central_or_shiftOptions_["evtYield"] = { "*" };
   central_or_shiftOptions_["luminosity"] = central_or_shiftOptions_["evtYield"];
+  central_or_shiftOptions_["evtYield_full"] = central_or_shiftOptions_["evtYield"];
 }
 
 void
@@ -186,12 +188,15 @@ EvtYieldHistManager::bookHistograms(TFileDirectory & dir)
   binning.push_back(runPeriods_[numRunPeriods - 1].lastRun() + 0.5);
   histogram_evtYield_   = book1D(dir, "evtYield",   "evtYield",   numRunPeriods, binning.data());
   histogram_luminosity_ = book1D(dir, "luminosity", "luminosity", numRunPeriods, binning.data());
+  histogram_evtYield_full_   = book1D(dir, "evtYield_full",   "evtYield_full",   numRunPeriods, binning.data());
+  
   if ( histogram_evtYield_ && histogram_luminosity_ ) 
   {
     for(std::size_t idxRunPeriod = 0; idxRunPeriod < numRunPeriods; ++idxRunPeriod)
     {
       const int idxBin = idxRunPeriod + 1;
       histogram_evtYield_->GetXaxis()->SetBinLabel(idxBin, runPeriods_[idxRunPeriod].name().data());
+      histogram_evtYield_full_->GetXaxis()->SetBinLabel(idxBin, runPeriods_[idxRunPeriod].name().data());
       histogram_luminosity_->SetBinContent(idxBin, runPeriods_[idxRunPeriod].luminosity());
       histogram_luminosity_->GetXaxis()->SetBinLabel(idxBin, runPeriods_[idxRunPeriod].name().data());
     }
@@ -230,5 +235,6 @@ EvtYieldHistManager::fillHistograms(const EventInfo & eventInfo,
     const double luminosity = histogram_luminosity_->GetBinContent(idxBin_run);
     assert(luminosity > 0.);
     histogram_evtYield_->Fill(run, evtWeight / luminosity);
+    histogram_evtYield_full_->Fill(run, evtWeight);
   }
 }

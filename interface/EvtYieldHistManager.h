@@ -77,6 +77,7 @@ class EvtYieldHistManager
 
   TH1 * histogram_evtYield_;
   TH1 * histogram_luminosity_;
+  TH1 * histogram_evtYield_full_;
   evtYieldHistManager::TRandomTH1 * histogram_rnd_;
 };
 
