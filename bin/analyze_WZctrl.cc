@@ -1355,6 +1355,19 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update("sel tau veto", evtWeightRecorder.get(central_or_shift_main));
 
+
+    const bool failsHtoZZVeto = isfailsHtoZZVeto(preselLeptonsFull);
+    if(failsHtoZZVeto)
+    {
+      if(run_lumi_eventSelector)
+      {
+        std::cout << "event " << eventInfo.str() << " FAILS H->ZZ*->4l veto.\n";
+      }
+      continue;
+    }
+    cutFlowTable.update("H->ZZ*->4l veto", evtWeightRecorder.get(central_or_shift_main));
+
+    
     bool failsSignalRegionVeto = false;
     if ( isMCClosure_e || isMCClosure_m ) {
       bool applySignalRegionVeto = (isMCClosure_e && countFakeElectrons(selLeptons) >= 1) || (isMCClosure_m && countFakeMuons(selLeptons) >= 1);
@@ -1479,7 +1492,8 @@ int main(int argc, char* argv[])
             selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
             mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss,
             mvaOutput_3l_ttV, mvaOutput_3l_ttbar, mvaDiscr_3l,
-            massSFOS, mT, sumLeptonCharge, kv.second
+            massSFOS, mT, sumLeptonCharge, met.pt(),
+	    kv.second
           );
         }
         if(isSignal)
@@ -1498,7 +1512,8 @@ int main(int argc, char* argv[])
                 selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
                 mvaOutput_2lss_ttV, mvaOutput_2lss_ttbar, mvaDiscr_2lss,
                 mvaOutput_3l_ttV, mvaOutput_3l_ttbar, mvaDiscr_3l,
-                massSFOS, mT, sumLeptonCharge, kv.second
+                massSFOS, mT, sumLeptonCharge, met.pt(),
+		kv.second
               );
             }
           }

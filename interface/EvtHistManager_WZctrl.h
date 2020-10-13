@@ -40,6 +40,7 @@ public:
                  double mLL,
                  double mT,
                  int sumLeptonCharge,
+		 double met,
                  double evtWeight);
 
 private:
@@ -62,7 +63,8 @@ private:
   TH1 * histogram_mLL_;
   TH1 * histogram_mT_;
   TH1 * histogram_sumLeptonCharge_;
-
+  TH1 * histogram_met_;
+  
   TH1 * histogram_EventCounter_;
 };
 

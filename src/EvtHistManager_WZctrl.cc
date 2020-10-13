@@ -19,6 +19,7 @@ EvtHistManager_WZctrl::EvtHistManager_WZctrl(const edm::ParameterSet & cfg)
     "sumLeptonCharge",
     "mvaOutput_3l_ttV",
     "mvaOutput_3l_ttbar",
+    "met"
   };
   const std::vector<std::string> sysOpts_all = {
     "mvaDiscr_2lss",
@@ -59,6 +60,7 @@ EvtHistManager_WZctrl::bookHistograms(TFileDirectory & dir)
   histogram_mLL_             = book1D(dir, "mLL",             "mLL",             30, 60., 120.);
   histogram_mT_              = book1D(dir, "mT",              "mT",              40,  0., 200.);
   histogram_sumLeptonCharge_ = book1D(dir, "sumLeptonCharge", "sumLeptonCharge",  7, -3.,  +3.);
+  histogram_met_             = book1D(dir, "met",              "met",            14,  0., 350.);
   
   histogram_EventCounter_    = book1D(dir, "EventCounter",    "EventCounter",     1, -0.5, +0.5);
 }
@@ -79,6 +81,7 @@ EvtHistManager_WZctrl::fillHistograms(int numElectrons,
                                       double mLL,
                                       double mT,
                                       int sumLeptonCharge,
+				      double met,
                                       double evtWeight)
 {
   const double evtWeightErr = 0.;
@@ -102,6 +105,7 @@ EvtHistManager_WZctrl::fillHistograms(int numElectrons,
   fillWithOverFlow(histogram_mLL_,             mLL,             evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_mT_,              mT,              evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_sumLeptonCharge_, sumLeptonCharge, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_met_,              met,            evtWeight, evtWeightErr);
  
   fillWithOverFlow(histogram_EventCounter_,    0.,              evtWeight, evtWeightErr);
 }
