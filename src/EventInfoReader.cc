@@ -38,6 +38,7 @@ EventInfoReader::~EventInfoReader()
 std::vector<std::string>
 EventInfoReader::setBranchAddresses(TTree * tree)
 {
+  std::vector<std::string> bound_branches;
   BranchAddressInitializer bai(tree);
   bai.setBranchAddress(info_ -> run, branchName_run);
   bai.setBranchAddress(info_ -> lumi, branchName_lumi);
@@ -73,13 +74,18 @@ EventInfoReader::setBranchAddresses(TTree * tree)
     BranchAddressInitializer bai_LHEReweight(tree, info_ -> LHEReweightingWeight_max);
     bai_LHEReweight.setBranchAddress(info_ -> nLHEReweightingWeight, branchName_nLHEReweightingWeight);
     bai_LHEReweight.setBranchAddress(info_ -> LHEReweightingWeight, branchName_LHEReweightingWeight);
+
+    const std::vector<std::string> lhe_branches = bai_LHEReweight.getBoundBranchNames();
+    bound_branches.insert(bound_branches.end(), lhe_branches.begin(), lhe_branches.end());
   }
   if(info_ -> is_hh_nonresonant())
   {
     bai.setBranchAddress(info_ -> gen_mHH, branchName_gen_mHH);
     bai.setBranchAddress(info_ -> gen_cosThetaStar, branchName_gen_cosThetaStar);
   }
-  return bai.getBoundBranchNames();
+  const std::vector<std::string> evt_branches = bai.getBoundBranchNames();
+  bound_branches.insert(bound_branches.end(), evt_branches.begin(), evt_branches.end());
+  return bound_branches;
 }
 
 void
