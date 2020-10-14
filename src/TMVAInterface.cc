@@ -3,6 +3,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/LocalFileInPath.h" // LocalFileInPath
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 #include "tthAnalysis/HiggsToTauTau/interface/MVAInputVarTransformer.h" // MVAInputVarTransformer
+#include "tthAnalysis/HiggsToTauTau/interface/generalAuxFunctions.h" // format_vfloat
 
 #include <TMVA/Tools.h> // TMVA::Tools::Instance()
 #include <TMVA/Reader.h> // TMVA::Reader
@@ -266,6 +267,7 @@ TMVAInterface::operator()(const std::map<std::string, double> & mvaInputs,
   std::vector<float> mvamulticlsOutput;
   if ( multiclass ) {
     mvamulticlsOutput = (const_cast<TMVA::Reader*>(mva))->EvaluateMulticlass("BDTG");
+    std::cout << "mvamulticlsOutput = " << format_vfloat(mvamulticlsOutput) << std::endl;
     return std::distance(mvamulticlsOutput.begin(),std::max_element(mvamulticlsOutput.begin(),mvamulticlsOutput.end()));
   }
 
