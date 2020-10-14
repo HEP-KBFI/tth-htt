@@ -126,14 +126,14 @@ class analyzeConfig_WZctrl(analyzeConfig):
     self.executable_addBackgrounds = executable_addBackgrounds
     self.executable_addFakes = executable_addBackgroundJetToTauFakes
 
-    #self.nonfake_backgrounds = [ "TTW", "TTWW", "TTZ", "WZ", "Rares", "tHq", "tHW", "VH" ]
-    self.nonfake_backgrounds = [ "ZZ", "WZ", "WW", "TT", "TTW", "TTWW", "TTZ", "DY", "W", "Other", "VH", "TTH", "TH", "ggH", "qqH", "TTWH", "TTZH"]
+    self.nonfake_backgrounds = [ "TTW", "TTWW", "TTZ", "WZ", "Rares", "tHq", "tHW", "VH" ]
+    #self.nonfake_backgrounds = [ "ZZ", "WZ", "WW", "TT", "TTW", "TTWW", "TTZ", "DY", "W", "Other", "VH", "TTH", "TH", "ggH", "qqH", "TTWH", "TTZH"]
     
     self.cfgFile_analyze = os.path.join(self.template_dir, cfgFile_analyze)
     self.prep_dcard_processesToCopy = [ "data_obs" ] + self.nonfake_backgrounds + [ "Convs", "data_fakes", "fakes_mc" ]
     self.histogramDir_prep_dcard = "WZctrl_Tight"
-    #self.make_plots_backgrounds = [ "TTW", "TTZ", "TTWW", "WZ", "Rares", "tHq", "tHW" ] + [ "Convs", "data_fakes" ]
-    self.make_plots_backgrounds = [ "ZZ", "WZ", "WW", "TT", "TTW", "TTWW", "TTZ", "DY", "W", "Other", "VH", "TTH", "TH", "ggH", "qqH", "TTWH", "TTZH"] + [ "Convs", "data_fakes" ]
+    self.make_plots_backgrounds = [ "TTW", "TTZ", "TTWW", "WZ", "Rares", "tHq", "tHW" ] + [ "Convs", "data_fakes" ]
+    #self.make_plots_backgrounds = [ "ZZ", "WZ", "WW", "TT", "TTW", "TTWW", "TTZ", "DY", "W", "Other", "VH", "TTH", "TH", "ggH", "qqH", "TTWH", "TTZH"] + [ "Convs", "data_fakes" ]
     self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_WZctrl_cfg.py")
     self.make_plots_signal = "WZ"
 
@@ -597,11 +597,12 @@ class analyzeConfig_WZctrl(analyzeConfig):
     self.addToMakefile_backgrounds_from_data(lines_makefile)
     self.addToMakefile_hadd_stage2(lines_makefile)
     self.addToMakefile_prep_dcard(lines_makefile)
-    self.addToMakefile_add_syst_dcard(lines_makefile)
+    self.addToMakefile_add_syst_fakerate(lines_makefile_1)
     self.addToMakefile_make_plots(lines_makefile)
     self.addToMakefile_validate(lines_makefile)
-    self.createMakefile(lines_makefile)
-
+    self.createMakefile(lines_makefile)    
+    
+    
     logging.info("Done.")
 
     return self.num_jobs
