@@ -144,7 +144,7 @@ class analyzeConfig_ZZctrl(analyzeConfig):
     self.make_plots_backgrounds = [ "ZZ", "TTW", "TTZ", "TTWW", "Rares" ] + [ "data_fakes" ]
     self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_ZZctrl_cfg.py")
     self.cfgFile_make_plots_mcClosure = os.path.join(self.template_dir, "makePlots_mcClosure_ZZctrl_cfg.py") #TODO
-    self.make_plots_signal = "ZZ"
+    self.make_plots_signal = ""
 
     self.select_rle_output = select_rle_output
     self.select_root_output = select_root_output

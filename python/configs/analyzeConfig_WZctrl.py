@@ -133,7 +133,7 @@ class analyzeConfig_WZctrl(analyzeConfig):
     self.histogramDir_prep_dcard = "WZctrl_Tight"
     self.make_plots_backgrounds = [ "WZ", "TTW", "TTZ", "TTWW", "Rares" ] + [ "data_fakes" ]
     self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_WZctrl_cfg.py")
-    self.make_plots_signal = "WZ"
+    self.make_plots_signal = ""
 
     self.select_rle_output = select_rle_output
     self.rle_select = rle_select
@@ -402,13 +402,13 @@ class analyzeConfig_WZctrl(analyzeConfig):
           # add output files of hadd_stage1 for data to list of input files for hadd_stage1_5
           key_hadd_stage1_job = getKey(process_name, lepton_selection_and_frWeight)
           key_hadd_stage1_5_dir = getKey("hadd", lepton_selection_and_frWeight)
-          hadd_stage1_5_job_tuple = (lepton_selection_and_frWeight)
+          hadd_stage1_5_job_tuple = (lepton_selection_and_frWeight,)
           key_hadd_stage1_5_job = getKey(*hadd_stage1_5_job_tuple)
           if not key_hadd_stage1_5_job in self.inputFiles_hadd_stage1_5:
             self.inputFiles_hadd_stage1_5[key_hadd_stage1_5_job] = []
           self.inputFiles_hadd_stage1_5[key_hadd_stage1_5_job].append(self.outputFile_hadd_stage1[key_hadd_stage1_job])
           self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job] = os.path.join(self.dirs[key_hadd_stage1_5_dir][DKEY_HIST],
-                                                                      "hadd_stage1_5_%s_%s.root" % hadd_stage1_5_job_tuple)
+                                                                      "hadd_stage1_5_%s.root" % hadd_stage1_5_job_tuple)
 
         if self.do_sync: 
           continue
@@ -437,7 +437,7 @@ class analyzeConfig_WZctrl(analyzeConfig):
           'cfgFile_modified' : os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_CFGS], "addBackgrounds_%s_%s_cfg.py" % addBackgrounds_job_fakes_tuple),
           'outputFile' : os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_HIST], "addBackgrounds_%s_%s.root" % addBackgrounds_job_fakes_tuple),
           'logFile' : os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_LOGS], "addBackgrounds_%s_%s.log" % addBackgrounds_job_fakes_tuple),
-          'categories' : [ getHistogramDir(lepton_selection, lepton_frWeight, lepton_charge_selection) ],
+          'categories' : [ getHistogramDir(lepton_selection, lepton_frWeight) ],
           'processes_input' : processes_input,
           'process_output' : "fakes_mc"
         }
@@ -458,7 +458,7 @@ class analyzeConfig_WZctrl(analyzeConfig):
           'cfgFile_modified' : os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_CFGS], "addBackgrounds_%s_%s_cfg.py" % addBackgrounds_job_Convs_tuple),
           'outputFile' : os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_HIST], "addBackgrounds_%s_%s.root" % addBackgrounds_job_Convs_tuple),
           'logFile' : os.path.join(self.dirs[key_addBackgrounds_dir][DKEY_LOGS], "addBackgrounds_%s_%s.log" % addBackgrounds_job_Convs_tuple),
-          'categories' : [ getHistogramDir(lepton_selection, lepton_frWeight, lepton_charge_selection) ],
+          'categories' : [ getHistogramDir(lepton_selection, lepton_frWeight) ],
           'processes_input' : processes_input,
           'process_output' : "Convs"
         }
@@ -467,7 +467,7 @@ class analyzeConfig_WZctrl(analyzeConfig):
         # initialize input and output file names for hadd_stage2
         key_hadd_stage1_5_job = getKey(lepton_selection_and_frWeight)
         key_hadd_stage2_dir = getKey("hadd", lepton_selection_and_frWeight)
-        hadd_stage2_job_tuple = (lepton_selection_and_frWeight)
+        hadd_stage2_job_tuple = (lepton_selection_and_frWeight,)
         key_hadd_stage2_job = getKey(*hadd_stage2_job_tuple)
         if not key_hadd_stage2_job in self.inputFiles_hadd_stage2:
           self.inputFiles_hadd_stage2[key_hadd_stage2_job] = []
@@ -476,7 +476,7 @@ class analyzeConfig_WZctrl(analyzeConfig):
           self.inputFiles_hadd_stage2[key_hadd_stage2_job].append(self.jobOptions_addBackgrounds_sum[key_addBackgrounds_job_Convs]['outputFile'])
         self.inputFiles_hadd_stage2[key_hadd_stage2_job].append(self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job])
         self.outputFile_hadd_stage2[key_hadd_stage2_job] = os.path.join(self.dirs[key_hadd_stage2_dir][DKEY_HIST],
-                                                                        "hadd_stage2_%s_%s.root" % hadd_stage2_job_tuple)
+                                                                        "hadd_stage2_%s.root" % hadd_stage2_job_tuple)
 
     if self.do_sync:
       if self.is_sbatch:
@@ -595,7 +595,7 @@ class analyzeConfig_WZctrl(analyzeConfig):
     self.addToMakefile_backgrounds_from_data(lines_makefile)
     self.addToMakefile_hadd_stage2(lines_makefile)
     self.addToMakefile_prep_dcard(lines_makefile)
-    self.addToMakefile_add_syst_dcard(lines_makefile)
+    self.addToMakefile_add_syst_fakerate(lines_makefile)
     self.addToMakefile_make_plots(lines_makefile)
     self.addToMakefile_validate(lines_makefile)
     self.createMakefile(lines_makefile)
