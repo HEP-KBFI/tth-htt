@@ -231,6 +231,9 @@ int main(int argc, char* argv[])
   int minNumJets = cfg_analyze.getParameter<int>("minNumJets");
   std::cout << "minNumJets = " << minNumJets << std::endl;
 
+  bool apply_metLD = cfg_analyze.getParameter<bool>("apply_metLD");
+  std::cout << "apply_metLD = " << apply_metLD << std::endl;
+
   bool isMC = cfg_analyze.getParameter<bool>("isMC");
   bool hasLHE = cfg_analyze.getParameter<bool>("hasLHE");
   bool useObjectMultiplicity = cfg_analyze.getParameter<bool>("useObjectMultiplicity");
@@ -1376,15 +1379,18 @@ int main(int argc, char* argv[])
     cutFlowTable.update("H->ZZ*->4l veto", evtWeightRecorder.get(central_or_shift_main));
     cutFlowHistManager->fillHistograms("H->ZZ*->4l veto", evtWeightRecorder.get(central_or_shift_main));
 
-    const bool isSameFlavor_OS_FO = isSFOS(fakeableLeptons);
-    double met_LD_cut = 0.;
-    if      ( selJets.size() >= 4 ) met_LD_cut = -1.; // MET LD cut not applied
-    else if ( isSameFlavor_OS_FO      ) met_LD_cut = 45.;
-    else                            met_LD_cut = 30.;
-    if ( met_LD_cut > 0 && met_LD < met_LD_cut ) {
-      if ( run_lumi_eventSelector ) {
-            std::cout << "event " << eventInfo.str() << " FAILS MET LD selection." << std::endl;
-            std::cout << " (met_LD = " << met_LD << ", met_LD_cut = " << met_LD_cut << ")" << std::endl;
+    if ( apply_metLD ) 
+    {
+      const bool isSameFlavor_OS_FO = isSFOS(fakeableLeptons);
+      double met_LD_cut = 0.;
+      if      ( selJets.size() >= 4 ) met_LD_cut = -1.; // MET LD cut not applied
+      else if ( isSameFlavor_OS_FO  ) met_LD_cut = 45.;
+      else                            met_LD_cut = 30.;
+      if ( met_LD_cut > 0 && met_LD < met_LD_cut ) {
+        if ( run_lumi_eventSelector ) {
+              std::cout << "event " << eventInfo.str() << " FAILS MET LD selection." << std::endl;
+              std::cout << " (met_LD = " << met_LD << ", met_LD_cut = " << met_LD_cut << ")" << std::endl;
+        }
       }
       continue;
     }
@@ -1447,6 +1453,8 @@ int main(int argc, char* argv[])
       }
     }
 
+    double m4lep = (selLepton_lead->p4() + selLepton_sublead->p4() + selLepton_third->p4() + selLepton_fourth->p4()).mass();
+
 //--- retrieve gen-matching flags
     std::vector<const GenMatchEntry*> genMatches = genMatchInterface.getGenMatch(selLeptons);
 
@@ -1506,8 +1514,12 @@ int main(int argc, char* argv[])
         for(const auto & kv: tH_weight_map)
         {
           selHistManager->evt_[kv.first]->fillHistograms(
-            selElectrons.size(), selMuons.size(),
-            selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
+            selElectrons.size(), 
+            selMuons.size(),
+            selJets.size(), 
+            selBJets_loose.size(), 
+            selBJets_medium.size(),
+            m4lep,
             kv.second);
         }
         if(isSignal)
@@ -1527,6 +1539,7 @@ int main(int argc, char* argv[])
                 selJets.size(),
                 selBJets_loose.size(),
                 selBJets_medium.size(),
+                m4lep,
                 kv.second
               );
             }
