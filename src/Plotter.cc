@@ -263,7 +263,8 @@ Plotter::makePlots()
       {
         outputFileName_plot.append(std::string(outputFileName_, idx));
       }
-
+      bool divideByBinWidth_plot = divideByBinWidth_;
+      if ( distribution->divideByBinWidth_ != plotEntryType::kUndefined ) divideByBinWidth_plot = distribution->divideByBinWidth_;
       makePlot(
         800, 900,
         histogramData, histogramData_blinded,
@@ -277,7 +278,7 @@ Plotter::makePlots()
         true, distribution->yMin_, distribution->yMax_, distribution->yAxisTitle_, distribution->yAxisOffset_,
         outputFileName_plot,
         false,
-        divideByBinWidth_
+        divideByBinWidth_plot
       );
       makePlot(
         800, 900,
@@ -292,7 +293,7 @@ Plotter::makePlots()
         false, distribution->yMin_, distribution->yMax_, distribution->yAxisTitle_, distribution->yAxisOffset_,
         outputFileName_plot,
         false,
-        divideByBinWidth_
+        divideByBinWidth_plot
       );
 
       const std::string histogramNameData_rebinned = Form("%s_rebinned", histogramData->GetName());
@@ -408,7 +409,6 @@ Plotter::makePlots()
             histogramData_blinded_rebinned = (TH1*)histogramData_rebinned->Clone("rebinned_data");
           }
         }
-
         makePlot(
           800, 900, 
           histogramData_rebinned, histogramData_blinded_rebinned,
@@ -422,7 +422,7 @@ Plotter::makePlots()
           true, distribution->yMin_, distribution->yMax_, distribution->yAxisTitle_, distribution->yAxisOffset_,
           outputFileName_plot,
           true,
-          divideByBinWidth_
+          divideByBinWidth_plot
         );
         makePlot(
           800, 900, 
@@ -437,7 +437,7 @@ Plotter::makePlots()
           false, distribution->yMin_, distribution->yMax_, distribution->yAxisTitle_, distribution->yAxisOffset_,
           outputFileName_plot,
           true,
-          divideByBinWidth_
+          divideByBinWidth_plot
         );
       }
 

@@ -30,6 +30,8 @@ struct plotEntryType
   double yMax_;
   std::string yAxisTitle_;
   double yAxisOffset_;
+  enum { kUndefined = -1, kDisabled = 0, kEnabled = 1 };  
+  int divideByBinWidth_;
   std::vector<std::pair<double, double>> keepBlinded_;
   std::vector<double> explicitBinning_;
 

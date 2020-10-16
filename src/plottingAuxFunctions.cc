@@ -28,13 +28,23 @@ plotEntryType::plotEntryType(const edm::ParameterSet & cfg)
   , xMin_(cfg.exists("xMin") ? cfg.getParameter<double>("xMin") : -1.)
   , xMax_(cfg.exists("xMax") ? cfg.getParameter<double>("xMax") : -1.)
   , xAxisTitle_(cfg.getParameter<std::string>("xAxisTitle"))
-  , xAxisOffset_( cfg.exists("xAxisOffset") ? cfg.getParameter<double>("xAxisOffset") : 1.25)
+  , xAxisOffset_(cfg.exists("xAxisOffset") ? cfg.getParameter<double>("xAxisOffset") : 1.25)
   , yMin_(cfg.exists("yMin") ? cfg.getParameter<double>("yMin") : -1.)
   , yMax_(cfg.exists("yMax") ? cfg.getParameter<double>("yMax") : -1.)
   , yAxisTitle_(cfg.getParameter<std::string>("yAxisTitle"))
-  , yAxisOffset_( cfg.exists("yAxisOffset") ? cfg.getParameter<double>("yAxisOffset") : 1.15)
+  , yAxisOffset_(cfg.exists("yAxisOffset") ? cfg.getParameter<double>("yAxisOffset") : 1.15)
   , explicitBinning_( cfg.exists("explicitBinning") ? cfg.getParameter<std::vector<double>>("explicitBinning") : std::vector<double>() )
 {
+  if(cfg.exists("divideByBinWidth"))
+  {
+    bool divideByBinWidth_bool = cfg.getParameter<bool>("divideByBinWidth");
+    if ( divideByBinWidth_bool ) divideByBinWidth_ = kEnabled;
+    else divideByBinWidth_ = kDisabled;
+  }
+  else
+  {
+    divideByBinWidth_ = kUndefined;
+  }
   if(cfg.exists("keepBlinded"))
   {
     const vstring keepBlinded_string = cfg.getParameter<vstring>("keepBlinded");
