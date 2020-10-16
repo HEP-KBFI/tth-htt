@@ -131,7 +131,7 @@ class analyzeConfig_WZctrl(analyzeConfig):
     self.cfgFile_analyze = os.path.join(self.template_dir, cfgFile_analyze)
     self.prep_dcard_processesToCopy = [ "data_obs" ] + self.nonfake_backgrounds + [ "Convs", "data_fakes", "fakes_mc" ]
     self.histogramDir_prep_dcard = "WZctrl_Tight"
-    self.make_plots_backgrounds = [ "WZ", "TTW", "TTZ", "TTWW", "Rares" ] + [ "data_fakes" ]
+    self.make_plots_backgrounds = [ "WZ", "ZZ", "TTW", "TTZ", "TTWW", "Rares" ] + [ "data_fakes" ]
     self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_WZctrl_cfg.py")
     self.make_plots_signal = ""
 
