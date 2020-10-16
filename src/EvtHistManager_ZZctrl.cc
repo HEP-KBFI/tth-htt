@@ -14,6 +14,7 @@ EvtHistManager_ZZctrl::EvtHistManager_ZZctrl(const edm::ParameterSet & cfg)
     "numBJets_medium",
     "numBJets_loose_vs_numJets",
     "numBJets_medium_vs_numJets",
+    "m4lep",
   };
   const std::vector<std::string> sysOpts_all = {
     "EventCounter",
@@ -43,16 +44,19 @@ EvtHistManager_ZZctrl::bookHistograms(TFileDirectory & dir)
   histogram_numBJets_loose_  = book1D(dir, "numBJets_loose",  "numBJets_loose",  10, -0.5,  +9.5);
   histogram_numBJets_medium_ = book1D(dir, "numBJets_medium", "numBJets_medium", 10, -0.5,  +9.5);
 
+  histogram_m4lep_ = book1D(dir, "m4lep", "m4lep", 50, 0., 500.);
+
   histogram_EventCounter_ = book1D(dir, "EventCounter", "EventCounter", 1, -0.5, +0.5);
 }
 
 void
 EvtHistManager_ZZctrl::fillHistograms(int numElectrons,
-                                  int numMuons,
-                                  int numJets,
-                                  int numBJets_loose,
-                                  int numBJets_medium,
-                                  double evtWeight)
+                                      int numMuons,
+                                      int numJets,
+                                      int numBJets_loose,
+                                      int numBJets_medium,
+                                      double m4lep,
+                                      double evtWeight)
 {
   const double evtWeightErr = 0.;
 
@@ -61,5 +65,6 @@ EvtHistManager_ZZctrl::fillHistograms(int numElectrons,
   fillWithOverFlow(histogram_numJets_,         numJets,         evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_numBJets_loose_,  numBJets_loose,  evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_numBJets_medium_, numBJets_medium, evtWeight, evtWeightErr);
+  fillWithOverFlow(histogram_m4lep_, m4lep, evtWeight, evtWeightErr);
   fillWithOverFlow(histogram_EventCounter_, 0., evtWeight, evtWeightErr);
 }
