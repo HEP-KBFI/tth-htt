@@ -213,6 +213,19 @@ class tthAnalyzeParser(argparse.ArgumentParser):
       help = 'R|Lepton MVA WP (choices: %s)' % tthAnalyzeParser.cat(list(LEP_MVA_WPS.keys())),
     )
 
+  def add_disableFRwgts(self):
+    self.add_argument('-disableFRwgts', '--disable-FRwgts',
+      dest = 'disableFRwgts', action = 'store_true', default = False,
+      help = 'R|Disable FR weights for Fakes Application region',
+    )
+
+  def add_disableLeptonTightChargeCut(self, disableLeptonTightChargeCut = False):
+    self.add_argument('-disableLeptonTightChargeCut', '--disable-LeptonTightChargeCut',
+      dest = 'disableLeptonTightChargeCut', action = 'store_true', default = False,
+      help = 'R|Disable lepton tight charge cut',
+    )
+
+
   def add_jet_cleaning(self, default_jet_cleaning = 'by_index'):
     choices = [ 'by_index', 'by_dr' ]
     self.add_argument('-q', '--jet-cleaning',

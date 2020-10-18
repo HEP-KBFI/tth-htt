@@ -99,12 +99,8 @@ class analyzeConfig(object):
           histograms_to_fit,
           triggers,
           lep_mva_wp                      = "default",
-          lep_fakeable_pog_wp_mu_tmp1         = "default",
-          lep_fakeable_nearDeepJet_wp_mu_tmp1 = "default",
-          lep_fakeable_jetRelIso_cut_mu_tmp1  = "default",
-          lep_fakeable_pog_wp_e_tmp1          = "default",
-          lep_fakeable_nearDeepJet_wp_e_tmp1  = "default",
-          lep_fakeable_jetRelIso_cut_e_tmp1   = "default",
+          disableFRwgts                   = "default",
+          disableLeptonTightChargeCut     = "default",
           executable_prep_dcard           = "prepareDatacards",
           executable_add_syst_dcard       = "addSystDatacards",
           executable_add_syst_fakerate    = "addSystFakeRates",
@@ -217,13 +213,9 @@ class analyzeConfig(object):
               del sample_info['nof_events'][event_count]
 
         self.lep_mva_wp = lep_mva_wp
-        self.lep_fakeable_pog_wp_mu_tmp1         = lep_fakeable_pog_wp_mu_tmp1
-        self.lep_fakeable_nearDeepJet_wp_mu_tmp1 = lep_fakeable_nearDeepJet_wp_mu_tmp1
-        self.lep_fakeable_jetRelIso_cut_mu_tmp1  = lep_fakeable_jetRelIso_cut_mu_tmp1
-        self.lep_fakeable_pog_wp_e_tmp1          = lep_fakeable_pog_wp_e_tmp1
-        self.lep_fakeable_nearDeepJet_wp_e_tmp1  = lep_fakeable_nearDeepJet_wp_e_tmp1
-        self.lep_fakeable_jetRelIso_cut_e_tmp1   = lep_fakeable_jetRelIso_cut_e_tmp1
-
+        self.disableFRwgts = disableFRwgts
+        self.disableLeptonTightChargeCut = disableLeptonTightChargeCut
+        
         self.apply_pileupJetID = apply_pileupJetID
         assert(self.apply_pileupJetID in [ 'disabled', 'loose', 'medium', 'tight' ])
 
@@ -1000,18 +992,11 @@ class analyzeConfig(object):
             jobOptions['lep_mva_cut_mu'] = float(self.lep_mva_cut_mu)
         if 'lep_mva_wp' not in jobOptions and self.lep_mva_wp != 'default':
             jobOptions['lep_mva_wp'] = self.lep_mva_wp
-        if 'lep_fakeable_pog_wp_mu_tmp1' not in jobOptions and "default" not in self.lep_fakeable_pog_wp_mu_tmp1:
-            jobOptions['lep_fakeable_pog_wp_mu_tmp1'] = str(self.lep_fakeable_pog_wp_mu_tmp1)            
-        if 'lep_fakeable_nearDeepJet_wp_mu_tmp1' not in jobOptions and "default" not in self.lep_fakeable_nearDeepJet_wp_mu_tmp1:
-            jobOptions['lep_fakeable_nearDeepJet_wp_mu_tmp1'] = str(self.lep_fakeable_nearDeepJet_wp_mu_tmp1)            
-        if 'lep_fakeable_jetRelIso_cut_mu_tmp1' not in jobOptions and "default" not in self.lep_fakeable_jetRelIso_cut_mu_tmp1:
-            jobOptions['lep_fakeable_jetRelIso_cut_mu_tmp1'] = float(self.lep_fakeable_jetRelIso_cut_mu_tmp1)            
-        if 'lep_fakeable_pog_wp_e_tmp1' not in jobOptions and "default" not in self.lep_fakeable_pog_wp_e_tmp1:
-            jobOptions['lep_fakeable_pog_wp_e_tmp1'] = str(self.lep_fakeable_pog_wp_e_tmp1)            
-        if 'lep_fakeable_nearDeepJet_wp_e_tmp1' not in jobOptions and "default" not in self.lep_fakeable_nearDeepJet_wp_e_tmp1:
-            jobOptions['lep_fakeable_nearDeepJet_wp_e_tmp1'] = str(self.lep_fakeable_nearDeepJet_wp_e_tmp1)            
-        if 'lep_fakeable_jetRelIso_cut_e_tmp1' not in jobOptions and "default" not in self.lep_fakeable_jetRelIso_cut_e_tmp1:
-            jobOptions['lep_fakeable_jetRelIso_cut_e_tmp1'] = float(self.lep_fakeable_jetRelIso_cut_e_tmp1)
+        if 'disableFRwgts' not in jobOptions and self.disableFRwgts != 'default':
+            jobOptions['disableFRwgts'] = bool(self.disableFRwgts)
+        if 'disableLeptonTightChargeCut' not in jobOptions and self.disableLeptonTightChargeCut != 'default':
+            jobOptions['disableLeptonTightChargeCut'] = bool(self.disableLeptonTightChargeCut)
+
 
         btagSFRatio_args = {}
         if jobOptions['applyBtagSFRatio']:
@@ -1064,12 +1049,8 @@ class analyzeConfig(object):
             'lep_mva_cut_mu',
             'lep_mva_cut_e',
             'lep_mva_wp',
-            'lep_fakeable_pog_wp_mu_tmp1',
-            'lep_fakeable_nearDeepJet_wp_mu_tmp1',
-            'lep_fakeable_jetRelIso_cut_mu_tmp1',          
-            'lep_fakeable_pog_wp_e_tmp1',
-            'lep_fakeable_nearDeepJet_wp_e_tmp1',
-            'lep_fakeable_jetRelIso_cut_e_tmp1',          
+            'disableFRwgts',
+            'disableLeptonTightChargeCut',
             'chargeSumSelection',
             'histogramDir',
             'isControlRegion',
