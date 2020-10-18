@@ -385,11 +385,11 @@ EvtWeightRecorder::get_FR(const std::string & central_or_shift) const
 
 void
 EvtWeightRecorder::record_genWeight(const EventInfo & eventInfo,
-                                    bool use_sign)
+                                    bool use_sign_only)
 {
   assert(isMC_);
   genWeight_ = boost::math::sign(eventInfo.genWeight);
-  if(! use_sign)
+  if(! use_sign_only)
   {
     const double genWeight_abs = std::fabs(eventInfo.genWeight);
     const double ref_genWeight = eventInfo.get_refGenWeight();

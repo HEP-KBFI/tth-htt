@@ -139,7 +139,7 @@ public:
 
   void
   record_genWeight(const EventInfo & eventInfo,
-                   bool use_sign = true);
+                   bool use_sign_only = true);
 
   void
   record_auxWeight(const EvtWeightManager * const evtWeightManager);
