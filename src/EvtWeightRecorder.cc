@@ -18,6 +18,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h"
 #include "tthAnalysis/HiggsToTauTau/interface/fakeBackgroundAuxFunctions.h"
 
+#include <boost/math/special_functions/sign.hpp> // boost::math::sign()
+
 #include <algorithm>
 #include <cassert> // assert()
 
@@ -382,10 +384,10 @@ EvtWeightRecorder::get_FR(const std::string & central_or_shift) const
 }
 
 void
-EvtWeightRecorder::record_genWeight(double genWeight)
+EvtWeightRecorder::record_genWeight(const EventInfo & eventInfo)
 {
   assert(isMC_);
-  genWeight_ = genWeight;
+  genWeight_ = boost::math::sign(eventInfo.genWeight);
 }
 
 void

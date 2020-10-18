@@ -114,7 +114,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/TensorFlowInterface.h"
 
 #include <boost/algorithm/string/replace.hpp> // boost::replace_all_copy()
-#include <boost/math/special_functions/sign.hpp> // boost::math::sign()
 #include <boost/algorithm/string/predicate.hpp> // boost::starts_with()
 
 #include <iostream> // std::cerr, std::fixed
@@ -294,7 +293,7 @@ int main(int argc, char* argv[])
     double evtWeight = 1.;
     if(isMC)
     {
-      if(apply_genWeight)         evtWeightRecorder.record_genWeight(boost::math::sign(eventInfo.genWeight));
+      if(apply_genWeight)         evtWeightRecorder.record_genWeight(eventInfo);
       //if(eventWeightManager)      evtWeightRecorder.record_auxWeight(eventWeightManager);
       //if(apply_topPtReweighting)  evtWeightRecorder.record_toppt_rwgt(eventInfo.topPtRwgtSF);
       lheInfoReader->read();

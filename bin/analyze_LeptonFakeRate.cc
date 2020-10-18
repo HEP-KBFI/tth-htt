@@ -80,7 +80,6 @@
 #include <TROOT.h> // TROOT
 #include <Math/Vector3D.h> // Needed for ROOT::Math::XYZVector
 
-#include <boost/math/special_functions/sign.hpp> // boost::math::sign()
 #include <boost/algorithm/string/predicate.hpp> // boost::starts_with(), boost::ends_with()
 
 #include <fstream> // std::ofstream
@@ -2411,7 +2410,7 @@ main(int argc,
     }
     if(isMC)
     {
-      if(apply_genWeight)         evtWeightRecorder.record_genWeight(boost::math::sign(eventInfo.genWeight));
+      if(apply_genWeight)         evtWeightRecorder.record_genWeight(eventInfo);
       if(apply_DYMCReweighting)   evtWeightRecorder.record_dy_rwgt(dyReweighting, genTauLeptons);
       if(eventWeightManager)      evtWeightRecorder.record_auxWeight(eventWeightManager);
       if(l1PreFiringWeightReader) evtWeightRecorder.record_l1PrefireWeight(l1PreFiringWeightReader);
