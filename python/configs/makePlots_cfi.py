@@ -48,7 +48,8 @@ process.makePlots = cms.PSet(
         cms.PSet(
             histogramName = cms.string("sel/evtYield/$PROCESS/evtYield"),
             xAxisTitle = cms.string("Run Period"),
-            yAxisTitle = cms.string("Events / 1 fb^{-1}")
+            yAxisTitle = cms.string("Events / 1 fb^{-1}"),
+            divideByBinWidth = cms.bool(False)
         ),
         cms.PSet(
             histogramName = cms.string('sel/met/$PROCESS/met_pt'),

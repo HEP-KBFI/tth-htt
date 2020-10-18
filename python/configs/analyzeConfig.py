@@ -1055,6 +1055,7 @@ class analyzeConfig(object):
             'histogramDir',
             'isControlRegion',
             'lumiScale',
+            'ref_genWeight',
             'leptonChargeSelection',
             'hadTauChargeSelection',
             'hadTauSelection',

@@ -94,7 +94,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/HHWeightInterface.h" // HHWeightInterface
 
 #include <boost/algorithm/string/replace.hpp> // boost::replace_all_copy()
-#include <boost/math/special_functions/sign.hpp> // boost::math::sign()
 
 #include <iostream> // std::cerr, std::fixed
 #include <iomanip> // std::setprecision(), std::setw()
@@ -230,6 +229,9 @@ int main(int argc, char* argv[])
 
   int minNumJets = cfg_analyze.getParameter<int>("minNumJets");
   std::cout << "minNumJets = " << minNumJets << std::endl;
+
+  bool apply_metLD = cfg_analyze.getParameter<bool>("apply_metLD");
+  std::cout << "apply_metLD = " << apply_metLD << std::endl;
 
   bool isMC = cfg_analyze.getParameter<bool>("isMC");
   bool hasLHE = cfg_analyze.getParameter<bool>("hasLHE");
@@ -383,6 +385,11 @@ int main(int argc, char* argv[])
 
 //--- declare event-level variables
   EventInfo eventInfo(isMC, isSignal, isMC_HH, apply_topPtReweighting);
+  if(isMC)
+  {
+    const double ref_genWeight = cfg_analyze.getParameter<double>("ref_genWeight");
+    eventInfo.set_refGetWeight(ref_genWeight);
+  }
   const std::string default_cat_str = "default";
   std::vector<std::string> evt_cat_strs = { default_cat_str };
   const std::vector<std::pair<std::string, int>> evt_htxs_binning = get_htxs_binning(isMC_signal);
@@ -844,7 +851,7 @@ int main(int argc, char* argv[])
 
     if(isMC)
     {
-      if(apply_genWeight)         evtWeightRecorder.record_genWeight(boost::math::sign(eventInfo.genWeight));
+      if(apply_genWeight)         evtWeightRecorder.record_genWeight(eventInfo);
       if(eventWeightManager)      evtWeightRecorder.record_auxWeight(eventWeightManager);
       if(l1PreFiringWeightReader) evtWeightRecorder.record_l1PrefireWeight(l1PreFiringWeightReader);
       if(apply_topPtReweighting)  evtWeightRecorder.record_toppt_rwgt(eventInfo.topPtRwgtSF);
@@ -1376,15 +1383,18 @@ int main(int argc, char* argv[])
     cutFlowTable.update("H->ZZ*->4l veto", evtWeightRecorder.get(central_or_shift_main));
     cutFlowHistManager->fillHistograms("H->ZZ*->4l veto", evtWeightRecorder.get(central_or_shift_main));
 
-    const bool isSameFlavor_OS_FO = isSFOS(fakeableLeptons);
-    double met_LD_cut = 0.;
-    if      ( selJets.size() >= 4 ) met_LD_cut = -1.; // MET LD cut not applied
-    else if ( isSameFlavor_OS_FO      ) met_LD_cut = 45.;
-    else                            met_LD_cut = 30.;
-    if ( met_LD_cut > 0 && met_LD < met_LD_cut ) {
-      if ( run_lumi_eventSelector ) {
-            std::cout << "event " << eventInfo.str() << " FAILS MET LD selection." << std::endl;
-            std::cout << " (met_LD = " << met_LD << ", met_LD_cut = " << met_LD_cut << ")" << std::endl;
+    if ( apply_metLD ) 
+    {
+      const bool isSameFlavor_OS_FO = isSFOS(fakeableLeptons);
+      double met_LD_cut = 0.;
+      if      ( selJets.size() >= 4 ) met_LD_cut = -1.; // MET LD cut not applied
+      else if ( isSameFlavor_OS_FO  ) met_LD_cut = 45.;
+      else                            met_LD_cut = 30.;
+      if ( met_LD_cut > 0 && met_LD < met_LD_cut ) {
+        if ( run_lumi_eventSelector ) {
+              std::cout << "event " << eventInfo.str() << " FAILS MET LD selection." << std::endl;
+              std::cout << " (met_LD = " << met_LD << ", met_LD_cut = " << met_LD_cut << ")" << std::endl;
+        }
       }
       continue;
     }
@@ -1447,6 +1457,8 @@ int main(int argc, char* argv[])
       }
     }
 
+    double m4lep = (selLepton_lead->p4() + selLepton_sublead->p4() + selLepton_third->p4() + selLepton_fourth->p4()).mass();
+
 //--- retrieve gen-matching flags
     std::vector<const GenMatchEntry*> genMatches = genMatchInterface.getGenMatch(selLeptons);
 
@@ -1506,8 +1518,12 @@ int main(int argc, char* argv[])
         for(const auto & kv: tH_weight_map)
         {
           selHistManager->evt_[kv.first]->fillHistograms(
-            selElectrons.size(), selMuons.size(),
-            selJets.size(), selBJets_loose.size(), selBJets_medium.size(),
+            selElectrons.size(), 
+            selMuons.size(),
+            selJets.size(), 
+            selBJets_loose.size(), 
+            selBJets_medium.size(),
+            m4lep,
             kv.second);
         }
         if(isSignal)
@@ -1527,6 +1543,7 @@ int main(int argc, char* argv[])
                 selJets.size(),
                 selBJets_loose.size(),
                 selBJets_medium.size(),
+                m4lep,
                 kv.second
               );
             }

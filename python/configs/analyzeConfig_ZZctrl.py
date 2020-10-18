@@ -135,15 +135,16 @@ class analyzeConfig_ZZctrl(analyzeConfig):
     self.executable_addBackgrounds = executable_addBackgrounds
     self.executable_addFakes = executable_addBackgroundJetToTauFakes
 
-    self.nonfake_backgrounds = [ "TTW", "TTZ", "TTWW", "Rares", "tHq", "tHW", "VH" ]
+    self.nonfake_backgrounds = [ "ZZ", "WZ", "TTW", "TTZ", "TTWW", "Rares", "tHq", "tHW", "VH" ]
 
     self.cfgFile_analyze = os.path.join(self.template_dir, cfgFile_analyze)
     self.prep_dcard_processesToCopy = [ "data_obs" ] + self.nonfake_backgrounds + [ "data_fakes", "fakes_mc" ]
     self.histogramDir_prep_dcard = "ZZctrl_OS_Tight"
     self.histogramDir_prep_dcard_SS = "ZZctrl_SS_Tight"
-    self.make_plots_backgrounds = [ "TTW", "TTZ", "TTWW", "Rares", "tHq", "tHW" ] + [ "Convs", "data_fakes" ]
+    self.make_plots_backgrounds = [ "ZZ", "TTW", "TTZ", "TTWW", "Rares" ] + [ "data_fakes" ]
     self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_ZZctrl_cfg.py")
     self.cfgFile_make_plots_mcClosure = os.path.join(self.template_dir, "makePlots_mcClosure_ZZctrl_cfg.py") #TODO
+    self.make_plots_signal = ""
 
     self.select_rle_output = select_rle_output
     self.select_root_output = select_root_output
@@ -522,7 +523,7 @@ class analyzeConfig_ZZctrl(analyzeConfig):
       key_hadd_stage1_5_job = getKey(get_lepton_selection_and_frWeight("Fakeable", "enabled"), lepton_charge_selection)
       key_addFakes_dir = getKey("addBackgroundLeptonFakes")
       key_addFakes_job = getKey("data_fakes", lepton_charge_selection)
-      category_sideband = "ZZctrl_%s_Fakeable" % lepton_charge_selection
+      category_sideband = "ZZctrl_%s_Fakeable_wFakeRateWeights" % lepton_charge_selection
       self.jobOptions_addFakes[key_addFakes_job] = {
         'inputFile' : self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job],
         'cfgFile_modified' : os.path.join(self.dirs[key_addFakes_dir][DKEY_CFGS], "addBackgroundLeptonFakes_%s_cfg.py" % lepton_charge_selection),

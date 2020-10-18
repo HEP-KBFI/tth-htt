@@ -29,6 +29,7 @@ class EvtHistManager_ZZctrl
                  int numJets,
                  int numBJets_loose,
                  int numBJets_medium,
+                 double m_4lep,
                  double evtWeight);
 
   const TH1 *
@@ -41,10 +42,7 @@ class EvtHistManager_ZZctrl
   TH1 * histogram_numBJets_loose_;
   TH1 * histogram_numBJets_medium_;
 
-  // CV: used to check loss in signal efficiency in case events with high jet and b-jet multiplicity are vetoed
-  // to avoid overlap with ttH, H->bb analysis (alternative: ttH, H->bb analysis adds hadronic tau veto)
-  TH2 * histogram_numBJets_loose_vs_numJets_;
-  TH2 * histogram_numBJets_medium_vs_numJets_;
+  TH1 * histogram_m4lep_;
 
   TH1 * histogram_EventCounter_;
 };

@@ -126,16 +126,17 @@ class analyzeConfig_WZctrl(analyzeConfig):
     self.executable_addBackgrounds = executable_addBackgrounds
     self.executable_addFakes = executable_addBackgroundJetToTauFakes
 
-    self.nonfake_backgrounds = [ "TTW", "TTWW", "TTZ", "WZ", "Rares", "tHq", "tHW", "VH" ]
+    self.nonfake_backgrounds = [ "WZ", "ZZ", "TTW", "TTWW", "TTZ", "Rares", "tHq", "tHW", "VH" ]
     #self.nonfake_backgrounds = [ "ZZ", "WZ", "WW", "TT", "TTW", "TTWW", "TTZ", "DY", "W", "Other", "VH", "TTH", "TH", "ggH", "qqH", "TTWH", "TTZH"]
-    
+
     self.cfgFile_analyze = os.path.join(self.template_dir, cfgFile_analyze)
     self.prep_dcard_processesToCopy = [ "data_obs" ] + self.nonfake_backgrounds + [ "Convs", "data_fakes", "fakes_mc" ]
     self.histogramDir_prep_dcard = "WZctrl_Tight"
-    self.make_plots_backgrounds = [ "TTW", "TTZ", "TTWW", "WZ", "Rares", "tHq", "tHW" ] + [ "Convs", "data_fakes" ]
+    self.make_plots_backgrounds = [ "WZ", "ZZ", "TTW", "TTZ", "TTWW", "Rares" ] + [ "data_fakes" ]
     #self.make_plots_backgrounds = [ "ZZ", "WZ", "WW", "TT", "TTW", "TTWW", "TTZ", "DY", "W", "Other", "VH", "TTH", "TH", "ggH", "qqH", "TTWH", "TTZH"] + [ "Convs", "data_fakes" ]
+
     self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_WZctrl_cfg.py")
-    self.make_plots_signal = "WZ"
+    self.make_plots_signal = ""
 
     self.select_rle_output = select_rle_output  
     self.rle_select = rle_select
@@ -404,8 +405,10 @@ class analyzeConfig_WZctrl(analyzeConfig):
           # add output files of hadd_stage1 for data to list of input files for hadd_stage1_5
           key_hadd_stage1_job = getKey(process_name, lepton_selection_and_frWeight)
           key_hadd_stage1_5_dir = getKey("hadd", lepton_selection_and_frWeight)
-          hadd_stage1_5_job_tuple = lepton_selection_and_frWeight
-          key_hadd_stage1_5_job = getKey(hadd_stage1_5_job_tuple)
+          #hadd_stage1_5_job_tuple = lepton_selection_and_frWeight
+          #key_hadd_stage1_5_job = getKey(hadd_stage1_5_job_tuple)
+          hadd_stage1_5_job_tuple = (lepton_selection_and_frWeight,)
+          key_hadd_stage1_5_job = getKey(*hadd_stage1_5_job_tuple)
           if not key_hadd_stage1_5_job in self.inputFiles_hadd_stage1_5:
             self.inputFiles_hadd_stage1_5[key_hadd_stage1_5_job] = []
           self.inputFiles_hadd_stage1_5[key_hadd_stage1_5_job].append(self.outputFile_hadd_stage1[key_hadd_stage1_job])
@@ -469,8 +472,10 @@ class analyzeConfig_WZctrl(analyzeConfig):
         # initialize input and output file names for hadd_stage2
         key_hadd_stage1_5_job = getKey(lepton_selection_and_frWeight)
         key_hadd_stage2_dir = getKey("hadd", lepton_selection_and_frWeight)
-        hadd_stage2_job_tuple = (lepton_selection_and_frWeight)
-        key_hadd_stage2_job = getKey(hadd_stage2_job_tuple)
+        #hadd_stage2_job_tuple = (lepton_selection_and_frWeight)
+        #key_hadd_stage2_job = getKey(hadd_stage2_job_tuple)
+        hadd_stage2_job_tuple = (lepton_selection_and_frWeight,)
+        key_hadd_stage2_job = getKey(*hadd_stage2_job_tuple)
         if not key_hadd_stage2_job in self.inputFiles_hadd_stage2:
           self.inputFiles_hadd_stage2[key_hadd_stage2_job] = []
         if lepton_selection == "Tight":
@@ -597,7 +602,7 @@ class analyzeConfig_WZctrl(analyzeConfig):
     self.addToMakefile_backgrounds_from_data(lines_makefile)
     self.addToMakefile_hadd_stage2(lines_makefile)
     self.addToMakefile_prep_dcard(lines_makefile)
-    self.addToMakefile_add_syst_fakerate(lines_makefile_1)
+    self.addToMakefile_add_syst_fakerate(lines_makefile)
     self.addToMakefile_make_plots(lines_makefile)
     self.addToMakefile_validate(lines_makefile)
     self.createMakefile(lines_makefile)    

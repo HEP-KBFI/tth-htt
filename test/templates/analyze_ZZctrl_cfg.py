@@ -73,11 +73,16 @@ process.analyze_ZZctrl = cms.PSet(
         applyNonClosureCorrection = cms.bool(True),
     ),
 
-    minNumJets = cms.int32(2),
+    ##minNumJets = cms.int32(2), # CV: use for ttH multilepton+tau analysis
+    minNumJets = cms.int32(0), # CV: use for HH->multilepton analysis
+
+    ##apply_metLD = cms.bool(True), # CV: use for ttH multilepton+tau analysis
+    apply_metLD = cms.bool(False), # CV: use for HH->multilepton analysis
 
     isMC = cms.bool(True),
     central_or_shift = cms.string(''),
     lumiScale = cms.VPSet(),
+    ref_genWeight = cms.double(0.),
     apply_genWeight = cms.bool(True),
     apply_DYMCReweighting = cms.bool(False),
     apply_topPtReweighting = cms.string(''),
