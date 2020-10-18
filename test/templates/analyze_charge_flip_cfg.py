@@ -45,6 +45,7 @@ process.analyze_charge_flip = cms.PSet(
     isMC = cms.bool(True),
     central_or_shift = cms.string(''),
     lumiScale = cms.VPSet(),
+    ref_genWeight = cms.double(0.),
     apply_l1PreFireWeight = cms.bool(True),
     apply_genWeight = cms.bool(True),
     apply_topPtReweighting = cms.string(''),

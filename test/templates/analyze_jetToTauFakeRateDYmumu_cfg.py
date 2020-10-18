@@ -50,6 +50,7 @@ process.analyze_jetToTauFakeRateDYmumu = cms.PSet(
     isMC = cms.bool(False),
     central_or_shift = cms.string(''),
     lumiScale = cms.VPSet(),
+    ref_genWeight = cms.double(0.),
     apply_l1PreFireWeight = cms.bool(True),
     apply_topPtReweighting = cms.string(''),
     apply_genWeight = cms.bool(True),

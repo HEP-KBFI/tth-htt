@@ -384,10 +384,22 @@ EvtWeightRecorder::get_FR(const std::string & central_or_shift) const
 }
 
 void
-EvtWeightRecorder::record_genWeight(const EventInfo & eventInfo)
+EvtWeightRecorder::record_genWeight(const EventInfo & eventInfo,
+                                    bool use_sign)
 {
   assert(isMC_);
   genWeight_ = boost::math::sign(eventInfo.genWeight);
+  if(! use_sign)
+  {
+    const double genWeight_abs = std::fabs(eventInfo.genWeight);
+    const double ref_genWeight = eventInfo.get_refGenWeight();
+    if(std::fpclassify(ref_genWeight) == FP_ZERO)
+    {
+      // TODO move this check to EventInfo::set_refGenWeight()
+      throw cmsException(this, __func__, __LINE__) << "Reference weight cannot be zero";
+    }
+    genWeight_ *= std::min(genWeight_abs, 3 * ref_genWeight);
+  }
 }
 
 void

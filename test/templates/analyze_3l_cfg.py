@@ -81,6 +81,7 @@ process.analyze_3l = cms.PSet(
     skipEvery = cms.uint32(0),
     central_or_shift = cms.string(''),
     lumiScale = cms.VPSet(),
+    ref_genWeight = cms.double(0.),
     apply_genWeight = cms.bool(True),
     apply_DYMCReweighting = cms.bool(False),
     apply_topPtReweighting = cms.string(''),

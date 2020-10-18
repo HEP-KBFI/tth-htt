@@ -73,6 +73,7 @@ process.analyze_2los_1tau = cms.PSet(
     isMC = cms.bool(True),
     central_or_shift = cms.string(''),
     lumiScale = cms.VPSet(),
+    ref_genWeight = cms.double(0.),
     apply_genWeight = cms.bool(True),
     apply_DYMCReweighting = cms.bool(False),
     apply_topPtReweighting = cms.string(''),

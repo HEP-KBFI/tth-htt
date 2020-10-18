@@ -62,6 +62,7 @@ EventInfo::EventInfo(bool is_mc,
   , LHEReweightingWeight_max(69)
   , is_owner(false)
   , read_htxs_(false)
+  , refGenWeight_(0.)
 {
   assert(is_mc_ || ! is_signal_);
   assert(is_mc_ || ! is_hh_nonresonant_);
@@ -235,6 +236,18 @@ EventInfo::getWeight_tH_str(const std::string & central_or_shift,
     names.push_back(kv.first);
   }
   return names;
+}
+
+void
+EventInfo::set_refGetWeight(double refGenWeight)
+{
+  refGenWeight_ = refGenWeight;
+}
+
+double
+EventInfo::get_refGenWeight() const
+{
+  return refGenWeight_;
 }
 
 void

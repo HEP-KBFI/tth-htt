@@ -374,6 +374,11 @@ int main(int argc, char* argv[])
 
 //--- declare event-level variables
   EventInfo eventInfo(isMC, isSignal, isMC_HH, apply_topPtReweighting);
+  if(isMC)
+  {
+    const double ref_genWeight = cfg_analyze.getParameter<double>("ref_genWeight");
+    eventInfo.set_refGetWeight(ref_genWeight);
+  }
   const std::string default_cat_str = "default";
   std::vector<std::string> evt_cat_strs = { default_cat_str };
   const std::vector<std::pair<std::string, int>> evt_htxs_binning = get_htxs_binning(isMC_signal);

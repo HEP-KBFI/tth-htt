@@ -1644,6 +1644,11 @@ main(int argc,
 
 //--- declare event-level variables
   EventInfo eventInfo(isMC, false, false, apply_topPtReweighting);
+  if(isMC)
+  {
+    const double ref_genWeight = cfg_analyze.getParameter<double>("ref_genWeight");
+    eventInfo.set_refGetWeight(ref_genWeight);
+  }
   const std::vector<edm::ParameterSet> tHweights = cfg_analyze.getParameterSetVector("tHweights");
   if((isMC_tH || isSignal) && ! tHweights.empty())
   {
