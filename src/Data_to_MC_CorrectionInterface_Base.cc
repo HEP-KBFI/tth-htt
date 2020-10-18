@@ -405,6 +405,13 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso(std::size_t numLepto
       const double sf_recomp_shift = 0.5 * std::fabs(sf_tmp - sf_recomp_tmp);
       const double sf_recomp = sf_recomp_tmp + error_shift * sf_recomp_shift;
       corrFactor = sf_recomp / sf_tmp;
+      if(isDEBUG_)
+      {
+	std::cout << get_human_line(this, __func__, __LINE__)
+		  << "recompTightSF:: recompSF: " << recompSF
+		  << ", sf: " << sf_tmp
+		  << ", sf_corrected: " << sf_tmp * corrFactor << "\n"; 
+      }
     }
     sf *= sf_tmp * corrFactor;
   }
