@@ -241,7 +241,7 @@ EventInfo::getWeight_tH_str(const std::string & central_or_shift,
 void
 EventInfo::set_refGetWeight(double refGenWeight)
 {
-  refGenWeight_ = refGenWeight;
+  refGenWeight_ = std::fabs(refGenWeight);
 }
 
 double
