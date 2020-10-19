@@ -25,7 +25,8 @@ public:
                          const std::vector<std::string> & ll_particleNames,
                          const std::vector<std::string> & hl_mvaInputVariables,
                          const std::vector<std::string> & classes,
-                         const std::string & mvaFileName_even = "");
+                         const std::string & mvaFileName_even = "",
+                         bool isDEBUG = false);
   ~TensorFlowInterfaceLBN();
 
   /**

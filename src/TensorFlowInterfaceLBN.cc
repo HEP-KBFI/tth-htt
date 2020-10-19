@@ -14,10 +14,11 @@
 #include "tthAnalysis/HiggsToTauTau/interface/MVAInputVarTransformer.h" // MVAInputVarTransformer
 
 TensorFlowInterfaceLBN::TensorFlowInterfaceLBN(const std::string & mvaFileName_odd,
-                    const std::vector<std::string> & ll_particleNames,
-                    const std::vector<std::string> & hl_mvaInputVariables,
-                    const std::vector<std::string> & classes,
-                    const std::string & mvaFileName_even)
+                                               const std::vector<std::string> & ll_particleNames,
+                                               const std::vector<std::string> & hl_mvaInputVariables,
+                                               const std::vector<std::string> & classes,
+                                               const std::string & mvaFileName_even,
+                                               bool isDEBUG)
   : classes_(classes)
   , mvaFileName_odd_(mvaFileName_odd)
   , graphDef_odd_(nullptr)
@@ -27,7 +28,7 @@ TensorFlowInterfaceLBN::TensorFlowInterfaceLBN(const std::string & mvaFileName_o
   , session_even_(nullptr)
   , ll_particleNames_(ll_particleNames)
   , hl_mvaInputVariables_(hl_mvaInputVariables)
-  , isDEBUG_(false)
+  , isDEBUG_(isDEBUG)
 {
 // loading the model
   tensorflow::SessionOptions options;
@@ -142,7 +143,10 @@ TensorFlowInterfaceLBN::operator()(const std::map<std::string, const Particle*> 
   }
   if(isDEBUG_)
   {
-    std::cout << "Output " << outputs.size() << " " << outputs[0].matrix<float>()(0, 0) << '\n';
+    for(const auto & kv: mvaOutputs)
+    {
+      std::cout << "OUtput " << kv.first << " = " << kv.second << '\n';
+    }
   }
   return mvaOutputs;
 }
