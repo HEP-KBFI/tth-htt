@@ -22,7 +22,7 @@ class TensorFlowInterface
 public:
   TensorFlowInterface(const std::string & mvaFileName_odd,
                       const std::vector<std::string> & mvaInputVariables,
-                      const std::vector<std::string> classes,
+                      const std::vector<std::string> & classes,
                       const std::string & mvaFileName_even = "",
                       const std::string & fitFunctionFileName = "");
   ~TensorFlowInterface();
@@ -55,10 +55,7 @@ private:
   int n_input_layer_even;
   int n_output_layer_even;
 
-  std::vector<std::string>  mvaInputVariables_; // key = MVA input variable name
-  // we do not really care about variables declared as "spectators" during TMVA training,
-  // but TMVA requires that we keep track of these variables...
-  mutable std::map<std::string, Float_t> spectators_;
+  std::vector<std::string>  mvaInputVariables_;
   std::string fitFunctionFileName_;
   MVAInputVarTransformer * Transform_Ptr_;
 
