@@ -62,6 +62,12 @@ public:
   getWeight_tH_str(bool include_sm = false) const;
 
   void
+  set_refGetWeight(double refGenWeight);
+
+  double
+  get_refGenWeight() const;
+
+  void
   set_central_or_shift(const std::string & central_or_shift);
 
   bool
@@ -132,6 +138,8 @@ protected:
   std::map<std::string, std::map<std::string, std::pair<int, double>>> tH_sf;
   static const std::map<std::string, Int_t> decayMode_idString_singleHiggs;
   static const std::map<std::string, Int_t> decayMode_idString_diHiggs;
+
+  double refGenWeight_;
 
   std::string
   getDecayModeString(const std::map<std::string, Int_t> & decayMode_idString) const;

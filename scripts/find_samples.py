@@ -265,6 +265,10 @@ def get_crab_string(dataset_name, paths):
     if type(entry) == tuple:
       path = entry[0]
       comment = entry[1]
+      if len(entry) == 3 and entry[2] == dataset_name and hdfs.isdir(path):
+        task_id = os.path.basename(path)
+        requestName = os.path.basename(os.path.dirname(path))
+        return (os.path.join(requestName, task_id), comment)
     elif type(entry) == str:
       path = entry
       comment = ''
@@ -609,10 +613,9 @@ if __name__ == '__main__':
         if not line_stripped:
           continue
         crab_string_path = line_stripped[0]
-        crab_string_comment = ' '.join(line_stripped[1:]) if len(line_stripped) > 1 else ''
         if not hdfs.isdir(crab_string_path):
           raise ValueError("No such directory: %s" % crab_string_path)
-        crab_string.append((crab_string_path, crab_string_comment))
+        crab_string.append(tuple(line_stripped))
   else:
     for crab_line in args.crab_string:
       if not hdfs.isdir(crab_line):

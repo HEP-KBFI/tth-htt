@@ -962,8 +962,9 @@ if __name__ == '__main__':
   # load the dictionaries
   meta_dict = load_dict(args.meta_dictionary, "meta_dictionary")
   sum_events = load_dict(args.meta_dictionary, "sum_events")
-  process_names = { entry['process_name_specific'] : dbs_name for dbs_name, entry in meta_dict.items() }
-  crab_strings  = { entry['crab_string']           : dbs_name for dbs_name, entry in meta_dict.items() if entry['crab_string'] != "" }
+  process_names = { entry['process_name_specific']         : dbs_name for dbs_name, entry in meta_dict.items() }
+  crab_strings  = { os.path.basename(entry['crab_string']) : dbs_name for dbs_name, entry in meta_dict.items() if entry['crab_string'] != "" }
+  crab_strings_single = [ os.path.basename(entry['crab_string']) for entry in meta_dict.values() if "/" in entry['crab_string'] ]
   for key, entry in meta_dict.items():
     entry['located'] = False
   for key_arr in sum_events:
@@ -982,6 +983,7 @@ if __name__ == '__main__':
     if path in excluded_paths:
       logging.info("Skipping path {path} since it is in the exclusion list".format(path = path.name))
       continue
+    logging.debug("Considering path {path}".format(path = path.name))
     if args.depth > 0 and (path.depth - path.sparent_depth) >= args.depth:
       continue
     if path.basename in process_names:
@@ -1007,11 +1009,23 @@ if __name__ == '__main__':
             paths_to_traverse[expected_key] = []
           paths_to_traverse[expected_key].append(path.name)
         else:
-          traverse_double(
-            use_fuse, meta_dict, path, crab_strings[path.basename],
-            args.check_every_event, args.missing_branches, filetracker, args.file_idx, args.era,
-            triggerTable
-          )
+          if path.basename in crab_strings_single:
+            traverse_double(
+              use_fuse, meta_dict, path, crab_strings[path.basename],
+              args.check_every_event, args.missing_branches, filetracker, args.file_idx, args.era,
+              triggerTable
+            )
+            traverse_single(
+              use_fuse, meta_dict, path, crab_strings[path.basename],
+              args.check_every_event, args.missing_branches, filetracker, args.file_idx, args.era,
+              triggerTable
+            )
+          else:
+            traverse_double(
+              use_fuse, meta_dict, path, crab_strings[path.basename],
+              args.check_every_event, args.missing_branches, filetracker, args.file_idx, args.era,
+              triggerTable
+            )
     else:
       entries = get_dir_entries(use_fuse, path)
       entries_dirs = filter(

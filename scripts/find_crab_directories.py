@@ -39,7 +39,7 @@ if __name__ == '__main__':
   args = parser.parse_args()
 
   crab_dirs = args.input
-  output_fn = args.output
+  output_fn = os.path.abspath(args.output)
   req_strs = args.contains
 
   if args.verbose:
@@ -125,7 +125,10 @@ if __name__ == '__main__':
         logging.debug("Found directory: {}".format(crab_path))
         subdirs = hdfs.listdir(crab_path)
         if len(subdirs) != 1:
-          raise RuntimeError("Expected exactly one subdir in %s" % crab_path)
+          logging.error("Expected exactly one subdir in {} but found {}: {}".format(
+            crab_path, len(subdirs), ', '.join(subdirs)
+          ))
+          continue
         subdir = subdirs[0]
         root_files = [
           root_file for subsubdir in hdfs.listdir(subdir) for root_file in hdfs.listdir(subsubdir) if root_file.endswith('.root')

@@ -138,7 +138,8 @@ public:
   get_FR(const std::string & central_or_shift) const;
 
   void
-  record_genWeight(double genWeight);
+  record_genWeight(const EventInfo & eventInfo,
+                   bool use_sign_only = true);
 
   void
   record_auxWeight(const EvtWeightManager * const evtWeightManager);

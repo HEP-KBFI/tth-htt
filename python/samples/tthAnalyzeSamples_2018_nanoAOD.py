@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2020-06-23 13:18:37 with the following command:
+# file generated at 2020-10-17 17:00:06 with the following command:
 # create_dictionary.py -m python/samples/metaDict_2018.py -p python/samples/sampleLocations_2018_nanoAOD.txt -N samples_2018 -E 2018 -o python/samples -g tthAnalyzeSamples_2018_nanoAOD.py -M
 
 samples_2018 = OD()
@@ -17409,6 +17409,53 @@ samples_2018["/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAO
   ]),
 ])
 
+samples_2018["/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext3-v2/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "TT"),
+  ("process_name_specific",           "TTToSemiLeptonic_ext3"),
+  ("nof_files",                       3999),
+  ("nof_db_files",                    3513),
+  ("nof_events",                      {
+  }),
+  ("nof_tree_events",                 199925998),
+  ("nof_db_events",                   199925998),
+  ("fsize_local",                     449137324031), # 449.14GB, avg file size 112.31MB
+  ("fsize_db",                        12212064828531), # 12.21TB, avg file size 3.48GB
+  ("use_it",                          True),
+  ("xsection",                        365.52),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("nof_PSweights",                   4),
+  ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Oct13/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/2018_2020Oct13_TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext3-v2/201013_102750"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+    "HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg",
+    "HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg",
+    "HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg",
+    "HLT_Ele24_eta2p1_WPTight_Gsf_LooseChargedIsoPFTau30_eta2p1_CrossL1",
+    "HLT_IsoMu20_eta2p1_LooseChargedIsoPFTau27_eta2p1_CrossL1",
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
 samples_2018["/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM"] = OD([
   ("type",                            "mc"),
   ("sample_category",                 "TT"),
@@ -17433,6 +17480,53 @@ samples_2018["/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-10
     [
       OD([
         ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Mar03/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/2018_2020Mar03_TTToHadronic_TuneCP5_13TeV-powheg-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/200303_194456"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+    "HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg",
+    "HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg",
+    "HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg",
+    "HLT_Ele24_eta2p1_WPTight_Gsf_LooseChargedIsoPFTau30_eta2p1_CrossL1",
+    "HLT_IsoMu20_eta2p1_LooseChargedIsoPFTau27_eta2p1_CrossL1",
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
+samples_2018["/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext2-v2/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "TT"),
+  ("process_name_specific",           "TTToHadronic_ext2"),
+  ("nof_files",                       3991),
+  ("nof_db_files",                    3762),
+  ("nof_events",                      {
+  }),
+  ("nof_tree_events",                 199524000),
+  ("nof_db_events",                   199524000),
+  ("fsize_local",                     457361617574), # 457.36GB, avg file size 114.60MB
+  ("fsize_db",                        12273002936208), # 12.27TB, avg file size 3.26GB
+  ("use_it",                          True),
+  ("xsection",                        377.85),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("nof_PSweights",                   4),
+  ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Oct13/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/2018_2020Oct13_TTToHadronic_TuneCP5_13TeV-powheg-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext2-v2/201013_102856"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -23568,8 +23662,8 @@ samples_2018["/TTWJetsToLNu_EWK_5f_NLO/RunIIAutumn18MiniAOD/USER"] = OD([
 
 samples_2018["sum_events"] = [
   [ 'ZZTo4L_ext1',                                     'ZZTo4L_ext2',                                      ],
-  [ 'ZZTo2L2Nu_ext1',                                  'ZZTo2L2Nu_ext2',                                   ],
-  [ 'WplusH_HToBB_WToLNu',                             'WplusH_HToBB_WToLNu_ext1',                         ],
+  [ 'TTToSemiLeptonic',                                'TTToSemiLeptonic_ext3',                            ],
+  [ 'TTZToQQ',                                         'TTZToQQ_ext1',                                     ],
   [ 'QCD_Pt80to120_Mu5',                               'QCD_Pt80to120_Mu5_ext1',                           ],
   [ 'DYJetsToLL_M50_HT400to600_PSweights',             'DYJetsToLL_M50_HT400to600_PSweights_ext2',         ],
   [ 'ggZZTo4mu',                                       'ggZZTo4mu_ext1',                                   ],
@@ -23577,13 +23671,15 @@ samples_2018["sum_events"] = [
   [ 'WZTo3LNu',                                        'WZTo3LNu_ext1',                                    ],
   [ 'QCD_Pt470to600_Mu5',                              'QCD_Pt470to600_Mu5_ext1',                          ],
   [ 'WZTo3LNu_powheg_ext1',                            'WZTo3LNu_mllmin01',                                ],
-  [ 'WminusH_HToBB_WToLNu',                            'WminusH_HToBB_WToLNu_ext1',                        ],
-  [ 'DYJetsToLL_M-50_amcatnloFXFX',                    'DYJetsToLL_M-50_amcatnloFXFX_ext2',                ],
-  [ 'TTZToQQ',                                         'TTZToQQ_ext1',                                     ],
-  [ 'QCD_Pt120to170_Mu5',                              'QCD_Pt120to170_Mu5_ext1',                          ],
-  [ 'GluGluHToMuMu_M125',                              'GluGluHToMuMu_M125_ext1',                          ],
-  [ 'QCD_Pt300to470_Mu5',                              'QCD_Pt300to470_Mu5_ext3',                          ],
   [ 'ZH_HToBB_ZToLL',                                  'ZH_HToBB_ZToLL_ext1',                              ],
+  [ 'DYJetsToLL_M-50_amcatnloFXFX',                    'DYJetsToLL_M-50_amcatnloFXFX_ext2',                ],
+  [ 'WplusH_HToBB_WToLNu',                             'WplusH_HToBB_WToLNu_ext1',                         ],
+  [ 'QCD_Pt120to170_Mu5',                              'QCD_Pt120to170_Mu5_ext1',                          ],
+  [ 'TTToHadronic',                                    'TTToHadronic_ext2',                                ],
+  [ 'GluGluHToMuMu_M125',                              'GluGluHToMuMu_M125_ext1',                          ],
+  [ 'ZZTo2L2Nu_ext1',                                  'ZZTo2L2Nu_ext2',                                   ],
+  [ 'QCD_Pt300to470_Mu5',                              'QCD_Pt300to470_Mu5_ext3',                          ],
+  [ 'WminusH_HToBB_WToLNu',                            'WminusH_HToBB_WToLNu_ext1',                        ],
   [ 'TTWW_ext1',                                       'TTWW_ext2',                                        ],
 ]
 

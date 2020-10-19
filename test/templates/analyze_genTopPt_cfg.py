@@ -31,6 +31,7 @@ process.analyze_genTopPt = cms.PSet(
             lumi = cms.double(1.)
         )
     ]),
+    ref_genWeight = cms.double(0.),
     apply_genWeight = cms.bool(True),
     apply_topPtReweighting = cms.bool(False),
 
