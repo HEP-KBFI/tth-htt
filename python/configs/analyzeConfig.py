@@ -128,6 +128,9 @@ class analyzeConfig(object):
         self.executable_analyze = executable_analyze
         self.channel = channel
 
+        self.useFullGenWeight = False
+        self.weight_prefix = "CountWeighted{}".format("Full" if self.useFullGenWeight else "")
+
         # sum the event counts for samples which cover the same phase space only if
         # there are multiple such samples
         event_sums = copy.deepcopy(samples['sum_events'])
@@ -195,10 +198,10 @@ class analyzeConfig(object):
           if sample_key == 'sum_events': continue
           sample_info["dbs_name"] = sample_key
           sample_info["apply_toppt_rwgt"] = sample_key.startswith('/TTTo')
-          if any('CountWeightedPSWeight' in event_count for event_count in sample_info['nof_events']):
-            nof_events_default = sample_info['nof_events']['CountWeighted'][0]
-            nof_events_psweight = sample_info['nof_events']['CountWeightedPSWeight'][0]
-            nof_events_psweight_lhenom = sample_info['nof_events']['CountWeightedPSWeightOriginalXWGTUP'][0]
+          if any('{}PSWeight'.format(self.weight_prefix) in event_count for event_count in sample_info['nof_events']):
+            nof_events_default = sample_info['nof_events'][self.weight_prefix][0]
+            nof_events_psweight = sample_info['nof_events']['{}PSWeight'.format(self.weight_prefix)][0]
+            nof_events_psweight_lhenom = sample_info['nof_events']['{}PSWeightOriginalXWGTUP'.format(self.weight_prefix)][0]
             apply_lhe_nom = abs(nof_events_default - nof_events_psweight_lhenom) < abs(nof_events_default - nof_events_psweight)
             if apply_lhe_nom:
               logging.warning("Applying nominal LHE weight for PS weights in sample {}".format(sample_info["process_name_specific"]))
@@ -837,47 +840,47 @@ class analyzeConfig(object):
               nof_events_label = ''
               nof_events_idx = -1
 
-              # Convention: CountWeighted includes the sign of genWeight, CountFullWeighted includes the full genWeight
+              # Convention: CountWeighted includes the sign of genWeight, CountWeightedFull includes the full genWeight
               # If L1 prefiring weights are enabled, then L1PrefireNom suffix is added
               count_suffix = "L1PrefireNom" if self.do_l1prefiring else ""
               if central_or_shift == systematics.PU_().up:
-                nof_events_label = 'CountWeighted{}'.format(count_suffix)
+                nof_events_label = '{}{}'.format(self.weight_prefix, count_suffix)
                 nof_events_idx = 1 # PU weight up
               elif central_or_shift == systematics.PU_().down:
-                nof_events_label = 'CountWeighted{}'.format(count_suffix)
+                nof_events_label = '{}{}'.format(self.weight_prefix, count_suffix)
                 nof_events_idx = 2 # PU weight down
               elif central_or_shift in systematics.LHE().x1_up:
-                nof_events_label = 'CountWeightedLHEWeightScale{}'.format(count_suffix)
+                nof_events_label = '{}LHEWeightScale{}'.format(self.weight_prefix, count_suffix)
                 nof_events_idx = 5 # muR=1   muF=2
               elif central_or_shift in systematics.LHE().y1_up:
-                nof_events_label = 'CountWeightedLHEWeightScale{}'.format(count_suffix)
+                nof_events_label = '{}LHEWeightScale{}'.format(self.weight_prefix, count_suffix)
                 nof_events_idx = 7 # muR=2   muF=1
               elif central_or_shift in systematics.LHE().x1_down:
-                nof_events_label = 'CountWeightedLHEWeightScale{}'.format(count_suffix)
+                nof_events_label = '{}LHEWeightScale{}'.format(self.weight_prefix, count_suffix)
                 nof_events_idx = 3 # muR=1   muF=0.5
               elif central_or_shift in systematics.LHE().y1_down:
-                nof_events_label = 'CountWeightedLHEWeightScale{}'.format(count_suffix)
+                nof_events_label = '{}LHEWeightScale{}'.format(self.weight_prefix, count_suffix)
                 nof_events_idx = 1 # muR=0.5 muF=1
               elif central_or_shift in systematics.LHE().x1y1_up:
-                nof_events_label = 'CountWeightedLHEWeightScale{}'.format(count_suffix)
+                nof_events_label = '{}LHEWeightScale{}'.format(self.weight_prefix, count_suffix)
                 nof_events_idx = 8 # muR=2   muF=2
               elif central_or_shift in systematics.LHE().x1y1_down:
-                nof_events_label = 'CountWeightedLHEWeightScale{}'.format(count_suffix)
+                nof_events_label = '{}LHEWeightScale{}'.format(self.weight_prefix, count_suffix)
                 nof_events_idx = 0 # muR=0.5   muF=0.5
               elif central_or_shift in systematics.LHE().env_up:
-                nof_events_label = 'CountWeightedLHEEnvelope{}'.format(count_suffix)
+                nof_events_label = '{}LHEEnvelope{}'.format(self.weight_prefix, count_suffix)
                 nof_events_idx = 0
               elif central_or_shift in systematics.LHE().env_down:
-                nof_events_label = 'CountWeightedLHEEnvelope{}'.format(count_suffix)
+                nof_events_label = '{}LHEEnvelope{}'.format(self.weight_prefix, count_suffix)
                 nof_events_idx = 1
               elif central_or_shift in systematics.L1PreFiring_().up:
-                nof_events_label = 'CountWeightedL1Prefire'
+                nof_events_label = '{}L1Prefire'.format(self.weight_prefix)
                 nof_events_idx = 1  # L1 prefiring weight up
               elif central_or_shift in systematics.L1PreFiring_().down:
-                nof_events_label = 'CountWeightedL1Prefire'
+                nof_events_label = '{}L1Prefire'.format(self.weight_prefix)
                 nof_events_idx = 2  # L1 prefiring weight down
               elif central_or_shift == jobOptions['central_or_shift']:
-                nof_events_label = 'CountWeighted{}'.format(count_suffix)
+                nof_events_label = '{}{}'.format(self.weight_prefix, count_suffix)
                 nof_events_idx = 0 # central
 
               if jobOptions['hasPS'] and central_or_shift in systematics.PartonShower().full:
@@ -897,7 +900,7 @@ class analyzeConfig(object):
                   nof_events_idx = 4
                 elif central_or_shift in systematics.PartonShower().env_down:
                   nof_events_idx = 5
-                nof_events_label = "CountWeighted{}{}".format(psWeights_str, count_suffix)
+                nof_events_label = "{}{}{}".format(self.weight_prefix, self.weight_prefix, psWeights_str, count_suffix)
 
               if jobOptions['apply_topPtReweighting']:
                 assert(is_mc)
@@ -906,10 +909,10 @@ class analyzeConfig(object):
                   nof_events_label += toppt_str
                 elif central_or_shift == systematics.topPtReweighting_().down:
                   # no SF is applied
-                  nof_events_label = "CountWeighted{}".format(count_suffix)
+                  nof_events_label = "{}{}".format(self.weight_prefix, count_suffix)
                   nof_events_idx = 0
                 elif central_or_shift == systematics.topPtReweighting_().up:
-                  nof_events_label = "CountWeighted{}{}Squared".format(count_suffix, toppt_str)
+                  nof_events_label = "{}{}{}Squared".format(self.weight_prefix, count_suffix, toppt_str)
                   nof_events_idx = 0
 
               if nof_events_idx >= 0 and nof_events_label:
