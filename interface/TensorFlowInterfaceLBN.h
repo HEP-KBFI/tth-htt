@@ -1,8 +1,6 @@
 #ifndef tthAnalysis_HiggsToTauTau_TensorFlowInterfaceLBN_h
 #define tthAnalysis_HiggsToTauTau_TensorFlowInterfaceLBN_h
 
-#include "tthAnalysis/HiggsToTauTau/interface/Particle.h"
-
 #include <Rtypes.h> // Float_t
 
 #include <string> // std::string
@@ -17,6 +15,7 @@ namespace tensorflow
   class Session;
   class Status;
 }
+class Particle;
 
 class TensorFlowInterfaceLBN
 {

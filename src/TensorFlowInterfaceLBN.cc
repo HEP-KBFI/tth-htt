@@ -2,6 +2,7 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/LocalFileInPath.h" // LocalFileInPath
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
+#include "tthAnalysis/HiggsToTauTau/interface/Particle.h" // Particle
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wshadow"
