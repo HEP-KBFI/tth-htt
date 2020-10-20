@@ -62,9 +62,10 @@ class prodNtupleConfig:
              use_home,
              skip_tools_step,
              do_sync,
+             lep_mva_wp,
              verbose = False,
              pool_id        = '',
-            submission_cmd = None,
+             submission_cmd = None,
           ):
 
         self.configDir             = configDir
@@ -98,6 +99,7 @@ class prodNtupleConfig:
         self.num_parallel_jobs = num_parallel_jobs
         self.skip_tools_step   = skip_tools_step
         self.do_sync           = do_sync
+        self.lep_mva_wp        = lep_mva_wp
         self.pool_id           = pool_id if pool_id else uuid.uuid4()
 
         self.pileup_histograms = []
@@ -198,6 +200,7 @@ class prodNtupleConfig:
             "process.produceNtuple.useNonNominal              = cms.bool(%s)"     % self.use_nonnominal,
             "process.produceNtuple.genMatchingByIndex         = cms.bool(%s)"     % self.gen_matching_by_index,
             "process.produceNtuple.branchNames_triggers       = cms.vstring(%s)"  % jobOptions['triggers'],
+            "process.produceNtuple.lep_mva_wp                 = cms.string('%s')" % self.lep_mva_wp,
             "process.fwliteInput.fileNames                    = cms.vstring(%s)"  % inputFiles_prepended,
             "executable              = 'produceNtuple'",
             "inputFiles              = %s" % jobOptions['inputFiles'],

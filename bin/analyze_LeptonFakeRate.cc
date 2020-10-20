@@ -16,11 +16,9 @@
 #include "tthAnalysis/HiggsToTauTau/interface/ObjectMultiplicityReader.h" // ObjectMultiplicityReader
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorLoose.h" // RecoElectronCollectionSelectorLoose
-#include "hhAnalysis/multilepton/interface/RecoElectronCollectionSelectorFakeable_hh_multilepton.h" // RecoElectronCollectionSelectorFakeable_hh_multilepton
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorFakeable.h" // RecoElectronCollectionSelectorFakeable
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorTight.h" // RecoElectronCollectionSelectorTight
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorLoose.h" // RecoMuonCollectionSelectorLoose
-#include "hhAnalysis/multilepton/interface/RecoMuonCollectionSelectorFakeable_hh_multilepton.h" // RecoMuonCollectionSelectorFakeable_hh_multilepton
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorFakeable.h" // RecoMuonCollectionSelectorFakeable
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorTight.h" // RecoMuonCollectionSelectorTight
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelector.h" // RecoJetCollectionSelector
@@ -59,8 +57,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/jetToTauFakeRateAuxFunctions.h" // getEtaBin(), getPtBin()
 #include "tthAnalysis/HiggsToTauTau/interface/leptonTypes.h" // kElectron, kMuon, getLeptonType
 
-#include "hhAnalysis/multilepton/interface/RecoElectronCollectionSelectorFakeable_hh_multilepton.h" // RecoElectronCollectionSelectorFakeable
-#include "hhAnalysis/multilepton/interface/RecoMuonCollectionSelectorFakeable_hh_multilepton.h" // RecoMuonCollectionSelectorFakeable
+#include "hhAnalysis/multilepton/interface/RecoElectronCollectionSelectorFakeable_hh_multilepton.h" // RecoElectronCollectionSelectorFakeable_hh_multilepton
+#include "hhAnalysis/multilepton/interface/RecoMuonCollectionSelectorFakeable_hh_multilepton.h" // RecoMuonCollectionSelectorFakeable_hh_multilepton
 
 #if __has_include (<FWCore/ParameterSetReader/interface/ParameterSetReader.h>)
 #  include <FWCore/ParameterSetReader/interface/ParameterSetReader.h> // edm::readPSetsFrom()
@@ -1424,6 +1422,7 @@ main(int argc,
 
   const bool fillNtuple = ( cfg_analyze.exists("fillNtuple") ) ? cfg_analyze.getParameter<bool>("fillNtuple") : false;
 
+
   edm::ParameterSet triggerWhiteList;
   if(! isMC)
   {
@@ -1506,6 +1505,7 @@ main(int argc,
 
   const double lep_mva_cut_mu = cfg_analyze.getParameter<double>("lep_mva_cut_mu");
   const double lep_mva_cut_e  = cfg_analyze.getParameter<double>("lep_mva_cut_e");
+  const std::string lep_mva_wp = cfg_analyze.getParameter<std::string>("lep_mva_wp");
   const double METScaleSyst   = cfg_analyze.getParameter<double>("METScaleSyst");
 
   
@@ -1706,8 +1706,8 @@ main(int argc,
   inputTree->registerReader(muonReader);
   RecoMuonCollectionGenMatcher muonGenMatcher;
   RecoMuonCollectionSelectorLoose preselMuonSelector(era);
-  //RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era);  // DEFAULT FAKE DEF. USED IN TTH ANALYSIS 
-  RecoMuonCollectionSelectorFakeable_hh_multilepton fakeableMuonSelector(era); // NEW HH OPTIMIZED FAKE DEFINITION;    
+  RecoMuonCollectionSelectorFakeable fakeableMuonSelector_default(era);  // DEFAULT FAKE DEF. USED IN TTH ANALYSIS
+  RecoMuonCollectionSelectorFakeable_hh_multilepton fakeableMuonSelector_hh_multilepton(era); // NEW HH OPTIMIZED FAKE DEFINITION;
   RecoMuonCollectionSelectorTight tightMuonSelector(era);       
   muonReader->set_mvaTTH_wp(lep_mva_cut_mu);
 
@@ -1717,11 +1717,12 @@ main(int argc,
   RecoElectronCollectionGenMatcher electronGenMatcher;
   RecoElectronCollectionCleaner electronCleaner(0.3);
   RecoElectronCollectionSelectorLoose preselElectronSelector(era);
-  //RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era); // DEFAULT FAKE DEF. USED IN TTH ANALYSIS
-  RecoElectronCollectionSelectorFakeable_hh_multilepton fakeableElectronSelector(era); // NEW HH OPTIMIZED FAKE DEFINITION     
+  RecoElectronCollectionSelectorFakeable fakeableElectronSelector_default(era); // DEFAULT FAKE DEF. USED IN TTH ANALYSIS
+  RecoElectronCollectionSelectorFakeable_hh_multilepton fakeableElectronSelector_hh_multilepton(era); // NEW HH OPTIMIZED FAKE DEFINITION
   RecoElectronCollectionSelectorTight tightElectronSelector(era); 
   electronReader->set_mvaTTH_wp(lep_mva_cut_e);
-  fakeableElectronSelector.enable_offline_e_trigger_cuts();
+  fakeableElectronSelector_default.enable_offline_e_trigger_cuts();
+  fakeableElectronSelector_hh_multilepton.enable_offline_e_trigger_cuts();
   tightElectronSelector.enable_offline_e_trigger_cuts();
 
   RecoJetReader * jetReader = new RecoJetReader(era, isMC, branchName_jets, readGenObjects);
@@ -2444,14 +2445,24 @@ main(int argc,
     // CV: no cleaning needed for muons, as they have the highest priority in the overlap removal
     std::vector<const RecoMuon *> cleanedMuons = muon_ptrs;
     std::vector<const RecoMuon *> preselMuons = preselMuonSelector(cleanedMuons); // Loose muons
-    std::vector<const RecoMuon *> fakeableMuons = fakeableMuonSelector(preselMuons);
+    std::vector<const RecoMuon *> fakeableMuons = [&](){
+      return lep_mva_wp == "hh_multilepton" ?
+        fakeableMuonSelector_hh_multilepton(preselMuons) :
+        fakeableMuonSelector_default(preselMuons)
+      ;
+    }();
     std::vector<const RecoMuon *> tightMuons = tightMuonSelector(preselMuons);
 
     std::vector<RecoElectron> electrons = electronReader->read();
     std::vector<const RecoElectron *> electron_ptrs = convert_to_ptrs(electrons);
     std::vector<const RecoElectron *> cleanedElectrons = electronCleaner(electron_ptrs, preselMuons);
     std::vector<const RecoElectron *> preselElectrons = preselElectronSelector(cleanedElectrons); // Loose electrons
-    std::vector<const RecoElectron *> fakeableElectrons = fakeableElectronSelector(preselElectrons);
+    std::vector<const RecoElectron *> fakeableElectrons = [&](){
+      return lep_mva_wp == "hh_multilepton" ?
+        fakeableElectronSelector_hh_multilepton(preselElectrons) :
+        fakeableElectronSelector_default(preselElectrons)
+      ;
+    }();
     std::vector<const RecoElectron *> tightElectrons = tightElectronSelector(preselElectrons);
 
 //--- build collections of jets and select subset of jets passing b-tagging criteria

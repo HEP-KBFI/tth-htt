@@ -19,6 +19,7 @@ mode_choices = [
 parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
 parser.add_nonnominal()
+parser.add_lep_mva_wp(default_wp = 'default')
 parser.add_tau_id_wp('dR03mvaVVLoose&dR05mvaVVLoose&deepVSjVVVLoose')
 parser.add_files_per_job(5)
 parser.add_use_home(False)
@@ -45,6 +46,7 @@ gen_matching       = args.gen_matching
 # Additional arguments
 mode           = args.mode
 use_nonnominal = args.original_central
+lep_mva_wp     = args.lep_mva_wp
 files_per_job  = args.files_per_job
 use_home       = args.use_home
 
@@ -65,6 +67,9 @@ golden_json_2018 = os.path.join(
   os.environ['CMSSW_BASE'], 'src/tthAnalysis/NanoAOD/data',
   'Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt'
 )
+
+if not preselection and lep_mva_wp != 'default':
+  raise ValueError("Non-default lepton selection can only be used in the skimming")
 
 # Use the arguments
 version = "%s_w%sPresel_%s_%s" % (
@@ -233,6 +238,7 @@ if __name__ == '__main__':
     use_nonnominal        = use_nonnominal,
     use_home              = use_home,
     skip_tools_step       = preselection,
+    lep_mva_wp            = lep_mva_wp,
     do_sync               = do_sync,
     submission_cmd        = sys.argv,
   )
