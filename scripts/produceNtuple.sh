@@ -45,6 +45,7 @@ SPLIT_BY_LHEHT=$(python -c "execfile('$SCRIPT'); print(splitByNlheHT)")
 SPLIT_BY_LHENJETHT=$(python -c "execfile('$SCRIPT'); print(splitByNlheJetHT)")
 MLL4WZTO3LNU=$(python -c "execfile('$SCRIPT'); print(mllForWZTo3LNu)")
 MLL4WZTO3LNU_MLLMIN01=$(python -c "execfile('$SCRIPT'); print(mllForWZTo3LNu_mllmin01)")
+RECOMPUTE_RUN_LS=$(python -c "execfile('$SCRIPT'); print(recomp_run_ls)")
 
 echo "Found the following file(s): '$FILES'"
 echo "Found the following executable: '$EXECUTABLE'"
@@ -60,6 +61,7 @@ echo "Splitting event counts by LHE HT? '$SPLIT_BY_LHEHT'"
 echo "Splitting event counts by # LHE jets and LHE HT? '$SPLIT_BY_LHENJETHT'"
 echo "Finding mll for WZTo3LNu? '$MLL4WZTO3LNU'"
 echo "Finding mll for WZTo3LNu (mllmin01)? '$MLL4WZTO3LNU_MLLMIN01'"
+echo "Recompute run and luminosityBlock? '$RECOMPUTE_RUN_LS'"
 
 if [[ -z $(which "$EXECUTABLE" 2>/dev/null) ]]; then
   echo "Executable '$EXECUTABLE' not in \$PATH";
@@ -101,11 +103,37 @@ if [ "$SKIP_TOOLS_STEP" == "False" ]; then
   echo "Starting nanoAOD pre-processing in `pwd` at `date`"
   for F in $FILES; do
     #NB! The various input files cannot have the same basename!
-    F_i=$(basename "${F%.*}_i.${F##*.}")
-    F_ii=$(basename "${F%.*}_ii.${F##*.}")
-    echo "Adding new branches: $F -> $F_i"
-    nano_postproc.py -s _i -I tthAnalysis.NanoAODTools.postprocessing.tthModules $NANO_MODULES . $F
+    G=$F
+
+    if [ "$RECOMPUTE_RUN_LS" = "True" ]; then
+      F_j=$(basename "${F%.*}_j.${F##*.}")
+      echo "Removing old run and luminosityBlock branches: $G -> $F_j"
+      nano_postproc.py -s _j -b $CMSSW_BASE/src/tthAnalysis/NanoAODTools/data/keep_and_drop_rle.txt . $G
+      test_exit_code $?
+
+      F_jj=$(basename "${F%.*}_jj.${F##*.}")
+      echo "Adding new run and luminosityBlock branches: $F_j -> $F_jj"
+      nano_postproc.py -s j -I tthAnalysis.NanoAODTools.postprocessing.tthModules rle . $F_j
+      test_exit_code $?
+
+      if [ "$REMOVE_INTERMEDIATE" == "True" ]; then
+        echo "Removing intermediate file $F_j";
+        rm -f $F_j;
+      fi
+      G=$F_jj
+    fi
+
+    F_i=$(basename "${G%.*}_i.${G##*.}")
+    F_ii=$(basename "${G%.*}_ii.${G##*.}")
+    echo "Adding new branches: $G -> $F_i"
+    nano_postproc.py -s _i -I tthAnalysis.NanoAODTools.postprocessing.tthModules $NANO_MODULES . $G
     test_exit_code $?
+
+    if [[ "$REMOVE_INTERMEDIATE" == "True" ]] && [[ ! -z ${F_jj+x} ]]; then
+      echo "Removing intermediate file $F_jj";
+      rm -f $F_jj;
+    fi
+
     echo "Creating counter histograms: $F_i -> $F_ii"
     COUNTHISTOGRAM_MODULE="countHistogramAll"
     if [ "$IS_MC" == "True" ]; then

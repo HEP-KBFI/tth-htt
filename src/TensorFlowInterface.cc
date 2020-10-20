@@ -15,7 +15,7 @@
 
 TensorFlowInterface::TensorFlowInterface(const std::string & mvaFileName_odd,
                     const std::vector<std::string> & mvaInputVariables,
-                    const std::vector<std::string> classes,
+                    const std::vector<std::string> & classes,
                     const std::string & mvaFileName_even,
                     const std::string & fitFunctionFileName)
   : classes_(classes)
@@ -250,11 +250,10 @@ TensorFlowInterface::operator()(const std::map<std::string, double> & mvaInputs,
   }
   tensorflow::run(
     session,
-    { { graphDef->node(n_input_layer).name(), inputs } },
+    { { graphDef->node(n_input_layer).name(), inputs } }, 
     { graphDef->node(n_output_layer).name() },
     &outputs
   );
-  
 
   // store the output
   std::map<std::string, double> mvaOutputs;

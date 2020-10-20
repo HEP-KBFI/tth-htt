@@ -1,5 +1,5 @@
-#ifndef tthAnalysis_HiggsToTauTau_TensorFlowInterface_h
-#define tthAnalysis_HiggsToTauTau_TensorFlowInterface_h
+#ifndef tthAnalysis_HiggsToTauTau_TensorFlowInterfaceLBN_h
+#define tthAnalysis_HiggsToTauTau_TensorFlowInterfaceLBN_h
 
 #include <Rtypes.h> // Float_t
 
@@ -15,17 +15,18 @@ namespace tensorflow
   class Session;
   class Status;
 }
-class MVAInputVarTransformer;
+class Particle;
 
-class TensorFlowInterface
+class TensorFlowInterfaceLBN
 {
 public:
-  TensorFlowInterface(const std::string & mvaFileName_odd,
-                      const std::vector<std::string> & mvaInputVariables,
-                      const std::vector<std::string> & classes,
-                      const std::string & mvaFileName_even = "",
-                      const std::string & fitFunctionFileName = "");
-  ~TensorFlowInterface();
+  TensorFlowInterfaceLBN(const std::string & mvaFileName_odd,
+                         const std::vector<std::string> & ll_particleNames,
+                         const std::vector<std::string> & hl_mvaInputVariables,
+                         const std::vector<std::string> & classes,
+                         const std::string & mvaFileName_even = "",
+                         bool isDEBUG = false);
+  ~TensorFlowInterfaceLBN();
 
   /**
    * @brief Calculates MVA output.
@@ -33,7 +34,8 @@ public:
    * @return          MVA output
    */
   std::map<std::string, double>
-  operator()(const std::map<std::string, double> & mvaInputs,
+  operator()(const std::map<std::string, const Particle*> & ll_particles,
+             const std::map<std::string, double> & hl_mvaInputs,
              int event_number = -1) const;
 
 
@@ -44,22 +46,17 @@ private:
   tensorflow::Session * session_odd_;
   std::string input_layer_name_odd;
   std::string output_layer_name_odd;
-  int n_input_layer_odd;
-  int n_output_layer_odd;
 
   std::string mvaFileName_even_;
   tensorflow::GraphDef * graphDef_even_;
   tensorflow::Session * session_even_;
   std::string input_layer_name_even;
   std::string output_layer_name_even;
-  int n_input_layer_even;
-  int n_output_layer_even;
 
-  std::vector<std::string>  mvaInputVariables_;
-  std::string fitFunctionFileName_;
-  MVAInputVarTransformer * Transform_Ptr_;
+  std::vector<std::string> ll_particleNames_;
+  std::vector<std::string> hl_mvaInputVariables_;
 
   bool isDEBUG_;
 };
 
-#endif // TensorFlowInterface_h
+#endif // TensorFlowInterfaceLBN_h

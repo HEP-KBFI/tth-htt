@@ -165,10 +165,15 @@ class prodNtupleConfig:
           inputFiles: list of input files (Ntuples)
           outputFile: output file of the job -- a ROOT file containing histogram
         """
+        recomp_run_ls = jobOptions['recomp_run_ls']
         if self.skip_tools_step:
             inputFiles_prepended = jobOptions['inputFiles']
         else:
-            inputFiles_prepended = map(lambda path: os.path.basename('%s_ii%s' % os.path.splitext(path)), jobOptions['inputFiles'])
+            inputFiles_prepended = []
+            for inputFile in jobOptions['inputFiles']:
+                inputFile_split = os.path.splitext(os.path.basename(inputFile))
+                infix = "{}_ii".format("_jj" if recomp_run_ls else "")
+                inputFiles_prepended.append('%s%s%s' % (inputFile_split[0], infix, inputFile_split[1]))
         if len(inputFiles_prepended) != len(set(inputFiles_prepended)):
             raise ValueError("Not all input files have a unique base name: %s" % ', '.join(jobOptions['inputFiles']))
         lines = [
@@ -211,7 +216,8 @@ class prodNtupleConfig:
             "splitByNlheHT           = %s" % jobOptions['splitByNlheHT'],
             "splitByNlheJetHT        = %s" % jobOptions['splitByNlheJetHT'],
             "mllForWZTo3LNu          = %s" % jobOptions['mllForWZTo3LNu'],
-            "mllForWZTo3LNu_mllmin01 = %s" % jobOptions['mllForWZTo3LNu_mllmin01']
+            "mllForWZTo3LNu_mllmin01 = %s" % jobOptions['mllForWZTo3LNu_mllmin01'],
+            "recomp_run_ls           = %s" % recomp_run_ls,
         ]
         create_cfg(self.cfgFile_prodNtuple_original, jobOptions['cfgFile_modified'], lines)
 
@@ -352,6 +358,10 @@ class prodNtupleConfig:
                 splitByNlheJetHT = process_name.startswith('WJetsToLNu_madgraphMLM') or (process_name.startswith('DYJetsToLL_M-50') and is_lo)
                 mllForWZTo3LNu = process_name.startswith('WZTo3LNu') and is_lo and 'mllmin01' not in sample_name
                 mllForWZTo3LNu_mllmin01 = process_name.startswith('WZTo3LNu_mllmin01')
+                sample_category = sample_info["sample_category"]
+                recomp_run_ls = sample_name.endswith('/USER') and self.era == '2017' and sample_category in [
+                    'signal_ggf_nonresonant_hh_tttt', 'signal_ggf_nonresonant_hh_wwtt', 'signal_ggf_nonresonant_hh_wwww'
+                ]
 
                 jobOptions = {
                     'inputFiles'              : self.inputFiles[key_file],
@@ -360,7 +370,7 @@ class prodNtupleConfig:
                     'is_mc'                   : is_mc,
                     'random_seed'             : jobId,
                     'process_name'            : process_name,
-                    'category_name'           : sample_info["sample_category"],
+                    'category_name'           : sample_category,
                     'triggers'                : hlt_paths,
                     'HLTcuts'                 : hlt_cuts,
                     'compTopRwgt'             : sample_name.startswith('/TTTo'),
@@ -371,6 +381,7 @@ class prodNtupleConfig:
                     'splitByNlheJetHT'        : splitByNlheJetHT,
                     'mllForWZTo3LNu'          : mllForWZTo3LNu,
                     'mllForWZTo3LNu_mllmin01' : mllForWZTo3LNu_mllmin01,
+                    'recomp_run_ls'           : recomp_run_ls,
                 }
                 self.createCfg_prodNtuple(jobOptions)
 
