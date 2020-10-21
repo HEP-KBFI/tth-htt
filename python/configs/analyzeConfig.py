@@ -1,7 +1,7 @@
 from tthAnalysis.HiggsToTauTau.safe_root import ROOT
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, generate_file_ids, get_log_version, check_submission_cmd, record_software_state
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile, is_dymc_reweighting, is_dymc_normalization, check_sample_pairs
-from tthAnalysis.HiggsToTauTau.analysisTools import createMakefile as tools_createMakefile, get_tH_weight_str, get_tH_SM_str
+from tthAnalysis.HiggsToTauTau.analysisTools import createMakefile as tools_createMakefile, get_tH_weight_str, get_tH_SM_str, load_refGenWeightsFromFile
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch as tools_createScript_sbatch
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch_hadd_nonBlocking as tools_createScript_sbatch_hadd_nonBlocking
 from tthAnalysis.HiggsToTauTau.analysisSettings import Triggers, systematics, HTXS_BINS
@@ -666,6 +666,9 @@ class analyzeConfig(object):
         else:
             raise ValueError('Invalid era: %s' % self.era)
         assert(os.path.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', self.hadTauFakeRateWeight_inputFile)))
+
+        self.ref_genWeightFile = os.path.join(os.environ['CMSSW_BASE'], 'src/tthAnalysis/HiggsToTauTau/data/refGenWeight_{}.txt'.format(self.era))
+        self.ref_genWeights = {}
         self.isBDTtraining = False
         self.mcClosure_dir = {}
         self.cfgFile_make_plots_mcClosure = ''
@@ -704,6 +707,11 @@ class analyzeConfig(object):
                 self.hadTauFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_deeptau_BDT_{}_v6.root".format(self.era)
         assert(os.path.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', self.hadTauFakeRateWeight_inputFile)))
         self.isBDTtraining = True
+
+    def load_refGenWeights(self):
+        if self.ref_genWeights:
+            return
+        self.ref_genWeights = load_refGenWeightsFromFile(self.ref_genWeightFile)
 
     def get_addMEM_systematics(self, central_or_shift):
         #if central_or_shift in systematics.an_addMEM:
@@ -986,6 +994,11 @@ class analyzeConfig(object):
 
         if 'hasLHE' not in jobOptions:
             jobOptions['hasLHE'] = sample_info['has_LHE']
+        if 'ref_genWeight' not in jobOptions and False: #TODO remove False
+            self.load_refGenWeights()
+            if process_name not in self.ref_genWeights:
+                raise RuntimeError("Unable to find reference gen weight for process %s from file %s" % (process_name, self.ref_genWeightFile))
+            jobOptions['ref_genWeight'] = self.ref_genWeights[process_name]
         if 'skipEvery' in sample_info:
             assert('skipEvery' not in jobOptions)
             jobOptions['skipEvery'] = sample_info['skipEvery']

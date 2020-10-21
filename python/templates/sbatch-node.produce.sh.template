@@ -173,6 +173,7 @@ run_wrapped_executable() {
     echo "Listing of current directory:"
     ls -l
 
+{% if copy_output_file %}
     echo "Copying output files: {{ outputFiles }}"
     for OUTPUT_FILE in $OUTPUT_FILES; do
       OUTPUT_FILE_SIZE=$(stat -c '%s' $OUTPUT_FILE)
@@ -207,6 +208,7 @@ run_wrapped_executable() {
         EXIT_CODE=1;
       fi
     done
+{% endif %}
 
     cleanup "$JOB_DIR"
 

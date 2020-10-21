@@ -2,6 +2,7 @@
 from tthAnalysis.HiggsToTauTau.jobTools import generate_file_ids, generate_input_list, logging
 
 import re
+import os.path
 
 def initDict(dictionary, keys):
     """Auxiliary function to initialize dictionary for access with multiple keys
@@ -223,3 +224,17 @@ def get_tH_params(kt_kv_cosa_str):
     kv_str = kt_kv_cosa_str_repl[kt_kv_cosa_str_repl.find('kv_') + 3 : len(kt_kv_cosa_str_repl) if cosa_idx < 0 else (cosa_idx - 1)]
     cosa_str = '' if cosa_idx < 0 else kt_kv_cosa_str_repl[cosa_idx + 5 : ]
     return (float(kt_str), float(kv_str), float(cosa_str) if cosa_str else None)
+
+def load_refGenWeightsFromFile(ref_genWeightsFile):
+    ref_genWeights = {}
+    assert(os.path.isfile(ref_genWeightsFile))
+    with open(ref_genWeightsFile, 'r') as ref_genWeightsFilePtr:
+        for line in ref_genWeightsFilePtr:
+            line_split = line.rstrip().split()
+            assert(len(line_split) == 2)
+            process_name = line_split[0]
+            ref_genWeight = float(line_split[1])
+            if process_name in ref_genWeights:
+                raise RuntimeError("Found duplicate entry of process: %s" % process_name)
+            ref_genWeights[process_name] = ref_genWeight
+    return ref_genWeights

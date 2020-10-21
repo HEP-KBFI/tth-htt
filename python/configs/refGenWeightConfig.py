@@ -2,7 +2,6 @@ from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, ge
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, createFile, generateInputFileList
 from tthAnalysis.HiggsToTauTau.analysisTools import createMakefile as tools_createMakefile
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch as tools_createScript_sbatch
-from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch_hadd as tools_createScript_sbatch_hadd
 from tthAnalysis.HiggsToTauTau.safe_root import ROOT
 from tthAnalysis.HiggsToTauTau.common import logging, DEPENDENCIES
 
@@ -202,6 +201,7 @@ class refGenWeightConfig:
             validate_outputs        = self.check_output_files,
             min_file_size           = -1,
             use_home                = self.use_home,
+            copy_output_file        = False,
         )
         return num_jobs
 
@@ -322,7 +322,7 @@ class refGenWeightConfig:
                 'cfgFile_path' : self.cfgFiles[key_file],
                 'cmdParams'    : "-i {} -o {} -p {} -v".format(
                     self.cfgFiles[key_file],
-                    os.path.basename(self.outputFiles[key_file]),
+                    self.outputFiles[key_file],
                     self.plotFiles[key_file],
                 ),
                 'outputFile'   : self.outputFiles[key_file],

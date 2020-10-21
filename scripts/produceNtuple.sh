@@ -46,6 +46,7 @@ SPLIT_BY_LHENJETHT=$(python -c "execfile('$SCRIPT'); print(splitByNlheJetHT)")
 MLL4WZTO3LNU=$(python -c "execfile('$SCRIPT'); print(mllForWZTo3LNu)")
 MLL4WZTO3LNU_MLLMIN01=$(python -c "execfile('$SCRIPT'); print(mllForWZTo3LNu_mllmin01)")
 RECOMPUTE_RUN_LS=$(python -c "execfile('$SCRIPT'); print(recomp_run_ls)")
+REF_GENWEIGHT=$(python -c "execfile('$SCRIPT'); print(ref_genWeight)")
 
 echo "Found the following file(s): '$FILES'"
 echo "Found the following executable: '$EXECUTABLE'"
@@ -62,6 +63,7 @@ echo "Splitting event counts by # LHE jets and LHE HT? '$SPLIT_BY_LHENJETHT'"
 echo "Finding mll for WZTo3LNu? '$MLL4WZTO3LNU'"
 echo "Finding mll for WZTo3LNu (mllmin01)? '$MLL4WZTO3LNU_MLLMIN01'"
 echo "Recompute run and luminosityBlock? '$RECOMPUTE_RUN_LS'"
+echo "Reference gen weight: $REF_GENWEIGHT"
 
 if [[ -z $(which "$EXECUTABLE" 2>/dev/null) ]]; then
   echo "Executable '$EXECUTABLE' not in \$PATH";
@@ -148,11 +150,13 @@ if [ "$SKIP_TOOLS_STEP" == "False" ]; then
       elif [ "$SPLIT_BY_LHENJETHT" == "True" ]; then
         COUNTHISTOGRAM_MODULE="${COUNTHISTOGRAM_MODULE}SplitByLHENjetHT";
       fi
-      nano_postproc.py -s i -I tthAnalysis.NanoAODTools.postprocessing.tthModules $COUNTHISTOGRAM_MODULE \
+      COUNTHISTOGRAM_MODULE="$COUNTHISTOGRAM_MODULE($REF_GENWEIGHT)";
+      nano_postproc.py -s i -I tthAnalysis.NanoAODTools.postprocessing.tthModules "$COUNTHISTOGRAM_MODULE" \
                        . $F_i
     else
-      nano_postproc.py -s i -I tthAnalysis.NanoAODTools.postprocessing.tthModules $COUNTHISTOGRAM_MODULE \
-                       -J $GOLDEN_JSON                                                                   \
+      COUNTHISTOGRAM_MODULE="$COUNTHISTOGRAM_MODULE($REF_GENWEIGHT)";
+      nano_postproc.py -s i -I tthAnalysis.NanoAODTools.postprocessing.tthModules "$COUNTHISTOGRAM_MODULE" \
+                       -J $GOLDEN_JSON                                                                     \
                        . $F_i
     fi
     test_exit_code $?
