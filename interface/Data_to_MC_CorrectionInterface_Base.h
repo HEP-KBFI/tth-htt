@@ -168,8 +168,10 @@ protected:
   pileupJetID pileupJetId_;
 
   bool recompTightSF_;
-  double recompTightSF_el_;
-  double recompTightSF_mu_;
+  double recompTightSF_el_woTightCharge_;
+  double recompTightSF_mu_woTightCharge_;
+  double recompTightSF_el_wTightCharge_;
+  double recompTightSF_mu_wTightCharge_;
 
   std::size_t numLeptons_;
   std::vector<int> lepton_type_;

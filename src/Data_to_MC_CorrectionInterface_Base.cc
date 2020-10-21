@@ -42,8 +42,10 @@ Data_to_MC_CorrectionInterface_Base::Data_to_MC_CorrectionInterface_Base(Era era
   , isDEBUG_(cfg.exists("isDEBUG") ? cfg.getParameter<bool>("isDEBUG") : false)
   , pileupJetId_(kPileupJetID_disabled)
   , recompTightSF_(cfg.exists("lep_mva_wp") && cfg.getParameter<std::string>("lep_mva_wp") == "hh_multilepton")
-  , recompTightSF_el_(1.)
-  , recompTightSF_mu_(1.)
+  , recompTightSF_el_woTightCharge_(1.)
+  , recompTightSF_mu_woTightCharge_(1.)
+  , recompTightSF_el_wTightCharge_(1.)
+  , recompTightSF_mu_wTightCharge_(1.)
   , numLeptons_(0)
   , numElectrons_(0)
   , numMuons_(0)
@@ -182,25 +184,40 @@ Data_to_MC_CorrectionInterface_Base::Data_to_MC_CorrectionInterface_Base(Era era
   {
     if(era_ == Era::k2016)
     {
-      // AvgSF_Def_el = 0.795 +- 0.009;  AvgSF_New_el = 0.876 +- 0.044;
-      // AvgSF_Def_mu = 0.922 +- 0.008;  AvgSF_New_mu = 1.031 +- 0.040;
-      recompTightSF_el_ = (1. - 0.876) / (1. - 0.795); 
-      recompTightSF_mu_ = (1. - 1.031) / (1. - 0.922); 
+      // 2016 woTightCharge e  AvgSF_Def_el_woTightCharge: 0.796 +- 0.009;   AvgSF_New_el_woTightCharge: 0.876 +- 0.044 
+      // 2016 woTightCharge mu  AvgSF_Def_mu_woTightCharge: 0.922 +- 0.008;   AvgSF_New_mu_woTightCharge: 1.027 +- 0.040
+      recompTightSF_el_woTightCharge_ = (1. - 0.876) / (1. - 0.796);
+      recompTightSF_mu_woTightCharge_ = (1. - 1.027) / (1. - 0.922);
+
+      // 2016 wTightCharge e  AvgSF_Def_el_wTightCharge: 0.789 +- 0.009;   AvgSF_New_el_wTightCharge: 0.868 +- 0.045 
+      // 2016 wTightCharge mu  AvgSF_Def_mu_wTightCharge: 0.922 +- 0.008;   AvgSF_New_mu_wTightCharge: 1.024 +- 0.040 
+      recompTightSF_el_wTightCharge_ = (1. - 0.868) / (1. - 0.789);
+      recompTightSF_mu_wTightCharge_ = (1. - 1.024) / (1. - 0.922);
     }
     else if(era_ == Era::k2017)
     {
       // see: https://indico.cern.ch/event/961689/contributions/4047547/attachments/2114588/3557570/HHTo4W_3l_Updates_20201002_LooseLeptonSFCorrection_1.pdf
-      // AvgSF_Def_el = 0.755 +- 0.008;  AvgSF_New_el = 0.886 +- 0.040;
-      // AvgSF_Def_mu = 0.881 +- 0.008;  AvgSF_New_mu = 0.988 +- 0.034;
-      recompTightSF_el_ = (1. - 0.886) / (1. - 0.755);
-      recompTightSF_mu_ = (1. - 0.988) / (1. - 0.881);
+      // 2017 woTightCharge e  AvgSF_Def_el_woTightCharge: 0.755 +- 0.008;   AvgSF_New_el_woTightCharge: 0.883 +- 0.039 
+      // 2017 woTightCharge mu  AvgSF_Def_mu_woTightCharge: 0.881 +- 0.008;   AvgSF_New_mu_woTightCharge: 0.983 +- 0.034
+      recompTightSF_el_woTightCharge_ = (1. - 0.883) / (1. - 0.755); 
+      recompTightSF_mu_woTightCharge_ = (1. - 0.983) / (1. - 0.881);
+
+      // 2017 wTightCharge e  AvgSF_Def_el_wTightCharge: 0.750 +- 0.008;   AvgSF_New_el_wTightCharge: 0.867 +- 0.040 
+      // 2017 wTightCharge mu  AvgSF_Def_mu_wTightCharge: 0.882 +- 0.008;   AvgSF_New_mu_wTightCharge: 0.978 +- 0.034
+      recompTightSF_el_wTightCharge_ = (1. - 0.867) / (1. - 0.750);
+      recompTightSF_mu_wTightCharge_ = (1. - 0.978) / (1. - 0.882);
     }
     else if(era_ == Era::k2018)
     {
-      // AvgSF_Def_el = 0.834 +- 0.007;  AvgSF_New_el = 0.931 +- 0.036;
-      // AvgSF_Def_mu = 0.915 +- 0.006;  AvgSF_New_mu = 0.957 +- 0.028;
-      recompTightSF_el_ = (1. - 0.931) / (1. - 0.834);
-      recompTightSF_mu_ = (1. - 0.957) / (1. - 0.915);
+      // 2018 woTightCharge e  AvgSF_Def_el_woTightCharge: 0.834 +- 0.007;   AvgSF_New_el_woTightCharge: 0.928 +- 0.036 
+      // 2018 woTightCharge mu  AvgSF_Def_mu_woTightCharge: 0.915 +- 0.006;   AvgSF_New_mu_woTightCharge: 0.954 +- 0.028
+      recompTightSF_el_woTightCharge_ = (1. - 0.928) / (1. - 0.834);
+      recompTightSF_mu_woTightCharge_ = (1. - 0.954) / (1. - 0.915);
+
+      // 2018 wTightCharge e  AvgSF_Def_el_wTightCharge: 0.832 +- 0.007;   AvgSF_New_el_wTightCharge: 0.917 +- 0.036 
+      // 2018 wTightCharge mu  AvgSF_Def_mu_wTightCharge: 0.915 +- 0.006;   AvgSF_New_mu_wTightCharge: 0.948 +- 0.028
+      recompTightSF_el_wTightCharge_ = (1. - 0.917) / (1. - 0.832);
+      recompTightSF_mu_wTightCharge_ = (1. - 0.948) / (1. - 0.915); 
     }
     else
     {
@@ -576,7 +593,7 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_tight_to_loose_woTig
                 "sfForTightSelection: " << sfForTightSelection << '\n'
     ;
   }
-  const double recompSF_el = recompTightSF_ ? recompTightSF_el_ : -1.;
+  const double recompSF_el = recompTightSF_ ? recompTightSF_el_woTightCharge_ : -1.;
   int error_shift_el = 0;
   if(recompTightSF_)
   {
@@ -616,7 +633,7 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_tight_to_loose_woTig
     ;
   }
 
-  const double recompSF_mu = recompTightSF_ ? recompTightSF_mu_ : -1.;
+  const double recompSF_mu = recompTightSF_ ? recompTightSF_mu_woTightCharge_ : -1.;
   int error_shift_mu = 0;
   if(recompTightSF_)
   {
@@ -669,8 +686,21 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_tight_to_loose_wTigh
   {
     std::cout << get_human_line(this, __func__, __LINE__) << "Computing SF for electrons\n";
   }
+  const double recompSF_el = recompTightSF_ ? recompTightSF_el_wTightCharge_ : -1.;
+  int error_shift_el = 0;
+  if(recompTightSF_)
+  {
+    if(central_or_shift == LeptonIDSFsys::elTightRecompUp)
+    {
+      error_shift_el = +1;
+    }
+    else if(central_or_shift == LeptonIDSFsys::elTightRecompDown)
+    {
+      error_shift_el = -1;
+    }
+  }  
   double sf_el = getSF_leptonID_and_Iso(
-    numElectrons_, electron_pt_, electron_eta_, electron_isGenMatched_, electron_isTight_, sfForTightSelection, sfElectronID_and_Iso_tight_to_loose_wTightCharge_, error_shift, recompSF
+    numElectrons_, electron_pt_, electron_eta_, electron_isGenMatched_, electron_isTight_, sfForTightSelection, sfElectronID_and_Iso_tight_to_loose_wTightCharge_, error_shift_el, recompSF_el
   );
   if(isDEBUG_)
   {
@@ -696,8 +726,21 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_tight_to_loose_wTigh
     ;
   }
 
+  const double recompSF_mu = recompTightSF_ ? recompTightSF_mu_wTightCharge_ : -1.;
+  int error_shift_mu = 0;
+  if(recompTightSF_)
+  {
+    if(central_or_shift == LeptonIDSFsys::muTightRecompUp)
+    {
+      error_shift_mu = +1;
+    }
+    else if(central_or_shift == LeptonIDSFsys::muTightRecompDown)
+    {
+      error_shift_mu = -1;
+    }
+  }
   double sf_mu = getSF_leptonID_and_Iso(
-    numMuons_, muon_pt_, muon_eta_, muon_isGenMatched_, muon_isTight_, sfForTightSelection, sfMuonID_and_Iso_tight_to_loose_wTightCharge_, error_shift, recompSF
+    numMuons_, muon_pt_, muon_eta_, muon_isGenMatched_, muon_isTight_, sfForTightSelection, sfMuonID_and_Iso_tight_to_loose_wTightCharge_, error_shift_mu, recompSF_mu
   );
   if(isDEBUG_)
   {
