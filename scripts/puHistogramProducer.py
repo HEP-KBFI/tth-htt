@@ -6,15 +6,9 @@
 import argparse
 import subprocess
 import os
-import logging
-import sys
 import shutil
 
-class SmartFormatter(argparse.HelpFormatter):
-  def _split_lines(self, text, width):
-    if text.startswith('R|'):
-      return text[2:].splitlines()
-    return argparse.HelpFormatter._split_lines(self, text, width)
+from tthAnalysis.HiggsToTauTau.common import logging, SmartFormatter
 
 ERAS = {
   '2016' : {
@@ -60,13 +54,9 @@ cat = ERAS[era]['cat']
 
 output = args.output
 tmp_dir = os.path.join(args.tmp_dir, era, cat)
-verbose = args.verbose
 
-logging.basicConfig(
-  stream = sys.stdout,
-  level  = logging.DEBUG if verbose else logging.INFO,
-  format = '%(asctime)s - %(levelname)s: %(message)s',
-)
+if args.verbose:
+  logging.getLogger().setLevel(logging.DEBUG)
 
 min_hours = 3
 min_seconds = min_hours * 3600
