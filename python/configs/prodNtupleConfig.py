@@ -371,7 +371,7 @@ class prodNtupleConfig:
                 recomp_run_ls = sample_name.endswith('/USER') and self.era == '2017' and sample_category in [
                     'signal_ggf_nonresonant_hh_tttt', 'signal_ggf_nonresonant_hh_wwtt', 'signal_ggf_nonresonant_hh_wwww'
                 ]
-                if not process_name in self.ref_genWeights:
+                if not process_name in self.ref_genWeights and is_mc:
                     raise RuntimeError("Unable to find refernce LHE weight for process: %s" % process_name)
                 ref_genWeight = self.ref_genWeights[process_name] if is_mc else 0.
 
