@@ -55,6 +55,8 @@ process.produceNtuple = cms.PSet(
     # list of HLT paths that the events are skimmed by
     branchNames_triggersFilter = cms.vstring(),
 
+    lep_mva_wp = cms.string(''),
+
     isMC = cms.bool(True),
     redoGenMatching = cms.bool(False),
     genMatchingByIndex = cms.bool(True),

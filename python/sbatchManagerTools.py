@@ -40,6 +40,7 @@ def createScript_sbatch(
     min_file_size         = 20000,
     max_num_submittedJobs = 5000,
     use_home              = False,
+    copy_output_file      = True,
   ):
     """Creates the python script necessary to submit analysis and/or Ntuple production jobs to the batch system
     """
@@ -70,6 +71,7 @@ def createScript_sbatch(
         min_file_size           = min_file_size,
         max_num_submittedJobs   = max_num_submittedJobs,
         use_home                = use_home,
+        copy_output_file        = copy_output_file,
     )
     createFile(sbatch_script_file_name, sbatch_analyze_lines)
     return num_jobs
@@ -93,6 +95,7 @@ def generate_sbatch_lines(
     min_file_size         = 20000,
     max_num_submittedJobs = 5000,
     use_home              = False,
+    copy_output_file      = True,
   ):
     if not pool_id:
         raise ValueError('pool_id is empty')
@@ -123,6 +126,7 @@ def generate_sbatch_lines(
                 job_template_file      = job_template_file,
                 validate_outputs       = validate_outputs,
                 min_file_size          = min_file_size,
+                copy_output_file       = copy_output_file,
             )
             if sbatch_line:
                 lines_sbatch.append(sbatch_line)
@@ -190,6 +194,7 @@ def generate_sbatch_line(
     min_file_size     = 20000,
     job_template_file = 'sbatch-node.sh.template',
     validate_outputs  = True,
+    copy_output_file = True,
   ):
     #------------------------------------------------------------------------------------------------
     # CV: This check (which considerably slows down the execution of 'python tthAnalyzeRun_XXX.py') is no longer needed,
@@ -241,6 +246,7 @@ def generate_sbatch_line(
       "  logFile                = '{log_file_name}',\n"               \
       "  skipIfOutputFileExists = {skipIfOutputFileExists},\n"        \
       "  job_template_file      = '{job_template_file}',\n"           \
+      "  copy_output_file       = {copy_output_file},\n"              \
       ")".format(
         input_file_names       = input_file_names,
         executable             = executable,
@@ -251,6 +257,7 @@ def generate_sbatch_line(
         log_file_name          = log_file_name,
         skipIfOutputFileExists = False,
         job_template_file      = job_template_file,
+        copy_output_file       = copy_output_file,
     )
     return submissionStatement
 

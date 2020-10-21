@@ -1,6 +1,6 @@
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, get_log_version, check_submission_cmd, record_software_state
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, generateInputFileList
-from tthAnalysis.HiggsToTauTau.analysisTools import createMakefile as tools_createMakefile
+from tthAnalysis.HiggsToTauTau.analysisTools import createMakefile as tools_createMakefile, load_refGenWeightsFromFile
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch as tools_createScript_sbatch
 from tthAnalysis.HiggsToTauTau.safe_root import ROOT
 from tthAnalysis.HiggsToTauTau.common import logging, DEPENDENCIES
@@ -62,9 +62,10 @@ class prodNtupleConfig:
              use_home,
              skip_tools_step,
              do_sync,
+             lep_mva_wp,
              verbose = False,
              pool_id        = '',
-            submission_cmd = None,
+             submission_cmd = None,
           ):
 
         self.configDir             = configDir
@@ -98,6 +99,7 @@ class prodNtupleConfig:
         self.num_parallel_jobs = num_parallel_jobs
         self.skip_tools_step   = skip_tools_step
         self.do_sync           = do_sync
+        self.lep_mva_wp        = lep_mva_wp
         self.pool_id           = pool_id if pool_id else uuid.uuid4()
 
         self.pileup_histograms = []
@@ -158,6 +160,11 @@ class prodNtupleConfig:
         self.cvmfs_error_log = {}
         self.executable = "produceNtuple.sh"
 
+        ref_genWeightsFile = os.path.join(
+            os.environ['CMSSW_BASE'], 'src', 'tthAnalysis', 'HiggsToTauTau', 'data', 'refGenWeight_{}.txt'.format(self.era)
+        )
+        self.ref_genWeights = load_refGenWeightsFromFile(ref_genWeightsFile)
+
     def createCfg_prodNtuple(self, jobOptions):
         """Create python configuration file for the prodNtuple executable (Ntuple production code)
 
@@ -198,6 +205,7 @@ class prodNtupleConfig:
             "process.produceNtuple.useNonNominal              = cms.bool(%s)"     % self.use_nonnominal,
             "process.produceNtuple.genMatchingByIndex         = cms.bool(%s)"     % self.gen_matching_by_index,
             "process.produceNtuple.branchNames_triggers       = cms.vstring(%s)"  % jobOptions['triggers'],
+            "process.produceNtuple.lep_mva_wp                 = cms.string('%s')" % self.lep_mva_wp,
             "process.fwliteInput.fileNames                    = cms.vstring(%s)"  % inputFiles_prepended,
             "executable              = 'produceNtuple'",
             "inputFiles              = %s" % jobOptions['inputFiles'],
@@ -218,6 +226,7 @@ class prodNtupleConfig:
             "mllForWZTo3LNu          = %s" % jobOptions['mllForWZTo3LNu'],
             "mllForWZTo3LNu_mllmin01 = %s" % jobOptions['mllForWZTo3LNu_mllmin01'],
             "recomp_run_ls           = %s" % recomp_run_ls,
+            "ref_genWeight           = %.6e" % jobOptions['ref_genWeight'],
         ]
         create_cfg(self.cfgFile_prodNtuple_original, jobOptions['cfgFile_modified'], lines)
 
@@ -362,6 +371,9 @@ class prodNtupleConfig:
                 recomp_run_ls = sample_name.endswith('/USER') and self.era == '2017' and sample_category in [
                     'signal_ggf_nonresonant_hh_tttt', 'signal_ggf_nonresonant_hh_wwtt', 'signal_ggf_nonresonant_hh_wwww'
                 ]
+                if not process_name in self.ref_genWeights and is_mc:
+                    raise RuntimeError("Unable to find refernce LHE weight for process: %s" % process_name)
+                ref_genWeight = self.ref_genWeights[process_name] if is_mc else 0.
 
                 jobOptions = {
                     'inputFiles'              : self.inputFiles[key_file],
@@ -382,6 +394,7 @@ class prodNtupleConfig:
                     'mllForWZTo3LNu'          : mllForWZTo3LNu,
                     'mllForWZTo3LNu_mllmin01' : mllForWZTo3LNu_mllmin01,
                     'recomp_run_ls'           : recomp_run_ls,
+                    'ref_genWeight'           : ref_genWeight,
                 }
                 self.createCfg_prodNtuple(jobOptions)
 

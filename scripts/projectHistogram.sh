@@ -41,18 +41,18 @@ ERA=$(echo "$LAST_LINE" | awk '{print $2}')
 HISTOGRAM_NAME=$(echo "$LAST_LINE" | awk '{print $3}')
 OUTPUT_FILE=$(echo "$LAST_LINE" | awk '{print $4}')
 
-if [ -z ${OUTPUT_FILE+x} ]; then
+if [ -z ${ERA+x} ]; then
   echo "No era provided";
   exit 3;
 fi
 
-if [ -z ${OUTPUT_FILE+x} ]; then
+if [ -z ${HISTOGRAM_NAME+x} ]; then
   echo "No histogram name provided";
   exit 4;
 fi
 
 if [ -z ${OUTPUT_FILE+x} ]; then
-  echo "Input file empty";
+  echo "Output file empty";
   exit 5;
 fi
 

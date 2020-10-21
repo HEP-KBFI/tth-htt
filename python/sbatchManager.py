@@ -385,6 +385,7 @@ class sbatchManager:
             logFile                = None,
             skipIfOutputFileExists = False,
             job_template_file      = 'sbatch-node.sh.template',
+            copy_output_file       = True,
             nof_submissions        = 0,
           ):
         """Waits for all sbatch jobs submitted by this instance of sbatchManager to finish processing
@@ -458,7 +459,8 @@ class sbatchManager:
             executable_log_file    = executable_log_file,
             script_file            = scriptFile,
             RUNNING_COMMAND        = sbatch_command,
-            random_sleep           = random_delay
+            random_sleep           = random_delay,
+            copy_output_file       = copy_output_file,
         )
         logging.debug("writing sbatch script file = '%s'" % scriptFile)
         with codecs.open(scriptFile, "w", "utf-8") as f:
