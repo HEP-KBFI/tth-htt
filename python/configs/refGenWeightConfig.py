@@ -224,7 +224,7 @@ class refGenWeightConfig:
                 plot_files = self.plotFiles[key_file]
                 lines_makefile.extend([
                     "%s:" % output_file,
-                    "\t%s -i %s -o %s -p %s -v &> %s" % (self.executable, cfg_file, output_file, plot_files, log_file),
+                    "\t%s -i %s -o %s -p %s &> %s" % (self.executable, cfg_file, output_file, plot_files, log_file),
                     "",
                 ])
             elif self.is_sbatch:
@@ -322,7 +322,7 @@ class refGenWeightConfig:
                 'cfgFile_path' : self.cfgFiles[key_file],
                 'cmdParams'    : "-i {} -o {} -p {} -v".format(
                     self.cfgFiles[key_file],
-                    self.outputFiles[key_file],
+                    os.path.basename(self.outputFiles[key_file]),
                     self.plotFiles[key_file],
                 ),
                 'outputFile'   : self.outputFiles[key_file],
