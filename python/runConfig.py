@@ -201,7 +201,7 @@ class tthAnalyzeParser(argparse.ArgumentParser):
     self.add_argument('-y', '--use-home',
       type = lambda s: s.lower() in ['true', 't', 'yes', '1'], dest = 'use_home', metavar = 'option',
       default = use_home, required = False,
-      help = 'R|Use /home instead of /scratch for SLURM jobs',
+      help = 'R|Use /home instead of /scratch for SLURM jobs', 
     )
 
   def add_lep_mva_wp(self, default_wp = ''):
@@ -219,12 +219,40 @@ class tthAnalyzeParser(argparse.ArgumentParser):
       help = 'R|Disable FR weights for Fakes Application region',
     )
 
-  def add_disableLeptonTightChargeCut(self, disableLeptonTightChargeCut = False):
-    self.add_argument('-disableLeptonTightChargeCut', '--disable-LeptonTightChargeCut',
-      dest = 'disableLeptonTightChargeCut', action = 'store_true', default = False,
-      help = 'R|Disable lepton tight charge cut',
+  def add_lep_useTightChargeCut(self, default_option = ''):
+    self.add_argument('-L_useTightChargeCut', '--lepton-useTightChargeCut',
+      type = str, dest = 'lep_useTightChargeCut', metavar = 'lepton Tight Charge cut option', choices = ['True', 'False'],
+      required = not bool(default_option), default = default_option,
+      help = 'R|Flag to use Lepton tight charge cut',
     )
 
+  def add_lep_useSFCor(self, default_option = ''):
+    self.add_argument('-L_useSFCor', '--lepton-useSFCor',
+      type = str, dest = 'lep_useSFCor', metavar = 'lepton SF correction', choices = ['True', 'False'],
+      required = not bool(default_option), default = default_option,
+      help = 'R|Flag to use Lepton SF correction derived in hh_multilepton analysis',
+    )
+
+  def add_lep_useDifferentMVACutForLepton3(self, default_option = ''):
+    self.add_argument('-L_useDifferentMVACutForLepton3', '--lepton-useDifferentMVACutForLepton3',
+      type = str, dest = 'lep_useDifferentMVACutForLepton3', metavar = 'Use different MVA cut for W->lepton in WZ', choices = ['True', 'False'],
+      required = not bool(default_option), default = default_option, 
+      help = 'R|Use different lepton MVA cut (that are provided using the other arguments) for lepton3',
+    )
+
+  def add_lep_mva_cut_mu_forLepton3(self, default_wp = ''):
+    self.add_argument('-L_mva_cut_mu_forLepton3', '--lepton-mva-cut-mu-forLepton3',
+      type = str, dest = 'lep_mva_cut_mu_forLepton3', metavar = 'lepton mva cut mu for lepton3', #choices = list(LEP_MVA_WPS.keys()),
+      required = not bool(default_wp), default = '0.5',
+      help = 'R|Lepton mva cut mu for lepton3 (choices: 0.5)'
+    )
+
+  def add_lep_mva_cut_e_forLepton3(self, default_wp = ''):
+    self.add_argument('-L_mva_cut_e_forLepton3', '--lepton-mva-cut-e-forLepton3',
+      type = str, dest = 'lep_mva_cut_e_forLepton3', metavar = 'lepton mva cut e for lepton3', #choices = list(LEP_MVA_WPS.keys()),
+      required = not bool(default_wp), default = '0.3',
+      help = 'R|Lepton mva cut e for lepton3 (choices: 0.3)'
+    )
 
   def add_jet_cleaning(self, default_jet_cleaning = 'by_index'):
     choices = [ 'by_index', 'by_dr' ]

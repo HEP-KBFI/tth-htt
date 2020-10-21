@@ -100,7 +100,11 @@ class analyzeConfig(object):
           triggers,
           lep_mva_wp                      = "default",
           disableFRwgts                   = "default",
-          disableLeptonTightChargeCut     = "default",
+          lep_useTightChargeCut           = "default",
+          lep_useSFCor                    = "default",       
+          lep_useDifferentMVACutForLepton3 = False,
+          lep_mva_cut_mu_forLepton3        = "default",
+          lep_mva_cut_e_forLepton3         = "default",
           executable_prep_dcard           = "prepareDatacards",
           executable_add_syst_dcard       = "addSystDatacards",
           executable_add_syst_fakerate    = "addSystFakeRates",
@@ -217,7 +221,12 @@ class analyzeConfig(object):
 
         self.lep_mva_wp = lep_mva_wp
         self.disableFRwgts = disableFRwgts
-        self.disableLeptonTightChargeCut = disableLeptonTightChargeCut
+        self.lep_useTightChargeCut = lep_useTightChargeCut
+        self.lep_useSFCor = lep_useSFCor
+        self.lep_useDifferentMVACutForLepton3 = lep_useDifferentMVACutForLepton3
+        self.lep_mva_cut_mu_forLepton3        = lep_mva_cut_mu_forLepton3
+        self.lep_mva_cut_e_forLepton3         = lep_mva_cut_e_forLepton3        
+
         
         self.apply_pileupJetID = apply_pileupJetID
         assert(self.apply_pileupJetID in [ 'disabled', 'loose', 'medium', 'tight' ])
@@ -993,12 +1002,22 @@ class analyzeConfig(object):
             jobOptions['lep_mva_cut_e'] = float(self.lep_mva_cut_e)
         if 'lep_mva_cut_mu' not in jobOptions:
             jobOptions['lep_mva_cut_mu'] = float(self.lep_mva_cut_mu)
-        if 'lep_mva_wp' not in jobOptions and self.lep_mva_wp != 'default':
+        #if 'lep_mva_wp' not in jobOptions and self.lep_mva_wp != 'default':
+        if 'lep_mva_wp' not in jobOptions:
             jobOptions['lep_mva_wp'] = self.lep_mva_wp
         if 'disableFRwgts' not in jobOptions and self.disableFRwgts != 'default':
             jobOptions['disableFRwgts'] = bool(self.disableFRwgts)
-        if 'disableLeptonTightChargeCut' not in jobOptions and self.disableLeptonTightChargeCut != 'default':
-            jobOptions['disableLeptonTightChargeCut'] = bool(self.disableLeptonTightChargeCut)
+        if 'lep_useTightChargeCut' not in jobOptions and self.lep_useTightChargeCut != 'default':
+            jobOptions['lep_useTightChargeCut'] = bool(self.lep_useTightChargeCut == 'True')            
+        if 'lep_useSFCor' not in jobOptions and self.lep_useSFCor != 'default':
+            jobOptions['lep_useSFCor'] = bool(self.lep_useSFCor == 'True')                
+        if 'lep_useDifferentMVACutForLepton3' not in jobOptions and self.lep_useDifferentMVACutForLepton3 != 'default':
+            jobOptions['lep_useDifferentMVACutForLepton3'] = bool(self.lep_useDifferentMVACutForLepton3 == 'True')
+        if 'lep_mva_cut_mu_forLepton3' not in jobOptions and "default" not in self.lep_mva_cut_mu_forLepton3:
+            jobOptions['lep_mva_cut_mu_forLepton3'] = float(self.lep_mva_cut_mu_forLepton3)            
+        if 'lep_mva_cut_e_forLepton3' not in jobOptions and "default" not in self.lep_mva_cut_e_forLepton3:
+            jobOptions['lep_mva_cut_e_forLepton3'] = float(self.lep_mva_cut_e_forLepton3)            
+
 
 
         btagSFRatio_args = {}
@@ -1053,7 +1072,11 @@ class analyzeConfig(object):
             'lep_mva_cut_e',
             'lep_mva_wp',
             'disableFRwgts',
-            'disableLeptonTightChargeCut',
+            'lep_useTightChargeCut',
+            'lep_useSFCor',
+            'lep_useDifferentMVACutForLepton3',
+            'lep_mva_cut_mu_forLepton3',
+            'lep_mva_cut_e_forLepton3',
             'chargeSumSelection',
             'histogramDir',
             'isControlRegion',
