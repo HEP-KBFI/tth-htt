@@ -1,6 +1,6 @@
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, get_log_version, check_submission_cmd, record_software_state
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, createFile, generateInputFileList
-from tthAnalysis.HiggsToTauTau.analysisTools import createMakefile as tools_createMakefile
+from tthAnalysis.HiggsToTauTau.analysisTools import createMakefile as tools_createMakefile, load_refGenWeightsFromFile
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch as tools_createScript_sbatch
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch_hadd as tools_createScript_sbatch_hadd
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import is_file_ok as tools_is_file_ok
@@ -151,6 +151,11 @@ class projectionConfig:
         all_dirs = [ DKEY_CFGS, DKEY_HISTO_TMP, DKEY_HISTO, DKEY_PLOTS, DKEY_LOGS, DKEY_SCRIPTS, DKEY_HADD_RT ]
         cfg_dirs = [ DKEY_CFGS, DKEY_LOGS, DKEY_PLOTS, DKEY_SCRIPTS, DKEY_HADD_RT ]
 
+        ref_genWeightsFile = os.path.join(
+            os.environ['CMSSW_BASE'], 'src', 'tthAnalysis', 'HiggsToTauTau', 'data', 'refGenWeight_{}.txt'.format(self.era)
+        )
+        self.ref_genWeights = load_refGenWeightsFromFile(ref_genWeightsFile) if projection_module == 'btagSF' else {}
+
         for sample_name, sample_info in self.samples.items():
             if not sample_info['use_it']:
                 continue
@@ -183,8 +188,10 @@ class projectionConfig:
           inputFiles: list of input files (Ntuples)
           outputFile: output file of the job -- a ROOT file containing histogram
         """
-        lines = jobOptions['inputFiles'] + \
-                [ '', '%s %s %s %s' % (self.projection_module, self.era, jobOptions['histName'], jobOptions['outputFile']) ]
+        last_line = '%s %s %s %s' % (self.projection_module, self.era, jobOptions['histName'], jobOptions['outputFile'])
+        if self.projection_module == 'btagSF':
+            last_line += ' %.6e' % jobOptions['ref_genWeight']
+        lines = jobOptions['inputFiles'] + [ '', last_line ]
         assert(len(lines) >= 3)
         createFile(jobOptions['cfgFile_path'], lines, nofNewLines = 1)
 
@@ -450,13 +457,16 @@ class projectionConfig:
                 self.scriptFiles_projection[key_file] = os.path.join(
                     self.dirs[key_dir][DKEY_CFGS], "project_%s_%i_cfg.sh" % (process_name, jobId)
                 )
+                if process_name not in self.ref_genWeights:
+                    raise RuntimeError("Unable to find reference LHE weight for process %s" % process_name)
                 self.jobOptions_sbatch[key_file] = {
-                    'histName'     : process_name,
-                    'inputFiles'   : self.inputFiles[key_file],
-                    'cfgFile_path' : self.cfgFiles_projection[key_file],
-                    'outputFile'   : self.outputFiles_tmp[key_file],
-                    'logFile'      : self.logFiles_projection[key_file],
-                    'scriptFile'   : self.scriptFiles_projection[key_file],
+                    'histName'      : process_name,
+                    'inputFiles'    : self.inputFiles[key_file],
+                    'cfgFile_path'  : self.cfgFiles_projection[key_file],
+                    'outputFile'    : self.outputFiles_tmp[key_file],
+                    'logFile'       : self.logFiles_projection[key_file],
+                    'scriptFile'    : self.scriptFiles_projection[key_file],
+                    'ref_genWeight' : self.ref_genWeights[process_name],
                 }
                 self.createCfg_project(self.jobOptions_sbatch[key_file])
                 self.outputFiles[process_name]['inputFiles'].append(self.outputFiles_tmp[key_file])

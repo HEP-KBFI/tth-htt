@@ -144,6 +144,8 @@ main(int argc,
   const vstring branchNames_triggers       = cfg_produceNtuple.getParameter<vstring>("branchNames_triggers");
   const vstring branchNames_triggersFilter = cfg_produceNtuple.getParameter<vstring>("branchNames_triggersFilter");
 
+  const double lep_mva_cut_mu = cfg_produceNtuple.getParameter<double>("lep_mva_cut_mu");
+  const double lep_mva_cut_e  = cfg_produceNtuple.getParameter<double>("lep_mva_cut_e");
   const std::string lep_mva_wp = cfg_produceNtuple.getParameter<std::string>("lep_mva_wp");
 
   const int minNumLeptons             = cfg_produceNtuple.getParameter<int>("minNumLeptons");
@@ -262,6 +264,7 @@ main(int argc,
   const RecoMuonCollectionSelectorFakeable fakeableMuonSelector_default(era, -1, isDEBUG);
   const RecoMuonCollectionSelectorFakeable_hh_multilepton fakeableMuonSelector_hh_multilepton(era, -1, isDEBUG);
   const RecoMuonCollectionSelectorTight tightMuonSelector(era, -1, isDEBUG);
+  muonReader->set_mvaTTH_wp(lep_mva_cut_mu);
   
   RecoElectronReader * const electronReader = new RecoElectronReader(era, branchName_electrons, isMC, readGenObjects);
   inputTree -> registerReader(electronReader);
@@ -271,6 +274,7 @@ main(int argc,
   const RecoElectronCollectionSelectorFakeable fakeableElectronSelector_default(era, -1, isDEBUG);
   const RecoElectronCollectionSelectorFakeable_hh_multilepton fakeableElectronSelector_hh_multilepton(era, -1, isDEBUG);
   const RecoElectronCollectionSelectorTight tightElectronSelector(era, -1, isDEBUG);
+  electronReader->set_mvaTTH_wp(lep_mva_cut_e);
 
   const double minPt_ele = 18.;
   const double minPt_mu  =  9.;

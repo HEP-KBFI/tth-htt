@@ -4,6 +4,7 @@ from tthAnalysis.HiggsToTauTau.analysisTools import createMakefile as tools_crea
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch as tools_createScript_sbatch
 from tthAnalysis.HiggsToTauTau.safe_root import ROOT
 from tthAnalysis.HiggsToTauTau.common import logging, DEPENDENCIES
+from tthAnalysis.HiggsToTauTau.configs.analyzeConfig import get_lep_mva_map
 
 from tthAnalysis.NanoAOD.triggers import Triggers
 
@@ -99,8 +100,12 @@ class prodNtupleConfig:
         self.num_parallel_jobs = num_parallel_jobs
         self.skip_tools_step   = skip_tools_step
         self.do_sync           = do_sync
-        self.lep_mva_wp        = lep_mva_wp
         self.pool_id           = pool_id if pool_id else uuid.uuid4()
+
+        self.lep_mva_wp = lep_mva_wp
+        lep_mva_cut_map = get_lep_mva_map(self.lep_mva_wp)
+        self.lep_mva_cut_mu = lep_mva_cut_map['mu']
+        self.lep_mva_cut_e = lep_mva_cut_map['e']
 
         self.pileup_histograms = []
         if not self.skip_tools_step:
