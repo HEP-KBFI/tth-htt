@@ -45,6 +45,11 @@ DIRLIST = [
 def convert_lep_wp(float_str):
   return float_str.replace('.', '')
 
+def get_lep_mva_map(lep_mva_wp):
+  if lep_mva_wp not in LEP_MVA_WPS:
+    raise RuntimeError("No such lepton MVA WP: %s" % lep_mva_wp)
+  return dict(map(lambda lep_mva_cut: lep_mva_cut.split('='), LEP_MVA_WPS[lep_mva_wp].split(';')))
+
 class analyzeConfig(object):
     """Configuration metadata needed to run analysis in a single go.
 
@@ -640,11 +645,9 @@ class analyzeConfig(object):
         self.leptonFakeRateWeight_histogramName_e = None
         self.leptonFakeRateWeight_histogramName_mu = None
 
-        self.lep_mva_cut_map = dict(map(
-          lambda lep_mva_cut: lep_mva_cut.split('='), LEP_MVA_WPS[self.lep_mva_wp].split(';')
-        ))
-        self.lep_mva_cut_mu = self.lep_mva_cut_map['mu']
-        self.lep_mva_cut_e = self.lep_mva_cut_map['e']
+        lep_mva_cut_map = get_lep_mva_map(self.lep_mva_wp)
+        self.lep_mva_cut_mu = lep_mva_cut_map['mu']
+        self.lep_mva_cut_e = lep_mva_cut_map['e']
 
         self.leptonFakeRateWeight_inputFile = ''
         if self.channel != 'LeptonFakeRate':

@@ -1588,6 +1588,7 @@ main(int argc,
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("hadTauSelection", "disabled");
   cfg_dataToMCcorrectionInterface.addParameter<int>("hadTauSelection_antiElectron", -1);
   cfg_dataToMCcorrectionInterface.addParameter<int>("hadTauSelection_antiMuon", -1);
+  cfg_dataToMCcorrectionInterface.addParameter<std::string>("lep_mva_wp", lep_mva_wp);
   Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface = nullptr;
   switch(era)
     {

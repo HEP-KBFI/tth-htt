@@ -20,6 +20,7 @@ systematics.full = systematics.an_chargeFlip_e
 
 parser = tthAnalyzeParser()
 parser.add_sys(sys_choices, default_choice = 'full')
+parser.add_lep_mva_wp(default_wp = 'default')
 parser.add_preselect()
 parser.add_files_per_job()
 parser.add_use_home()
@@ -42,12 +43,16 @@ running_method     = args.running_method
 
 # Additional arguments
 systematics_label = args.systematics
+lep_mva_wp        = args.lep_mva_wp
 use_preselected   = args.use_preselected
 files_per_job     = args.files_per_job
 use_home          = args.use_home
 jet_cleaning      = args.jet_cleaning
 gen_matching      = args.gen_matching
 use_stitched      = args.use_stitched
+
+if lep_mva_wp != 'default' and use_preselected:
+  raise RuntimeError("Cannot use skimmed samples with non-default lepton definition")
 
 # Use the arguments
 central_or_shifts = []
@@ -114,6 +119,7 @@ if __name__ == '__main__':
       "mass_ll"            : {},
       "mass_ll_ePtThrsh15" : {},
     },
+    lep_mva_wp             = lep_mva_wp,
     select_rle_output      = True,
     dry_run                = dry_run,
     isDebug                = debug,

@@ -450,6 +450,7 @@
   <use   name="DataFormats/Math"/>
   <use   name="PhysicsTools/FWLite"/>
   <use   name="tthAnalysis/HiggsToTauTau"/>
+  <use   name="hhAnalysis/multilepton"/>
   <Flags CXXFLAGS="-g -Wshadow -Werror"/>
 </bin>
 <bin file="analyze_charge_flip_mu.cc" name="analyze_charge_flip_mu">
@@ -462,6 +463,7 @@
   <use   name="DataFormats/Math"/>
   <use   name="PhysicsTools/FWLite"/>
   <use   name="tthAnalysis/HiggsToTauTau"/>
+  <use   name="hhAnalysis/multilepton"/>
   <Flags CXXFLAGS="-g -Wshadow -Werror"/>
 </bin>
 <bin file="analyze_WZctrl.cc" name="analyze_WZctrl">

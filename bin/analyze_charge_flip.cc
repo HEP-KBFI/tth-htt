@@ -76,6 +76,9 @@
 #include "tthAnalysis/HiggsToTauTau/interface/EvtWeightRecorder.h" // EvtWeightRecorder
 #include "tthAnalysis/HiggsToTauTau/interface/BtagSFRatioFacility.h" // BtagSFRatioFacility
 
+#include "hhAnalysis/multilepton/interface/RecoElectronCollectionSelectorFakeable_hh_multilepton.h" // RecoElectronCollectionSelectorFakeable_hh_multilepton
+#include "hhAnalysis/multilepton/interface/RecoMuonCollectionSelectorFakeable_hh_multilepton.h" // RecoMuonCollectionSelectorFakeable_hh_multilepton
+
 #include <iostream> // std::cerr, std::fixed
 #include <cstring> // std::strncpm
 #include <iomanip> // std::setprecision(), std::setw()
@@ -185,6 +188,11 @@ int main(int argc, char* argv[])
 
   const edm::ParameterSet additionalEvtWeight = cfg_analyze.getParameter<edm::ParameterSet>("evtWeight");
   const bool applyAdditionalEvtWeight = additionalEvtWeight.getParameter<bool>("apply");
+
+  const double lep_mva_cut_mu = cfg_analyze.getParameter<double>("lep_mva_cut_mu");
+  const double lep_mva_cut_e  = cfg_analyze.getParameter<double>("lep_mva_cut_e");
+  const std::string lep_mva_wp = cfg_analyze.getParameter<std::string>("lep_mva_wp");
+
   EvtWeightManager * eventWeightManager = nullptr;
   if(applyAdditionalEvtWeight)
   {
@@ -225,6 +233,7 @@ int main(int argc, char* argv[])
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("era", era_string);
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("hadTauSelection", "disabled");
   cfg_dataToMCcorrectionInterface.addParameter<bool>("isDEBUG", isDEBUG);
+  cfg_dataToMCcorrectionInterface.addParameter<std::string>("lep_mva_wp", lep_mva_wp);
   Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface = nullptr;
   switch(era)
   {
@@ -345,16 +354,20 @@ int main(int argc, char* argv[])
   inputTree->registerReader(muonReader);
   RecoMuonCollectionGenMatcher muonGenMatcher;
   RecoMuonCollectionSelectorLoose preselMuonSelector(era, -1, isDEBUG);
-  RecoMuonCollectionSelectorFakeable fakeableMuonSelector(era, -1, isDEBUG);
+  RecoMuonCollectionSelectorFakeable fakeableMuonSelector_default(era, -1, isDEBUG);
+  RecoMuonCollectionSelectorFakeable_hh_multilepton fakeableMuonSelector_hh_multilepton(era, -1, isDEBUG);
   RecoMuonCollectionSelectorTight tightMuonSelector(era, -1, isDEBUG);
+  muonReader->set_mvaTTH_wp(lep_mva_cut_mu);
 
   RecoElectronReader* electronReader = new RecoElectronReader(era, branchName_electrons, isMC, readGenObjects);
   inputTree->registerReader(electronReader);
   RecoElectronCollectionGenMatcher electronGenMatcher(isDEBUG);
   RecoElectronCollectionCleaner electronCleaner(0.3, isDEBUG);
   RecoElectronCollectionSelectorLoose preselElectronSelector(era, -1, isDEBUG);
-  RecoElectronCollectionSelectorFakeable fakeableElectronSelector(era, -1, isDEBUG);
+  RecoElectronCollectionSelectorFakeable fakeableElectronSelector_default(era, -1, isDEBUG);
+  RecoElectronCollectionSelectorFakeable_hh_multilepton fakeableElectronSelector_hh_multilepton(era, -1, isDEBUG);
   RecoElectronCollectionSelectorTight tightElectronSelector(era, -1, isDEBUG);
+  electronReader->set_mvaTTH_wp(lep_mva_cut_e);
   
   RecoJetReader* jetReader = new RecoJetReader(era, isMC, branchName_jets, readGenObjects);
   jetReader->setPtMass_central_or_shift(jetPt_option);
@@ -691,10 +704,10 @@ int main(int argc, char* argv[])
 
     if ( (selTrigger_2e && !apply_offline_e_trigger_cuts_2e) ||
 	 (selTrigger_1e && !apply_offline_e_trigger_cuts_1e) ) {
-      fakeableElectronSelector.disable_offline_e_trigger_cuts();
+      fakeableElectronSelector_default.disable_offline_e_trigger_cuts();
       tightElectronSelector.disable_offline_e_trigger_cuts();
     } else {
-      fakeableElectronSelector.enable_offline_e_trigger_cuts();
+      fakeableElectronSelector_default.enable_offline_e_trigger_cuts();
       tightElectronSelector.enable_offline_e_trigger_cuts();
     } 
 
@@ -729,7 +742,12 @@ int main(int argc, char* argv[])
     const std::vector<const RecoMuon*> muon_ptrs = convert_to_ptrs(muons);
     const std::vector<const RecoMuon*> cleanedMuons = muon_ptrs; // CV: no cleaning needed for muons, as they have the highest priority in the overlap removal
     const std::vector<const RecoMuon*> preselMuons = preselMuonSelector(cleanedMuons);
-    const std::vector<const RecoMuon*> fakeableMuons = fakeableMuonSelector(preselMuons);
+    const std::vector<const RecoMuon*> fakeableMuons = [&](){
+      return lep_mva_wp == "hh_multilepton" ?
+        fakeableMuonSelector_hh_multilepton(preselMuons) :
+        fakeableMuonSelector_default(preselMuons)
+      ;
+    }();
     const std::vector<const RecoMuon*> tightMuons = tightMuonSelector(preselMuons);
     const std::vector<const RecoMuon*> selMuons = selectObjects(
       leptonSelection, preselMuons, fakeableMuons, tightMuons
@@ -786,7 +804,12 @@ int main(int argc, char* argv[])
     }
     const std::vector<const RecoElectron*> electrons_shifted = recompute_p4(cleanedElectrons, electronPt_option);
     const std::vector<const RecoElectron*> preselElectrons = preselElectronSelector(electrons_shifted);
-    const std::vector<const RecoElectron*> fakeableElectrons = fakeableElectronSelector(preselElectrons);
+    const std::vector<const RecoElectron*> fakeableElectrons = [&](){
+      return lep_mva_wp == "hh_multilepton" ?
+        fakeableElectronSelector_hh_multilepton(preselElectrons) :
+        fakeableElectronSelector_default(preselElectrons)
+      ;
+    }();
     const std::vector<const RecoElectron*> tightElectrons = tightElectronSelector(preselElectrons);
     const std::vector<const RecoElectron*> selElectrons = selectObjects(
       leptonSelection, preselElectrons, fakeableElectrons, tightElectrons
