@@ -1561,7 +1561,7 @@ main(int argc,
   const double      lep_mva_cut_mu = cfg_analyze.getParameter<double>("lep_mva_cut_mu");
   const double      lep_mva_cut_e  = cfg_analyze.getParameter<double>("lep_mva_cut_e");
   const std::string lep_mva_wp     = cfg_analyze.getParameter<std::string>("lep_mva_wp");
-  const bool   isLeptonSelection_hh_multilepton = lep_mva_wp.compare("hh_multilepton") ? true : false;
+  const bool   isLeptonSelection_hh_multilepton = lep_mva_wp.compare("hh_multilepton") == 0 ? true : false;
   printf("lep_mva_wp %s, lep_mva_cut_mu %g, lep_mva_cut_e %g, \t\t isLeptonSelection_hh_multilepton %d \n",
 	 lep_mva_wp.c_str(),lep_mva_cut_mu,lep_mva_cut_e, isLeptonSelection_hh_multilepton);
   
