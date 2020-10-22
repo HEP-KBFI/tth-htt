@@ -3042,8 +3042,8 @@ main(int argc,
     {
       //bool isTriggered_SingleElectron = isTriggered_1e && preselElectrons.size() >= 1;
       bool isTriggered_SingleMuon = isTriggered_1mu && preselMuons.size() >= 1;
-      bool isTriggered_DoubleEG = isTriggered_2e && preselElectrons.size() >= 2;
-      bool isTriggered_DoubleMuon = isTriggered_2mu && preselMuons.size() >= 2;
+      bool isTriggered_DoubleEG = isTriggered_2e && preselElectrons.size() >= 1;
+      bool isTriggered_DoubleMuon = isTriggered_2mu && preselMuons.size() >= 1;
 
       bool selTrigger_SingleElectron = selTrigger_1e;
       bool selTrigger_SingleMuon = selTrigger_1mu;
