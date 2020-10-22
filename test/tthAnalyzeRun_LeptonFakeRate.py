@@ -24,6 +24,7 @@ parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
 parser.add_sys(sys_choices)
 parser.add_lep_mva_wp(default_wp = 'default')
+parser.add_lep_useTightChargeCut(default_option = 'False')
 parser.add_files_per_job()
 parser.add_use_home()
 parser.add_jet_cleaning()
@@ -47,6 +48,7 @@ running_method     = args.running_method
 mode              = args.mode
 systematics_label = args.systematics
 lep_mva_wp        = args.lep_mva_wp
+lep_useTightChargeCut            = args.lep_useTightChargeCut
 files_per_job     = args.files_per_job
 use_home          = args.use_home
 jet_cleaning      = args.jet_cleaning
@@ -114,7 +116,8 @@ if __name__ == '__main__':
     absEtaBins_mu                            = [ 0., 1.2, 2.4 ],                       ## CERN binning scheme
     ptBins_e                                 = [ 15., 25., 35., 45., 65., 100. ],      ## CERN binning scheme
     ptBins_mu                                = [ 10., 15., 20., 32., 45., 65., 100. ], ## CERN binning scheme
-    lep_mva_wp                               = lep_mva_wp,   
+    lep_mva_wp                               = lep_mva_wp,
+    lep_useTightChargeCut                    = lep_useTightChargeCut,
     fillGenEvtHistograms                     = False,
     jet_cleaning_by_index                    = jet_cleaning_by_index,
     gen_matching_by_index                    = gen_matching_by_index,

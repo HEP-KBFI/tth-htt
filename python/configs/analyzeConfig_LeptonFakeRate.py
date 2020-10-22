@@ -131,6 +131,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
         ptBins_e,
         ptBins_mu,
         lep_mva_wp,
+        lep_useTightChargeCut,       
         fillGenEvtHistograms,
         jet_cleaning_by_index,
         gen_matching_by_index,
@@ -181,7 +182,8 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
       dry_run               = dry_run,
       isDebug               = isDebug,
       use_home              = use_home,
-      lep_mva_wp            = lep_mva_wp,                          
+      lep_mva_wp            = lep_mva_wp,
+      lep_useTightChargeCut = lep_useTightChargeCut,                     
       submission_cmd        = submission_cmd,
       apply_nc_correction   = None,
     )

@@ -16,9 +16,11 @@
 #include "tthAnalysis/HiggsToTauTau/interface/ObjectMultiplicityReader.h" // ObjectMultiplicityReader
 
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorLoose.h" // RecoElectronCollectionSelectorLoose
+#include "hhAnalysis/multilepton/interface/RecoElectronCollectionSelectorFakeable_hh_multilepton.h" // RecoElectronCollectionSelectorFakeable_hh_multilepton
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorFakeable.h" // RecoElectronCollectionSelectorFakeable
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorTight.h" // RecoElectronCollectionSelectorTight
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorLoose.h" // RecoMuonCollectionSelectorLoose
+#include "hhAnalysis/multilepton/interface/RecoMuonCollectionSelectorFakeable_hh_multilepton.h" // RecoMuonCollectionSelectorFakeable_hh_multilepton
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorFakeable.h" // RecoMuonCollectionSelectorFakeable
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorTight.h" // RecoMuonCollectionSelectorTight
 #include "tthAnalysis/HiggsToTauTau/interface/RecoJetCollectionSelector.h" // RecoJetCollectionSelector
@@ -57,8 +59,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/jetToTauFakeRateAuxFunctions.h" // getEtaBin(), getPtBin()
 #include "tthAnalysis/HiggsToTauTau/interface/leptonTypes.h" // kElectron, kMuon, getLeptonType
 
-#include "hhAnalysis/multilepton/interface/RecoElectronCollectionSelectorFakeable_hh_multilepton.h" // RecoElectronCollectionSelectorFakeable_hh_multilepton
-#include "hhAnalysis/multilepton/interface/RecoMuonCollectionSelectorFakeable_hh_multilepton.h" // RecoMuonCollectionSelectorFakeable_hh_multilepton
+#include "hhAnalysis/multilepton/interface/RecoElectronCollectionSelectorFakeable_hh_multilepton.h" // RecoElectronCollectionSelectorFakeable
+#include "hhAnalysis/multilepton/interface/RecoMuonCollectionSelectorFakeable_hh_multilepton.h" // RecoMuonCollectionSelectorFakeable
 
 #if __has_include (<FWCore/ParameterSetReader/interface/ParameterSetReader.h>)
 #  include <FWCore/ParameterSetReader/interface/ParameterSetReader.h> // edm::readPSetsFrom()
@@ -434,7 +436,8 @@ void ApplyBTagSF2(const std::vector<const RecoJet*> selJets,
 void 
 ApplyDataToMCCorrection(const RecoLepton* preselLepton,
 			Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface,
-			EvtWeightRecorder &evtWeightRecorder)
+			EvtWeightRecorder &evtWeightRecorder,
+			const bool lep_useTightChargeCut)
 {
   //std::cout << "preselLepton " << " pdgId: "<< preselLepton->pdgId() << " eta: " << preselLepton->eta() << " pt: " << preselLepton->pt() << " cone_pt: " << preselLepton->cone_pt() << std::endl;
   dataToMCcorrectionInterface->setLeptons({ preselLepton }); // requireChargeGenMatch set to false for preselLepton by default
@@ -443,12 +446,9 @@ ApplyDataToMCCorrection(const RecoLepton* preselLepton,
   evtWeightRecorder.record_leptonIDSF_recoToLoose(dataToMCcorrectionInterface);
 
   //--- apply data/MC corrections for efficiencies of leptons passing the loose identification and isolation criteria                                                                           
-  //    to also pass the tight identification and isolation criteria                                                                                                                            
-  if(preselLepton->isTight()){ // Signal region
-    evtWeightRecorder.record_leptonIDSF_looseToTight(dataToMCcorrectionInterface);    
-  }else if(preselLepton->isFakeable()){ // Fakeable region
-    evtWeightRecorder.record_leptonSF(dataToMCcorrectionInterface->getSF_leptonID_and_Iso_looseToFakeable());
-  }
+  //    to also pass the tight identification and isolation criteria
+  bool woTightCharge = lep_useTightChargeCut ? false : true;
+  evtWeightRecorder.record_leptonIDSF_looseToTight(dataToMCcorrectionInterface, woTightCharge);
   //std::cout<<" evtWeightRecorder.get(central): " << evtWeightRecorder.get("central") << std::endl;
 
 }
@@ -532,6 +532,7 @@ FillNtuples(const RecoLepton* preselLepton,
 	    ("lep_isgenMatchedToLepton", preselElectron.genLepton() ? 1 : 0)
 	    ("lep_isgenMatchedToTau", preselElectron.genHadTau() ? 1 : 0)
 	    ("lep_isgenMatchedToPhoton", preselElectron.genPhoton() ? 1 : 0)
+	    ("lep_TightCharge", preselElectron.tightCharge())
 	    .fill();
       }
     }
@@ -574,6 +575,7 @@ FillNtuples(const RecoLepton* preselLepton,
           ("lep_isgenMatchedFake", (!(preselMuon.genLepton() || preselMuon.genHadTau())) ? 1 : 0)
           ("lep_isgenMatchedToLepton", preselMuon.genLepton() ? 1 : 0)
           ("lep_isgenMatchedToTau", preselMuon.genHadTau() ? 1 : 0)
+	  ("lep_TightCharge", preselMuon.tightCharge())
           .fill();
       }
     }
@@ -622,6 +624,7 @@ LeptonPlusJet(Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface_
 	      const bool use_triggers_1mu,
 	      const bool use_triggers_2mu,
 	      const bool isMC,
+	      const bool lep_useTightChargeCut,
 	      const bool apply_DYMCNormScaleFactors,
 	      //const bool apply_DYMCReweighting,
 	      std::vector<GenParticle> genTauLeptons,
@@ -655,8 +658,35 @@ LeptonPlusJet(Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface_
   //std::vector<const RecoJet*> selBJets_medium;
   double prescale_weight = 1.0;
   bool passTrigger = false;
+  bool failsTightChargeCut = false;
+  
+  if ( lep_useTightChargeCut )
+  {      
+    for ( std::vector<const RecoLepton*>::const_iterator lepton = preselLeptonsFull.begin();
+	  lepton != preselLeptonsFull.end(); ++lepton ) {
+      if ( (*lepton)->is_electron() ) {
+	const RecoElectron* electron = dynamic_cast<const RecoElectron*>(*lepton);
+	assert(electron);
+	if ( electron->tightCharge() < 2 )
+	{
+	  failsTightChargeCut = true;
+	  break;
+	}
+      }
+      else if ( (*lepton)->is_muon() ) {
+	const RecoMuon* muon = dynamic_cast<const RecoMuon*>(*lepton);
+	assert(muon);
+	if ( muon->tightCharge() < 2 )
+	{
+	  failsTightChargeCut = true;
+	  break;
+	}
+      }
+    } 
+  }
 
-  if(preselLeptonsFull.size() == 1)
+  
+  if(preselLeptonsFull.size() == 1 && ( ! failsTightChargeCut ) )
     { // 1 Loose/Presel Leptons cond.
       if(preselLeptonsFull[0]->is_electron())
 	{// electron block
@@ -732,8 +762,8 @@ LeptonPlusJet(Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface_
 
 		if(passMETFilter)
 		  {
-		    // ---- Apply Data-to-mc Corrections
-		    ApplyDataToMCCorrection(preselLeptonsFull[0], dataToMCcorrectionInterface_ntuple, evtWeightRecorder_copy);
+		    // ---- Apply Data-to-mc Corrections		    
+		    ApplyDataToMCCorrection(preselLeptonsFull[0], dataToMCcorrectionInterface_ntuple, evtWeightRecorder_copy, lep_useTightChargeCut);
 		    evtWeight_wo_TrigPrescale = evtWeightRecorder_copy.get(central_or_shift);
 		    cutFlowTable_e_woTrigger->update("Event passes MET filters", evtWeight_wo_TrigPrescale);
 		  }
@@ -894,7 +924,7 @@ LeptonPlusJet(Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface_
 		if(passMETFilter)
 		  {
 		    // ---- Apply Data-to-mc Corrections
-		    ApplyDataToMCCorrection(preselLeptonsFull[0], dataToMCcorrectionInterface_ntuple, evtWeightRecorder_copy);
+		    ApplyDataToMCCorrection(preselLeptonsFull[0], dataToMCcorrectionInterface_ntuple, evtWeightRecorder_copy, lep_useTightChargeCut);
 		    evtWeight_wo_TrigPrescale = evtWeightRecorder_copy.get(central_or_shift);
 		    cutFlowTable_mu_woTrigger->update("Event passes MET filters", evtWeight_wo_TrigPrescale);
 		  }
@@ -1031,6 +1061,7 @@ DiLeptonSS(Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface_ntu
 	   const bool use_triggers_1mu,
 	   const bool use_triggers_2mu,
 	   const bool isMC,
+	   const bool lep_useTightChargeCut,
 	   const bool apply_DYMCNormScaleFactors,
 	   //const bool apply_DYMCReweighting,
 	   std::vector<GenParticle> genTauLeptons,
@@ -1062,13 +1093,38 @@ DiLeptonSS(Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface_ntu
   //std::vector<const RecoJet*> selBJets_medium;
   double prescale_weight = 1.0;
   bool passTrigger = false;
-
+  bool failsTightChargeCut = false;
+  
+  if ( lep_useTightChargeCut )
+  {      
+    for ( std::vector<const RecoLepton*>::const_iterator lepton = preselLeptonsFull.begin();
+	  lepton != preselLeptonsFull.end(); ++lepton ) {
+      if ( (*lepton)->is_electron() ) {
+	const RecoElectron* electron = dynamic_cast<const RecoElectron*>(*lepton);
+	assert(electron);
+	if ( electron->tightCharge() < 2 )
+	{
+	  failsTightChargeCut = true;
+	  break;
+	}
+      }
+      else if ( (*lepton)->is_muon() ) {
+	const RecoMuon* muon = dynamic_cast<const RecoMuon*>(*lepton);
+	assert(muon);
+	if ( muon->tightCharge() < 2 )
+	{
+	  failsTightChargeCut = true;
+	  break;
+	}
+      }
+    } 
+  }
 
   int TagLeptonIndex = -1;
   int ProbeLeptonIndex = -1;
   bool TagLeptonExists = false;
   bool ProbeLeptonExists = false;
-  if(preselLeptonsFull.size() == 2)
+  if(preselLeptonsFull.size() == 2 && ( ! failsTightChargeCut ) )
     { // 2 Loose/Presel Leptons cond.
 
       cutFlowTable_e->update("= 2 presel/Loose leptons", evtWeight_wo_TrigPrescale_BTag_DY_SFs);
@@ -1077,7 +1133,7 @@ DiLeptonSS(Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface_ntu
       cutFlowTable_mu_woTrigger->update("= 2 presel/Loose leptons", evtWeight_wo_TrigPrescale_BTag_DY_SFs);
 
       for(unsigned int i = 0; i < preselLeptonsFull.size(); i++)
-	{ // loop over preselleptons
+	{ // loop over preselleptons	  
 	  if( (preselLeptonsFull[i]->genLepton()) && (preselLeptonsFull[i]->isTight()) )
 	    {
 	      cutFlowTable_e->update("Gen-matched lepton (Tag) exists", evtWeight_wo_TrigPrescale_BTag_DY_SFs);
@@ -1162,7 +1218,7 @@ DiLeptonSS(Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface_ntu
 	      if(passMETFilter)
 		{
 		  // ---- Apply Data-to-mc Corrections
-		  ApplyDataToMCCorrection(preselLeptonsFull[ProbeLeptonIndex], dataToMCcorrectionInterface_ntuple, evtWeightRecorder_copy);
+		  ApplyDataToMCCorrection(preselLeptonsFull[ProbeLeptonIndex], dataToMCcorrectionInterface_ntuple, evtWeightRecorder_copy, lep_useTightChargeCut);
 		  evtWeight_wo_TrigPrescale = evtWeightRecorder_copy.get(central_or_shift);
 		  cutFlowTable_e_woTrigger->update ("Event passes MET filters", evtWeight_wo_TrigPrescale);
 		  cutFlowTable_mu_woTrigger->update ("Event passes MET filters", evtWeight_wo_TrigPrescale);
@@ -1422,7 +1478,6 @@ main(int argc,
 
   const bool fillNtuple = ( cfg_analyze.exists("fillNtuple") ) ? cfg_analyze.getParameter<bool>("fillNtuple") : false;
 
-
   edm::ParameterSet triggerWhiteList;
   if(! isMC)
   {
@@ -1503,11 +1558,22 @@ main(int argc,
   const double minRecoPt_global_e  = cfg_analyze.getParameter<double>("minRecoPt_global_e");
   const double minRecoPt_global_mu = cfg_analyze.getParameter<double>("minRecoPt_global_mu");
 
-  const double lep_mva_cut_mu = cfg_analyze.getParameter<double>("lep_mva_cut_mu");
-  const double lep_mva_cut_e  = cfg_analyze.getParameter<double>("lep_mva_cut_e");
-  const std::string lep_mva_wp = cfg_analyze.getParameter<std::string>("lep_mva_wp");
+  const double      lep_mva_cut_mu = cfg_analyze.getParameter<double>("lep_mva_cut_mu");
+  const double      lep_mva_cut_e  = cfg_analyze.getParameter<double>("lep_mva_cut_e");
+  const std::string lep_mva_wp     = cfg_analyze.getParameter<std::string>("lep_mva_wp");
+  const bool   isLeptonSelection_hh_multilepton = lep_mva_wp.compare("hh_multilepton") ? true : false;
+  printf("lep_mva_wp %s, lep_mva_cut_mu %g, lep_mva_cut_e %g, \t\t isLeptonSelection_hh_multilepton %d \n",
+	 lep_mva_wp.c_str(),lep_mva_cut_mu,lep_mva_cut_e, isLeptonSelection_hh_multilepton);
+  
+  if ( ! cfg_analyze.exists("lep_useTightChargeCut") )
+  {
+    throw cms::Exception("analyze_WZctrl_SFstudy")
+      << " Missing input parameter lep_useTightChargeCut !!\n";
+  }
+  const bool lep_useTightChargeCut = cfg_analyze.exists("lep_useTightChargeCut") ? cfg_analyze.getParameter<bool>("lep_useTightChargeCut") : false;
+  printf("lep_useTightChargeCut %d \n",lep_useTightChargeCut);
+  
   const double METScaleSyst   = cfg_analyze.getParameter<double>("METScaleSyst");
-
   
   const std::string branchName_electrons = cfg_analyze.getParameter<std::string>("branchName_electrons");
   const std::string branchName_muons     = cfg_analyze.getParameter<std::string>("branchName_muons");
@@ -1588,6 +1654,8 @@ main(int argc,
   cfg_dataToMCcorrectionInterface.addParameter<std::string>("hadTauSelection", "disabled");
   cfg_dataToMCcorrectionInterface.addParameter<int>("hadTauSelection_antiElectron", -1);
   cfg_dataToMCcorrectionInterface.addParameter<int>("hadTauSelection_antiMuon", -1);
+  cfg_dataToMCcorrectionInterface.addParameter<bool>("isDEBUG", isDEBUG);
+  cfg_dataToMCcorrectionInterface.addParameter<std::string>("lep_mva_wp", lep_mva_wp);
   Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface = nullptr;
   switch(era)
     {
@@ -1706,8 +1774,8 @@ main(int argc,
   inputTree->registerReader(muonReader);
   RecoMuonCollectionGenMatcher muonGenMatcher;
   RecoMuonCollectionSelectorLoose preselMuonSelector(era);
-  RecoMuonCollectionSelectorFakeable fakeableMuonSelector_default(era);  // DEFAULT FAKE DEF. USED IN TTH ANALYSIS
-  RecoMuonCollectionSelectorFakeable_hh_multilepton fakeableMuonSelector_hh_multilepton(era); // NEW HH OPTIMIZED FAKE DEFINITION;
+  RecoMuonCollectionSelectorFakeable fakeableMuonSelector_ttH(era);  // DEFAULT FAKE DEF. USED IN TTH ANALYSIS 
+  RecoMuonCollectionSelectorFakeable_hh_multilepton fakeableMuonSelector_hh_multilepton(era); // NEW HH OPTIMIZED FAKE DEFINITION;    
   RecoMuonCollectionSelectorTight tightMuonSelector(era);       
   muonReader->set_mvaTTH_wp(lep_mva_cut_mu);
 
@@ -1717,11 +1785,11 @@ main(int argc,
   RecoElectronCollectionGenMatcher electronGenMatcher;
   RecoElectronCollectionCleaner electronCleaner(0.3);
   RecoElectronCollectionSelectorLoose preselElectronSelector(era);
-  RecoElectronCollectionSelectorFakeable fakeableElectronSelector_default(era); // DEFAULT FAKE DEF. USED IN TTH ANALYSIS
-  RecoElectronCollectionSelectorFakeable_hh_multilepton fakeableElectronSelector_hh_multilepton(era); // NEW HH OPTIMIZED FAKE DEFINITION
+  RecoElectronCollectionSelectorFakeable fakeableElectronSelector_ttH(era); // DEFAULT FAKE DEF. USED IN TTH ANALYSIS
+  RecoElectronCollectionSelectorFakeable_hh_multilepton fakeableElectronSelector_hh_multilepton(era); // NEW HH OPTIMIZED FAKE DEFINITION     
   RecoElectronCollectionSelectorTight tightElectronSelector(era); 
   electronReader->set_mvaTTH_wp(lep_mva_cut_e);
-  fakeableElectronSelector_default.enable_offline_e_trigger_cuts();
+  fakeableElectronSelector_ttH.enable_offline_e_trigger_cuts();
   fakeableElectronSelector_hh_multilepton.enable_offline_e_trigger_cuts();
   tightElectronSelector.enable_offline_e_trigger_cuts();
 
@@ -2163,7 +2231,8 @@ main(int argc,
     );
     bdt_filler_e_LeptonPlusJet->register_variable<int_type_e>(
 						"EGamma_MVA_WP", "Conv_reject", "miss_hits", "isTight", "isFakeable", "lep_isgenMatchedFake",
-						"lep_isgenMatchedToLepton", "lep_isgenMatchedToPhoton", "lep_isgenMatchedToTau", "passesTrigger"
+						"lep_isgenMatchedToLepton", "lep_isgenMatchedToPhoton", "lep_isgenMatchedToTau", "passesTrigger",
+						"lep_TightCharge"
     );
 
     bdt_filler_e_diLeptSS = new std::remove_pointer<decltype(bdt_filler_e_diLeptSS)>::type(
@@ -2176,7 +2245,8 @@ main(int argc,
     );
     bdt_filler_e_diLeptSS->register_variable<int_type_e>(
 						"EGamma_MVA_WP", "Conv_reject", "miss_hits", "isTight", "isFakeable", "lep_isgenMatchedFake",
-						"lep_isgenMatchedToLepton", "lep_isgenMatchedToPhoton", "lep_isgenMatchedToTau", "passesTrigger"
+						"lep_isgenMatchedToLepton", "lep_isgenMatchedToPhoton", "lep_isgenMatchedToTau", "passesTrigger",
+						"lep_TightCharge"
     );
 
     bdt_filler_mu_LeptonPlusJet = new std::remove_pointer<decltype(bdt_filler_mu_LeptonPlusJet)>::type(
@@ -2189,7 +2259,8 @@ main(int argc,
     );
     bdt_filler_mu_LeptonPlusJet->register_variable<int_type_mu>(
 						  "PFMuon_WP", "isTight", "isFakeable", "lep_isgenMatchedFake",
-						  "lep_isgenMatchedToLepton", "lep_isgenMatchedToTau", "passesTrigger"
+						  "lep_isgenMatchedToLepton", "lep_isgenMatchedToTau", "passesTrigger",
+						  "lep_TightCharge"
     );
 
     bdt_filler_mu_diLeptSS = new std::remove_pointer<decltype(bdt_filler_mu_diLeptSS)>::type(
@@ -2202,7 +2273,8 @@ main(int argc,
     );
     bdt_filler_mu_diLeptSS->register_variable<int_type_mu>(
 						  "PFMuon_WP", "isTight", "isFakeable", "lep_isgenMatchedFake",
-						  "lep_isgenMatchedToLepton", "lep_isgenMatchedToTau", "passesTrigger"
+						  "lep_isgenMatchedToLepton", "lep_isgenMatchedToTau", "passesTrigger",
+						  "lep_TightCharge"
     );
     bdt_filler_e_LeptonPlusJet->bookTree(fs);
     bdt_filler_e_diLeptSS->bookTree(fs);
@@ -2445,24 +2517,18 @@ main(int argc,
     // CV: no cleaning needed for muons, as they have the highest priority in the overlap removal
     std::vector<const RecoMuon *> cleanedMuons = muon_ptrs;
     std::vector<const RecoMuon *> preselMuons = preselMuonSelector(cleanedMuons); // Loose muons
-    std::vector<const RecoMuon *> fakeableMuons = [&](){
-      return lep_mva_wp == "hh_multilepton" ?
-        fakeableMuonSelector_hh_multilepton(preselMuons) :
-        fakeableMuonSelector_default(preselMuons)
-      ;
-    }();
+    std::vector<const RecoMuon *> fakeableMuons = isLeptonSelection_hh_multilepton ?
+      fakeableMuonSelector_hh_multilepton(preselMuons) :
+      fakeableMuonSelector_ttH(preselMuons);
     std::vector<const RecoMuon *> tightMuons = tightMuonSelector(preselMuons);
 
     std::vector<RecoElectron> electrons = electronReader->read();
     std::vector<const RecoElectron *> electron_ptrs = convert_to_ptrs(electrons);
     std::vector<const RecoElectron *> cleanedElectrons = electronCleaner(electron_ptrs, preselMuons);
     std::vector<const RecoElectron *> preselElectrons = preselElectronSelector(cleanedElectrons); // Loose electrons
-    std::vector<const RecoElectron *> fakeableElectrons = [&](){
-      return lep_mva_wp == "hh_multilepton" ?
-        fakeableElectronSelector_hh_multilepton(preselElectrons) :
-        fakeableElectronSelector_default(preselElectrons)
-      ;
-    }();
+    std::vector<const RecoElectron *> fakeableElectrons = isLeptonSelection_hh_multilepton ?
+      fakeableElectronSelector_hh_multilepton(preselElectrons) :
+      fakeableElectronSelector_ttH(preselElectrons);
     std::vector<const RecoElectron *> tightElectrons = tightElectronSelector(preselElectrons);
 
 //--- build collections of jets and select subset of jets passing b-tagging criteria
@@ -2616,6 +2682,7 @@ main(int argc,
 				     use_triggers_1mu,
 				     use_triggers_2mu,
 				     isMC,
+				     lep_useTightChargeCut,	 
 				     apply_DYMCNormScaleFactors,
 				     //apply_DYMCReweighting,
 				     genTauLeptons,
@@ -2674,6 +2741,7 @@ main(int argc,
 					     use_triggers_1mu,
 					     use_triggers_2mu,
 					     isMC,
+					     lep_useTightChargeCut,	 
 					     apply_DYMCNormScaleFactors,
 					     //apply_DYMCReweighting,
 					     genTauLeptons,
@@ -2702,9 +2770,44 @@ main(int argc,
       }
       continue;
     }
-
+    
     if(preselElectrons.size() >= 1) cutFlowTable_e.update (">= 1 presel/Loose electron", evtWeightRecorder.get(central_or_shift));
     if(preselMuons.size()     >= 1) cutFlowTable_mu.update(">= 1 presel/Loose muon",     evtWeightRecorder.get(central_or_shift));
+
+    if ( lep_useTightChargeCut )
+    {
+      bool failsTightChargeCut = false;
+      for ( std::vector<const RecoLepton*>::const_iterator lepton = preselLeptonsFull.begin();
+	    lepton != preselLeptonsFull.end(); ++lepton ) {
+	if ( (*lepton)->is_electron() ) {
+	  const RecoElectron* electron = dynamic_cast<const RecoElectron*>(*lepton);
+	  assert(electron);
+	  if ( electron->tightCharge() < 2 )
+	  {
+	    failsTightChargeCut = true;
+	    break;
+	  }
+	}
+	else if ( (*lepton)->is_muon() ) {
+	  const RecoMuon* muon = dynamic_cast<const RecoMuon*>(*lepton);
+	  assert(muon);
+	  if ( muon->tightCharge() < 2 )
+	  {
+	    failsTightChargeCut = true;
+	    break;
+	  }
+	}
+      }
+      if ( failsTightChargeCut ) {
+	if ( run_lumi_eventSelector ) {
+	  std::cout << "event " << eventInfo.str() << " FAILS tight lepton charge requirement." << std::endl;
+	}
+	//if (!selectBDT)
+	continue;
+      }
+      if(preselElectrons.size() >= 1) cutFlowTable_e.update (">= 1 presel/Loose electron pasing tight lepton charge", evtWeightRecorder.get(central_or_shift));
+      if(preselMuons.size()     >= 1) cutFlowTable_mu.update(">= 1 presel/Loose muon pasing tight lepton charge",     evtWeightRecorder.get(central_or_shift));
+    }
   
     if(apply_met_filters)
       {
@@ -2927,49 +3030,63 @@ main(int argc,
       }
       continue;
     }
-    //--- rank triggers by priority and ignore triggers of lower priority if a trigger of higher priority has fired for given event;
-    //    the ranking of the triggers is as follows: 2mu, 2e, 1mu, 1e
-    // CV: this logic is necessary to avoid that the same event is selected multiple times when processing different primary datasets
-    if(! isMC && ! isDEBUG)
+    if(preselElectrons.size() >= 1) cutFlowTable_e.update (">= 1 presel/Loose electron pasing triggers", evtWeightRecorder.get(central_or_shift));
+    if(preselMuons.size()     >= 1) cutFlowTable_mu.update(">= 1 presel/Loose muon pasing triggers",     evtWeightRecorder.get(central_or_shift));
+      
+    // Require that trigger paths match primary datasets,
+    // to avoid that the same event is selected multiple times when processing different primary datasets (PD).
+    // In case the same event passes the triggers paths for more than one primary datasets,
+    // the event is selected in the PD of highest priority only. 
+    // The ranking of the PDs is as follows: DoubleMuon, MuonEG, DoubleEG, SingleMuon, SingleElectron
+    if ( !isMC && !isDEBUG ) 
     {
-      if(selTrigger_1e && (isTriggered_1mu || isTriggered_2e || isTriggered_2mu))
-      {
-        if(run_lumi_eventSelector)
-        {
-          std::cout << "event " << eventInfo.str() << " FAILS trigger selection.\n( "
-                       "selTrigger_1e = "   << selTrigger_1e   << ", "
-                       "isTriggered_2e = "  << isTriggered_2e  << ", "
-                       "isTriggered_1mu = " << isTriggered_1mu << ", "
-                       "isTriggered_2mu = " << isTriggered_2mu << ")\n"
-          ;
+      //bool isTriggered_SingleElectron = isTriggered_1e && preselElectrons.size() >= 1;
+      bool isTriggered_SingleMuon = isTriggered_1mu && preselMuons.size() >= 1;
+      bool isTriggered_DoubleEG = isTriggered_2e && preselElectrons.size() >= 2;
+      bool isTriggered_DoubleMuon = isTriggered_2mu && preselMuons.size() >= 2;
+
+      bool selTrigger_SingleElectron = selTrigger_1e;
+      bool selTrigger_SingleMuon = selTrigger_1mu;
+      bool selTrigger_DoubleEG = selTrigger_2e;
+      //bool selTrigger_DoubleMuon = selTrigger_2mu;
+      
+      if ( selTrigger_SingleElectron && (isTriggered_SingleMuon || isTriggered_DoubleMuon) ) {
+	if ( run_lumi_eventSelector ) {
+          std::cout << "event " << eventInfo.str() << " FAILS trigger selection." << std::endl;
+	  std::cout << " (selTrigger_SingleElectron = " << selTrigger_SingleElectron
+		    << ", isTriggered_SingleMuon = " << isTriggered_SingleMuon
+		    << ", isTriggered_DoubleMuon = " << isTriggered_DoubleMuon << ")" << std::endl;
+	}
+	continue;
+      }
+      if ( selTrigger_SingleElectron && isTriggered_DoubleEG && era != Era::k2018 ) {
+        if ( run_lumi_eventSelector ) {
+          std::cout << "event " << eventInfo.str() << " FAILS trigger selection." << std::endl;
+          std::cout << " (selTrigger_SingleElectron = " << selTrigger_SingleElectron
+                    << ", isTriggered_DoubleEG = " << isTriggered_DoubleEG << ")" << std::endl;
         }
         continue;
       }
-      if(selTrigger_1mu && (isTriggered_2e || isTriggered_2mu))
-      {
-        if(run_lumi_eventSelector)
-        {
-          std::cout << "event " << eventInfo.str() << " FAILS trigger selection.\n( "
-                       "selTrigger_1mu = "  << selTrigger_1mu  << ", "
-                       "isTriggered_2e = "  << isTriggered_2e  << ", "
-                       "isTriggered_2mu = " << isTriggered_2mu << ")\n"
-          ;
-        }
-        continue;
+      if ( selTrigger_DoubleEG && (isTriggered_DoubleMuon) ) {
+	if ( run_lumi_eventSelector ) {
+          std::cout << "event " << eventInfo.str() << " FAILS trigger selection." << std::endl;
+	  std::cout << " (selTrigger_DoubleEG = " << selTrigger_DoubleEG
+		    << ", isTriggered_DoubleMuon = " << isTriggered_DoubleMuon << ")" << std::endl;
+	}
+	continue;
       }
-      if(selTrigger_2e && isTriggered_2mu)
-      {
-        if(run_lumi_eventSelector)
-        {
-          std::cout << "event " << eventInfo.str() << " FAILS trigger selection.\n( "
-                       "selTrigger_2e = "   << selTrigger_2e   << ", "
-                       "isTriggered_2mu = " << isTriggered_2mu << ")\n"
-          ;
-        }
-        continue;
+      if ( selTrigger_SingleMuon && (isTriggered_DoubleEG || isTriggered_DoubleMuon) ) {
+	if ( run_lumi_eventSelector ) {
+          std::cout << "event " << eventInfo.str() << " FAILS trigger selection." << std::endl;
+	  std::cout << " (selTrigger_SingleMuon = " << selTrigger_SingleMuon
+		    << ", isTriggered_DoubleEG = " << isTriggered_DoubleEG
+		    << ", isTriggered_DoubleMuon = " << isTriggered_DoubleMuon << ")" << std::endl;
+	}
+	continue;
       }
     }
-
+    if(preselElectrons.size() >= 1) cutFlowTable_e.update (">= 1 presel/Loose electron pasing trigger & dataset matching", evtWeightRecorder.get(central_or_shift));
+    if(preselMuons.size()     >= 1) cutFlowTable_mu.update(">= 1 presel/Loose muon pasing trigger & dataset matching",     evtWeightRecorder.get(central_or_shift));
 
     if(isMC)
     {
@@ -2995,7 +3112,7 @@ main(int argc,
 	}
 
 //--- Data/MC scale factors ---------
-      ApplyDataToMCCorrection(preselLeptonsFull[0], dataToMCcorrectionInterface, evtWeightRecorder);
+      ApplyDataToMCCorrection(preselLeptonsFull[0], dataToMCcorrectionInterface, evtWeightRecorder, lep_useTightChargeCut);
       //std::cout<<"Main Workflow (after corr.): evtWeightRecorder.get(central_or_shift): "<< evtWeightRecorder.get(central_or_shift) << std::endl;
 
 //--- prescale weight      
