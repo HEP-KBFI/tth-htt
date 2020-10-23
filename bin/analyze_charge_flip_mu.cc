@@ -809,12 +809,10 @@ int main(int argc, char* argv[])
     const std::vector<const RecoMuon*> muon_ptrs = convert_to_ptrs(muons_shifted);
     const std::vector<const RecoMuon*> cleanedMuons = muon_ptrs; // CV: no cleaning needed for muons, as they have the highest priority in the overlap removal
     const std::vector<const RecoMuon*> preselMuons = preselMuonSelector(cleanedMuons);
-    const std::vector<const RecoMuon*> fakeableMuons = [&](){
-      return lep_mva_wp == "hh_multilepton" ?
-        fakeableMuonSelector_hh_multilepton(preselMuons) :
-        fakeableMuonSelector_default(preselMuons)
-      ;
-    }();
+    const std::vector<const RecoMuon*> fakeableMuons = lep_mva_wp == "hh_multilepton" ?
+      fakeableMuonSelector_hh_multilepton(preselMuons) :
+      fakeableMuonSelector_default(preselMuons)
+    ;
     const std::vector<const RecoMuon*> tightMuons = tightMuonSelector(preselMuons);
     const std::vector<const RecoMuon*> selMuons = selectObjects(
       leptonSelection, preselMuons, fakeableMuons, tightMuons
@@ -824,12 +822,10 @@ int main(int argc, char* argv[])
     const std::vector<const RecoElectron*> electron_ptrs = convert_to_ptrs(electrons);
     const std::vector<const RecoElectron*> cleanedElectrons = electronCleaner(electron_ptrs, selMuons);
     const std::vector<const RecoElectron*> preselElectrons = preselElectronSelector(cleanedElectrons);
-    const std::vector<const RecoElectron*> fakeableElectrons = [&](){
-      return lep_mva_wp == "hh_multilepton" ?
-        fakeableElectronSelector_hh_multilepton(preselElectrons) :
-        fakeableElectronSelector_default(preselElectrons)
-      ;
-    }();
+    const std::vector<const RecoElectron*> fakeableElectrons = lep_mva_wp == "hh_multilepton" ?
+      fakeableElectronSelector_hh_multilepton(preselElectrons) :
+      fakeableElectronSelector_default(preselElectrons)
+    ;
     const std::vector<const RecoElectron*> tightElectrons = tightElectronSelector(preselElectrons);
     const std::vector<const RecoElectron*> selElectrons = selectObjects(
       leptonSelection, preselElectrons, fakeableElectrons, tightElectrons
