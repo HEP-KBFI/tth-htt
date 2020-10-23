@@ -696,12 +696,10 @@ main(int argc,
     // CV: no cleaning needed for muons, as they have the highest priority in the overlap removal
     const std::vector<const RecoMuon *> cleanedMuons  = muon_ptrs;
     const std::vector<const RecoMuon *> preselMuons   = preselMuonSelector(cleanedMuons, isHigherConePt);
-    const std::vector<const RecoMuon *> fakeableMuons = [&](){
-      return lep_mva_wp == "hh_multilepton" ?
-        fakeableMuonSelector_hh_multilepton(preselMuons, isHigherConePt) :
-        fakeableMuonSelector_default(preselMuons, isHigherConePt)
-      ;
-    }();
+    const std::vector<const RecoMuon *> fakeableMuons = lep_mva_wp == "hh_multilepton" ?
+      fakeableMuonSelector_hh_multilepton(preselMuons, isHigherConePt) :
+      fakeableMuonSelector_default(preselMuons, isHigherConePt)
+    ;
     const std::vector<const RecoMuon *> tightMuons    = tightMuonSelector(preselMuons,  isHigherConePt);
     const std::vector<const RecoMuon *> selMuons      = selectObjects(
       leptonSelection, preselMuons, fakeableMuons, tightMuons
@@ -713,12 +711,10 @@ main(int argc,
 
     const std::vector<const RecoElectron *> preselElectronsUncleaned = preselElectronSelector(electron_ptrs,    isHigherConePt);
     const std::vector<const RecoElectron *> preselElectrons          = preselElectronSelector(cleanedElectrons, isHigherConePt);
-    const std::vector<const RecoElectron *> fakeableElectrons = [&](){
-      return lep_mva_wp == "hh_multilepton" ?
-        fakeableElectronSelector_hh_multilepton(preselElectrons, isHigherConePt) :
-        fakeableElectronSelector_default(preselElectrons, isHigherConePt)
-      ;
-    }();
+    const std::vector<const RecoElectron *> fakeableElectrons = lep_mva_wp == "hh_multilepton" ?
+      fakeableElectronSelector_hh_multilepton(preselElectrons, isHigherConePt) :
+      fakeableElectronSelector_default(preselElectrons, isHigherConePt)
+    ;
     const std::vector<const RecoElectron *> tightElectrons           = tightElectronSelector(preselElectrons,  isHigherConePt);
 
     const std::vector<const RecoElectron *> selElectrons      = selectObjects(
