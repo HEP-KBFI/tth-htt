@@ -14,7 +14,7 @@ import itertools
 # E.g.: ./test/tthProjection.py -v 2018May09 -e 2017 -m all -p pileup
 #       ./test/tthProjection.py -v 2018May09 -e 2017 -m all -p btagSF -j 4
 
-mode_choices = [ 'all', 'sync', 'hh', 'hh_bbww', 'hh_bbww_sync', 'hh_bbww_ttbar', 'hh_bbww_sync_ttbar' ]
+mode_choices = [ 'all', 'tth', 'tth_sync', 'hh', 'hh_bbww', 'hh_bbww_sync', 'hh_bbww_ttbar', 'hh_bbww_sync_ttbar' ]
 projections = [ 'pileup', 'btagSF' ]
 default_output = '{projection}_{era}.root'
 
@@ -72,8 +72,10 @@ if projection == 'pileup':
   projection_module = "puHist"
 
   if mode == 'all':
+    samples = load_samples(era, False, base = 'all')
+  elif mode == 'tth':
     samples = load_samples(era, False)
-  elif mode == 'sync':
+  elif mode == 'tth_sync':
     samples = load_samples(era, False, suffix = 'sync')
   elif mode == 'hh':
     samples = load_samples(era, False, base = 'hh_multilepton')
@@ -91,18 +93,10 @@ elif projection == 'btagSF':
   projection_module = "btagSFRatio"
 
   if mode == 'all':
-    samples_tth         = load_samples(era, True,                          suffix = 'base')
-    samples_ttbar       = load_samples(era, True, base = 'hh_bbww',        suffix = 'ttbar')
-    samples_multilepton = load_samples(era, True, base = 'hh_multilepton', suffix = 'hh')
-    samples_bbww        = load_samples(era, True, base = 'hh_bbww',        suffix = 'hh')
-    del samples_tth['sum_events']
-    del samples_ttbar['sum_events']
-    del samples_multilepton['sum_events']
-    del samples_bbww['sum_events']
-    samples = collections.OrderedDict(itertools.chain(
-      samples_tth.items(), samples_ttbar.items(), samples_multilepton.items(), samples_bbww.items(),
-    ))
-  elif mode == 'sync':
+    samples = load_samples(era, True, base = 'all')
+  elif mode == 'tth':
+    samples = load_samples(era, True)
+  elif mode == 'tth_sync':
     samples = load_samples(era, True, suffix = 'sync')
   elif mode == 'hh_bbww_sync':
     samples = load_samples(era, True, base = 'hh_bbww', suffix = 'sync')

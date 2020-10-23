@@ -12,8 +12,7 @@ import getpass
 # E.g.: ./test/tthProdNtuple.py -v 2017Dec13 -m all -e 2017 -p
 
 mode_choices = [
-  'all', 'all_except_forBDTtraining', 'forBDTtraining', 'sync', 'leptonFR_sync', 'hh', 'hh_bbww',
-  'hh_bbww_sync', 'hh_bbww_ttbar', 'hh_bbww_sync_ttbar', 'hh_bbww_sl',
+  'all', 'tth', 'tth_sync', 'leptonFR_sync', 'hh', 'hh_bbww', 'hh_bbww_sync', 'hh_bbww_ttbar', 'hh_bbww_sync_ttbar', 'hh_bbww_sl',
 ]
 
 parser = tthAnalyzeParser()
@@ -78,7 +77,7 @@ version = "%s_w%sPresel_%s_%s" % (
 gen_matching_by_index = (gen_matching == 'by_index')
 do_sync = 'sync' in mode
 
-if mode == 'sync':
+if mode == 'tth_sync':
   samples = load_samples(era, preselection, suffix = 'sync')
   pileup = os.path.join(
     os.environ['CMSSW_BASE'], 'src/tthAnalysis/HiggsToTauTau/data/pileup_%s_sync.root' % era
@@ -109,29 +108,33 @@ elif mode == 'hh':
     raise ValueError("Preselection not possible for %s mode" % mode)
 
   samples = load_samples(era, False, base = 'hh_multilepton')
-  pileup = os.path.join(
-    os.environ['CMSSW_BASE'], 'src/hhAnalysis/multilepton/data/pileup_hh_{}.root'.format(era)
-  )
+  # pileup = os.path.join(
+  #   os.environ['CMSSW_BASE'], 'src/hhAnalysis/multilepton/data/pileup_hh_{}.root'.format(era)
+  # )
 elif mode == 'hh_bbww':
   if preselection:
     raise ValueError("Preselection not possible for %s mode" % mode)
 
   samples = load_samples(era, False, base = 'hh_bbww')
-  pileup = os.path.join(
-    os.environ['CMSSW_BASE'], 'src/hhAnalysis/bbww/data/pileup_hh_{}.root'.format(era)
-  )
+  # pileup = os.path.join(
+  #   os.environ['CMSSW_BASE'], 'src/hhAnalysis/bbww/data/pileup_hh_{}.root'.format(era)
+  # )
 elif mode == 'hh_bbww_ttbar':
   samples = load_samples(era, preselection, base = 'hh_bbww', suffix = 'ttbar')
-  pileup = os.path.join(
-    os.environ['CMSSW_BASE'], 'src/hhAnalysis/bbww/data/pileup_hh_{}_ttbar.root'.format(era)
-  )
+  # pileup = os.path.join(
+  #   os.environ['CMSSW_BASE'], 'src/hhAnalysis/bbww/data/pileup_hh_{}_ttbar.root'.format(era)
+  # )
 elif mode == 'hh_bbww_sl':
   if not preselection:
     raise ValueError("Mode %s only if preselection is enabled" % mode)
 
   samples = load_samples(era, True, base = 'hh_bbww')
-else:
+elif mode == 'tth':
   samples = load_samples(era, preselection, suffix = 'base' if preselection else '')
+elif mode == 'all':
+  samples = load_samples(era, preselection, base = 'all')
+else:
+  raise RuntimeError("Invalid mode: %s" % mode)
 
 if era == "2016":
   golden_json = golden_json_2016

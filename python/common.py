@@ -1,5 +1,7 @@
 import sys
 import logging
+import collections
+import itertools
 
 DEPENDENCIES = [
   "",  # CMSSW_BASE/src
@@ -49,6 +51,25 @@ def load_samples(era, is_postproc = True, base = 'tth', suffix = '', analysis_ty
   elif base == 'hh_bbww':
     base_str = 'hhAnalysis.bbww'
     sample_prefix = 'hhAnalyzeSamples'
+  elif base == 'all':
+    if is_postproc:
+      samples_tth            = load_samples(era, True,                          suffix = 'base')
+      samples_hh_multilepton = load_samples(era, True, base = 'hh_multilepton', suffix = 'hh')
+      samples_hh_bbww        = load_samples(era, True, base = 'hh_bbww',        suffix = 'hh')
+      samples_hh_bbww_ttbar  = load_samples(era, True, base = 'hh_bbww',        suffix = 'ttbar')
+    else:
+      samples_tth            = load_samples(era, False)
+      samples_hh_multilepton = load_samples(era, False, base = 'hh_multilepton')
+      samples_hh_bbww        = load_samples(era, False, base = 'hh_bbww')
+      samples_hh_bbww_ttbar  = load_samples(era, False, base = 'hh_bbww', suffix = 'ttbar')
+    del samples_tth['sum_events']
+    del samples_hh_multilepton['sum_events']
+    del samples_hh_bbww['sum_events']
+    del samples_hh_bbww_ttbar['sum_events']
+    samples = collections.OrderedDict(itertools.chain(
+      samples_tth.items(), samples_hh_multilepton.items(), samples_hh_bbww.items(), samples_hh_bbww_ttbar.items()
+    ))
+    return samples
   else:
     raise ValueError("Invalid base: %s" % base)
   assert(base_str and sample_prefix)
