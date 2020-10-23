@@ -14,6 +14,7 @@ import re
 # E.g.: ./test/tthAnalyzeRun_chargeFlip.py -v 2017Dec13 -e 2017
 
 cmssw_base_dir_combine = os.path.expanduser('~/CMSSW_10_2_13') # immediate parent dir to src folder
+cmssw_base_dir_combine = os.path.expanduser('~/VHbbNtuples_10_x/CMSSW_10_2_13') if 'ssawant' in cmssw_base_dir_combine else cmssw_base_dir_combine
 
 sys_choices      = [ 'full' ] + systematics.an_chargeFlip_e_opts
 systematics.full = systematics.an_chargeFlip_e
@@ -21,6 +22,7 @@ systematics.full = systematics.an_chargeFlip_e
 parser = tthAnalyzeParser()
 parser.add_sys(sys_choices, default_choice = 'full')
 parser.add_lep_mva_wp(default_wp = 'default')
+parser.add_lep_useTightChargeCut(default_option = 'True')
 parser.add_preselect()
 parser.add_files_per_job()
 parser.add_use_home()
@@ -44,6 +46,7 @@ running_method     = args.running_method
 # Additional arguments
 systematics_label = args.systematics
 lep_mva_wp        = args.lep_mva_wp
+lep_useTightChargeCut            = args.lep_useTightChargeCut
 use_preselected   = args.use_preselected
 files_per_job     = args.files_per_job
 use_home          = args.use_home
@@ -120,6 +123,7 @@ if __name__ == '__main__':
       "mass_ll_ePtThrsh15" : {},
     },
     lep_mva_wp             = lep_mva_wp,
+    lep_useTightChargeCut  = lep_useTightChargeCut,
     select_rle_output      = True,
     dry_run                = dry_run,
     isDebug                = debug,

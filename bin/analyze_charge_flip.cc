@@ -89,6 +89,8 @@
 #include <fstream> // std::ofstream
 #include <assert.h> // assert
 
+const int printLevel = 0;
+
 typedef math::PtEtaPhiMLorentzVector LV;
 typedef std::vector<std::string> vstring;
 
@@ -192,7 +194,18 @@ int main(int argc, char* argv[])
   const double lep_mva_cut_mu = cfg_analyze.getParameter<double>("lep_mva_cut_mu");
   const double lep_mva_cut_e  = cfg_analyze.getParameter<double>("lep_mva_cut_e");
   const std::string lep_mva_wp = cfg_analyze.getParameter<std::string>("lep_mva_wp");
+  printf("lep_mva_wp %s, lep_mva_cut_mu %g, lep_mva_cut_e %g \n",
+	 lep_mva_wp.c_str(),lep_mva_cut_mu,lep_mva_cut_e);
 
+  if ( ! cfg_analyze.exists("lep_useTightChargeCut") )
+  {
+    throw cms::Exception("analyze_WZctrl_SFstudy")
+      << " Missing input parameter lep_useTightChargeCut !!\n";
+  }
+  const bool lep_useTightChargeCut = cfg_analyze.exists("lep_useTightChargeCut") ? cfg_analyze.getParameter<bool>("lep_useTightChargeCut") : true;
+  printf("lep_useTightChargeCut %d \n",lep_useTightChargeCut);
+
+  if (printLevel > 9) std::cout << "Siddh here1" << std::endl;
   EvtWeightManager * eventWeightManager = nullptr;
   if(applyAdditionalEvtWeight)
   {
@@ -205,12 +218,12 @@ int main(int argc, char* argv[])
   {
     triggerWhiteList = cfg_analyze.getParameter<edm::ParameterSet>("triggerWhiteList");
   }
-  
+
   checkOptionValidity(central_or_shift, isMC);
   const ElectronPtSys electronPt_option = getElectronPt_option(central_or_shift, isMC);
   const int jetPt_option                = getJet_option       (central_or_shift, isMC);
   const int met_option                  = getMET_option       (central_or_shift, isMC);
-
+    
   std::cout
     << "central_or_shift = "      << central_or_shift              << "\n"
        " -> jetPt_option      = " << jetPt_option                  << "\n"
@@ -672,20 +685,6 @@ int main(int argc, char* argv[])
       }
       continue;
     }
-        
-//--- rank triggers by priority and ignore triggers of lower priority if a trigger of higher priority has fired for given event;
-//    the ranking of the triggers is as follows: 2mu, 1e1mu, 2e, 1mu, 1e
-// CV: this logic is necessary to avoid that the same event is selected multiple times when processing different primary datasets
-    if ( !isMC ) {
-      if ( selTrigger_1e && isTriggered_2e && era != Era::k2018 ) {
-	if ( run_lumi_eventSelector ) {
-	  std::cout << "event FAILS trigger selection." << std::endl; 
-	  std::cout << " (selTrigger_1e = " << selTrigger_1e 
-		    << ", isTriggered_2e = " << isTriggered_2e << ")" << std::endl;
-	}
-	continue; 
-      }
-    }
     cutFlowTable.update("trigger", evtWeightRecorder.get(central_or_shift));
     cutFlowHistManager->fillHistograms("trigger", evtWeightRecorder.get(central_or_shift));
 
@@ -705,9 +704,11 @@ int main(int argc, char* argv[])
     if ( (selTrigger_2e && !apply_offline_e_trigger_cuts_2e) ||
 	 (selTrigger_1e && !apply_offline_e_trigger_cuts_1e) ) {
       fakeableElectronSelector_default.disable_offline_e_trigger_cuts();
+      fakeableElectronSelector_hh_multilepton.disable_offline_e_trigger_cuts();
       tightElectronSelector.disable_offline_e_trigger_cuts();
     } else {
       fakeableElectronSelector_default.enable_offline_e_trigger_cuts();
+      fakeableElectronSelector_hh_multilepton.enable_offline_e_trigger_cuts();
       tightElectronSelector.enable_offline_e_trigger_cuts();
     } 
 
@@ -899,6 +900,33 @@ int main(int argc, char* argv[])
     cutFlowTable.update("sel electron trigger match", evtWeightRecorder.get(central_or_shift));
     cutFlowHistManager->fillHistograms("sel electron trigger match", evtWeightRecorder.get(central_or_shift));
 
+
+    // Require that trigger paths match primary datasets,
+    // to avoid that the same event is selected multiple times when processing different primary datasets (PD).
+    // In case the same event passes the triggers paths for more than one primary datasets,
+    // the event is selected in the PD of highest priority only. 
+    // The ranking of the PDs is as follows: DoubleMuon, MuonEG, DoubleEG, SingleMuon, SingleElectron
+    if ( !isMC && !isDEBUG ) 
+    {
+      //bool isTriggered_SingleElectron = isTriggered_1e && fakeableElectrons.size() >= 1;
+      bool isTriggered_DoubleEG = isTriggered_2e && fakeableElectrons.size() >= 2;
+
+      bool selTrigger_SingleElectron = selTrigger_1e;
+      //bool selTrigger_DoubleEG = selTrigger_2e;
+
+      if ( selTrigger_SingleElectron && isTriggered_DoubleEG && era != Era::k2018 ) {
+        if ( run_lumi_eventSelector ) {
+          std::cout << "event " << eventInfo.str() << " FAILS trigger selection." << std::endl;
+          std::cout << " (selTrigger_SingleElectron = " << selTrigger_SingleElectron
+                    << ", isTriggered_DoubleEG = " << isTriggered_DoubleEG << ")" << std::endl;
+        }
+        continue;
+      }
+    }              
+    cutFlowTable.update("trigger & dataset matching", evtWeightRecorder.get(central_or_shift));
+    cutFlowHistManager->fillHistograms("trigger & dataset matching", evtWeightRecorder.get(central_or_shift));
+
+    
     const RecoElectron * selElectron_lead = selElectrons[0];
     const GenLepton * genElectron_lead = nullptr;
     if(selElectron_lead->genLepton() && abs(selElectron_lead->genLepton()->pdgId()) == 11)
@@ -962,7 +990,7 @@ int main(int argc, char* argv[])
 	  electron != selElectrons.end(); ++electron ) {
       if ( (*electron)->tightCharge() < 2 ) failsTightChargeCut = true;
     }
-    if ( failsTightChargeCut ) {
+    if ( failsTightChargeCut && lep_useTightChargeCut ) {
       if ( run_lumi_eventSelector ) {
       	std::cout << "event FAILS tight lepton charge requirement." << std::endl;
       }
@@ -1014,7 +1042,8 @@ int main(int argc, char* argv[])
         evtWeightRecorder.record_btagSFRatio(btagSFRatioFacility, selJets.size());
       }
 
-      dataToMCcorrectionInterface->setLeptons({ selElectron_lead, selElectron_sublead }, true); // TODO: use corrected 4-momentum
+      bool requireChargeMatch = lep_useTightChargeCut;
+      dataToMCcorrectionInterface->setLeptons({ selElectron_lead, selElectron_sublead }, requireChargeMatch); // TODO: use corrected 4-momentum
 
 //--- apply data/MC corrections for trigger efficiency,
 //    and efficiencies for lepton to pass loose identification and isolation criteria
@@ -1024,25 +1053,24 @@ int main(int argc, char* argv[])
 
 //--- apply data/MC corrections for efficiencies of leptons passing the loose identification and isolation criteria
 //    to also pass the tight identification and isolation criteria
-      if(leptonSelection == kFakeable)
+      if(leptonSelection >= kFakeable)
       {
-        evtWeightRecorder.record_leptonSF(dataToMCcorrectionInterface->getSF_leptonID_and_Iso_looseToFakeable());
-      }
-      else if(leptonSelection == kTight)
-      {
-        evtWeightRecorder.record_leptonIDSF_looseToTight(dataToMCcorrectionInterface, false);
-      }
-
-      if(applyFakeRateWeights == kFR_2lepton)
-      {
-        evtWeightRecorder.record_jetToLepton_FR_lead(leptonFakeRateInterface, selElectron_lead);
-        evtWeightRecorder.record_jetToLepton_FR_sublead(leptonFakeRateInterface, selElectron_sublead);
-        const bool passesTight_electron_lead = isMatched(*selElectron_lead, tightElectrons);
-        const bool passesTight_electron_sublead = isMatched(*selElectron_sublead, tightElectrons);
-        evtWeightRecorder.compute_FR_2l(passesTight_electron_lead, passesTight_electron_sublead);
+        // apply looseToTight SF to leptons matched to generator-level prompt leptons and passing Tight selection conditions
+	bool woTightCharge = lep_useTightChargeCut ? false : true;
+	evtWeightRecorder.record_leptonIDSF_looseToTight(dataToMCcorrectionInterface, woTightCharge);	
       }
     }
 
+    if(applyFakeRateWeights == kFR_2lepton)
+    {
+      evtWeightRecorder.record_jetToLepton_FR_lead(leptonFakeRateInterface, selElectron_lead);
+      evtWeightRecorder.record_jetToLepton_FR_sublead(leptonFakeRateInterface, selElectron_sublead);
+      const bool passesTight_electron_lead = isMatched(*selElectron_lead, tightElectrons);
+      const bool passesTight_electron_sublead = isMatched(*selElectron_sublead, tightElectrons);
+      evtWeightRecorder.compute_FR_2l(passesTight_electron_lead, passesTight_electron_sublead);
+    }
+    
+    
 //--- fill histograms with events passing final selection
     const double evtWeight = evtWeightRecorder.get(central_or_shift);
     evtHistManager.fillHistograms(selElectron_lead_p4, selElectron_sublead_p4, m_ee, isCharge_SS, evtWeight);

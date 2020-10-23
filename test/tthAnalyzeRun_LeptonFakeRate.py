@@ -12,8 +12,8 @@ import getpass
 
 # E.g.: ./test/tthAnalyzeRun_LeptonFakeRate.py -v 2017Dec13 -e 2017
 
-#cmssw_base_dir_combine = os.path.expanduser('~/CMSSW_10_2_13') # immediate parent dir to src folder
-cmssw_base_dir_combine = os.path.expanduser('~/VHbbNtuples_10_x/CMSSW_10_2_13') # immediate parent dir to src folder
+cmssw_base_dir_combine = os.path.expanduser('~/CMSSW_10_2_13') # immediate parent dir to src folder
+cmssw_base_dir_combine = os.path.expanduser('~/VHbbNtuples_10_x/CMSSW_10_2_13') if 'ssawant' in cmssw_base_dir_combine else cmssw_base_dir_combine
 qcd_inclusive = True # set to True if you want to process inclusive muon-enriched sample
 
 mode_choices     = [ 'default', 'sync' ]
