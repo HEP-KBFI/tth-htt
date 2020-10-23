@@ -188,10 +188,10 @@ Data_to_MC_CorrectionInterface_Base::Data_to_MC_CorrectionInterface_Base(Era era
       // 2016 woTightCharge mu  AvgSF_Def_mu_woTightCharge: 0.922 +- 0.008;   AvgSF_New_mu_woTightCharge: 1.027 +- 0.040
       recompTightSF_el_woTightCharge_ = (1. - 0.876) / (1. - 0.796);
       recompTightSF_mu_woTightCharge_ = (1. - 1.027) / (1. - 0.922);
-
-      // 2016 wTightCharge e  AvgSF_Def_el_wTightCharge: 0.789 +- 0.009;   AvgSF_New_el_wTightCharge: 0.868 +- 0.045 
-      // 2016 wTightCharge mu  AvgSF_Def_mu_wTightCharge: 0.922 +- 0.008;   AvgSF_New_mu_wTightCharge: 1.024 +- 0.040 
-      recompTightSF_el_wTightCharge_ = (1. - 0.868) / (1. - 0.789);
+ 
+      // 2016 wTightCharge e  AvgSF_Def_el_wTightCharge: 0.790 +- 0.009;   AvgSF_New_el_wTightCharge: 0.869 +- 0.045
+      // 2016 wTightCharge mu  AvgSF_Def_mu_wTightCharge: 0.922 +- 0.008;   AvgSF_New_mu_wTightCharge: 1.024 +- 0.040 	
+      recompTightSF_el_wTightCharge_ = (1. - 0.869) / (1. - 0.790);
       recompTightSF_mu_wTightCharge_ = (1. - 1.024) / (1. - 0.922);
     }
     else if(era_ == Era::k2017)
@@ -202,10 +202,10 @@ Data_to_MC_CorrectionInterface_Base::Data_to_MC_CorrectionInterface_Base(Era era
       recompTightSF_el_woTightCharge_ = (1. - 0.883) / (1. - 0.755); 
       recompTightSF_mu_woTightCharge_ = (1. - 0.983) / (1. - 0.881);
 
-      // 2017 wTightCharge e  AvgSF_Def_el_wTightCharge: 0.750 +- 0.008;   AvgSF_New_el_wTightCharge: 0.867 +- 0.040 
-      // 2017 wTightCharge mu  AvgSF_Def_mu_wTightCharge: 0.882 +- 0.008;   AvgSF_New_mu_wTightCharge: 0.978 +- 0.034
-      recompTightSF_el_wTightCharge_ = (1. - 0.867) / (1. - 0.750);
-      recompTightSF_mu_wTightCharge_ = (1. - 0.978) / (1. - 0.882);
+      // 2017 wTightCharge e  AvgSF_Def_el_wTightCharge: 0.750 +- 0.008;   AvgSF_New_el_wTightCharge: 0.868 +- 0.040
+      // 2017 wTightCharge mu  AvgSF_Def_mu_wTightCharge: 0.882 +- 0.008;   AvgSF_New_mu_wTightCharge: 0.978 +- 0.034 
+      recompTightSF_el_wTightCharge_ = (1. - 0.868) / (1. - 0.750); 	
+      recompTightSF_mu_wTightCharge_ = (1. - 0.978) / (1. - 0.882); 	 
     }
     else if(era_ == Era::k2018)
     {
@@ -214,9 +214,9 @@ Data_to_MC_CorrectionInterface_Base::Data_to_MC_CorrectionInterface_Base(Era era
       recompTightSF_el_woTightCharge_ = (1. - 0.928) / (1. - 0.834);
       recompTightSF_mu_woTightCharge_ = (1. - 0.954) / (1. - 0.915);
 
-      // 2018 wTightCharge e  AvgSF_Def_el_wTightCharge: 0.832 +- 0.007;   AvgSF_New_el_wTightCharge: 0.917 +- 0.036 
-      // 2018 wTightCharge mu  AvgSF_Def_mu_wTightCharge: 0.915 +- 0.006;   AvgSF_New_mu_wTightCharge: 0.948 +- 0.028
-      recompTightSF_el_wTightCharge_ = (1. - 0.917) / (1. - 0.832);
+      // 2018 wTightCharge e  AvgSF_Def_el_wTightCharge: 0.832 +- 0.007;   AvgSF_New_el_wTightCharge: 0.917 +- 0.036
+      // 2018 wTightCharge mu  AvgSF_Def_mu_wTightCharge: 0.915 +- 0.006;   AvgSF_New_mu_wTightCharge: 0.948 +- 0.028  
+      recompTightSF_el_wTightCharge_ = (1. - 0.917) / (1. - 0.832); 
       recompTightSF_mu_wTightCharge_ = (1. - 0.948) / (1. - 0.915); 
     }
     else
