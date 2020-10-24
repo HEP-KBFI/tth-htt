@@ -393,7 +393,7 @@ class prodNtupleConfig:
                     'triggers'                : hlt_paths,
                     'HLTcuts'                 : hlt_cuts,
                     'compTopRwgt'             : sample_name.startswith('/TTTo'),
-                    'compHTXS'                : sample_info['sample_category'].startswith('ttH'),
+                    'compHTXS'                : sample_info['sample_category'].startswith('ttH') and not self.do_sync,
                     'isTuneCP5'               : (self.era == "2016" and 'TuneCP5' in sample_name),
                     'splitByNlheJet'          : splitByNlheJet,
                     'splitByNlheHT'           : splitByNlheHT,
