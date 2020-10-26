@@ -57,7 +57,7 @@ create_datacards:
 	printf -- 'cd $(CMSSW_BASE)\n' >>  $(CREATE_DATACARD_SCRIPT)
 	printf -- 'eval $$(scramv1 runtime -sh)\n' >> $(CREATE_DATACARD_SCRIPT)
 	printf -- 'mkdir -p $$(dirname $(DATACARD_ROOT_DATA))\n' >> $(CREATE_DATACARD_SCRIPT)
-	printf -- 'mkdir -p $$($(DATACARD_ROOT_PSEUDODATA))\n' >> $(CREATE_DATACARD_SCRIPT)
+	printf -- 'mkdir -p $$(dirname $(DATACARD_ROOT_PSEUDODATA))\n' >> $(CREATE_DATACARD_SCRIPT)
 	printf -- 'create_pseudodata_datacard.py -i $(INPUT_DATACARD) -o $(DATACARD_ROOT_DATA) ' >> $(CREATE_DATACARD_SCRIPT)
 	printf -- '-O $(DATACARD_ROOT_PSEUDODATA) -t $(LEPTON_TYPE) -s $(SIGNALS) $(BACKGROUNDS)\n' >> $(CREATE_DATACARD_SCRIPT)
 	printf -- 'ChargeFlipDC -i $(DATACARD_ROOT_DATA) -b $(BACKGROUNDS) ' >> $(CREATE_DATACARD_SCRIPT)
