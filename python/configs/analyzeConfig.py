@@ -380,7 +380,7 @@ class analyzeConfig(object):
         self.triggerTable = Triggers(self.era)
         self.do_sync = do_sync
         self.topPtRwgtChoice = "Quadratic" # alternatives: "TOP16011", "Linear", "Quadratic", "HighPt"
-        self.do_stxs = do_stxs and not self.do_sync #TODO produce new sync Ntuples with the HTXS branches
+        self.do_stxs = do_stxs
         self.run_mcClosure = systematics.mcClosure_str in self.central_or_shifts
         if self.run_mcClosure:
           self.central_or_shifts.remove(systematics.mcClosure_str)
