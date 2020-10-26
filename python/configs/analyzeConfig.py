@@ -912,7 +912,7 @@ class analyzeConfig(object):
                   nof_events_idx = 4
                 elif central_or_shift in systematics.PartonShower().env_down:
                   nof_events_idx = 5
-                nof_events_label = "{}{}{}".format(self.weight_prefix, self.weight_prefix, psWeights_str, count_suffix)
+                nof_events_label = "{}{}{}".format(self.weight_prefix, psWeights_str, count_suffix)
 
               if jobOptions['apply_topPtReweighting']:
                 assert(is_mc)
