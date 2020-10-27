@@ -4,12 +4,11 @@ from tthAnalysis.HiggsToTauTau.configs.analyzeConfig import LEP_MVA_WPS
 import argparse
 import datetime
 import re
+import os.path
 
-ALLOWED_CONDITION_KEYS = {
-  'name' : 'process_name_specific',
-  'cat'  : 'sample_category',
-  'path' : 'path',
-}
+FILE_SUFFIX = 'file'
+ALLOWED_CONDITION_KEYS = [ 'name', 'cat', 'path', 'dbs' ]
+ALLOWED_CONDITION_KEYS.extend(['{}_{}'.format(key, FILE_SUFFIX) for key in ALLOWED_CONDITION_KEYS])
 
 def positive_int_type(value):
   try:
@@ -27,19 +26,31 @@ def condition_type(value):
 
   negate = False
   key = value_split[0]
-  regex_str = value_split[1]
+  if key.endswith('_{}'.format(FILE_SUFFIX)):
+    key = key[:-(len('_{}'.format(FILE_SUFFIX)))]
+    input_filename = os.path.abspath(value_split[1])
+    if not os.path.isfile(input_filename):
+      raise RuntimeError("No such file: %s" % input_filename)
+    values = []
+    with open(input_filename, 'r') as input_file:
+      for line in input_file:
+        line_stripped = line.rstrip()
+        if not line_stripped:
+          continue
+        line_stripped_rfmt = '^{}$'.format(line_stripped)
+        if line_stripped_rfmt not in values:
+          values.append(line_stripped_rfmt)
+    logging.info("Found {} entries from file {}".format(len(values), input_filename))
+    regex_str = '({})'.format('|'.join(values))
+  else:
+    regex_str = value_split[1]
   if regex_str.startswith('~'):
     regex_str = regex_str[1:]
     negate = True
   regex = re.compile(regex_str)
 
   if key not in ALLOWED_CONDITION_KEYS:
-    raise argparse.ArgumentTypeError(
-      "Allowed keys are: %s (corresponding to %s sample keys)" % (
-        ', '.join(ALLOWED_CONDITION_KEYS),
-        ', '.join(map(lambda k: ALLOWED_CONDITION_KEYS[k], ALLOWED_CONDITION_KEYS))
-      )
-    )
+    raise argparse.ArgumentTypeError("Allowed keys are: %s" % (', '.join(ALLOWED_CONDITION_KEYS)))
   return (key, regex, negate)
 
 def filter_samples(sample, condition, force = False):
@@ -47,13 +58,18 @@ def filter_samples(sample, condition, force = False):
   regex = condition[1]
   negate = condition[2]
 
-  sample_key = ALLOWED_CONDITION_KEYS[key]
   for sample_name, sample_entry in sample.items():
     if sample_name == 'sum_events': continue
-    if sample_key == 'path':
+    if key == 'path':
       use_it = bool(regex.match(sample_entry['local_paths'][0]['path']))
+    elif key == 'dbs':
+      use_it = bool(regex.match(sample_name))
+    elif key == 'name':
+      use_it = bool(regex.match(sample_entry['process_name_specific']))
+    elif key == 'cat':
+      use_it = bool(regex.match(sample_entry['sample_category']))
     else:
-      use_it = bool(regex.match(sample_entry[sample_key]))
+      raise RuntimeError("Invalid key: %s" % key)
     if negate:
       use_it = not use_it
     if force:
@@ -61,7 +77,8 @@ def filter_samples(sample, condition, force = False):
     else:
       sample_entry['use_it'] &= use_it
     logging_str = 'Enabling' if sample_entry['use_it'] else 'Disabling'
-    logging.info('%s sample %s' % (logging_str, sample_entry[ALLOWED_CONDITION_KEYS['name']]))
+    process_name = sample_entry["process_name_specific"]
+    logging.info('%s sample %s' % (logging_str, process_name))
 
   return sample
 
