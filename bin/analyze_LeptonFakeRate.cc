@@ -440,7 +440,8 @@ ApplyDataToMCCorrection(const RecoLepton* preselLepton,
 			const bool lep_useTightChargeCut)
 {
   //std::cout << "preselLepton " << " pdgId: "<< preselLepton->pdgId() << " eta: " << preselLepton->eta() << " pt: " << preselLepton->pt() << " cone_pt: " << preselLepton->cone_pt() << std::endl;
-  dataToMCcorrectionInterface->setLeptons({ preselLepton }); // requireChargeGenMatch set to false for preselLepton by default
+  bool requireChargeMatch = lep_useTightChargeCut;
+  dataToMCcorrectionInterface->setLeptons({ preselLepton }, requireChargeMatch); // requireChargeGenMatch set to false for preselLepton by default
   
   //--- apply data/MC corrections for efficiencies for lepton to pass loose identification and isolation criteria                                                                               
   evtWeightRecorder.record_leptonIDSF_recoToLoose(dataToMCcorrectionInterface);
@@ -449,7 +450,7 @@ ApplyDataToMCCorrection(const RecoLepton* preselLepton,
   //    to also pass the tight identification and isolation criteria
   bool woTightCharge = lep_useTightChargeCut ? false : true;
   evtWeightRecorder.record_leptonIDSF_looseToTight(dataToMCcorrectionInterface, woTightCharge);
-  //std::cout<<" evtWeightRecorder.get(central): " << evtWeightRecorder.get("central") << std::endl;
+  //std::cout<<" evtWeightRecorder.get(central): " << evtWeightRecorder.get("central") << std::endl; 
 
 }
 
