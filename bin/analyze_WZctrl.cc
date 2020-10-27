@@ -582,7 +582,7 @@ int main(int argc, char* argv[])
       int idxLepton = genMatchDefinition->getIdx();
 
       selHistManagerType* selHistManager = new selHistManagerType();
-      if(! skipBooking)
+      if(! skipBooking && 1==0)
       {
         selHistManager->electrons_ = new ElectronHistManager(makeHistManager_cfg(process_and_genMatch,
           Form("%s/sel/electrons", histogramDir.data()), era_string, central_or_shift, "allHistograms"));
@@ -868,71 +868,6 @@ int main(int argc, char* argv[])
       }
       continue;
     }
-
-//--- rank triggers by priority and ignore triggers of lower priority if a trigger of higher priority has fired for given event;
-//    the triggers are ranked by primary dataset (PD).
-//    The ranking of the PDs is as follows: DoubleMuon, MuonEG, DoubleEG, SingleMuon, SingleElectron
-// CV: see https://cmssdt.cern.ch/lxr/source/HLTrigger/Configuration/python/HLT_GRun_cff.py?v=CMSSW_8_0_24 for association of triggers paths to PD
-//     this logic is necessary to avoid that the same event is selected multiple times when processing different primary datasets
-    if ( !isMC && !isDEBUG ) {
-
-      //bool isTriggered_SingleElectron = isTriggered_1e;
-      bool isTriggered_SingleMuon = isTriggered_1mu;
-      bool isTriggered_DoubleEG = isTriggered_2e || isTriggered_3e;
-      bool isTriggered_DoubleMuon = isTriggered_2mu || isTriggered_3mu;
-      bool isTriggered_MuonEG = isTriggered_1e1mu || isTriggered_2e1mu || isTriggered_1e2mu;
-
-      bool selTrigger_SingleElectron = selTrigger_1e;
-      bool selTrigger_SingleMuon = selTrigger_1mu;
-      bool selTrigger_DoubleEG = selTrigger_2e || selTrigger_3e;
-      //bool selTrigger_DoubleMuon = selTrigger_2mu || selTrigger_3mu;
-      bool selTrigger_MuonEG = selTrigger_1e1mu || selTrigger_2e1mu || selTrigger_1e2mu;
-      if ( selTrigger_SingleElectron && (isTriggered_SingleMuon || isTriggered_DoubleMuon || isTriggered_MuonEG) ) {
-	if ( run_lumi_eventSelector ) {
-          std::cout << "event " << eventInfo.str() << " FAILS trigger selection." << std::endl;
-	  std::cout << " (selTrigger_SingleElectron = " << selTrigger_SingleElectron
-		    << ", isTriggered_SingleMuon = " << isTriggered_SingleMuon
-		    << ", isTriggered_DoubleMuon = " << isTriggered_DoubleMuon
-		    << ", isTriggered_MuonEG = " << isTriggered_MuonEG << ")" << std::endl;
-	}
-	continue;
-      }
-      if ( selTrigger_SingleElectron && isTriggered_DoubleEG && era != Era::k2018 ) {
-        if ( run_lumi_eventSelector ) {
-          std::cout << "event " << eventInfo.str() << " FAILS trigger selection." << std::endl;
-          std::cout << " (selTrigger_SingleElectron = " << selTrigger_SingleElectron
-                    << ", isTriggered_DoubleEG = " << isTriggered_DoubleEG << ")" << std::endl;
-        }
-        continue;
-      }
-      if ( selTrigger_DoubleEG && (isTriggered_DoubleMuon || isTriggered_MuonEG) ) {
-	if ( run_lumi_eventSelector ) {
-      std::cout << "event " << eventInfo.str() << " FAILS trigger selection." << std::endl;
-	  std::cout << " (selTrigger_DoubleEG = " << selTrigger_DoubleEG
-		    << ", isTriggered_DoubleMuon = " << isTriggered_DoubleMuon
-		    << ", isTriggered_MuonEG = " << isTriggered_MuonEG << ")" << std::endl;
-	}
-	continue;
-      }
-      if ( selTrigger_SingleMuon && (isTriggered_DoubleEG || isTriggered_DoubleMuon || isTriggered_MuonEG) ) {
-	if ( run_lumi_eventSelector ) {
-      std::cout << "event " << eventInfo.str() << " FAILS trigger selection." << std::endl;
-	  std::cout << " (selTrigger_SingleMuon = " << selTrigger_SingleMuon
-		    << ", isTriggered_DoubleEG = " << isTriggered_DoubleEG
-		    << ", isTriggered_DoubleMuon = " << isTriggered_DoubleMuon
-		    << ", isTriggered_MuonEG = " << isTriggered_MuonEG << ")" << std::endl;
-	}
-	continue;
-      }
-      if ( selTrigger_MuonEG && isTriggered_DoubleMuon ) {
-	if ( run_lumi_eventSelector ) {
-      std::cout << "event " << eventInfo.str() << " FAILS trigger selection." << std::endl;
-	  std::cout << " (selTrigger_MuonEG = " << selTrigger_MuonEG
-		    << ", isTriggered_DoubleMuon = " << isTriggered_DoubleMuon << ")" << std::endl;
-	}
-	continue;
-      }
-    }
     cutFlowTable.update("trigger", evtWeightRecorder.get(central_or_shift_main));
 
     if ( (selTrigger_3mu   && !apply_offline_e_trigger_cuts_3mu)   ||
@@ -1216,6 +1151,112 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update("<= 3 tight leptons", evtWeightRecorder.get(central_or_shift_main));
 
+
+
+
+
+
+
+    // require that trigger paths match lepton flavor (for fakeable leptons)
+    if ( !((fakeableElectrons.size() >= 3 &&                              (selTrigger_3e    || selTrigger_2e  || selTrigger_1e                                      )) ||
+	   (fakeableElectrons.size() >= 2 && fakeableMuons.size() >= 1 && (selTrigger_2e1mu || selTrigger_2e  || selTrigger_1e1mu || selTrigger_1mu || selTrigger_1e)) ||
+	   (fakeableElectrons.size() >= 1 && fakeableMuons.size() >= 2 && (selTrigger_1e2mu || selTrigger_2mu || selTrigger_1e1mu || selTrigger_1mu || selTrigger_1e)) ||
+	   (                                 fakeableMuons.size() >= 3 && (selTrigger_3mu   || selTrigger_2mu || selTrigger_1mu                                     ))) ) {
+      if ( run_lumi_eventSelector ) {
+        std::cout << "event " << eventInfo.str() << " FAILS trigger selection for given fakeableLepton multiplicity." << std::endl;
+	std::cout << " (#fakeableElectrons = " << fakeableElectrons.size()
+		  << ", #fakeableMuons = " << fakeableMuons.size()
+		  << ", selTrigger_3mu = " << selTrigger_3mu
+		  << ", selTrigger_1e2mu = " << selTrigger_1e2mu
+		  << ", selTrigger_2e1mu = " << selTrigger_2e1mu
+		  << ", selTrigger_3e = " << selTrigger_3e
+		  << ", selTrigger_2mu = " << selTrigger_2mu
+		  << ", selTrigger_1e1mu = " << selTrigger_1e1mu
+		  << ", selTrigger_2e = " << selTrigger_2e
+		  << ", selTrigger_1mu = " << selTrigger_1mu
+		  << ", selTrigger_1e = " << selTrigger_1e << ")" << std::endl;
+      }
+      continue;
+    }
+    cutFlowTable.update("trigger & fakeable lepton flavor matching", evtWeightRecorder.get(central_or_shift_main));
+
+    // Require that trigger paths match primary datasets,
+    // to avoid that the same event is selected multiple times when processing different primary datasets (PD).
+    // In case the same event passes the triggers paths for more than one primary datasets,
+    // the event is selected in the PD of highest priority only. 
+    // The ranking of the PDs is as follows: DoubleMuon, MuonEG, DoubleEG, SingleMuon, SingleElectron
+    if ( !isMC && !isDEBUG ) 
+    {
+      //bool isTriggered_SingleElectron = isTriggered_1e;
+      bool isTriggered_SingleMuon = isTriggered_1mu && fakeableMuons.size() >= 1;
+      bool isTriggered_DoubleEG = (isTriggered_2e && fakeableElectrons.size() >= 2) || 
+                                  (isTriggered_3e && fakeableElectrons.size() >= 3);
+      bool isTriggered_DoubleMuon = (isTriggered_2mu && fakeableMuons.size() >= 2) || 
+                                    (isTriggered_3mu && fakeableMuons.size() >= 3);
+      bool isTriggered_MuonEG = (isTriggered_1e1mu && fakeableElectrons.size() >= 1 && fakeableMuons.size() >= 1) || 
+                                (isTriggered_2e1mu && fakeableElectrons.size() >= 2 && fakeableMuons.size() >= 1) || 
+                                (isTriggered_1e2mu && fakeableElectrons.size() >= 1 && fakeableMuons.size() >= 2);
+
+      bool selTrigger_SingleElectron = selTrigger_1e;
+      bool selTrigger_SingleMuon = selTrigger_1mu;
+      bool selTrigger_DoubleEG = selTrigger_2e || selTrigger_3e;
+      //bool selTrigger_DoubleMuon = selTrigger_2mu || selTrigger_3mu;
+      bool selTrigger_MuonEG = selTrigger_1e1mu || selTrigger_2e1mu || selTrigger_1e2mu;
+
+      if ( selTrigger_SingleElectron && (isTriggered_SingleMuon || isTriggered_DoubleMuon || isTriggered_MuonEG) ) {
+	if ( run_lumi_eventSelector ) {
+          std::cout << "event " << eventInfo.str() << " FAILS trigger selection." << std::endl;
+	  std::cout << " (selTrigger_SingleElectron = " << selTrigger_SingleElectron
+		    << ", isTriggered_SingleMuon = " << isTriggered_SingleMuon
+		    << ", isTriggered_DoubleMuon = " << isTriggered_DoubleMuon
+		    << ", isTriggered_MuonEG = " << isTriggered_MuonEG << ")" << std::endl;
+	}
+	continue;
+      }
+      if ( selTrigger_SingleElectron && isTriggered_DoubleEG && era != Era::k2018 ) {
+        if ( run_lumi_eventSelector ) {
+          std::cout << "event " << eventInfo.str() << " FAILS trigger selection." << std::endl;
+          std::cout << " (selTrigger_SingleElectron = " << selTrigger_SingleElectron
+                    << ", isTriggered_DoubleEG = " << isTriggered_DoubleEG << ")" << std::endl;
+        }
+        continue;
+      }
+      if ( selTrigger_DoubleEG && (isTriggered_DoubleMuon || isTriggered_MuonEG) ) {
+	if ( run_lumi_eventSelector ) {
+          std::cout << "event " << eventInfo.str() << " FAILS trigger selection." << std::endl;
+	  std::cout << " (selTrigger_DoubleEG = " << selTrigger_DoubleEG
+		    << ", isTriggered_DoubleMuon = " << isTriggered_DoubleMuon
+		    << ", isTriggered_MuonEG = " << isTriggered_MuonEG << ")" << std::endl;
+	}
+	continue;
+      }
+      if ( selTrigger_SingleMuon && (isTriggered_DoubleEG || isTriggered_DoubleMuon || isTriggered_MuonEG) ) {
+	if ( run_lumi_eventSelector ) {
+          std::cout << "event " << eventInfo.str() << " FAILS trigger selection." << std::endl;
+	  std::cout << " (selTrigger_SingleMuon = " << selTrigger_SingleMuon
+		    << ", isTriggered_DoubleEG = " << isTriggered_DoubleEG
+		    << ", isTriggered_DoubleMuon = " << isTriggered_DoubleMuon
+		    << ", isTriggered_MuonEG = " << isTriggered_MuonEG << ")" << std::endl;
+	}
+	continue;
+      }
+      if ( selTrigger_MuonEG && isTriggered_DoubleMuon ) {
+	if ( run_lumi_eventSelector ) {
+          std::cout << "event " << eventInfo.str() << " FAILS trigger selection." << std::endl;
+	  std::cout << " (selTrigger_MuonEG = " << selTrigger_MuonEG
+		    << ", isTriggered_DoubleMuon = " << isTriggered_DoubleMuon << ")" << std::endl;
+	}
+	continue;
+      }
+    }              
+    cutFlowTable.update("trigger & dataset matching", evtWeightRecorder.get(central_or_shift_main));
+   
+
+
+
+
+
+    
 //--- apply HLT filter
     if(apply_hlt_filter)
     {
@@ -1445,7 +1486,7 @@ int main(int argc, char* argv[])
       {
         selHistManagerType* selHistManager = selHistManagers[central_or_shift][genMatch->getIdx()];
         assert(selHistManager);
-        if(! skipFilling)
+        if(! skipFilling && 1==0)
         {
           selHistManager->electrons_->fillHistograms(selElectrons, evtWeight);
           selHistManager->muons_->fillHistograms(selMuons, evtWeight);
