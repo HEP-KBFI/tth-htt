@@ -788,6 +788,7 @@ class analyzeConfig(object):
           jobOptions['hhWeight_cfg.ktScan_file'] = self.kt_scan_file
           jobOptions['hhWeight_cfg.klScan_file'] = self.kl_scan_file
           jobOptions['hhWeight_cfg.c2Scan_file'] = self.c2_scan_file
+          jobOptions['hhWeight_cfg.scanMode'] = 'default'
           
           jobOptions['hhWeight_cfg.apply_rwgt'] = 'hh' in self.channel
 
@@ -1157,6 +1158,7 @@ class analyzeConfig(object):
             'hhWeight_cfg.c2Scan_file',
             'hhWeight_cfg.cgScan_file',
             'hhWeight_cfg.c2gScan_file',
+            'hhWeight_cfg.scanMode',
             'hhWeight_cfg.apply_rwgt',
             'minNumJets',
             'skipEvery',

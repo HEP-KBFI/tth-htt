@@ -58,6 +58,7 @@ HHWeightInterface_2::HHWeightInterface_2(const edm::ParameterSet & cfg)
   const std::string applicationLoadFile_c2Scan = cfg.getParameter<std::string>("c2Scan_file");
   const std::string applicationLoadFile_cgScan = cfg.getParameter<std::string>("cgScan_file");
   const std::string applicationLoadFile_c2gScan = cfg.getParameter<std::string>("c2gScan_file");
+  const std::string scanMode = cfg.getParameter<std::string>("scanMode");
   // const std::string applicationLoadFile_klScan = "hhAnalysis/multilepton/data/kl_scan.dat";
   // const std::string applicationLoadFile_ktScan = "hhAnalysis/multilepton/data/kt_scan.dat";
   // const std::string applicationLoadFile_c2Scan = "hhAnalysis/multilepton/data/c2_scan.dat";
@@ -125,38 +126,42 @@ HHWeightInterface_2::HHWeightInterface_2(const edm::ParameterSet & cfg)
   bmName_ = {};
   bmWeightName_ = {};
   //insert JHEP weight BM points 
-  for (unsigned int i = 0; i < nof_JHEP; i++){
-    kl_.push_back(klJHEP[i]);
-    kt_.push_back(ktJHEP[i]);
-    c2_.push_back(c2JHEP[i]);
-    cg_.push_back(cgJHEP[i]);
-    c2g_.push_back(c2gJHEP[i]);
-    norm_.push_back(normJHEP[i]);
-    std::string bmname = (i == 0 ) ? "SM" : "BM" + std::to_string(i);
-    bmName_.push_back(bmname);
-    bmWeightName_.push_back("Weight_" + bmname);
+  if (scanMode == "default" || scanMode == "full"){
+    for (unsigned int i = 0; i < nof_JHEP; i++){
+      kl_.push_back(klJHEP[i]);
+      kt_.push_back(ktJHEP[i]);
+      c2_.push_back(c2JHEP[i]);
+      cg_.push_back(cgJHEP[i]);
+      c2g_.push_back(c2gJHEP[i]);
+      norm_.push_back(normJHEP[i]);
+      std::string bmname = (i == 0 ) ? "SM" : "BM" + std::to_string(i);
+      bmName_.push_back(bmname);
+      bmWeightName_.push_back("Weight_" + bmname);
+    }
   }
   // Load a file with an specific scan, that we can decide at later stage on the analysis
   // save the closest shape BM to use this value on the evaluation of a BDT
-  if( applicationLoadFile_klScan != "" ){
-    const std::string applicationLoadPath_klScan = LocalFileInPath(applicationLoadFile_klScan).fullPath();
-    loadScanFile(applicationLoadPath_klScan, "kl_", 0, isDEBUG);
-  }
-  if( applicationLoadFile_ktScan != "" ){
-    const std::string applicationLoadPath_ktScan = LocalFileInPath(applicationLoadFile_ktScan).fullPath();
-    loadScanFile(applicationLoadPath_ktScan, "kt_", 1, isDEBUG);
-  }
-  if( applicationLoadFile_c2Scan != "" ){
-    const std::string applicationLoadPath_c2Scan = LocalFileInPath(applicationLoadFile_c2Scan).fullPath();
-    loadScanFile(applicationLoadPath_c2Scan, "c2_", 2, isDEBUG);
-  }
-  if( applicationLoadFile_cgScan != "" ){
-    const std::string applicationLoadPath_cgScan = LocalFileInPath(applicationLoadFile_cgScan).fullPath();
-    loadScanFile(applicationLoadPath_cgScan, "cg_", 2, isDEBUG);
-  }
-  if( applicationLoadFile_c2gScan != "" ){
-    const std::string applicationLoadPath_c2gScan = LocalFileInPath(applicationLoadFile_c2gScan).fullPath();
-    loadScanFile(applicationLoadPath_c2gScan, "c2g_", 2, isDEBUG);
+  if (scanMode == "full" || scanMode == "additional"){
+    if( applicationLoadFile_klScan != "" ){
+      const std::string applicationLoadPath_klScan = LocalFileInPath(applicationLoadFile_klScan).fullPath();
+      loadScanFile(applicationLoadPath_klScan, "kl_", 0, isDEBUG);
+    }
+    if( applicationLoadFile_ktScan != "" ){
+      const std::string applicationLoadPath_ktScan = LocalFileInPath(applicationLoadFile_ktScan).fullPath();
+      loadScanFile(applicationLoadPath_ktScan, "kt_", 1, isDEBUG);
+    }
+    if( applicationLoadFile_c2Scan != "" ){
+      const std::string applicationLoadPath_c2Scan = LocalFileInPath(applicationLoadFile_c2Scan).fullPath();
+      loadScanFile(applicationLoadPath_c2Scan, "c2_", 2, isDEBUG);
+    }
+    if( applicationLoadFile_cgScan != "" ){
+      const std::string applicationLoadPath_cgScan = LocalFileInPath(applicationLoadFile_cgScan).fullPath();
+      loadScanFile(applicationLoadPath_cgScan, "cg_", 3, isDEBUG);
+    }
+    if( applicationLoadFile_c2gScan != "" ){
+      const std::string applicationLoadPath_c2gScan = LocalFileInPath(applicationLoadFile_c2gScan).fullPath();
+      loadScanFile(applicationLoadPath_c2gScan, "c2g_", 4, isDEBUG);
+    }
   }
   if(isDEBUG)
     {
