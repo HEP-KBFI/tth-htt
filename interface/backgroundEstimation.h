@@ -7,7 +7,9 @@ double
 prob_chargeMisId(Era era,
                  int lepton_type,
                  double lepton_pt,
-                 double lepton_eta);
+                 double lepton_eta,
+		 std::string lep_mva_wp   = "default",
+		 bool        wTightCharge = true);
 
 #endif // tthAnalysis_HiggsToTauTau_backgroundEstimation_h
 
