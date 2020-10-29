@@ -211,6 +211,8 @@ class prodNtupleConfig:
             "process.produceNtuple.genMatchingByIndex         = cms.bool(%s)"     % self.gen_matching_by_index,
             "process.produceNtuple.branchNames_triggers       = cms.vstring(%s)"  % jobOptions['triggers'],
             "process.produceNtuple.lep_mva_wp                 = cms.string('%s')" % self.lep_mva_wp,
+            "process.produceNtuple.lep_mva_cut_mu             = cms.double(%s)"   % str(self.lep_mva_cut_mu),
+            "process.produceNtuple.lep_mva_cut_e              = cms.double(%s)"   % str(self.lep_mva_cut_e),
             "process.fwliteInput.fileNames                    = cms.vstring(%s)"  % inputFiles_prepended,
             "executable              = 'produceNtuple'",
             "inputFiles              = %s" % jobOptions['inputFiles'],

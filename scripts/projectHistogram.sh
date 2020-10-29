@@ -97,7 +97,7 @@ for INDEX in ${!INPUT_FILES[@]}; do
   INDEX_INCR=$((INDEX+1));
   TMP_OUTPUT_FILENAME="${OUTPUT_FILE_FILENAME}_${INDEX_INCR}.${OUTPUT_FILE_EXTENSION}";
   MODULE_ARGS="$TMP_OUTPUT_FILENAME;$HISTOGRAM_NAME"
-  if [[ ! -z ${REF_GENWEIGHT+x} ]]; then
+  if [ -n "${REF_GENWEIGHT}" ]; then
     MODULE_ARGS="$MODULE_ARGS;$REF_GENWEIGHT";
   fi
   nano_postproc.py -I tthAnalysis.NanoAODTools.postprocessing.tthModules "${PROJECTION_MODULE}$ERA($MODULE_ARGS)" --noout . "${INPUT_FILES[INDEX]}";

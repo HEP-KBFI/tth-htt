@@ -55,13 +55,7 @@ if output_file == default_output:
 version = "%s_%s" % (version, mode)
 
 if mode == 'all':
-  samples_tth            = load_samples(era, False)
-  samples_hh_multilepton = load_samples(era, False, base = 'hh_multilepton')
-  samples_hh_bbww        = load_samples(era, False, base = 'hh_bbww')
-  samples_hh_bbww_ttbar  = load_samples(era, False, base = 'hh_bbww', suffix = 'ttbar')
-  samples = collections.OrderedDict(itertools.chain(
-    samples_tth.items(), samples_hh_multilepton.items(), samples_hh_bbww.items(), samples_hh_bbww_ttbar.items()
-  ))
+  samples = load_samples(era, False, base = 'all')
 elif mode == 'tth':
   samples = load_samples(era, False)
 elif mode == 'tth_sync':

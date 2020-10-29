@@ -154,7 +154,7 @@ class projectionConfig:
         ref_genWeightsFile = os.path.join(
             os.environ['CMSSW_BASE'], 'src', 'tthAnalysis', 'HiggsToTauTau', 'data', 'refGenWeight_{}.txt'.format(self.era)
         )
-        self.ref_genWeights = load_refGenWeightsFromFile(ref_genWeightsFile) if projection_module == 'btagSF' else {}
+        self.ref_genWeights = load_refGenWeightsFromFile(ref_genWeightsFile) if projection_module != 'puHist' else {}
 
         for sample_name, sample_info in self.samples.items():
             if not sample_info['use_it']:
@@ -189,7 +189,7 @@ class projectionConfig:
           outputFile: output file of the job -- a ROOT file containing histogram
         """
         last_line = '%s %s %s %s' % (self.projection_module, self.era, jobOptions['histName'], jobOptions['outputFile'])
-        if self.projection_module == 'btagSF':
+        if self.projection_module != 'puHist':
             last_line += ' %.6e' % jobOptions['ref_genWeight']
         lines = jobOptions['inputFiles'] + [ '', last_line ]
         assert(len(lines) >= 3)
@@ -457,8 +457,6 @@ class projectionConfig:
                 self.scriptFiles_projection[key_file] = os.path.join(
                     self.dirs[key_dir][DKEY_CFGS], "project_%s_%i_cfg.sh" % (process_name, jobId)
                 )
-                if process_name not in self.ref_genWeights:
-                    raise RuntimeError("Unable to find reference LHE weight for process %s" % process_name)
                 self.jobOptions_sbatch[key_file] = {
                     'histName'      : process_name,
                     'inputFiles'    : self.inputFiles[key_file],
@@ -466,8 +464,11 @@ class projectionConfig:
                     'outputFile'    : self.outputFiles_tmp[key_file],
                     'logFile'       : self.logFiles_projection[key_file],
                     'scriptFile'    : self.scriptFiles_projection[key_file],
-                    'ref_genWeight' : self.ref_genWeights[process_name],
                 }
+                if self.projection_module != 'puHist':
+                    self.jobOptions_sbatch[key_file]['ref_genWeight'] = self.ref_genWeights[process_name]
+                    if process_name not in self.ref_genWeights:
+                        raise RuntimeError("Unable to find reference LHE weight for process %s" % process_name)
                 self.createCfg_project(self.jobOptions_sbatch[key_file])
                 self.outputFiles[process_name]['inputFiles'].append(self.outputFiles_tmp[key_file])
 
