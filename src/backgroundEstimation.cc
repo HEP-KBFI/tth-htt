@@ -19,7 +19,7 @@ prob_chargeMisId(Era era,
                  int lepton_type,
                  double lepton_pt,
                  double lepton_eta,
-		 std::string lep_mva_wp,
+		 const std::string lep_mva_wp,
 		 bool        wTightCharge)
 {
   double prob = 1.;
@@ -135,16 +135,16 @@ prob_chargeMisId(Era era,
 	    else if(lepton_pt >= 25. && lepton_pt < 50.) prob = 1.29464e-03; // 1.29464e-03 +- 6.63515e-05, wTightCharge 
 	    else if(lepton_pt >= 50.                   ) prob = 1.58391e-03; // 1.58391e-03 +- 6.36324e-05, wTightCharge 
 	  } 
-	} 
-	else if(lepton_type == kMuon)
-	{
-	  prob = 0.;
-	}
-	else
-	{
-	  assert(0);
 	}
       }
+      else if(lepton_type == kMuon)
+      {
+	prob = 0.;
+      }
+      else
+      {
+	assert(0);
+      }      
     }
     else
     { // hh_multilepton w/o TightCharge
