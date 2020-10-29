@@ -1208,8 +1208,8 @@ DiLeptonSS(Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface_ntu
 				 genTauLeptons);
 		  prescale_weight = JetAndTrigPrescaleCollector_ptr->Get_prescaleWeight();
 		  passTrigger = JetAndTrigPrescaleCollector_ptr->Get_TrigDecision();
-		  std::cout<< "DiLeptonSS()::prescale_weight " << prescale_weight << std::endl;
-		  std::cout<< "DiLeptonSS()::passTrigger " << passTrigger << std::endl;
+		  //std::cout<< "DiLeptonSS()::prescale_weight " << prescale_weight << std::endl;
+		  //std::cout<< "DiLeptonSS()::passTrigger " << passTrigger << std::endl;
 		}
 	      	
 	      double evtWeight_wo_TrigPrescale = 1.0; // Event weight (w/o Trigger prescale and Data/MC corr.) defined here
