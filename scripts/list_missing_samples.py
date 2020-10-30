@@ -24,11 +24,16 @@ parser.add_argument('-c', '--compare',
   type = str, dest = 'compare', metavar = 'stage', required = False, choices = [ 'pre', 'post', 'skimmed' ], default = 'post',
   help = 'R|Compare the status of samples to its previous stage',
 )
+parser.add_argument('-f', '--flip',
+  dest = 'flip', action = 'store_true', default = False,
+  help = 'R|Flip the diff',
+)
 args = parser.parse_args()
 
 era = args.era
 attr = args.attribute
 comparison = args.compare
+flip = args.flip
 
 # load the meta dictionaries first
 hh_suffix = "_hh" if era != "2017" else ""
@@ -69,7 +74,9 @@ elif comparison == 'skimmed':
 else:
   raise RuntimeError("Invalid comparison choice: %s" % comparison)
 
-missing_samples = list(sorted(set(samples_before.keys()) - set(samples_after.keys())))
+diff = set(samples_before.keys()) - set(samples_after.keys())
+diff_flipped = set(samples_after.keys()) - set(samples_before.keys())
+missing_samples = list(sorted(diff_flipped if flip else diff))
 for sample_name in missing_samples:
   print(sample_name if attr == 'dbs' else samples_before[sample_name]['process_name_specific'])
 

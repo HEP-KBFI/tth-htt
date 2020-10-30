@@ -176,7 +176,7 @@ if preselection:
       'minNumBJets_medium'         : -1,
       'maxNumBJets_loose'          : -1,
       'maxNumBJets_medium'         : -1,
-      'applyJetEtaCut'             : True,
+      'applyJetEtaCut'             : False,
       'applyHLTcut'                : True,
       'listHLT'                    : [ '1e', '1mu' ],
     }

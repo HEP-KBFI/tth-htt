@@ -184,40 +184,40 @@ Data_to_MC_CorrectionInterface_Base::Data_to_MC_CorrectionInterface_Base(Era era
   {
     if(era_ == Era::k2016)
     {
-      // 2016 woTightCharge e  AvgSF_Def_el_woTightCharge: 0.796 +- 0.009;   AvgSF_New_el_woTightCharge: 0.876 +- 0.044 
-      // 2016 woTightCharge mu  AvgSF_Def_mu_woTightCharge: 0.922 +- 0.008;   AvgSF_New_mu_woTightCharge: 1.027 +- 0.040
-      recompTightSF_el_woTightCharge_ = (1. - 0.876) / (1. - 0.796);
-      recompTightSF_mu_woTightCharge_ = (1. - 1.027) / (1. - 0.922);
- 
-      // 2016 wTightCharge e  AvgSF_Def_el_wTightCharge: 0.790 +- 0.009;   AvgSF_New_el_wTightCharge: 0.869 +- 0.045
-      // 2016 wTightCharge mu  AvgSF_Def_mu_wTightCharge: 0.922 +- 0.008;   AvgSF_New_mu_wTightCharge: 1.024 +- 0.040 	
-      recompTightSF_el_wTightCharge_ = (1. - 0.869) / (1. - 0.790);
-      recompTightSF_mu_wTightCharge_ = (1. - 1.024) / (1. - 0.922);
+      // 2016 woTightCharge e   AvgSF_Def_el_woTightCharge: 0.796 +- 0.009;   AvgSF_New_el_woTightCharge: 0.875 +- 0.044
+      // 2016 woTightCharge mu  AvgSF_Def_mu_woTightCharge: 0.922 +- 0.008;   AvgSF_New_mu_woTightCharge: 1.028 +- 0.040
+      recompTightSF_el_woTightCharge_ = (1. - 0.875) / (1. - 0.796);
+      recompTightSF_mu_woTightCharge_ = (1. - 1.028) / (1. - 0.922);
+      
+      // 2016 wTightCharge e   AvgSF_Def_el_wTightCharge: 0.790 +- 0.009;   AvgSF_New_el_wTightCharge: 0.867 +- 0.045
+      // 2016 wTightCharge mu  AvgSF_Def_mu_wTightCharge: 0.922 +- 0.008;   AvgSF_New_mu_wTightCharge: 1.026 +- 0.040
+      recompTightSF_el_wTightCharge_ = (1. - 0.867) / (1. - 0.790); 
+      recompTightSF_mu_wTightCharge_ = (1. - 1.026) / (1. - 0.922); 
     }
     else if(era_ == Era::k2017)
     {
       // see: https://indico.cern.ch/event/961689/contributions/4047547/attachments/2114588/3557570/HHTo4W_3l_Updates_20201002_LooseLeptonSFCorrection_1.pdf
-      // 2017 woTightCharge e  AvgSF_Def_el_woTightCharge: 0.755 +- 0.008;   AvgSF_New_el_woTightCharge: 0.883 +- 0.039 
-      // 2017 woTightCharge mu  AvgSF_Def_mu_woTightCharge: 0.881 +- 0.008;   AvgSF_New_mu_woTightCharge: 0.983 +- 0.034
-      recompTightSF_el_woTightCharge_ = (1. - 0.883) / (1. - 0.755); 
-      recompTightSF_mu_woTightCharge_ = (1. - 0.983) / (1. - 0.881);
-
-      // 2017 wTightCharge e  AvgSF_Def_el_wTightCharge: 0.750 +- 0.008;   AvgSF_New_el_wTightCharge: 0.868 +- 0.040
-      // 2017 wTightCharge mu  AvgSF_Def_mu_wTightCharge: 0.882 +- 0.008;   AvgSF_New_mu_wTightCharge: 0.978 +- 0.034 
-      recompTightSF_el_wTightCharge_ = (1. - 0.868) / (1. - 0.750); 	
-      recompTightSF_mu_wTightCharge_ = (1. - 0.978) / (1. - 0.882); 	 
+      // 2017 woTightCharge e   AvgSF_Def_el_woTightCharge: 0.755 +- 0.008;   AvgSF_New_el_woTightCharge: 0.886 +- 0.040
+      // 2017 woTightCharge mu  AvgSF_Def_mu_woTightCharge: 0.881 +- 0.008;   AvgSF_New_mu_woTightCharge: 0.986 +- 0.034
+      recompTightSF_el_woTightCharge_ = (1. - 0.886) / (1. - 0.755);
+      recompTightSF_mu_woTightCharge_ = (1. - 0.986) / (1. - 0.881);
+      
+      // 2017 wTightCharge e   AvgSF_Def_el_wTightCharge: 0.750 +- 0.008;   AvgSF_New_el_wTightCharge: 0.871 +- 0.040 
+      // 2017 wTightCharge mu  AvgSF_Def_mu_wTightCharge: 0.882 +- 0.008;   AvgSF_New_mu_wTightCharge: 0.981 +- 0.034
+      recompTightSF_el_wTightCharge_ = (1. - 0.871) / (1. - 0.750);
+      recompTightSF_mu_wTightCharge_ = (1. - 0.981) / (1. - 0.882); 
     }
     else if(era_ == Era::k2018)
     {
-      // 2018 woTightCharge e  AvgSF_Def_el_woTightCharge: 0.834 +- 0.007;   AvgSF_New_el_woTightCharge: 0.928 +- 0.036 
-      // 2018 woTightCharge mu  AvgSF_Def_mu_woTightCharge: 0.915 +- 0.006;   AvgSF_New_mu_woTightCharge: 0.954 +- 0.028
-      recompTightSF_el_woTightCharge_ = (1. - 0.928) / (1. - 0.834);
-      recompTightSF_mu_woTightCharge_ = (1. - 0.954) / (1. - 0.915);
+      // 2018 woTightCharge e   AvgSF_Def_el_woTightCharge: 0.834 +- 0.007;   AvgSF_New_el_woTightCharge: 0.929 +- 0.036 
+      // 2018 woTightCharge mu  AvgSF_Def_mu_woTightCharge: 0.915 +- 0.006;   AvgSF_New_mu_woTightCharge: 0.956 +- 0.028 
+      recompTightSF_el_woTightCharge_ = (1. - 0.929) / (1. - 0.834); 
+      recompTightSF_mu_woTightCharge_ = (1. - 0.956) / (1. - 0.915);
 
-      // 2018 wTightCharge e  AvgSF_Def_el_wTightCharge: 0.832 +- 0.007;   AvgSF_New_el_wTightCharge: 0.917 +- 0.036
-      // 2018 wTightCharge mu  AvgSF_Def_mu_wTightCharge: 0.915 +- 0.006;   AvgSF_New_mu_wTightCharge: 0.948 +- 0.028  
-      recompTightSF_el_wTightCharge_ = (1. - 0.917) / (1. - 0.832); 
-      recompTightSF_mu_wTightCharge_ = (1. - 0.948) / (1. - 0.915); 
+      // 2018 wTightCharge e   AvgSF_Def_el_wTightCharge: 0.832 +- 0.007;   AvgSF_New_el_wTightCharge: 0.918 +- 0.036
+      // 2018 wTightCharge mu  AvgSF_Def_mu_wTightCharge: 0.915 +- 0.006;   AvgSF_New_mu_wTightCharge: 0.950 +- 0.028
+      recompTightSF_el_wTightCharge_ = (1. - 0.918) / (1. - 0.832);
+      recompTightSF_mu_wTightCharge_ = (1. - 0.950) / (1. - 0.915); 
     }
     else
     {
