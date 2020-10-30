@@ -1,6 +1,7 @@
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, get_log_version, check_submission_cmd, record_software_state
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, generateInputFileList
 from tthAnalysis.HiggsToTauTau.analysisTools import createMakefile as tools_createMakefile, load_refGenWeightsFromFile
+from tthAnalysis.HiggsToTauTau.analysisTools import isSplitByNlheJet, isSplitByNlheHT, isSplitByNlheJetHT
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch as tools_createScript_sbatch
 from tthAnalysis.HiggsToTauTau.safe_root import ROOT
 from tthAnalysis.HiggsToTauTau.common import logging, DEPENDENCIES
@@ -362,17 +363,10 @@ class prodNtupleConfig:
                             hlt_path for hlt_pair in self.preselection_cuts["listHLT"] \
                             for hlt_path in Triggers(self.era).triggers_all[hlt_pair]
                         ]
-                is_lo = 'amcatnlo' not in sample_name
-                splitByNlheJet = process_name.startswith(
-                    tuple('DYToLL_{}J'.format(i) for i in range(3)) + \
-                    ('DYJetsToLL_M-50_amcatnloFXFX', 'WJetsToLNu_HT', 'DYJetsToLL_M50_HT', 'DYJetsToLL_M-10to50')
-                )
-                splitByNlheHT = process_name.startswith(
-                    tuple('W{}JetsToLNu'.format(i) for i in range(1, 5)) + \
-                    tuple('DY{}JetsToLL_M-50'.format(i) for i in range(1, 5))
-                )
-                splitByNlheJetHT = process_name.startswith('WJetsToLNu_madgraphMLM') or (process_name.startswith('DYJetsToLL_M-50') and is_lo)
-                mllForWZTo3LNu = process_name.startswith('WZTo3LNu') and is_lo and 'mllmin01' not in sample_name
+                splitByNlheJet = isSplitByNlheJet(process_name)
+                splitByNlheHT = isSplitByNlheHT(process_name)
+                splitByNlheJetHT = isSplitByNlheJetHT(process_name, sample_name)
+                mllForWZTo3LNu = process_name.startswith('WZTo3LNu') and 'amcatnlo' not in sample_name and 'mllmin01' not in sample_name
                 mllForWZTo3LNu_mllmin01 = process_name.startswith('WZTo3LNu_mllmin01')
                 sample_category = sample_info["sample_category"]
                 recomp_run_ls = sample_name.endswith('/USER') and self.era == '2017' and sample_category in [

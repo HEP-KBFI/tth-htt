@@ -13,9 +13,10 @@ import itertools
 
 # E.g.: ./test/tthProjection.py -v 2018May09 -e 2017 -m all -p pileup
 #       ./test/tthProjection.py -v 2018May09 -e 2017 -m all -p btagSF -j 4
+#       ./test/tthProjection.py -v 2018May09 -e 2017 -m all -p count  -j 10
 
 mode_choices = [ 'all', 'tth', 'tth_sync', 'hh', 'hh_bbww', 'hh_bbww_sync', 'hh_bbww_ttbar', 'hh_bbww_sync_ttbar' ]
-projections = [ 'pileup', 'btagSF' ]
+projections = [ 'pileup', 'btagSF', 'count' ]
 default_output = '{projection}_{era}.root'
 
 parser = tthAnalyzeParser(default_num_parallel_jobs = 100)
@@ -89,15 +90,26 @@ if projection == 'pileup':
     samples = load_samples(era, False, base = 'hh_bbww', suffix = 'sync_ttbar')
   else:
     raise ValueError('Invalid mode: %s' % mode)
-elif projection == 'btagSF':
-  projection_module = "btagSFRatio"
+elif projection in [ 'btagSF', 'count' ]:
+  if projection == 'btagSF':
+    projection_module = "btagSFRatio"
+  elif projection == 'count':
+    projection_module = 'count'
+  else:
+    assert(False)
 
   if mode == 'all':
     samples = load_samples(era, True, base = 'all')
   elif mode == 'tth':
-    samples = load_samples(era, True)
+    samples = load_samples(era, True, suffix = 'base')
   elif mode == 'tth_sync':
     samples = load_samples(era, True, suffix = 'sync')
+  elif mode == 'hh':
+    samples = load_samples(era, True, base = 'hh_multilepton', suffix = 'hh')
+  elif mode == 'hh_bbww':
+    samples = load_samples(era, True, base = 'hh_bbww', suffix = 'hh')
+  elif mode == 'hh_bbww_ttbar':
+    samples = load_samples(era, True, base = 'hh_bbww', suffix = 'ttbar')
   elif mode == 'hh_bbww_sync':
     samples = load_samples(era, True, base = 'hh_bbww', suffix = 'sync')
   elif mode == 'hh_bbww_sync_ttbar':
