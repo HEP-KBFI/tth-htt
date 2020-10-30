@@ -150,7 +150,7 @@ if [ "$SKIP_TOOLS_STEP" == "False" ]; then
       elif [ "$SPLIT_BY_LHENJETHT" == "True" ]; then
         COUNTHISTOGRAM_MODULE="${COUNTHISTOGRAM_MODULE}SplitByLHENjetHT";
       fi
-      COUNTHISTOGRAM_MODULE="$COUNTHISTOGRAM_MODULE($REF_GENWEIGHT)";
+      COUNTHISTOGRAM_MODULE="$COUNTHISTOGRAM_MODULE($REF_GENWEIGHT;;)";
       nano_postproc.py -s i -I tthAnalysis.NanoAODTools.postprocessing.tthModules "$COUNTHISTOGRAM_MODULE" \
                        . $F_i
     else
