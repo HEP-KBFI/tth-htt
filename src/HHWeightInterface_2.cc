@@ -141,7 +141,7 @@ HHWeightInterface_2::HHWeightInterface_2(const edm::ParameterSet & cfg)
   }
   // Load a file with an specific scan, that we can decide at later stage on the analysis
   // save the closest shape BM to use this value on the evaluation of a BDT
-  if (scanMode == "full" || scanMode == "additional"){
+  if (scanMode == "full"){
     if( applicationLoadFile_klScan != "" ){
       const std::string applicationLoadPath_klScan = LocalFileInPath(applicationLoadFile_klScan).fullPath();
       loadScanFile(applicationLoadPath_klScan, "kl_", 0, isDEBUG);
