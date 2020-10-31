@@ -350,6 +350,7 @@ int main(int argc, char* argv[])
     case Era::k2018: dataToMCcorrectionInterface = new Data_to_MC_CorrectionInterface_2018(cfg_dataToMCcorrectionInterface); break;
     default: throw cmsException("analyze_1l_1tau", __LINE__) << "Invalid era = " << static_cast<int>(era);
   }
+  // TODO: either provide flip rates w/o the tight charge cut, or require the lepton to pass the tight charge requirement
   const ChargeMisIdRate chargeMisIdRate(era);
 
   Data_to_MC_CorrectionInterface_1l_1tau_trigger * dataToMCcorrectionInterface_1l_1tau_trigger = nullptr;
