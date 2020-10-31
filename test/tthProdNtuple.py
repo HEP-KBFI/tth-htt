@@ -77,6 +77,10 @@ version = "%s_w%sPresel_%s_%s" % (
 gen_matching_by_index = (gen_matching == 'by_index')
 do_sync = 'sync' in mode
 
+if mode == 'all':
+  samples = load_samples(era, preselection, base = 'all')
+elif mode == 'tth':
+  samples = load_samples(era, preselection, suffix = 'base' if preselection else '')
 if mode == 'tth_sync':
   samples = load_samples(era, preselection, suffix = 'sync')
   pileup = os.path.join(
@@ -104,35 +108,16 @@ elif mode == 'hh_bbww_sync_ttbar':
     os.environ['CMSSW_BASE'], 'src/hhAnalysis/bbww/data/pileup_hh_{}_sync_ttbar.root'.format(era)
   )
 elif mode == 'hh':
-  if preselection:
-    raise ValueError("Preselection not possible for %s mode" % mode)
-
-  samples = load_samples(era, False, base = 'hh_multilepton')
-  # pileup = os.path.join(
-  #   os.environ['CMSSW_BASE'], 'src/hhAnalysis/multilepton/data/pileup_hh_{}.root'.format(era)
-  # )
+  samples = load_samples(era, preselection, base = 'hh_multilepton')
 elif mode == 'hh_bbww':
-  if preselection:
-    raise ValueError("Preselection not possible for %s mode" % mode)
-
-  samples = load_samples(era, False, base = 'hh_bbww')
-  # pileup = os.path.join(
-  #   os.environ['CMSSW_BASE'], 'src/hhAnalysis/bbww/data/pileup_hh_{}.root'.format(era)
-  # )
+  samples = load_samples(era, preselection, base = 'hh_bbww')
 elif mode == 'hh_bbww_ttbar':
   samples = load_samples(era, preselection, base = 'hh_bbww', suffix = 'ttbar')
-  # pileup = os.path.join(
-  #   os.environ['CMSSW_BASE'], 'src/hhAnalysis/bbww/data/pileup_hh_{}_ttbar.root'.format(era)
-  # )
 elif mode == 'hh_bbww_sl':
   if not preselection:
     raise ValueError("Mode %s only if preselection is enabled" % mode)
 
   samples = load_samples(era, True, base = 'hh_bbww')
-elif mode == 'tth':
-  samples = load_samples(era, preselection, suffix = 'base' if preselection else '')
-elif mode == 'all':
-  samples = load_samples(era, preselection, base = 'all')
 else:
   raise RuntimeError("Invalid mode: %s" % mode)
 
@@ -147,23 +132,6 @@ else:
 
 if 'sum_events' in samples:
   del samples['sum_events']
-for sample_name, sample_entry in samples.items():
-  process_name = sample_entry['process_name_specific']
-  is_hh = process_name.startswith('signal') and 'hh' in process_name
-  if mode == 'all':
-    sample_entry['use_it'] = True
-  elif mode == 'hh_bbww_sl':
-    sample_entry['use_it'] = not is_hh
-  elif mode == 'forBDTtraining':
-    sample_entry['use_it'] = not sample_entry['use_it']
-  elif mode.startswith('hh') and 'ttbar' not in mode:
-    sample_entry['use_it'] = is_hh
-  elif mode.startswith('hh') and 'ttbar' in mode:
-    sample_entry['use_it'] = process_name.startswith('TTTo')
-  elif do_sync or mode == 'all_except_forBDTtraining':
-    pass
-  else:
-    raise ValueError("Invalid mode: %s" % mode)
 
 if preselection:
   if mode == 'hh_bbww_sl':
