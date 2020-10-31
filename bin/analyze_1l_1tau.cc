@@ -89,7 +89,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/hadTauGenMatchingAuxFunctions.h" // getHadTauGenMatch_definitions_1tau, getHadTauGenMatch_string, getHadTauGenMatch_int
 #include "tthAnalysis/HiggsToTauTau/interface/GenMatchInterface.h" // GenMatchInterface
 #include "tthAnalysis/HiggsToTauTau/interface/fakeBackgroundAuxFunctions.h" // getWeight_1L, getWeight_2L
-#include "tthAnalysis/HiggsToTauTau/interface/backgroundEstimation.h" // prob_chargeMisId
+#include "tthAnalysis/HiggsToTauTau/interface/ChargeMisIdRate.h" // ChargeMisIdRate
 #include "tthAnalysis/HiggsToTauTau/interface/hltPath.h" // hltPath, create_hltPaths, hltPaths_isTriggered, hltPaths_delete
 #include "tthAnalysis/HiggsToTauTau/interface/hltPathReader.h" // hltPathReader
 #include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface_2016.h"
@@ -350,6 +350,7 @@ int main(int argc, char* argv[])
     case Era::k2018: dataToMCcorrectionInterface = new Data_to_MC_CorrectionInterface_2018(cfg_dataToMCcorrectionInterface); break;
     default: throw cmsException("analyze_1l_1tau", __LINE__) << "Invalid era = " << static_cast<int>(era);
   }
+  const ChargeMisIdRate chargeMisIdRate(era);
 
   Data_to_MC_CorrectionInterface_1l_1tau_trigger * dataToMCcorrectionInterface_1l_1tau_trigger = nullptr;
   if(isMC)
@@ -2154,7 +2155,7 @@ int main(int argc, char* argv[])
         {
           double prob_chargeMisId_sum = 1.;
           if ( category.find("_wChargeFlipWeights") != std::string::npos ) {
-            const double prob_chargeMisId_lepton = prob_chargeMisId(era, selLepton_type, selLepton->pt(), selLepton->eta());
+            const double prob_chargeMisId_lepton = chargeMisIdRate.get(selLepton);
             const double prob_chargeMisId_tau = 0.01; // CV: not implemented yet; take "guessed" value for now
             prob_chargeMisId_sum = prob_chargeMisId_lepton + prob_chargeMisId_tau;
           }
