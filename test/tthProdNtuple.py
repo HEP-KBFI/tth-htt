@@ -132,6 +132,8 @@ else:
 
 if 'sum_events' in samples:
   del samples['sum_events']
+for sample_name, sample_entry in samples.items():
+  sample_entry['use_it'] = True
 
 if preselection:
   if mode == 'hh_bbww_sl':
