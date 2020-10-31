@@ -81,7 +81,7 @@ if mode == 'all':
   samples = load_samples(era, preselection, base = 'all')
 elif mode == 'tth':
   samples = load_samples(era, preselection, suffix = 'base' if preselection else '')
-if mode == 'tth_sync':
+elif mode == 'tth_sync':
   samples = load_samples(era, preselection, suffix = 'sync')
   pileup = os.path.join(
     os.environ['CMSSW_BASE'], 'src/tthAnalysis/HiggsToTauTau/data/pileup_%s_sync.root' % era
