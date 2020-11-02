@@ -637,9 +637,8 @@ class analyzeConfig(object):
             os.environ['CMSSW_BASE'], "src/tthAnalysis/HiggsToTauTau/data/btagSFRatio_{}.root".format(self.era)
           )
         else:
-          self.btagSFRatioFile = "/hdfs/local/karl/ttHBtagsfProjection/{era}/{version}_all/btagSF_{era}_fullSys.root".format(
+          self.btagSFRatioFile = "/hdfs/local/karl/btagSFratios_final/2020Nov02/btagSF_{era}_fullSys.root".format(
             era = self.era,
-            version = '2020Jul09' if self.era != '2018' else '2020Jul18',
           )
 
         self.leptonFakeRateWeight_histogramName_e = None
