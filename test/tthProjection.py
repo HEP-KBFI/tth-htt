@@ -13,7 +13,7 @@ import itertools
 
 # E.g.: ./test/tthProjection.py -v 2018May09 -e 2017 -m all -p pileup
 #       ./test/tthProjection.py -v 2018May09 -e 2017 -m all -p btagSF -j 4
-#       ./test/tthProjection.py -v 2018May09 -e 2017 -m all -p count  -j 10
+#       ./test/tthProjection.py -v 2018May09 -e 2017 -m all -p count  j "4,cat:ttH:1,cat:TT:1,cat:EWK:1"
 
 mode_choices = [ 'all', 'tth', 'tth_sync', 'hh', 'hh_bbww', 'hh_bbww_sync', 'hh_bbww_ttbar', 'hh_bbww_sync_ttbar' ]
 projections = [ 'pileup', 'btagSF', 'count' ]
