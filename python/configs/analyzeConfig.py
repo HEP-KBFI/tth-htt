@@ -252,19 +252,7 @@ class analyzeConfig(object):
           self.central_or_shifts = [
             central_or_shift for central_or_shift in self.central_or_shifts if central_or_shift not in central_or_shift_nc
           ]
-        if self.lep_mva_wp == 'hh_multilepton':
-          #TODO remove this if block once we have the capability to provide FR systematics
-          central_or_shift_fr = [
-            central_or_shift for central_or_shift in self.central_or_shifts if central_or_shift in systematics.FRl_shape
-          ]
-          if central_or_shift_fr:
-            logging.warning("Removing the following systematics because these FR variations haven't been measured, yet: {}".format(
-              ", ".join(central_or_shift_fr)
-            ))
-          self.central_or_shifts = [
-            central_or_shift for central_or_shift in self.central_or_shifts if central_or_shift not in central_or_shift_fr
-          ]
-        else:
+        if self.lep_mva_wp != 'hh_multilepton':
           central_or_shift_leptonEff = [
             central_or_shift for central_or_shift in self.central_or_shifts if central_or_shift in systematics.leptonIDSF_hh_recomp
           ]
@@ -654,7 +642,7 @@ class analyzeConfig(object):
           if self.lep_mva_wp == 'default':
             self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva_{}_CERN_2019Jul08.root".format(self.era)
           elif self.lep_mva_wp == 'hh_multilepton':
-            self.leptonFakeRateWeight_inputFile = "hhAnalysis/multilepton/data/FR_lep_mva_hh_multilepton_{}_KBFI_2020Oct27_woTightCharge.root".format(self.era)
+            self.leptonFakeRateWeight_inputFile = "hhAnalysis/multilepton/data/FR_lep_mva_hh_multilepton_{}_KBFI_2020Oct27_woTightCharge_wSysUnc.root".format(self.era)
           else:
             raise RuntimeError("No FR files available for the following choice of prompt lepton MVA WP: %s" % self.lep_mva_wp)
           if not os.path.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', self.leptonFakeRateWeight_inputFile)):
