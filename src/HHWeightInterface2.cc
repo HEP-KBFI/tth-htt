@@ -61,6 +61,7 @@ HHWeightInterface2::HHWeightInterface2(const edm::ParameterSet & cfg)
   const std::string applicationLoadFile_c2Scan = cfg.getParameter<std::string>("c2Scan_file");
   const std::string applicationLoadFile_cgScan = cfg.getParameter<std::string>("cgScan_file");
   const std::string applicationLoadFile_c2gScan = cfg.getParameter<std::string>("c2gScan_file");
+  const std::string scanMode = cfg.getParameter<std::string>("scanMode");
   const std::string coefFile = cfg.getParameter<std::string>("coefFile");
   const std::string histtitle = cfg.getParameter<std::string>("histtitle");
   const bool isDEBUG = cfg.getParameter<bool>("isDEBUG");
@@ -123,39 +124,45 @@ HHWeightInterface2::HHWeightInterface2(const edm::ParameterSet & cfg)
   bmNames_ = {};
   bmWeightNames_ = {};
   //insert JHEP weight BM points 
-  for (std::size_t bmIdx = 0; bmIdx < nof_JHEP_; ++bmIdx){
-    kl_.push_back(klJHEP_[bmIdx]);
-    kt_.push_back(ktJHEP_[bmIdx]);
-    c2_.push_back(c2JHEP_[bmIdx]);
-    cg_.push_back(cgJHEP_[bmIdx]);
-    c2g_.push_back(c2gJHEP_[bmIdx]);
-    norm_.push_back(normJHEP_[bmIdx]);
-    std::string bmname = (bmIdx == 0 ) ? "SM" : "BM" + std::to_string(bmIdx);
-    bmNames_.push_back(bmname);
-    bmWeightNames_.push_back("Weight_" + bmname);
-    bmName_to_idx_[bmname] = bmIdx;
+  if (scanMode == "default" || scanMode == "full")
+  {
+    for (std::size_t bmIdx = 0; bmIdx < nof_JHEP_; ++bmIdx)
+    {
+      kl_.push_back(klJHEP_[bmIdx]);
+      kt_.push_back(ktJHEP_[bmIdx]);
+      c2_.push_back(c2JHEP_[bmIdx]);
+      cg_.push_back(cgJHEP_[bmIdx]);
+      c2g_.push_back(c2gJHEP_[bmIdx]);
+      norm_.push_back(normJHEP_[bmIdx]);
+      std::string bmname = (bmIdx == 0 ) ? "SM" : "BM" + std::to_string(bmIdx);
+      bmNames_.push_back(bmname);
+      bmWeightNames_.push_back("Weight_" + bmname);
+      bmName_to_idx_[bmname] = bmIdx;
+    }
   }
   // Load a file with an specific scan, that we can decide at later stage on the analysis
   // save the closest shape BM to use this value on the evaluation of a BDT
-  if( applicationLoadFile_klScan != "" ){
-    const std::string applicationLoadPath_klScan = LocalFileInPath(applicationLoadFile_klScan).fullPath();
-    loadScanFile(applicationLoadPath_klScan, "kl_", 0, isDEBUG);
-  }
-  if( applicationLoadFile_ktScan != "" ){
-    const std::string applicationLoadPath_ktScan = LocalFileInPath(applicationLoadFile_ktScan).fullPath();
-    loadScanFile(applicationLoadPath_ktScan, "kt_", 1, isDEBUG);
-  }
-  if( applicationLoadFile_c2Scan != "" ){
-    const std::string applicationLoadPath_c2Scan = LocalFileInPath(applicationLoadFile_c2Scan).fullPath();
-    loadScanFile(applicationLoadPath_c2Scan, "c2_", 2, isDEBUG);
-  }
-  if( applicationLoadFile_cgScan != "" ){
-    const std::string applicationLoadPath_cgScan = LocalFileInPath(applicationLoadFile_cgScan).fullPath();
-    loadScanFile(applicationLoadPath_cgScan, "cg_", 2, isDEBUG);
-  }
-  if( applicationLoadFile_c2gScan != "" ){
-    const std::string applicationLoadPath_c2gScan = LocalFileInPath(applicationLoadFile_c2gScan).fullPath();
-    loadScanFile(applicationLoadPath_c2gScan, "c2g_", 2, isDEBUG);
+  if (scanMode == "full" || scanMode == "additional"){
+    if( applicationLoadFile_klScan != "" ){
+      const std::string applicationLoadPath_klScan = LocalFileInPath(applicationLoadFile_klScan).fullPath();
+      loadScanFile(applicationLoadPath_klScan, "kl_", 0, isDEBUG);
+    }
+    if( applicationLoadFile_ktScan != "" ){
+      const std::string applicationLoadPath_ktScan = LocalFileInPath(applicationLoadFile_ktScan).fullPath();
+      loadScanFile(applicationLoadPath_ktScan, "kt_", 1, isDEBUG);
+    }
+    if( applicationLoadFile_c2Scan != "" ){
+      const std::string applicationLoadPath_c2Scan = LocalFileInPath(applicationLoadFile_c2Scan).fullPath();
+      loadScanFile(applicationLoadPath_c2Scan, "c2_", 2, isDEBUG);
+    }
+    if( applicationLoadFile_cgScan != "" ){
+      const std::string applicationLoadPath_cgScan = LocalFileInPath(applicationLoadFile_cgScan).fullPath();
+      loadScanFile(applicationLoadPath_cgScan, "cg_", 2, isDEBUG);
+    }
+    if( applicationLoadFile_c2gScan != "" ){
+      const std::string applicationLoadPath_c2gScan = LocalFileInPath(applicationLoadFile_c2gScan).fullPath();
+      loadScanFile(applicationLoadPath_c2gScan, "c2g_", 2, isDEBUG);
+    }
   }
   if(isDEBUG)
   {
@@ -168,8 +175,7 @@ HHWeightInterface2::HHWeightInterface2(const edm::ParameterSet & cfg)
   Py_XDECREF(args_load);
   Py_XDECREF(func_load);
 
-  std::cout << "<HHWeightInterface2>:" << std::endl;
-  std::cout << " Scanning " << bmNames_.size() << " benchmark scenarios: " << format_vstring(bmNames_) << std::endl;
+  std::cout << "<HHWeightInterface2>: Scanning " << bmNames_.size() << " benchmark scenarios: " << format_vstring(bmNames_) << std::endl;
 }
 
 
