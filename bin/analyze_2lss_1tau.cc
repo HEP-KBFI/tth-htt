@@ -113,7 +113,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/EvtWeightRecorder.h" // EvtWeightRecorder
 #include "tthAnalysis/HiggsToTauTau/interface/BtagSFRatioFacility.h" // BtagSFRatioFacility
 #include "tthAnalysis/HiggsToTauTau/interface/HHWeightInterface.h" // HHWeightInterface
-#include "tthAnalysis/HiggsToTauTau/interface/TensorFlowInterface.h"
+#include "tthAnalysis/HiggsToTauTau/interface/TensorFlowInterface.h" // TensorFlowInterface
+#include "tthAnalysis/HiggsToTauTau/interface/AnalysisConfig.h" // AnalsyisConfig
 
 #include <boost/algorithm/string/replace.hpp> // boost::replace_all_copy()
 #include <boost/algorithm/string/predicate.hpp> // boost::starts_with()
@@ -162,18 +163,19 @@ int main(int argc, char* argv[])
   edm::ParameterSet cfg = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("process");
 
   edm::ParameterSet cfg_analyze = cfg.getParameter<edm::ParameterSet>("analyze_2lss_1tau");
+  AnalysisConfig analysisConfig("ttH->multilepton+tau", cfg_analyze);
 
   std::string treeName = cfg_analyze.getParameter<std::string>("treeName");
 
   std::string process_string = cfg_analyze.getParameter<std::string>("process");
-  const bool isMC_tH = process_string == "tHq" || process_string == "tHW";
-  const bool isMC_VH = process_string == "VH";
-  const bool isMC_WZ = process_string == "WZ";
-  const bool isMC_H  = process_string == "ggH" || process_string == "qqH" || process_string == "TTWH" || process_string == "TTZH";
-  const bool isMC_HH = process_string == "HH";
-  const bool isMC_EWK = process_string == "WZ" || process_string == "ZZ";
-  const bool isMC_signal = process_string == "ttH" || process_string == "ttH_ctcvcp";
-  const bool isSignal = isMC_signal || isMC_tH || isMC_VH || isMC_HH || isMC_H;
+  const bool isMC_tH     = analysisConfig.isMC_tH();
+  const bool isMC_VH     = analysisConfig.isMC_VH();
+  const bool isMC_WZ     = analysisConfig.isMC_WZ();
+  const bool isMC_H      = analysisConfig.isMC_H();
+  const bool isMC_HH     = analysisConfig.isMC_HH();
+  const bool isMC_EWK    = analysisConfig.isMC_WZ() || analysisConfig.isMC_ZZ();
+  const bool isMC_ttH    = analysisConfig.isMC_ttH();
+  const bool isMC_signal = isMC_ttH || isMC_tH || isMC_VH || isMC_HH || isMC_H;
 
   std::string histogramDir = cfg_analyze.getParameter<std::string>("histogramDir");
   bool isMCClosure_e = histogramDir.find("mcClosure_e") != std::string::npos;
@@ -262,7 +264,7 @@ int main(int argc, char* argv[])
   bool useObjectMultiplicity = cfg_analyze.getParameter<bool>("useObjectMultiplicity");
   std::string central_or_shift_main = cfg_analyze.getParameter<std::string>("central_or_shift");
   std::vector<std::string> central_or_shifts_local = cfg_analyze.getParameter<std::vector<std::string>>("central_or_shifts_local");
-  const bool do_tree = (isSignal || isMC_WZ || process_string == "TTW" || process_string == "TTZ" || process_string == "TT") && !(central_or_shifts_local.size() > 1);
+  const bool do_tree = (isMC_signal || isMC_WZ || process_string == "TTW" || process_string == "TTZ" || process_string == "TT") && !(central_or_shifts_local.size() > 1);
 
   edm::VParameterSet lumiScale = cfg_analyze.getParameter<edm::VParameterSet>("lumiScale");
   bool apply_genWeight = cfg_analyze.getParameter<bool>("apply_genWeight");
@@ -432,7 +434,7 @@ int main(int argc, char* argv[])
   }
 
 //--- declare event-level variables
-  EventInfo eventInfo(isMC, isSignal, isMC_HH, apply_topPtReweighting);
+  EventInfo eventInfo(isMC, isMC_signal, isMC_HH, apply_topPtReweighting);
   if(isMC)
   {
     const double ref_genWeight = cfg_analyze.getParameter<double>("ref_genWeight");
@@ -798,7 +800,7 @@ int main(int argc, char* argv[])
         }
       }
 
-      if(isSignal)
+      if(isMC_signal)
       {
         const vstring decayModes_evt = get_key_list_hist(eventInfo, isMC_HH, isMC_VH);
         for(const std::string & decayMode_evt: decayModes_evt)
@@ -2256,7 +2258,7 @@ int main(int argc, char* argv[])
             }
           }
 
-          if ( isSignal ) {
+          if ( isMC_signal ) {
             std::string decayModeStr = get_key_hist(eventInfo, genWBosons, isMC_HH, isMC_VH);
             if ( ( isMC_tH || isMC_H ) && ( decayModeStr == "hzg" || decayModeStr == "hmm" ) ) continue;
             if(! decayModeStr.empty())
