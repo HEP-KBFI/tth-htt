@@ -38,10 +38,14 @@ EventInfo::EventInfo()
   : EventInfo(false)
 {}
 
-EventInfo::EventInfo(bool is_mc,
-                     bool is_signal,
-                     bool is_hh_nonresonant,
-                     bool is_ttbar_rwgt)
+EventInfo::EventInfo(const AnalysisConfig & analysisConfig)
+  : EventInfo(analysisConfig.isMC(), analysisConfig.isMC_H(), analysisConfig.isMC_HH_nonresonant(), analysisConfig.apply_topPtReweighting())
+{}
+
+EventInfo::EventInfo(bool isMC,
+                     bool isMC_H,
+                     bool isMC_HH_nonresonant,
+                     bool apply_topPtRwgt)
   : run(0)
   , lumi(0)
   , event(0)
@@ -52,10 +56,10 @@ EventInfo::EventInfo(bool is_mc,
   , gen_mHH(0.)
   , gen_cosThetaStar(-2.)
   , topPtRwgtSF(-1.)
-  , is_signal_(is_signal)
-  , is_mc_(is_mc)
-  , is_hh_nonresonant_(is_hh_nonresonant)
-  , is_ttbar_rwgt_(is_ttbar_rwgt)
+  , isMC_(isMC)
+  , isMC_H_(isMC_H)
+  , isMC_HH_nonresonant_(isMC_HH_nonresonant)
+  , apply_topPtRwgt_(apply_topPtRwgt)
   , central_or_shift_("central")
   , nLHEReweightingWeight(0)
   , LHEReweightingWeight(nullptr)
@@ -64,8 +68,8 @@ EventInfo::EventInfo(bool is_mc,
   , read_htxs_(false)
   , refGenWeight_(0.)
 {
-  assert(is_mc_ || ! is_signal_);
-  assert(is_mc_ || ! is_hh_nonresonant_);
+  assert(isMC_ || !isMC_H_);
+  assert(isMC_ || !isMC_HH_nonresonant_);
 }
 
 EventInfo::EventInfo(const EventInfo & eventInfo)
@@ -84,19 +88,18 @@ EventInfo::operator=(const EventInfo & eventInfo)
 void
 EventInfo::copy(const EventInfo & eventInfo)
 {
-  run                 = eventInfo.run;
-  lumi                = eventInfo.lumi;
-  event               = eventInfo.event;
-  genHiggsDecayMode   = eventInfo.genHiggsDecayMode;
-  genWeight           = eventInfo.genWeight;
-
-  is_signal_ = eventInfo.is_signal_;
-  is_mc_     = eventInfo.is_mc_;
-
+  run = eventInfo.run;
+  lumi = eventInfo.lumi;
+  event = eventInfo.event;
+  genHiggsDecayMode = eventInfo.genHiggsDecayMode;
+  genWeight = eventInfo.genWeight;
+  isMC_H_ = eventInfo.isMC_H_;
+  isMC_ = eventInfo.isMC_;
   genDiHiggsDecayMode = eventInfo.genDiHiggsDecayMode;
-  is_hh_nonresonant_ = eventInfo.is_hh_nonresonant_;
+  isMC_HH_nonresonant_ = eventInfo.isMC_HH_nonresonant_;
   gen_mHH = eventInfo.gen_mHH;
   gen_cosThetaStar = eventInfo.gen_cosThetaStar;
+  apply_topPtRwgt_ = eventInfo.apply_topPtRwgt_;
   topPtRwgtSF = eventInfo.topPtRwgtSF;
 
   nLHEReweightingWeight = eventInfo.nLHEReweightingWeight;
@@ -281,33 +284,9 @@ EventInfo::get_htxs_category() const
 }
 
 bool
-EventInfo::is_signal() const
-{
-  return is_signal_;
-}
-
-bool
-EventInfo::is_mc() const
-{
-  return is_mc_;
-}
-
-bool
 EventInfo::is_initialized() const
 {
   return run != 0 && lumi != 0 && event != 0;
-}
-
-bool
-EventInfo::is_hh_nonresonant() const
-{
-  return is_hh_nonresonant_;
-}
-
-bool
-EventInfo::is_ttbar_rwgt() const
-{
-  return is_ttbar_rwgt_;
 }
 
 std::string
@@ -325,7 +304,7 @@ EventInfo::getDiHiggsDecayModeString() const
 std::string
 EventInfo::getDecayModeString(const std::map<std::string, Int_t> & decayMode_idString) const
 {
-  if(! is_signal_)
+  if(! isMC_H_)
   {
     throw cmsException(this, __func__, __LINE__)
       << "The event " << *this << " is not a signal event => request "

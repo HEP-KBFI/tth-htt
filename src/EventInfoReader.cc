@@ -29,7 +29,7 @@ EventInfoReader::EventInfoReader(EventInfo * info,
 
 EventInfoReader::~EventInfoReader()
 {
-  if(info_ -> is_mc())
+  if(info_ -> isMC_)
   {
     delete[] info_ -> LHEReweightingWeight;
   }
@@ -43,7 +43,7 @@ EventInfoReader::setBranchAddresses(TTree * tree)
   bai.setBranchAddress(info_ -> run, branchName_run);
   bai.setBranchAddress(info_ -> lumi, branchName_lumi);
   bai.setBranchAddress(info_ -> event, branchName_event);
-  if(info_ -> is_signal())
+  if(info_ -> isMC_H_)
   {
     if(info_ -> read_htxs())
     {
@@ -55,7 +55,7 @@ EventInfoReader::setBranchAddresses(TTree * tree)
       bai.setBranchAddress(info_ -> genHiggsDecayMode, branchName_genHiggsDecayMode);
     }
   }
-  if(info_ -> is_mc())
+  if(info_ -> isMC_)
   {
     bai.setBranchAddress(info_ -> genWeight, branchName_genWeight);
     if(read_puWeight_)
@@ -64,12 +64,12 @@ EventInfoReader::setBranchAddresses(TTree * tree)
       bai.setBranchAddress(info_ -> pileupWeightUp, getBranchName_pileup(PUsys::up));
       bai.setBranchAddress(info_ -> pileupWeightDown, getBranchName_pileup(PUsys::down));
     }
-    if(info_ -> is_ttbar_rwgt())
+    if(info_ -> apply_topPtRwgt_)
     {
       bai.setBranchAddress(info_ -> topPtRwgtSF, branchName_topPtRwgt);
     }
   }
-  if(info_ -> is_mc() && ! info_ -> tH_sf.empty())
+  if(info_ -> isMC_ && ! info_ -> tH_sf.empty())
   {
     BranchAddressInitializer bai_LHEReweight(tree, info_ -> LHEReweightingWeight_max);
     bai_LHEReweight.setBranchAddress(info_ -> nLHEReweightingWeight, branchName_nLHEReweightingWeight);
@@ -78,7 +78,7 @@ EventInfoReader::setBranchAddresses(TTree * tree)
     const std::vector<std::string> lhe_branches = bai_LHEReweight.getBoundBranchNames();
     bound_branches.insert(bound_branches.end(), lhe_branches.begin(), lhe_branches.end());
   }
-  if(info_ -> is_hh_nonresonant())
+  if(info_ -> isMC_HH_nonresonant_)
   {
     bai.setBranchAddress(info_ -> gen_mHH, branchName_gen_mHH);
     bai.setBranchAddress(info_ -> gen_cosThetaStar, branchName_gen_cosThetaStar);
