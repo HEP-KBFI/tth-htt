@@ -7,6 +7,7 @@
 AnalysisConfig::AnalysisConfig(const std::string & analysis, const edm::ParameterSet & cfg)
   : analysis_string_(analysis)
   , process_string_(cfg.getParameter<std::string>("process"))
+  , mass_HH_resonant_(-1.)
 {
   isMC_     = cfg.getParameter<bool>("isMC");
   isData_   = !isMC_;
@@ -27,6 +28,15 @@ AnalysisConfig::AnalysisConfig(const std::string & analysis, const edm::Paramete
   isMC_HH_resonant_spin2_ = parser_HH_resonant_spin2.Match(process_string_.data());
   assert(!(isMC_HH_resonant_spin0_ && isMC_HH_resonant_spin2_));
   isMC_HH_resonant_       = isMC_HH_resonant_spin0_ || isMC_HH_resonant_spin2_;
+  if ( isMC_HH_resonant_ )
+  {
+    TPRegexp parser_mass_HH_resonant("signal_(ggf|vbf)_spin(0|2)_([0-9]+)_*");
+    const TObjArray * const subStrings = parser_mass_HH_resonant.MatchS(process_string_.data());
+    if ( subStrings->GetEntries() == 4 )
+    {
+      mass_HH_resonant_ = (static_cast<TObjString *>(subStrings->At(3)))->GetString().Atof();
+    }
+  }
   TPRegexp parser_HH_nonresonant("signal_(ggf|vbf)_nonresonant_*");
   isMC_HH_nonresonant_    = parser_HH_nonresonant.Match(process_string_.data());
   assert(!(isMC_HH_resonant_ && isMC_HH_nonresonant_));
@@ -145,6 +155,12 @@ std::vector<std::string>
 AnalysisConfig::get_decayModes_H() const
 {
   return decayModes_H_;
+}
+
+double
+AnalysisConfig::get_HH_resonant_mass() const
+{
+  return mass_HH_resonant_;
 }
 
 bool

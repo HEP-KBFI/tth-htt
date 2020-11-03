@@ -42,6 +42,8 @@ class AnalysisConfig
 
   virtual std::vector<std::string> get_decayModes_H() const;
 
+  virtual double get_HH_resonant_mass() const;
+
   virtual bool apply_topPtReweighting() const;
 
  protected:
@@ -66,6 +68,8 @@ class AnalysisConfig
   bool isMC_HH_;
 
   std::vector<std::string> decayModes_H_;
+
+  double mass_HH_resonant_;
 
   bool apply_topPtReweighting_;
 };
