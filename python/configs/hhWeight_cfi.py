@@ -13,4 +13,5 @@ hhWeight = cms.PSet(
     do_scan = cms.bool(True),
     do_ktscan = cms.bool(False),
     apply_rwgt = cms.bool(False),
+    scanMode = cms.string('default'),
 )

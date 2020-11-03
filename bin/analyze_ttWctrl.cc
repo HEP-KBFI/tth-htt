@@ -76,7 +76,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // getBTagWeight_option, isHigherPt, isMatched
 #include "tthAnalysis/HiggsToTauTau/interface/leptonGenMatchingAuxFunctions.h" // getLeptonChargeFlipGenMatch_definitions_2lepton, getLeptonGenMatch_string, getLeptonGenMatch_int
 #include "tthAnalysis/HiggsToTauTau/interface/fakeBackgroundAuxFunctions.h" // getWeight_2L
-#include "tthAnalysis/HiggsToTauTau/interface/backgroundEstimation.h" // prob_chargeMisId
+#include "tthAnalysis/HiggsToTauTau/interface/ChargeMisIdRate.h" // ChargeMisIdRate
 #include "tthAnalysis/HiggsToTauTau/interface/hltPath.h" // hltPath, create_hltPaths, hltPaths_isTriggered, hltPaths_delete
 #include "tthAnalysis/HiggsToTauTau/interface/hltPathReader.h" // hltPathReader
 #include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface_2016.h"
@@ -283,6 +283,7 @@ int main(int argc, char* argv[])
     case Era::k2018: dataToMCcorrectionInterface = new Data_to_MC_CorrectionInterface_2018(cfg_dataToMCcorrectionInterface); break;
     default: throw cmsException("analyze_ttWctrl", __LINE__) << "Invalid era = " << static_cast<int>(era);
   }
+  const ChargeMisIdRate chargeMisIdRate(era);
 
   std::string applyFakeRateWeights_string = cfg_analyze.getParameter<std::string>("applyFakeRateWeights");
   int applyFakeRateWeights = -1;
@@ -1276,13 +1277,7 @@ int main(int argc, char* argv[])
     }
     if(leptonChargeSelection == kOS)
     {
-      const double prob_chargeMisId_lead = prob_chargeMisId(
-        era, selLepton_lead_type, selLepton_lead->pt(), selLepton_lead->eta()
-      );
-      const double prob_chargeMisId_sublead = prob_chargeMisId(
-        era, selLepton_sublead_type, selLepton_sublead->pt(), selLepton_sublead->eta()
-      );
-      const double prob_chargeMisId_sum = (prob_chargeMisId_lead + prob_chargeMisId_sublead);
+      const double prob_chargeMisId_sum = chargeMisIdRate.get(selLepton_lead, selLepton_sublead);
 
       // Karl: reject the event, if the applied probability of charge misidentification is 0;
       //       note that this can happen only if both selected leptons are muons (their misId prob is 0).
@@ -1292,9 +1287,9 @@ int main(int argc, char* argv[])
         {
           std::cout << "event " << eventInfo.str() << " FAILS charge flip selection\n"
                        "(leading lepton charge (pdgId) = " << selLepton_lead->charge() << " (" << selLepton_lead->pdgId()
-                    << ") => misId prob = " << prob_chargeMisId_lead << "; "
+                    << "); "
                        "subleading lepton charge (pdgId) = " << selLepton_sublead->charge() << " (" << selLepton_sublead->pdgId()
-                    << ") => misId prob = " << prob_chargeMisId_sublead << ")\n"
+                    << "))\n"
           ;
         }
         continue;

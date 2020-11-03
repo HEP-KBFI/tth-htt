@@ -654,7 +654,7 @@ class analyzeConfig(object):
           if self.lep_mva_wp == 'default':
             self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva_{}_CERN_2019Jul08.root".format(self.era)
           elif self.lep_mva_wp == 'hh_multilepton':
-            self.leptonFakeRateWeight_inputFile = "hhAnalysis/multilepton/data/FR_lep_mva_hh_multilepton_{}_KBFI_2020Sep25.root".format(self.era)
+            self.leptonFakeRateWeight_inputFile = "hhAnalysis/multilepton/data/FR_lep_mva_hh_multilepton_{}_KBFI_2020Oct27_woTightCharge.root".format(self.era)
           else:
             raise RuntimeError("No FR files available for the following choice of prompt lepton MVA WP: %s" % self.lep_mva_wp)
           if not os.path.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', self.leptonFakeRateWeight_inputFile)):
@@ -788,6 +788,7 @@ class analyzeConfig(object):
           jobOptions['hhWeight_cfg.ktScan_file'] = self.kt_scan_file
           jobOptions['hhWeight_cfg.klScan_file'] = self.kl_scan_file
           jobOptions['hhWeight_cfg.c2Scan_file'] = self.c2_scan_file
+          jobOptions['hhWeight_cfg.scanMode'] = 'default'
           
           jobOptions['hhWeight_cfg.apply_rwgt'] = 'hh' in self.channel
 
@@ -1157,6 +1158,7 @@ class analyzeConfig(object):
             'hhWeight_cfg.c2Scan_file',
             'hhWeight_cfg.cgScan_file',
             'hhWeight_cfg.c2gScan_file',
+            'hhWeight_cfg.scanMode',
             'hhWeight_cfg.apply_rwgt',
             'minNumJets',
             'skipEvery',
@@ -1774,6 +1776,11 @@ class analyzeConfig(object):
         self.num_jobs['addFakes'] += self.createScript_sbatch(executable, sbatchFile, jobOptions)
 
     def create_hadd_python_file(self, inputFiles, outputFiles, hadd_stage_name, max_input_files_per_job = 10, max_mem = ''):
+        if not max_mem and \
+            max_input_files_per_job == 2 and \
+            len(self.central_or_shifts) > 1 and \
+            (self.channel in [ '1l_1tau', '2lss' ] or self.channel.startswith('hh')):
+          max_mem = '4096M'
         sbatch_hadd_file = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_hadd_%s_%s.py" % (self.channel, hadd_stage_name)).replace(".root", "")
         scriptFile       = os.path.join(self.dirs[DKEY_SCRIPTS], os.path.basename(sbatch_hadd_file).replace(".py", ".sh"))
         logFile          = os.path.join(self.dirs[DKEY_LOGS],    os.path.basename(sbatch_hadd_file).replace(".py", ".log"))
@@ -1868,7 +1875,8 @@ class analyzeConfig(object):
 
     def addToMakefile_hadd_stage1(self, lines_makefile, make_target = "phony_hadd_stage1", make_dependency = "phony_analyze", 
                                   max_input_files_per_job = 10, max_mem = ''):
-        self.addToMakefile_hadd(lines_makefile, make_target, make_dependency, self.inputFiles_hadd_stage1, self.outputFile_hadd_stage1)
+        self.addToMakefile_hadd(lines_makefile, make_target, make_dependency, self.inputFiles_hadd_stage1, self.outputFile_hadd_stage1,
+                                max_input_files_per_job, max_mem)
 
     def addToMakefile_hadd_sync(self, lines_makefile, make_target = "phony_hadd_sync", make_dependency = "phony_analyze"):
         self.addToMakefile_hadd(lines_makefile, make_target, make_dependency, self.inputFiles_sync, self.outputFile_sync)

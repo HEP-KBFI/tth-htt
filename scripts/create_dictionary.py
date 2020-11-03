@@ -378,7 +378,7 @@ def process_paths(meta_dict, key):
       else:
         nof_events_sum_str = '{:.8e}'.format(nof_events_sum)
       if nof_events_sum == 0:
-        nof_events_sum_str = 0.
+        nof_events_sum_str = "0."
       assert(nof_events_sum_str)
       nof_events[histogram_name].append(nof_events_sum_str)
 

@@ -92,7 +92,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/hadTauGenMatchingAuxFunctions.h" // getHadTauGenMatch_definitions_1tau, getHadTauGenMatch_string, getHadTauGenMatch_int
 #include "tthAnalysis/HiggsToTauTau/interface/GenMatchInterface.h" // GenMatchInterface
 #include "tthAnalysis/HiggsToTauTau/interface/fakeBackgroundAuxFunctions.h" // getWeight_2L, getWeight_3L
-#include "tthAnalysis/HiggsToTauTau/interface/backgroundEstimation.h" // prob_chargeMisId
+#include "tthAnalysis/HiggsToTauTau/interface/ChargeMisIdRate.h" // ChargeMisIdRate
 #include "tthAnalysis/HiggsToTauTau/interface/hltPath.h" // hltPath, create_hltPaths, hltPaths_isTriggered, hltPaths_delete
 #include "tthAnalysis/HiggsToTauTau/interface/hltPathReader.h" // hltPathReader
 #include "tthAnalysis/HiggsToTauTau/interface/Data_to_MC_CorrectionInterface_2016.h"
@@ -342,6 +342,7 @@ int main(int argc, char* argv[])
     case Era::k2018: dataToMCcorrectionInterface = new Data_to_MC_CorrectionInterface_2018(cfg_dataToMCcorrectionInterface); break;
     default: throw cmsException("analyze_2lss_1tau", __LINE__) << "Invalid era = " << static_cast<int>(era);
   }
+  const ChargeMisIdRate chargeMisIdRate(era);
 
   std::string applyFakeRateWeights_string = cfg_analyze.getParameter<std::string>("applyFakeRateWeights");
   int applyFakeRateWeights = -1;
@@ -1659,8 +1660,8 @@ int main(int argc, char* argv[])
       continue;
     }
     if ( leptonChargeSelection == kOS ) {
-      double prob_chargeMisId_lead = prob_chargeMisId(era, selLepton_lead_type, selLepton_lead->pt(), selLepton_lead->eta());
-      double prob_chargeMisId_sublead = prob_chargeMisId(era, selLepton_sublead_type, selLepton_sublead->pt(), selLepton_sublead->eta());
+      double prob_chargeMisId_lead = chargeMisIdRate.get(selLepton_lead);
+      double prob_chargeMisId_sublead = chargeMisIdRate.get(selLepton_sublead);
 
       double prob_chargeMisId_applied = 1.;
       if ( apply_lepton_and_hadTauCharge_cut ) {

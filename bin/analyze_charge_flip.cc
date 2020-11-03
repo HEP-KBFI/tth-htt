@@ -205,7 +205,6 @@ int main(int argc, char* argv[])
   const bool lep_useTightChargeCut = cfg_analyze.exists("lep_useTightChargeCut") ? cfg_analyze.getParameter<bool>("lep_useTightChargeCut") : true;
   printf("lep_useTightChargeCut %d \n",lep_useTightChargeCut);
 
-  if (printLevel > 9) std::cout << "Siddh here1" << std::endl;
   EvtWeightManager * eventWeightManager = nullptr;
   if(applyAdditionalEvtWeight)
   {
@@ -803,10 +802,12 @@ int main(int argc, char* argv[])
     }
     const std::vector<const RecoElectron*> electrons_shifted = recompute_p4(cleanedElectrons, electronPt_option);
     const std::vector<const RecoElectron*> preselElectrons = preselElectronSelector(electrons_shifted);
-    const std::vector<const RecoElectron*> fakeableElectrons = lep_mva_wp == "hh_multilepton" ?
-      fakeableElectronSelector_hh_multilepton(preselElectrons) :
-      fakeableElectronSelector_default(preselElectrons)
-    ;
+    const std::vector<const RecoElectron*> fakeableElectrons = [&](){
+      return lep_mva_wp == "hh_multilepton" ?
+        fakeableElectronSelector_hh_multilepton(preselElectrons) :
+        fakeableElectronSelector_default(preselElectrons)
+      ;
+    }();
     const std::vector<const RecoElectron*> tightElectrons = tightElectronSelector(preselElectrons);
     const std::vector<const RecoElectron*> selElectrons = selectObjects(
       leptonSelection, preselElectrons, fakeableElectrons, tightElectrons
@@ -978,8 +979,8 @@ int main(int argc, char* argv[])
       }
       continue;
     }
-    cutFlowTable.update("lead electron pT > 25 GeV && sublead electron pT > 10 GeV", evtWeightRecorder.get(central_or_shift));
-    cutFlowHistManager->fillHistograms("lead electron pT > 25 GeV && sublead electron pT > 10 GeV", evtWeightRecorder.get(central_or_shift));
+    cutFlowTable.update("lead electron pT > 20 GeV && sublead electron pT > 10 GeV", evtWeightRecorder.get(central_or_shift));
+    cutFlowHistManager->fillHistograms("lead electron pT > 20 GeV && sublead electron pT > 10 GeV", evtWeightRecorder.get(central_or_shift));
     
     bool failsTightChargeCut = false;
     for ( std::vector<const RecoElectron*>::const_iterator electron = selElectrons.begin();
@@ -1039,7 +1040,7 @@ int main(int argc, char* argv[])
       }
 
       bool requireChargeMatch = lep_useTightChargeCut;
-      dataToMCcorrectionInterface->setLeptons({ selElectron_lead, selElectron_sublead }, requireChargeMatch); // TODO: use corrected 4-momentum
+      dataToMCcorrectionInterface->setLeptons({ selElectron_lead, selElectron_sublead }, requireChargeMatch);
 
 //--- apply data/MC corrections for trigger efficiency,
 //    and efficiencies for lepton to pass loose identification and isolation criteria

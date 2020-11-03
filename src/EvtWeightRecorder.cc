@@ -51,8 +51,8 @@ double
 EvtWeightRecorder::get(const std::string & central_or_shift,
                        const std::string & bin) const
 {
-  double retVal = (isMC_ ? get_inclusive(central_or_shift, bin) * get_data_to_MC_correction(central_or_shift) * prescale_ : 1.) *
-         get_FR(central_or_shift) * chargeMisIdProb_
+  double retVal = (isMC_ ? get_inclusive(central_or_shift, bin) * get_data_to_MC_correction(central_or_shift) * get_prescaleWeight() : 1.) *
+         get_FR(central_or_shift) * get_chargeMisIdProb()
   ;
   return retVal;
 }
