@@ -31,6 +31,7 @@ JetHistManagerAK8::JetHistManagerAK8(const edm::ParameterSet & cfg)
     "phi",
     "msoftdrop",
     "tau21",
+    "jetId",
     "mass",
     "tau32",
     "subjet1_pt",
@@ -55,6 +56,7 @@ JetHistManagerAK8::bookHistograms(TFileDirectory & dir)
   histogram_phi_               = book1D(dir, "phi",             "phi",             36, -TMath::Pi(), +TMath::Pi());
   histogram_msoftdrop_         = book1D(dir, "msoftdrop",       "msoftdrop",       40,  0.,  200.);
   histogram_tau21_             = book1D(dir, "tau21",           "tau21",           40,  0.2,   1.);
+  histogram_jetId_             = book1D(dir, "jetId",           "jetId",            7, -0.5,   6.5); 
 
   if(option_ == kOption_allHistograms)
   {
@@ -83,6 +85,7 @@ JetHistManagerAK8::fillHistograms(const RecoJetAK8 & jet,
   if ( jet.tau1() > 0. ) {
     fillWithOverFlow(histogram_tau21_,             jet.tau2()/jet.tau1(), evtWeight, evtWeightErr);
   }
+  fillWithOverFlow(histogram_jetId_,               jet.jetId(),           evtWeight, evtWeightErr);
 
   if(option_ == kOption_allHistograms)
   {
@@ -97,15 +100,25 @@ JetHistManagerAK8::fillHistograms(const RecoJetAK8 & jet,
     {
       fillWithOverFlow(histogram_subjet1_pt_,      subJet1->pt(),         evtWeight, evtWeightErr);
       fillWithOverFlow(histogram_subjet1_eta_,     subJet1->eta(),        evtWeight, evtWeightErr); 
-      fillWithOverFlow(histogram_subjet1_BtagCSV_, subJet1->BtagCSV(),    evtWeight, evtWeightErr);
+      // CV: plot b-tag discriminator value for subjets of pT > 30 GeV only,
+      //     matching the selection implemented in the RecoJetCollectionSelectorAK8_hh_bbWW_Hbb class
+      if(subJet1->pt() > 30.) 
+      {
+        fillWithOverFlow(histogram_subjet1_BtagCSV_, subJet1->BtagCSV(),    evtWeight, evtWeightErr);
+      }
     }
 
     const RecoSubjetAK8 * const subJet2 = jet.subJet2();
     if(subJet2)
     {
       fillWithOverFlow(histogram_subjet2_pt_,      subJet2->pt(),         evtWeight, evtWeightErr);
-      fillWithOverFlow(histogram_subjet2_eta_,     subJet2->eta(),        evtWeight, evtWeightErr); 
-      fillWithOverFlow(histogram_subjet2_BtagCSV_, subJet2->BtagCSV(),    evtWeight, evtWeightErr);
+      fillWithOverFlow(histogram_subjet2_eta_,     subJet2->eta(),        evtWeight, evtWeightErr);
+      // CV: plot b-tag discriminator value for subjets of pT > 30 GeV only,
+      //     matching the selection implemented in the RecoJetCollectionSelectorAK8_hh_bbWW_Hbb class
+      if(subJet2->pt() > 30.)
+      {
+        fillWithOverFlow(histogram_subjet2_BtagCSV_, subJet2->BtagCSV(),    evtWeight, evtWeightErr);
+      }
     }
 
     if(subJet1 && subJet2)

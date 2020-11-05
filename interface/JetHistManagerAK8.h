@@ -42,6 +42,7 @@ private:
   TH1 * histogram_phi_;
   TH1 * histogram_msoftdrop_;
   TH1 * histogram_tau21_;
+  TH1 * histogram_jetId_;
 
   TH1 * histogram_mass_;
   TH1 * histogram_tau32_;
