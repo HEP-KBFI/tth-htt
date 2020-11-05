@@ -59,7 +59,7 @@ RecoMEtReader::setMEt_central_or_shift(int central_or_shift)
     std::cout
         << get_human_line(this, __func__, __LINE__)
         << "Not setting the systematics option to " << central_or_shift
-        << " but keeping it at " << ptPhiOption_
+        << " but keeping it at " << ptPhiOption_ << std::endl;
     ;
   }
 }

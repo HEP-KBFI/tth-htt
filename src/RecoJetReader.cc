@@ -134,7 +134,7 @@ RecoJetReader::setPtMass_central_or_shift(int central_or_shift)
     std::cout
         << get_human_line(this, __func__, __LINE__)
         << "Not setting the systematics option to " << ptMassOption_
-        << " but keeping it at " << ptMassOption_branch_
+        << " but keeping it at " << ptMassOption_branch_ << std::endl;
     ;
   }
 }
