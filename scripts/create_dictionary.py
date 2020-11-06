@@ -317,7 +317,17 @@ def get_array_type(tree, branch_name, array_multiplier = 1):
   else:
     return (arr_type, [0] * array_multiplier)
 
-def process_paths(meta_dict, key):
+def get_nof_events_sum_str(nof_events_sum, histogram_name):
+  if histogram_name == HISTOGRAM_COUNT or histogram_name.startswith('{}_'.format(HISTOGRAM_COUNT)):
+    nof_events_sum_str = str(int(nof_events_sum))
+  else:
+    nof_events_sum_str = '{:.8e}'.format(nof_events_sum)
+  if nof_events_sum == 0:
+    nof_events_sum_str = "0."
+  assert(nof_events_sum_str)
+  return nof_events_sum_str
+
+def process_paths(meta_dict, key, count_histograms):
   local_paths = meta_dict[key]['paths']
   nof_events = max(path_entry.nof_tree_events for path_entry in local_paths)
   is_presel_list = [ path_entry.is_presel for path_entry in local_paths ]
@@ -373,17 +383,31 @@ def process_paths(meta_dict, key):
         index_entry[HISTOGRAM_COUNT_KEY][histogram_name][idxBin] for index_entry in local_path_choice.indices.values() \
         if histogram_name in index_entry[HISTOGRAM_COUNT_KEY]
       )
-      if histogram_name == HISTOGRAM_COUNT or histogram_name.startswith('{}_'.format(HISTOGRAM_COUNT)):
-        nof_events_sum_str = str(int(nof_events_sum))
-      else:
-        nof_events_sum_str = '{:.8e}'.format(nof_events_sum)
-      if nof_events_sum == 0:
-        nof_events_sum_str = "0."
-      assert(nof_events_sum_str)
-      nof_events[histogram_name].append(nof_events_sum_str)
+      nof_events[histogram_name].append(get_nof_events_sum_str(nof_events_sum, histogram_name))
 
   nof_tree_events = sum(index_entry[TREE_COUNT_KEY] for index_entry in local_path_choice.indices.values())
   fsize           = sum(index_entry[FSIZE_KEY]      for index_entry in local_path_choice.indices.values())
+
+  process_name = meta_dict[key]['process_name_specific']
+  if count_histograms and process_name in count_histograms:
+    count_histograms_process = count_histograms[process_name]
+    int_count_histograms_process = int(count_histograms_process[HISTOGRAM_COUNT][0])
+    int_nof_events = int(nof_events[HISTOGRAM_COUNT][0])
+    if int_count_histograms_process != int_nof_events:
+      raise RuntimeError(
+        "Incompatible event counts found for process %s at count '%s': %d vs %d" % \
+        (process_name, HISTOGRAM_COUNT, int_count_histograms_process, int_nof_events)
+      )
+    # the assumption is that all necessary event counts are already stored in the auxiliary file
+    for count_histogram_name in count_histograms_process:
+      if count_histogram_name in nof_events:
+        continue
+      if 'Pdf' in count_histogram_name:
+        continue
+      nof_events[count_histogram_name] = [
+        get_nof_events_sum_str(nof_events_sum, count_histogram_name) \
+        for nof_events_sum in count_histograms_process[count_histogram_name]
+      ]
 
   meta_dict[key]['nof_events']      = nof_events
   meta_dict[key]['nof_tree_events'] = nof_tree_events
@@ -901,6 +925,9 @@ if __name__ == '__main__':
                       help = 'R|Clean the temporary SLURM directory specified by -J')
   parser.add_argument('-F', '--force', dest = 'force', action = 'store_true', default = False,
                       help = 'R|Force the creation of missing directories')
+  parser.add_argument('-q', '--count-histograms', dest = 'count_histograms', metavar = 'file',
+                      type = str, default = '', required = False,
+                      help = 'R|A ROOT file with histograms storing the event sums')
   parser.add_argument('-v', '--verbose', dest = 'verbose', action = 'store_true', default = False,
                       help = 'R|Enable verbose printout')
   args = parser.parse_args()
@@ -927,6 +954,31 @@ if __name__ == '__main__':
 
   if args.save_corrupted and not args.check_every_event:
     logging.warning("The flag -C/--save-corrupted has no effect w/o -c/--check-every-event option")
+
+  count_histograms = {}
+  count_histogram_input = args.count_histograms
+  if count_histogram_input:
+    if not os.path.isfile(count_histogram_input):
+      raise RuntimeError("No such file: %s" % count_histogram_input)
+    count_histogram_file = ROOT.TFile.Open(count_histogram_input)
+    count_process_names = [ key.GetName() for key in count_histogram_file.GetListOfKeys() ]
+    nof_count_processes = len(count_process_names)
+    logging.info("Reading event counts of {} processes from {}".format(nof_count_processes, count_histogram_input))
+    for count_process_idx, count_process_name in enumerate(count_process_names):
+      logging.info("Reading events counts of process {} ({}/{})".format(
+        count_process_name, count_process_idx + 1, nof_count_processes
+      ))
+      count_histogram_dir = count_histogram_file.Get(count_process_name)
+      count_histogram_names = [ key.GetName() for key in count_histogram_dir.GetListOfKeys() ]
+      process_content = collections.OrderedDict()
+      for count_histogram_name in count_histogram_names:
+        count_histogram = count_histogram_dir.Get(count_histogram_name)
+        count_histogram.SetDirectory(0)
+        process_content[count_histogram_name] = [
+          count_histogram.GetBinContent(bin_idx) for bin_idx in range(1, count_histogram.GetNbinsX() + 1)
+        ]
+      count_histograms[count_process_name] = process_content
+    count_histogram_file.Close()
 
   use_fuse = args.use_fuse
   filetracker = FileTracker()
@@ -1162,7 +1214,7 @@ if __name__ == '__main__':
       if not name_regex.match(entry['process_name_specific']):
         continue
       if entry['located']:
-        process_paths(meta_dict, key)
+        process_paths(meta_dict, key, count_histograms)
 
     for key, entry in meta_dict.items():
       if not name_regex.match(entry['process_name_specific']):
