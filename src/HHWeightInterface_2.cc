@@ -104,13 +104,13 @@ HHWeightInterface_2::HHWeightInterface_2(const edm::ParameterSet & cfg)
   }
   if(fileHH -> IsZombie())
   {
-    cmsException(this, __func__, __LINE__) << "The file '" << FileDenominator << "' appears to be a zombie";
+    throw cmsException(this, __func__, __LINE__) << "The file '" << FileDenominator << "' appears to be a zombie";
   }
 
   sumEvt = static_cast<TH2 *>(fileHH -> Get(histtitle.c_str()));
   if(! sumEvt)
   {
-    cmsException(this, __func__, __LINE__)
+    throw cmsException(this, __func__, __LINE__)
       << "The file '" << FileDenominator << "' does not have a TH2 named " << histtitle
     ;
   }
@@ -180,7 +180,7 @@ void HHWeightInterface_2::loadScanFile(std::string filePath, std::string prefix,
   std::ifstream inFile_scan(filePath);
   if(! inFile_scan)
     {
-      cmsException(this, __func__, __LINE__) << "Error on opening file " << filePath;
+      throw cmsException(this, __func__, __LINE__) << "Error on opening file " << filePath;
     }
   for(std::string line; std::getline(inFile_scan, line);)
     {

@@ -10,8 +10,8 @@ class EventInfoWriter
 {
 public:
   EventInfoWriter();
-  EventInfoWriter(bool is_signal,
-                  bool is_mc,
+  EventInfoWriter(bool isMC_H,
+                  bool isMC,
                   const std::string & prefix = "");
 
   void

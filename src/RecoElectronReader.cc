@@ -129,6 +129,7 @@ RecoElectronReader::setBranchAddresses(TTree * tree)
     const unsigned int max_nLeptons = leptonReader_->max_nLeptons_;
 
     BranchAddressInitializer bai(tree, max_nLeptons);
+    bai.ignoreErrors(true); // [*]
     for(const auto & EGammaID_choice: EGammaID_map)
     {
       bai.setBranchAddress(rawMVAs_POG_[EGammaID_choice.first], branchNames_mvaRaw_POG_[EGammaID_choice.first]);
@@ -141,6 +142,8 @@ RecoElectronReader::setBranchAddresses(TTree * tree)
         );
       }
     }
+    bai.ignoreErrors(false); // [*]
+    // [*] TODO remove once all Ntuples have the EGamma ISO ID branches
 
     bai.setBranchAddress(eCorr_, branchName_eCorr_);
     bai.setBranchAddress(sigmaEtaEta_, branchName_sigmaEtaEta_);

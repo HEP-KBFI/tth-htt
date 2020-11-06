@@ -52,6 +52,7 @@ RecoLepton::RecoLepton(const ChargedParticle & lepton,
   , genLepton_(nullptr)
   , genHadTau_(nullptr)
   , genJet_(nullptr)
+  , isCMSPOG_(false)
   , isLoose_(false)
   , isFakeable_(false)
   , isTight_(false)
@@ -59,6 +60,12 @@ RecoLepton::RecoLepton(const ChargedParticle & lepton,
 
 RecoLepton::~RecoLepton()
 {}
+
+void
+RecoLepton::set_isCMSPOG() const
+{
+  isCMSPOG_ = true;
+}
 
 void
 RecoLepton::set_isLoose() const
@@ -324,6 +331,12 @@ RecoLepton::hasAnyGenMatch() const
 }
 
 bool
+RecoLepton::isCMSPOG() const
+{
+  return isCMSPOG_;
+}
+
+bool
 RecoLepton::isLoose() const
 {
   return isLoose_;
@@ -397,6 +410,7 @@ operator<<(std::ostream & stream,
   if(lepton.hasJetBtagCSV(Btag::kCSVv2))   stream << lepton.jetBtagCSV(Btag::kCSVv2);   else stream << "N/A";
   stream << ", mvaRawTTH = "               << lepton.mvaRawTTH()
          << ", mvaRawTTH_cut = "           << lepton.mvaRawTTH_cut()
+         << ", passes CMS POG ID = "       << lepton.isCMSPOG()
          << ", is loose/fakeable/tight = " << lepton.isLoose()       << '/'
                                            << lepton.isFakeable()    << '/'
                                            << lepton.isTight()       << ",\n"

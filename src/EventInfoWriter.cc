@@ -7,8 +7,8 @@ EventInfoWriter::EventInfoWriter()
   : EventInfoWriter(false, false, "")
 {}
 
-EventInfoWriter::EventInfoWriter(bool is_signal,
-                                 bool is_mc,
+EventInfoWriter::EventInfoWriter(bool isMC_H,
+                                 bool isMC,
                                  const std::string & prefix)
 {
   const std::string pattern = prefix.empty() ? "%s" : prefix + "_%s";
@@ -16,15 +16,15 @@ EventInfoWriter::EventInfoWriter(bool is_signal,
   branchName_lumi_    = Form(pattern.data(), "luminosityBlock");
   branchName_event_   = Form(pattern.data(), "event");
 
-  branchName_genHiggsDecayMode_ = is_signal ? Form(pattern.data(), "genHiggsDecayMode")                         : "";
-  branchName_genWeight_         = is_mc     ? Form(pattern.data(), "genWeight")                                 : "";
-  branchName_pileupWeight_      = is_mc     ? Form(pattern.data(), getBranchName_pileup(PUsys::central).data()) : "";
-  branchName_pileupWeightUp_    = is_mc     ? Form(pattern.data(), getBranchName_pileup(PUsys::up).data())      : "";
-  branchName_pileupWeightDown_  = is_mc     ? Form(pattern.data(), getBranchName_pileup(PUsys::down).data())    : "";
+  branchName_genHiggsDecayMode_ = isMC_H ? Form(pattern.data(), "genHiggsDecayMode")                         : "";
+  branchName_genWeight_         = isMC   ? Form(pattern.data(), "genWeight")                                 : "";
+  branchName_pileupWeight_      = isMC   ? Form(pattern.data(), getBranchName_pileup(PUsys::central).data()) : "";
+  branchName_pileupWeightUp_    = isMC   ? Form(pattern.data(), getBranchName_pileup(PUsys::up).data())      : "";
+  branchName_pileupWeightDown_  = isMC   ? Form(pattern.data(), getBranchName_pileup(PUsys::down).data())    : "";
 
   const std::string LHEReweightingWeight_base = "LHEReweightingWeight";
-  branchName_LHEReweightingWeight  = is_mc ? Form(pattern.data(), LHEReweightingWeight_base.data())              : "";
-  branchName_nLHEReweightingWeight = is_mc ? Form(pattern.data(), Form("n%s", LHEReweightingWeight_base.data())) : "";
+  branchName_LHEReweightingWeight  = isMC ? Form(pattern.data(), LHEReweightingWeight_base.data())              : "";
+  branchName_nLHEReweightingWeight = isMC ? Form(pattern.data(), Form("n%s", LHEReweightingWeight_base.data())) : "";
 }
 
 void

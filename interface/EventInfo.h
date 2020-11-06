@@ -1,6 +1,7 @@
 #ifndef EventInfo_H
 #define EventInfo_H
 
+#include "tthAnalysis/HiggsToTauTau/interface/AnalysisConfig.h"
 #include "tthAnalysis/HiggsToTauTau/interface/HTXS.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h" // edm::ParameterSet
@@ -13,10 +14,12 @@ class EventInfo
 {
 public:
   EventInfo();
-  EventInfo(bool is_mc,
-            bool is_signal = false,
-            bool is_hh_nonresonant = false,
-            bool is_ttbar_rwgt = false);
+  EventInfo(const AnalysisConfig & analysisConfig);
+  EventInfo(bool isMC,
+            bool isMC_H,
+            bool isMC_HH,
+            bool isHH_rwgt_allowed,
+            bool apply_topPtRwgt);
   EventInfo(const EventInfo & eventInfo);
   EventInfo &
   operator=(const EventInfo & eventInfo);
@@ -83,18 +86,6 @@ public:
   get_htxs_category() const;
 
   bool
-  is_signal() const;
-
-  bool
-  is_mc() const;
-
-  bool
-  is_hh_nonresonant() const;
-
-  bool
-  is_ttbar_rwgt() const;
-
-  bool
   is_initialized() const;
 
   std::string
@@ -120,10 +111,11 @@ public:
   friend class EventInfoWriter;
 
 protected:
-  bool is_signal_;
-  bool is_mc_;
-  bool is_hh_nonresonant_;
-  bool is_ttbar_rwgt_;
+  bool isMC_;
+  bool isMC_H_;
+  bool isMC_HH_;
+  bool isHH_rwgt_allowed_;
+  bool apply_topPtRwgt_;
   std::string central_or_shift_;
 
   UInt_t nLHEReweightingWeight;

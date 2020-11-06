@@ -54,6 +54,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // createSubdirectory_recursively()
 #include "tthAnalysis/HiggsToTauTau/interface/branchEntryTypeAuxFunctions.h" // copyBranches_singleType(), copyBranches_vectorType()
 #include "tthAnalysis/HiggsToTauTau/interface/branchEntryType.h" // branchEntryBaseType
+#include "tthAnalysis/HiggsToTauTau/interface/AnalysisConfig.h" // AnalysisConfig
 
 #include <boost/algorithm/string/predicate.hpp> // boost::algorithm::starts_with(), boost::algorithm::ends_with()
 
@@ -93,6 +94,8 @@ int main(int argc,
 
   const edm::ParameterSet cfg        = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("process");
   const edm::ParameterSet cfg_addMEM = cfg.getParameter<edm::ParameterSet>("addMEM_3l_1tau");
+  AnalysisConfig analysisConfig("ttH->multilepton+tau", cfg_addMEM);
+
   const vstring central_or_shifts           = cfg_addMEM.getParameter<vstring>("central_or_shift");
   const std::string treeName                = cfg_addMEM.getParameter<std::string>("treeName");
   const std::string selEventsFileName_input = cfg_addMEM.getParameter<std::string>("selEventsFileName_input");
@@ -259,7 +262,7 @@ int main(int argc,
   std::map<std::string, branchEntryBaseType*> branchesToKeep;
   if(copy_all_branches)
   {
-    eventInfoWriter = new EventInfoWriter(eventInfo.is_signal(), eventInfo.is_mc());
+    eventInfoWriter = new EventInfoWriter(analysisConfig.isMC_H(), analysisConfig.isMC());
     eventInfoWriter->setBranches(outputTree);
 
     muonWriter = new RecoMuonWriter(era, isMC, Form("n%s", branchName_muons.data()), branchName_muons);

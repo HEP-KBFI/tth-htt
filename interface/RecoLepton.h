@@ -42,6 +42,7 @@ public:
   /**
    * @brief Set flags indicating whether or not lepton passes loose, fakeable and/or tight selection criteria
    */
+  void set_isCMSPOG() const;
   void set_isLoose() const;
   void set_isFakeable() const;
   void set_isTight() const;
@@ -148,6 +149,7 @@ public:
   bool isGenMatched(bool requireChargeMatch) const;
   bool hasAnyGenMatch() const;
 
+  bool isCMSPOG() const;
   bool isLoose() const;
   bool isFakeable() const;
   bool isTight() const;
@@ -198,7 +200,8 @@ protected:
   std::shared_ptr<const GenPhoton> genPhoton_;
   std::shared_ptr<const GenJet> genJet_;
 
-//--- flags indicating whether or not lepton passes loose, fakeable and/or tight selection criteria
+//--- flags indicating whether or not lepton passes CMS POG ID, loose, fakeable and/or tight selection criteria
+  mutable bool isCMSPOG_;
   mutable bool isLoose_;
   mutable bool isFakeable_;
   mutable bool isTight_;

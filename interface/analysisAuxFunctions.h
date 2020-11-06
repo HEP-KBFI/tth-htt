@@ -141,7 +141,7 @@ const std::map<EGammaID, std::string> EGammaID_map = {
 //  { EGammaID::Fall17V1noIso, "mvaFall17V1noIso" },
 //  { EGammaID::Fall17V1Iso,   "mvaFall17V1Iso"   },
   { EGammaID::Fall17V2noIso, "mvaFall17V2noIso" },
-//  { EGammaID::Fall17V2Iso,   "mvaFall17V2Iso"   },
+  { EGammaID::Fall17V2Iso,   "mvaFall17V2Iso"   },
 };
 
 const std::map<EGammaWP, std::string> EGammaWP_map = {
@@ -532,6 +532,25 @@ mergeLeptonCollections(const std::vector<const RecoElectron *> & electrons,
   std::vector<const RecoLepton *> leptons = mergeLeptonCollectionsNoSort(electrons, muons);
   std::sort(leptons.begin(), leptons.end(), sortFunction);
   return leptons;
+}
+
+template <typename T,
+          typename U>
+std::vector<const T *>
+mergeCollections(const std::vector<const T *> & firstCollection,
+                 const std::vector<const T *> & secondCollection,
+                 bool (*sortFunction)(const U *, const U *))
+{
+  std::vector<const T *> result = firstCollection;
+  for(const T * obj_ptr: secondCollection)
+  {
+    if(std::find(result.begin(), result.end(), obj_ptr) == result.end())
+    {
+      result.push_back(obj_ptr);
+    }
+  }
+  std::sort(result.begin(), result.end(), sortFunction);
+  return result;
 }
 
 template <typename T,
