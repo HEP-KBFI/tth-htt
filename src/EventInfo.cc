@@ -35,16 +35,21 @@ const std::map<std::string, Int_t> EventInfo::decayMode_idString_diHiggs =
 };
 
 EventInfo::EventInfo()
-  : EventInfo(false)
+  : EventInfo(false, false, false, false, false)
 {}
 
 EventInfo::EventInfo(const AnalysisConfig & analysisConfig)
-  : EventInfo(analysisConfig.isMC(), analysisConfig.isMC_H(), analysisConfig.isMC_HH_nonresonant(), analysisConfig.apply_topPtReweighting())
+  : EventInfo(analysisConfig.isMC()
+  , analysisConfig.isMC_H()
+  , analysisConfig.isMC_HH()
+  , analysisConfig.isHH_rwgt_allowed()
+  , analysisConfig.apply_topPtReweighting())
 {}
 
 EventInfo::EventInfo(bool isMC,
                      bool isMC_H,
-                     bool isMC_HH_nonresonant,
+                     bool isMC_HH,
+                     bool isHH_rwgt_allowed,
                      bool apply_topPtRwgt)
   : run(0)
   , lumi(0)
@@ -58,7 +63,8 @@ EventInfo::EventInfo(bool isMC,
   , topPtRwgtSF(-1.)
   , isMC_(isMC)
   , isMC_H_(isMC_H)
-  , isMC_HH_nonresonant_(isMC_HH_nonresonant)
+  , isMC_HH_(isMC_HH)
+  , isHH_rwgt_allowed_(isHH_rwgt_allowed)
   , apply_topPtRwgt_(apply_topPtRwgt)
   , central_or_shift_("central")
   , nLHEReweightingWeight(0)
@@ -68,8 +74,15 @@ EventInfo::EventInfo(bool isMC,
   , read_htxs_(false)
   , refGenWeight_(0.)
 {
-  assert(isMC_ || !isMC_H_);
-  assert(isMC_ || !isMC_HH_nonresonant_);
+  int checksum = 0;
+  if ( isMC_H_  ) ++checksum;
+  if ( isMC_HH_ ) ++checksum;
+  if ( !(checksum == 0 || (checksum == 1 && isMC_)) )
+    throw cmsException(this, __func__, __LINE__)
+      << "Invalid combination of Configuration parameters:\n" 
+      << " isMC = " << isMC_ << "\n" 
+      << " isMC_H = " << isMC_H_ << "\n"  
+      << " isMC_HH = " << isMC_HH_ << "\n";
 }
 
 EventInfo::EventInfo(const EventInfo & eventInfo)
@@ -96,7 +109,8 @@ EventInfo::copy(const EventInfo & eventInfo)
   isMC_H_ = eventInfo.isMC_H_;
   isMC_ = eventInfo.isMC_;
   genDiHiggsDecayMode = eventInfo.genDiHiggsDecayMode;
-  isMC_HH_nonresonant_ = eventInfo.isMC_HH_nonresonant_;
+  isMC_HH_ = eventInfo.isMC_HH_;
+  isHH_rwgt_allowed_ = eventInfo.isHH_rwgt_allowed_;
   gen_mHH = eventInfo.gen_mHH;
   gen_cosThetaStar = eventInfo.gen_cosThetaStar;
   apply_topPtRwgt_ = eventInfo.apply_topPtRwgt_;
@@ -292,25 +306,32 @@ EventInfo::is_initialized() const
 std::string
 EventInfo::getDecayModeString() const
 {
+  if(! isMC_H_)
+  {
+    throw cmsException(this, __func__, __LINE__)
+      << "The event " << *this << " is not a H signal event => request "
+         "for a decay mode as a string is not applicable\n"
+    ;
+  }
   return EventInfo::getDecayModeString(decayMode_idString_singleHiggs);
 }
 
 std::string
 EventInfo::getDiHiggsDecayModeString() const
 {
+  if(! (isMC_HH_))
+  {
+    throw cmsException(this, __func__, __LINE__)
+      << "The event " << *this << " is not a HH signal event => request "
+         "for a decay mode as a string is not applicable\n"
+    ;
+  }
   return EventInfo::getDecayModeString(decayMode_idString_diHiggs);
 }
 
 std::string
 EventInfo::getDecayModeString(const std::map<std::string, Int_t> & decayMode_idString) const
 {
-  if(! isMC_H_)
-  {
-    throw cmsException(this, __func__, __LINE__)
-      << "The event " << *this << " is not a signal event => request "
-         "for a decay mode as a string is not applicable\n"
-    ;
-  }
   for(const auto & kv: decayMode_idString)
   {
     if(genHiggsDecayMode == kv.second)

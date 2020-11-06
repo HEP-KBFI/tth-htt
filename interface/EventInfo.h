@@ -16,16 +16,15 @@ public:
   EventInfo();
   EventInfo(const AnalysisConfig & analysisConfig);
   EventInfo(bool isMC,
-            bool isMC_H = false,
-            bool isMC_HH_nonresonant = false,
-            bool apply_topPtRwgt = false);
+            bool isMC_H,
+            bool isMC_HH,
+            bool isHH_rwgt_allowed,
+            bool apply_topPtRwgt);
   EventInfo(const EventInfo & eventInfo);
   EventInfo &
   operator=(const EventInfo & eventInfo);
 
   ~EventInfo();
-
-  bool is_hh_nonresonant() { return isMC_HH_nonresonant_; } // CV: remove this function once all analysis channels have migrated to using analysisConfig class !!
 
   UInt_t    run;                 ///< run number
   UInt_t    lumi;                ///< luminosity
@@ -114,7 +113,8 @@ public:
 protected:
   bool isMC_;
   bool isMC_H_;
-  bool isMC_HH_nonresonant_;
+  bool isMC_HH_;
+  bool isHH_rwgt_allowed_;
   bool apply_topPtRwgt_;
   std::string central_or_shift_;
 

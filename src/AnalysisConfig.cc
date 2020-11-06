@@ -4,6 +4,8 @@
 #include <TObjString.h>
 #include <TObjArray.h>
 
+#include <boost/algorithm/string/predicate.hpp> // boost::starts_with()
+
 AnalysisConfig::AnalysisConfig(const std::string & analysis, const edm::ParameterSet & cfg)
   : analysis_string_(analysis)
   , process_string_(cfg.getParameter<std::string>("process"))
@@ -41,6 +43,7 @@ AnalysisConfig::AnalysisConfig(const std::string & analysis, const edm::Paramete
   isMC_HH_nonresonant_    = parser_HH_nonresonant.Match(process_string_.data());
   assert(!(isMC_HH_resonant_ && isMC_HH_nonresonant_));
   isMC_HH_  = isMC_HH_resonant_ || isMC_HH_nonresonant_ || process_string_ == "HH";
+  isHH_rwgt_allowed_ = boost::starts_with(process_string_, "signal_ggf_nonresonant_") && process_string_.find("cHHH") == std::string::npos;
 
   std::string apply_topPtReweighting_string = cfg.getParameter<std::string>("apply_topPtReweighting");
   apply_topPtReweighting_ = !apply_topPtReweighting_string.empty();
@@ -161,6 +164,12 @@ double
 AnalysisConfig::get_HH_resonant_mass() const
 {
   return mass_HH_resonant_;
+}
+
+bool
+AnalysisConfig::isHH_rwgt_allowed() const
+{
+  return isHH_rwgt_allowed_;
 }
 
 bool
