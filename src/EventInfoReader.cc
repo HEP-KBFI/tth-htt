@@ -50,6 +50,9 @@ EventInfoReader::setBranchAddresses(TTree * tree)
       bai.setBranchAddress(info_ -> htxs_.pt_, branchName_htxs_pt);
       bai.setBranchAddress(info_ -> htxs_.y_, branchName_htxs_y);
     }
+  }
+  if(info_ -> isMC_H_ || info_ -> isMC_HH_)
+  {
     if(read_genHiggsDecayMode_)
     {
       bai.setBranchAddress(info_ -> genHiggsDecayMode, branchName_genHiggsDecayMode);
