@@ -65,6 +65,7 @@ class prodNtupleConfig:
              skip_tools_step,
              do_sync,
              lep_mva_wp,
+             skip_count,
              verbose = False,
              pool_id        = '',
              submission_cmd = None,
@@ -103,6 +104,7 @@ class prodNtupleConfig:
         self.do_sync           = do_sync
         self.pool_id           = pool_id if pool_id else uuid.uuid4()
 
+        self.skip_count = skip_count
         self.lep_mva_wp = lep_mva_wp
         lep_mva_cut_map = get_lep_mva_map(self.lep_mva_wp)
         self.lep_mva_cut_mu = lep_mva_cut_map['mu']
@@ -185,7 +187,9 @@ class prodNtupleConfig:
             inputFiles_prepended = []
             for inputFile in jobOptions['inputFiles']:
                 inputFile_split = os.path.splitext(os.path.basename(inputFile))
-                infix = "{}_ii".format("_jj" if recomp_run_ls else "")
+                infix = "{}_i".format("_jj" if recomp_run_ls else "")
+                if not self.skip_count:
+                    infix += "i"
                 inputFiles_prepended.append('%s%s%s' % (inputFile_split[0], infix, inputFile_split[1]))
         if len(inputFiles_prepended) != len(set(inputFiles_prepended)):
             raise ValueError("Not all input files have a unique base name: %s" % ', '.join(jobOptions['inputFiles']))
@@ -224,6 +228,7 @@ class prodNtupleConfig:
             "golden_json             = '%s'" % self.golden_json,
             "process_name            = '%s'" % jobOptions['process_name'],
             "skip_tools_step         = %s" % self.skip_tools_step,
+            "skip_count              = %s" % self.skip_count,
             "remove_intermediate     = %s" % (not self.do_sync),
             "compTopRwgt             = %s" % jobOptions['compTopRwgt'],
             "compHTXS                = %s" % jobOptions['compHTXS'],

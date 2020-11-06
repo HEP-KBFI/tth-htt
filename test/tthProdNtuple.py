@@ -27,6 +27,10 @@ parser.add_argument('-p', '--enable-preselection',
   dest = 'enable_preselection', action = 'store_true', default = False,
   help = 'R|Enable preselection (read this script for the list of cuts)',
 )
+parser.add_argument('-s', '--skip-count',
+  dest = 'skip_count', action = 'store_true', default = False,
+  help = 'R|Skip the event counting modules',
+)
 args = parser.parse_args()
 
 # Common arguments
@@ -51,6 +55,8 @@ use_home       = args.use_home
 
 # Custom arguments
 preselection = args.enable_preselection
+skip_count   = args.skip_count
+
 pileup       = os.path.join(
   os.environ['CMSSW_BASE'], 'src/tthAnalysis/HiggsToTauTau/data/pileup_%s.root' % era
 )
@@ -212,6 +218,7 @@ if __name__ == '__main__':
     use_home              = use_home,
     skip_tools_step       = preselection,
     lep_mva_wp            = lep_mva_wp,
+    skip_count            = skip_count,
     do_sync               = do_sync,
     submission_cmd        = sys.argv,
   )

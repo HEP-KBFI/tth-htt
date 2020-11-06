@@ -37,6 +37,7 @@ PILEUP=$(python -c "execfile('$SCRIPT'); print(pileup)")
 PROCESS_NAME=$(python -c "execfile('$SCRIPT'); print(process_name)")
 GOLDEN_JSON=$(python -c "execfile('$SCRIPT'); print(golden_json)")
 SKIP_TOOLS_STEP=$(python -c "execfile('$SCRIPT'); print(skip_tools_step)")
+SKIP_COUNT=$(python -c "execfile('$SCRIPT'); print(skip_count)")
 REMOVE_INTERMEDIATE=$(python -c "execfile('$SCRIPT'); print(remove_intermediate)")
 COMP_TOP_RWGT=$(python -c "execfile('$SCRIPT'); print(compTopRwgt)")
 COMP_HTXS=$(python -c "execfile('$SCRIPT'); print(compHTXS)")
@@ -54,6 +55,7 @@ echo "Era? '$ERA'"
 echo "Is MC? '$IS_MC'"
 echo "Is TuneCP5? '$IS_TUNECP5'"
 echo "Skip tools step? '$SKIP_TOOLS_STEP'"
+echo "Skipping event count modules? '$SKIP_COUNT'"
 echo "Remove intermediate file? '$REMOVE_INTERMEDIATE'"
 echo "Compute SFs for top reweighting? '$COMP_TOP_RWGT'"
 echo "Count events in bins of Higgs pT? '$COMP_HTXS'"
@@ -136,6 +138,9 @@ if [ "$SKIP_TOOLS_STEP" == "False" ]; then
       rm -f $F_jj;
     fi
 
+    if [[ "$SKIP_COUNT" == "True" ]]; then
+      continue;
+    fi
     echo "Creating counter histograms: $F_i -> $F_ii"
     COUNTHISTOGRAM_MODULE="countHistogramAll"
     if [ "$IS_MC" == "True" ]; then
