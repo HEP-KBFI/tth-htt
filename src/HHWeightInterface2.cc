@@ -186,7 +186,7 @@ void HHWeightInterface2::loadScanFile(const std::string & filePath, const std::s
   std::ifstream inFile_scan(filePath);
   if(! inFile_scan)
   {
-    cmsException(this, __func__, __LINE__) << "Error on opening file " << filePath;
+    throw cmsException(this, __func__, __LINE__) << "Error on opening file " << filePath;
   }
   for (std::string line; std::getline(inFile_scan, line); ) 
   {
@@ -274,7 +274,9 @@ HHWeightInterface2::getWeight(const std::string & bmName, double mHH, double cos
 {
   std::map<std::string, size_t>::const_iterator bmIdx = bmName_to_idx_.find(bmName);
   if ( bmIdx == bmName_to_idx_.end() )
+  {
     throw cmsException(this, __func__, __LINE__) << "Invalid parameter 'bmName' = " << bmName << " !!\n";
+  }
   const double denominator = getDenom(mHH, cosThetaStar);
   PyObject* args_BM_list = PyTuple_Pack(10,
     PyFloat_FromDouble(static_cast<double>(kl_[bmIdx->second])),

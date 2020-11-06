@@ -99,13 +99,13 @@ HHWeightInterface::HHWeightInterface(const edm::ParameterSet & cfg)
   }
   if(fileHH -> IsZombie())
   {
-    cmsException(this, __func__, __LINE__) << "The file '" << FileDenominator << "' appears to be a zombie";
+    throw cmsException(this, __func__, __LINE__) << "The file '" << FileDenominator << "' appears to be a zombie";
   }
 
   sumEvt = static_cast<TH2 *>(fileHH -> Get(histtitle.c_str()));
   if(! sumEvt)
   {
-    cmsException(this, __func__, __LINE__)
+    throw cmsException(this, __func__, __LINE__)
       << "The file '" << FileDenominator << "' does not have a TH2 named " << histtitle
     ;
   }
@@ -121,7 +121,7 @@ HHWeightInterface::HHWeightInterface(const edm::ParameterSet & cfg)
 
     if(! inFile_kl_scan)
     {
-      cmsException(this, __func__, __LINE__) << "Error on opening file " << applicationLoadFile_klScan;
+      throw cmsException(this, __func__, __LINE__) << "Error on opening file " << applicationLoadFile_klScan;
     }
 
     for(std::string line; std::getline(inFile_kl_scan, line);)
