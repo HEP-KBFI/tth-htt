@@ -391,16 +391,35 @@ def process_paths(meta_dict, key, count_histograms):
   process_name = meta_dict[key]['process_name_specific']
   if count_histograms and process_name in count_histograms:
     count_histograms_process = count_histograms[process_name]
-    int_count_histograms_process = int(count_histograms_process[HISTOGRAM_COUNT][0])
-    int_nof_events = int(nof_events[HISTOGRAM_COUNT][0])
-    if int_count_histograms_process != int_nof_events:
-      raise RuntimeError(
-        "Incompatible event counts found for process %s at count '%s': %d vs %d" % \
-        (process_name, HISTOGRAM_COUNT, int_count_histograms_process, int_nof_events)
-      )
     # the assumption is that all necessary event counts are already stored in the auxiliary file
     for count_histogram_name in count_histograms_process:
       if count_histogram_name in nof_events:
+        event_counts_int = [ float(event_count) for event_count in nof_events[count_histogram_name] ]
+        event_counts_ext = count_histograms_process[count_histogram_name]
+        event_counts_int_len = len(event_counts_int)
+        event_counts_ext_len = len(event_counts_ext)
+        if event_counts_int_len != event_counts_ext_len:
+          raise RuntimeError(
+            "Expected %d event counts but got %d instead in %s" % \
+            (event_counts_int_len, event_counts_ext_len, count_histogram_name)
+          )
+        if count_histogram_name == HISTOGRAM_COUNT or count_histogram_name.startswith('{}_'.format(HISTOGRAM_COUNT)):
+          event_counts_int_integer = [ int(event_count) for event_count in event_counts_int ]
+          event_counts_ext_integer = [ int(event_count) for event_count in event_counts_ext ]
+          if event_counts_int_integer != event_counts_ext_integer:
+            raise RuntimeError(
+              "Expected equal event counts for %s but got %s and %s" % \
+              (count_histogram_name, str(event_counts_int_integer), str(event_counts_ext_integer))
+            )
+        for count_idx in range(event_counts_int_len):
+          event_count_int = event_counts_int[count_idx]
+          event_count_ext = event_counts_ext[count_idx]
+          event_count_diff = abs(event_count_int - event_count_ext) / event_count_int
+          if event_count_diff > 1.e-2:
+            raise RuntimeError(
+              "Observed too large difference of %.3f%% in %s at index %d" % \
+              (event_count_diff * 100., count_histogram_name, count_idx)
+            )
         continue
       if 'Pdf' in count_histogram_name:
         continue
