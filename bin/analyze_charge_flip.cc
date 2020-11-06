@@ -804,12 +804,10 @@ int main(int argc, char* argv[])
     }
     const std::vector<const RecoElectron*> electrons_shifted = recompute_p4(cleanedElectrons, electronPt_option);
     const std::vector<const RecoElectron*> preselElectrons = preselElectronSelector(electrons_shifted);
-    const std::vector<const RecoElectron*> fakeableElectrons = [&](){
-      return lep_mva_wp == "hh_multilepton" ?
+    const std::vector<const RecoElectron*> fakeableElectrons = lep_mva_wp == "hh_multilepton" ?
         fakeableElectronSelector_hh_multilepton(preselElectrons) :
         fakeableElectronSelector_default(preselElectrons)
-      ;
-    }();
+    ;
     const std::vector<const RecoElectron*> tightElectrons = tightElectronSelector(preselElectrons);
     const std::vector<const RecoElectron*> selElectrons = selectObjects(
       leptonSelection, preselElectrons, fakeableElectrons, tightElectrons
