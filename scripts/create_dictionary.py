@@ -507,6 +507,12 @@ def get_dir_entries(use_fuse, path):
   else:
     return list(map(lambda dir_entry: nohdfs_info(dir_entry), hdfs.listdir(path.name, return_objs = False)))
 
+def get_is_njet(process_name):
+  return process_name.startswith(
+    tuple('DYToLL_{}J'.format(i) for i in range(3)) + \
+    ('DYJetsToLL_M-50_amcatnloFXFX', 'WJetsToLNu_HT', 'DYJetsToLL_M50_HT', 'DYJetsToLL_M-10to50')
+  )
+
 def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missing_branches,
                     filetracker, file_idx, era, triggerTable, count_histograms):
   ''' Assume that the following subdirectories are of the form: 0000, 0001, 0002, ...
@@ -550,10 +556,7 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
   is_htxs = meta_dict[key]['sample_category'].startswith('ttH')
   process_name = meta_dict[key]['process_name_specific']
   is_lo = 'amcatnlo' not in key
-  is_njet = process_name.startswith(
-    tuple('DYToLL_{}J'.format(i) for i in range(3)) + \
-    ('DYJetsToLL_M-50_amcatnloFXFX', 'WJetsToLNu_HT', 'DYJetsToLL_M50_HT', 'DYJetsToLL_M-10to50')
-  )
+  is_njet = get_is_njet(process_name)
   is_ht = process_name.startswith(
     tuple('W{}JetsToLNu'.format(i) for i in range(1, 5)) + tuple('DY{}JetsToLL_M-50'.format(i) for i in range(1, 5))
   )
@@ -1010,6 +1013,15 @@ if __name__ == '__main__':
         process_content[count_histogram_name] = [
           count_histogram.GetBinContent(bin_idx) for bin_idx in range(1, count_histogram.GetNbinsX() + 1)
         ]
+      for count_histogram_name in process_content:
+        if len(process_content[count_histogram_name]) == 8 and \
+           (count_histogram_name in LHESCALEARR or get_is_njet(count_process_name)):
+          histogram_name_nolhe = count_histogram_name.replace('LHEWeightScale', '')
+          assert(histogram_name_nolhe != count_histogram_name)
+          assert(histogram_name_nolhe in process_content)
+          # use nominal weight as the 5th LHE scale weight
+          process_content[count_histogram_name].insert(4, process_content[count_histogram_name][0])
+          logging.info("Got 8 weights in {} -> added the nominal weight to make it 9")
       count_histograms[count_process_name] = process_content
     count_histogram_file.Close()
 
