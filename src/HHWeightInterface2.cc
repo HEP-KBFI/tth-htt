@@ -81,6 +81,7 @@ HHWeightInterface2::HHWeightInterface2(const edm::ParameterSet & cfg)
   // https://gist.github.com/rjzak/5681680
   Py_SetProgramName(const_cast<char *>("do_weight"));
   moduleMainString_ = PyString_FromString("__main__");
+  Py_Initialize();
   moduleMain_ = PyImport_Import(moduleMainString_);
   PyRun_SimpleString(applicationLoadStr.c_str());
 
