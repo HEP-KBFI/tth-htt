@@ -182,8 +182,14 @@ class analyzeConfig(object):
                 evt_key for evt_key in nof_events.keys() \
                 if not any(excl_evt_key in evt_key for excl_evt_key in excl_count_type)
               )
+              if not samples[dbs_key]['has_LHE']:
+                nof_events_set_lhe = set(evt_key for evt_key in nof_events_set if 'LHEWeightScale' in evt_key)
+                nof_events_set = nof_events_set - nof_events_set_lhe
               if sample_nof_events_set != nof_events_set:
-                raise ValueError('Mismatching event counts for samples: %s' % dbs_list_human)
+                raise ValueError(
+                  'Mismatching event counts for samples: %s: %s vs %s' % \
+                  (dbs_list_human, str(sample_nof_events_set), str(nof_events_set))
+                )
               for count_type, count_array in samples[dbs_key]['nof_events'].items():
                 if count_type not in nof_events and \
                    any(excl_evt_key in count_type for excl_evt_key in excl_count_type):
