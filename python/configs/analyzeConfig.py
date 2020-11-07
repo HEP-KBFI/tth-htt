@@ -1521,12 +1521,12 @@ class analyzeConfig(object):
         lines.append("process.prepareDatacards.makeSubDir = cms.bool(False)")
         lines.append("process.prepareDatacards.categories = cms.VPSet(")
         lines.append("    cms.PSet(")
+        lines.append("        input = cms.string('%s/sel/evt')," % jobOptions['histogramDir'])
         if ('hh' in category_output):
           lines.append("        output = cms.string('%s')" % category_output)
           if ("BDTOutput" in histogramToFit):
             lines.append("        input = cms.string('%s/sel/datacard')," % jobOptions['histogramDir'])
         else:
-          lines.append("        input = cms.string('%s/sel/evt')," % jobOptions['histogramDir'])
           lines.append("        output = cms.string('ttH_%s')" % category_output)
         lines.append("    )")
         lines.append(")")
