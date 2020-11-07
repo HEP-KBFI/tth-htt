@@ -400,8 +400,8 @@ def process_paths(meta_dict, key, count_histograms):
         event_counts_ext_len = len(event_counts_ext)
         if event_counts_int_len != event_counts_ext_len:
           raise RuntimeError(
-            "Expected %d event counts but got %d instead in %s" % \
-            (event_counts_int_len, event_counts_ext_len, count_histogram_name)
+            "Expected %d event counts but got %d instead in %s of process %s" % \
+            (event_counts_int_len, event_counts_ext_len, count_histogram_name, process_name)
           )
         ## The number of events stored in Count histograms don't necessarily have to match, as it depends on the way
         ## the histograms are summed together.
@@ -420,14 +420,14 @@ def process_paths(meta_dict, key, count_histograms):
             event_count_diff = abs(event_count_int - event_count_ext) / event_count_int
             if event_count_diff > 1.e-2:
               raise RuntimeError(
-                "Observed too large difference of %.3f%% in %s at index %d" % \
-                (event_count_diff * 100., count_histogram_name, count_idx)
+                "Observed too large difference of %.3f%% in %s at index %d of process %s" % \
+                (event_count_diff * 100., count_histogram_name, count_idx, process_name)
               )
           else:
             if event_count_int != event_count_ext:
               raise RuntimeError(
-                "Expected 0 events but observed %.3f in %s at index %d" % \
-                (event_count_ext, count_histogram_name, count_idx)
+                "Expected 0 events but observed %.3f in %s at index %d of process %s" % \
+                (event_count_ext, count_histogram_name, count_idx, process_name)
               )
         continue
       if 'Pdf' in count_histogram_name:
