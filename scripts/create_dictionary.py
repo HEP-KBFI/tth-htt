@@ -1275,7 +1275,7 @@ if __name__ == '__main__':
           sample_category                 = meta_dict[key]['sample_category'],
           process_name_specific           = meta_dict[key]['process_name_specific'],
           nof_files                       = meta_dict[key]['nof_files'],
-          nof_events                      = meta_dict[key]['nof_events'],
+          nof_events                      = meta_dict[key]['nof_events'] if is_mc else {},
           nof_tree_events                 = meta_dict[key]['nof_tree_events'],
           nof_db_events                   = meta_dict[key]['nof_db_events'],
           nof_db_files                    = meta_dict[key]['nof_db_files'],
