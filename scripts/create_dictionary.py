@@ -429,7 +429,7 @@ def process_paths(meta_dict, key, count_histograms):
                 "Expected 0 events but observed %.3f in %s at index %d of process %s" % \
                 (event_count_ext, count_histogram_name, count_idx, process_name)
               )
-        continue
+        #continue
       if 'Pdf' in count_histogram_name:
         continue
       nof_events[count_histogram_name] = [
@@ -630,16 +630,17 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
   nof_PSweights = 0
   PS_tried = False
   for entry in entries_valid:
-    index_entry = {
-      HISTOGRAM_COUNT_KEY : {},
-      TREE_COUNT_KEY      : -1,
-      FSIZE_KEY           : -1,
-      BRANCH_NAMES_KEY    : [],
-    }
 
     subentries = get_dir_entries(use_fuse, entry)
     subentry_files = filter(lambda path: path.isfile(), subentries)
     for subentry_file in subentry_files:
+      index_entry = {
+        HISTOGRAM_COUNT_KEY : {},
+        TREE_COUNT_KEY      : -1,
+        FSIZE_KEY           : -1,
+        BRANCH_NAMES_KEY    : [],
+      }
+
       digit_match = digit_regex.search(subentry_file.basename)
       if not digit_match:
         continue
