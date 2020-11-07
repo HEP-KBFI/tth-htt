@@ -1,14 +1,1 @@
-/hdfs/local/karl/ttHNtupleProduction/2016/2020Aug18_wPresel_nom_all/ntuples
-/hdfs/local/karl/ttHNtupleProduction/2016/2020Aug07_wPresel_nom_all/ntuples
-/hdfs/local/karl/ttHNtupleProduction/2016/2020Aug03_wPresel_nom_all/ntuples
-/hdfs/local/karl/ttHNtupleProduction/2016/2020Jul13_wPresel_nom_all/ntuples
-/hdfs/local/karl/ttHNtupleProduction/2016/2020Jul12_wPresel_nom_all/ntuples
-/hdfs/local/karl/ttHNtupleProduction/2016/2020Jul11_wPresel_nom_all/ntuples
-/hdfs/local/karl/ttHNtupleProduction/2016/2020Jul05_wPresel_nom_all/ntuples
-/hdfs/local/karl/ttHNtupleProduction/2016/2020Jun23_wPresel_nom_all/ntuples
-/hdfs/local/karl/ttHNtupleProduction/2016/2020Jun16_wPresel_nom_all/ntuples
-/hdfs/local/karl/ttHNtupleProduction/2016/2020Jun01_wPresel_nom_all/ntuples
-/hdfs/local/karl/ttHNtupleProduction/2016/2020May26_wPresel_nom_all/ntuples
-/hdfs/local/karl/ttHNtupleProduction/2016/2020May12_wPresel_nom_all/ntuples
-/hdfs/local/karl/ttHNtupleProduction/2016/2020Apr15_wPresel_nom_all/ntuples
-/hdfs/local/karl/ttHNtupleProduction/2016/2020Apr24_wPresel_nom_all/ntuples
+/hdfs/local/karl/ttHNtupleProduction/2016/2020Oct31_wPresel_nom_all/ntuples

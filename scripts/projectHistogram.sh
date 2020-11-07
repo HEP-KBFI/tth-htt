@@ -92,6 +92,10 @@ OUTPUT_FILE_BASENAME=$(basename -- "$OUTPUT_FILE")
 OUTPUT_FILE_EXTENSION="${OUTPUT_FILE_BASENAME##*.}"
 OUTPUT_FILE_FILENAME="${OUTPUT_FILE_BASENAME%.*}"
 
+if [[ ! "$PROJECTION_MODULE" =~ ^count ]]; then
+  PROJECTION_MODULE=${PROJECTION_MODULE}$ERA;
+fi
+
 HADD_FILES="$OUTPUT_FILE_BASENAME"
 for INDEX in ${!INPUT_FILES[@]}; do
   INDEX_INCR=$((INDEX+1));
@@ -100,7 +104,7 @@ for INDEX in ${!INPUT_FILES[@]}; do
   if [ -n "${REF_GENWEIGHT}" ]; then
     MODULE_ARGS="$MODULE_ARGS;$REF_GENWEIGHT";
   fi
-  nano_postproc.py -I tthAnalysis.NanoAODTools.postprocessing.tthModules "${PROJECTION_MODULE}$ERA($MODULE_ARGS)" --noout . "${INPUT_FILES[INDEX]}";
+  nano_postproc.py -I tthAnalysis.NanoAODTools.postprocessing.tthModules "${PROJECTION_MODULE}($MODULE_ARGS)" --noout . "${INPUT_FILES[INDEX]}";
   test_exit_code $?;
   HADD_FILES+=" $TMP_OUTPUT_FILENAME";
 done

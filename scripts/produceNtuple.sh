@@ -37,6 +37,7 @@ PILEUP=$(python -c "execfile('$SCRIPT'); print(pileup)")
 PROCESS_NAME=$(python -c "execfile('$SCRIPT'); print(process_name)")
 GOLDEN_JSON=$(python -c "execfile('$SCRIPT'); print(golden_json)")
 SKIP_TOOLS_STEP=$(python -c "execfile('$SCRIPT'); print(skip_tools_step)")
+SKIP_COUNT=$(python -c "execfile('$SCRIPT'); print(skip_count)")
 REMOVE_INTERMEDIATE=$(python -c "execfile('$SCRIPT'); print(remove_intermediate)")
 COMP_TOP_RWGT=$(python -c "execfile('$SCRIPT'); print(compTopRwgt)")
 COMP_HTXS=$(python -c "execfile('$SCRIPT'); print(compHTXS)")
@@ -54,6 +55,7 @@ echo "Era? '$ERA'"
 echo "Is MC? '$IS_MC'"
 echo "Is TuneCP5? '$IS_TUNECP5'"
 echo "Skip tools step? '$SKIP_TOOLS_STEP'"
+echo "Skipping event count modules? '$SKIP_COUNT'"
 echo "Remove intermediate file? '$REMOVE_INTERMEDIATE'"
 echo "Compute SFs for top reweighting? '$COMP_TOP_RWGT'"
 echo "Count events in bins of Higgs pT? '$COMP_HTXS'"
@@ -128,7 +130,11 @@ if [ "$SKIP_TOOLS_STEP" == "False" ]; then
     F_i=$(basename "${G%.*}_i.${G##*.}")
     F_ii=$(basename "${G%.*}_ii.${G##*.}")
     echo "Adding new branches: $G -> $F_i"
-    nano_postproc.py -s _i -I tthAnalysis.NanoAODTools.postprocessing.tthModules $NANO_MODULES . $G
+    POSTPROC_ARGS="-s _i -I tthAnalysis.NanoAODTools.postprocessing.tthModules $NANO_MODULES"
+    if [ "$IS_MC" == "False" ]; then
+      POSTPROC_ARGS+=" -J $GOLDEN_JSON";
+    fi
+    nano_postproc.py $POSTPROC_ARGS . $G
     test_exit_code $?
 
     if [[ "$REMOVE_INTERMEDIATE" == "True" ]] && [[ ! -z ${F_jj+x} ]]; then
@@ -136,6 +142,9 @@ if [ "$SKIP_TOOLS_STEP" == "False" ]; then
       rm -f $F_jj;
     fi
 
+    if [[ "$SKIP_COUNT" == "True" ]]; then
+      continue;
+    fi
     echo "Creating counter histograms: $F_i -> $F_ii"
     COUNTHISTOGRAM_MODULE="countHistogramAll"
     if [ "$IS_MC" == "True" ]; then
@@ -150,16 +159,17 @@ if [ "$SKIP_TOOLS_STEP" == "False" ]; then
       elif [ "$SPLIT_BY_LHENJETHT" == "True" ]; then
         COUNTHISTOGRAM_MODULE="${COUNTHISTOGRAM_MODULE}SplitByLHENjetHT";
       fi
-      COUNTHISTOGRAM_MODULE="$COUNTHISTOGRAM_MODULE($REF_GENWEIGHT)";
+      COUNTHISTOGRAM_MODULE="$COUNTHISTOGRAM_MODULE(;;$REF_GENWEIGHT)";
       nano_postproc.py -s i -I tthAnalysis.NanoAODTools.postprocessing.tthModules "$COUNTHISTOGRAM_MODULE" \
-                       . $F_i
-    else
-      COUNTHISTOGRAM_MODULE="$COUNTHISTOGRAM_MODULE($REF_GENWEIGHT)";
-      nano_postproc.py -s i -I tthAnalysis.NanoAODTools.postprocessing.tthModules "$COUNTHISTOGRAM_MODULE" \
-                       -J $GOLDEN_JSON                                                                     \
-                       . $F_i
+                       . $F_i;
+      test_exit_code $?
+#    else
+#      COUNTHISTOGRAM_MODULE="$COUNTHISTOGRAM_MODULE($REF_GENWEIGHT)";
+#      nano_postproc.py -s i -I tthAnalysis.NanoAODTools.postprocessing.tthModules "$COUNTHISTOGRAM_MODULE" \
+#                       -J $GOLDEN_JSON                                                                     \
+#                       . $F_i;
+#      test_exit_code $?
     fi
-    test_exit_code $?
     if [ "$REMOVE_INTERMEDIATE" == "True" ]; then
       echo "Removing intermediate file $F_i";
       rm -f $F_i;

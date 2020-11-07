@@ -110,18 +110,22 @@ TTTW_ext1 1.000000e+00
 TTTo2L2Nu 7.269830e+01
 TTTo2L2Nu_GluonMove 7.269830e+01
 TTTo2L2Nu_QCDbased 7.269830e+01
+TTTo2L2Nu_QCDbased_ext1 7.269830e+01
 TTTo2L2Nu_erdON 7.269830e+01
 TTTo2L2Nu_erdON_ext1 7.269830e+01
 TTTo2L2Nu_hdampDOWN 7.332050e+01
 TTTo2L2Nu_hdampDOWN_ext1 7.332050e+01
 TTTo2L2Nu_hdampUP 7.244080e+01
 TTTo2L2Nu_hdampUP_ext1 7.244080e+01
+TTTo2L2Nu_hdampUP_ext2 7.244080e+01
 TTTo2L2Nu_mtop169p5_PSweights_backup 7.896450e+01
+TTTo2L2Nu_mtop169p5_PSweights_ext1 7.896450e+01
 TTTo2L2Nu_mtop175p5_PSweights_backup 6.701030e+01
 TTTo2L2Nu_ueDown 7.269830e+01
 TTTo2L2Nu_ueDown_ext1 7.269830e+01
 TTTo2L2Nu_ueUp 7.269830e+01
 TTTo2L2Nu_ueUp_ext1 7.269830e+01
+TTTo2L2Nu_ueUp_ext2 7.269830e+01
 TTToHadronic 3.164660e+02
 TTToHadronic_GluonMove 3.164660e+02
 TTToHadronic_QCDbased 3.164660e+02
@@ -244,7 +248,10 @@ ggZZTo4e 1.000000e+00
 ggZZTo4mu 1.000000e+00
 ggZZTo4tau 1.000000e+00
 signal_ggf_nonresonant_cHHH0_hh_2b2t 6.396150e-02
+signal_ggf_nonresonant_cHHH0_hh_2b2v 6.396150e-02
+signal_ggf_nonresonant_cHHH0_hh_2b2v_sl 6.396150e-02
 signal_ggf_nonresonant_cHHH0_hh_2v2t 6.396150e-02
+signal_ggf_nonresonant_cHHH0_hh_4t 6.396150e-02
 signal_ggf_nonresonant_cHHH0_hh_4v 6.396150e-02
 signal_ggf_nonresonant_cHHH1_hh_2b2t 2.986350e-02
 signal_ggf_nonresonant_cHHH1_hh_2b2v 2.986350e-02
@@ -260,6 +267,7 @@ signal_ggf_nonresonant_cHHH2p45_hh_4t 1.311440e-02
 signal_ggf_nonresonant_cHHH2p45_hh_4v 1.311440e-02
 signal_ggf_nonresonant_cHHH5_hh_2b2t 8.020430e-02
 signal_ggf_nonresonant_cHHH5_hh_2b2v 8.020430e-02
+signal_ggf_nonresonant_cHHH5_hh_2b2v_sl 8.020430e-02
 signal_ggf_nonresonant_cHHH5_hh_2v2t 8.020430e-02
 signal_ggf_nonresonant_cHHH5_hh_4t 8.020430e-02
 signal_ggf_nonresonant_cHHH5_hh_4v 8.020430e-02
@@ -295,8 +303,10 @@ signal_ggf_nonresonant_node_2_hh_4t 1.000000e+00
 signal_ggf_nonresonant_node_2_hh_4v 1.000000e+00
 signal_ggf_nonresonant_node_3_hh_2b2t 1.000000e+00
 signal_ggf_nonresonant_node_3_hh_2b2v 1.000000e+00
+signal_ggf_nonresonant_node_3_hh_2b2v_sl_PSWeights 1.000000e+00
 signal_ggf_nonresonant_node_3_hh_2v2t 1.000000e+00
 signal_ggf_nonresonant_node_3_hh_4t 1.000000e+00
+signal_ggf_nonresonant_node_3_hh_4v 1.000000e+00
 signal_ggf_nonresonant_node_4_hh_2b2t 1.000000e+00
 signal_ggf_nonresonant_node_4_hh_2b2v 1.000000e+00
 signal_ggf_nonresonant_node_4_hh_2b2v_sl_PSWeights 1.000000e+00
@@ -309,9 +319,12 @@ signal_ggf_nonresonant_node_5_hh_2b2v_sl 1.000000e+00
 signal_ggf_nonresonant_node_5_hh_2v2t 1.000000e+00
 signal_ggf_nonresonant_node_5_hh_4t 1.000000e+00
 signal_ggf_nonresonant_node_5_hh_4v 1.000000e+00
+signal_ggf_nonresonant_node_6_hh_2b2t 1.000000e+00
 signal_ggf_nonresonant_node_6_hh_2b2v 1.000000e+00
 signal_ggf_nonresonant_node_6_hh_2b2v_sl_PSWeights 1.000000e+00
+signal_ggf_nonresonant_node_6_hh_2v2t 1.000000e+00
 signal_ggf_nonresonant_node_6_hh_4t 1.000000e+00
+signal_ggf_nonresonant_node_6_hh_4v 1.000000e+00
 signal_ggf_nonresonant_node_7_hh_2b2t 1.000000e+00
 signal_ggf_nonresonant_node_7_hh_2b2v 1.000000e+00
 signal_ggf_nonresonant_node_7_hh_2b2v_sl 1.000000e+00
@@ -323,6 +336,7 @@ signal_ggf_nonresonant_node_8_hh_2b2v 1.000000e+00
 signal_ggf_nonresonant_node_8_hh_2b2v_sl_PSWeights 1.000000e+00
 signal_ggf_nonresonant_node_8_hh_2v2t 1.000000e+00
 signal_ggf_nonresonant_node_8_hh_4t 1.000000e+00
+signal_ggf_nonresonant_node_8_hh_4v 1.000000e+00
 signal_ggf_nonresonant_node_9_hh_2b2t 1.000000e+00
 signal_ggf_nonresonant_node_9_hh_2b2v 1.000000e+00
 signal_ggf_nonresonant_node_9_hh_2b2v_sl 1.000000e+00
@@ -375,12 +389,14 @@ signal_ggf_spin0_260_hh_2b2v 1.000000e+00
 signal_ggf_spin0_260_hh_2b2v_sl 1.000000e+00
 signal_ggf_spin0_260_hh_2v2t 1.000000e+00
 signal_ggf_spin0_260_hh_4t 1.000000e+00
+signal_ggf_spin0_260_hh_4t_PSWeights 1.000000e+00
 signal_ggf_spin0_260_hh_4v 1.000000e+00
 signal_ggf_spin0_270_hh_2b2t 1.000000e+00
 signal_ggf_spin0_270_hh_2b2v 1.000000e+00
 signal_ggf_spin0_270_hh_2b2v_sl 1.000000e+00
 signal_ggf_spin0_270_hh_2v2t 1.000000e+00
 signal_ggf_spin0_270_hh_4t 1.000000e+00
+signal_ggf_spin0_270_hh_4t_PSWeights 1.000000e+00
 signal_ggf_spin0_270_hh_4v 1.000000e+00
 signal_ggf_spin0_280_hh_2b2t 1.000000e+00
 signal_ggf_spin0_280_hh_2v2t 1.000000e+00
@@ -443,6 +459,7 @@ signal_ggf_spin0_550_hh_4v 1.000000e+00
 signal_ggf_spin0_600_hh_2b2t 1.000000e+00
 signal_ggf_spin0_600_hh_2b2v 1.000000e+00
 signal_ggf_spin0_600_hh_2b2v_sl 1.000000e+00
+signal_ggf_spin0_600_hh_2v2t 1.000000e+00
 signal_ggf_spin0_600_hh_4t 1.000000e+00
 signal_ggf_spin0_600_hh_4t_PSWeights 1.000000e+00
 signal_ggf_spin0_600_hh_4v 1.000000e+00
@@ -457,6 +474,7 @@ signal_ggf_spin0_700_hh_2b2t 1.000000e+00
 signal_ggf_spin0_700_hh_2b2v_sl 1.000000e+00
 signal_ggf_spin0_700_hh_2v2t 1.000000e+00
 signal_ggf_spin0_700_hh_4t 1.000000e+00
+signal_ggf_spin0_700_hh_4t_PSWeights 1.000000e+00
 signal_ggf_spin0_700_hh_4v 1.000000e+00
 signal_ggf_spin0_750_hh_2b2t 1.000000e+00
 signal_ggf_spin0_750_hh_2b2v 1.000000e+00
@@ -506,6 +524,8 @@ signal_ggf_spin2_2000_hh_2v2t 1.000000e+00
 signal_ggf_spin2_2000_hh_4t_PSWeights 1.000000e+00
 signal_ggf_spin2_2000_hh_4v 1.000000e+00
 signal_ggf_spin2_2500_hh_2b2t 1.000000e+00
+signal_ggf_spin2_2500_hh_2v2t 1.000000e+00
+signal_ggf_spin2_2500_hh_4t 1.000000e+00
 signal_ggf_spin2_2500_hh_4v 1.000000e+00
 signal_ggf_spin2_250_hh_2b2t 1.000000e+00
 signal_ggf_spin2_250_hh_2b2v_sl 1.000000e+00
@@ -519,6 +539,7 @@ signal_ggf_spin2_260_hh_2b2v_sl 1.000000e+00
 signal_ggf_spin2_260_hh_2v2t 1.000000e+00
 signal_ggf_spin2_260_hh_4t 1.000000e+00
 signal_ggf_spin2_260_hh_4t_PSWeights 1.000000e+00
+signal_ggf_spin2_260_hh_4v 1.000000e+00
 signal_ggf_spin2_270_hh_2b2t 1.000000e+00
 signal_ggf_spin2_270_hh_2b2v 1.000000e+00
 signal_ggf_spin2_270_hh_2b2v_sl 1.000000e+00
@@ -540,11 +561,13 @@ signal_ggf_spin2_300_hh_2b2v 1.000000e+00
 signal_ggf_spin2_300_hh_2b2v_sl 1.000000e+00
 signal_ggf_spin2_300_hh_2v2t 1.000000e+00
 signal_ggf_spin2_300_hh_4t 1.000000e+00
+signal_ggf_spin2_300_hh_4t_PSWeights 1.000000e+00
 signal_ggf_spin2_300_hh_4v 1.000000e+00
 signal_ggf_spin2_320_hh_2b2t 1.000000e+00
 signal_ggf_spin2_320_hh_2v2t 1.000000e+00
 signal_ggf_spin2_320_hh_4t 1.000000e+00
 signal_ggf_spin2_320_hh_4t_PSWeights 1.000000e+00
+signal_ggf_spin2_320_hh_4v 1.000000e+00
 signal_ggf_spin2_340_hh_2b2t 1.000000e+00
 signal_ggf_spin2_340_hh_4t 1.000000e+00
 signal_ggf_spin2_350_hh_2b2t 1.000000e+00
@@ -552,6 +575,7 @@ signal_ggf_spin2_350_hh_2b2v 1.000000e+00
 signal_ggf_spin2_350_hh_2b2v_sl 1.000000e+00
 signal_ggf_spin2_350_hh_2v2t 1.000000e+00
 signal_ggf_spin2_350_hh_4t 1.000000e+00
+signal_ggf_spin2_350_hh_4t_PSWeights 1.000000e+00
 signal_ggf_spin2_350_hh_4v 1.000000e+00
 signal_ggf_spin2_400_hh_2b2t 1.000000e+00
 signal_ggf_spin2_400_hh_2b2v 1.000000e+00
@@ -565,6 +589,7 @@ signal_ggf_spin2_450_hh_2b2v 1.000000e+00
 signal_ggf_spin2_450_hh_2b2v_sl 1.000000e+00
 signal_ggf_spin2_450_hh_2v2t 1.000000e+00
 signal_ggf_spin2_450_hh_4t 1.000000e+00
+signal_ggf_spin2_450_hh_4t_PSWeights 1.000000e+00
 signal_ggf_spin2_450_hh_4v 1.000000e+00
 signal_ggf_spin2_500_hh_2b2t 1.000000e+00
 signal_ggf_spin2_500_hh_2b2v 1.000000e+00
@@ -604,6 +629,7 @@ signal_ggf_spin2_700_hh_4v 1.000000e+00
 signal_ggf_spin2_750_hh_2b2t 1.000000e+00
 signal_ggf_spin2_750_hh_2v2t 1.000000e+00
 signal_ggf_spin2_750_hh_4t 1.000000e+00
+signal_ggf_spin2_750_hh_4t_PSWeights 1.000000e+00
 signal_ggf_spin2_750_hh_4v 1.000000e+00
 signal_ggf_spin2_800_hh_2b2t 1.000000e+00
 signal_ggf_spin2_800_hh_2b2v 1.000000e+00
@@ -645,6 +671,9 @@ signal_vbf_nonresonant_1_1_0_hh_4v_dipoleRecoilOff 1.000000e+00
 signal_vbf_nonresonant_1_1_1_hh_2b2t_dipoleRecoilOff 1.000000e+00
 signal_vbf_nonresonant_1_1_1_hh_2b2v_dipoleRecoilOff 1.000000e+00
 signal_vbf_nonresonant_1_1_1_hh_2b2v_sl_dipoleRecoilOff 1.000000e+00
+signal_vbf_nonresonant_1_1_1_hh_2v2t_dipoleRecoilOff 1.000000e+00
+signal_vbf_nonresonant_1_1_1_hh_4t_dipoleRecoilOff 1.000000e+00
+signal_vbf_nonresonant_1_1_1_hh_4v_dipoleRecoilOff 1.000000e+00
 signal_vbf_nonresonant_1_1_2_hh_2b2t_dipoleRecoilOff 1.000000e+00
 signal_vbf_nonresonant_1_1_2_hh_2b2v_dipoleRecoilOff 1.000000e+00
 signal_vbf_nonresonant_1_1_2_hh_2b2v_sl_dipoleRecoilOff 1.000000e+00
@@ -659,6 +688,7 @@ signal_vbf_nonresonant_1_2_1_hh_4t_dipoleRecoilOff 1.000000e+00
 signal_vbf_nonresonant_1_2_1_hh_4v_dipoleRecoilOff 1.000000e+00
 signal_vbf_nonresonant_1p5_1_1_hh_2b2t_dipoleRecoilOff 1.000000e+00
 signal_vbf_nonresonant_1p5_1_1_hh_2b2v_dipoleRecoilOff 1.000000e+00
+signal_vbf_nonresonant_1p5_1_1_hh_2b2v_sl_dipoleRecoilOff 1.000000e+00
 signal_vbf_nonresonant_1p5_1_1_hh_2v2t_dipoleRecoilOff 1.000000e+00
 signal_vbf_nonresonant_1p5_1_1_hh_4t_dipoleRecoilOff 1.000000e+00
 signal_vbf_nonresonant_1p5_1_1_hh_4v_dipoleRecoilOff 1.000000e+00

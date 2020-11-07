@@ -317,7 +317,17 @@ def get_array_type(tree, branch_name, array_multiplier = 1):
   else:
     return (arr_type, [0] * array_multiplier)
 
-def process_paths(meta_dict, key):
+def get_nof_events_sum_str(nof_events_sum, histogram_name):
+  if histogram_name == HISTOGRAM_COUNT or histogram_name.startswith('{}_'.format(HISTOGRAM_COUNT)):
+    nof_events_sum_str = str(int(nof_events_sum))
+  else:
+    nof_events_sum_str = '{:.8e}'.format(nof_events_sum)
+  if nof_events_sum == 0:
+    nof_events_sum_str = "0."
+  assert(nof_events_sum_str)
+  return nof_events_sum_str
+
+def process_paths(meta_dict, key, count_histograms):
   local_paths = meta_dict[key]['paths']
   nof_events = max(path_entry.nof_tree_events for path_entry in local_paths)
   is_presel_list = [ path_entry.is_presel for path_entry in local_paths ]
@@ -373,17 +383,52 @@ def process_paths(meta_dict, key):
         index_entry[HISTOGRAM_COUNT_KEY][histogram_name][idxBin] for index_entry in local_path_choice.indices.values() \
         if histogram_name in index_entry[HISTOGRAM_COUNT_KEY]
       )
-      if histogram_name == HISTOGRAM_COUNT or histogram_name.startswith('{}_'.format(HISTOGRAM_COUNT)):
-        nof_events_sum_str = str(int(nof_events_sum))
-      else:
-        nof_events_sum_str = '{:.8e}'.format(nof_events_sum)
-      if nof_events_sum == 0:
-        nof_events_sum_str = "0."
-      assert(nof_events_sum_str)
-      nof_events[histogram_name].append(nof_events_sum_str)
+      nof_events[histogram_name].append(get_nof_events_sum_str(nof_events_sum, histogram_name))
 
   nof_tree_events = sum(index_entry[TREE_COUNT_KEY] for index_entry in local_path_choice.indices.values())
   fsize           = sum(index_entry[FSIZE_KEY]      for index_entry in local_path_choice.indices.values())
+
+  process_name = meta_dict[key]['process_name_specific']
+  if count_histograms and process_name in count_histograms:
+    count_histograms_process = count_histograms[process_name]
+    # the assumption is that all necessary event counts are already stored in the auxiliary file
+    for count_histogram_name in count_histograms_process:
+      if count_histogram_name in nof_events and HISTOGRAM_COUNTWEIGHTED_FULL not in count_histogram_name:
+        event_counts_int = [ float(event_count) for event_count in nof_events[count_histogram_name] ]
+        event_counts_ext = count_histograms_process[count_histogram_name]
+        event_counts_int_len = len(event_counts_int)
+        event_counts_ext_len = len(event_counts_ext)
+        if event_counts_int_len != event_counts_ext_len:
+          raise RuntimeError(
+            "Expected %d event counts but got %d instead in %s of process %s" % \
+            (event_counts_int_len, event_counts_ext_len, count_histogram_name, process_name)
+          )
+        for count_idx in range(event_counts_int_len):
+          event_count_int = event_counts_int[count_idx]
+          event_count_ext = event_counts_ext[count_idx]
+          if event_count_int != 0.:
+            event_count_diff = abs(event_count_int - event_count_ext) / event_count_int
+            if event_count_diff > 1.e-2:
+              raise RuntimeError(
+                "Observed too large difference of %.3f%% in %s at index %d of process %s" % \
+                (event_count_diff * 100., count_histogram_name, count_idx, process_name)
+              )
+          else:
+            if event_count_int != event_count_ext:
+              raise RuntimeError(
+                "Expected 0 events but observed %.3f in %s at index %d of process %s" % \
+                (event_count_ext, count_histogram_name, count_idx, process_name)
+              )
+        #continue
+      if 'Pdf' in count_histogram_name:
+        continue
+      if count_histogram_name in LHESCALEARR and len(count_histograms_process[count_histogram_name]) != 9:
+        # Ignore LHE scale weights if we don't have the correct number of them
+        continue
+      nof_events[count_histogram_name] = [
+        get_nof_events_sum_str(nof_events_sum, count_histogram_name) \
+        for nof_events_sum in count_histograms_process[count_histogram_name]
+      ]
 
   meta_dict[key]['nof_events']      = nof_events
   meta_dict[key]['nof_tree_events'] = nof_tree_events
@@ -455,8 +500,14 @@ def get_dir_entries(use_fuse, path):
   else:
     return list(map(lambda dir_entry: nohdfs_info(dir_entry), hdfs.listdir(path.name, return_objs = False)))
 
+def get_is_njet(process_name):
+  return process_name.startswith(
+    tuple('DYToLL_{}J'.format(i) for i in range(3)) + \
+    ('DYJetsToLL_M-50_amcatnloFXFX', 'WJetsToLNu_HT', 'DYJetsToLL_M50_HT', 'DYJetsToLL_M-10to50')
+  )
+
 def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missing_branches,
-                    filetracker, file_idx, era, triggerTable):
+                    filetracker, file_idx, era, triggerTable, count_histograms):
   ''' Assume that the following subdirectories are of the form: 0000, 0001, 0002, ...
       In these directories we expect root files of the form: tree_1.root, tree_2.root, ...
       If either of those assumptions doesn't hold, we bail out; no clever event count needed
@@ -469,6 +520,7 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
   :param filetracker:       An instance of FileTracker() for logging broken files
   :param file_idx:          Index of the corrupted file
   :param triggerTable:      Trigger instance containing a list of required triggers for the era
+  :param count_histograms   Externally provided event sums
   :return: None
   '''
   if 'paths' not in meta_dict[key]:
@@ -497,10 +549,7 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
   is_htxs = meta_dict[key]['sample_category'].startswith('ttH')
   process_name = meta_dict[key]['process_name_specific']
   is_lo = 'amcatnlo' not in key
-  is_njet = process_name.startswith(
-    tuple('DYToLL_{}J'.format(i) for i in range(3)) + \
-    ('DYJetsToLL_M-50_amcatnloFXFX', 'WJetsToLNu_HT', 'DYJetsToLL_M50_HT', 'DYJetsToLL_M-10to50')
-  )
+  is_njet = get_is_njet(process_name)
   is_ht = process_name.startswith(
     tuple('W{}JetsToLNu'.format(i) for i in range(1, 5)) + tuple('DY{}JetsToLL_M-50'.format(i) for i in range(1, 5))
   )
@@ -563,6 +612,8 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
     for histogram_name in histogram_names_extend:
         histogram_names[histogram_name] = -1
 
+  count_histograms_process = count_histograms[process_name] if process_name in count_histograms else {}
+
   indices = {}
   lhe_set = ''
   lhe_set_tried = False
@@ -572,16 +623,17 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
   nof_PSweights = 0
   PS_tried = False
   for entry in entries_valid:
-    index_entry = {
-      HISTOGRAM_COUNT_KEY : {},
-      TREE_COUNT_KEY      : -1,
-      FSIZE_KEY           : -1,
-      BRANCH_NAMES_KEY    : [],
-    }
 
     subentries = get_dir_entries(use_fuse, entry)
     subentry_files = filter(lambda path: path.isfile(), subentries)
     for subentry_file in subentry_files:
+      index_entry = {
+        HISTOGRAM_COUNT_KEY : {},
+        TREE_COUNT_KEY      : -1,
+        FSIZE_KEY           : -1,
+        BRANCH_NAMES_KEY    : [],
+      }
+
       digit_match = digit_regex.search(subentry_file.basename)
       if not digit_match:
         continue
@@ -669,10 +721,11 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
             if ((HISTOGRAM_COUNTWEIGHTED_PSWEIGHT in histogram_name or
                  HISTOGRAM_COUNTWEIGHTED_PSWEIGHT_FULL in histogram_name) and nof_PSweights != 4):
               continue
-            logging.warning("Histogram of the name {histogram_name} is not in file {path}".format(
-              histogram_name = histogram_name,
-              path           = subentry_file.name,
-            ))
+            if histogram_name not in count_histograms_process:
+              logging.warning("Histogram of the name {histogram_name} is not in file {path}".format(
+                histogram_name = histogram_name,
+                path           = subentry_file.name,
+              ))
           else:
             histogram = root_file.Get(histogram_name)
             if not histogram:
@@ -782,7 +835,7 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
   return
 
 def traverse_double(use_fuse, meta_dict, path_obj, key, check_every_event, missing_branches,
-                    filetracker, file_idx, era, triggerTable):
+                    filetracker, file_idx, era, triggerTable, count_histograms):
   ''' Assume that the name of the following subdirectories are the CRAB job IDs
       The tree structure inside those directories should be the same as described in
       traverse_single()
@@ -796,6 +849,7 @@ def traverse_double(use_fuse, meta_dict, path_obj, key, check_every_event, missi
   :param filetracker:       An instance of FileTracker() for logging broken files
   :param file_idx:          Index of the corrupted file
   :param triggerTable:      Trigger instance containing a list of required triggers for the era
+  :param count_histograms   Externally provided event sums
   :return: None
   '''
   logging.info("Double-traversing {path}".format(path = path_obj.name))
@@ -803,7 +857,7 @@ def traverse_double(use_fuse, meta_dict, path_obj, key, check_every_event, missi
   for entry in entries:
     traverse_single(
       use_fuse, meta_dict, entry, key, check_every_event, missing_branches,
-      filetracker, file_idx, era, triggerTable
+      filetracker, file_idx, era, triggerTable, count_histograms
     )
   return
 
@@ -901,6 +955,9 @@ if __name__ == '__main__':
                       help = 'R|Clean the temporary SLURM directory specified by -J')
   parser.add_argument('-F', '--force', dest = 'force', action = 'store_true', default = False,
                       help = 'R|Force the creation of missing directories')
+  parser.add_argument('-q', '--count-histograms', dest = 'count_histograms', metavar = 'file',
+                      type = str, default = '', required = False,
+                      help = 'R|A ROOT file with histograms storing the event sums')
   parser.add_argument('-v', '--verbose', dest = 'verbose', action = 'store_true', default = False,
                       help = 'R|Enable verbose printout')
   args = parser.parse_args()
@@ -927,6 +984,40 @@ if __name__ == '__main__':
 
   if args.save_corrupted and not args.check_every_event:
     logging.warning("The flag -C/--save-corrupted has no effect w/o -c/--check-every-event option")
+
+  count_histograms = {}
+  count_histogram_input = args.count_histograms
+  if count_histogram_input:
+    if not os.path.isfile(count_histogram_input):
+      raise RuntimeError("No such file: %s" % count_histogram_input)
+    count_histogram_file = ROOT.TFile.Open(count_histogram_input)
+    count_process_names = [ key.GetName() for key in count_histogram_file.GetListOfKeys() ]
+    nof_count_processes = len(count_process_names)
+    logging.info("Reading event counts of {} processes from {}".format(nof_count_processes, count_histogram_input))
+    for count_process_idx, count_process_name in enumerate(count_process_names):
+      logging.info("Reading events counts of process {} ({}/{})".format(
+        count_process_name, count_process_idx + 1, nof_count_processes
+      ))
+      count_histogram_dir = count_histogram_file.Get(count_process_name)
+      count_histogram_names = [ key.GetName() for key in count_histogram_dir.GetListOfKeys() ]
+      process_content = collections.OrderedDict()
+      for count_histogram_name in count_histogram_names:
+        count_histogram = count_histogram_dir.Get(count_histogram_name)
+        count_histogram.SetDirectory(0)
+        process_content[count_histogram_name] = [
+          count_histogram.GetBinContent(bin_idx) for bin_idx in range(1, count_histogram.GetNbinsX() + 1)
+        ]
+      for count_histogram_name in process_content:
+        if len(process_content[count_histogram_name]) == 8 and \
+           (count_histogram_name in LHESCALEARR or get_is_njet(count_process_name)):
+          histogram_name_nolhe = count_histogram_name.replace('LHEWeightScale', '')
+          assert(histogram_name_nolhe != count_histogram_name)
+          assert(histogram_name_nolhe in process_content)
+          # use nominal weight as the 5th LHE scale weight
+          process_content[count_histogram_name].insert(4, process_content[histogram_name_nolhe][0])
+          logging.info("Got 8 weights in {} -> added the nominal weight to make it 9".format(count_histogram_name))
+      count_histograms[count_process_name] = process_content
+    count_histogram_file.Close()
 
   use_fuse = args.use_fuse
   filetracker = FileTracker()
@@ -981,7 +1072,7 @@ if __name__ == '__main__':
           traverse_single(
             use_fuse, meta_dict, path, process_names[path.basename],
             args.check_every_event, args.missing_branches, filetracker, args.file_idx, args.era,
-            triggerTable
+            triggerTable, count_histograms
           )
     elif path.basename in crab_strings:
       expected_key = meta_dict[crab_strings[path.basename]]['process_name_specific']
@@ -996,18 +1087,18 @@ if __name__ == '__main__':
             traverse_double(
               use_fuse, meta_dict, path, crab_strings[path.basename],
               args.check_every_event, args.missing_branches, filetracker, args.file_idx, args.era,
-              triggerTable
+              triggerTable, count_histograms
             )
             traverse_single(
               use_fuse, meta_dict, path, crab_strings[path.basename],
               args.check_every_event, args.missing_branches, filetracker, args.file_idx, args.era,
-              triggerTable
+              triggerTable, count_histograms
             )
           else:
             traverse_double(
               use_fuse, meta_dict, path, crab_strings[path.basename],
               args.check_every_event, args.missing_branches, filetracker, args.file_idx, args.era,
-              triggerTable
+              triggerTable, count_histograms
             )
     else:
       entries = get_dir_entries(use_fuse, path)
@@ -1162,7 +1253,7 @@ if __name__ == '__main__':
       if not name_regex.match(entry['process_name_specific']):
         continue
       if entry['located']:
-        process_paths(meta_dict, key)
+        process_paths(meta_dict, key, count_histograms)
 
     for key, entry in meta_dict.items():
       if not name_regex.match(entry['process_name_specific']):
@@ -1199,7 +1290,7 @@ if __name__ == '__main__':
           sample_category                 = meta_dict[key]['sample_category'],
           process_name_specific           = meta_dict[key]['process_name_specific'],
           nof_files                       = meta_dict[key]['nof_files'],
-          nof_events                      = meta_dict[key]['nof_events'],
+          nof_events                      = meta_dict[key]['nof_events'] if is_mc else {},
           nof_tree_events                 = meta_dict[key]['nof_tree_events'],
           nof_db_events                   = meta_dict[key]['nof_db_events'],
           nof_db_files                    = meta_dict[key]['nof_db_files'],
