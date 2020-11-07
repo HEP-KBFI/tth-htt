@@ -130,7 +130,11 @@ if [ "$SKIP_TOOLS_STEP" == "False" ]; then
     F_i=$(basename "${G%.*}_i.${G##*.}")
     F_ii=$(basename "${G%.*}_ii.${G##*.}")
     echo "Adding new branches: $G -> $F_i"
-    nano_postproc.py -s _i -I tthAnalysis.NanoAODTools.postprocessing.tthModules $NANO_MODULES . $G
+    POSTPROC_ARGS="-s _i -I tthAnalysis.NanoAODTools.postprocessing.tthModules $NANO_MODULES"
+    if [ "$IS_MC" == "False" ]; then
+      POSTPROC_ARGS+=" -J $GOLDEN_JSON";
+    fi
+    nano_postproc.py $POSTPROC_ARGS . $G
     test_exit_code $?
 
     if [[ "$REMOVE_INTERMEDIATE" == "True" ]] && [[ ! -z ${F_jj+x} ]]; then
@@ -157,14 +161,15 @@ if [ "$SKIP_TOOLS_STEP" == "False" ]; then
       fi
       COUNTHISTOGRAM_MODULE="$COUNTHISTOGRAM_MODULE(;;$REF_GENWEIGHT)";
       nano_postproc.py -s i -I tthAnalysis.NanoAODTools.postprocessing.tthModules "$COUNTHISTOGRAM_MODULE" \
-                       . $F_i
-    else
-      COUNTHISTOGRAM_MODULE="$COUNTHISTOGRAM_MODULE($REF_GENWEIGHT)";
-      nano_postproc.py -s i -I tthAnalysis.NanoAODTools.postprocessing.tthModules "$COUNTHISTOGRAM_MODULE" \
-                       -J $GOLDEN_JSON                                                                     \
-                       . $F_i
+                       . $F_i;
+      test_exit_code $?
+#    else
+#      COUNTHISTOGRAM_MODULE="$COUNTHISTOGRAM_MODULE($REF_GENWEIGHT)";
+#      nano_postproc.py -s i -I tthAnalysis.NanoAODTools.postprocessing.tthModules "$COUNTHISTOGRAM_MODULE" \
+#                       -J $GOLDEN_JSON                                                                     \
+#                       . $F_i;
+#      test_exit_code $?
     fi
-    test_exit_code $?
     if [ "$REMOVE_INTERMEDIATE" == "True" ]; then
       echo "Removing intermediate file $F_i";
       rm -f $F_i;
