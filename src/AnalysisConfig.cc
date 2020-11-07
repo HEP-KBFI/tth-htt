@@ -15,8 +15,8 @@ AnalysisConfig::AnalysisConfig(const std::string & analysis, const edm::Paramete
   isData_   = !isMC_;
   isMC_WZ_  = process_string_ == "WZ";
   isMC_ZZ_  = process_string_ == "ZZ";
-  isMC_tH_  = process_string_ == "tHq" || process_string_ == "tHW";
-  isMC_ttH_ = process_string_ == "ttH" || process_string_ == "ttH_ctcvcp";
+  isMC_tH_  = process_string_ == "tHq" || process_string_ == "tHW" || process_string_ == "TH";
+  isMC_ttH_ = process_string_ == "ttH" || process_string_ == "ttH_ctcvcp" || process_string_ == "TTH";
   isMC_ggH_ = process_string_ == "ggH";
   isMC_qqH_ = process_string_ == "qqH";
   isMC_VH_  = process_string_ == "VH";

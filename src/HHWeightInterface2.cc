@@ -99,18 +99,19 @@ HHWeightInterface2::HHWeightInterface2(const edm::ParameterSet & cfg)
   fileHH_ = TFileOpenWrapper::Open(FileDenominator.c_str(), "READ");
   if(! fileHH_)
   {
-    throw cmsException(this, __func__, __LINE__) << "Could not open file " << FileDenominator;
+    throw cmsException(this, __func__, __LINE__) 
+      << "Could not open file " << FileDenominator << " !!\n";
   }
   if(fileHH_ -> IsZombie())
   {
-    throw cmsException(this, __func__, __LINE__) << "The file '" << FileDenominator << "' appears to be a zombie";
+    throw cmsException(this, __func__, __LINE__) 
+      << "The file '" << FileDenominator << "' appears to be a zombie" << " !!\n";
   }
   sumEvt_ = static_cast<TH2 *>(fileHH_ -> Get(histtitle.c_str()));
   if(! sumEvt_)
   {
     throw cmsException(this, __func__, __LINE__)
-      << "The file '" << FileDenominator << "' does not have a TH2 named " << histtitle
-    ;
+      << "The file '" << FileDenominator << "' does not have a TH2 named " << histtitle << " !!\n";
   }
   nof_sumEvt_entries_ = static_cast<int>(sumEvt_->GetEntries());
   assert(nof_sumEvt_entries_ > 0);
