@@ -403,14 +403,16 @@ def process_paths(meta_dict, key, count_histograms):
             "Expected %d event counts but got %d instead in %s" % \
             (event_counts_int_len, event_counts_ext_len, count_histogram_name)
           )
-        if count_histogram_name == HISTOGRAM_COUNT:# or count_histogram_name.startswith('{}_'.format(HISTOGRAM_COUNT)):
-          event_counts_int_integer = [ int(event_count) for event_count in event_counts_int ]
-          event_counts_ext_integer = [ int(event_count) for event_count in event_counts_ext ]
-          if event_counts_int_integer != event_counts_ext_integer:
-            raise RuntimeError(
-              "Expected equal event counts for %s but got %s and %s" % \
-              (count_histogram_name, str(event_counts_int_integer), str(event_counts_ext_integer))
-            )
+        ## The number of events stored in Count histograms don't necessarily have to match, as it depends on the way
+        ## the histograms are summed together.
+        # if count_histogram_name == HISTOGRAM_COUNT or count_histogram_name.startswith('{}_'.format(HISTOGRAM_COUNT)):
+        #   event_counts_int_integer = [ int(event_count) for event_count in event_counts_int ]
+        #   event_counts_ext_integer = [ int(event_count) for event_count in event_counts_ext ]
+        #   if event_counts_int_integer != event_counts_ext_integer:
+        #     raise RuntimeError(
+        #       "Expected equal event counts for %s but got %s and %s" % \
+        #       (count_histogram_name, str(event_counts_int_integer), str(event_counts_ext_integer))
+        #     )
         for count_idx in range(event_counts_int_len):
           event_count_int = event_counts_int[count_idx]
           event_count_ext = event_counts_ext[count_idx]
