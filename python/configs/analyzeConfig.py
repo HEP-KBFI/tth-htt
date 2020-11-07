@@ -133,7 +133,7 @@ class analyzeConfig(object):
         self.executable_analyze = executable_analyze
         self.channel = channel
 
-        self.useFullGenWeight = False
+        self.useFullGenWeight = True
         self.weight_prefix = "CountWeighted{}".format("Full" if self.useFullGenWeight else "")
 
         # sum the event counts for samples which cover the same phase space only if
@@ -997,7 +997,7 @@ class analyzeConfig(object):
 
         if 'hasLHE' not in jobOptions:
             jobOptions['hasLHE'] = sample_info['has_LHE']
-        if 'ref_genWeight' not in jobOptions and is_mc and False: #TODO remove False
+        if 'ref_genWeight' not in jobOptions and is_mc:
             self.load_refGenWeights()
             if process_name not in self.ref_genWeights:
                 raise RuntimeError("Unable to find reference gen weight for process %s from file %s" % (process_name, self.ref_genWeightFile))
