@@ -499,7 +499,7 @@ def get_dir_entries(use_fuse, path):
     return list(map(lambda dir_entry: nohdfs_info(dir_entry), hdfs.listdir(path.name, return_objs = False)))
 
 def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missing_branches,
-                    filetracker, file_idx, era, triggerTable):
+                    filetracker, file_idx, era, triggerTable, count_histograms):
   ''' Assume that the following subdirectories are of the form: 0000, 0001, 0002, ...
       In these directories we expect root files of the form: tree_1.root, tree_2.root, ...
       If either of those assumptions doesn't hold, we bail out; no clever event count needed
@@ -512,6 +512,7 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
   :param filetracker:       An instance of FileTracker() for logging broken files
   :param file_idx:          Index of the corrupted file
   :param triggerTable:      Trigger instance containing a list of required triggers for the era
+  :param count_histograms   Externally provided event sums
   :return: None
   '''
   if 'paths' not in meta_dict[key]:
@@ -605,6 +606,8 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
           histogram_names_extend.append('{}{}{}'.format(histogram_name, topPtPrefix, topPtSuffix))
     for histogram_name in histogram_names_extend:
         histogram_names[histogram_name] = -1
+
+  count_histograms_process = count_histograms[process_name] if process_name in count_histograms else {}
 
   indices = {}
   lhe_set = ''
@@ -712,10 +715,11 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
             if ((HISTOGRAM_COUNTWEIGHTED_PSWEIGHT in histogram_name or
                  HISTOGRAM_COUNTWEIGHTED_PSWEIGHT_FULL in histogram_name) and nof_PSweights != 4):
               continue
-            logging.warning("Histogram of the name {histogram_name} is not in file {path}".format(
-              histogram_name = histogram_name,
-              path           = subentry_file.name,
-            ))
+            if histogram_name not in count_histograms_process:
+              logging.warning("Histogram of the name {histogram_name} is not in file {path}".format(
+                histogram_name = histogram_name,
+                path           = subentry_file.name,
+              ))
           else:
             histogram = root_file.Get(histogram_name)
             if not histogram:
@@ -825,7 +829,7 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
   return
 
 def traverse_double(use_fuse, meta_dict, path_obj, key, check_every_event, missing_branches,
-                    filetracker, file_idx, era, triggerTable):
+                    filetracker, file_idx, era, triggerTable, count_histograms):
   ''' Assume that the name of the following subdirectories are the CRAB job IDs
       The tree structure inside those directories should be the same as described in
       traverse_single()
@@ -839,6 +843,7 @@ def traverse_double(use_fuse, meta_dict, path_obj, key, check_every_event, missi
   :param filetracker:       An instance of FileTracker() for logging broken files
   :param file_idx:          Index of the corrupted file
   :param triggerTable:      Trigger instance containing a list of required triggers for the era
+  :param count_histograms   Externally provided event sums
   :return: None
   '''
   logging.info("Double-traversing {path}".format(path = path_obj.name))
@@ -846,7 +851,7 @@ def traverse_double(use_fuse, meta_dict, path_obj, key, check_every_event, missi
   for entry in entries:
     traverse_single(
       use_fuse, meta_dict, entry, key, check_every_event, missing_branches,
-      filetracker, file_idx, era, triggerTable
+      filetracker, file_idx, era, triggerTable, count_histograms
     )
   return
 
@@ -1052,7 +1057,7 @@ if __name__ == '__main__':
           traverse_single(
             use_fuse, meta_dict, path, process_names[path.basename],
             args.check_every_event, args.missing_branches, filetracker, args.file_idx, args.era,
-            triggerTable
+            triggerTable, count_histograms
           )
     elif path.basename in crab_strings:
       expected_key = meta_dict[crab_strings[path.basename]]['process_name_specific']
@@ -1067,18 +1072,18 @@ if __name__ == '__main__':
             traverse_double(
               use_fuse, meta_dict, path, crab_strings[path.basename],
               args.check_every_event, args.missing_branches, filetracker, args.file_idx, args.era,
-              triggerTable
+              triggerTable, count_histograms
             )
             traverse_single(
               use_fuse, meta_dict, path, crab_strings[path.basename],
               args.check_every_event, args.missing_branches, filetracker, args.file_idx, args.era,
-              triggerTable
+              triggerTable, count_histograms
             )
           else:
             traverse_double(
               use_fuse, meta_dict, path, crab_strings[path.basename],
               args.check_every_event, args.missing_branches, filetracker, args.file_idx, args.era,
-              triggerTable
+              triggerTable, count_histograms
             )
     else:
       entries = get_dir_entries(use_fuse, path)
