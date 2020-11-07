@@ -1020,8 +1020,8 @@ if __name__ == '__main__':
           assert(histogram_name_nolhe != count_histogram_name)
           assert(histogram_name_nolhe in process_content)
           # use nominal weight as the 5th LHE scale weight
-          process_content[count_histogram_name].insert(4, process_content[count_histogram_name][0])
-          logging.info("Got 8 weights in {} -> added the nominal weight to make it 9")
+          process_content[count_histogram_name].insert(4, process_content[histogram_name_nolhe][0])
+          logging.info("Got 8 weights in {} -> added the nominal weight to make it 9".format(count_histogram_name))
       count_histograms[count_process_name] = process_content
     count_histogram_file.Close()
 
