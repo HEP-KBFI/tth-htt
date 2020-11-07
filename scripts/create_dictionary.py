@@ -393,7 +393,7 @@ def process_paths(meta_dict, key, count_histograms):
     count_histograms_process = count_histograms[process_name]
     # the assumption is that all necessary event counts are already stored in the auxiliary file
     for count_histogram_name in count_histograms_process:
-      if count_histogram_name in nof_events:
+      if count_histogram_name in nof_events and HISTOGRAM_COUNTWEIGHTED_FULL not in count_histogram_name:
         event_counts_int = [ float(event_count) for event_count in nof_events[count_histogram_name] ]
         event_counts_ext = count_histograms_process[count_histogram_name]
         event_counts_int_len = len(event_counts_int)
