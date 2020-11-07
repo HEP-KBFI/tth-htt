@@ -1384,6 +1384,7 @@ class analyzeConfig(object):
             self.btagSFRatios[sample_name] = {}
             for sys_name in btagSFRatio_sysNames:
                 btagSFRatio_histogram = sample_dir.Get(sys_name)
+                btagSFRatio_histogram.SetDirectory(0)
                 btagSFRatio_nbins = btagSFRatio_histogram.GetXaxis().GetNbins()
                 btagSFRatio_values = [ btagSFRatio_histogram.GetBinContent(bin_idx) for bin_idx in range(1, btagSFRatio_nbins + 1) ]
                 if sys_name.startswith(('JES', 'JER', 'pileup', 'l1PreFire', 'topPtReweighting')):
