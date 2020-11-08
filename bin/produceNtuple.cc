@@ -1115,6 +1115,10 @@ main(int argc,
         {
           histogram_output = fs.make<TH1D>(*(dynamic_cast<TH1D *>(histogram_input)));
         }
+        else if(dynamic_cast<TH1I*>(histogram_input))
+        {
+          histogram_output = fs.make<TH1I>(*(dynamic_cast<TH1I *>(histogram_input)));
+        }
         assert(histogram_output);
         histograms[histogramName] = histogram_output;
       }
