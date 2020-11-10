@@ -1419,6 +1419,7 @@ operator<<(std::ostream & os,
           "  lepton ID SF          = " << evtWeightRecorder.get_leptonIDSF(central_or_shift)              << "\n"
           "  tau SF                = " << evtWeightRecorder.get_tauSF(central_or_shift)                   << "\n"
           "  DY norm weight        = " << evtWeightRecorder.get_dy_norm(central_or_shift)                 << "\n"
+          "  TT pT weight          = " << evtWeightRecorder.get_toppt_rwgt(central_or_shift)              << "\n"
           "  btag weight           = " << evtWeightRecorder.get_btag(central_or_shift)                    << "\n"
           "  PU jet ID SF          = " << evtWeightRecorder.get_pileupJetIDSF(central_or_shift)           << "\n"
           "  EWK jet weight        = " << evtWeightRecorder.get_ewk_jet(central_or_shift)                 << "\n"
