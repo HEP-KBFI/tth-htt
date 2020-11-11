@@ -57,6 +57,12 @@ public:
   operator()(const std::map<std::string, double> & mvaInputs,
              const TMVA::Reader * mva, const bool multiclass = false) const;
 
+  /**
+   * @brief Returns output of multi-class MVA (used for debugging/synchronization purposes).
+   */
+  const std::vector<float>& 
+  mvamulticlsOutput() const;
+
 private:
   enum Mode{
     k_old, k_odd_even
@@ -75,6 +81,7 @@ private:
   mutable std::map<std::string, Float_t> spectators_;
   std::string fitFunctionFileName_;
   MVAInputVarTransformer * Transform_Ptr_;
+  mutable std::vector<float> mvamulticlsOutput_;
 };
 
 #endif // TMVAInterface_h

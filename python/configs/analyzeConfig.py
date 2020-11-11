@@ -174,6 +174,8 @@ class analyzeConfig(object):
               nof_events = copy.deepcopy(samples[dbs_key]['nof_events'])
             else:
               excl_count_type = [ 'LHEHT', 'LHENjet', 'PSWeight' ]
+              if not samples[dbs_key]['has_LHE']:
+                excl_count_type.append('LHEWeightScale')
               sample_nof_events_set = set(
                 evt_key for evt_key in samples[dbs_key]['nof_events'] \
                 if not any(excl_evt_key in evt_key for excl_evt_key in excl_count_type)
@@ -182,9 +184,6 @@ class analyzeConfig(object):
                 evt_key for evt_key in nof_events.keys() \
                 if not any(excl_evt_key in evt_key for excl_evt_key in excl_count_type)
               )
-              if not samples[dbs_key]['has_LHE']:
-                nof_events_set_lhe = set(evt_key for evt_key in nof_events_set if 'LHEWeightScale' in evt_key)
-                nof_events_set = nof_events_set - nof_events_set_lhe
               if sample_nof_events_set != nof_events_set:
                 raise ValueError(
                   'Mismatching event counts for samples: %s: %s vs %s' % \
