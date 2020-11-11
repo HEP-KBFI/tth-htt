@@ -170,36 +170,37 @@ class analyzeConfig(object):
           dbs_list_human = ', '.join(samples[dbs_key]['process_name_specific'] for dbs_key in dbs_list)
           nof_events = {}
           for dbs_key in dbs_list:
-            if len(nof_events) == 0:
-              nof_events = copy.deepcopy(samples[dbs_key]['nof_events'])
-            else:
-              excl_count_type = [ 'LHEHT', 'LHENjet', 'PSWeight' ]
-              if not samples[dbs_key]['has_LHE']:
-                excl_count_type.append('LHEWeightScale')
-              sample_nof_events_set = set(
-                evt_key for evt_key in samples[dbs_key]['nof_events'] \
-                if not any(excl_evt_key in evt_key for excl_evt_key in excl_count_type)
+            for evt_key in samples[dbs_key]['nof_events']:
+              if evt_key not in nof_events:
+                nof_events[evt_key] = [0.] * len(samples[dbs_key]['nof_events'][evt_key])
+          for dbs_key in dbs_list:
+            excl_count_type = [ 'LHEHT', 'LHENjet', 'PSWeight' ]
+            if not samples[dbs_key]['has_LHE']:
+              excl_count_type.append('LHEWeightScale')
+            sample_nof_events_set = set(
+              evt_key for evt_key in samples[dbs_key]['nof_events'] \
+              if not any(excl_evt_key in evt_key for excl_evt_key in excl_count_type)
+            )
+            nof_events_set = set(
+              evt_key for evt_key in nof_events.keys() \
+              if not any(excl_evt_key in evt_key for excl_evt_key in excl_count_type)
+            )
+            if sample_nof_events_set != nof_events_set:
+              raise ValueError(
+                'Mismatching event counts for samples: %s: %s vs %s' % \
+                (dbs_list_human, str(sample_nof_events_set), str(nof_events_set))
               )
-              nof_events_set = set(
-                evt_key for evt_key in nof_events.keys() \
-                if not any(excl_evt_key in evt_key for excl_evt_key in excl_count_type)
-              )
-              if sample_nof_events_set != nof_events_set:
+            for count_type, count_array in samples[dbs_key]['nof_events'].items():
+              if count_type not in nof_events and \
+                 any(excl_evt_key in count_type for excl_evt_key in excl_count_type):
+                # initialize event counts with 0s that don't necessarily exist in the samples covering the same phase space
+                nof_events[count_type] = [ 0 ] * len(count_array)
+              if len(nof_events[count_type]) != len(count_array):
                 raise ValueError(
-                  'Mismatching event counts for samples: %s: %s vs %s' % \
-                  (dbs_list_human, str(sample_nof_events_set), str(nof_events_set))
+                  'Mismatching array length of %s for samples: %s' % (count_type, dbs_list_human)
                 )
-              for count_type, count_array in samples[dbs_key]['nof_events'].items():
-                if count_type not in nof_events and \
-                   any(excl_evt_key in count_type for excl_evt_key in excl_count_type):
-                  # initialize event counts with 0s that don't necessarily exist in the samples covering the same phase space
-                  nof_events[count_type] = [ 0 ] * len(count_array)
-                if len(nof_events[count_type]) != len(count_array):
-                  raise ValueError(
-                    'Mismatching array length of %s for samples: %s' % (count_type, dbs_list_human)
-                  )
-                for count_idx, count_val in enumerate(count_array):
-                  nof_events[count_type][count_idx] += count_val
+              for count_idx, count_val in enumerate(count_array):
+                nof_events[count_type][count_idx] += count_val
           for dbs_key in dbs_list:
             samples[dbs_key]['nof_events'] = copy.deepcopy(nof_events)
 
