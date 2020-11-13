@@ -430,6 +430,13 @@ def process_paths(meta_dict, key, count_histograms):
         for nof_events_sum in count_histograms_process[count_histogram_name]
       ]
 
+  nof_events_zeroes = []
+  for count_histogram_name in nof_events:
+    if all(nof_events_sum == '0.' for nof_events_sum in nof_events[count_histogram_name]):
+      nof_events_zeroes.append(count_histogram_name)
+  for count_histogram_name in nof_events_zeroes:
+    del nof_events[count_histogram_name]
+
   meta_dict[key]['nof_events']      = nof_events
   meta_dict[key]['nof_tree_events'] = nof_tree_events
   meta_dict[key]['fsize_local']     = fsize
