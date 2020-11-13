@@ -818,6 +818,77 @@ DoubleToUInt_Convertor(double BDT_param,
                        bool isNonRes,
                        const std::string & spin_label);
 
+namespace
+{
+
+template <typename T_algo, typename T_retVal>
+std::map<std::string, T_retVal>
+CreateBDT_or_DNNOutputMap(const std::vector<double> & BDT_params,
+		          T_algo * BDT,
+                          std::map<std::string, double> & BDTInputs,
+                          int event_number,
+                          bool isNonRes,
+                          const std::string & spin_label)
+{
+  std::map<std::string, T_retVal> BDTOutput_Map;
+  for ( size_t i = 0; i < BDT_params.size(); ++i ) // Loop over BDT_params: signal mass (Reso.)/BM index (Non Reso.)
+  { 
+    std::string key_final = "";
+    if ( !isNonRes )
+    {
+      // resonant case
+      BDTInputs["gen_mHH"] = BDT_params[i];
+      key_final = DoubleToUInt_Convertor(BDT_params[i], isNonRes, spin_label);
+    }
+    else 
+    { 
+      // non-resonant case
+      if ( BDT_params[i] == 0 )
+      {
+        // SM
+	BDTInputs["SM"] = 1;  
+	key_final = "BDTOutput_SM";
+      }
+      else
+      {
+        // non-SM coupling scenario
+	BDTInputs["SM"] = 0;
+	unsigned int bm_index_int = (int)BDT_params[i];
+	std::string key = "";
+	std::ostringstream temp;
+	temp << bm_index_int;
+	key = temp.str(); // Conversion from unsigned int to string
+	std::string input_BM_index = "BM" + key;
+	BDTInputs[input_BM_index] = 1;   
+	key_final = DoubleToUInt_Convertor(BDT_params[i], isNonRes, spin_label);
+	if ( i >= 2 )
+        {
+          unsigned int bm_index_int_prev = (int)BDT_params[i- 1];
+          std::string key_prev = "";
+          std::ostringstream temp_prev;
+          temp_prev << bm_index_int_prev;
+          key_prev = temp_prev.str(); // Conversion from unsigned int to string
+          std::string input_BM_index_prev = "BM" + key_prev;
+          BDTInputs[input_BM_index_prev] = 0; // Resetting the prev. hot encoder to zero   
+        }
+      }
+    }
+    if ( event_number != -1 )
+    { 
+      // use odd-even method
+      BDTOutput_Map.insert(std::make_pair(key_final, (*BDT)(BDTInputs, event_number)));
+    }
+    else
+    { 
+      // use same BDT for all events
+      BDTOutput_Map.insert(std::make_pair(key_final, (*BDT)(BDTInputs)));
+    }
+  }
+  return BDTOutput_Map;
+}
+
+}
+
 /**
  * @brief Compute BDT or DNN output for parametrized training
  *        The function supports non-resonant (parametrized by SM/coupling scenario) and resonant (parametrized by mHH) HH production.
@@ -831,7 +902,10 @@ CreateBDTOutputMap(const std::vector<double> & BDT_params,
 		   std::map<std::string, double> & BDTInputs,
 		   int event_number,
 		   bool isNonRes,
-		   const std::string & spin_label);
+		   const std::string & spin_label)
+{
+  return CreateBDT_or_DNNOutputMap<T, double>(BDT_params, BDT, BDTInputs, event_number, isNonRes, spin_label);
+}
 
 std::map<std::string, std::map<std::string, double>>
 CreateDNNOutputMap(const std::vector<double> & DNN_params,
