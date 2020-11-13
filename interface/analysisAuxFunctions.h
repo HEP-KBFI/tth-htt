@@ -823,68 +823,68 @@ namespace
 
 template <typename T_algo, typename T_retVal>
 std::map<std::string, T_retVal>
-CreateBDT_or_DNNOutputMap(const std::vector<double> & BDT_params,
-		          T_algo * BDT,
-                          std::map<std::string, double> & BDTInputs,
-                          int event_number,
-                          bool isNonRes,
-                          const std::string & spin_label)
+CreateMVAOutputMap(const std::vector<double> & MVA_params,
+                   T_algo * MVA,
+                   std::map<std::string, double> & MVAInputs,
+                   int event_number,
+                   bool isNonRes,
+                   const std::string & spin_label)
 {
-  std::map<std::string, T_retVal> BDTOutput_Map;
-  for ( size_t i = 0; i < BDT_params.size(); ++i ) // Loop over BDT_params: signal mass (Reso.)/BM index (Non Reso.)
+  std::map<std::string, T_retVal> MVAOutput_Map;
+  for ( size_t i = 0; i < MVA_params.size(); ++i ) // Loop over MVA_params: signal mass (Reso.)/BM index (Non Reso.)
   { 
     std::string key_final = "";
     if ( !isNonRes )
     {
       // resonant case
-      BDTInputs["gen_mHH"] = BDT_params[i];
-      key_final = DoubleToUInt_Convertor(BDT_params[i], isNonRes, spin_label);
+      MVAInputs["gen_mHH"] = MVA_params[i];
+      key_final = DoubleToUInt_Convertor(MVA_params[i], isNonRes, spin_label);
     }
     else 
     { 
       // non-resonant case
-      if ( BDT_params[i] == 0 )
+      if ( MVA_params[i] == 0 )
       {
         // SM
-	BDTInputs["SM"] = 1;  
-	key_final = "BDTOutput_SM";
+	MVAInputs["SM"] = 1;  
+	key_final = "MVAOutput_SM";
       }
       else
       {
         // non-SM coupling scenario
-	BDTInputs["SM"] = 0;
-	unsigned int bm_index_int = (int)BDT_params[i];
+	MVAInputs["SM"] = 0;
+	unsigned int bm_index_int = (int)MVA_params[i];
 	std::string key = "";
 	std::ostringstream temp;
 	temp << bm_index_int;
 	key = temp.str(); // Conversion from unsigned int to string
 	std::string input_BM_index = "BM" + key;
-	BDTInputs[input_BM_index] = 1;   
-	key_final = DoubleToUInt_Convertor(BDT_params[i], isNonRes, spin_label);
+	MVAInputs[input_BM_index] = 1;   
+	key_final = DoubleToUInt_Convertor(MVA_params[i], isNonRes, spin_label);
 	if ( i >= 2 )
         {
-          unsigned int bm_index_int_prev = (int)BDT_params[i- 1];
+          unsigned int bm_index_int_prev = (int)MVA_params[i- 1];
           std::string key_prev = "";
           std::ostringstream temp_prev;
           temp_prev << bm_index_int_prev;
           key_prev = temp_prev.str(); // Conversion from unsigned int to string
           std::string input_BM_index_prev = "BM" + key_prev;
-          BDTInputs[input_BM_index_prev] = 0; // Resetting the prev. hot encoder to zero   
+          MVAInputs[input_BM_index_prev] = 0; // Resetting the prev. hot encoder to zero   
         }
       }
     }
     if ( event_number != -1 )
     { 
       // use odd-even method
-      BDTOutput_Map.insert(std::make_pair(key_final, (*BDT)(BDTInputs, event_number)));
+      MVAOutput_Map.insert(std::make_pair(key_final, (*MVA)(MVAInputs, event_number)));
     }
     else
     { 
-      // use same BDT for all events
-      BDTOutput_Map.insert(std::make_pair(key_final, (*BDT)(BDTInputs)));
+      // use same BDT/DNN for all events
+      MVAOutput_Map.insert(std::make_pair(key_final, (*MVA)(MVAInputs)));
     }
   }
-  return BDTOutput_Map;
+  return MVAOutput_Map;
 }
 
 }
@@ -896,18 +896,18 @@ CreateBDT_or_DNNOutputMap(const std::vector<double> & BDT_params,
  *
  */
 template <typename T>
-std::map<std::string, double>
+std::map<std::string, double> // key = gen_mHH/bmName
 CreateBDTOutputMap(const std::vector<double> & BDT_params,
 		   T * BDT,
 		   std::map<std::string, double> & BDTInputs,
 		   int event_number,
 		   bool isNonRes,
 		   const std::string & spin_label)
-{
-  return CreateBDT_or_DNNOutputMap<T, double>(BDT_params, BDT, BDTInputs, event_number, isNonRes, spin_label);
+{ 
+  return CreateMVAOutputMap<T, double>(BDT_params, BDT, BDTInputs, event_number, isNonRes, spin_label);
 }
 
-std::map<std::string, std::map<std::string, double>>
+std::map<std::string, std::map<std::string, double>> // keys = gen_mHH/bmName, event category
 CreateDNNOutputMap(const std::vector<double> & DNN_params,
 		   TensorFlowInterface * DNN,
 		   std::map<std::string, double> & DNNInputs,
@@ -915,16 +915,13 @@ CreateDNNOutputMap(const std::vector<double> & DNN_params,
 		   bool isNonRes,
 		   const std::string & spin_label);
 
-
-
-
 /**
  * @brief Compute LBN output for parametrized training
  *        The function supports non-resonant (parametrized by SM/coupling scenario) and resonant (parametrized by mHH) HH production.
  *  NOTE: Use this function for LBNs
  *
  */
-std::map<std::string, std::map<std::string, double>>
+std::map<std::string, std::map<std::string, double>> // keys = gen_mHH/bmName, event category
 CreateLBNOutputMap(const std::vector<double> & LBN_params,
 		   TensorFlowInterfaceLBN * LBN,
                    const std::map<std::string, const Particle*> & ll_particles,
