@@ -128,9 +128,9 @@ square(double x)
 {
   return x * x;
 }
-
+/*
 HistogramManager::HistogramManager(const vstring & processesBackground,
-                                   const std::string & processSignal,
+                                   const vstring & processesSignal,
                                    const vstring & categories,
                                    const edm::ParameterSet & cfg)
   : currentDir_(nullptr)
@@ -138,7 +138,11 @@ HistogramManager::HistogramManager(const vstring & processesBackground,
   , histogram_uncertainty_(nullptr)
 {
   processes_ = processesBackground;
-  if ( processSignal != "" ) processes_.push_back(processSignal);
+  //if ( processSignal != "" ) processes_.push_back(processSignal);
+  for (const std::string & processSignal: processesSignal)
+  {
+    if ( processSignal != "" ) processes_.push_back(processSignal);
+  }
 
   const edm::ParameterSet cfgNormalization = cfg.getParameter<edm::ParameterSet>("normalization");
   for(const std::string & process: processes_)
@@ -167,6 +171,91 @@ HistogramManager::HistogramManager(const vstring & processesBackground,
     shapeValues_and_Uncertainties_[sysShift] = sysShiftEntry;
   }
 }
+*/
+/*
+HistogramManager::HistogramManager(const vstring & processesBackground,
+                                   const std::string & processSignal,
+                                   const vstring & categories,
+                                   const edm::ParameterSet & cfg)
+  : currentDir_(nullptr)
+  , isUpToDate_(false)
+  , histogram_uncertainty_(nullptr)
+{
+  HistogramManager();
+}
+*/
+
+
+HistogramManager::HistogramManager(const vstring & processesBackground,
+                                   const vstring & processesSignal,
+                                   const vstring & categories,
+                                   const edm::ParameterSet & cfg)
+  : currentDir_(nullptr)
+  , isUpToDate_(false)
+  , histogram_uncertainty_(nullptr)
+{
+  setHistogramManager(processesBackground,
+		      processesSignal,
+		      categories,
+		      cfg);
+}
+
+HistogramManager::HistogramManager(const vstring & processesBackground,
+                                   const std::string & processSignal,
+                                   const vstring & categories,
+                                   const edm::ParameterSet & cfg)
+  : currentDir_(nullptr)
+  , isUpToDate_(false)
+  , histogram_uncertainty_(nullptr)
+{
+  const vstring processesSignal = { processSignal };
+  setHistogramManager(processesBackground,
+		      processesSignal,
+		      categories,
+		      cfg);
+}
+
+void
+HistogramManager::setHistogramManager(const vstring & processesBackground,
+                                   const vstring & processesSignal,
+                                   const vstring & categories,
+                                   const edm::ParameterSet & cfg)
+{
+  processes_ = processesBackground;
+  //if ( processSignal != "" ) processes_.push_back(processSignal);
+  for (const std::string & processSignal: processesSignal)
+  {
+    if ( processSignal != "" ) processes_.push_back(processSignal);
+  }
+
+  const edm::ParameterSet cfgNormalization = cfg.getParameter<edm::ParameterSet>("normalization");
+  for(const std::string & process: processes_)
+  {
+    for(const std::string & category: categories)
+    {
+      normEntryType processEntry;
+      processEntry.process_  = process;
+      processEntry.category_ = category;
+      parseValue_and_Uncertainty(
+        cfgNormalization.getParameter<std::string>(process), processEntry.sf_, processEntry.sfErr_
+      );
+      normalizationValues_and_Uncertainties_[process][category] = processEntry;
+    }
+  }
+
+  const edm::ParameterSet cfgShape = cfg.getParameter<edm::ParameterSet>("shape");
+  sysShifts_ = cfgShape.getParameterNamesForType<std::string>();
+  for(const std::string & sysShift: sysShifts_)
+  {
+    shapeEntryType sysShiftEntry;
+    sysShiftEntry.sysShift_ = sysShift;
+    parseValue_and_Uncertainty(
+      cfgShape.getParameter<std::string>(sysShift), sysShiftEntry.value_, sysShiftEntry.err_
+    );
+    shapeValues_and_Uncertainties_[sysShift] = sysShiftEntry;
+  }
+}
+  
 
 void
 HistogramManager::setDirectory(TDirectory * dir)
