@@ -146,7 +146,7 @@ TensorFlowInterfaceLBN::operator()(const std::map<std::string, const Particle*> 
   {
     for(const auto & kv: mvaOutputs)
     {
-      std::cout << "OUtput " << kv.first << " = " << kv.second << '\n';
+      std::cout << "Output " << kv.first << " = " << kv.second << '\n';
     }
   }
   return mvaOutputs;
