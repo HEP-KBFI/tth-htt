@@ -763,15 +763,14 @@ class analyzeConfig(object):
            sample_info['nof_reweighting'] > 0
 
         is_hh_channel = 'hh' in self.channel
-        if (is_hh_channel and sample_info["sample_category"].startswith('signal_') and
-            not "spin" in sample_info["sample_category"] and not "cHHH" in sample_info["sample_category"]) or \
+        if (is_hh_channel and sample_info["sample_category"].startswith('signal_ggf_nonresonant') and "cHHH" not in sample_info["sample_category"]) or \
            (not is_hh_channel and sample_info["sample_category"] == "HH"):
-          sample_category_to_check = 'sample_category_hh' if not is_hh_channel else 'sample_category'
+          sample_category_to_check = 'sample_category_hh'
           assert(sample_category_to_check in sample_info)
           hhWeight_base = ''
-          if any(decayMode in sample_info[sample_category_to_check] for decayMode in [ 'bbvv', 'bbtt' ]):
+          if sample_info[sample_category_to_check].endswith(('bbvv', 'bbvv_sl', 'bbtt')):
             hhWeight_base = 'bbww'
-          elif any(decayMode in sample_info[sample_category_to_check] for decayMode in [ 'tttt', 'wwtt', 'wwww' ]):
+          elif sample_info[sample_category_to_check].endswith(('tttt', 'wwtt', 'wwww')):
             hhWeight_base = 'multilepton'
           else:
             raise ValueError("Uncrecongizable sample category: %s" % sample_info[sample_category_to_check])
@@ -810,6 +809,8 @@ class analyzeConfig(object):
             jobOptions['apply_topPtReweighting'] = self.topPtRwgtChoice
           else:
             jobOptions['apply_topPtReweighting'] = ''
+        if 'process_hh' not in jobOptions and 'sample_category_hh' in sample_info:
+          jobOptions['process_hh'] = sample_info['sample_category_hh']
         if 'hasPS' not in jobOptions:
           jobOptions['hasPS'] = sample_info["nof_PSweights"] == 4 and 'central_or_shifts_local' in jobOptions and any(
             central_or_shift in systematics.PartonShower().full \
@@ -1068,6 +1069,7 @@ class analyzeConfig(object):
 
         jobOptions_local = [
             'process',
+            'process_hh',
             'isMC',
             'hasLHE',
             'hasPS',

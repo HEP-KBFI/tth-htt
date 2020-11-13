@@ -22,6 +22,7 @@ class AnalysisConfig
 
   const std::string & analysis() const;
   const std::string & process() const;
+  const std::string & process_hh() const;
 
   virtual bool isData() const;
 
@@ -51,6 +52,7 @@ class AnalysisConfig
  protected:
   std::string analysis_string_;
   std::string process_string_;
+  std::string process_string_hh_;
 
   bool isData_;
 
