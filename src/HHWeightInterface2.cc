@@ -81,6 +81,7 @@ HHWeightInterface2::HHWeightInterface2(const edm::ParameterSet & cfg)
   // https://gist.github.com/rjzak/5681680
   Py_SetProgramName(const_cast<char *>("do_weight"));
   moduleMainString_ = PyString_FromString("__main__");
+  Py_Initialize();
   moduleMain_ = PyImport_Import(moduleMainString_);
   PyRun_SimpleString(applicationLoadStr.c_str());
 
@@ -278,20 +279,40 @@ HHWeightInterface2::getWeight(const std::string & bmName, double mHH, double cos
     throw cmsException(this, __func__, __LINE__) << "Invalid parameter 'bmName' = " << bmName << " !!\n";
   }
   const double denominator = getDenom(mHH, cosThetaStar);
+  PyObject* kl_py = PyFloat_FromDouble(static_cast<double>(kl_[bmIdx->second]));
+  PyObject* kt_py = PyFloat_FromDouble(static_cast<double>(kt_[bmIdx->second]));
+  PyObject* c2_py = PyFloat_FromDouble(static_cast<double>(c2_[bmIdx->second]));
+  PyObject* cg_py = PyFloat_FromDouble(static_cast<double>(cg_[bmIdx->second]));
+  PyObject* c2g_py = PyFloat_FromDouble(static_cast<double>(c2g_[bmIdx->second]));
+  PyObject* mHH_py = PyFloat_FromDouble(static_cast<double>(mHH));
+  PyObject* cosThetaStar_py = PyFloat_FromDouble(static_cast<double>(cosThetaStar));
+  PyObject* norm_py = PyFloat_FromDouble(static_cast<double>(norm_[bmIdx->second]));
+  PyObject* denominator_py = PyFloat_FromDouble(static_cast<double>(denominator));
   PyObject* args_BM_list = PyTuple_Pack(10,
-    PyFloat_FromDouble(static_cast<double>(kl_[bmIdx->second])),
-    PyFloat_FromDouble(static_cast<double>(kt_[bmIdx->second])),
-    PyFloat_FromDouble(static_cast<double>(c2_[bmIdx->second])),
-    PyFloat_FromDouble(static_cast<double>(cg_[bmIdx->second])),
-    PyFloat_FromDouble(static_cast<double>(c2g_[bmIdx->second])),
-    PyFloat_FromDouble(static_cast<double>(mHH)),
-    PyFloat_FromDouble(static_cast<double>(cosThetaStar)),
-    PyFloat_FromDouble(static_cast<double>(norm_[bmIdx->second])),
-    PyFloat_FromDouble(static_cast<double>(denominator)),
+    kl_py,
+    kt_py,
+    c2_py,
+    cg_py,
+    c2g_py,
+    mHH_py,
+    cosThetaStar_py,
+    norm_py,
+    denominator_py,
     modeldata_
   );
-  double weight = PyFloat_AsDouble(PyObject_CallObject(func_Weight_, args_BM_list)) * nof_sumEvt_entries_;
+  PyObject* weight_ptr = PyObject_CallObject(func_Weight_, args_BM_list);
+  const double weight = PyFloat_AsDouble(weight_ptr) * nof_sumEvt_entries_;
+  Py_XDECREF(kl_py);
+  Py_XDECREF(kt_py);
+  Py_XDECREF(c2_py);
+  Py_XDECREF(cg_py);
+  Py_XDECREF(c2g_py);
+  Py_XDECREF(mHH_py);
+  Py_XDECREF(cosThetaStar_py);
+  Py_XDECREF(norm_py);
+  Py_XDECREF(denominator_py);
   Py_XDECREF(args_BM_list);
+  Py_XDECREF(weight_ptr);
   if(isDEBUG)
   {
     std::cout << "denominator = " << denominator << std::endl;

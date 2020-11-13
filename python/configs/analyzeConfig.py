@@ -133,7 +133,7 @@ class analyzeConfig(object):
         self.executable_analyze = executable_analyze
         self.channel = channel
 
-        self.useFullGenWeight = False
+        self.useFullGenWeight = True
         self.weight_prefix = "CountWeighted{}".format("Full" if self.useFullGenWeight else "")
 
         # sum the event counts for samples which cover the same phase space only if
@@ -170,31 +170,37 @@ class analyzeConfig(object):
           dbs_list_human = ', '.join(samples[dbs_key]['process_name_specific'] for dbs_key in dbs_list)
           nof_events = {}
           for dbs_key in dbs_list:
-            if len(nof_events) == 0:
-              nof_events = copy.deepcopy(samples[dbs_key]['nof_events'])
-            else:
-              excl_count_type = [ 'LHEHT', 'LHENjet', 'PSWeight' ]
-              sample_nof_events_set = set(
-                evt_key for evt_key in samples[dbs_key]['nof_events'] \
-                if not any(excl_evt_key in evt_key for excl_evt_key in excl_count_type)
+            for evt_key in samples[dbs_key]['nof_events']:
+              if evt_key not in nof_events:
+                nof_events[evt_key] = [0.] * len(samples[dbs_key]['nof_events'][evt_key])
+          for dbs_key in dbs_list:
+            excl_count_type = [ 'LHEHT', 'LHENjet', 'PSWeight' ]
+            if not samples[dbs_key]['has_LHE']:
+              excl_count_type.append('LHEWeightScale')
+            sample_nof_events_set = set(
+              evt_key for evt_key in samples[dbs_key]['nof_events'] \
+              if not any(excl_evt_key in evt_key for excl_evt_key in excl_count_type)
+            )
+            nof_events_set = set(
+              evt_key for evt_key in nof_events.keys() \
+              if not any(excl_evt_key in evt_key for excl_evt_key in excl_count_type)
+            )
+            if sample_nof_events_set != nof_events_set:
+              raise ValueError(
+                'Mismatching event counts for samples: %s: %s vs %s' % \
+                (dbs_list_human, str(sample_nof_events_set), str(nof_events_set))
               )
-              nof_events_set = set(
-                evt_key for evt_key in nof_events.keys() \
-                if not any(excl_evt_key in evt_key for excl_evt_key in excl_count_type)
-              )
-              if sample_nof_events_set != nof_events_set:
-                raise ValueError('Mismatching event counts for samples: %s' % dbs_list_human)
-              for count_type, count_array in samples[dbs_key]['nof_events'].items():
-                if count_type not in nof_events and \
-                   any(excl_evt_key in count_type for excl_evt_key in excl_count_type):
-                  # initialize event counts with 0s that don't necessarily exist in the samples covering the same phase space
-                  nof_events[count_type] = [ 0 ] * len(count_array)
-                if len(nof_events[count_type]) != len(count_array):
-                  raise ValueError(
-                    'Mismatching array length of %s for samples: %s' % (count_type, dbs_list_human)
-                  )
-                for count_idx, count_val in enumerate(count_array):
-                  nof_events[count_type][count_idx] += count_val
+            for count_type, count_array in samples[dbs_key]['nof_events'].items():
+              if count_type not in nof_events and \
+                 any(excl_evt_key in count_type for excl_evt_key in excl_count_type):
+                # initialize event counts with 0s that don't necessarily exist in the samples covering the same phase space
+                nof_events[count_type] = [ 0 ] * len(count_array)
+              if len(nof_events[count_type]) != len(count_array):
+                raise ValueError(
+                  'Mismatching array length of %s for samples: %s' % (count_type, dbs_list_human)
+                )
+              for count_idx, count_val in enumerate(count_array):
+                nof_events[count_type][count_idx] += count_val
           for dbs_key in dbs_list:
             samples[dbs_key]['nof_events'] = copy.deepcopy(nof_events)
 
@@ -625,9 +631,8 @@ class analyzeConfig(object):
             os.environ['CMSSW_BASE'], "src/tthAnalysis/HiggsToTauTau/data/btagSFRatio_{}.root".format(self.era)
           )
         else:
-          self.btagSFRatioFile = "/hdfs/local/karl/ttHBtagsfProjection/{era}/{version}_all/btagSF_{era}_fullSys.root".format(
+          self.btagSFRatioFile = "/hdfs/local/karl/btagSFratios_final/2020Nov06/btagSF_{era}_fullSys.root".format(
             era = self.era,
-            version = '2020Jul09' if self.era != '2018' else '2020Jul18',
           )
 
         self.leptonFakeRateWeight_histogramName_e = None
@@ -987,7 +992,7 @@ class analyzeConfig(object):
 
         if 'hasLHE' not in jobOptions:
             jobOptions['hasLHE'] = sample_info['has_LHE']
-        if 'ref_genWeight' not in jobOptions and is_mc and False: #TODO remove False
+        if 'ref_genWeight' not in jobOptions and is_mc:
             self.load_refGenWeights()
             if process_name not in self.ref_genWeights:
                 raise RuntimeError("Unable to find reference gen weight for process %s from file %s" % (process_name, self.ref_genWeightFile))
@@ -1385,6 +1390,7 @@ class analyzeConfig(object):
             self.btagSFRatios[sample_name] = {}
             for sys_name in btagSFRatio_sysNames:
                 btagSFRatio_histogram = sample_dir.Get(sys_name)
+                btagSFRatio_histogram.SetDirectory(0)
                 btagSFRatio_nbins = btagSFRatio_histogram.GetXaxis().GetNbins()
                 btagSFRatio_values = [ btagSFRatio_histogram.GetBinContent(bin_idx) for bin_idx in range(1, btagSFRatio_nbins + 1) ]
                 if sys_name.startswith(('JES', 'JER', 'pileup', 'l1PreFire', 'topPtReweighting')):
@@ -1505,13 +1511,13 @@ class analyzeConfig(object):
         assert(self.prep_dcard_processesToCopy)
         category_output = self.channel
         central_or_shifts_modified = self.central_or_shifts
-        if len(self.central_or_shifts) > 1 and "hh_bbWW" in category_output :
+        if len(self.central_or_shifts) > 1 and "hh_bbWW" in category_output:
           central_or_shift_remove = systematics.ttbar
           central_or_shifts_added = [ "CMS_HHbbww_TT_{}".format(central_or_shift) for central_or_shift in central_or_shift_remove ]
           central_or_shifts_modified = [ central_or_shift for central_or_shift in self.central_or_shifts if central_or_shift not in central_or_shift_remove ]
           central_or_shifts_modified += central_or_shifts_added
-        if 'label' in jobOptions.keys() and jobOptions['label']:
-            category_output += "_%s" % jobOptions['label']
+        ##if 'label' in jobOptions.keys() and jobOptions['label']:
+        ##    category_output += "_%s" % jobOptions['label']
         histogramToFit = jobOptions['histogramToFit']
         lines = []
         lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
@@ -1521,12 +1527,13 @@ class analyzeConfig(object):
         lines.append("process.prepareDatacards.makeSubDir = cms.bool(False)")
         lines.append("process.prepareDatacards.categories = cms.VPSet(")
         lines.append("    cms.PSet(")
-        if ('hh' in category_output):
-          lines.append("        output = cms.string('%s')" % category_output)
-          if ("BDTOutput" in histogramToFit):
-            lines.append("        input = cms.string('%s/sel/datacard')," % jobOptions['histogramDir'])
+        if "BDTOutput" in histogramToFit:
+          lines.append("        input = cms.string('%s/sel/datacard')," % jobOptions['histogramDir'])
         else:
           lines.append("        input = cms.string('%s/sel/evt')," % jobOptions['histogramDir'])
+        if 'hh' in category_output:
+          lines.append("        output = cms.string('%s')" % category_output)
+        else:
           lines.append("        output = cms.string('ttH_%s')" % category_output)
         lines.append("    )")
         lines.append(")")

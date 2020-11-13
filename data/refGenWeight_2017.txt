@@ -93,6 +93,7 @@ TTTW 1.000000e+00
 TTTo2L2Nu 7.269830e+01
 TTTo2L2Nu_GluonMove 7.269830e+01
 TTTo2L2Nu_GluonMove_ext1 7.269830e+01
+TTTo2L2Nu_GluonMove_ext2 7.269830e+01
 TTTo2L2Nu_PSweights 7.269830e+01
 TTTo2L2Nu_QCDbased 7.269830e+01
 TTTo2L2Nu_QCDbased_ext1 7.269830e+01
@@ -104,6 +105,7 @@ TTTo2L2Nu_hdampDOWN_ext1 7.332050e+01
 TTTo2L2Nu_hdampDOWN_ext2 7.332050e+01
 TTTo2L2Nu_hdampUP 7.244080e+01
 TTTo2L2Nu_hdampUP_ext1 7.244080e+01
+TTTo2L2Nu_hdampUP_ext2 7.244080e+01
 TTTo2L2Nu_mtop166p5 8.587800e+01
 TTTo2L2Nu_mtop166p5_PSweights 8.587800e+01
 TTTo2L2Nu_mtop169p5 7.896450e+01
@@ -114,10 +116,12 @@ TTTo2L2Nu_mtop173p5 7.074110e+01
 TTTo2L2Nu_mtop173p5_ext1 7.074110e+01
 TTTo2L2Nu_mtop175p5 6.701030e+01
 TTTo2L2Nu_mtop175p5_ext1 6.701030e+01
+TTTo2L2Nu_mtop175p5_ext2 6.701030e+01
 TTTo2L2Nu_mtop178p5 6.183780e+01
 TTTo2L2Nu_mtop178p5_PSweights 6.183780e+01
 TTTo2L2Nu_ueDown 7.269830e+01
 TTTo2L2Nu_ueDown_ext1 7.269830e+01
+TTTo2L2Nu_ueDown_ext2 7.269830e+01
 TTTo2L2Nu_ueUp 7.269830e+01
 TTTo2L2Nu_ueUp_ext1 7.269830e+01
 TTTo2L2Nu_ueUp_ext2 7.269830e+01
@@ -748,6 +752,7 @@ signal_vbf_nonresonant_1_1_0_hh_2v2t_dipoleRecoilOff 1.000000e+00
 signal_vbf_nonresonant_1_1_0_hh_4t_dipoleRecoilOff 1.000000e+00
 signal_vbf_nonresonant_1_1_0_hh_4v_dipoleRecoilOff 1.000000e+00
 signal_vbf_nonresonant_1_1_1_hh_2b2t_dipoleRecoilOff 1.000000e+00
+signal_vbf_nonresonant_1_1_1_hh_2b2v_dipoleRecoilOff 1.000000e+00
 signal_vbf_nonresonant_1_1_1_hh_2b2v_sl_dipoleRecoilOff 1.000000e+00
 signal_vbf_nonresonant_1_1_1_hh_2v2t_dipoleRecoilOff 1.000000e+00
 signal_vbf_nonresonant_1_1_1_hh_4t_dipoleRecoilOff 1.000000e+00
@@ -762,6 +767,7 @@ signal_vbf_nonresonant_1_2_1_hh_2b2t_dipoleRecoilOff 1.000000e+00
 signal_vbf_nonresonant_1_2_1_hh_2b2v_dipoleRecoilOff 1.000000e+00
 signal_vbf_nonresonant_1_2_1_hh_2b2v_sl_dipoleRecoilOff 1.000000e+00
 signal_vbf_nonresonant_1_2_1_hh_2v2t_dipoleRecoilOff 1.000000e+00
+signal_vbf_nonresonant_1_2_1_hh_4t_dipoleRecoilOff 1.000000e+00
 signal_vbf_nonresonant_1_2_1_hh_4v_dipoleRecoilOff 1.000000e+00
 signal_vbf_nonresonant_1p5_1_1_hh_2b2t_dipoleRecoilOff 1.000000e+00
 signal_vbf_nonresonant_1p5_1_1_hh_2b2v_dipoleRecoilOff 1.000000e+00

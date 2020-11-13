@@ -148,7 +148,6 @@ int main(int argc, char* argv[])
   const bool isMC_tHW = process_string == "tHW";
   const bool isMC_tH = isMC_tHq || isMC_tHW;
   const bool isMC_VH = process_string == "VH";
-  const bool isMC_HH = process_string == "HH";
   const bool isMC_EWK = process_string == "WZ" || process_string == "ZZ";
   const bool isMC_signal = process_string == "ttH" || process_string == "ttH_ctcvcp";
   const bool isSignal = isMC_signal || isMC_tH || isMC_VH;
@@ -1102,9 +1101,7 @@ int main(int argc, char* argv[])
     }
     cutFlowTable.update(">= 2 sel leptons", evtWeightRecorder.get(central_or_shift_main));
     const RecoLepton* selLepton_lead = selLeptons[0];
-    int selLepton_lead_type = getLeptonType(selLepton_lead->pdgId());
     const RecoLepton* selLepton_sublead = selLeptons[1];
-    int selLepton_sublead_type = getLeptonType(selLepton_sublead->pdgId());
     const leptonChargeFlipGenMatchEntry& selLepton_genMatch = getLeptonChargeFlipGenMatch(leptonGenMatch_definitions, selLepton_lead, selLepton_sublead);
     int idxSelLepton_genMatch = selLepton_genMatch.idx_;
     assert(idxSelLepton_genMatch != kGen_LeptonUndefined2);

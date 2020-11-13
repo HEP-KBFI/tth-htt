@@ -149,6 +149,11 @@ main(int argc,
   const double lep_mva_cut_mu = cfg_produceNtuple.getParameter<double>("lep_mva_cut_mu");
   const double lep_mva_cut_e  = cfg_produceNtuple.getParameter<double>("lep_mva_cut_e");
   const std::string lep_mva_wp = cfg_produceNtuple.getParameter<std::string>("lep_mva_wp");
+  std::cout
+    << "Using lepton MVA WP '" << lep_mva_wp
+    << "': >= " << lep_mva_cut_mu << " for muons and"
+       " >= " << lep_mva_cut_e    << " for electrons\n"
+  ;
 
   const int minNumLeptons             = cfg_produceNtuple.getParameter<int>("minNumLeptons");
   const int minNumHadTaus             = cfg_produceNtuple.getParameter<int>("minNumHadTaus");
@@ -1109,6 +1114,10 @@ main(int argc,
         else if(dynamic_cast<TH1D*>(histogram_input))
         {
           histogram_output = fs.make<TH1D>(*(dynamic_cast<TH1D *>(histogram_input)));
+        }
+        else if(dynamic_cast<TH1I*>(histogram_input))
+        {
+          histogram_output = fs.make<TH1I>(*(dynamic_cast<TH1I *>(histogram_input)));
         }
         assert(histogram_output);
         histograms[histogramName] = histogram_output;

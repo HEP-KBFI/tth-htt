@@ -1,33 +1,31 @@
 #ifndef tthAnalysis_HiggsToTauTau_analysisAuxFunctions_h
 #define tthAnalysis_HiggsToTauTau_analysisAuxFunctions_h
 
-#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
-
-#include "tthAnalysis/HiggsToTauTau/interface/Particle.h" // Particle::LorentzVector
-#include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h" // RecoLepton
-#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h" // RecoHadTau
-#include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h" // RecoJet
-#include "tthAnalysis/HiggsToTauTau/interface/RecoJetBase.h" // RecoJetBase
-#include "tthAnalysis/HiggsToTauTau/interface/TrigObj.h" // TrigObj
-#include "tthAnalysis/HiggsToTauTau/interface/EventInfo.h" // EventInfo
-#include "tthAnalysis/HiggsToTauTau/interface/RecoMEt.h" // RecoMEt
-
-#include <DataFormats/Math/interface/deltaR.h> // deltaR()
 #include <DataFormats/Math/interface/LorentzVector.h> // math::PtEtaPhiMLorentzVector
+#include <DataFormats/Math/interface/deltaR.h>        // deltaR()
 
-#include "tthAnalysis/HiggsToTauTau/interface/TMVAInterface.h" // TMVAInterface
-#include "tthAnalysis/HiggsToTauTau/interface/XGBInterface.h" // XGBInterface
+#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h"           // cmsException()
+#include "tthAnalysis/HiggsToTauTau/interface/Particle.h"               // Particle::LorentzVector
+#include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h"             // RecoLepton
+#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h"             // RecoHadTau
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h"                // RecoJet
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJetBase.h"            // RecoJetBase
+#include "tthAnalysis/HiggsToTauTau/interface/TrigObj.h"                // TrigObj
+#include "tthAnalysis/HiggsToTauTau/interface/EventInfo.h"              // EventInfo
+#include "tthAnalysis/HiggsToTauTau/interface/RecoMEt.h"                // RecoMEt
+#include "tthAnalysis/HiggsToTauTau/interface/TMVAInterface.h"          // TMVAInterface
+#include "tthAnalysis/HiggsToTauTau/interface/XGBInterface.h"           // XGBInterface
+#include "tthAnalysis/HiggsToTauTau/interface/TensorFlowInterface.h"    // TensorFlowInterface
+#include "tthAnalysis/HiggsToTauTau/interface/TensorFlowInterfaceLBN.h" // TensorFlowInterfaceLBN
 
 #include <TMath.h> // TMath::Abs()
 
-#include <vector> // std::vector<>
-#include <map> // std::map<,>
-#include <algorithm> // std::copy_n()
+#include <vector>      // std::vector<>
+#include <map>         // std::map<,>
+#include <algorithm>   // std::copy_n()
 #include <type_traits> // std::underlying_type<>
-
-#include <fstream> // std::ofstream   
-#include <sstream>
-
+#include <fstream>     // std::ofstream   
+#include <sstream>     // std::ostringstream
 
 #define TAU_WP_SEPARATOR   "&"
 #define TAU_WP_SEPARATOR_C '&'
@@ -815,19 +813,50 @@ InitializeInputVarMap(std::map<std::string, double> & AllVars_Map,
 		      std::vector<std::string> & BDTInputVariables,
 		      bool isNonRes);
 
-std::map<std::string, double>
-CreateBDTOutputMap(std::vector<double> & BDT_params,
-		   TMVAInterface* BDT_SUM,
-		   std::map<std::string, double>& BDTInputs_SUM,
-		   int event_number,
-		   bool isNonRes,
-		   std::string label);
+std::string 
+DoubleToUInt_Convertor(double BDT_param,
+                       bool isNonRes,
+                       const std::string & spin_label);
 
+/**
+ * @brief Compute BDT or DNN output for parametrized training
+ *        The function supports non-resonant (parametrized by SM/coupling scenario) and resonant (parametrized by mHH) HH production.
+ *  NOTE: Use this function for BDTs (T = TMVAInterface) and DNNs (T = TensorFlowInterface)
+ *
+ */
+template <typename T>
 std::map<std::string, double>
-CreateBDTOutputMap(std::vector<double> & BDT_params,
-		   XGBInterface* BDT_SUM,
-		   std::map<std::string, double>& BDTInputs_SUM,
+CreateBDTOutputMap(const std::vector<double> & BDT_params,
+		   T * BDT,
+		   std::map<std::string, double> & BDTInputs,
 		   int event_number,
 		   bool isNonRes,
-		   std::string label);
+		   const std::string & spin_label);
+
+std::map<std::string, std::map<std::string, double>>
+CreateDNNOutputMap(const std::vector<double> & DNN_params,
+		   TensorFlowInterface * DNN,
+		   std::map<std::string, double> & DNNInputs,
+		   int event_number,
+		   bool isNonRes,
+		   const std::string & spin_label);
+
+
+
+
+/**
+ * @brief Compute LBN output for parametrized training
+ *        The function supports non-resonant (parametrized by SM/coupling scenario) and resonant (parametrized by mHH) HH production.
+ *  NOTE: Use this function for LBNs
+ *
+ */
+std::map<std::string, std::map<std::string, double>>
+CreateLBNOutputMap(const std::vector<double> & LBN_params,
+		   TensorFlowInterfaceLBN * LBN,
+                   const std::map<std::string, const Particle*> & ll_particles,
+		   std::map<std::string, double> & hl_mvaInputs,
+		   int event_number,
+		   bool isNonRes,
+		   const std::string & spin_label);
+
 #endif

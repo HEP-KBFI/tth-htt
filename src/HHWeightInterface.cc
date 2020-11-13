@@ -217,22 +217,42 @@ HHWeightInterface::getJHEPWeight(double mHH,
   std::vector<double> WeightBM;
   for(std::size_t bmIdx = 0; bmIdx < nof_JHEP; ++bmIdx)
   {
+    PyObject* klJHEP_py = PyFloat_FromDouble(static_cast<double>(klJHEP[bmIdx]));
+    PyObject* ktJHEP_py = PyFloat_FromDouble(static_cast<double>(ktJHEP[bmIdx]));
+    PyObject* c2JHEP_py = PyFloat_FromDouble(static_cast<double>(c2JHEP[bmIdx]));
+    PyObject* cgJHEP_py = PyFloat_FromDouble(static_cast<double>(cgJHEP[bmIdx]));
+    PyObject* c2gJHEP_py = PyFloat_FromDouble(static_cast<double>(c2gJHEP[bmIdx]));
+    PyObject* mHH_py = PyFloat_FromDouble(static_cast<double>(mHH));
+    PyObject* cosThetaStar_py = PyFloat_FromDouble(static_cast<double>(cosThetaStar));
+    PyObject* normJHEP_py = PyFloat_FromDouble(static_cast<double>(normJHEP[bmIdx]));
+    PyObject* denominator_py = PyFloat_FromDouble(static_cast<double>(denominator));
     PyObject* args_BM_list = PyTuple_Pack(10,
-      PyFloat_FromDouble(static_cast<double>(klJHEP[bmIdx])),
-      PyFloat_FromDouble(static_cast<double>(ktJHEP[bmIdx])),
-      PyFloat_FromDouble(static_cast<double>(c2JHEP[bmIdx])),
-      PyFloat_FromDouble(static_cast<double>(cgJHEP[bmIdx])),
-      PyFloat_FromDouble(static_cast<double>(c2gJHEP[bmIdx])),
-      PyFloat_FromDouble(static_cast<double>(mHH)),
-      PyFloat_FromDouble(static_cast<double>(cosThetaStar)),
-      PyFloat_FromDouble(static_cast<double>(normJHEP[bmIdx])),
-      PyFloat_FromDouble(static_cast<double>(denominator)),
+      klJHEP_py,
+      ktJHEP_py,
+      c2JHEP_py,
+      cgJHEP_py,
+      c2gJHEP_py,
+      mHH_py,
+      cosThetaStar_py,
+      normJHEP_py,
+      denominator_py,
       modeldata_
     );
+    PyObject* weight = PyObject_CallObject(func_Weight_, args_BM_list);
     WeightBM.push_back(
-      PyFloat_AsDouble(PyObject_CallObject(func_Weight_, args_BM_list)) * nof_sumEvt_entries
+      PyFloat_AsDouble(weight) * nof_sumEvt_entries
     );
+    Py_XDECREF(klJHEP_py);
+    Py_XDECREF(ktJHEP_py);
+    Py_XDECREF(c2JHEP_py);
+    Py_XDECREF(cgJHEP_py);
+    Py_XDECREF(c2gJHEP_py);
+    Py_XDECREF(mHH_py);
+    Py_XDECREF(cosThetaStar_py);
+    Py_XDECREF(normJHEP_py);
+    Py_XDECREF(denominator_py);
     Py_XDECREF(args_BM_list);
+    Py_XDECREF(weight);
   }
 
   if(isDEBUG)
@@ -258,22 +278,41 @@ HHWeightInterface::getScanWeight(double mHH,
   std::map<std::string, double> Weight_klScan;
   for(std::size_t scanIdx = 0; scanIdx < Norm_klScan.size(); ++scanIdx)
   {
+    PyObject* kl_py = PyFloat_FromDouble(static_cast<double>(kl_scan[scanIdx]));
+    PyObject* kt_py = PyFloat_FromDouble(static_cast<double>(kt_scan[scanIdx]));
+    PyObject* c2_py = PyFloat_FromDouble(static_cast<double>(c2_scan[scanIdx]));
+    PyObject* cg_py = PyFloat_FromDouble(static_cast<double>(cg_scan[scanIdx]));
+    PyObject* c2g_py = PyFloat_FromDouble(static_cast<double>(c2g_scan[scanIdx]));
+    PyObject* mHH_py = PyFloat_FromDouble(static_cast<double>(mHH));
+    PyObject* cosThetaStar_py = PyFloat_FromDouble(static_cast<double>(cosThetaStar));
+    PyObject* norm_py = PyFloat_FromDouble(static_cast<double>(Norm_klScan[scanIdx]));
+    PyObject * denominator_py = PyFloat_FromDouble(static_cast<double>(denominator));
+
     PyObject* args_kl_scan_list = PyTuple_Pack(10,
-      PyFloat_FromDouble(static_cast<double>(kl_scan[scanIdx])),
-      PyFloat_FromDouble(static_cast<double>(kt_scan[scanIdx])),
-      PyFloat_FromDouble(static_cast<double>(c2_scan[scanIdx])),
-      PyFloat_FromDouble(static_cast<double>(cg_scan[scanIdx])),
-      PyFloat_FromDouble(static_cast<double>(c2g_scan[scanIdx])),
-      PyFloat_FromDouble(static_cast<double>(mHH)),
-      PyFloat_FromDouble(static_cast<double>(cosThetaStar)),
-      PyFloat_FromDouble(static_cast<double>(Norm_klScan[scanIdx])),
-      PyFloat_FromDouble(static_cast<double>(denominator)),
+      kl_py,
+      kt_py,
+      c2_py,
+      cg_py,
+      c2g_py,
+      mHH_py,
+      cosThetaStar_py,
+      norm_py,
+      denominator_py,
       modeldata_
     );
-    Weight_klScan[values_string[scanIdx]] =
-      PyFloat_AsDouble(PyObject_CallObject(func_Weight_, args_kl_scan_list)) * nof_sumEvt_entries
-    ;
+    PyObject* weight = PyObject_CallObject(func_Weight_, args_kl_scan_list);
+    Weight_klScan[values_string[scanIdx]] = PyFloat_AsDouble(weight) * nof_sumEvt_entries;
+    Py_XDECREF(kl_py);
+    Py_XDECREF(kt_py);
+    Py_XDECREF(c2_py);
+    Py_XDECREF(cg_py);
+    Py_XDECREF(c2g_py);
+    Py_XDECREF(mHH_py);
+    Py_XDECREF(cosThetaStar_py);
+    Py_XDECREF(norm_py);
+    Py_XDECREF(denominator_py);
     Py_XDECREF(args_kl_scan_list);
+    Py_XDECREF(weight);
   }
 
   if(isDEBUG)

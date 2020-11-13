@@ -1,6 +1,7 @@
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, get_log_version, check_submission_cmd, record_software_state
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, createFile, generateInputFileList
 from tthAnalysis.HiggsToTauTau.analysisTools import createMakefile as tools_createMakefile, load_refGenWeightsFromFile
+from tthAnalysis.HiggsToTauTau.analysisTools import isSplitByNlheJet, isSplitByNlheHT, isSplitByNlheJetHT
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch as tools_createScript_sbatch
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch_hadd as tools_createScript_sbatch_hadd
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import is_file_ok as tools_is_file_ok
@@ -180,7 +181,6 @@ class projectionConfig:
             'plot'    : 0,
         }
 
-
     def createCfg_project(self, jobOptions):
         """Create python configuration file for the projection script
 
@@ -188,7 +188,7 @@ class projectionConfig:
           inputFiles: list of input files (Ntuples)
           outputFile: output file of the job -- a ROOT file containing histogram
         """
-        last_line = '%s %s %s %s' % (self.projection_module, self.era, jobOptions['histName'], jobOptions['outputFile'])
+        last_line = '%s %s %s %s' % (jobOptions['projection_module'], self.era, jobOptions['histName'], jobOptions['outputFile'])
         if self.projection_module != 'puHist':
             last_line += ' %.6e' % jobOptions['ref_genWeight']
         lines = jobOptions['inputFiles'] + [ '', last_line ]
@@ -457,13 +457,27 @@ class projectionConfig:
                 self.scriptFiles_projection[key_file] = os.path.join(
                     self.dirs[key_dir][DKEY_CFGS], "project_%s_%i_cfg.sh" % (process_name, jobId)
                 )
+                projection_module = self.projection_module
+                if projection_module == "count":
+                    projection_module = "countHistogramAll"
+                    if sample_name.startswith('/TTTo'):
+                        projection_module += "CompTopRwgt"
+                    elif sample_info['sample_category'].startswith('ttH'):
+                        projection_module += "CompHTXS"
+                    elif isSplitByNlheJet(process_name):
+                        projection_module += "SplitByLHENjet"
+                    elif isSplitByNlheHT(process_name):
+                        projection_module += "SplitByLHEHT"
+                    elif isSplitByNlheJetHT(process_name, sample_name):
+                        projection_module += "SplitByLHENjetHT"
                 self.jobOptions_sbatch[key_file] = {
-                    'histName'      : process_name,
-                    'inputFiles'    : self.inputFiles[key_file],
-                    'cfgFile_path'  : self.cfgFiles_projection[key_file],
-                    'outputFile'    : self.outputFiles_tmp[key_file],
-                    'logFile'       : self.logFiles_projection[key_file],
-                    'scriptFile'    : self.scriptFiles_projection[key_file],
+                    'histName'          : process_name,
+                    'inputFiles'        : self.inputFiles[key_file],
+                    'cfgFile_path'      : self.cfgFiles_projection[key_file],
+                    'outputFile'        : self.outputFiles_tmp[key_file],
+                    'logFile'           : self.logFiles_projection[key_file],
+                    'scriptFile'        : self.scriptFiles_projection[key_file],
+                    'projection_module' : projection_module,
                 }
                 if self.projection_module != 'puHist':
                     self.jobOptions_sbatch[key_file]['ref_genWeight'] = self.ref_genWeights[process_name]

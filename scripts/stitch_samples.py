@@ -187,6 +187,12 @@ CAPTIONS_BASE = [
   "Dataset info", "Binned event counts", "Lumiscale by bin", "Stitching weights", "Fraction of events per bin"
 ]
 
+def get_weight_name(era, use_full_weight):
+  count_var = 'CountWeighted' if era == '2018' else 'CountWeightedL1PrefireNom'
+  if use_full_weight:
+    count_var = count_var.replace('CountWeighted', 'CountWeightedFull')
+  return count_var
+
 def rfmt(nr, force_scientific = False):
   if nr == 0.:
     return '0'
@@ -459,9 +465,9 @@ def comp_lumiscale(samples_to_stitch_in):
       samples_to_stitch_out['exclusive'][split_var][sample_idx]['lumiscale'] = lumiscale_exc
   return samples_to_stitch_out
 
-def print_lumiscale(samples_to_stitch, era, count_var = '', count_idx = 0):
+def print_lumiscale(samples_to_stitch, era, use_full_weight, count_var = '', count_idx = 0):
   if not count_var:
-    count_var = 'CountWeighted' if era == '2018' else 'CountWeightedL1PrefireNom'
+    count_var = get_weight_name(era, use_full_weight)
   header = ['Sample', 'XS [pb]', 'Event sum', 'Lumiscale', 'Datasets']
   table = prettytable.PrettyTable(header)
   row_dict = collections.OrderedDict()
@@ -542,10 +548,10 @@ def get_binned_counts(samples_to_stitch_in, split_var_grid, split_var_names_full
       )
   return samples_to_stitch_out
 
-def print_event_counts(samples_to_stitch, era, count_var = '', count_idx = 0):
+def print_event_counts(samples_to_stitch, era, use_full_weight, count_var = '', count_idx = 0):
   split_vars = get_split_vars(samples_to_stitch, check_inclusive = False)
   if not count_var:
-    count_var = 'CountWeighted' if era == '2018' else 'CountWeightedL1PrefireNom'
+    count_var = get_weight_name(era, use_full_weight)
   header = ['Bin', ]
   if 'inclusive' in samples_to_stitch:
     header.append('Inclusive\nsample')
@@ -663,9 +669,9 @@ def get_binstats(samples_to_stitch, split_var_grid):
         }
   return binstat, binstat_meta
 
-def print_binstats(binstat, binstat_meta, era, count_var = '', count_idx = 0):
+def print_binstats(binstat, binstat_meta, era, use_full_weight, count_var = '', count_idx = 0):
   if not count_var:
-    count_var = 'CountWeighted' if era == '2018' else 'CountWeightedL1PrefireNom'
+    count_var = get_weight_name(era, use_full_weight)
   header = ['Bin', 'XS [pb]', 'Event sum', 'Lumiscale', '# samples', 'Samples']
   table = prettytable.PrettyTable(header)
   row_dict = collections.OrderedDict()
@@ -718,9 +724,9 @@ def comp_stitching_weights(samples_to_stitch_in, binstat):
       )
   return samples_to_stitch_out
 
-def print_stitching_weights(samples_to_stitch, era, count_var = '', count_idx = 0):
+def print_stitching_weights(samples_to_stitch, era, use_full_weight, count_var = '', count_idx = 0):
   if not count_var:
-    count_var = 'CountWeighted' if era == '2018' else 'CountWeightedL1PrefireNom'
+    count_var = get_weight_name(era, use_full_weight)
   header = ['Bin']
   if 'inclusive' in samples_to_stitch:
     header.append('Inclusive\nsample')
@@ -754,9 +760,9 @@ def print_stitching_weights(samples_to_stitch, era, count_var = '', count_idx = 
 
   return table.get_html_string()
 
-def get_ratios(samples_to_stitch, era, inclusive_xs, count_var = '', count_idx = 0):
+def get_ratios(samples_to_stitch, era, inclusive_xs, use_full_weight, count_var = '', count_idx = 0):
   if not count_var:
-    count_var = 'CountWeighted' if era == '2018' else 'CountWeightedL1PrefireNom'
+    count_var = get_weight_name(era, use_full_weight)
 
   ratios = collections.OrderedDict()
 
@@ -782,8 +788,8 @@ def get_ratios(samples_to_stitch, era, inclusive_xs, count_var = '', count_idx =
         ratios[bin_key][split_var].append(ratio)
   return ratios
 
-def get_ratio_table(samples_to_stitch, era, inclusive_xs):
-  ratios = get_ratios(samples_to_stitch, era, inclusive_xs)
+def get_ratio_table(samples_to_stitch, era, inclusive_xs, use_full_weight):
+  ratios = get_ratios(samples_to_stitch, era, inclusive_xs, use_full_weight)
   header = [ 'Bin' ]
   rows = collections.OrderedDict()
   for bin_key in ratios:
@@ -817,7 +823,7 @@ def write_report(output_fn, content):
     ))
   return
 
-def run_stitch(era, samples_to_stitch_orig, del_var, counter = -1):
+def run_stitch(era, samples_to_stitch_orig, del_var, use_full_weight, counter = -1):
   inclusive_xs = samples_to_stitch_orig['inclusive']['xsec']
   samples_to_stitch = copy.deepcopy(samples_to_stitch_orig)
   if del_var:
@@ -835,21 +841,21 @@ def run_stitch(era, samples_to_stitch_orig, del_var, counter = -1):
     split_var_name_full.split('_') for split_var_name_full in split_var_names_full
   ))))
   samples_to_stitch_wlumiscale = comp_lumiscale(samples_to_stitch)
-  lumiscale_table = print_lumiscale(samples_to_stitch_wlumiscale, era)
+  lumiscale_table = print_lumiscale(samples_to_stitch_wlumiscale, era, use_full_weight)
 
   samples_to_stitch_wbinnedcounts = get_binned_counts(
     samples_to_stitch_wlumiscale, split_var_grid, split_var_names_full, event_counts_unbinned,
     split_var_sum_mapping, split_var_names_full_linear, del_var
   )
-  binned_count_table = print_event_counts(samples_to_stitch_wbinnedcounts, era)
+  binned_count_table = print_event_counts(samples_to_stitch_wbinnedcounts, era, use_full_weight)
 
   binstat, binstat_meta = get_binstats(samples_to_stitch_wbinnedcounts, split_var_grid)
-  binstats_table = print_binstats(binstat, binstat_meta, era)
+  binstats_table = print_binstats(binstat, binstat_meta, era, use_full_weight)
 
   samples_to_stitch_wstitching = comp_stitching_weights(samples_to_stitch_wbinnedcounts, binstat)
-  stitching_table = print_stitching_weights(samples_to_stitch_wstitching, era)
+  stitching_table = print_stitching_weights(samples_to_stitch_wstitching, era, use_full_weight)
 
-  ratio_table = get_ratio_table(samples_to_stitch_wstitching, era, inclusive_xs)
+  ratio_table = get_ratio_table(samples_to_stitch_wstitching, era, inclusive_xs, use_full_weight)
 
   content_entries = []
   block_title = ''
@@ -876,7 +882,7 @@ def run_stitch(era, samples_to_stitch_orig, del_var, counter = -1):
       ])
   return samples_to_stitch_wstitching, content_entries, block_title
 
-def stitch(era):
+def stitch(era, use_full_weight):
   samples, samples_to_stitch_dict = load_sample(era)
   content = []
   counter = 0
@@ -887,7 +893,7 @@ def stitch(era):
       del_vars.extend(list(samples_to_stitch_orig['exclusive'].keys()))
       del_vars.append('inclusive')
     for del_var in del_vars:
-      stitch_results = run_stitch(era, samples_to_stitch_orig, del_var, counter)
+      stitch_results = run_stitch(era, samples_to_stitch_orig, del_var, use_full_weight, counter)
       stitch_results += (era, idx, del_var)
       content.append(stitch_results)
 
@@ -1075,6 +1081,10 @@ parser.add_argument('-r', '--report',
   type = str, dest = 'report', metavar = 'path', required = False,
   help = 'R|Report file name',
 )
+parser.add_argument('-f', '--full-weight',
+  dest = 'full_weight', action = 'store_true', default = False,
+  help = 'R|Use the full generator level weights in the final report',
+)
 parser.add_argument('-o', '--output',
   type = str, dest = 'output', metavar = 'path', required = False,
   default = os.path.join(os.environ['CMSSW_BASE'], 'src', 'tthAnalysis', 'HiggsToTauTau', 'data'),
@@ -1082,6 +1092,7 @@ parser.add_argument('-o', '--output',
 )
 args = parser.parse_args()
 eras = args.era
+use_full_weight = args.full_weight
 report_name = args.report
 output = os.path.abspath(args.output)
 
@@ -1097,7 +1108,7 @@ if not os.path.isdir(output):
 
 content = []
 for era in eras:
-  content.extend(stitch(era))
+  content.extend(stitch(era, use_full_weight))
 
 if report_name:
   write_report(report_name, content)

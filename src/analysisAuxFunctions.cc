@@ -1019,125 +1019,186 @@ std::map<std::string, double>InitializeInputVarMap(std::map<std::string, double>
   return BDTInputs_SUM;
 }
 
-std::string DoubleToUInt_Convertor(double BDT_param,
-				   bool isNonRes,
-				   std::string label)
+std::string 
+DoubleToUInt_Convertor(double BDT_param,
+                       bool isNonRes,
+                       const std::string & spin_label)
 {
   std::string key_final = "";
   unsigned int mass_int = (int)BDT_param; // Conversion from double to unsigned int 
   std::string key = "";
   std::ostringstream temp;
   temp << mass_int;
-  key = temp.str(); // Conversion from unsigned int to string
-
-  if(!isNonRes){ // Resonant 
+  key = temp.str(); // conversion from unsigned int to string
+  if ( !isNonRes )
+  { 
+    // resonant HH production
     key_final = "BDTOutput_" + key;
-  }else{ // Non-Resonant (Non SM BM Indices)
+  }
+  else // Non-Resonant (Non SM BM Indices)
+  {
+    // non-resonant HH production (SM and non-SM coupling scenarios)
     key_final = "BDTOutput_BM" + key;
   }
-
-  if(!isNonRes && !label.empty()){ // Appending Spin hypothesis to the Output label
-    std::string Label = label;
-    key_final += Label;
+  if ( !isNonRes && !spin_label.empty() )
+  { 
+    // add spin hypothesis to the output label
+    key_final += spin_label;
   }
-
   return key_final;
 }
 
-
-std::map<std::string, double>CreateBDTOutputMap(std::vector<double>& BDT_params,
-                                                TMVAInterface* BDT_SUM,
-                                                std::map<std::string, double>& BDTInputs_SUM,
-						int event_number,
-						bool isNonRes,
-						std::string label)
+template <typename T_algo, typename T_retVal>
+std::map<std::string, T_retVal>
+CreateBDT_or_DNNOutputMap(const std::vector<double> & BDT_params,
+		          T_algo * BDT,
+                          std::map<std::string, double> & BDTInputs,
+                          int event_number,
+                          bool isNonRes,
+                          const std::string & spin_label)
 {
-  std::map<std::string, double> BDTOutput_SUM_Map;
-  for(unsigned int i=0; i<BDT_params.size(); i++){ // Loop over BDT_params: signal mass (Reso.)/BM index (Non Reso.)
+  std::map<std::string, T_retVal> BDTOutput_Map;
+  for ( size_t i = 0; i < BDT_params.size(); ++i ) // Loop over BDT_params: signal mass (Reso.)/BM index (Non Reso.)
+  { 
     std::string key_final = "";
-    if(!isNonRes){ // Reso. case
-      BDTInputs_SUM["gen_mHH"] = BDT_params[i];
-      key_final = DoubleToUInt_Convertor(BDT_params[i], isNonRes, label);
-    }else{ // Non Reso. case
-      if(BDT_params[i] == 0){ // SM case
-	BDTInputs_SUM["SM"] = 1;  
+    if ( !isNonRes )
+    {
+      // resonant case
+      BDTInputs["gen_mHH"] = BDT_params[i];
+      key_final = DoubleToUInt_Convertor(BDT_params[i], isNonRes, spin_label);
+    }
+    else 
+    { 
+      // non-resonant case
+      if ( BDT_params[i] == 0 )
+      {
+        // SM
+	BDTInputs["SM"] = 1;  
 	key_final = "BDTOutput_SM";
-      }else{ // Non SM case
-	BDTInputs_SUM["SM"] = 0;
+      }
+      else
+      {
+        // non-SM coupling scenario
+	BDTInputs["SM"] = 0;
 	unsigned int bm_index_int = (int)BDT_params[i];
 	std::string key = "";
 	std::ostringstream temp;
 	temp << bm_index_int;
 	key = temp.str(); // Conversion from unsigned int to string
 	std::string input_BM_index = "BM" + key;
-	BDTInputs_SUM[input_BM_index] = 1;   
-	key_final = DoubleToUInt_Convertor(BDT_params[i], isNonRes, label);
-	if(i >= 2){
-	    	unsigned int bm_index_int_prev = (int)BDT_params[i-1];
-		std::string key_prev = "";
-		std::ostringstream temp_prev;
-		temp_prev << bm_index_int_prev;
-		key_prev = temp_prev.str(); // Conversion from unsigned int to string
-		std::string input_BM_index_prev = "BM" + key_prev;
-		BDTInputs_SUM[input_BM_index_prev] = 0; // Resetting the prev. hot encoder to zero   
-	}
+	BDTInputs[input_BM_index] = 1;   
+	key_final = DoubleToUInt_Convertor(BDT_params[i], isNonRes, spin_label);
+	if ( i >= 2 )
+        {
+          unsigned int bm_index_int_prev = (int)BDT_params[i- 1];
+          std::string key_prev = "";
+          std::ostringstream temp_prev;
+          temp_prev << bm_index_int_prev;
+          key_prev = temp_prev.str(); // Conversion from unsigned int to string
+          std::string input_BM_index_prev = "BM" + key_prev;
+          BDTInputs[input_BM_index_prev] = 0; // Resetting the prev. hot encoder to zero   
+        }
       }
     }
-
-    if(event_number != -1){ // Odd Even method
-      BDTOutput_SUM_Map.insert( std::make_pair(key_final, (*BDT_SUM)(BDTInputs_SUM, event_number)) );
-    }else{ // Same BDT for all events
-      BDTOutput_SUM_Map.insert( std::make_pair(key_final, (*BDT_SUM)(BDTInputs_SUM)) );
+    if ( event_number != -1 )
+    { 
+      // use odd-even method
+      BDTOutput_Map.insert(std::make_pair(key_final, (*BDT)(BDTInputs, event_number)));
+    }
+    else
+    { 
+      // use same BDT for all events
+      BDTOutput_Map.insert(std::make_pair(key_final, (*BDT)(BDTInputs)));
     }
   }
-  return BDTOutput_SUM_Map;
+  return BDTOutput_Map;
 }
 
-
-std::map<std::string, double>CreateBDTOutputMap(std::vector<double>& BDT_params,
-                                                XGBInterface* BDT_SUM,
-                                                std::map<std::string, double>& BDTInputs_SUM,
-						int event_number,
-						bool isNonRes,
-						std::string label)
+template <typename T>
+std::map<std::string, double>
+CreateBDTOutputMap(const std::vector<double> & BDT_params,
+		   T * BDT,
+		   std::map<std::string, double> & BDTInputs,
+		   int event_number,
+		   bool isNonRes,
+		   const std::string & spin_label)
 {
-  std::map<std::string, double> BDTOutput_SUM_Map;
-  for(unsigned int i=0; i<BDT_params.size(); i++){ // Loop over BDT_params: signal mass (Reso.)/BM index (Non Reso.)
+  return CreateBDT_or_DNNOutputMap<T, double>(BDT_params, BDT, BDTInputs, event_number, isNonRes, spin_label);
+}
+
+std::map<std::string, std::map<std::string, double>>
+CreateDNNOutputMap(const std::vector<double> & DNN_params,
+		   TensorFlowInterface * DNN,
+		   std::map<std::string, double> & DNNInputs,
+		   int event_number,
+		   bool isNonRes,
+		   const std::string & spin_label)
+{
+  return CreateBDT_or_DNNOutputMap<TensorFlowInterface, std::map<std::string, double>>(DNN_params, DNN, DNNInputs, event_number, isNonRes, spin_label);
+}
+
+std::map<std::string, std::map<std::string, double>>
+CreateLBNOutputMap(const std::vector<double> & LBN_params,
+		   TensorFlowInterfaceLBN * LBN,
+                   const std::map<std::string, const Particle*> & ll_particles,
+		   std::map<std::string, double> & hl_mvaInputs,
+		   int event_number,
+		   bool isNonRes,
+		   const std::string & label)
+{
+  std::map<std::string, std::map<std::string, double>> LBNOutput_Map;
+  for ( size_t i = 0; i < LBN_params.size(); ++i ) // Loop over LBN_params: signal mass (Reso.)/BM index (Non Reso.)
+  { 
     std::string key_final = "";
-    if(!isNonRes){ // Reso. case
-      BDTInputs_SUM["gen_mHH"] = BDT_params[i];
-      key_final = DoubleToUInt_Convertor(BDT_params[i], isNonRes, label);
-    }else{ // Non Reso. case
-      if(BDT_params[i] == 0){ // SM case
-	BDTInputs_SUM["SM"] = 1;  
-	key_final = "BDTOutput_SM";
-      }else{ // Non SM case
-	BDTInputs_SUM["SM"] = 0;
-	unsigned int bm_index_int = (int)BDT_params[i];
+    if ( !isNonRes )
+    {
+      // resonant case
+      hl_mvaInputs["gen_mHH"] = LBN_params[i];
+      key_final = DoubleToUInt_Convertor(LBN_params[i], isNonRes, label);
+    }
+    else 
+    { 
+      // non-resonant case
+      if ( LBN_params[i] == 0 )
+      {
+        // SM
+	hl_mvaInputs["SM"] = 1;  
+	key_final = "LBNOutput_SM";
+      }
+      else
+      {
+        // non-SM coupling scenario
+	hl_mvaInputs["SM"] = 0;
+	unsigned int bm_index_int = (int)LBN_params[i];
 	std::string key = "";
 	std::ostringstream temp;
 	temp << bm_index_int;
 	key = temp.str(); // Conversion from unsigned int to string
 	std::string input_BM_index = "BM" + key;
-	BDTInputs_SUM[input_BM_index] = 1;   
-	key_final = DoubleToUInt_Convertor(BDT_params[i], isNonRes, label);
-	if(i >= 2){
-	    	unsigned int bm_index_int_prev = (int)BDT_params[i-1];
-		std::string key_prev = "";
-		std::ostringstream temp_prev;
-		temp_prev << bm_index_int_prev;
-		key_prev = temp_prev.str(); // Conversion from unsigned int to string
-		std::string input_BM_index_prev = "BM" + key_prev;
-		BDTInputs_SUM[input_BM_index_prev] = 0; // Resetting the prev. hot encoder to zero   
-	}
+	hl_mvaInputs[input_BM_index] = 1;   
+	key_final = DoubleToUInt_Convertor(LBN_params[i], isNonRes, label);
+	if ( i >= 2 )
+        {
+          unsigned int bm_index_int_prev = (int)LBN_params[i- 1];
+          std::string key_prev = "";
+          std::ostringstream temp_prev;
+          temp_prev << bm_index_int_prev;
+          key_prev = temp_prev.str(); // Conversion from unsigned int to string
+          std::string input_BM_index_prev = "BM" + key_prev;
+          hl_mvaInputs[input_BM_index_prev] = 0; // Resetting the prev. hot encoder to zero   
+        }
       }
     }
-
-    if(event_number != -1){ // Odd Even method
-      BDTOutput_SUM_Map.insert( std::make_pair(key_final, (*BDT_SUM)(BDTInputs_SUM, event_number)) );
-    }else{ // Same BDT for all events
-      BDTOutput_SUM_Map.insert( std::make_pair(key_final, (*BDT_SUM)(BDTInputs_SUM)) );
+    if ( event_number != -1 )
+    { 
+      // use odd-even method
+      LBNOutput_Map.insert(std::make_pair(key_final, (*LBN)(ll_particles, hl_mvaInputs, event_number)));
+    }
+    else
+    { 
+      // use same LBN for all events
+      LBNOutput_Map.insert(std::make_pair(key_final, (*LBN)(ll_particles, hl_mvaInputs)));
     }
   }
-  return BDTOutput_SUM_Map;
+  return LBNOutput_Map;
 }

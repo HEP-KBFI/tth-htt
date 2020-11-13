@@ -238,3 +238,19 @@ def load_refGenWeightsFromFile(ref_genWeightsFile):
                 raise RuntimeError("Found duplicate entry of process: %s" % process_name)
             ref_genWeights[process_name] = ref_genWeight
     return ref_genWeights
+
+def isSplitByNlheJet(process_name):
+    return process_name.startswith(
+        tuple('DYToLL_{}J'.format(i) for i in range(3)) + \
+        ('DYJetsToLL_M-50_amcatnloFXFX', 'WJetsToLNu_HT', 'DYJetsToLL_M50_HT', 'DYJetsToLL_M-10to50')
+    )
+
+def isSplitByNlheHT(process_name):
+    return process_name.startswith(
+        tuple('W{}JetsToLNu'.format(i) for i in range(1, 5)) + \
+        tuple('DY{}JetsToLL_M-50'.format(i) for i in range(1, 5))
+    )
+
+def isSplitByNlheJetHT(process_name, sample_name):
+    return process_name.startswith('WJetsToLNu_madgraphMLM') or \
+           (process_name.startswith('DYJetsToLL_M-50') and 'amcatnlo' not in sample_name)

@@ -91,6 +91,7 @@ TTTo2L2Nu_hdampDOWN_ext1 7.332050e+01
 TTTo2L2Nu_hdampDOWN_ext2 7.332050e+01
 TTTo2L2Nu_hdampUP 7.244080e+01
 TTTo2L2Nu_hdampUP_ext1 7.244080e+01
+TTTo2L2Nu_hdampUP_ext2 7.244080e+01
 TTTo2L2Nu_mtop166p5 8.587800e+01
 TTTo2L2Nu_mtop169p5 7.896450e+01
 TTTo2L2Nu_mtop169p5_ext1 7.896450e+01
@@ -541,6 +542,7 @@ signal_ggf_spin2_280_hh_2v2t 1.000000e+00
 signal_ggf_spin2_280_hh_4t 1.000000e+00
 signal_ggf_spin2_280_hh_4v 1.000000e+00
 signal_ggf_spin2_3000_hh_2b2t 1.000000e+00
+signal_ggf_spin2_3000_hh_2b2v 1.000000e+00
 signal_ggf_spin2_3000_hh_2b2v_sl 1.000000e+00
 signal_ggf_spin2_3000_hh_2v2t 1.000000e+00
 signal_ggf_spin2_3000_hh_4t 1.000000e+00

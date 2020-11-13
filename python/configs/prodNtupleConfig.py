@@ -1,6 +1,7 @@
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, get_log_version, check_submission_cmd, record_software_state
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, generateInputFileList
 from tthAnalysis.HiggsToTauTau.analysisTools import createMakefile as tools_createMakefile, load_refGenWeightsFromFile
+from tthAnalysis.HiggsToTauTau.analysisTools import isSplitByNlheJet, isSplitByNlheHT, isSplitByNlheJetHT
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch as tools_createScript_sbatch
 from tthAnalysis.HiggsToTauTau.safe_root import ROOT
 from tthAnalysis.HiggsToTauTau.common import logging, DEPENDENCIES
@@ -64,6 +65,7 @@ class prodNtupleConfig:
              skip_tools_step,
              do_sync,
              lep_mva_wp,
+             skip_count,
              verbose = False,
              pool_id        = '',
              submission_cmd = None,
@@ -102,6 +104,7 @@ class prodNtupleConfig:
         self.do_sync           = do_sync
         self.pool_id           = pool_id if pool_id else uuid.uuid4()
 
+        self.skip_count = skip_count
         self.lep_mva_wp = lep_mva_wp
         lep_mva_cut_map = get_lep_mva_map(self.lep_mva_wp)
         self.lep_mva_cut_mu = lep_mva_cut_map['mu']
@@ -184,7 +187,9 @@ class prodNtupleConfig:
             inputFiles_prepended = []
             for inputFile in jobOptions['inputFiles']:
                 inputFile_split = os.path.splitext(os.path.basename(inputFile))
-                infix = "{}_ii".format("_jj" if recomp_run_ls else "")
+                infix = "{}_i".format("_jj" if recomp_run_ls else "")
+                if not self.skip_count:
+                    infix += "i"
                 inputFiles_prepended.append('%s%s%s' % (inputFile_split[0], infix, inputFile_split[1]))
         if len(inputFiles_prepended) != len(set(inputFiles_prepended)):
             raise ValueError("Not all input files have a unique base name: %s" % ', '.join(jobOptions['inputFiles']))
@@ -223,6 +228,7 @@ class prodNtupleConfig:
             "golden_json             = '%s'" % self.golden_json,
             "process_name            = '%s'" % jobOptions['process_name'],
             "skip_tools_step         = %s" % self.skip_tools_step,
+            "skip_count              = %s" % self.skip_count,
             "remove_intermediate     = %s" % (not self.do_sync),
             "compTopRwgt             = %s" % jobOptions['compTopRwgt'],
             "compHTXS                = %s" % jobOptions['compHTXS'],
@@ -362,17 +368,10 @@ class prodNtupleConfig:
                             hlt_path for hlt_pair in self.preselection_cuts["listHLT"] \
                             for hlt_path in Triggers(self.era).triggers_all[hlt_pair]
                         ]
-                is_lo = 'amcatnlo' not in sample_name
-                splitByNlheJet = process_name.startswith(
-                    tuple('DYToLL_{}J'.format(i) for i in range(3)) + \
-                    ('DYJetsToLL_M-50_amcatnloFXFX', 'WJetsToLNu_HT', 'DYJetsToLL_M50_HT', 'DYJetsToLL_M-10to50')
-                )
-                splitByNlheHT = process_name.startswith(
-                    tuple('W{}JetsToLNu'.format(i) for i in range(1, 5)) + \
-                    tuple('DY{}JetsToLL_M-50'.format(i) for i in range(1, 5))
-                )
-                splitByNlheJetHT = process_name.startswith('WJetsToLNu_madgraphMLM') or (process_name.startswith('DYJetsToLL_M-50') and is_lo)
-                mllForWZTo3LNu = process_name.startswith('WZTo3LNu') and is_lo and 'mllmin01' not in sample_name
+                splitByNlheJet = isSplitByNlheJet(process_name)
+                splitByNlheHT = isSplitByNlheHT(process_name)
+                splitByNlheJetHT = isSplitByNlheJetHT(process_name, sample_name)
+                mllForWZTo3LNu = process_name.startswith('WZTo3LNu') and 'amcatnlo' not in sample_name and 'mllmin01' not in sample_name
                 mllForWZTo3LNu_mllmin01 = process_name.startswith('WZTo3LNu_mllmin01')
                 sample_category = sample_info["sample_category"]
                 recomp_run_ls = sample_name.endswith('/USER') and self.era == '2017' and sample_category in [

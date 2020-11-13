@@ -28,7 +28,11 @@ def condition_type(value):
   key = value_split[0]
   if key.endswith('_{}'.format(FILE_SUFFIX)):
     key = key[:-(len('_{}'.format(FILE_SUFFIX)))]
-    input_filename = os.path.abspath(value_split[1])
+    input_path = value_split[1]
+    if input_path.startswith('~'):
+      input_path = input_path[1:]
+      negate = True
+    input_filename = os.path.abspath(input_path)
     if not os.path.isfile(input_filename):
       raise RuntimeError("No such file: %s" % input_filename)
     values = []
@@ -44,9 +48,9 @@ def condition_type(value):
     regex_str = '({})'.format('|'.join(values))
   else:
     regex_str = value_split[1]
-  if regex_str.startswith('~'):
-    regex_str = regex_str[1:]
-    negate = True
+    if regex_str.startswith('~'):
+      regex_str = regex_str[1:]
+      negate = True
   regex = re.compile(regex_str)
 
   if key not in ALLOWED_CONDITION_KEYS:
