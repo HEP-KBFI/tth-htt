@@ -29,6 +29,7 @@ class Plotter
   virtual void makePlots();
 
  private:
+  /*
   virtual void
   makePlot(double canvasSizeX,
            double canvasSizeY,
@@ -61,6 +62,41 @@ class Plotter
            const std::string & outputFileName,
            bool isRebinned,
            bool divideByBinWidth) = 0;
+  */
+  // plot multiple signal histograms
+  virtual void
+  makePlot(double canvasSizeX,
+           double canvasSizeY,
+           TH1 * histogramData,
+           TH1 * histogramData_blinded,
+           std::vector<histogramEntryType *> & histogramsBackground,
+           std::vector<histogramEntryType *> & histogramsSignal,
+           TH1 * histogramUncertainty,
+           double legendTextSize,
+           double legendPosX,
+           double legendPosY,
+           double legendSizeX,
+           double legendSizeY,
+           const std::string & labelOnTop,
+           std::vector<std::string> & extraLabels,
+           double labelTextSize,
+           double labelPosX,
+           double labelPosY,
+           double labelSizeX,
+           double labelSizeY,
+           double xMin,
+           double xMax,
+           const std::string & xAxisTitle,
+           double xAxisOffset,
+           bool useLogScale,
+           double yMin,
+           double yMax,
+           const std::string & yAxisTitle,
+           double yAxisOffset,
+           const std::string & outputFileName,
+           bool isRebinned,
+           bool divideByBinWidth) = 0;
+
   
   struct categoryEntryType
   {
@@ -78,7 +114,8 @@ class Plotter
   std::string processData_;
   std::vector<std::string> processesBackground_;
   std::string processSignal_;
-
+  std::vector<std::string> processesSignal_;
+  
   std::vector<plotEntryType *> distributions_;
 
   bool applyRebinning_;

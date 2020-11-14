@@ -24,6 +24,7 @@ class PlotterPluginBase
 
   virtual void makePlots() = 0;
 
+
  protected:
   const TFile * inputFile_;
   edm::ParameterSet cfg_;

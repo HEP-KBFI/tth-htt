@@ -22,7 +22,8 @@ Plotter_ttH::~Plotter_ttH()
 void Plotter_ttH::makePlot(double canvasSizeX, double canvasSizeY,
 			   TH1* histogramData, TH1* histogramData_blinded,
 			   std::vector<histogramEntryType*>& histogramsBackground, 	
-			   TH1* histogramSignal,
+			   //TH1* histogramSignal,
+			   std::vector<histogramEntryType*>& histogramsSignal,
 			   TH1* histogramUncertainty,
 			   double legendTextSize, double legendPosX, double legendPosY, double legendSizeX, double legendSizeY, 
 			   const std::string& labelOnTop,
@@ -37,6 +38,12 @@ void Plotter_ttH::makePlot(double canvasSizeX, double canvasSizeY,
   std::cout << "<Plotter_ttH::makePlot>:" << std::endl;
   std::cout << " outputFileName = " << outputFileName << std::endl;
 
+  TH1 * histogramSignal = nullptr;
+  if (histogramsSignal.size() > 0)
+  {
+    histogramSignal = histogramsSignal[0]->histogram_;
+  }
+  
   TH1* histogramData_density = 0;
   if ( histogramData ) {
     if  ( divideByBinWidth ) {

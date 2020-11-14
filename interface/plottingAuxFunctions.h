@@ -57,13 +57,24 @@ printHistogram(const TH1 * histogram);
 
 struct HistogramManager
 {
+  
   HistogramManager(const std::vector<std::string> & processesBackground,
                    const std::string & processSignal,
                    const std::vector<std::string> & categories,
                    const edm::ParameterSet & cfg);
-
+  
+  HistogramManager(const std::vector<std::string> & processesBackground,
+                   const std::vector<std::string> & processSignal,
+                   const std::vector<std::string> & categories,
+                   const edm::ParameterSet & cfg);
+  
   ~HistogramManager() {}
 
+  void setHistogramManager(const std::vector<std::string> & processesBackground,
+			   const std::vector<std::string> & processSignal,
+			   const std::vector<std::string> & categories,
+			   const edm::ParameterSet & cfg);
+  
   void setDirectory(TDirectory * dir);
   void setCategory(const std::string & category);
   void setHistogram(const std::string & histogramName);

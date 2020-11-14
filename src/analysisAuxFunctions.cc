@@ -1049,14 +1049,30 @@ DoubleToUInt_Convertor(double BDT_param,
 }
 
 std::map<std::string, std::map<std::string, double>>
+swapKeys(const std::map<std::string, std::map<std::string, double>>& mvaOutputMap)
+{
+  std::map<std::string, std::map<std::string, double>> retVal;
+  for ( std::map<std::string, std::map<std::string, double>>::const_iterator iter1 = mvaOutputMap.begin();
+        iter1 != mvaOutputMap.end(); ++iter1 ) {
+    for ( std::map<std::string, double>::const_iterator iter2 = iter1->second.begin();
+          iter2 != iter1->second.end(); ++iter2 ) {
+      retVal[iter2->first][iter1->first] = iter2->second;
+    }
+  }
+  return retVal;
+}
+
+std::map<std::string, std::map<std::string, double>>
 CreateDNNOutputMap(const std::vector<double> & DNN_params,
 		   TensorFlowInterface * DNN,
 		   std::map<std::string, double> & DNNInputs,
 		   int event_number,
 		   bool isNonRes,
 		   const std::string & spin_label)
-{
-  return CreateBDT_or_DNNOutputMap<TensorFlowInterface, std::map<std::string, double>>(DNN_params, DNN, DNNInputs, event_number, isNonRes, spin_label);
+{ 
+  std::map<std::string, std::map<std::string, double>> retVal = CreateMVAOutputMap<TensorFlowInterface, std::map<std::string, double>>(
+    DNN_params, DNN, DNNInputs, event_number, isNonRes, spin_label);
+  return swapKeys(retVal);
 }
 
 std::map<std::string, std::map<std::string, double>>
@@ -1122,5 +1138,5 @@ CreateLBNOutputMap(const std::vector<double> & LBN_params,
       LBNOutput_Map.insert(std::make_pair(key_final, (*LBN)(ll_particles, hl_mvaInputs)));
     }
   }
-  return LBNOutput_Map;
+  return swapKeys(LBNOutput_Map);
 }

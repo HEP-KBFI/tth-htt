@@ -631,7 +631,7 @@ class analyzeConfig(object):
             os.environ['CMSSW_BASE'], "src/tthAnalysis/HiggsToTauTau/data/btagSFRatio_{}.root".format(self.era)
           )
         else:
-          self.btagSFRatioFile = "/hdfs/local/karl/btagSFratios_final/2020Nov06/btagSF_{era}_fullSys.root".format(
+          self.btagSFRatioFile = "/hdfs/local/karl/btagSFratios_final/2020Nov14/btagSF_{era}_fullSys.root".format(
             era = self.era,
           )
 
@@ -1684,6 +1684,7 @@ class analyzeConfig(object):
         lines.append("  )")
         lines.append(")")
         lines.append("process.makePlots.intLumiData = cms.double(%.1f)" % (self.lumi / 1000))
+        lines.append("process.makePlots.labelOnTop = cms.string('CMS #it{Preliminary} %.1f fb^{-1} (13 TeV)'" % (self.lumi / 1000))
         if 'extra_params' in jobOptions:
           lines.append(jobOptions['extra_params'])
         self.createCfg_makePlots_addShapes(lines)
