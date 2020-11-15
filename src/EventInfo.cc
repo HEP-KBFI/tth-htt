@@ -34,16 +34,21 @@ const std::map<std::string, Int_t> EventInfo::decayMode_idString_diHiggs =
   { "zzww", 23000024 },
 };
 
+const std::map<Int_t, std::string> EventInfo::productionMode_idString_singleHiggs = {
+  { 23000025, "ZH" },
+  { 24000025, "WH" },
+};
+
 EventInfo::EventInfo()
   : EventInfo(false, false, false, false, false)
 {}
 
 EventInfo::EventInfo(const AnalysisConfig & analysisConfig)
-  : EventInfo(analysisConfig.isMC()
-  , analysisConfig.isMC_H()
-  , analysisConfig.isMC_HH()
-  , analysisConfig.isHH_rwgt_allowed()
-  , analysisConfig.apply_topPtReweighting())
+  : EventInfo(analysisConfig.isMC(),
+              analysisConfig.isMC_H(),
+              analysisConfig.isMC_HH(),
+              analysisConfig.isHH_rwgt_allowed(),
+              analysisConfig.apply_topPtReweighting())
 {}
 
 EventInfo::EventInfo(bool isMC,
@@ -73,6 +78,7 @@ EventInfo::EventInfo(bool isMC,
   , is_owner(false)
   , read_htxs_(false)
   , refGenWeight_(0.)
+  , productionMode_(-1)
 {
   int checksum = 0;
   if ( isMC_H_  ) ++checksum;
@@ -330,6 +336,23 @@ EventInfo::getDiHiggsDecayModeString() const
 }
 
 std::string
+EventInfo::getProductionModeString() const
+{
+  if(! isMC_H_)
+  {
+    throw cmsException(this, __func__, __LINE__)
+      << "The event " << *this << " is not a H signal event => request "
+         "for a production mode as a string is not applicable\n"
+    ;
+  }
+  return
+    productionMode_idString_singleHiggs.count(productionMode_) ?
+    productionMode_idString_singleHiggs.at(productionMode_)    :
+    ""
+  ;
+}
+
+std::string
 EventInfo::getDecayModeString(const std::map<std::string, Int_t> & decayMode_idString) const
 {
   for(const auto & kv: decayMode_idString)
@@ -361,6 +384,18 @@ EventInfo::getDecayModes(const std::map<std::string, Int_t> & decayMode_idString
   decayModes.reserve(decayMode_idString.size());
   boost::copy(decayMode_idString | boost::adaptors::map_keys, std::back_inserter(decayModes));
   return decayModes;
+}
+
+void
+EventInfo::reset_productionMode()
+{
+  set_productionMode(-1);
+}
+
+void
+EventInfo::set_productionMode(int productionMode)
+{
+  productionMode_ = productionMode;
 }
 
 std::string

@@ -611,6 +611,21 @@ isfailsHtoZZVeto(const std::vector<const RecoLepton *> & preselLeptons)
   return failsHtoZZVeto;
 }
 
+int
+get_VH_productionMode(const std::vector<GenParticle> & genWBosons)
+{
+  int Vboson_pdgId = 0;
+  for(const GenParticle & genWBoson: genWBosons)
+  {
+    if(genWBoson.statusFlags() == 4481) // isPrompt, isHardProcess, fromHardProcess, isFirstCopy
+    {
+      Vboson_pdgId = std::abs(genWBoson.pdgId());
+      break;
+    }
+  }
+  return Vboson_pdgId > 0 ? 1000000 * Vboson_pdgId + 25 : -1;
+}
+
 std::string
 get_key_hist(const EventInfo & eventInfo,
              const std::vector<GenParticle> & genWBosons,

@@ -691,6 +691,9 @@ countZbosonSFOSpairs(const std::vector<const RecoLepton *> & preselLeptons,
 bool
 isfailsHtoZZVeto(const std::vector<const RecoLepton *> & preselLeptons);
 
+int
+get_VH_productionMode(const std::vector<GenParticle> & genWBosons);
+
 std::string
 get_key_hist(const EventInfo & eventInfo,
              const std::vector<GenParticle> & genWBosons,
