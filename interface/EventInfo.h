@@ -94,11 +94,20 @@ public:
   std::string
   getDiHiggsDecayModeString() const;
 
+  std::string
+  getProductionModeString() const;
+
   static std::vector<std::string>
   getDecayModes();
 
   static std::vector<std::string>
   getDiHiggsDecayModes();
+
+  void
+  reset_productionMode();
+
+  void
+  set_productionMode(int productionMode);
 
   std::string
   str() const;
@@ -130,8 +139,10 @@ protected:
   std::map<std::string, std::map<std::string, std::pair<int, double>>> tH_sf;
   static const std::map<std::string, Int_t> decayMode_idString_singleHiggs;
   static const std::map<std::string, Int_t> decayMode_idString_diHiggs;
+  static const std::map<Int_t, std::string> productionMode_idString_singleHiggs;
 
   double refGenWeight_;
+  int productionMode_;
 
   std::string
   getDecayModeString(const std::map<std::string, Int_t> & decayMode_idString) const;

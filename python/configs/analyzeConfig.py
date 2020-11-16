@@ -1780,10 +1780,12 @@ class analyzeConfig(object):
 
     def create_hadd_python_file(self, inputFiles, outputFiles, hadd_stage_name, max_input_files_per_job = 10, max_mem = ''):
         if not max_mem and \
-            max_input_files_per_job == 2 and \
-            len(self.central_or_shifts) > 1 and \
-            (self.channel in [ '1l_1tau', '2lss' ] or self.channel.startswith('hh')):
+            len(self.central_or_shifts) > 1 and (
+             (max_input_files_per_job == 2 and
+             (self.channel in [ '1l_1tau', '2lss' ] or self.channel.startswith('hh'))) or
+             (self.channel == 'LeptonFakeRate' and any(stage in hadd_stage_name for stage in ['stage1_5', 'stage2' ]))):
           max_mem = '4096M'
+          logging.info("Asking {} of memory in {} jobs".format(max_mem, hadd_stage_name))
         sbatch_hadd_file = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_hadd_%s_%s.py" % (self.channel, hadd_stage_name)).replace(".root", "")
         scriptFile       = os.path.join(self.dirs[DKEY_SCRIPTS], os.path.basename(sbatch_hadd_file).replace(".py", ".sh"))
         logFile          = os.path.join(self.dirs[DKEY_LOGS],    os.path.basename(sbatch_hadd_file).replace(".py", ".log"))
