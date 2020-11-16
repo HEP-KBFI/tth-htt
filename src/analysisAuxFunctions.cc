@@ -963,9 +963,10 @@ recompute_p4(const std::vector<RecoMuon> & muons,
   return muons_shifted;
 }
 
-std::map<std::string, double>InitializeInputVarMap(std::map<std::string, double>& AllVars_Map,
-                                                   std::vector<std::string>& BDTInputVariables,
-						   bool isNonRes)
+std::map<std::string, double>
+InitializeInputVarMap(std::map<std::string, double>& AllVars_Map,
+                      std::vector<std::string>& BDTInputVariables,
+                      bool isNonRes)
 {
   std::map<std::string, double> BDTInputs_SUM;
   
@@ -1024,42 +1025,24 @@ DoubleToUInt_Convertor(double BDT_param,
                        bool isNonRes,
                        const std::string & spin_label)
 {
-  std::string key_final = "";
-  unsigned int mass_int = (int)BDT_param; // Conversion from double to unsigned int 
-  std::string key = "";
-  std::ostringstream temp;
-  temp << mass_int;
-  key = temp.str(); // conversion from unsigned int to string
+  std::string key;
   if ( !isNonRes )
   { 
     // resonant HH production
-    key_final = "BDTOutput_" + key;
+    key = Form("%1.0f", BDT_param);
   }
   else // Non-Resonant (Non SM BM Indices)
   {
     // non-resonant HH production (SM and non-SM coupling scenarios)
-    key_final = "BDTOutput_BM" + key;
+    key = Form("BM%i", TMath::Nint(BDT_param));
   }
+
   if ( !isNonRes && !spin_label.empty() )
   { 
     // add spin hypothesis to the output label
-    key_final += spin_label;
+    key += spin_label;
   }
-  return key_final;
-}
-
-std::map<std::string, std::map<std::string, double>>
-swapKeys(const std::map<std::string, std::map<std::string, double>>& mvaOutputMap)
-{
-  std::map<std::string, std::map<std::string, double>> retVal;
-  for ( std::map<std::string, std::map<std::string, double>>::const_iterator iter1 = mvaOutputMap.begin();
-        iter1 != mvaOutputMap.end(); ++iter1 ) {
-    for ( std::map<std::string, double>::const_iterator iter2 = iter1->second.begin();
-          iter2 != iter1->second.end(); ++iter2 ) {
-      retVal[iter2->first][iter1->first] = iter2->second;
-    }
-  }
-  return retVal;
+  return key;
 }
 
 std::map<std::string, std::map<std::string, double>>
@@ -1072,7 +1055,7 @@ CreateDNNOutputMap(const std::vector<double> & DNN_params,
 { 
   std::map<std::string, std::map<std::string, double>> retVal = CreateMVAOutputMap<TensorFlowInterface, std::map<std::string, double>>(
     DNN_params, DNN, DNNInputs, event_number, isNonRes, spin_label);
-  return swapKeys(retVal);
+  return retVal;
 }
 
 std::map<std::string, std::map<std::string, double>>
@@ -1087,12 +1070,12 @@ CreateLBNOutputMap(const std::vector<double> & LBN_params,
   std::map<std::string, std::map<std::string, double>> LBNOutput_Map;
   for ( size_t i = 0; i < LBN_params.size(); ++i ) // Loop over LBN_params: signal mass (Reso.)/BM index (Non Reso.)
   { 
-    std::string key_final = "";
+    std::string key;
     if ( !isNonRes )
     {
       // resonant case
       hl_mvaInputs["gen_mHH"] = LBN_params[i];
-      key_final = DoubleToUInt_Convertor(LBN_params[i], isNonRes, label);
+      key = DoubleToUInt_Convertor(LBN_params[i], isNonRes, label);
     }
     else 
     { 
@@ -1101,42 +1084,31 @@ CreateLBNOutputMap(const std::vector<double> & LBN_params,
       {
         // SM
 	hl_mvaInputs["SM"] = 1;  
-	key_final = "LBNOutput_SM";
+	key = "SM";
       }
       else
       {
         // non-SM coupling scenario
 	hl_mvaInputs["SM"] = 0;
-	unsigned int bm_index_int = (int)LBN_params[i];
-	std::string key = "";
-	std::ostringstream temp;
-	temp << bm_index_int;
-	key = temp.str(); // Conversion from unsigned int to string
-	std::string input_BM_index = "BM" + key;
-	hl_mvaInputs[input_BM_index] = 1;   
-	key_final = DoubleToUInt_Convertor(LBN_params[i], isNonRes, label);
+        key = Form("BM%i", TMath::Nint(LBN_params[i]));
+	hl_mvaInputs[key] = 1;   
 	if ( i >= 2 )
         {
-          unsigned int bm_index_int_prev = (int)LBN_params[i- 1];
-          std::string key_prev = "";
-          std::ostringstream temp_prev;
-          temp_prev << bm_index_int_prev;
-          key_prev = temp_prev.str(); // Conversion from unsigned int to string
-          std::string input_BM_index_prev = "BM" + key_prev;
-          hl_mvaInputs[input_BM_index_prev] = 0; // Resetting the prev. hot encoder to zero   
+          std::string key_prev = Form("BM%i", TMath::Nint(LBN_params[i - 1]));
+          hl_mvaInputs[key] = 0; // Resetting the prev. hot encoder to zero   
         }
       }
     }
     if ( event_number != -1 )
     { 
       // use odd-even method
-      LBNOutput_Map.insert(std::make_pair(key_final, (*LBN)(ll_particles, hl_mvaInputs, event_number)));
+      LBNOutput_Map.insert(std::make_pair(key, (*LBN)(ll_particles, hl_mvaInputs, event_number)));
     }
     else
     { 
       // use same LBN for all events
-      LBNOutput_Map.insert(std::make_pair(key_final, (*LBN)(ll_particles, hl_mvaInputs)));
+      LBNOutput_Map.insert(std::make_pair(key, (*LBN)(ll_particles, hl_mvaInputs)));
     }
   }
-  return swapKeys(LBNOutput_Map);
+  return LBNOutput_Map;
 }

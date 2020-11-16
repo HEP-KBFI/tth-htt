@@ -833,12 +833,12 @@ CreateMVAOutputMap(const std::vector<double> & MVA_params,
   std::map<std::string, T_retVal> MVAOutput_Map;
   for ( size_t i = 0; i < MVA_params.size(); ++i ) // Loop over MVA_params: signal mass (Reso.)/BM index (Non Reso.)
   { 
-    std::string key_final = "";
+    std::string key = "";
     if ( !isNonRes )
     {
       // resonant case
       MVAInputs["gen_mHH"] = MVA_params[i];
-      key_final = DoubleToUInt_Convertor(MVA_params[i], isNonRes, spin_label);
+      key = DoubleToUInt_Convertor(MVA_params[i], isNonRes, spin_label);
     }
     else 
     { 
@@ -847,41 +847,30 @@ CreateMVAOutputMap(const std::vector<double> & MVA_params,
       {
         // SM
 	MVAInputs["SM"] = 1;  
-	key_final = "MVAOutput_SM";
+	key = "SM";
       }
       else
       {
         // non-SM coupling scenario
 	MVAInputs["SM"] = 0;
-	unsigned int bm_index_int = (int)MVA_params[i];
-	std::string key = "";
-	std::ostringstream temp;
-	temp << bm_index_int;
-	key = temp.str(); // Conversion from unsigned int to string
-	std::string input_BM_index = "BM" + key;
-	MVAInputs[input_BM_index] = 1;   
-	key_final = DoubleToUInt_Convertor(MVA_params[i], isNonRes, spin_label);
+	key = Form("BM%i", TMath::Nint(MVA_params[i]));
+	MVAInputs[key] = 1;   
 	if ( i >= 2 )
         {
-          unsigned int bm_index_int_prev = (int)MVA_params[i- 1];
-          std::string key_prev = "";
-          std::ostringstream temp_prev;
-          temp_prev << bm_index_int_prev;
-          key_prev = temp_prev.str(); // Conversion from unsigned int to string
-          std::string input_BM_index_prev = "BM" + key_prev;
-          MVAInputs[input_BM_index_prev] = 0; // Resetting the prev. hot encoder to zero   
+          std::string key_prev = Form("BM%i", TMath::Nint(MVA_params[i - 1]));
+          MVAInputs[key_prev] = 0; // Resetting the prev. hot encoder to zero   
         }
       }
     }
     if ( event_number != -1 )
     { 
       // use odd-even method
-      MVAOutput_Map.insert(std::make_pair(key_final, (*MVA)(MVAInputs, event_number)));
+      MVAOutput_Map.insert(std::make_pair(key, (*MVA)(MVAInputs, event_number)));
     }
     else
     { 
       // use same BDT/DNN for all events
-      MVAOutput_Map.insert(std::make_pair(key_final, (*MVA)(MVAInputs)));
+      MVAOutput_Map.insert(std::make_pair(key, (*MVA)(MVAInputs)));
     }
   }
   return MVAOutput_Map;
