@@ -72,8 +72,8 @@ getBTagWeight_option(const std::string & central_or_shift)
   else if(central_or_shift == "CMS_ttHl_btag_cErr1Down"   ) central_or_shift_int = kBtag_cErr1Down;
   else if(central_or_shift == "CMS_ttHl_btag_cErr2Up"     ) central_or_shift_int = kBtag_cErr2Up;
   else if(central_or_shift == "CMS_ttHl_btag_cErr2Down"   ) central_or_shift_int = kBtag_cErr2Down;
-  else if(central_or_shift == "CMS_ttHl_JESUp"            ) central_or_shift_int = kBtag_jesUp;
-  else if(central_or_shift == "CMS_ttHl_JESDown"          ) central_or_shift_int = kBtag_jesDown;
+  else if(central_or_shift == "CMS_ttHl_btag_JESUp"       ) central_or_shift_int = kBtag_jesUp;
+  else if(central_or_shift == "CMS_ttHl_btag_JESDown"     ) central_or_shift_int = kBtag_jesDown;
   return central_or_shift_int;
 }
 
