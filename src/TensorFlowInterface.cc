@@ -214,7 +214,7 @@ TensorFlowInterface::operator()(const std::map<std::string, double> & mvaInputs,
       inputs.matrix<float>()(0, idx_input) = static_cast<float>(mvaInputs_final.at(mvaInputVariables_.at(idx_input)));
       if(isDEBUG_)
       {
-        std::cout << mvaInputVariables_[idx_input]  << " = " << mvaInputs_final.at(mvaInputVariables_.at(idx_input)) << '\n';
+        std::cout << mvaInputVariables_[idx_input] << " = " << mvaInputs_final.at(mvaInputVariables_.at(idx_input)) << '\n';
       }
     }
     else
@@ -275,4 +275,10 @@ TensorFlowInterface::operator()(const std::map<std::string, double> & mvaInputs,
     std::cout << "Output " << outputs.size() << " " << outputs[0].matrix<float>()(0, 0) << '\n';
   }
   return mvaOutputs;
+}
+
+const std::vector<std::string> &
+TensorFlowInterface::mvaInputVariables() const
+{
+  return mvaInputVariables_;
 }

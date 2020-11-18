@@ -36,6 +36,11 @@ public:
   operator()(const std::map<std::string, double> & mvaInputs,
              int event_number = -1) const;
 
+  /**
+   * @brief Return list of MVA input variables
+   */
+  const std::vector<std::string> &
+  mvaInputVariables() const;
 
 private:
   const std::vector<std::string> classes_;
@@ -55,7 +60,7 @@ private:
   int n_input_layer_even;
   int n_output_layer_even;
 
-  std::vector<std::string>  mvaInputVariables_;
+  std::vector<std::string> mvaInputVariables_;
   std::string fitFunctionFileName_;
   MVAInputVarTransformer * Transform_Ptr_;
 

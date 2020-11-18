@@ -812,8 +812,8 @@ recompute_p4(const std::vector<RecoMuon> & muons,
              bool (*sortFunction)(const RecoMuon &, const RecoMuon &) = isHigherPtT<RecoMuon>);
 
 std::map<std::string, double>
-InitializeInputVarMap(std::map<std::string, double> & AllVars_Map,
-		      std::vector<std::string> & BDTInputVariables,
+InitializeInputVarMap(const std::map<std::string, double> & AllVars_Map,
+		      const std::vector<std::string> & BDTInputVariables,
 		      bool isNonRes);
 
 std::string 

@@ -151,3 +151,15 @@ TensorFlowInterfaceLBN::operator()(const std::map<std::string, const Particle*> 
   }
   return mvaOutputs;
 }
+
+const std::vector<std::string> &
+TensorFlowInterfaceLBN::ll_particleNames() const
+{
+  return ll_particleNames_;
+}
+
+const std::vector<std::string> &
+TensorFlowInterfaceLBN::hl_mvaInputVariables() const
+{
+  return hl_mvaInputVariables_;
+}

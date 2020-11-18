@@ -301,10 +301,12 @@ class tthAnalyzeParser(argparse.ArgumentParser):
         help = 'M|do not run data',
     )
 
-  def enable_regrouped_jerc(self):
+  def enable_regrouped_jerc(self, default = 'both'):
+    choices = [ 'both', 'jes', 'jer' ]
+    assert(default in choices)
     self.add_argument('-G', '--enable-regrouped-jerc',
-      dest = 'enable_regrouped_jerc', action = 'store_true', default = False,
-      help = 'R|Enable regrouped JEC/JER',
+      type = str, dest = 'enable_regrouped_jerc', metavar = 'choice', default = '', const = default, choices = choices, nargs = '?', action = 'store',
+      help = 'R|Enable regrouped JES/JER/both',
     )
 
   def add_split_trigger_sys(self, default = 'both'):

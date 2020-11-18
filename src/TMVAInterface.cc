@@ -17,6 +17,7 @@ TMVAInterface::TMVAInterface(const std::string & mvaFileName,
   , mva_odd_(nullptr)
   , mva_even_(nullptr)
   , isBDTTransform_(false)
+  , mvaInputVariables_(mvaInputVariables)
   , Transform_Ptr_(nullptr)
 {
 
@@ -33,8 +34,8 @@ TMVAInterface::TMVAInterface(const std::string & mvaFileName,
 
   for(const std::string & mvaInputVariable: mvaInputVariables)
   {
-    mvaInputVariables_[mvaInputVariable] = -1.;
-    mva_->AddVariable(mvaInputVariable, &mvaInputVariables_[mvaInputVariable]);
+    mvaInputVariableMap_[mvaInputVariable] = -1.;
+    mva_->AddVariable(mvaInputVariable, &mvaInputVariableMap_[mvaInputVariable]);
   }
 
   for(const std::string & spectator: spectators)
@@ -54,6 +55,7 @@ TMVAInterface::TMVAInterface(const std::string & mvaFileName_odd,
   , mva_odd_(nullptr)
   , mva_even_(nullptr)
   , isBDTTransform_(false)
+  , mvaInputVariables_(mvaInputVariables)
   , Transform_Ptr_(nullptr)
 {
 
@@ -76,9 +78,9 @@ TMVAInterface::TMVAInterface(const std::string & mvaFileName_odd,
 
   for(const std::string & mvaInputVariable: mvaInputVariables)
   {
-    mvaInputVariables_[mvaInputVariable] = -1.;
-    mva_odd_->AddVariable(mvaInputVariable, &mvaInputVariables_[mvaInputVariable]);
-    mva_even_->AddVariable(mvaInputVariable, &mvaInputVariables_[mvaInputVariable]);
+    mvaInputVariableMap_[mvaInputVariable] = -1.;
+    mva_odd_->AddVariable(mvaInputVariable, &mvaInputVariableMap_[mvaInputVariable]);
+    mva_even_->AddVariable(mvaInputVariable, &mvaInputVariableMap_[mvaInputVariable]);
   }
 
   for(const std::string & spectator: spectators)
@@ -99,6 +101,7 @@ TMVAInterface::TMVAInterface(const std::string & mvaFileName,
   , mva_odd_(nullptr)
   , mva_even_(nullptr)
   , isBDTTransform_(false)
+  , mvaInputVariables_(mvaInputVariables)
   , fitFunctionFileName_(LocalFileInPath(fitFunctionFileName).fullPath())
   , Transform_Ptr_(nullptr)
 {
@@ -121,8 +124,8 @@ TMVAInterface::TMVAInterface(const std::string & mvaFileName,
 
   for(const std::string & mvaInputVariable: mvaInputVariables)
   {
-    mvaInputVariables_[mvaInputVariable] = -1.;
-    mva_->AddVariable(mvaInputVariable, &mvaInputVariables_[mvaInputVariable]);
+    mvaInputVariableMap_[mvaInputVariable] = -1.;
+    mva_->AddVariable(mvaInputVariable, &mvaInputVariableMap_[mvaInputVariable]);
   }
 
   for(const std::string & spectator: spectators)
@@ -143,6 +146,7 @@ TMVAInterface::TMVAInterface(const std::string & mvaFileName_odd,
   , mva_odd_(nullptr)
   , mva_even_(nullptr)
   , isBDTTransform_(false)
+  , mvaInputVariables_(mvaInputVariables)
   , fitFunctionFileName_(LocalFileInPath(fitFunctionFileName).fullPath())
   , Transform_Ptr_(nullptr)
 {
@@ -171,9 +175,9 @@ TMVAInterface::TMVAInterface(const std::string & mvaFileName_odd,
 
   for(const std::string & mvaInputVariable: mvaInputVariables)
   {
-    mvaInputVariables_[mvaInputVariable] = -1.;
-    mva_odd_->AddVariable(mvaInputVariable, &mvaInputVariables_[mvaInputVariable]);
-    mva_even_->AddVariable(mvaInputVariable, &mvaInputVariables_[mvaInputVariable]);
+    mvaInputVariableMap_[mvaInputVariable] = -1.;
+    mva_odd_->AddVariable(mvaInputVariable, &mvaInputVariableMap_[mvaInputVariable]);
+    mva_even_->AddVariable(mvaInputVariable, &mvaInputVariableMap_[mvaInputVariable]);
   }
 
   for(const std::string & spectator: spectators)
@@ -250,7 +254,7 @@ double
 TMVAInterface::operator()(const std::map<std::string, double> & mvaInputs,
                           const TMVA::Reader * mva, const bool multiclass) const
 {
-  for(auto & mvaInputVariable: mvaInputVariables_)
+  for(auto & mvaInputVariable: mvaInputVariableMap_)
   {
     if(mvaInputs.count(mvaInputVariable.first))
     {
@@ -285,7 +289,13 @@ TMVAInterface::operator()(const std::map<std::string, double> & mvaInputs,
   return mvaOutput;
 }
 
-const std::vector<float>& 
+const std::vector<std::string> &
+TMVAInterface::mvaInputVariables() const
+{
+  return mvaInputVariables_;
+}
+
+const std::vector<float> & 
 TMVAInterface::mvamulticlsOutput() const
 {
   return mvamulticlsOutput_;
