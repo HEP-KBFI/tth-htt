@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2020-04-01 12:53:20 with the following command:
+# file generated at 2020-11-16 11:30:56 with the following command:
 # find_samples.py -V -i ../NanoAOD/test/datasets/txt/datasets_mc_2016_RunIISummer16MiniAODv3.txt -m python/samples/metaDict_2016_mc.py -s ../NanoAOD/test/datasets/txt/sum_datasets_2016_RunIISummer16MiniAODv3.txt -c python/samples/sampleLocations_2016_nanoAOD.txt
 
 meta_dictionary = OD()
@@ -179,7 +179,7 @@ meta_dictionary["/THW_ctcvcp_HIncl_M125_TuneCP5_13TeV-madgraph-pythia8/RunIISumm
 ])
 
 meta_dictionary["/GluGluHToTauTau_M125_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v3/MINIAODSIM"] =  OD([
-  ("crab_string",           "2016v3_2019Sep30_GluGluHToTauTau_M125_13TeV_powheg_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v3"),
+  ("crab_string",           "2016v3_2020Oct20_GluGluHToTauTau_M125_13TeV_powheg_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v3"),
   ("sample_category",       "ggH"),
   ("process_name_specific", "GluGluHToTauTau"),
   ("nof_db_events",         9673200),
@@ -192,7 +192,7 @@ meta_dictionary["/GluGluHToTauTau_M125_13TeV_powheg_pythia8/RunIISummer16MiniAOD
 ])
 
 meta_dictionary["/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           "2016v3_2019Sep30_GluGluHToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1"),
+  ("crab_string",           "2016v3_2020Oct20_GluGluHToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1"),
   ("sample_category",       "ggH"),
   ("process_name_specific", "GluGluHToZZTo4L"),
   ("nof_db_events",         999800),
@@ -205,7 +205,7 @@ meta_dictionary["/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/RunIISumme
 ])
 
 meta_dictionary["/GluGluHToWWToLNuQQ_M125_13TeV_powheg_JHUGenV628_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           "2016v3_2019Oct23_GluGluHToWWToLNuQQ_M125_13TeV_powheg_JHUGenV628_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1"),
+  ("crab_string",           "2016v3_2020Oct20_GluGluHToWWToLNuQQ_M125_13TeV_powheg_JHUGenV628_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1"),
   ("sample_category",       "ggH"),
   ("process_name_specific", "GluGluHToWWToLNuQQ_M125_ext1"),
   ("nof_db_events",         198000),
@@ -218,7 +218,7 @@ meta_dictionary["/GluGluHToWWToLNuQQ_M125_13TeV_powheg_JHUGenV628_pythia8/RunIIS
 ])
 
 meta_dictionary["/GluGluHToWWTo2L2Nu_M125_13TeV_powheg_JHUgen_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] =  OD([
-  ("crab_string",           "2016v3_2019Nov25_GluGluHToWWTo2L2Nu_M125_13TeV_powheg_JHUgen_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2"),
+  ("crab_string",           "2016v3_2020Oct20_GluGluHToWWTo2L2Nu_M125_13TeV_powheg_JHUgen_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2"),
   ("sample_category",       "ggH"),
   ("process_name_specific", "GluGluHToWWTo2L2Nu_M125"),
   ("nof_db_events",         492200),
@@ -231,7 +231,7 @@ meta_dictionary["/GluGluHToWWTo2L2Nu_M125_13TeV_powheg_JHUgen_pythia8/RunIISumme
 ])
 
 meta_dictionary["/GluGluHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           "2016v3_2019Sep30_GluGluHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1"),
+  ("crab_string",           "2016v3_2020Oct20_GluGluHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1"),
   ("sample_category",       "ggH"),
   ("process_name_specific", "GluGluHToMuMu_M125"),
   ("nof_db_events",         1991200),
@@ -244,7 +244,7 @@ meta_dictionary["/GluGluHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8/Run
 ])
 
 meta_dictionary["/GluGluHToBB_M125_13TeV_amcatnloFXFX_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] =  OD([
-  ("crab_string",           "2016v3_2019Sep30_GluGluHToBB_M125_13TeV_amcatnloFXFX_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2"),
+  ("crab_string",           "2016v3_2020Oct20_GluGluHToBB_M125_13TeV_amcatnloFXFX_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2"),
   ("sample_category",       "ggH"),
   ("process_name_specific", "GluGluHToBB_M125"),
   ("nof_db_events",         972675),
@@ -257,7 +257,7 @@ meta_dictionary["/GluGluHToBB_M125_13TeV_amcatnloFXFX_pythia8/RunIISummer16MiniA
 ])
 
 meta_dictionary["/GluGluHToBB_M125_13TeV_amcatnloFXFX_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           "2016v3_2019Nov25_GluGluHToBB_M125_13TeV_amcatnloFXFX_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1"),
+  ("crab_string",           "2016v3_2020Oct20_GluGluHToBB_M125_13TeV_amcatnloFXFX_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1"),
   ("sample_category",       "ggH"),
   ("process_name_specific", "GluGluHToBB_M125_ext1"),
   ("nof_db_events",         3799373),
@@ -270,7 +270,7 @@ meta_dictionary["/GluGluHToBB_M125_13TeV_amcatnloFXFX_pythia8/RunIISummer16MiniA
 ])
 
 meta_dictionary["/GluGluHToGG_M125_13TeV_amcatnloFXFX_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v2/MINIAODSIM"] =  OD([
-  ("crab_string",           "2016v3_2019Sep30_GluGluHToGG_M125_13TeV_amcatnloFXFX_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v2"),
+  ("crab_string",           "2016v3_2020Oct20_GluGluHToGG_M125_13TeV_amcatnloFXFX_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v2"),
   ("sample_category",       "ggH"),
   ("process_name_specific", "GluGluHToGG_M125_ext2"),
   ("nof_db_events",         812652),
@@ -283,7 +283,7 @@ meta_dictionary["/GluGluHToGG_M125_13TeV_amcatnloFXFX_pythia8/RunIISummer16MiniA
 ])
 
 meta_dictionary["/VBFHToTauTau_M125_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] =  OD([
-  ("crab_string",           "2016v3_2019Nov25_VBFHToTauTau_M125_13TeV_powheg_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2"),
+  ("crab_string",           "2016v3_2020Oct20_VBFHToTauTau_M125_13TeV_powheg_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2"),
   ("sample_category",       "qqH"),
   ("process_name_specific", "VBFHToTauTau"),
   ("nof_db_events",         1499400),
@@ -296,7 +296,7 @@ meta_dictionary["/VBFHToTauTau_M125_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-
 ])
 
 meta_dictionary["/VBF_HToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] =  OD([
-  ("crab_string",           "2016v3_2019Sep30_VBF_HToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2"),
+  ("crab_string",           "2016v3_2020Oct20_VBF_HToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2"),
   ("sample_category",       "qqH"),
   ("process_name_specific", "VBF_HToZZTo4L"),
   ("nof_db_events",         500000),
@@ -309,7 +309,7 @@ meta_dictionary["/VBF_HToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/RunIISummer1
 ])
 
 meta_dictionary["/VBFHToWWToLNuQQ_M125_13TeV_powheg_JHUGenV628_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           "2016v3_2019Oct23_VBFHToWWToLNuQQ_M125_13TeV_powheg_JHUGenV628_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1"),
+  ("crab_string",           "2016v3_2020Oct20_VBFHToWWToLNuQQ_M125_13TeV_powheg_JHUGenV628_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1"),
   ("sample_category",       "qqH"),
   ("process_name_specific", "VBFHToWWToLNuQQ_M125_ext1"),
   ("nof_db_events",         200000),
@@ -322,7 +322,7 @@ meta_dictionary["/VBFHToWWToLNuQQ_M125_13TeV_powheg_JHUGenV628_pythia8/RunIISumm
 ])
 
 meta_dictionary["/VBFHToWWTo2L2Nu_M125_13TeV_powheg_JHUgenv628_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] =  OD([
-  ("crab_string",           "2016v3_2019Sep30_VBFHToWWTo2L2Nu_M125_13TeV_powheg_JHUgenv628_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2"),
+  ("crab_string",           "2016v3_2020Oct20_VBFHToWWTo2L2Nu_M125_13TeV_powheg_JHUgenv628_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2"),
   ("sample_category",       "qqH"),
   ("process_name_specific", "VBFHToWWTo2L2Nu_M125"),
   ("nof_db_events",         100000),
@@ -335,7 +335,7 @@ meta_dictionary["/VBFHToWWTo2L2Nu_M125_13TeV_powheg_JHUgenv628_pythia8/RunIISumm
 ])
 
 meta_dictionary["/VBFHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           "2016v3_2019Sep30_VBFHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1"),
+  ("crab_string",           "2016v3_2020Oct20_VBFHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1"),
   ("sample_category",       "qqH"),
   ("process_name_specific", "VBFHToMuMu_M125"),
   ("nof_db_events",         997600),
@@ -348,7 +348,7 @@ meta_dictionary["/VBFHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8/RunIIS
 ])
 
 meta_dictionary["/VBFHToBB_M-125_13TeV_powheg_pythia8_weightfix/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           "2016v3_2019Oct23_VBFHToBB_M-125_13TeV_powheg_pythia8_weightfix__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1"),
+  ("crab_string",           "2016v3_2020Oct20_VBFHToBB_M-125_13TeV_powheg_pythia8_weightfix__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1"),
   ("sample_category",       "qqH"),
   ("process_name_specific", "VBFHToBB_M125"),
   ("nof_db_events",         997371),
@@ -361,7 +361,7 @@ meta_dictionary["/VBFHToBB_M-125_13TeV_powheg_pythia8_weightfix/RunIISummer16Min
 ])
 
 meta_dictionary["/VBFHToBB_M-125_13TeV_powheg_pythia8_weightfix/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           "2016v3_2019Sep30_VBFHToBB_M-125_13TeV_powheg_pythia8_weightfix__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1"),
+  ("crab_string",           "2016v3_2020Oct20_VBFHToBB_M-125_13TeV_powheg_pythia8_weightfix__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1"),
   ("sample_category",       "qqH"),
   ("process_name_specific", "VBFHToBB_M125_ext1"),
   ("nof_db_events",         3774811),
@@ -374,7 +374,7 @@ meta_dictionary["/VBFHToBB_M-125_13TeV_powheg_pythia8_weightfix/RunIISummer16Min
 ])
 
 meta_dictionary["/VBFHToGG_M125_13TeV_amcatnlo_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/MINIAODSIM"] =  OD([
-  ("crab_string",           "2016v3_2019Sep30_VBFHToGG_M125_13TeV_amcatnlo_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2"),
+  ("crab_string",           "2016v3_2020Oct20_VBFHToGG_M125_13TeV_amcatnlo_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2"),
   ("sample_category",       "qqH"),
   ("process_name_specific", "VBFHToGG_M125_ext1"),
   ("nof_db_events",         1999200),
@@ -383,11 +383,11 @@ meta_dictionary["/VBFHToGG_M125_13TeV_amcatnlo_pythia8/RunIISummer16MiniAODv3-PU
   ("xsection",              0.0085851),
   ("use_it",                True),
   ("genWeight",             True),
-  ("comment",               "95.0%; status: VALID; size: 66.55GB; nevents: 2.00M; release: 9_4_9; last modified: 2019-04-28 19:32:42"),
+  ("comment",               "100.0%; status: VALID; size: 66.55GB; nevents: 2.00M; release: 9_4_9; last modified: 2019-04-28 19:32:42"),
 ])
 
 meta_dictionary["/VBFHToGG_M125_13TeV_amcatnlo_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v2/MINIAODSIM"] =  OD([
-  ("crab_string",           "2016v3_2019Sep30_VBFHToGG_M125_13TeV_amcatnlo_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v2"),
+  ("crab_string",           "2016v3_2020Oct20_VBFHToGG_M125_13TeV_amcatnlo_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v2"),
   ("sample_category",       "qqH"),
   ("process_name_specific", "VBFHToGG_M125_ext2"),
   ("nof_db_events",         1198800),
@@ -1050,7 +1050,7 @@ meta_dictionary["/TTZZ_TuneCUETP8M2T4_13TeV-madgraph-pythia8/RunIISummer16MiniAO
 ])
 
 meta_dictionary["/VHToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] =  OD([
-  ("crab_string",           "2016v3_2019Sep30_VHToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2"),
+  ("crab_string",           "2016v3_2020Oct20_VHToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2"),
   ("sample_category",       "VH"),
   ("process_name_specific", "VHToNonbb_M125"),
   ("nof_db_events",         1007898),
@@ -1063,7 +1063,7 @@ meta_dictionary["/VHToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8/RunIISummer1
 ])
 
 meta_dictionary["/ZH_HToBB_ZToLL_M125_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           "2016v3_2019Sep30_ZH_HToBB_ZToLL_M125_13TeV_powheg_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1"),
+  ("crab_string",           "2016v3_2020Oct20_ZH_HToBB_ZToLL_M125_13TeV_powheg_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1"),
   ("sample_category",       "VH"),
   ("process_name_specific", "ZH_HToBB_ZToLL_ext1"),
   ("nof_db_events",         2972920),
@@ -1076,7 +1076,7 @@ meta_dictionary["/ZH_HToBB_ZToLL_M125_13TeV_powheg_pythia8/RunIISummer16MiniAODv
 ])
 
 meta_dictionary["/ZHToTauTau_M125_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/MINIAODSIM"] =  OD([
-  ("crab_string",           "2016v3_2019Sep30_ZHToTauTau_M125_13TeV_powheg_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2"),
+  ("crab_string",           "2016v3_2020Oct20_ZHToTauTau_M125_13TeV_powheg_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2"),
   ("sample_category",       "VH"),
   ("process_name_specific", "ZHToTauTau"),
   ("nof_db_events",         599803),

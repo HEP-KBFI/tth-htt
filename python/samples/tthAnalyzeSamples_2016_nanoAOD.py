@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2020-03-03 03:27:00 with the following command:
+# file generated at 2020-11-16 14:54:15 with the following command:
 # create_dictionary.py -m python/samples/metaDict_2016.py -p python/samples/sampleLocations_2016_nanoAOD.txt -N samples_2016 -E 2016 -o python/samples -g tthAnalyzeSamples_2016_nanoAOD.py -M
 
 samples_2016 = OD()
@@ -25800,7 +25800,7 @@ samples_2016["/ttH_4f_ctcvcp_TuneCP5_13TeV_madgraph_pythia8/RunIISummer16MiniAOD
   ("has_LHE",                         True),
   ("nof_PSweights",                   1),
   ("LHE_set",                         "LHA IDs 306000 - 306102 -> NNPDF31_nnlo_hessian_pdfas PDF set, expecting 103 weights (counted 103 weights)"),
-  ("nof_reweighting",                 0),
+  ("nof_reweighting",                 69),
   ("local_paths",
     [
       OD([
@@ -26086,13 +26086,13 @@ samples_2016["/GluGluHToTauTau_M125_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-
   ("type",                            "mc"),
   ("sample_category",                 "ggH"),
   ("process_name_specific",           "GluGluHToTauTau"),
-  ("nof_files",                       97),
+  ("nof_files",                       194),
   ("nof_db_files",                    78),
   ("nof_events",                      {
   }),
   ("nof_tree_events",                 9673200),
   ("nof_db_events",                   9673200),
-  ("fsize_local",                     12355495873), # 12.36GB, avg file size 127.38MB
+  ("fsize_local",                     12669483062), # 12.67GB, avg file size 65.31MB
   ("fsize_db",                        301793073376), # 301.79GB, avg file size 3.87GB
   ("use_it",                          True),
   ("xsection",                        3.0469),
@@ -26105,7 +26105,7 @@ samples_2016["/GluGluHToTauTau_M125_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2019Sep30/GluGluHToTauTau_M125_13TeV_powheg_pythia8/2016v3_2019Sep30_GluGluHToTauTau_M125_13TeV_powheg_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v3/190930_195434"),
+        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2020Oct20/GluGluHToTauTau_M125_13TeV_powheg_pythia8/2016v3_2020Oct20_GluGluHToTauTau_M125_13TeV_powheg_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v3/201020_162730"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -26129,13 +26129,13 @@ samples_2016["/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/RunIISummer16
   ("type",                            "mc"),
   ("sample_category",                 "ggH"),
   ("process_name_specific",           "GluGluHToZZTo4L"),
-  ("nof_files",                       11),
+  ("nof_files",                       21),
   ("nof_db_files",                    9),
   ("nof_events",                      {
   }),
   ("nof_tree_events",                 999800),
   ("nof_db_events",                   999800),
-  ("fsize_local",                     1660156563), # 1.66GB, avg file size 150.92MB
+  ("fsize_local",                     1715223220), # 1.72GB, avg file size 81.68MB
   ("fsize_db",                        35576764188), # 35.58GB, avg file size 3.95GB
   ("use_it",                          True),
   ("xsection",                        0.01297),
@@ -26148,7 +26148,7 @@ samples_2016["/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/RunIISummer16
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2019Sep30/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/2016v3_2019Sep30_GluGluHToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/190930_181731"),
+        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2020Oct20/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/2016v3_2020Oct20_GluGluHToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/201020_162840"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -26172,13 +26172,13 @@ samples_2016["/GluGluHToWWToLNuQQ_M125_13TeV_powheg_JHUGenV628_pythia8/RunIISumm
   ("type",                            "mc"),
   ("sample_category",                 "ggH"),
   ("process_name_specific",           "GluGluHToWWToLNuQQ_M125_ext1"),
-  ("nof_files",                       2),
+  ("nof_files",                       4),
   ("nof_db_files",                    22),
   ("nof_events",                      {
   }),
   ("nof_tree_events",                 198000),
   ("nof_db_events",                   198000),
-  ("fsize_local",                     263201248), # 263.20MB, avg file size 131.60MB
+  ("fsize_local",                     275212432), # 275.21MB, avg file size 68.80MB
   ("fsize_db",                        6500162934), # 6.50GB, avg file size 295.46MB
   ("use_it",                          True),
   ("xsection",                        4.5621),
@@ -26191,7 +26191,7 @@ samples_2016["/GluGluHToWWToLNuQQ_M125_13TeV_powheg_JHUGenV628_pythia8/RunIISumm
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Oct23/GluGluHToWWToLNuQQ_M125_13TeV_powheg_JHUGenV628_pythia8/2016v3_2019Oct23_GluGluHToWWToLNuQQ_M125_13TeV_powheg_JHUGenV628_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/191023_052042"),
+        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2020Oct20/GluGluHToWWToLNuQQ_M125_13TeV_powheg_JHUGenV628_pythia8/2016v3_2020Oct20_GluGluHToWWToLNuQQ_M125_13TeV_powheg_JHUGenV628_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/201020_162948"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -26215,13 +26215,13 @@ samples_2016["/GluGluHToWWTo2L2Nu_M125_13TeV_powheg_JHUgen_pythia8/RunIISummer16
   ("type",                            "mc"),
   ("sample_category",                 "ggH"),
   ("process_name_specific",           "GluGluHToWWTo2L2Nu_M125"),
-  ("nof_files",                       5),
+  ("nof_files",                       10),
   ("nof_db_files",                    4),
   ("nof_events",                      {
   }),
   ("nof_tree_events",                 492200),
   ("nof_db_events",                   492200),
-  ("fsize_local",                     658531045), # 658.53MB, avg file size 131.71MB
+  ("fsize_local",                     687972880), # 687.97MB, avg file size 68.80MB
   ("fsize_db",                        15435406262), # 15.44GB, avg file size 3.86GB
   ("use_it",                          True),
   ("xsection",                        1.1033),
@@ -26234,7 +26234,7 @@ samples_2016["/GluGluHToWWTo2L2Nu_M125_13TeV_powheg_JHUgen_pythia8/RunIISummer16
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2019Nov25/GluGluHToWWTo2L2Nu_M125_13TeV_powheg_JHUgen_pythia8/2016v3_2019Nov25_GluGluHToWWTo2L2Nu_M125_13TeV_powheg_JHUgen_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/191125_160948"),
+        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2020Oct20/GluGluHToWWTo2L2Nu_M125_13TeV_powheg_JHUgen_pythia8/2016v3_2020Oct20_GluGluHToWWTo2L2Nu_M125_13TeV_powheg_JHUgen_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/201020_163125"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -26258,13 +26258,13 @@ samples_2016["/GluGluHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8/RunIIS
   ("type",                            "mc"),
   ("sample_category",                 "ggH"),
   ("process_name_specific",           "GluGluHToMuMu_M125"),
-  ("nof_files",                       20),
+  ("nof_files",                       40),
   ("nof_db_files",                    34),
   ("nof_events",                      {
   }),
   ("nof_tree_events",                 1991200),
   ("nof_db_events",                   1991200),
-  ("fsize_local",                     2669220580), # 2.67GB, avg file size 133.46MB
+  ("fsize_local",                     2788332834), # 2.79GB, avg file size 69.71MB
   ("fsize_db",                        63981899559), # 63.98GB, avg file size 1.88GB
   ("use_it",                          True),
   ("xsection",                        0.010571),
@@ -26277,7 +26277,7 @@ samples_2016["/GluGluHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8/RunIIS
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2019Sep30/GluGluHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8/2016v3_2019Sep30_GluGluHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/190930_173339"),
+        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2020Oct20/GluGluHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8/2016v3_2020Oct20_GluGluHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/201020_163235"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -26301,13 +26301,13 @@ samples_2016["/GluGluHToBB_M125_13TeV_amcatnloFXFX_pythia8/RunIISummer16MiniAODv
   ("type",                            "mc"),
   ("sample_category",                 "ggH"),
   ("process_name_specific",           "GluGluHToBB_M125"),
-  ("nof_files",                       10),
+  ("nof_files",                       20),
   ("nof_db_files",                    7),
   ("nof_events",                      {
   }),
   ("nof_tree_events",                 972675),
   ("nof_db_events",                   972675),
-  ("fsize_local",                     1448629731), # 1.45GB, avg file size 144.86MB
+  ("fsize_local",                     1482392741), # 1.48GB, avg file size 74.12MB
   ("fsize_db",                        32270097687), # 32.27GB, avg file size 4.61GB
   ("use_it",                          True),
   ("xsection",                        28.293),
@@ -26320,7 +26320,7 @@ samples_2016["/GluGluHToBB_M125_13TeV_amcatnloFXFX_pythia8/RunIISummer16MiniAODv
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2019Sep30/GluGluHToBB_M125_13TeV_amcatnloFXFX_pythia8/2016v3_2019Sep30_GluGluHToBB_M125_13TeV_amcatnloFXFX_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190930_172941"),
+        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2020Oct20/GluGluHToBB_M125_13TeV_amcatnloFXFX_pythia8/2016v3_2020Oct20_GluGluHToBB_M125_13TeV_amcatnloFXFX_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/201020_163341"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -26344,13 +26344,13 @@ samples_2016["/GluGluHToBB_M125_13TeV_amcatnloFXFX_pythia8/RunIISummer16MiniAODv
   ("type",                            "mc"),
   ("sample_category",                 "ggH"),
   ("process_name_specific",           "GluGluHToBB_M125_ext1"),
-  ("nof_files",                       39),
+  ("nof_files",                       77),
   ("nof_db_files",                    31),
   ("nof_events",                      {
   }),
   ("nof_tree_events",                 3799373),
   ("nof_db_events",                   3799373),
-  ("fsize_local",                     5654668896), # 5.65GB, avg file size 144.99MB
+  ("fsize_local",                     5787960903), # 5.79GB, avg file size 75.17MB
   ("fsize_db",                        126249951405), # 126.25GB, avg file size 4.07GB
   ("use_it",                          True),
   ("xsection",                        28.293),
@@ -26363,7 +26363,7 @@ samples_2016["/GluGluHToBB_M125_13TeV_amcatnloFXFX_pythia8/RunIISummer16MiniAODv
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2019Nov25/GluGluHToBB_M125_13TeV_amcatnloFXFX_pythia8/2016v3_2019Nov25_GluGluHToBB_M125_13TeV_amcatnloFXFX_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/191125_162807"),
+        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2020Oct20/GluGluHToBB_M125_13TeV_amcatnloFXFX_pythia8/2016v3_2020Oct20_GluGluHToBB_M125_13TeV_amcatnloFXFX_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/201020_163519"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -26387,13 +26387,13 @@ samples_2016["/GluGluHToGG_M125_13TeV_amcatnloFXFX_pythia8/RunIISummer16MiniAODv
   ("type",                            "mc"),
   ("sample_category",                 "ggH"),
   ("process_name_specific",           "GluGluHToGG_M125_ext2"),
-  ("nof_files",                       9),
+  ("nof_files",                       17),
   ("nof_db_files",                    7),
   ("nof_events",                      {
   }),
   ("nof_tree_events",                 812652),
   ("nof_db_events",                   812652),
-  ("fsize_local",                     1060514147), # 1.06GB, avg file size 117.83MB
+  ("fsize_local",                     1087588015), # 1.09GB, avg file size 63.98MB
   ("fsize_db",                        26217726562), # 26.22GB, avg file size 3.75GB
   ("use_it",                          True),
   ("xsection",                        0.11028),
@@ -26406,7 +26406,7 @@ samples_2016["/GluGluHToGG_M125_13TeV_amcatnloFXFX_pythia8/RunIISummer16MiniAODv
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2019Sep30/GluGluHToGG_M125_13TeV_amcatnloFXFX_pythia8/2016v3_2019Sep30_GluGluHToGG_M125_13TeV_amcatnloFXFX_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v2/190930_173158"),
+        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2020Oct20/GluGluHToGG_M125_13TeV_amcatnloFXFX_pythia8/2016v3_2020Oct20_GluGluHToGG_M125_13TeV_amcatnloFXFX_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v2/201020_163626"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -26430,13 +26430,13 @@ samples_2016["/VBFHToTauTau_M125_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUM
   ("type",                            "mc"),
   ("sample_category",                 "qqH"),
   ("process_name_specific",           "VBFHToTauTau"),
-  ("nof_files",                       16),
+  ("nof_files",                       31),
   ("nof_db_files",                    15),
   ("nof_events",                      {
   }),
   ("nof_tree_events",                 1499400),
   ("nof_db_events",                   1499400),
-  ("fsize_local",                     2404962310), # 2.40GB, avg file size 150.31MB
+  ("fsize_local",                     2461113587), # 2.46GB, avg file size 79.39MB
   ("fsize_db",                        50767229807), # 50.77GB, avg file size 3.38GB
   ("use_it",                          True),
   ("xsection",                        0.2372),
@@ -26449,7 +26449,7 @@ samples_2016["/VBFHToTauTau_M125_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUM
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2019Nov25/VBFHToTauTau_M125_13TeV_powheg_pythia8/2016v3_2019Nov25_VBFHToTauTau_M125_13TeV_powheg_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/191125_154845"),
+        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2020Oct20/VBFHToTauTau_M125_13TeV_powheg_pythia8/2016v3_2020Oct20_VBFHToTauTau_M125_13TeV_powheg_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/201020_163734"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -26473,13 +26473,13 @@ samples_2016["/VBF_HToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/RunIISummer16Mi
   ("type",                            "mc"),
   ("sample_category",                 "qqH"),
   ("process_name_specific",           "VBF_HToZZTo4L"),
-  ("nof_files",                       6),
+  ("nof_files",                       11),
   ("nof_db_files",                    6),
   ("nof_events",                      {
   }),
   ("nof_tree_events",                 500000),
   ("nof_db_events",                   500000),
-  ("fsize_local",                     1004730743), # 1.00GB, avg file size 167.46MB
+  ("fsize_local",                     1036301068), # 1.04GB, avg file size 94.21MB
   ("fsize_db",                        19438723963), # 19.44GB, avg file size 3.24GB
   ("use_it",                          True),
   ("xsection",                        0.0010099),
@@ -26492,7 +26492,7 @@ samples_2016["/VBF_HToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/RunIISummer16Mi
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2019Sep30/VBF_HToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/2016v3_2019Sep30_VBF_HToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190930_175921"),
+        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2020Oct20/VBF_HToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8/2016v3_2020Oct20_VBF_HToZZTo4L_M125_13TeV_powheg2_JHUgenV6_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/201020_163913"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -26516,13 +26516,13 @@ samples_2016["/VBFHToWWToLNuQQ_M125_13TeV_powheg_JHUGenV628_pythia8/RunIISummer1
   ("type",                            "mc"),
   ("sample_category",                 "qqH"),
   ("process_name_specific",           "VBFHToWWToLNuQQ_M125_ext1"),
-  ("nof_files",                       3),
+  ("nof_files",                       5),
   ("nof_db_files",                    31),
   ("nof_events",                      {
   }),
   ("nof_tree_events",                 200000),
   ("nof_db_events",                   200000),
-  ("fsize_local",                     338598533), # 338.60MB, avg file size 112.87MB
+  ("fsize_local",                     350943397), # 350.94MB, avg file size 70.19MB
   ("fsize_db",                        7289993844), # 7.29GB, avg file size 235.16MB
   ("use_it",                          True),
   ("xsection",                        0.35517),
@@ -26535,7 +26535,7 @@ samples_2016["/VBFHToWWToLNuQQ_M125_13TeV_powheg_JHUGenV628_pythia8/RunIISummer1
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Oct23/VBFHToWWToLNuQQ_M125_13TeV_powheg_JHUGenV628_pythia8/2016v3_2019Oct23_VBFHToWWToLNuQQ_M125_13TeV_powheg_JHUGenV628_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/191023_092430"),
+        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2020Oct20/VBFHToWWToLNuQQ_M125_13TeV_powheg_JHUGenV628_pythia8/2016v3_2020Oct20_VBFHToWWToLNuQQ_M125_13TeV_powheg_JHUGenV628_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/201020_164020"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -26559,13 +26559,13 @@ samples_2016["/VBFHToWWTo2L2Nu_M125_13TeV_powheg_JHUgenv628_pythia8/RunIISummer1
   ("type",                            "mc"),
   ("sample_category",                 "qqH"),
   ("process_name_specific",           "VBFHToWWTo2L2Nu_M125"),
-  ("nof_files",                       2),
+  ("nof_files",                       3),
   ("nof_db_files",                    1),
   ("nof_events",                      {
   }),
   ("nof_tree_events",                 100000),
   ("nof_db_events",                   100000),
-  ("fsize_local",                     168593524), # 168.59MB, avg file size 84.30MB
+  ("fsize_local",                     174455666), # 174.46MB, avg file size 58.15MB
   ("fsize_db",                        3406704278), # 3.41GB, avg file size 3.41GB
   ("use_it",                          True),
   ("xsection",                        0.085894),
@@ -26578,7 +26578,7 @@ samples_2016["/VBFHToWWTo2L2Nu_M125_13TeV_powheg_JHUgenv628_pythia8/RunIISummer1
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2019Sep30/VBFHToWWTo2L2Nu_M125_13TeV_powheg_JHUgenv628_pythia8/2016v3_2019Sep30_VBFHToWWTo2L2Nu_M125_13TeV_powheg_JHUgenv628_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190930_175504"),
+        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2020Oct20/VBFHToWWTo2L2Nu_M125_13TeV_powheg_JHUgenv628_pythia8/2016v3_2020Oct20_VBFHToWWTo2L2Nu_M125_13TeV_powheg_JHUgenv628_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/201020_164128"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -26602,13 +26602,13 @@ samples_2016["/VBFHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8/RunIISumm
   ("type",                            "mc"),
   ("sample_category",                 "qqH"),
   ("process_name_specific",           "VBFHToMuMu_M125"),
-  ("nof_files",                       10),
+  ("nof_files",                       20),
   ("nof_db_files",                    25),
   ("nof_events",                      {
   }),
   ("nof_tree_events",                 997600),
   ("nof_db_events",                   997600),
-  ("fsize_local",                     1623075272), # 1.62GB, avg file size 162.31MB
+  ("fsize_local",                     1659728138), # 1.66GB, avg file size 82.99MB
   ("fsize_db",                        36458351750), # 36.46GB, avg file size 1.46GB
   ("use_it",                          True),
   ("xsection",                        0.00082296),
@@ -26621,7 +26621,7 @@ samples_2016["/VBFHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8/RunIISumm
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2019Sep30/VBFHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8/2016v3_2019Sep30_VBFHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/190930_175326"),
+        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2020Oct20/VBFHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8/2016v3_2020Oct20_VBFHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/201020_164235"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -26645,13 +26645,13 @@ samples_2016["/VBFHToBB_M-125_13TeV_powheg_pythia8_weightfix/RunIISummer16MiniAO
   ("type",                            "mc"),
   ("sample_category",                 "qqH"),
   ("process_name_specific",           "VBFHToBB_M125"),
-  ("nof_files",                       10),
+  ("nof_files",                       20),
   ("nof_db_files",                    11),
   ("nof_events",                      {
   }),
   ("nof_tree_events",                 997371),
   ("nof_db_events",                   997371),
-  ("fsize_local",                     1648921268), # 1.65GB, avg file size 164.89MB
+  ("fsize_local",                     1683524087), # 1.68GB, avg file size 84.18MB
   ("fsize_db",                        35502253347), # 35.50GB, avg file size 3.23GB
   ("use_it",                          True),
   ("xsection",                        2.2026),
@@ -26664,7 +26664,7 @@ samples_2016["/VBFHToBB_M-125_13TeV_powheg_pythia8_weightfix/RunIISummer16MiniAO
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/acarvalh/2016v3_2019Oct23/VBFHToBB_M-125_13TeV_powheg_pythia8_weightfix/2016v3_2019Oct23_VBFHToBB_M-125_13TeV_powheg_pythia8_weightfix__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/191023_091733"),
+        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2020Oct20/VBFHToBB_M-125_13TeV_powheg_pythia8_weightfix/2016v3_2020Oct20_VBFHToBB_M-125_13TeV_powheg_pythia8_weightfix__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v1/201020_164413"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -26688,13 +26688,13 @@ samples_2016["/VBFHToBB_M-125_13TeV_powheg_pythia8_weightfix/RunIISummer16MiniAO
   ("type",                            "mc"),
   ("sample_category",                 "qqH"),
   ("process_name_specific",           "VBFHToBB_M125_ext1"),
-  ("nof_files",                       38),
+  ("nof_files",                       76),
   ("nof_db_files",                    36),
   ("nof_events",                      {
   }),
   ("nof_tree_events",                 3774811),
   ("nof_db_events",                   3774811),
-  ("fsize_local",                     6241992399), # 6.24GB, avg file size 164.26MB
+  ("fsize_local",                     6369925119), # 6.37GB, avg file size 83.81MB
   ("fsize_db",                        134011208892), # 134.01GB, avg file size 3.72GB
   ("use_it",                          True),
   ("xsection",                        2.2026),
@@ -26707,7 +26707,7 @@ samples_2016["/VBFHToBB_M-125_13TeV_powheg_pythia8_weightfix/RunIISummer16MiniAO
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2019Sep30/VBFHToBB_M-125_13TeV_powheg_pythia8_weightfix/2016v3_2019Sep30_VBFHToBB_M-125_13TeV_powheg_pythia8_weightfix__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/190930_174545"),
+        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2020Oct20/VBFHToBB_M-125_13TeV_powheg_pythia8_weightfix/2016v3_2020Oct20_VBFHToBB_M-125_13TeV_powheg_pythia8_weightfix__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/201020_164521"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -26731,13 +26731,13 @@ samples_2016["/VBFHToGG_M125_13TeV_amcatnlo_pythia8/RunIISummer16MiniAODv3-PUMor
   ("type",                            "mc"),
   ("sample_category",                 "qqH"),
   ("process_name_specific",           "VBFHToGG_M125_ext1"),
-  ("nof_files",                       20),
+  ("nof_files",                       40),
   ("nof_db_files",                    14),
   ("nof_events",                      {
   }),
-  ("nof_tree_events",                 1899200),
+  ("nof_tree_events",                 1999200),
   ("nof_db_events",                   1999200),
-  ("fsize_local",                     2798679819), # 2.80GB, avg file size 139.93MB
+  ("fsize_local",                     3011364098), # 3.01GB, avg file size 75.28MB
   ("fsize_db",                        66554715193), # 66.55GB, avg file size 4.75GB
   ("use_it",                          True),
   ("xsection",                        0.0085851),
@@ -26750,9 +26750,9 @@ samples_2016["/VBFHToGG_M125_13TeV_amcatnlo_pythia8/RunIISummer16MiniAODv3-PUMor
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2019Sep30/VBFHToGG_M125_13TeV_amcatnlo_pythia8/2016v3_2019Sep30_VBFHToGG_M125_13TeV_amcatnlo_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/190930_174934"),
+        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2020Oct20/VBFHToGG_M125_13TeV_amcatnlo_pythia8/2016v3_2020Oct20_VBFHToGG_M125_13TeV_amcatnlo_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2/201020_164627"),
         ("selection", "*"),
-        ("blacklist", [1]),
+        ("blacklist", []),
       ]),
     ]
   ),
@@ -26774,13 +26774,13 @@ samples_2016["/VBFHToGG_M125_13TeV_amcatnlo_pythia8/RunIISummer16MiniAODv3-PUMor
   ("type",                            "mc"),
   ("sample_category",                 "qqH"),
   ("process_name_specific",           "VBFHToGG_M125_ext2"),
-  ("nof_files",                       12),
+  ("nof_files",                       24),
   ("nof_db_files",                    12),
   ("nof_events",                      {
   }),
   ("nof_tree_events",                 1198800),
   ("nof_db_events",                   1198800),
-  ("fsize_local",                     1765317988), # 1.77GB, avg file size 147.11MB
+  ("fsize_local",                     1804413878), # 1.80GB, avg file size 75.18MB
   ("fsize_db",                        40048536582), # 40.05GB, avg file size 3.34GB
   ("use_it",                          True),
   ("xsection",                        0.0085851),
@@ -26793,7 +26793,7 @@ samples_2016["/VBFHToGG_M125_13TeV_amcatnlo_pythia8/RunIISummer16MiniAODv3-PUMor
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2019Sep30/VBFHToGG_M125_13TeV_amcatnlo_pythia8/2016v3_2019Sep30_VBFHToGG_M125_13TeV_amcatnlo_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v2/190930_175144"),
+        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2020Oct20/VBFHToGG_M125_13TeV_amcatnlo_pythia8/2016v3_2020Oct20_VBFHToGG_M125_13TeV_amcatnlo_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v2/201020_164805"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -28967,13 +28967,13 @@ samples_2016["/VHToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8/RunIISummer16Mi
   ("type",                            "mc"),
   ("sample_category",                 "VH"),
   ("process_name_specific",           "VHToNonbb_M125"),
-  ("nof_files",                       11),
+  ("nof_files",                       21),
   ("nof_db_files",                    10),
   ("nof_events",                      {
   }),
   ("nof_tree_events",                 1007898),
   ("nof_db_events",                   1007898),
-  ("fsize_local",                     1846212684), # 1.85GB, avg file size 167.84MB
+  ("fsize_local",                     1891356926), # 1.89GB, avg file size 90.06MB
   ("fsize_db",                        36259986064), # 36.26GB, avg file size 3.63GB
   ("use_it",                          True),
   ("xsection",                        0.9425),
@@ -28986,7 +28986,7 @@ samples_2016["/VHToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8/RunIISummer16Mi
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2019Sep30/VHToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8/2016v3_2019Sep30_VHToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190930_201838"),
+        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2020Oct20/VHToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8/2016v3_2020Oct20_VHToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/201020_165127"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -29010,13 +29010,13 @@ samples_2016["/ZH_HToBB_ZToLL_M125_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-P
   ("type",                            "mc"),
   ("sample_category",                 "VH"),
   ("process_name_specific",           "ZH_HToBB_ZToLL_ext1"),
-  ("nof_files",                       30),
+  ("nof_files",                       60),
   ("nof_db_files",                    28),
   ("nof_events",                      {
   }),
   ("nof_tree_events",                 2972920),
   ("nof_db_events",                   2972920),
-  ("fsize_local",                     5936946118), # 5.94GB, avg file size 197.90MB
+  ("fsize_local",                     6077509843), # 6.08GB, avg file size 101.29MB
   ("fsize_db",                        117275606767), # 117.28GB, avg file size 4.19GB
   ("use_it",                          True),
   ("xsection",                        0.05198),
@@ -29029,7 +29029,7 @@ samples_2016["/ZH_HToBB_ZToLL_M125_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-P
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2019Sep30/ZH_HToBB_ZToLL_M125_13TeV_powheg_pythia8/2016v3_2019Sep30_ZH_HToBB_ZToLL_M125_13TeV_powheg_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/190930_202047"),
+        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2020Oct20/ZH_HToBB_ZToLL_M125_13TeV_powheg_pythia8/2016v3_2020Oct20_ZH_HToBB_ZToLL_M125_13TeV_powheg_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1/201020_165305"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -29053,13 +29053,13 @@ samples_2016["/ZHToTauTau_M125_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMor
   ("type",                            "mc"),
   ("sample_category",                 "VH"),
   ("process_name_specific",           "ZHToTauTau"),
-  ("nof_files",                       6),
+  ("nof_files",                       12),
   ("nof_db_files",                    7),
   ("nof_events",                      {
   }),
   ("nof_tree_events",                 599803),
   ("nof_db_events",                   599803),
-  ("fsize_local",                     1050970326), # 1.05GB, avg file size 175.16MB
+  ("fsize_local",                     1079593434), # 1.08GB, avg file size 89.97MB
   ("fsize_db",                        21471114314), # 21.47GB, avg file size 3.07GB
   ("use_it",                          True),
   ("xsection",                        0.05544),
@@ -29072,7 +29072,7 @@ samples_2016["/ZHToTauTau_M125_13TeV_powheg_pythia8/RunIISummer16MiniAODv3-PUMor
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2019Sep30/ZHToTauTau_M125_13TeV_powheg_pythia8/2016v3_2019Sep30_ZHToTauTau_M125_13TeV_powheg_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/190930_202255"),
+        ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2020Oct20/ZHToTauTau_M125_13TeV_powheg_pythia8/2016v3_2020Oct20_ZHToTauTau_M125_13TeV_powheg_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3-v2/201020_165412"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
