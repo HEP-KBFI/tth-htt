@@ -58,9 +58,15 @@ public:
              const TMVA::Reader * mva, const bool multiclass = false) const;
 
   /**
+   * @brief Return list of MVA input variables
+   */
+  const std::vector<std::string> &
+  mvaInputVariables() const;
+
+  /**
    * @brief Returns output of multi-class MVA (used for debugging/synchronization purposes).
    */
-  const std::vector<float>& 
+  const std::vector<float> & 
   mvamulticlsOutput() const;
 
 private:
@@ -75,7 +81,8 @@ private:
   std::string mvaFileName_even_;
   TMVA::Reader * mva_even_;
   bool isBDTTransform_;
-  mutable std::map<std::string, Float_t> mvaInputVariables_; // key = MVA input variable name
+  std::vector<std::string> mvaInputVariables_;
+  mutable std::map<std::string, Float_t> mvaInputVariableMap_; // key = MVA input variable name
   // we do not really care about variables declared as "spectators" during TMVA training,
   // but TMVA requires that we keep track of these variables ...
   mutable std::map<std::string, Float_t> spectators_;
