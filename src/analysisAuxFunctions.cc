@@ -979,60 +979,59 @@ recompute_p4(const std::vector<RecoMuon> & muons,
 }
 
 std::map<std::string, double>
-InitializeInputVarMap(std::map<std::string, double>& AllVars_Map,
-                      std::vector<std::string>& BDTInputVariables,
+InitializeInputVarMap(const std::map<std::string, double> & AllVars_Map,
+                      const std::vector<std::string> & BDTInputVariables,
                       bool isNonRes)
 {
-  std::map<std::string, double> BDTInputs_SUM;
-  
-  
-  if(isNonRes){// Intialize all Non-Reso. "one-hot encoders" to zero
+  std::map<std::string, double> BDTInputs;
+  if(isNonRes){// Initialize all Non-Reso. "one-hot encoders" to zero
     for(unsigned int i = 0; i < BDTInputVariables.size(); i++){
-      //if( (BDTInputVariables[i] == "SM") 
-      //	  || (BDTInputVariables[i].find("BM") != std::string::npos) )
-      //{
-      //continue;
-      //}
-      if(BDTInputVariables[i] == "SM"){ 
-	BDTInputs_SUM["SM"] = 0; 
-      }else if(BDTInputVariables[i] == "BM1"){ 
-	BDTInputs_SUM["BM1"] = 0; 
-      }else if(BDTInputVariables[i] == "BM2"){ 
-	BDTInputs_SUM["BM2"] = 0; 
-      }else if(BDTInputVariables[i] == "BM3"){ 
-	BDTInputs_SUM["BM3"] = 0; 
-      }else if(BDTInputVariables[i] == "BM4"){ 
-	BDTInputs_SUM["BM4"] = 0; 
-      }else if(BDTInputVariables[i] == "BM5"){ 
-	BDTInputs_SUM["BM5"] = 0; 
-      }else if(BDTInputVariables[i] == "BM6"){ 
-	BDTInputs_SUM["BM6"] = 0; 
-      }else if(BDTInputVariables[i] == "BM7"){ 
-	BDTInputs_SUM["BM7"] = 0; 
-      }else if(BDTInputVariables[i] == "BM8"){ 
-	BDTInputs_SUM["BM8"] = 0; 
-      }else if(BDTInputVariables[i] == "BM9"){ 
-	BDTInputs_SUM["BM9"] = 0; 
-      }else if(BDTInputVariables[i] == "BM10"){ 
-	BDTInputs_SUM["BM10"] = 0; 
-      }else if(BDTInputVariables[i] == "BM11"){ 
-	BDTInputs_SUM["BM11"] = 0; 
-      }else if(BDTInputVariables[i] == "BM12"){ 
-	BDTInputs_SUM["BM12"] = 0; 
+      const std::string & BDTInputVariable = BDTInputVariables[i];
+      if(BDTInputVariable == "SM"){ 
+	BDTInputs["SM"] = 0; 
+      }else if(BDTInputVariable == "BM1"){ 
+	BDTInputs["BM1"] = 0; 
+      }else if(BDTInputVariable == "BM2"){ 
+	BDTInputs["BM2"] = 0; 
+      }else if(BDTInputVariable == "BM3"){ 
+	BDTInputs["BM3"] = 0; 
+      }else if(BDTInputVariable == "BM4"){ 
+	BDTInputs["BM4"] = 0; 
+      }else if(BDTInputVariable == "BM5"){ 
+	BDTInputs["BM5"] = 0; 
+      }else if(BDTInputVariable == "BM6"){ 
+	BDTInputs["BM6"] = 0; 
+      }else if(BDTInputVariable == "BM7"){ 
+	BDTInputs["BM7"] = 0; 
+      }else if(BDTInputVariable == "BM8"){ 
+	BDTInputs["BM8"] = 0; 
+      }else if(BDTInputVariable == "BM9"){ 
+	BDTInputs["BM9"] = 0; 
+      }else if(BDTInputVariable == "BM10"){ 
+	BDTInputs["BM10"] = 0; 
+      }else if(BDTInputVariable == "BM11"){ 
+	BDTInputs["BM11"] = 0; 
+      }else if(BDTInputVariable == "BM12"){ 
+	BDTInputs["BM12"] = 0; 
       }else{
-	//std::cout<<"Filling Map for Input Var.: " << BDTInputVariables[i] << " with value " << AllVars_Map[BDTInputVariables[i]] << std::endl;
-	BDTInputs_SUM[BDTInputVariables[i]] = AllVars_Map[BDTInputVariables[i]];
+        std::map<std::string, double>::const_iterator BDTInput = AllVars_Map.find(BDTInputVariable);
+        if ( BDTInput == AllVars_Map.end() )
+          throw cmsException(__func__, __LINE__) << "Input variable = " << BDTInputVariable << " not in map given as function argument !!\n";
+        //std::cout<<"Filling Map for Input Var.: " << BDTInputVariable << " with value " << BDTInput->second; << std::endl;
+        BDTInputs[BDTInputVariable] = BDTInput->second;
       }
     }
-
   }else{
     for(unsigned int i = 0; i < BDTInputVariables.size(); i++){
-      //std::cout<<"Filling Map for Input Var.: " << BDTInputVariables[i] << " with value " << AllVars_Map[BDTInputVariables[i]] << std::endl;
-      BDTInputs_SUM[BDTInputVariables[i]] = AllVars_Map[BDTInputVariables[i]];
+      const std::string & BDTInputVariable = BDTInputVariables[i];
+      std::map<std::string, double>::const_iterator BDTInput = AllVars_Map.find(BDTInputVariable);
+        if ( BDTInput == AllVars_Map.end() )
+          throw cmsException(__func__, __LINE__) << "Input variable = " << BDTInputVariable << " not in map given as function argument !!\n";
+      //std::cout<<"Filling Map for Input Var.: " << BDTInputVariable << " with value " << BDTInput->second; << std::endl;
+      BDTInputs[BDTInputVariable] = BDTInput->second;
     }
   }
-
-  return BDTInputs_SUM;
+  return BDTInputs;
 }
 
 std::string 
