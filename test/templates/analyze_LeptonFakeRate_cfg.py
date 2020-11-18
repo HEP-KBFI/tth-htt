@@ -114,5 +114,5 @@ process.analyze_LeptonFakeRate = cms.PSet(
         branchTypeYaxis = cms.string(''),
     ),
     tHweights = cms.VPSet(),
-    fillNtuple = cms.bool(True),
+    fillNtuple = cms.bool(False),
 )
