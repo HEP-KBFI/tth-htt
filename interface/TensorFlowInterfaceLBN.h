@@ -38,6 +38,17 @@ public:
              const std::map<std::string, double> & hl_mvaInputs,
              int event_number = -1) const;
 
+  /**
+   * @brief Return list of low-level MVA input variables / particle names
+   */
+  const std::vector<std::string> &
+  ll_particleNames() const;
+
+  /**
+   * @brief Return list of high-level MVA input variables
+   */
+  const std::vector<std::string> &
+  hl_mvaInputVariables() const;
 
 private:
   const std::vector<std::string> classes_;
