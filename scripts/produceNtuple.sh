@@ -40,6 +40,7 @@ SKIP_TOOLS_STEP=$(python -c "execfile('$SCRIPT'); print(skip_tools_step)")
 REMOVE_INTERMEDIATE=$(python -c "execfile('$SCRIPT'); print(remove_intermediate)")
 COMP_TOP_RWGT=$(python -c "execfile('$SCRIPT'); print(compTopRwgt)")
 COMP_HTXS=$(python -c "execfile('$SCRIPT'); print(compHTXS)")
+RLEMASK=$(python -c "execfile('$SCRIPT'); print(rleMask)")
 echo "Found the following file(s): '$FILES'"
 echo "Found the following executable: '$EXECUTABLE'"
 echo "Era? '$ERA'"
@@ -49,6 +50,7 @@ echo "Skip tools step? '$SKIP_TOOLS_STEP'"
 echo "Remove intermediate file? '$REMOVE_INTERMEDIATE'"
 echo "Compute SFs for top reweighting? '$COMP_TOP_RWGT'"
 echo "Count events in bins of Higgs pT? '$COMP_HTXS'"
+echo "RLE mask: '$RLEMASK'"
 
 if [[ -z $(which "$EXECUTABLE" 2>/dev/null) ]]; then
   echo "Executable '$EXECUTABLE' not in \$PATH";
@@ -68,6 +70,13 @@ NANO_MODULES_MC="$NANO_MODULES_MC,$NANO_BTAGGING_SF_MODULE"
 
 if [ "$IS_HH_NONRES" == "True" ]; then
   NANO_MODULES_MC="$NANO_MODULES_MC,diHiggsVar_${ERA}"
+fi
+
+if [[ -f $RLEMASK ]]; then
+  echo "Applying $RLEMASK";
+  NANO_MODULES_MC="$NANO_MODULES_MC,skim($RLEMASK)"
+else
+  echo "NOT applying $RLEMASK";
 fi
 
 if [ "$IS_MC" == "True" ]; then
