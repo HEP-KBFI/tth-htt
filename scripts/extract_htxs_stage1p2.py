@@ -5,11 +5,12 @@ import sys
 import os.path
 import array
 
-# usage: extract_htxs_stage1p2.py [ output ] [ input1 [ input 2 [ ... ] ] ]
+# usage: extract_htxs_stage1p2.py [ output tree ] [ output ] [ input1 [ input 2 [ ... ] ] ]
 
-assert(len(sys.argv) > 2)
-fn_out = os.path.abspath(sys.argv[1])
-fns_in = [ os.path.abspath(fn) for fn in sys.argv[2:] ]
+assert(len(sys.argv) > 3)
+tn_out = sys.argv[1]
+fn_out = os.path.abspath(sys.argv[2])
+fns_in = [ os.path.abspath(fn) for fn in sys.argv[3:] ]
 for fn_in in fns_in:
   assert(os.path.isfile(fn_in))
   assert(fn_in != fn_out)
@@ -19,7 +20,7 @@ assert(os.path.isdir(os.path.dirname(fn_out)))
 
 f_out = ROOT.TFile.Open(fn_out, 'recreate')
 f_out.cd()
-t_out = ROOT.TTree('Events', 'Events')
+t_out = ROOT.TTree(tn_out, tn_out)
 
 run = array.array('I', [0])
 ls = array.array('I', [0])
