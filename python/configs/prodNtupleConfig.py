@@ -208,6 +208,7 @@ class prodNtupleConfig:
             "compTopRwgt         = %s" % jobOptions['compTopRwgt'],
             "compHTXS            = %s" % jobOptions['compHTXS'],
             "isTuneCP5           = %s" % jobOptions['isTuneCP5'],
+            "categoryName        = '%s'" % jobOptions['category_name'],
             "addHTXS             = %s" % (jobOptions['category_name'] in [ 'ggH', 'qqH', 'VH' ]),
             "fileHTXS            = '%s'" % self.htxsPath,
         ]
@@ -341,7 +342,7 @@ class prodNtupleConfig:
                     'triggers'         : hlt_paths,
                     'HLTcuts'          : hlt_cuts,
                     'compTopRwgt'      : sample_name.startswith('/TTTo'),
-                    'compHTXS'         : sample_info['sample_category'].startswith('ttH'),
+                    'compHTXS'         : sample_info['sample_category'] in [ 'ttH', 'ggH', 'qqH', 'VH' ],
                     'isTuneCP5'        : (self.era == "2016" and 'TuneCP5' in sample_name),
                 }
                 self.createCfg_prodNtuple(jobOptions)

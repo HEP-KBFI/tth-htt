@@ -42,6 +42,7 @@ COMP_TOP_RWGT=$(python -c "execfile('$SCRIPT'); print(compTopRwgt)")
 COMP_HTXS=$(python -c "execfile('$SCRIPT'); print(compHTXS)")
 ADD_HTXS=$(python -c "execfile('$SCRIPT'); print(addHTXS)")
 HTXS_FILE=$(python -c "execfile('$SCRIPT'); print(fileHTXS)")
+CATEGORY_NAME=$(python -c "execfile('$SCRIPT'); print(categoryName)")
 
 echo "Found the following file(s): '$FILES'"
 echo "Found the following executable: '$EXECUTABLE'"
@@ -54,6 +55,7 @@ echo "Compute SFs for top reweighting? '$COMP_TOP_RWGT'"
 echo "Count events in bins of Higgs pT? '$COMP_HTXS'"
 echo "Add HTXS? '$ADD_HTXS'"
 echo "HTXS file? '$HTXS_FILE'"
+echo "Category name? '$CATEGORY_NAME'"
 
 if [[ -z $(which "$EXECUTABLE" 2>/dev/null) ]]; then
   echo "Executable '$EXECUTABLE' not in \$PATH";
@@ -101,7 +103,7 @@ if [ "$SKIP_TOOLS_STEP" == "False" ]; then
       if [ "$COMP_TOP_RWGT" == "True" ]; then
         COUNTHISTOGRAM_MODULE="${COUNTHISTOGRAM_MODULE}CompTopRwgt";
       elif [ "$COMP_HTXS" == "True" ]; then
-        COUNTHISTOGRAM_MODULE="${COUNTHISTOGRAM_MODULE}CompHTXS";
+        COUNTHISTOGRAM_MODULE="${COUNTHISTOGRAM_MODULE}CompHTXS($CATEGORY_NAME)";
       fi
       nano_postproc.py -s i -I tthAnalysis.NanoAODTools.postprocessing.tthModules $COUNTHISTOGRAM_MODULE \
                        . $F_i
