@@ -811,8 +811,8 @@ class analyzeConfig(object):
               if nof_events_idx >= 0 and nof_events_label:
                 nof_events[central_or_shift] = sample_info["nof_events"][nof_events_label][nof_events_idx]
                 assert(nof_events[central_or_shift] > 0)
-                if self.do_stxs and sample_info["sample_category"].lower().startswith('tth'):
-                  for htxs_bin in HTXS_BINS:
+                if self.do_stxs and sample_info["sample_category"] in HTXS_BINS:
+                  for htxs_bin in HTXS_BINS[sample_info["sample_category"]]:
                     nof_events_label_htxs = '{}_{}'.format(nof_events_label, htxs_bin)
                     assert(nof_events_label_htxs in sample_info["nof_events"])
                     central_or_shift_htxs = '{}_{}'.format(central_or_shift, htxs_bin)
@@ -857,7 +857,7 @@ class analyzeConfig(object):
             jobOptions['lumiScale'] = []
             for central_or_shift_tmp in nof_events:
               central_or_shift_split = central_or_shift_tmp.split('_')
-              is_htxs = len(central_or_shift_split) > 1 and central_or_shift_split[-1] in HTXS_BINS
+              is_htxs = len(central_or_shift_split) > 1 and central_or_shift_split[-1] in HTXS_BINS[sample_info["sample_category"]]
               lumi_figure = self.lumi / nof_events[central_or_shift_tmp]
               if is_htxs:
                 central_or_shift = '_'.join(central_or_shift_split[:-1])

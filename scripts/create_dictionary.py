@@ -546,7 +546,7 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
   digit_regex = re.compile(r"tree_(?P<i>\d+)\.root$")
   is_data = meta_dict[key]['sample_category'] == 'data_obs'
   is_rwgt = meta_dict[key]['sample_category'] in [ "tHq", "tHW", "ttH_ctcvcp" ]
-  is_htxs = meta_dict[key]['sample_category'].startswith('ttH')
+  is_htxs = meta_dict[key]['sample_category'] in HTXS_BINS
 
   lheScaleArr = copy.deepcopy(LHESCALEARR)
   th_arr = [ -1 ]
@@ -554,7 +554,8 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
     th_arr.extend(TH_INDICES)
   htxs_arr = [ "" ]
   if is_htxs:
-    htxs_arr.extend(HTXS_BINS)
+    htxs_arr.extend(HTXS_BINS[meta_dict[key]['sample_category']])
+  assert(len(htxs_arr) == len(set(htxs_arr)))
   histogram_names = collections.OrderedDict([ ( HISTOGRAM_COUNT, -1 ) ])
   if not is_data:
     for tH_idx in th_arr:
