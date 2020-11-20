@@ -155,8 +155,8 @@ class prodNtupleConfig:
 
         self.cvmfs_error_log = {}
         self.executable = "produceNtuple.sh"
-        self.htxsPath = '/hdfs/local/karl/htxs/htxs_{}.root'.format(self.era)
-        assert(os.path.isfile(self.htxsPath))
+        self.htxsPath = '/hdfs/local/karl/htxs/{}'.format(self.era)
+        assert(os.path.isdir(self.htxsPath))
 
     def createCfg_prodNtuple(self, jobOptions):
         """Create python configuration file for the prodNtuple executable (Ntuple production code)
@@ -210,7 +210,7 @@ class prodNtupleConfig:
             "isTuneCP5           = %s" % jobOptions['isTuneCP5'],
             "categoryName        = '%s'" % jobOptions['category_name'],
             "addHTXS             = %s" % (jobOptions['category_name'] in [ 'ggH', 'qqH', 'VH' ]),
-            "fileHTXS            = '%s'" % self.htxsPath,
+            "fileHTXS            = '%s'" % os.path.join(self.htxsPath, '{}.txt'.format(jobOptions['process_name'])),
         ]
         create_cfg(self.cfgFile_prodNtuple_original, jobOptions['cfgFile_modified'], lines)
 

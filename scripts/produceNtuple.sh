@@ -78,7 +78,7 @@ if [ "$IS_HH_NONRES" == "True" ]; then
 fi
 
 if [ "$ADD_HTXS" == "True" ]; then
-  NANO_MODULES_MC="$NANO_MODULES_MC,htxs($HTXS_FILE;$PROCESS_NAME)";
+  NANO_MODULES_MC="$NANO_MODULES_MC,htxs($HTXS_FILE)";
 fi
 
 if [ "$IS_MC" == "True" ]; then
