@@ -155,7 +155,8 @@ class prodNtupleConfig:
 
         self.cvmfs_error_log = {}
         self.executable = "produceNtuple.sh"
-        self.rle_base = '/hdfs/local/karl/rle'
+        self.htxsPath = '/hdfs/local/karl/htxs/htxs_{}.root'.format(self.era)
+        assert(os.path.isfile(self.htxsPath))
 
     def createCfg_prodNtuple(self, jobOptions):
         """Create python configuration file for the prodNtuple executable (Ntuple production code)
@@ -170,8 +171,6 @@ class prodNtupleConfig:
             inputFiles_prepended = map(lambda path: os.path.basename('%s_ii%s' % os.path.splitext(path)), jobOptions['inputFiles'])
         if len(inputFiles_prepended) != len(set(inputFiles_prepended)):
             raise ValueError("Not all input files have a unique base name: %s" % ', '.join(jobOptions['inputFiles']))
-
-        rle_candidate = os.path.join(self.rle_base, self.era, '{}.txt'.format(jobOptions['process_name']))
 
         lines = [
             "process.fwliteOutput.fileName                    = cms.string('%s')" % os.path.basename(jobOptions['outputFile']),
@@ -209,7 +208,8 @@ class prodNtupleConfig:
             "compTopRwgt         = %s" % jobOptions['compTopRwgt'],
             "compHTXS            = %s" % jobOptions['compHTXS'],
             "isTuneCP5           = %s" % jobOptions['isTuneCP5'],
-            "rleMask             = %s" % rle_candidate,
+            "addHTXS             = %s" % (jobOptions['category_name'] in [ 'ggH', 'qqH', 'VH' ]),
+            "fileHTXS            = '%s'" % self.htxsPath,
         ]
         create_cfg(self.cfgFile_prodNtuple_original, jobOptions['cfgFile_modified'], lines)
 

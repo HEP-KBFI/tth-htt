@@ -40,7 +40,9 @@ SKIP_TOOLS_STEP=$(python -c "execfile('$SCRIPT'); print(skip_tools_step)")
 REMOVE_INTERMEDIATE=$(python -c "execfile('$SCRIPT'); print(remove_intermediate)")
 COMP_TOP_RWGT=$(python -c "execfile('$SCRIPT'); print(compTopRwgt)")
 COMP_HTXS=$(python -c "execfile('$SCRIPT'); print(compHTXS)")
-RLEMASK=$(python -c "execfile('$SCRIPT'); print(rleMask)")
+ADD_HTXS=$(python -c "execfile('$SCRIPT'); print(addHTXS)")
+HTXS_FILE=$(python -c "execfile('$SCRIPT'); print(fileHTXS)")
+
 echo "Found the following file(s): '$FILES'"
 echo "Found the following executable: '$EXECUTABLE'"
 echo "Era? '$ERA'"
@@ -50,7 +52,8 @@ echo "Skip tools step? '$SKIP_TOOLS_STEP'"
 echo "Remove intermediate file? '$REMOVE_INTERMEDIATE'"
 echo "Compute SFs for top reweighting? '$COMP_TOP_RWGT'"
 echo "Count events in bins of Higgs pT? '$COMP_HTXS'"
-echo "RLE mask: '$RLEMASK'"
+echo "Add HTXS? '$ADD_HTXS'"
+echo "HTXS file? '$HTXS_FILE'"
 
 if [[ -z $(which "$EXECUTABLE" 2>/dev/null) ]]; then
   echo "Executable '$EXECUTABLE' not in \$PATH";
@@ -72,11 +75,8 @@ if [ "$IS_HH_NONRES" == "True" ]; then
   NANO_MODULES_MC="$NANO_MODULES_MC,diHiggsVar_${ERA}"
 fi
 
-if [[ -f $RLEMASK ]]; then
-  echo "Applying $RLEMASK";
-  NANO_MODULES_MC="$NANO_MODULES_MC,skim($RLEMASK)"
-else
-  echo "NOT applying $RLEMASK";
+if [ "$ADD_HTXS" == "True" ]; then
+  NANO_MODULES_MC="$NANO_MODULES_MC,htxs($HTXS_FILE;$PROCESS_NAME)";
 fi
 
 if [ "$IS_MC" == "True" ]; then
