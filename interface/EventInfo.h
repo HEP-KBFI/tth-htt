@@ -67,11 +67,11 @@ public:
   bool
   has_central_or_shift(const std::string & central_or_shift) const;
 
-  bool
+  int
   read_htxs() const;
 
   void
-  read_htxs(bool flag);
+  read_htxs(int flag);
 
   int
   get_htxs_category() const;
@@ -127,7 +127,7 @@ protected:
   bool is_owner;
 
   HTXS htxs_;
-  bool read_htxs_;
+  int read_htxs_;
 
   std::map<std::string, std::map<std::string, std::pair<int, double>>> tH_sf;
   static const std::map<std::string, Int_t> decayMode_idString_singleHiggs;

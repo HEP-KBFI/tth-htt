@@ -726,21 +726,87 @@ get_prefix(const std::string & process_string,
 }
 
 std::vector<std::pair<std::string, int>>
-get_htxs_binning(bool isMC_ttH)
+get_htxs_binning(const std::string & process_string)
 {
+  const std::vector<std::pair<std::string, int>> binning_ttH = {
+    { "fwd",        HTXSCategory::kForward    },
+    { "pt0to60",    HTXSCategory::kPt0to60    },
+    { "pt60to120",  HTXSCategory::kPt60to120  },
+    { "pt120to200", HTXSCategory::kPt120to200 },
+    { "pt200to300", HTXSCategory::kPt200to300 },
+    { "ptGt300",    HTXSCategory::kPt300to450 | HTXSCategory::kPtGt450 },
+    { "pt300to450", HTXSCategory::kPt300to450 },
+    { "ptGt450",    HTXSCategory::kPtGt450    },
+  };
+  const std::vector<std::pair<std::string, int>> binning_ggH = {
+    { "GG2H_FWDH", HTXSCategory::GG2H_FWDH },
+    { "GG2H_PTH_200_300", HTXSCategory::GG2H_PTH_200_300 },
+    { "GG2H_PTH_300_450", HTXSCategory::GG2H_PTH_300_450 },
+    { "GG2H_PTH_450_650", HTXSCategory::GG2H_PTH_450_650 },
+    { "GG2H_PTH_GT650", HTXSCategory::GG2H_PTH_GT650 },
+    { "GG2H_0J_PTH_0_10", HTXSCategory::GG2H_0J_PTH_0_10 },
+    { "GG2H_0J_PTH_GT10", HTXSCategory::GG2H_0J_PTH_GT10 },
+    { "GG2H_1J_PTH_0_60", HTXSCategory::GG2H_1J_PTH_0_60 },
+    { "GG2H_1J_PTH_60_120", HTXSCategory::GG2H_1J_PTH_60_120 },
+    { "GG2H_1J_PTH_120_200", HTXSCategory::GG2H_1J_PTH_120_200 },
+    { "GG2H_GE2J_MJJ_0_350_PTH_0_60", HTXSCategory::GG2H_GE2J_MJJ_0_350_PTH_0_60 },
+    { "GG2H_GE2J_MJJ_0_350_PTH_60_120", HTXSCategory::GG2H_GE2J_MJJ_0_350_PTH_60_120 },
+    { "GG2H_GE2J_MJJ_0_350_PTH_120_200", HTXSCategory::GG2H_GE2J_MJJ_0_350_PTH_120_200 },
+    { "GG2H_GE2J_MJJ_350_700_PTH_0_200_PTHJJ_0_25", HTXSCategory::GG2H_GE2J_MJJ_350_700_PTH_0_200_PTHJJ_0_25 },
+    { "GG2H_GE2J_MJJ_350_700_PTH_0_200_PTHJJ_GT25", HTXSCategory::GG2H_GE2J_MJJ_350_700_PTH_0_200_PTHJJ_GT25 },
+    { "GG2H_GE2J_MJJ_GT700_PTH_0_200_PTHJJ_0_25", HTXSCategory::GG2H_GE2J_MJJ_GT700_PTH_0_200_PTHJJ_0_25 },
+    { "GG2H_GE2J_MJJ_GT700_PTH_0_200_PTHJJ_GT25", HTXSCategory::GG2H_GE2J_MJJ_GT700_PTH_0_200_PTHJJ_GT25 },
+  };
+  const std::vector<std::pair<std::string, int>> binning_qqH = {
+    { "QQ2HQQ_FWDH", HTXSCategory::QQ2HQQ_FWDH },
+    { "QQ2HQQ_0J", HTXSCategory::QQ2HQQ_0J },
+    { "QQ2HQQ_1J", HTXSCategory::QQ2HQQ_1J },
+    { "QQ2HQQ_GE2J_MJJ_0_60", HTXSCategory::QQ2HQQ_GE2J_MJJ_0_60 },
+    { "QQ2HQQ_GE2J_MJJ_60_120", HTXSCategory::QQ2HQQ_GE2J_MJJ_60_120 },
+    { "QQ2HQQ_GE2J_MJJ_120_350", HTXSCategory::QQ2HQQ_GE2J_MJJ_120_350 },
+    { "QQ2HQQ_GE2J_MJJ_GT350_PTH_GT200", HTXSCategory::QQ2HQQ_GE2J_MJJ_GT350_PTH_GT200 },
+    { "QQ2HQQ_GE2J_MJJ_350_700_PTH_0_200_PTHJJ_0_25", HTXSCategory::QQ2HQQ_GE2J_MJJ_350_700_PTH_0_200_PTHJJ_0_25 },
+    { "QQ2HQQ_GE2J_MJJ_350_700_PTH_0_200_PTHJJ_GT25", HTXSCategory::QQ2HQQ_GE2J_MJJ_350_700_PTH_0_200_PTHJJ_GT25 },
+    { "QQ2HQQ_GE2J_MJJ_GT700_PTH_0_200_PTHJJ_0_25", HTXSCategory::QQ2HQQ_GE2J_MJJ_GT700_PTH_0_200_PTHJJ_0_25 },
+    { "QQ2HQQ_GE2J_MJJ_GT700_PTH_0_200_PTHJJ_GT25", HTXSCategory::QQ2HQQ_GE2J_MJJ_GT700_PTH_0_200_PTHJJ_GT25 },
+  };
+  const std::vector<std::pair<std::string, int>> binning_VH = {
+    { "QQ2HLNU_FWDH", HTXSCategory::QQ2HLNU_FWDH },
+    { "QQ2HLNU_PTV_0_75", HTXSCategory::QQ2HLNU_PTV_0_75 },
+    { "QQ2HLNU_PTV_75_150", HTXSCategory::QQ2HLNU_PTV_75_150 },
+    { "QQ2HLNU_PTV_150_250_0J", HTXSCategory::QQ2HLNU_PTV_150_250_0J },
+    { "QQ2HLNU_PTV_150_250_GE1J", HTXSCategory::QQ2HLNU_PTV_150_250_GE1J },
+    { "QQ2HLNU_PTV_GT250", HTXSCategory::QQ2HLNU_PTV_GT250 },
+    { "QQ2HLL_FWDH", HTXSCategory::QQ2HLL_FWDH },
+    { "QQ2HLL_PTV_0_75", HTXSCategory::QQ2HLL_PTV_0_75 },
+    { "QQ2HLL_PTV_75_150", HTXSCategory::QQ2HLL_PTV_75_150 },
+    { "QQ2HLL_PTV_150_250_0J", HTXSCategory::QQ2HLL_PTV_150_250_0J },
+    { "QQ2HLL_PTV_150_250_GE1J", HTXSCategory::QQ2HLL_PTV_150_250_GE1J },
+    { "QQ2HLL_PTV_GT250", HTXSCategory::QQ2HLL_PTV_GT250 },
+    { "GG2HLL_FWDH", HTXSCategory::GG2HLL_FWDH },
+    { "GG2HLL_PTV_0_75", HTXSCategory::GG2HLL_PTV_0_75 },
+    { "GG2HLL_PTV_75_150", HTXSCategory::GG2HLL_PTV_75_150 },
+    { "GG2HLL_PTV_150_250_0J", HTXSCategory::GG2HLL_PTV_150_250_0J },
+    { "GG2HLL_PTV_150_250_GE1J", HTXSCategory::GG2HLL_PTV_150_250_GE1J },
+    { "GG2HLL_PTV_GT250", HTXSCategory::GG2HLL_PTV_GT250 },
+  };
   std::vector<std::pair<std::string, int>> binning;
-  if(isMC_ttH)
+  if(process_string == "ttH")
   {
-    binning = {
-      { "fwd",        HTXSCategory::kForward    },
-      { "pt0to60",    HTXSCategory::kPt0to60    },
-      { "pt60to120",  HTXSCategory::kPt60to120  },
-      { "pt120to200", HTXSCategory::kPt120to200 },
-      { "pt200to300", HTXSCategory::kPt200to300 },
-      { "ptGt300",    HTXSCategory::kPt300to450 | HTXSCategory::kPtGt450 },
-      { "pt300to450", HTXSCategory::kPt300to450 },
-      { "ptGt450",    HTXSCategory::kPtGt450    },
-    };
+    binning = binning_ttH;
+  }
+  else if(process_string == "ggH")
+  {
+    binning = binning_ggH;
+  }
+  else if(process_string == "qqH")
+  {
+    binning = binning_qqH;
+  }
+  else if(process_string == "VH")
+  {
+    binning = binning_VH;
+    binning.insert(binning.end(), binning_qqH.begin(), binning_qqH.end());
   }
   return binning;
 }

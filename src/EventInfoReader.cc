@@ -25,6 +25,7 @@ EventInfoReader::EventInfoReader(EventInfo * info,
   , branchName_gen_cosThetaStar("cosThetaStar_lhe")
   , branchName_htxs_pt("HTXS_Higgs_pt")
   , branchName_htxs_y("HTXS_Higgs_y")
+  , branchName_htxs("HTXS_stage1_2_cat_pTjet30GeV")
 {}
 
 EventInfoReader::~EventInfoReader()
@@ -44,10 +45,22 @@ EventInfoReader::setBranchAddresses(TTree * tree)
   bai.setBranchAddress(info_ -> event, branchName_event);
   if(info_ -> is_signal())
   {
-    if(info_ -> read_htxs())
+    const int read_htxs = info_ -> read_htxs();
+    if(read_htxs)
     {
-      bai.setBranchAddress(info_ -> htxs_.pt_, branchName_htxs_pt);
-      bai.setBranchAddress(info_ -> htxs_.y_, branchName_htxs_y);
+      if(read_htxs == 1)
+      {
+        bai.setBranchAddress(info_ -> htxs_.pt_, branchName_htxs_pt);
+        bai.setBranchAddress(info_ -> htxs_.y_, branchName_htxs_y);
+      }
+      else if(read_htxs == 2)
+      {
+        bai.setBranchAddress(info_ -> htxs_.id_, branchName_htxs);
+      }
+      else
+      {
+        throw cmsException(this, __func__, __LINE__) << "Invalid value: " << read_htxs;
+      }
     }
     if(read_genHiggsDecayMode_)
     {

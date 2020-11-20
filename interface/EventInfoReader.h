@@ -51,6 +51,7 @@ public:
   const std::string branchName_gen_cosThetaStar;
   const std::string branchName_htxs_pt;
   const std::string branchName_htxs_y;
+  const std::string branchName_htxs;
 };
 
 #endif // EventInfoReader_H

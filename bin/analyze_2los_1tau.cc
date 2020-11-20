@@ -396,8 +396,8 @@ int main(int argc, char* argv[])
   EventInfo eventInfo(isMC, isSignal, isMC_HH, apply_topPtReweighting);
   const std::string default_cat_str = "default";
   std::vector<std::string> evt_cat_strs = { default_cat_str };
-  const std::vector<std::pair<std::string, int>> evt_htxs_binning = get_htxs_binning(isMC_signal);
-  eventInfo.read_htxs(! evt_htxs_binning.empty());
+  const std::vector<std::pair<std::string, int>> evt_htxs_binning = get_htxs_binning(process_string);
+  eventInfo.read_htxs(evt_htxs_binning.empty() ? 0 : (process_string == "ttH" ? 1 : 2));
 
   //--- HH scan
 
@@ -1872,7 +1872,7 @@ int main(int argc, char* argv[])
           }
           for(const auto & kw: evt_htxs_binning)
           {
-            if(htxs_category & kw.second)
+            if((process_string == "ttH" && (htxs_category & kw.second)) || (process_string != "ttH" && (htxs_category == kw.second)))
             {
               EvtHistManager_2los_1tau_Input fillVariables_htxs = fillVariables;
               fillVariables_htxs.evtWeight = evtWeightRecorder.get(central_or_shift, kw.first);
@@ -1893,7 +1893,7 @@ int main(int argc, char* argv[])
               }
               for(const auto & kw: evt_htxs_binning)
               {
-                if(htxs_category & kw.second)
+                if((process_string == "ttH" && (htxs_category & kw.second)) || (process_string != "ttH" && (htxs_category == kw.second)))
                 {
                   EvtHistManager_2los_1tau_Input fillVariables_htxs = fillVariables;
                   fillVariables_htxs.evtWeight = evtWeightRecorder.get(central_or_shift, kw.first);
