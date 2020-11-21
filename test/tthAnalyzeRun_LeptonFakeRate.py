@@ -125,6 +125,7 @@ if __name__ == '__main__':
     numerator_histogram                      = ("mT_fix_L_num",     "m_{T}^{fix,num}"), # or ("pt", "p_{T}"),
     denominator_histogram                    = ("mT_fix_L_den",     "m_{T}^{fix,den}"), # or ("EventCounter", "Number of events"),
     prep_dcard                               = True,
+    enable_MC_Closure_sidebands              = False, # boolean handle to control inclusion of MC Closure sidebands: (2lss, TT Hadronic)
     max_files_per_job                        = files_per_job,
     era                                      = era,
     use_lumi                                 = True,

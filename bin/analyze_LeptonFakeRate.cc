@@ -1481,6 +1481,10 @@ main(int argc,
 
   const bool fillNtuple = ( cfg_analyze.exists("fillNtuple") ) ? cfg_analyze.getParameter<bool>("fillNtuple") : false;
 
+  // boolean handle to enable/disable MC closure sideband inclusion
+  const bool enable_MC_Closure_sidebands = cfg_analyze.getParameter<bool>("enable_MC_Closure_sidebands"); 
+
+
   edm::ParameterSet triggerWhiteList;
   if(! isMC)
   {
@@ -1898,31 +1902,25 @@ main(int argc,
   };
 
 //--- book histograms for electron numerator and denominator
-
   auto histograms_e_numerator_incl_LeptonPlusJet = get_num_den_hist_managers("numerator/LeptonPlusJet/electrons_tight", kElectron); // NEW !
-  histograms_e_numerator_incl_LeptonPlusJet->bookHistograms(fs); // NEW !
-
   auto histograms_e_numerator_incl_LeptonPlusJet_woTrigger = get_num_den_hist_managers("numerator/LeptonPlusJet_woTrigger/electrons_tight", kElectron); // NEW !
-  histograms_e_numerator_incl_LeptonPlusJet_woTrigger->bookHistograms(fs); // NEW !
-
   auto histograms_e_denominator_incl_LeptonPlusJet = get_num_den_hist_managers("denominator/LeptonPlusJet/electrons_fakeable", kElectron); // NEW !
-  histograms_e_denominator_incl_LeptonPlusJet->bookHistograms(fs); // NEW !
-
   auto histograms_e_denominator_incl_LeptonPlusJet_woTrigger = get_num_den_hist_managers("denominator/LeptonPlusJet_woTrigger/electrons_fakeable", kElectron); // NEW !
-  histograms_e_denominator_incl_LeptonPlusJet_woTrigger->bookHistograms(fs); // NEW !
-
   auto histograms_e_numerator_incl_diLeptSS = get_num_den_hist_managers("numerator/diLeptSS/electrons_tight", kElectron); // NEW !
-  histograms_e_numerator_incl_diLeptSS->bookHistograms(fs); // NEW !
-
   auto histograms_e_numerator_incl_diLeptSS_woTrigger = get_num_den_hist_managers("numerator/diLeptSS_woTrigger/electrons_tight", kElectron); // NEW !
-  histograms_e_numerator_incl_diLeptSS_woTrigger->bookHistograms(fs); // NEW !
-
   auto histograms_e_denominator_incl_diLeptSS = get_num_den_hist_managers("denominator/diLeptSS/electrons_fakeable", kElectron); // NEW !
-  histograms_e_denominator_incl_diLeptSS->bookHistograms(fs); // NEW !
-
   auto histograms_e_denominator_incl_diLeptSS_woTrigger = get_num_den_hist_managers("denominator/diLeptSS_woTrigger/electrons_fakeable", kElectron); // NEW !
-  histograms_e_denominator_incl_diLeptSS_woTrigger->bookHistograms(fs); // NEW !
-
+  if(enable_MC_Closure_sidebands){
+      histograms_e_numerator_incl_LeptonPlusJet->bookHistograms(fs); // NEW !
+      histograms_e_numerator_incl_LeptonPlusJet_woTrigger->bookHistograms(fs); // NEW !
+      histograms_e_denominator_incl_LeptonPlusJet->bookHistograms(fs); // NEW !
+      histograms_e_denominator_incl_LeptonPlusJet_woTrigger->bookHistograms(fs); // NEW !
+      histograms_e_numerator_incl_diLeptSS->bookHistograms(fs); // NEW !
+      histograms_e_numerator_incl_diLeptSS_woTrigger->bookHistograms(fs); // NEW !
+      histograms_e_denominator_incl_diLeptSS->bookHistograms(fs); // NEW !
+      histograms_e_denominator_incl_diLeptSS_woTrigger->bookHistograms(fs); // NEW !
+  }
+    
   auto histograms_e_numerator_incl_beforeCuts = get_num_den_hist_managers("numerator/electrons_tight", kElectron);
   histograms_e_numerator_incl_beforeCuts->bookHistograms(fs);
 
@@ -1939,6 +1937,7 @@ main(int argc,
   );
   histograms_e_denominator_incl_afterCuts->bookHistograms(fs);
 
+  //if(enable_MC_Closure_sidebands){
   std::vector<numerator_and_denominatorHistManagers *> histograms_e_numerator_binned_LeptonPlusJet;   // NEW !
   std::vector<numerator_and_denominatorHistManagers *> histograms_e_numerator_binned_LeptonPlusJet_woTrigger;   // NEW !
   std::vector<numerator_and_denominatorHistManagers *> histograms_e_denominator_binned_LeptonPlusJet; // NEW !
@@ -1947,6 +1946,7 @@ main(int argc,
   std::vector<numerator_and_denominatorHistManagers *> histograms_e_numerator_binned_diLeptSS_woTrigger;   // NEW !
   std::vector<numerator_and_denominatorHistManagers *> histograms_e_denominator_binned_diLeptSS; // NEW !
   std::vector<numerator_and_denominatorHistManagers *> histograms_e_denominator_binned_diLeptSS_woTrigger; // NEW !
+  //}
   std::vector<numerator_and_denominatorHistManagers *> histograms_e_numerator_binned_beforeCuts;
   std::vector<numerator_and_denominatorHistManagers *> histograms_e_denominator_binned_beforeCuts;
   std::vector<numerator_and_denominatorHistManagers *> histograms_e_numerator_binned_afterCuts;
@@ -1967,50 +1967,52 @@ main(int argc,
       auto histograms_numerator_LeptonPlusJet = get_num_den_hist_managers(
 	"numerator/LeptonPlusJet/electrons_tight", kElectron, minAbsEta_e, maxAbsEta_e, minPt_e, maxPt_e
       ); // NEW !
-      histograms_numerator_LeptonPlusJet->bookHistograms(fs); // NEW !
-      histograms_e_numerator_binned_LeptonPlusJet.push_back(histograms_numerator_LeptonPlusJet); // NEW !
-
       auto histograms_numerator_LeptonPlusJet_woTrigger = get_num_den_hist_managers(
 	"numerator/LeptonPlusJet_woTrigger/electrons_tight", kElectron, minAbsEta_e, maxAbsEta_e, minPt_e, maxPt_e
       ); // NEW !
-      histograms_numerator_LeptonPlusJet_woTrigger->bookHistograms(fs); // NEW !
-      histograms_e_numerator_binned_LeptonPlusJet_woTrigger.push_back(histograms_numerator_LeptonPlusJet_woTrigger); // NEW !
-
       auto histograms_denominator_LeptonPlusJet = get_num_den_hist_managers(
         "denominator/LeptonPlusJet/electrons_fakeable", kElectron, minAbsEta_e, maxAbsEta_e, minPt_e, maxPt_e
       ); // NEW !
-      histograms_denominator_LeptonPlusJet->bookHistograms(fs); // NEW !
-      histograms_e_denominator_binned_LeptonPlusJet.push_back(histograms_denominator_LeptonPlusJet); // NEW !
-
       auto histograms_denominator_LeptonPlusJet_woTrigger = get_num_den_hist_managers(
         "denominator/LeptonPlusJet_woTrigger/electrons_fakeable", kElectron, minAbsEta_e, maxAbsEta_e, minPt_e, maxPt_e
       ); // NEW !
-      histograms_denominator_LeptonPlusJet_woTrigger->bookHistograms(fs); // NEW !
-      histograms_e_denominator_binned_LeptonPlusJet_woTrigger.push_back(histograms_denominator_LeptonPlusJet_woTrigger); // NEW !
-
       auto histograms_numerator_diLeptSS = get_num_den_hist_managers(
 	"numerator/diLeptSS/electrons_tight", kElectron, minAbsEta_e, maxAbsEta_e, minPt_e, maxPt_e
       ); // NEW !
-      histograms_numerator_diLeptSS->bookHistograms(fs); // NEW !
-      histograms_e_numerator_binned_diLeptSS.push_back(histograms_numerator_diLeptSS); // NEW !
-
       auto histograms_numerator_diLeptSS_woTrigger = get_num_den_hist_managers(
 	"numerator/diLeptSS_woTrigger/electrons_tight", kElectron, minAbsEta_e, maxAbsEta_e, minPt_e, maxPt_e
       ); // NEW !
-      histograms_numerator_diLeptSS_woTrigger->bookHistograms(fs); // NEW !
-      histograms_e_numerator_binned_diLeptSS_woTrigger.push_back(histograms_numerator_diLeptSS_woTrigger); // NEW !
-
       auto histograms_denominator_diLeptSS = get_num_den_hist_managers(
         "denominator/diLeptSS/electrons_fakeable", kElectron, minAbsEta_e, maxAbsEta_e, minPt_e, maxPt_e
       ); // NEW !
-      histograms_denominator_diLeptSS->bookHistograms(fs); // NEW !
-      histograms_e_denominator_binned_diLeptSS.push_back(histograms_denominator_diLeptSS); // NEW !
-
       auto histograms_denominator_diLeptSS_woTrigger = get_num_den_hist_managers(
         "denominator/diLeptSS_woTrigger/electrons_fakeable", kElectron, minAbsEta_e, maxAbsEta_e, minPt_e, maxPt_e
       ); // NEW !
-      histograms_denominator_diLeptSS_woTrigger->bookHistograms(fs); // NEW !
-      histograms_e_denominator_binned_diLeptSS_woTrigger.push_back(histograms_denominator_diLeptSS_woTrigger); // NEW !
+      if(enable_MC_Closure_sidebands){ 
+	histograms_numerator_LeptonPlusJet->bookHistograms(fs); // NEW !
+	histograms_e_numerator_binned_LeptonPlusJet.push_back(histograms_numerator_LeptonPlusJet); // NEW !
+
+	histograms_numerator_LeptonPlusJet_woTrigger->bookHistograms(fs); // NEW !
+	histograms_e_numerator_binned_LeptonPlusJet_woTrigger.push_back(histograms_numerator_LeptonPlusJet_woTrigger); // NEW !
+
+	histograms_denominator_LeptonPlusJet->bookHistograms(fs); // NEW !
+	histograms_e_denominator_binned_LeptonPlusJet.push_back(histograms_denominator_LeptonPlusJet); // NEW !
+
+	histograms_denominator_LeptonPlusJet_woTrigger->bookHistograms(fs); // NEW !
+	histograms_e_denominator_binned_LeptonPlusJet_woTrigger.push_back(histograms_denominator_LeptonPlusJet_woTrigger); // NEW !
+
+	histograms_numerator_diLeptSS->bookHistograms(fs); // NEW !
+	histograms_e_numerator_binned_diLeptSS.push_back(histograms_numerator_diLeptSS); // NEW !
+
+	histograms_numerator_diLeptSS_woTrigger->bookHistograms(fs); // NEW !
+	histograms_e_numerator_binned_diLeptSS_woTrigger.push_back(histograms_numerator_diLeptSS_woTrigger); // NEW !
+
+	histograms_denominator_diLeptSS->bookHistograms(fs); // NEW !
+	histograms_e_denominator_binned_diLeptSS.push_back(histograms_denominator_diLeptSS); // NEW !
+
+	histograms_denominator_diLeptSS_woTrigger->bookHistograms(fs); // NEW !
+	histograms_e_denominator_binned_diLeptSS_woTrigger.push_back(histograms_denominator_diLeptSS_woTrigger); // NEW !
+      }
 
       auto histograms_numerator_beforeCuts = get_num_den_hist_managers(
         "numerator/electrons_tight", kElectron, minAbsEta_e, maxAbsEta_e, minPt_e, maxPt_e
@@ -2040,29 +2042,23 @@ main(int argc,
 
 //--- book histograms for muon numerator and denominator
   auto histograms_mu_numerator_incl_LeptonPlusJet = get_num_den_hist_managers("numerator/LeptonPlusJet/muons_tight", kMuon);   // NEW !
-  histograms_mu_numerator_incl_LeptonPlusJet->bookHistograms(fs); // NEW !
-
   auto histograms_mu_numerator_incl_LeptonPlusJet_woTrigger = get_num_den_hist_managers("numerator/LeptonPlusJet_woTrigger/muons_tight", kMuon);   // NEW !
-  histograms_mu_numerator_incl_LeptonPlusJet_woTrigger->bookHistograms(fs); // NEW !
-
   auto histograms_mu_denominator_incl_LeptonPlusJet = get_num_den_hist_managers("denominator/LeptonPlusJet/muons_fakeable", kMuon); // NEW !
-  histograms_mu_denominator_incl_LeptonPlusJet->bookHistograms(fs); // NEW !
-
   auto histograms_mu_denominator_incl_LeptonPlusJet_woTrigger = get_num_den_hist_managers("denominator/LeptonPlusJet_woTrigger/muons_fakeable", kMuon); // NEW !
-  histograms_mu_denominator_incl_LeptonPlusJet_woTrigger->bookHistograms(fs); // NEW !
-
   auto histograms_mu_numerator_incl_diLeptSS = get_num_den_hist_managers("numerator/diLeptSS/muons_tight", kMuon);   // NEW !
-  histograms_mu_numerator_incl_diLeptSS->bookHistograms(fs); // NEW !
-
   auto histograms_mu_numerator_incl_diLeptSS_woTrigger = get_num_den_hist_managers("numerator/diLeptSS_woTrigger/muons_tight", kMuon);   // NEW !
-  histograms_mu_numerator_incl_diLeptSS_woTrigger->bookHistograms(fs); // NEW !
-
   auto histograms_mu_denominator_incl_diLeptSS = get_num_den_hist_managers("denominator/diLeptSS/muons_fakeable", kMuon); // NEW !
-  histograms_mu_denominator_incl_diLeptSS->bookHistograms(fs); // NEW !
-
   auto histograms_mu_denominator_incl_diLeptSS_woTrigger = get_num_den_hist_managers("denominator/diLeptSS_woTrigger/muons_fakeable", kMuon); // NEW !
-  histograms_mu_denominator_incl_diLeptSS_woTrigger->bookHistograms(fs); // NEW !
-
+  if(enable_MC_Closure_sidebands){
+    histograms_mu_numerator_incl_LeptonPlusJet->bookHistograms(fs); // NEW !
+    histograms_mu_numerator_incl_LeptonPlusJet_woTrigger->bookHistograms(fs); // NEW !
+    histograms_mu_denominator_incl_LeptonPlusJet->bookHistograms(fs); // NEW !
+    histograms_mu_denominator_incl_LeptonPlusJet_woTrigger->bookHistograms(fs); // NEW !
+    histograms_mu_numerator_incl_diLeptSS->bookHistograms(fs); // NEW !
+    histograms_mu_numerator_incl_diLeptSS_woTrigger->bookHistograms(fs); // NEW !
+    histograms_mu_denominator_incl_diLeptSS->bookHistograms(fs); // NEW !
+    histograms_mu_denominator_incl_diLeptSS_woTrigger->bookHistograms(fs); // NEW !
+  }
   auto histograms_mu_numerator_incl_beforeCuts = get_num_den_hist_managers("numerator/muons_tight", kMuon);
   histograms_mu_numerator_incl_beforeCuts->bookHistograms(fs);
 
@@ -2079,6 +2075,7 @@ main(int argc,
   );
   histograms_mu_denominator_incl_afterCuts->bookHistograms(fs);
 
+  //if(enable_MC_Closure_sidebands){
   std::vector<numerator_and_denominatorHistManagers *> histograms_mu_numerator_binned_LeptonPlusJet; // NEW !
   std::vector<numerator_and_denominatorHistManagers *> histograms_mu_numerator_binned_LeptonPlusJet_woTrigger; // NEW !
   std::vector<numerator_and_denominatorHistManagers *> histograms_mu_denominator_binned_LeptonPlusJet; // NEW !
@@ -2087,6 +2084,7 @@ main(int argc,
   std::vector<numerator_and_denominatorHistManagers *> histograms_mu_numerator_binned_diLeptSS_woTrigger; // NEW !
   std::vector<numerator_and_denominatorHistManagers *> histograms_mu_denominator_binned_diLeptSS; // NEW !
   std::vector<numerator_and_denominatorHistManagers *> histograms_mu_denominator_binned_diLeptSS_woTrigger; // NEW !
+  //}
   std::vector<numerator_and_denominatorHistManagers *> histograms_mu_numerator_binned_beforeCuts;
   std::vector<numerator_and_denominatorHistManagers *> histograms_mu_denominator_binned_beforeCuts;
   std::vector<numerator_and_denominatorHistManagers *> histograms_mu_numerator_binned_afterCuts;
@@ -2107,50 +2105,53 @@ main(int argc,
       auto histograms_numerator_LeptonPlusJet = get_num_den_hist_managers(
         "numerator/LeptonPlusJet/muons_tight", kMuon, minAbsEta_mu, maxAbsEta_mu, minPt_mu, maxPt_mu
       ); // NEW !
-      histograms_numerator_LeptonPlusJet->bookHistograms(fs); // NEW !
-      histograms_mu_numerator_binned_LeptonPlusJet.push_back(histograms_numerator_LeptonPlusJet); // NEW !
-
       auto histograms_numerator_LeptonPlusJet_woTrigger = get_num_den_hist_managers(
         "numerator/LeptonPlusJet_woTrigger/muons_tight", kMuon, minAbsEta_mu, maxAbsEta_mu, minPt_mu, maxPt_mu
       ); // NEW !
-      histograms_numerator_LeptonPlusJet_woTrigger->bookHistograms(fs); // NEW !
-      histograms_mu_numerator_binned_LeptonPlusJet_woTrigger.push_back(histograms_numerator_LeptonPlusJet_woTrigger); // NEW !
-
       auto histograms_denominator_LeptonPlusJet = get_num_den_hist_managers(
         "denominator/LeptonPlusJet/muons_fakeable", kMuon, minAbsEta_mu, maxAbsEta_mu, minPt_mu, maxPt_mu
       ); // NEW !
-      histograms_denominator_LeptonPlusJet->bookHistograms(fs); // NEW !
-      histograms_mu_denominator_binned_LeptonPlusJet.push_back(histograms_denominator_LeptonPlusJet); // NEW !
-
       auto histograms_denominator_LeptonPlusJet_woTrigger = get_num_den_hist_managers(
         "denominator/LeptonPlusJet_woTrigger/muons_fakeable", kMuon, minAbsEta_mu, maxAbsEta_mu, minPt_mu, maxPt_mu
       ); // NEW !
-      histograms_denominator_LeptonPlusJet_woTrigger->bookHistograms(fs); // NEW !
-      histograms_mu_denominator_binned_LeptonPlusJet_woTrigger.push_back(histograms_denominator_LeptonPlusJet_woTrigger); // NEW !
-
       auto histograms_numerator_diLeptSS = get_num_den_hist_managers(
         "numerator/diLeptSS/muons_tight", kMuon, minAbsEta_mu, maxAbsEta_mu, minPt_mu, maxPt_mu
       ); // NEW !
-      histograms_numerator_diLeptSS->bookHistograms(fs); // NEW !
-      histograms_mu_numerator_binned_diLeptSS.push_back(histograms_numerator_diLeptSS); // NEW !
-
       auto histograms_numerator_diLeptSS_woTrigger = get_num_den_hist_managers(
         "numerator/diLeptSS_woTrigger/muons_tight", kMuon, minAbsEta_mu, maxAbsEta_mu, minPt_mu, maxPt_mu
       ); // NEW !
-      histograms_numerator_diLeptSS_woTrigger->bookHistograms(fs); // NEW !
-      histograms_mu_numerator_binned_diLeptSS_woTrigger.push_back(histograms_numerator_diLeptSS_woTrigger); // NEW !
-
       auto histograms_denominator_diLeptSS = get_num_den_hist_managers(
         "denominator/diLeptSS/muons_fakeable", kMuon, minAbsEta_mu, maxAbsEta_mu, minPt_mu, maxPt_mu
       ); // NEW !
-      histograms_denominator_diLeptSS->bookHistograms(fs); // NEW !
-      histograms_mu_denominator_binned_diLeptSS.push_back(histograms_denominator_diLeptSS); // NEW !
-
       auto histograms_denominator_diLeptSS_woTrigger = get_num_den_hist_managers(
         "denominator/diLeptSS_woTrigger/muons_fakeable", kMuon, minAbsEta_mu, maxAbsEta_mu, minPt_mu, maxPt_mu
       ); // NEW !
-      histograms_denominator_diLeptSS_woTrigger->bookHistograms(fs); // NEW !
-      histograms_mu_denominator_binned_diLeptSS_woTrigger.push_back(histograms_denominator_diLeptSS_woTrigger); // NEW !
+
+      if(enable_MC_Closure_sidebands){
+	histograms_numerator_LeptonPlusJet->bookHistograms(fs); // NEW !
+	histograms_mu_numerator_binned_LeptonPlusJet.push_back(histograms_numerator_LeptonPlusJet); // NEW !
+
+	histograms_numerator_LeptonPlusJet_woTrigger->bookHistograms(fs); // NEW !
+	histograms_mu_numerator_binned_LeptonPlusJet_woTrigger.push_back(histograms_numerator_LeptonPlusJet_woTrigger); // NEW !
+
+	histograms_denominator_LeptonPlusJet->bookHistograms(fs); // NEW !
+	histograms_mu_denominator_binned_LeptonPlusJet.push_back(histograms_denominator_LeptonPlusJet); // NEW !
+
+	histograms_denominator_LeptonPlusJet_woTrigger->bookHistograms(fs); // NEW !
+	histograms_mu_denominator_binned_LeptonPlusJet_woTrigger.push_back(histograms_denominator_LeptonPlusJet_woTrigger); // NEW !
+
+	histograms_numerator_diLeptSS->bookHistograms(fs); // NEW !
+	histograms_mu_numerator_binned_diLeptSS.push_back(histograms_numerator_diLeptSS); // NEW !
+
+	histograms_numerator_diLeptSS_woTrigger->bookHistograms(fs); // NEW !
+	histograms_mu_numerator_binned_diLeptSS_woTrigger.push_back(histograms_numerator_diLeptSS_woTrigger); // NEW !
+
+	histograms_denominator_diLeptSS->bookHistograms(fs); // NEW !
+	histograms_mu_denominator_binned_diLeptSS.push_back(histograms_denominator_diLeptSS); // NEW !
+
+	histograms_denominator_diLeptSS_woTrigger->bookHistograms(fs); // NEW !
+	histograms_mu_denominator_binned_diLeptSS_woTrigger.push_back(histograms_denominator_diLeptSS_woTrigger); // NEW !
+      }
 
       auto histograms_numerator_beforeCuts = get_num_den_hist_managers(
         "numerator/muons_tight", kMuon, minAbsEta_mu, maxAbsEta_mu, minPt_mu, maxPt_mu
@@ -2223,7 +2224,8 @@ main(int argc,
   typedef std::remove_pointer<decltype(bdt_filler_e_diLeptSS)>::type::int_type   int_type_e;
   typedef std::remove_pointer<decltype(bdt_filler_mu_diLeptSS)>::type::float_type float_type_mu;
   typedef std::remove_pointer<decltype(bdt_filler_mu_diLeptSS)>::type::int_type   int_type_mu;
-  if( fillNtuple ) {
+
+  if(enable_MC_Closure_sidebands && fillNtuple ) {
     bdt_filler_e_LeptonPlusJet = new std::remove_pointer<decltype(bdt_filler_e_LeptonPlusJet)>::type(
 	    makeHistManager_cfg(process_string, Form("LeptonFakeRate_ntuple_LeptonPlusJet/%s", "electron"), era_string, central_or_shift)
     );
@@ -2294,71 +2296,78 @@ main(int argc,
   TH1 * histogram_selectedEntries = fs.make<TH1D>("selectedEntries", "selectedEntries", 1, -0.5, +0.5);
 
   cutFlowTableType cutFlowTable_e_LeptonPlusJet({}, isDEBUG);
-  initializeCutFlowTable(cutFlowTable_e_LeptonPlusJet, "= 1 presel/Loose electron");
-  initializeCutFlowTable(cutFlowTable_e_LeptonPlusJet, "Jet found at a dist. dR=0.7 from electron");
-  initializeCutFlowTable(cutFlowTable_e_LeptonPlusJet, "Event passes trigger and MET filters");
-  initializeCutFlowTable(cutFlowTable_e_LeptonPlusJet, histograms_e_numerator_binned_LeptonPlusJet);
-  initializeCutFlowTable(cutFlowTable_e_LeptonPlusJet, histograms_e_denominator_binned_LeptonPlusJet);
-
+  if(enable_MC_Closure_sidebands){
+    initializeCutFlowTable(cutFlowTable_e_LeptonPlusJet, "= 1 presel/Loose electron");
+    initializeCutFlowTable(cutFlowTable_e_LeptonPlusJet, "Jet found at a dist. dR=0.7 from electron");
+    initializeCutFlowTable(cutFlowTable_e_LeptonPlusJet, "Event passes trigger and MET filters");
+    initializeCutFlowTable(cutFlowTable_e_LeptonPlusJet, histograms_e_numerator_binned_LeptonPlusJet);
+    initializeCutFlowTable(cutFlowTable_e_LeptonPlusJet, histograms_e_denominator_binned_LeptonPlusJet);
+  }
   cutFlowTableType cutFlowTable_e_LeptonPlusJet_woTrigger({}, isDEBUG);
-  initializeCutFlowTable(cutFlowTable_e_LeptonPlusJet_woTrigger, "= 1 presel/Loose electron");
-  initializeCutFlowTable(cutFlowTable_e_LeptonPlusJet_woTrigger, "Jet found at a dist. dR=0.7 from electron");
-  initializeCutFlowTable(cutFlowTable_e_LeptonPlusJet_woTrigger, "Event passes MET filters");
-  initializeCutFlowTable(cutFlowTable_e_LeptonPlusJet_woTrigger, histograms_e_numerator_binned_LeptonPlusJet_woTrigger);
-  initializeCutFlowTable(cutFlowTable_e_LeptonPlusJet_woTrigger, histograms_e_denominator_binned_LeptonPlusJet_woTrigger);
-
+  if(enable_MC_Closure_sidebands){
+    initializeCutFlowTable(cutFlowTable_e_LeptonPlusJet_woTrigger, "= 1 presel/Loose electron");
+    initializeCutFlowTable(cutFlowTable_e_LeptonPlusJet_woTrigger, "Jet found at a dist. dR=0.7 from electron");
+    initializeCutFlowTable(cutFlowTable_e_LeptonPlusJet_woTrigger, "Event passes MET filters");
+    initializeCutFlowTable(cutFlowTable_e_LeptonPlusJet_woTrigger, histograms_e_numerator_binned_LeptonPlusJet_woTrigger);
+    initializeCutFlowTable(cutFlowTable_e_LeptonPlusJet_woTrigger, histograms_e_denominator_binned_LeptonPlusJet_woTrigger);
+  }
   cutFlowTableType cutFlowTable_e_diLeptSS({}, isDEBUG);
-  initializeCutFlowTable(cutFlowTable_e_diLeptSS, "= 2 presel/Loose leptons");
-  initializeCutFlowTable(cutFlowTable_e_diLeptSS, "Gen-matched lepton (Tag) exists");
-  initializeCutFlowTable(cutFlowTable_e_diLeptSS, "Both presel/Loose leptons are Same Sign");
-  initializeCutFlowTable(cutFlowTable_e_diLeptSS, "Event passes trigger and MET filters");
-  initializeCutFlowTable(cutFlowTable_e_diLeptSS, "Probe lepton exists and is an electron");
-  initializeCutFlowTable(cutFlowTable_e_diLeptSS, histograms_e_numerator_binned_diLeptSS);
-  initializeCutFlowTable(cutFlowTable_e_diLeptSS, histograms_e_denominator_binned_diLeptSS);
-
+  if(enable_MC_Closure_sidebands){
+    initializeCutFlowTable(cutFlowTable_e_diLeptSS, "= 2 presel/Loose leptons");
+    initializeCutFlowTable(cutFlowTable_e_diLeptSS, "Gen-matched lepton (Tag) exists");
+    initializeCutFlowTable(cutFlowTable_e_diLeptSS, "Both presel/Loose leptons are Same Sign");
+    initializeCutFlowTable(cutFlowTable_e_diLeptSS, "Event passes trigger and MET filters");
+    initializeCutFlowTable(cutFlowTable_e_diLeptSS, "Probe lepton exists and is an electron");
+    initializeCutFlowTable(cutFlowTable_e_diLeptSS, histograms_e_numerator_binned_diLeptSS);
+    initializeCutFlowTable(cutFlowTable_e_diLeptSS, histograms_e_denominator_binned_diLeptSS);
+  }
   cutFlowTableType cutFlowTable_e_diLeptSS_woTrigger({}, isDEBUG);
-  initializeCutFlowTable(cutFlowTable_e_diLeptSS_woTrigger, "= 2 presel/Loose leptons");
-  initializeCutFlowTable(cutFlowTable_e_diLeptSS_woTrigger, "Gen-matched lepton (Tag) exists");
-  initializeCutFlowTable(cutFlowTable_e_diLeptSS_woTrigger, "Both presel/Loose leptons are Same Sign");
-  initializeCutFlowTable(cutFlowTable_e_diLeptSS_woTrigger, "Event passes MET filters");
-  initializeCutFlowTable(cutFlowTable_e_diLeptSS_woTrigger, "Probe lepton exists and is an electron");
-  initializeCutFlowTable(cutFlowTable_e_diLeptSS_woTrigger, histograms_e_numerator_binned_diLeptSS_woTrigger);
-  initializeCutFlowTable(cutFlowTable_e_diLeptSS_woTrigger, histograms_e_denominator_binned_diLeptSS_woTrigger);
-
+  if(enable_MC_Closure_sidebands){
+    initializeCutFlowTable(cutFlowTable_e_diLeptSS_woTrigger, "= 2 presel/Loose leptons");
+    initializeCutFlowTable(cutFlowTable_e_diLeptSS_woTrigger, "Gen-matched lepton (Tag) exists");
+    initializeCutFlowTable(cutFlowTable_e_diLeptSS_woTrigger, "Both presel/Loose leptons are Same Sign");
+    initializeCutFlowTable(cutFlowTable_e_diLeptSS_woTrigger, "Event passes MET filters");
+    initializeCutFlowTable(cutFlowTable_e_diLeptSS_woTrigger, "Probe lepton exists and is an electron");
+    initializeCutFlowTable(cutFlowTable_e_diLeptSS_woTrigger, histograms_e_numerator_binned_diLeptSS_woTrigger);
+    initializeCutFlowTable(cutFlowTable_e_diLeptSS_woTrigger, histograms_e_denominator_binned_diLeptSS_woTrigger);
+  }
   cutFlowTableType cutFlowTable_mu_LeptonPlusJet({}, isDEBUG);
-  initializeCutFlowTable(cutFlowTable_mu_LeptonPlusJet, "= 1 presel/Loose muon");
-  initializeCutFlowTable(cutFlowTable_mu_LeptonPlusJet, "Jet found at a dist. dR=0.7 from muon");
-  initializeCutFlowTable(cutFlowTable_mu_LeptonPlusJet, "Event passes trigger and MET filters");
-  initializeCutFlowTable(cutFlowTable_mu_LeptonPlusJet, histograms_mu_numerator_binned_LeptonPlusJet);
-  initializeCutFlowTable(cutFlowTable_mu_LeptonPlusJet, histograms_mu_denominator_binned_LeptonPlusJet);
-
+  if(enable_MC_Closure_sidebands){
+    initializeCutFlowTable(cutFlowTable_mu_LeptonPlusJet, "= 1 presel/Loose muon");
+    initializeCutFlowTable(cutFlowTable_mu_LeptonPlusJet, "Jet found at a dist. dR=0.7 from muon");
+    initializeCutFlowTable(cutFlowTable_mu_LeptonPlusJet, "Event passes trigger and MET filters");
+    initializeCutFlowTable(cutFlowTable_mu_LeptonPlusJet, histograms_mu_numerator_binned_LeptonPlusJet);
+    initializeCutFlowTable(cutFlowTable_mu_LeptonPlusJet, histograms_mu_denominator_binned_LeptonPlusJet);
+  }
   cutFlowTableType cutFlowTable_mu_LeptonPlusJet_woTrigger({}, isDEBUG);
-  initializeCutFlowTable(cutFlowTable_mu_LeptonPlusJet_woTrigger, "= 1 presel/Loose muon");
-  initializeCutFlowTable(cutFlowTable_mu_LeptonPlusJet_woTrigger, "Jet found at a dist. dR=0.7 from muon");
-  initializeCutFlowTable(cutFlowTable_mu_LeptonPlusJet_woTrigger, "Event passes MET filters");
-  initializeCutFlowTable(cutFlowTable_mu_LeptonPlusJet_woTrigger, histograms_mu_numerator_binned_LeptonPlusJet_woTrigger);
-  initializeCutFlowTable(cutFlowTable_mu_LeptonPlusJet_woTrigger, histograms_mu_denominator_binned_LeptonPlusJet_woTrigger);
-
-
+  if(enable_MC_Closure_sidebands){
+    initializeCutFlowTable(cutFlowTable_mu_LeptonPlusJet_woTrigger, "= 1 presel/Loose muon");
+    initializeCutFlowTable(cutFlowTable_mu_LeptonPlusJet_woTrigger, "Jet found at a dist. dR=0.7 from muon");
+    initializeCutFlowTable(cutFlowTable_mu_LeptonPlusJet_woTrigger, "Event passes MET filters");
+    initializeCutFlowTable(cutFlowTable_mu_LeptonPlusJet_woTrigger, histograms_mu_numerator_binned_LeptonPlusJet_woTrigger);
+    initializeCutFlowTable(cutFlowTable_mu_LeptonPlusJet_woTrigger, histograms_mu_denominator_binned_LeptonPlusJet_woTrigger);
+  }
   cutFlowTableType cutFlowTable_mu_diLeptSS({}, isDEBUG);
-  initializeCutFlowTable(cutFlowTable_mu_diLeptSS, "= 2 presel/Loose leptons");
-  initializeCutFlowTable(cutFlowTable_mu_diLeptSS, "Gen-matched lepton (Tag) exists");
-  initializeCutFlowTable(cutFlowTable_mu_diLeptSS, "Both presel/Loose leptons are Same Sign");
-  initializeCutFlowTable(cutFlowTable_mu_diLeptSS, "Event passes trigger and MET filters");
-  initializeCutFlowTable(cutFlowTable_mu_diLeptSS, "Probe lepton exists and is a muon");
-  initializeCutFlowTable(cutFlowTable_mu_diLeptSS, histograms_mu_numerator_binned_diLeptSS);
-  initializeCutFlowTable(cutFlowTable_mu_diLeptSS, histograms_mu_denominator_binned_diLeptSS);
-
+  if(enable_MC_Closure_sidebands){
+    initializeCutFlowTable(cutFlowTable_mu_diLeptSS, "= 2 presel/Loose leptons");
+    initializeCutFlowTable(cutFlowTable_mu_diLeptSS, "Gen-matched lepton (Tag) exists");
+    initializeCutFlowTable(cutFlowTable_mu_diLeptSS, "Both presel/Loose leptons are Same Sign");
+    initializeCutFlowTable(cutFlowTable_mu_diLeptSS, "Event passes trigger and MET filters");
+    initializeCutFlowTable(cutFlowTable_mu_diLeptSS, "Probe lepton exists and is a muon");
+    initializeCutFlowTable(cutFlowTable_mu_diLeptSS, histograms_mu_numerator_binned_diLeptSS);
+    initializeCutFlowTable(cutFlowTable_mu_diLeptSS, histograms_mu_denominator_binned_diLeptSS);
+  }
 
   cutFlowTableType cutFlowTable_mu_diLeptSS_woTrigger({}, isDEBUG);
-  initializeCutFlowTable(cutFlowTable_mu_diLeptSS_woTrigger, "= 2 presel/Loose leptons");
-  initializeCutFlowTable(cutFlowTable_mu_diLeptSS_woTrigger, "Gen-matched lepton (Tag) exists");
-  initializeCutFlowTable(cutFlowTable_mu_diLeptSS_woTrigger, "Both presel/Loose leptons are Same Sign");
-  initializeCutFlowTable(cutFlowTable_mu_diLeptSS_woTrigger, "Event passes MET filters");
-  initializeCutFlowTable(cutFlowTable_mu_diLeptSS_woTrigger, "Probe lepton exists and is an muon");
-  initializeCutFlowTable(cutFlowTable_mu_diLeptSS_woTrigger, histograms_mu_numerator_binned_diLeptSS_woTrigger);
-  initializeCutFlowTable(cutFlowTable_mu_diLeptSS_woTrigger, histograms_mu_denominator_binned_diLeptSS_woTrigger);
-
+  if(enable_MC_Closure_sidebands){
+    initializeCutFlowTable(cutFlowTable_mu_diLeptSS_woTrigger, "= 2 presel/Loose leptons");
+    initializeCutFlowTable(cutFlowTable_mu_diLeptSS_woTrigger, "Gen-matched lepton (Tag) exists");
+    initializeCutFlowTable(cutFlowTable_mu_diLeptSS_woTrigger, "Both presel/Loose leptons are Same Sign");
+    initializeCutFlowTable(cutFlowTable_mu_diLeptSS_woTrigger, "Event passes MET filters");
+    initializeCutFlowTable(cutFlowTable_mu_diLeptSS_woTrigger, "Probe lepton exists and is an muon");
+    initializeCutFlowTable(cutFlowTable_mu_diLeptSS_woTrigger, histograms_mu_numerator_binned_diLeptSS_woTrigger);
+    initializeCutFlowTable(cutFlowTable_mu_diLeptSS_woTrigger, histograms_mu_denominator_binned_diLeptSS_woTrigger);
+  }
 
   cutFlowTableType cutFlowTable_e({}, isDEBUG);
   initializeCutFlowTable(cutFlowTable_e, ">= 1 presel/Loose electron");
@@ -2642,7 +2651,7 @@ main(int argc,
     evtWeightRecorder_copy = evtWeightRecorder; 
 
 
-    if(isMC && isMC_TT_SL)
+    if(isMC && isMC_TT_SL && enable_MC_Closure_sidebands)
       {//Runs only for TT_SemiLeptonic MC
 	int DileptSS_result = DiLeptonSS(dataToMCcorrectionInterface_ntuple,
 				     preselLeptonsFull,
@@ -2701,7 +2710,7 @@ main(int argc,
 
       }
 
-    if(isMC && (isMC_TT_HAD || isMC_QCD))
+    if(isMC && (isMC_TT_HAD || isMC_QCD) && enable_MC_Closure_sidebands)
       {// Runs only for QCD and TTToHadronic
 	int LeptonPlusJet_result = LeptonPlusJet(dataToMCcorrectionInterface_ntuple,
 					     preselLeptonsFull,
@@ -3387,7 +3396,7 @@ main(int argc,
                "cut-flow table for muon events\n"     << cutFlowTable_mu << '\n';
 
 
-  if(isMC && isMC_TT_SL)
+  if(isMC && isMC_TT_SL && enable_MC_Closure_sidebands)
     {// Runs only for TTJets_SemiLeptonic
       std::cout << "Di-Lepton SS sideband Info (w MET Filter & Trigger)" << std::endl;
       std::cout << "cut-flow table for electron events\n" << cutFlowTable_e_diLeptSS  << "\n"
@@ -3398,7 +3407,7 @@ main(int argc,
 	"cut-flow table for muon events\n"     << cutFlowTable_mu_diLeptSS_woTrigger << '\n';
     }
 
-  if(isMC && (isMC_TT_HAD || isMC_QCD))
+  if(isMC && (isMC_TT_HAD || isMC_QCD) && enable_MC_Closure_sidebands)
     {// Runs only for QCD and TTToHadronic
       std::cout << "Lepton+Jet sideband Info (w MET Filter & Trigger)" << std::endl;
       std::cout << "cut-flow table for electron events\n" << cutFlowTable_e_LeptonPlusJet  << "\n"

@@ -115,4 +115,5 @@ process.analyze_LeptonFakeRate = cms.PSet(
     ),
     tHweights = cms.VPSet(),
     fillNtuple = cms.bool(False),
+    enable_MC_Closure_sidebands = cms.bool(False) ## Boolean handle to control inclusion of MC Closure sidebands (2lss, TTHadronic)
 )

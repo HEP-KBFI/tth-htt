@@ -13,7 +13,6 @@ process.fwliteOutput = cms.PSet(
 )
 
 process.comp_LeptonFakeRate = cms.PSet(
-
     histogramName_e = cms.string(""),
     absEtaBins_e = cms.vdouble(),
     ptBins_e = cms.vdouble(),
@@ -27,7 +26,8 @@ process.comp_LeptonFakeRate = cms.PSet(
 #    Conversion_uncert = cms.double(0.50),
 
     outputFileName = cms.string(""),
-
     HistogramName_den = cms.string(''),
+    enable_MC_Closure_sidebands = cms.bool(True),
 #    use_fakes_from_MC = cms.bool(False),
+
 )

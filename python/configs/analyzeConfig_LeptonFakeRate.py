@@ -139,6 +139,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
         numerator_histogram,
         denominator_histogram,
         prep_dcard,
+        enable_MC_Closure_sidebands,       
         max_files_per_job,
         era,
         use_lumi,
@@ -222,6 +223,8 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     self.prep_dcard_processesToCopy = [ "data_obs", "TTW", "TTZ", "TT", "Rares", "EWK", "ttH", "TTWW", "tHq", "tHW", "VH", "ttH_hbb", "data_fakes" ]
     self.histogramDir_prep_dcard = "LeptonFakeRate"
     self.prep_dcard = prep_dcard
+    self.enable_MC_Closure_sidebands = enable_MC_Closure_sidebands
+
 
     self.numerator_histogram = numerator_histogram[0]
     self.denominator_histogram = denominator_histogram[0]
@@ -307,10 +310,10 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     lines.append("process.comp_LeptonFakeRate.outputFileName = cms.string('%s')" % jobOptions['plots_outputFileName'])
     lines.append("process.comp_LeptonFakeRate.HistogramName_num = cms.string('%s')" % self.numerator_histogram)
     lines.append("process.comp_LeptonFakeRate.HistogramName_den = cms.string('%s')" % self.denominator_histogram)
-    # if self.use_QCD_fromMC :
-    #  lines.append("process.comp_LeptonFakeRate.use_fakes_from_MC = cms.bool(True)")
-    # else:
-    #  lines.append("process.comp_LeptonFakeRate.use_fakes_from_MC = cms.bool(False)")
+    if self.enable_MC_Closure_sidebands :
+      lines.append("process.comp_LeptonFakeRate.enable_MC_Closure_sidebands = cms.bool(True)")
+    else:
+      lines.append("process.comp_LeptonFakeRate.enable_MC_Closure_sidebands = cms.bool(False)")
     create_cfg(self.cfgFile_comp_LeptonFakeRate, jobOptions['cfgFile_modified'], lines)
 
   def createCfg_prep_dcard_LeptonFakeRate(self, jobOptions):

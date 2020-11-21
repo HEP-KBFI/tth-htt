@@ -332,7 +332,7 @@ void FixHistBinIntegral(std::string& histogramName, TFile* inputFile, const std:
 }
 
 
-void readPrefit(TFile* inputFile_stage2, TFile* inputFile_stage1_5, std::map<std::string, fitResultType*>& fitResults, const std::string& variable_den)
+void readPrefit(TFile* inputFile_stage2, TFile* inputFile_stage1_5, std::map<std::string, fitResultType*>& fitResults, const std::string& variable_den, bool enable_MC_Closure_sidebands = false)
 {
  
   for ( std::map<std::string, fitResultType*>::iterator fitResult = fitResults.begin();
@@ -460,26 +460,40 @@ void readPrefit(TFile* inputFile_stage2, TFile* inputFile_stage1_5, std::map<std
 
     //DiLeptSS TT fakes
     double integral_TT_fakes2 = 0.;
-    double integralErr2_TT_fakes2 = 0.; 
-    FixHistBinIntegral(histogramName_TT_fakes2, inputFile_stage1_5, "TTj", variable_den, integral_TT_fakes2, integralErr2_TT_fakes2);
-    double integralErr_TT_fakes2 = TMath::Sqrt(integralErr2_TT_fakes2);
-    fitResult->second->norm_TT_fakes2_ = integral_TT_fakes2;
-    fitResult->second->normErr_TT_fakes2_ = integralErr_TT_fakes2;
+    double integralErr2_TT_fakes2 = 0.;
+    if(enable_MC_Closure_sidebands){
+      FixHistBinIntegral(histogramName_TT_fakes2, inputFile_stage1_5, "TTj", variable_den, integral_TT_fakes2, integralErr2_TT_fakes2);
+      double integralErr_TT_fakes2 = TMath::Sqrt(integralErr2_TT_fakes2);
+      fitResult->second->norm_TT_fakes2_ = integral_TT_fakes2;
+      fitResult->second->normErr_TT_fakes2_ = integralErr_TT_fakes2;
+    }else{
+      std::cout<< " MC Closure sidebands disabled. Skipping DiLeptSS TT fakes histogram " << std::endl;
+    }
 
+    // LeptonPlusJet QCD MC fakes
     double integral_QCD_fakes = 0.;
-    double integralErr2_QCD_fakes = 0.; 
-    FixHistBinIntegral(histogramName_QCD_fakes, inputFile_stage1_5, "QCDj", variable_den, integral_QCD_fakes, integralErr2_QCD_fakes);
-    double integralErr_QCD_fakes = TMath::Sqrt(integralErr2_QCD_fakes);
-    fitResult->second->norm_QCD_fakes_ = integral_QCD_fakes;
-    fitResult->second->normErr_QCD_fakes_ = integralErr_QCD_fakes;
+    double integralErr2_QCD_fakes = 0.;
+    if(enable_MC_Closure_sidebands){ 
+      FixHistBinIntegral(histogramName_QCD_fakes, inputFile_stage1_5, "QCDj", variable_den, integral_QCD_fakes, integralErr2_QCD_fakes);
+      double integralErr_QCD_fakes = TMath::Sqrt(integralErr2_QCD_fakes);
+      fitResult->second->norm_QCD_fakes_ = integral_QCD_fakes;
+      fitResult->second->normErr_QCD_fakes_ = integralErr_QCD_fakes;
+    }else{
+      std::cout<< " MC Closure sidebands disabled. Skipping LeptonPlusJet QCD MC fakes histogram " << std::endl;
+    }
 
+    // LeptonPlusJet QCD MC fakes (Conv. corrected)
     double integral_QCD_fakes_Conv_Corrected = 0.;
-    double integralErr2_QCD_fakes_Conv_Corrected = 0.; 
-    //FixHistBinIntegral(histogramName_QCD_fakes_Conv_Corrected, inputFile_stage2, "QCD", variable_den, integral_QCD_fakes_Conv_Corrected, integralErr2_QCD_fakes_Conv_Corrected); // for QCD fakes (w Trigger prescale weights and Trigger cuts)   
-    FixHistBinIntegral(histogramName_QCD_fakes_Conv_Corrected, inputFile_stage1_5, "QCD", variable_den, integral_QCD_fakes_Conv_Corrected, integralErr2_QCD_fakes_Conv_Corrected); // for QCD fakes (w/o Trigger prescale weights and Trigger cuts)   
-    double integralErr_QCD_fakes_Conv_Corrected = TMath::Sqrt(integralErr2_QCD_fakes_Conv_Corrected);
-    fitResult->second->norm_QCD_fakes_Conv_Corrected_ = integral_QCD_fakes_Conv_Corrected;
-    fitResult->second->normErr_QCD_fakes_Conv_Corrected_ = integralErr_QCD_fakes_Conv_Corrected;
+    double integralErr2_QCD_fakes_Conv_Corrected = 0.;
+    if(enable_MC_Closure_sidebands){  
+      //FixHistBinIntegral(histogramName_QCD_fakes_Conv_Corrected, inputFile_stage2, "QCD", variable_den, integral_QCD_fakes_Conv_Corrected, integralErr2_QCD_fakes_Conv_Corrected); // for QCD fakes (w Trigger prescale weights and Trigger cuts)   
+      FixHistBinIntegral(histogramName_QCD_fakes_Conv_Corrected, inputFile_stage1_5, "QCD", variable_den, integral_QCD_fakes_Conv_Corrected, integralErr2_QCD_fakes_Conv_Corrected); // for QCD fakes (w/o Trigger prescale weights and Trigger cuts)   
+      double integralErr_QCD_fakes_Conv_Corrected = TMath::Sqrt(integralErr2_QCD_fakes_Conv_Corrected);
+      fitResult->second->norm_QCD_fakes_Conv_Corrected_ = integral_QCD_fakes_Conv_Corrected;
+      fitResult->second->normErr_QCD_fakes_Conv_Corrected_ = integralErr_QCD_fakes_Conv_Corrected;
+    }else{
+      std::cout<< " MC Closure sidebands disabled. Skipping LeptonPlusJet QCD MC fakes (Conv. corrected) histogram " << std::endl;
+    }
 
   }
 }
@@ -495,7 +509,9 @@ TH2* bookHistogram(fwlite::TFileService& fs, const std::string& histogramName, c
 
 
 void fillHistogram(TH2* histogram, const std::map<std::string, fitResultType*>& fitResults_pass, const std::map<std::string, fitResultType*>& fitResults_fail, int prefit_or_postfit, 
-		   bool is_data_fakes = true, bool is_TT_fakes = false, bool is_QCD_fakes = false, bool use_Conv_Corrected_QCD = false, bool is_TTj_minus_TTg = false, bool is_TT_fakes2 = false)
+		   bool is_data_fakes = true, bool is_TT_fakes = false, bool is_QCD_fakes = false, 
+		   bool use_Conv_Corrected_QCD = false, bool is_TTj_minus_TTg = false, bool is_TT_fakes2 = false,
+		   bool enable_MC_Closure_sidebands = false)
 {
   
   const TAxis* xAxis = histogram->GetXaxis();
@@ -517,7 +533,10 @@ void fillHistogram(TH2* histogram, const std::map<std::string, fitResultType*>& 
       }
 
       if ( fitResult_pass != fitResults_pass.end() && fitResult_fail != fitResults_fail.end() ) {
-	double nPass, nPassErr, nFail, nFailErr;
+	double nPass = 0.;
+        double nPassErr = 0.; 
+	double nFail = 0.;
+	double nFailErr = 0.;
 	if(is_data_fakes && !is_TT_fakes && !is_QCD_fakes && !is_TTj_minus_TTg && !is_TT_fakes2){ // For data driven fakes
 	  if ( prefit_or_postfit == kPrefit ) {
 	    std::cout<< "Pre-fit data fakes" << std::endl;
@@ -539,13 +558,13 @@ void fillHistogram(TH2* histogram, const std::map<std::string, fitResultType*>& 
 	    nPassErr = fitResult_pass->second->normErr_TT_fakes_;
 	    nFail = fitResult_fail->second->norm_TT_fakes_;
 	    nFailErr = fitResult_fail->second->normErr_TT_fakes_;
-	}else if(!is_data_fakes && !is_TT_fakes && !is_QCD_fakes && !is_TTj_minus_TTg && is_TT_fakes2){ // For DiLeptSS TTBar MC driven fakes
+	}else if(!is_data_fakes && !is_TT_fakes && !is_QCD_fakes && !is_TTj_minus_TTg && is_TT_fakes2 && enable_MC_Closure_sidebands){ // For DiLeptSS TTBar MC driven fakes
 	    std::cout<< "TTbar MC driven fakes (DiLeptSS)" << std::endl;
 	    nPass = fitResult_pass->second->norm_TT_fakes2_;
 	    nPassErr = fitResult_pass->second->normErr_TT_fakes2_;
 	    nFail = fitResult_fail->second->norm_TT_fakes2_;
 	    nFailErr = fitResult_fail->second->normErr_TT_fakes2_;
-	}else if(!is_data_fakes && !is_TT_fakes && is_QCD_fakes && !is_TTj_minus_TTg && !is_TT_fakes2){ // For QCD MC driven fakes
+	}else if(!is_data_fakes && !is_TT_fakes && is_QCD_fakes && !is_TTj_minus_TTg && !is_TT_fakes2 && enable_MC_Closure_sidebands){ // For QCD MC driven fakes
 	  if(use_Conv_Corrected_QCD){
 	    std::cout<< "QCD MC driven fakes (Corrected for Conversions)" << std::endl;
 	    nPass = fitResult_pass->second->norm_QCD_fakes_Conv_Corrected_;
@@ -560,7 +579,7 @@ void fillHistogram(TH2* histogram, const std::map<std::string, fitResultType*>& 
 	    nFailErr = fitResult_fail->second->normErr_QCD_fakes_;
 	  }
 	}else if(!is_data_fakes && !is_TT_fakes && !is_QCD_fakes && is_TTj_minus_TTg && !is_TT_fakes2){ // For TTj - TTg
-	    std::cout<< "(TTj - TTg) MC driven fakes " << std::endl;
+	    std::cout<< "(TTj - TTg) or Conversion corrected TTbar MC driven fakes " << std::endl;
 	    nPass = fitResult_pass->second->norm_TTj_minus_TTg_;
 	    nPassErr = fitResult_pass->second->normErr_TTj_minus_TTg_;
 	    nFail = fitResult_fail->second->norm_TTj_minus_TTg_;
@@ -859,6 +878,9 @@ int main(int argc, char* argv[])
   std::string variable_den = cfg_comp.getParameter<std::string>("HistogramName_den");
   //double conv_unc = cfg_comp.getParameter<double>("Conversion_uncert");    // ADDED FOR CONV. CORR.S [Not needed anymore]
 
+  // boolean handle to enable/disable MC closure sideband inclusion                                                                                                                                       
+  const bool enable_MC_Closure_sidebands = cfg_comp.getParameter<bool>("enable_MC_Closure_sidebands");
+
 
   fwlite::InputSource inputFiles(cfg);
   if ( !(inputFiles.files().size() == 2) )
@@ -923,10 +945,10 @@ int main(int argc, char* argv[])
   if ( !inputFile_mc_stage1_5 ) throw cms::Exception("comp_LeptonFakeRate")
 			 << "Failed to open stage 1_5 input file = '" << inputFileName_mc_stage1_5 << "' !!\n";
 
-  readPrefit(inputFile_mc_stage2, inputFile_mc_stage1_5, fitResults_e_pass, variable_den);
-  readPrefit(inputFile_mc_stage2, inputFile_mc_stage1_5, fitResults_e_fail, variable_den);
-  readPrefit(inputFile_mc_stage2, inputFile_mc_stage1_5, fitResults_mu_pass, variable_den);
-  readPrefit(inputFile_mc_stage2, inputFile_mc_stage1_5, fitResults_mu_fail, variable_den);
+  readPrefit(inputFile_mc_stage2, inputFile_mc_stage1_5, fitResults_e_pass, variable_den, enable_MC_Closure_sidebands);
+  readPrefit(inputFile_mc_stage2, inputFile_mc_stage1_5, fitResults_e_fail, variable_den, enable_MC_Closure_sidebands);
+  readPrefit(inputFile_mc_stage2, inputFile_mc_stage1_5, fitResults_mu_pass, variable_den, enable_MC_Closure_sidebands);
+  readPrefit(inputFile_mc_stage2, inputFile_mc_stage1_5, fitResults_mu_fail, variable_den, enable_MC_Closure_sidebands);
 
   readConversionCorr(inputFile_mc_stage2, fitResults_e_pass, process, variable); // ADDED FOR ELECTRON CONV. CORRECTIONS
 
@@ -938,22 +960,30 @@ int main(int argc, char* argv[])
   fwlite::OutputFiles outputFile(cfg);
   fwlite::TFileService fs = fwlite::TFileService(outputFile.file().data());
 
-
+  // ------- FOR ELECTRONS --------
   TH2* histogram_e_data_fakes_postfit = bookHistogram(fs, histogramName_e, ptBins_e_array, absEtaBins_e_array);
   fillHistogram(histogram_e_data_fakes_postfit, fitResults_e_pass, fitResults_e_fail, kPostfit);
+
   TH2* histogram_e_data_fakes_prefit = bookHistogram(fs, Form("%s_prefit", histogramName_e.data()), ptBins_e_array, absEtaBins_e_array);
   fillHistogram(histogram_e_data_fakes_prefit, fitResults_e_pass, fitResults_e_fail, kPrefit);
-  TH2* histogram_e_mc_TT_fakes = bookHistogram(fs, Form("%s_TT_fakes", histogramName_e.data()), ptBins_e_array, absEtaBins_e_array);
-  fillHistogram(histogram_e_mc_TT_fakes, fitResults_e_pass, fitResults_e_fail, kPrefit, false, true, false, false, false, false);
-  TH2* histogram_e_mc_QCD_fakes = bookHistogram(fs, Form("%s_QCD_fakes", histogramName_e.data()), ptBins_e_array, absEtaBins_e_array);
-  fillHistogram(histogram_e_mc_QCD_fakes, fitResults_e_pass, fitResults_e_fail, kPrefit, false, false, true, false, false, false); // Using Uncorrected QCD MC  
-  TH2* histogram_e_mc_QCD_fakes_Conv_Corrected = bookHistogram(fs, Form("%s_QCD_fakes_Conv_Corr", histogramName_e.data()), ptBins_e_array, absEtaBins_e_array);
-  fillHistogram(histogram_e_mc_QCD_fakes_Conv_Corrected, fitResults_e_pass, fitResults_e_fail, kPrefit, false, false, true, true, false, false); // Using Conv. Corrected QCD MC  
-  TH2* histogram_e_mc_TTj_minus_TTg_fakes = bookHistogram(fs, Form("%s_TTj_minus_TTg_fakes", histogramName_e.data()), ptBins_e_array, absEtaBins_e_array);
-  fillHistogram(histogram_e_mc_TTj_minus_TTg_fakes, fitResults_e_pass, fitResults_e_fail, kPrefit, false, false, false, false, true, false);
 
+  TH2* histogram_e_mc_TT_fakes = bookHistogram(fs, Form("%s_TT_fakes", histogramName_e.data()), ptBins_e_array, absEtaBins_e_array);
+  fillHistogram(histogram_e_mc_TT_fakes, fitResults_e_pass, fitResults_e_fail, kPrefit, false, true, false, false, false, false, false);
+
+  TH2* histogram_e_mc_TTj_minus_TTg_fakes = bookHistogram(fs, Form("%s_TTj_minus_TTg_fakes", histogramName_e.data()), ptBins_e_array, absEtaBins_e_array);
+  fillHistogram(histogram_e_mc_TTj_minus_TTg_fakes, fitResults_e_pass, fitResults_e_fail, kPrefit, false, false, false, false, true, false, false);
+
+  // Using Uncorrected QCD MC  
+  TH2* histogram_e_mc_QCD_fakes = bookHistogram(fs, Form("%s_QCD_fakes", histogramName_e.data()), ptBins_e_array, absEtaBins_e_array);
+  fillHistogram(histogram_e_mc_QCD_fakes, fitResults_e_pass, fitResults_e_fail, kPrefit, false, false, true, false, false, false, enable_MC_Closure_sidebands); 
+
+  // Using Conv. Corrected QCD MC  
+  TH2* histogram_e_mc_QCD_fakes_Conv_Corrected = bookHistogram(fs, Form("%s_QCD_fakes_Conv_Corr", histogramName_e.data()), ptBins_e_array, absEtaBins_e_array);
+  fillHistogram(histogram_e_mc_QCD_fakes_Conv_Corrected, fitResults_e_pass, fitResults_e_fail, kPrefit, false, false, true, true, false, false, enable_MC_Closure_sidebands); 
+
+  // Using (DiLeptSS) TT fakes
   TH2* histogram_e_mc_TT_fakes2 = bookHistogram(fs, Form("%s_TT_fakes2", histogramName_e.data()), ptBins_e_array, absEtaBins_e_array);
-  fillHistogram(histogram_e_mc_TT_fakes2, fitResults_e_pass, fitResults_e_fail, kPrefit, false, false, false, false, false, true); // Using (DiLeptSS) TT fakes
+  fillHistogram(histogram_e_mc_TT_fakes2, fitResults_e_pass, fitResults_e_fail, kPrefit, false, false, false, false, false, true, enable_MC_Closure_sidebands); 
 
 
   TAxis* yAxis_e = histogram_e_data_fakes_postfit->GetYaxis();
@@ -969,47 +999,63 @@ int main(int argc, char* argv[])
     TGraphAsymmErrors* graph_mc_TT_fakes = bookGraph(fs, graphName_mc_TT_fakes, ptBins_e_array);
     fillGraph(graph_mc_TT_fakes, histogram_e_mc_TT_fakes, absEta);
 
-    std::string graphName_mc_QCD_fakes = TString(Form("graph_e_absEta%1.2fto%1.2f_mc_QCD_fakes", minAbsEta, maxAbsEta)).ReplaceAll(".", "_").Data();
-    TGraphAsymmErrors* graph_mc_QCD_fakes = bookGraph(fs, graphName_mc_QCD_fakes, ptBins_e_array);
-    fillGraph(graph_mc_QCD_fakes, histogram_e_mc_QCD_fakes, absEta);
-
-    std::string graphName_mc_QCD_fakes_Conv_Corr = TString(Form("graph_e_absEta%1.2fto%1.2f_mc_QCD_fakes_Conv_Corr", minAbsEta, maxAbsEta)).ReplaceAll(".", "_").Data();
-    TGraphAsymmErrors* graph_mc_QCD_fakes_Conv_Corr = bookGraph(fs, graphName_mc_QCD_fakes_Conv_Corr, ptBins_e_array);
-    fillGraph(graph_mc_QCD_fakes_Conv_Corr, histogram_e_mc_QCD_fakes_Conv_Corrected, absEta);
-    
     std::string graphName_mc_TTj_minus_TTg_fakes = TString(Form("graph_e_absEta%1.2fto%1.2f_mc_TTj_minus_TTg_fakes", minAbsEta, maxAbsEta)).ReplaceAll(".", "_").Data();
     TGraphAsymmErrors* graph_mc_TTj_minus_TTg_fakes = bookGraph(fs, graphName_mc_TTj_minus_TTg_fakes, ptBins_e_array);
     fillGraph(graph_mc_TTj_minus_TTg_fakes, histogram_e_mc_TTj_minus_TTg_fakes, absEta);
 
+    // Using Uncorrected QCD MC
+    std::string graphName_mc_QCD_fakes = TString(Form("graph_e_absEta%1.2fto%1.2f_mc_QCD_fakes", minAbsEta, maxAbsEta)).ReplaceAll(".", "_").Data();
+    TGraphAsymmErrors* graph_mc_QCD_fakes = bookGraph(fs, graphName_mc_QCD_fakes, ptBins_e_array);
+    fillGraph(graph_mc_QCD_fakes, histogram_e_mc_QCD_fakes, absEta);
+
+    // Using Conv. Corrected QCD MC
+    std::string graphName_mc_QCD_fakes_Conv_Corr = TString(Form("graph_e_absEta%1.2fto%1.2f_mc_QCD_fakes_Conv_Corr", minAbsEta, maxAbsEta)).ReplaceAll(".", "_").Data();
+    TGraphAsymmErrors* graph_mc_QCD_fakes_Conv_Corr = bookGraph(fs, graphName_mc_QCD_fakes_Conv_Corr, ptBins_e_array);
+    fillGraph(graph_mc_QCD_fakes_Conv_Corr, histogram_e_mc_QCD_fakes_Conv_Corrected, absEta);
+    
+
+    // Using (DiLeptSS) TT fakes
     std::string graphName_mc_TT_fakes2 = TString(Form("graph_e_absEta%1.2fto%1.2f_mc_TT_fakes2", minAbsEta, maxAbsEta)).ReplaceAll(".", "_").Data();
     TGraphAsymmErrors* graph_mc_TT_fakes2 = bookGraph(fs, graphName_mc_TT_fakes2, ptBins_e_array);
-    fillGraph(graph_mc_TT_fakes2, histogram_e_mc_TT_fakes2, absEta); // Using (DiLeptSS) TT fakes
+    fillGraph(graph_mc_TT_fakes2, histogram_e_mc_TT_fakes2, absEta);
 
 
     std::string outputFileName_plot = std::string(outputFileName, 0, outputFileName.find_last_of('.'));
     outputFileName_plot.append(Form("_e_%s.png", getEtaBin(minAbsEta, maxAbsEta).data()));
 
-    //---- DEFAULT LINES
-    //makeControlPlot(graph_data, graph_mc_QCD_fakes, graph_mc_QCD_fakes_Conv_Corr,  graph_mc_TT_fakes, graph_mc_TTj_minus_TTg_fakes, graph_mc_TT_fakes2, ptBins_e_array, minAbsEta, maxAbsEta, true, outputFileName_plot);
-    //makeControlPlot(graph_data, graph_mc_QCD_fakes, graph_mc_QCD_fakes_Conv_Corr,  graph_mc_TT_fakes, graph_mc_TTj_minus_TTg_fakes, graph_mc_TT_fakes2, ptBins_e_array, minAbsEta, maxAbsEta, false, outputFileName_plot);
+    if(enable_MC_Closure_sidebands){
+      //---- PLOTTING CONV. CORREC. QCD/TTBAR AND OLD (DATA-DRIVEN) TTBAR GRAPHS
+      //makeControlPlot(graph_data, graph_mc_QCD_fakes, graph_mc_QCD_fakes_Conv_Corr,  graph_mc_TT_fakes, graph_mc_TTj_minus_TTg_fakes, graph_mc_TT_fakes2, ptBins_e_array, minAbsEta, maxAbsEta, true, outputFileName_plot);
+      //makeControlPlot(graph_data, graph_mc_QCD_fakes, graph_mc_QCD_fakes_Conv_Corr,  graph_mc_TT_fakes, graph_mc_TTj_minus_TTg_fakes, graph_mc_TT_fakes2, ptBins_e_array, minAbsEta, maxAbsEta, false, outputFileName_plot);
 
-    // ---- NOT PLOTTING CONV. CORREC. QCD/TTBAR AND OLD (DATA-DRIVEN) TTBAR
-    makeControlPlot(graph_data, graph_mc_QCD_fakes, 0, 0, 0, graph_mc_TT_fakes2, ptBins_e_array, minAbsEta, maxAbsEta, true, outputFileName_plot);
-    makeControlPlot(graph_data, graph_mc_QCD_fakes, 0, 0, 0, graph_mc_TT_fakes2, ptBins_e_array, minAbsEta, maxAbsEta, false, outputFileName_plot);
+      // ---- OMITTING CONV. CORREC. QCD/TTBAR AND OLD (DATA-DRIVEN) TTBAR GRAPHS
+      makeControlPlot(graph_data, graph_mc_QCD_fakes, 0, 0, 0, graph_mc_TT_fakes2, ptBins_e_array, minAbsEta, maxAbsEta, true, outputFileName_plot);
+      makeControlPlot(graph_data, graph_mc_QCD_fakes, 0, 0, 0, graph_mc_TT_fakes2, ptBins_e_array, minAbsEta, maxAbsEta, false, outputFileName_plot);
+    }else{
+      // ---- OMITTING ALL MC DRIVEN GRAPHS
+      makeControlPlot(graph_data, 0, 0, 0, 0, 0, ptBins_e_array, minAbsEta, maxAbsEta, true, outputFileName_plot);
+      makeControlPlot(graph_data, 0, 0, 0, 0, 0, ptBins_e_array, minAbsEta, maxAbsEta, false, outputFileName_plot);
+    }
 
   }  
 
-
+  // ------- FOR MUONS --------
   TH2* histogram_mu_data_fakes_postfit = bookHistogram(fs, histogramName_mu, ptBins_mu_array, absEtaBins_mu_array);
   fillHistogram(histogram_mu_data_fakes_postfit, fitResults_mu_pass, fitResults_mu_fail, kPostfit);
+
   TH2* histogram_mu_data_fakes_prefit = bookHistogram(fs, Form("%s_prefit", histogramName_mu.data()), ptBins_mu_array, absEtaBins_mu_array);
   fillHistogram(histogram_mu_data_fakes_prefit, fitResults_mu_pass, fitResults_mu_fail, kPrefit);
+
   TH2* histogram_mu_mc_TT_fakes = bookHistogram(fs, Form("%s_TT_fakes_prefit", histogramName_mu.data()), ptBins_mu_array, absEtaBins_mu_array);
-  fillHistogram(histogram_mu_mc_TT_fakes, fitResults_mu_pass, fitResults_mu_fail, kPrefit, false, true, false, false, false, false);
+  fillHistogram(histogram_mu_mc_TT_fakes, fitResults_mu_pass, fitResults_mu_fail, kPrefit, false, true, false, false, false, false, false);
+
+  // Using Uncorrected QCD MC (Since photon conv.s important only for electrons) 
   TH2* histogram_mu_mc_QCD_fakes = bookHistogram(fs, Form("%s_QCD_fakes", histogramName_mu.data()), ptBins_mu_array, absEtaBins_mu_array);
-  fillHistogram(histogram_mu_mc_QCD_fakes, fitResults_mu_pass, fitResults_mu_fail, kPrefit, false, false, true, false, false, false); // Using Uncorrected QCD MC (Since photon conv.s important only for electrons) 
+  fillHistogram(histogram_mu_mc_QCD_fakes, fitResults_mu_pass, fitResults_mu_fail, kPrefit, false, false, true, false, false, false, enable_MC_Closure_sidebands); 
+
+  // Using (DiLeptSS) TT fakes
   TH2* histogram_mu_mc_TT_fakes2 = bookHistogram(fs, Form("%s_TT_fakes2_prefit", histogramName_mu.data()), ptBins_mu_array, absEtaBins_mu_array);
-  fillHistogram(histogram_mu_mc_TT_fakes2, fitResults_mu_pass, fitResults_mu_fail, kPrefit, false, false, false, false, false, true); // Using (DiLeptSS) TT fakes
+  fillHistogram(histogram_mu_mc_TT_fakes2, fitResults_mu_pass, fitResults_mu_fail, kPrefit, false, false, false, false, false, true, enable_MC_Closure_sidebands); 
 
 
   TAxis* yAxis_mu = histogram_mu_data_fakes_postfit->GetYaxis();
@@ -1025,36 +1071,38 @@ int main(int argc, char* argv[])
     TGraphAsymmErrors* graph_mc_TT_fakes = bookGraph(fs, graphName_mc_TT_fakes, ptBins_mu_array);
     fillGraph(graph_mc_TT_fakes, histogram_mu_mc_TT_fakes, absEta);
 
+    // Using Uncorrected QCD MC (Since photon conv.s important only for electrons) 
     std::string graphName_mc_QCD_fakes = TString(Form("graph_mu_absEta%1.2fto%1.2f_mc_QCD_fakes", minAbsEta, maxAbsEta)).ReplaceAll(".", "_").Data();
     TGraphAsymmErrors* graph_mc_QCD_fakes = bookGraph(fs, graphName_mc_QCD_fakes, ptBins_mu_array);
     fillGraph(graph_mc_QCD_fakes, histogram_mu_mc_QCD_fakes, absEta);
 
-
+    // Using (DiLeptSS) TT fakes
     std::string graphName_mc_TT_fakes2 = TString(Form("graph_mu_absEta%1.2fto%1.2f_mc_TT_fakes2", minAbsEta, maxAbsEta)).ReplaceAll(".", "_").Data();
     TGraphAsymmErrors* graph_mc_TT_fakes2 = bookGraph(fs, graphName_mc_TT_fakes2, ptBins_mu_array);
     fillGraph(graph_mc_TT_fakes2, histogram_mu_mc_TT_fakes2, absEta);
 
-
-    TGraphAsymmErrors* graph_mc_QCD_fakes_Conv_Corr = 0;
-    TGraphAsymmErrors* graph_mc_TTj_minus_TTg_fakes = 0;
+    // Conversion corrected graphs not computed  (since not relevant for muons)
+    //TGraphAsymmErrors* graph_mc_QCD_fakes_Conv_Corr = 0; 
+    //TGraphAsymmErrors* graph_mc_TTj_minus_TTg_fakes = 0; 
 
 
     std::string outputFileName_plot = std::string(outputFileName, 0, outputFileName.find_last_of('.'));
     outputFileName_plot.append(Form("_mu_%s.png", getEtaBin(minAbsEta, maxAbsEta).data()));
 
-    //---- DEFAULT LINES
-    //makeControlPlot(graph_data, graph_mc_QCD_fakes, graph_mc_QCD_fakes_Conv_Corr,  graph_mc_TT_fakes, graph_mc_TTj_minus_TTg_fakes, graph_mc_TT_fakes2, ptBins_mu_array, minAbsEta, maxAbsEta, true, outputFileName_plot);
-    //makeControlPlot(graph_data, graph_mc_QCD_fakes, graph_mc_QCD_fakes_Conv_Corr,  graph_mc_TT_fakes, graph_mc_TTj_minus_TTg_fakes, graph_mc_TT_fakes2, ptBins_mu_array, minAbsEta, maxAbsEta, false, outputFileName_plot);
+    if(enable_MC_Closure_sidebands){
+      //---- PLOTTING OLD (DATA-DRIVEN) TTBAR GRAPH
+      //makeControlPlot(graph_data, graph_mc_QCD_fakes, graph_mc_QCD_fakes_Conv_Corr,  graph_mc_TT_fakes, graph_mc_TTj_minus_TTg_fakes, graph_mc_TT_fakes2, ptBins_mu_array, minAbsEta, maxAbsEta, true, outputFileName_plot);
+      //makeControlPlot(graph_data, graph_mc_QCD_fakes, graph_mc_QCD_fakes_Conv_Corr,  graph_mc_TT_fakes, graph_mc_TTj_minus_TTg_fakes, graph_mc_TT_fakes2, ptBins_mu_array, minAbsEta, maxAbsEta, false, outputFileName_plot);
 
-
-    // ---- NOT PLOTTING CONV. CORREC. QCD/TTBAR AND OLD (DATA-DRIVEN) TTBAR
-    makeControlPlot(graph_data, graph_mc_QCD_fakes, 0, 0, 0, graph_mc_TT_fakes2, ptBins_mu_array, minAbsEta, maxAbsEta, true, outputFileName_plot);
-    makeControlPlot(graph_data, graph_mc_QCD_fakes, 0, 0, 0, graph_mc_TT_fakes2, ptBins_mu_array, minAbsEta, maxAbsEta, false, outputFileName_plot);
-
+      // ---- OMITTING OLD (DATA-DRIVEN) TTBAR GRAPH
+      makeControlPlot(graph_data, graph_mc_QCD_fakes, 0, 0, 0, graph_mc_TT_fakes2, ptBins_mu_array, minAbsEta, maxAbsEta, true, outputFileName_plot);
+      makeControlPlot(graph_data, graph_mc_QCD_fakes, 0, 0, 0, graph_mc_TT_fakes2, ptBins_mu_array, minAbsEta, maxAbsEta, false, outputFileName_plot);
+    }else{
+      // ---- OMITTING ALL MC DRIVEN GRAPHS
+      makeControlPlot(graph_data, 0, 0, 0, 0, 0, ptBins_mu_array, minAbsEta, maxAbsEta, true, outputFileName_plot);
+      makeControlPlot(graph_data, 0, 0, 0, 0, 0, ptBins_mu_array, minAbsEta, maxAbsEta, false, outputFileName_plot);
+    }
 
   }
-
-
-
 
 }

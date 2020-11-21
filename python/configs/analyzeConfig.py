@@ -1178,6 +1178,12 @@ class analyzeConfig(object):
           "{}.{:<{len}} = cms.bool({})".format    (process_string, 'redoGenMatching', not self.gen_matching_by_index, len = max_option_len),
           "{}.{:<{len}} = cms.bool({})".format    (process_string, 'isDEBUG',         self.isDebug,                   len = max_option_len),
         ]
+
+        if isLeptonFR:
+          lines.extend([
+            "# Boolean handle for inclusion of MC Closure sidebands (2lss, TT Hadronic)",
+            "{}.{:<{len}} = cms.bool({})".format(process_string, 'enable_MC_Closure_sidebands', self.enable_MC_Closure_sidebands, len = max_option_len),
+          ])
         if (not isHTT and not self.do_sync) or self.do_sync:
           lines.extend([
             "{}.{:<{len}} = EvtYieldHistManager_{}".format  (process_string, 'cfgEvtYieldHistManager', self.era, len = max_option_len),
