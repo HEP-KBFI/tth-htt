@@ -1024,11 +1024,15 @@ InitializeInputVarMap(const std::map<std::string, double> & AllVars_Map,
   }else{
     for(unsigned int i = 0; i < BDTInputVariables.size(); i++){
       const std::string & BDTInputVariable = BDTInputVariables[i];
-      std::map<std::string, double>::const_iterator BDTInput = AllVars_Map.find(BDTInputVariable);
+      if(BDTInputVariable == "gen_mHH"){ 
+	BDTInputs["gen_mHH"] = 0; 
+      }else{
+        std::map<std::string, double>::const_iterator BDTInput = AllVars_Map.find(BDTInputVariable);
         if ( BDTInput == AllVars_Map.end() )
           throw cmsException(__func__, __LINE__) << "Input variable = " << BDTInputVariable << " not in map given as function argument !!\n";
-      //std::cout<<"Filling Map for Input Var.: " << BDTInputVariable << " with value " << BDTInput->second; << std::endl;
-      BDTInputs[BDTInputVariable] = BDTInput->second;
+        //std::cout<<"Filling Map for Input Var.: " << BDTInputVariable << " with value " << BDTInput->second; << std::endl;
+        BDTInputs[BDTInputVariable] = BDTInput->second;
+      }
     }
   }
   return BDTInputs;

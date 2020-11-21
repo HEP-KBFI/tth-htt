@@ -10,10 +10,9 @@ MVAInputVarTransformer::MVAInputVarTransformer(const std::vector<std::string> & 
   , fitFunctionFileName_(fitFunctionFileName)  
 {
   TFile * fitFuncFile = TFile::Open(fitFunctionFileName_.c_str(), "read");
-
   if(! fitFuncFile){
     throw cmsException(this, __func__, __LINE__)
-      << "Invalid file name / file does not exist: " << fitFunctionFileName_ << '\n'
+      << "Failed to open input file '" << fitFunctionFileName_ << "' !!\n"
     ;
   }
 
@@ -25,6 +24,11 @@ MVAInputVarTransformer::MVAInputVarTransformer(const std::vector<std::string> & 
     {
       const std::string fitFuncName = "fitFunction_" + var_name;
       TF1 * fitFunc = static_cast<TF1 *>(fitFuncFile->Get(fitFuncName.c_str()));
+      if (! fitFunc){
+        throw cmsException(this, __func__, __LINE__)
+          << "Failed to find fit function = '" << fitFuncName << "' in input file = '" << fitFunctionFileName_ << "' !!\n"
+        ;
+      }
       TF1 * fitFunc_copy = static_cast<TF1 * >(fitFunc->Clone());
       fitFuncMap_.insert(std::make_pair(var_name, fitFunc_copy));
     }
