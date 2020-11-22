@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2020-11-16 12:05:53 with the following command:
+# file generated at 2020-04-01 16:27:51 with the following command:
 # find_samples.py -V -i ../NanoAOD/test/datasets/txt/datasets_mc_2018_RunIIAutumn18MiniAOD.txt -m python/samples/metaDict_2018_mc.py -s ../NanoAOD/test/datasets/txt/sum_datasets_2018_RunIIAutumn18MiniAOD.txt -c python/samples/sampleLocations_2018_nanoAOD.txt
 
 meta_dictionary = OD()
@@ -92,7 +92,7 @@ meta_dictionary["/THW_ctcvcp_5f_Hincl_13TeV_madgraph_pythia8/RunIIAutumn18MiniAO
 ])
 
 meta_dictionary["/GluGluHToTauTau_M125_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/MINIAODSIM"] =  OD([
-  ("crab_string",           "2018_2020Oct20_GluGluHToTauTau_M125_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2"),
+  ("crab_string",           "2018_2019Sep29_GluGluHToTauTau_M125_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2"),
   ("sample_category",       "ggH"),
   ("process_name_specific", "GluGluHToTauTau"),
   ("nof_db_events",         12575000),
@@ -105,7 +105,7 @@ meta_dictionary["/GluGluHToTauTau_M125_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD
 ])
 
 meta_dictionary["/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/MINIAODSIM"] =  OD([
-  ("crab_string",           "2018_2020Oct20_GluGluHToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2"),
+  ("crab_string",           "2018_2019Sep29_GluGluHToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2"),
   ("sample_category",       "ggH"),
   ("process_name_specific", "GluGluHToZZTo4L"),
   ("nof_db_events",         958000),
@@ -118,7 +118,7 @@ meta_dictionary["/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8/RunIIAu
 ])
 
 meta_dictionary["/GluGluHToZZTo2L2Q_M125_13TeV_powheg2_JHUGenV7011_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           "2018_2020Oct20_GluGluHToZZTo2L2Q_M125_13TeV_powheg2_JHUGenV7011_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1"),
+  ("crab_string",           "2018_2019Nov24_GluGluHToZZTo2L2Q_M125_13TeV_powheg2_JHUGenV7011_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1"),
   ("sample_category",       "ggH"),
   ("process_name_specific", "GluGluHToZZTo2L2Q_M125"),
   ("nof_db_events",         984000),
@@ -131,7 +131,7 @@ meta_dictionary["/GluGluHToZZTo2L2Q_M125_13TeV_powheg2_JHUGenV7011_pythia8/RunII
 ])
 
 meta_dictionary["/GluGluHToWWToLNuQQ_M125_13TeV_powheg2_JHUGenV714_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           "2018_2020Oct20_GluGluHToWWToLNuQQ_M125_13TeV_powheg2_JHUGenV714_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1"),
+  ("crab_string",           "2018_2019Sep29_GluGluHToWWToLNuQQ_M125_13TeV_powheg2_JHUGenV714_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1"),
   ("sample_category",       "ggH"),
   ("process_name_specific", "GluGluHToWWToLNuQQ_M125"),
   ("nof_db_events",         1000000),
@@ -144,7 +144,7 @@ meta_dictionary["/GluGluHToWWToLNuQQ_M125_13TeV_powheg2_JHUGenV714_pythia8/RunII
 ])
 
 meta_dictionary["/GluGluHToWWTo2L2Nu_M125_13TeV_powheg2_JHUGenV714_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           "2018_2020Oct20_GluGluHToWWTo2L2Nu_M125_13TeV_powheg2_JHUGenV714_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1"),
+  ("crab_string",           "2018_2019Oct22_GluGluHToWWTo2L2Nu_M125_13TeV_powheg2_JHUGenV714_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1"),
   ("sample_category",       "ggH"),
   ("process_name_specific", "GluGluHToWWTo2L2Nu_M125"),
   ("nof_db_events",         1000000),
@@ -157,7 +157,7 @@ meta_dictionary["/GluGluHToWWTo2L2Nu_M125_13TeV_powheg2_JHUGenV714_pythia8/RunII
 ])
 
 meta_dictionary["/GluGluHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/MINIAODSIM"] =  OD([
-  ("crab_string",           "2018_2020Oct20_GluGluHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2"),
+  ("crab_string",           "2018_2019Sep29_GluGluHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2"),
   ("sample_category",       "ggH"),
   ("process_name_specific", "GluGluHToMuMu_M125"),
   ("nof_db_events",         476000),
@@ -170,7 +170,7 @@ meta_dictionary["/GluGluHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8/Run
 ])
 
 meta_dictionary["/GluGluHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           "2018_2020Oct20_GluGluHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1"),
+  ("crab_string",           "2018_2019Oct22_GluGluHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1"),
   ("sample_category",       "ggH"),
   ("process_name_specific", "GluGluHToMuMu_M125_ext1"),
   ("nof_db_events",         1444000),
@@ -179,11 +179,11 @@ meta_dictionary["/GluGluHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8/Run
   ("xsection",              0.010571),
   ("use_it",                True),
   ("genWeight",             True),
-  ("comment",               "100.0%; status: VALID; size: 63.45GB; nevents: 1.44M; release: 10_2_5; last modified: 2019-02-21 22:45:25"),
+  ("comment",               "93.33%; status: VALID; size: 63.45GB; nevents: 1.44M; release: 10_2_5; last modified: 2019-02-21 22:45:25"),
 ])
 
 meta_dictionary["/GluGluHToBB_M125_13TeV_amcatnloFXFX_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           "2018_2020Oct20_GluGluHToBB_M125_13TeV_amcatnloFXFX_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1"),
+  ("crab_string",           "2018_2019Sep29_GluGluHToBB_M125_13TeV_amcatnloFXFX_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1"),
   ("sample_category",       "ggH"),
   ("process_name_specific", "GluGluHToBB_M125"),
   ("nof_db_events",         15034579),
@@ -196,7 +196,7 @@ meta_dictionary["/GluGluHToBB_M125_13TeV_amcatnloFXFX_pythia8/RunIIAutumn18MiniA
 ])
 
 meta_dictionary["/GluGluHToGG_M125_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           "2018_2020Oct20_GluGluHToGG_M125_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1"),
+  ("crab_string",           "2018_2019Sep29_GluGluHToGG_M125_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1"),
   ("sample_category",       "ggH"),
   ("process_name_specific", "GluGluHToGG_M125"),
   ("nof_db_events",         1927927),
@@ -209,7 +209,7 @@ meta_dictionary["/GluGluHToGG_M125_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutum
 ])
 
 meta_dictionary["/VBFHToTauTau_M125_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           "2018_2020Oct20_VBFHToTauTau_M125_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1"),
+  ("crab_string",           "2018_2019Sep29_VBFHToTauTau_M125_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1"),
   ("sample_category",       "qqH"),
   ("process_name_specific", "VBFHToTauTau_ext1"),
   ("nof_db_events",         3000000),
@@ -222,7 +222,7 @@ meta_dictionary["/VBFHToTauTau_M125_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-10
 ])
 
 meta_dictionary["/VBF_HToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/MINIAODSIM"] =  OD([
-  ("crab_string",           "2018_2020Oct20_VBF_HToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2"),
+  ("crab_string",           "2018_2019Oct25_VBF_HToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2"),
   ("sample_category",       "qqH"),
   ("process_name_specific", "VBF_HToZZTo4L"),
   ("nof_db_events",         500000),
@@ -235,7 +235,7 @@ meta_dictionary["/VBF_HToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8/RunIIAutu
 ])
 
 meta_dictionary["/VBFHToWWToLNuQQ_M125_13TeV_powheg_JHUGen_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           "2018_2020Oct20_VBFHToWWToLNuQQ_M125_13TeV_powheg_JHUGen_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1"),
+  ("crab_string",           "2018_2019Nov24_VBFHToWWToLNuQQ_M125_13TeV_powheg_JHUGen_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1"),
   ("sample_category",       "qqH"),
   ("process_name_specific", "VBFHToWWToLNuQQ_M125"),
   ("nof_db_events",         1000000),
@@ -248,7 +248,7 @@ meta_dictionary["/VBFHToWWToLNuQQ_M125_13TeV_powheg_JHUGen_pythia8/RunIIAutumn18
 ])
 
 meta_dictionary["/VBFHToWWTo2L2Nu_M125_13TeV_powheg2_JHUGenV714_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           "2018_2020Oct20_VBFHToWWTo2L2Nu_M125_13TeV_powheg2_JHUGenV714_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1"),
+  ("crab_string",           "2018_2019Sep29_VBFHToWWTo2L2Nu_M125_13TeV_powheg2_JHUGenV714_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1"),
   ("sample_category",       "qqH"),
   ("process_name_specific", "VBFHToWWTo2L2Nu_M125"),
   ("nof_db_events",         1000000),
@@ -261,7 +261,7 @@ meta_dictionary["/VBFHToWWTo2L2Nu_M125_13TeV_powheg2_JHUGenV714_pythia8/RunIIAut
 ])
 
 meta_dictionary["/VBFHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           "2018_2020Oct20_VBFHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1"),
+  ("crab_string",           "2018_2019Sep29_VBFHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1"),
   ("sample_category",       "qqH"),
   ("process_name_specific", "VBFHToMuMu_M125"),
   ("nof_db_events",         1000000),
@@ -274,7 +274,7 @@ meta_dictionary["/VBFHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8/RunIIA
 ])
 
 meta_dictionary["/VBFHToBB_M-125_13TeV_powheg_pythia8_weightfix/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           "2018_2020Oct20_VBFHToBB_M-125_13TeV_powheg_pythia8_weightfix__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1"),
+  ("crab_string",           "2018_2019Sep29_VBFHToBB_M-125_13TeV_powheg_pythia8_weightfix__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1"),
   ("sample_category",       "qqH"),
   ("process_name_specific", "VBFHToBB_M125"),
   ("nof_db_events",         7587200),
@@ -287,7 +287,7 @@ meta_dictionary["/VBFHToBB_M-125_13TeV_powheg_pythia8_weightfix/RunIIAutumn18Min
 ])
 
 meta_dictionary["/VBFHToGG_M125_13TeV_amcatnlo_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           "2018_2020Oct20_VBFHToGG_M125_13TeV_amcatnlo_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1"),
+  ("crab_string",           "2018_2019Oct25_VBFHToGG_M125_13TeV_amcatnlo_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1"),
   ("sample_category",       "qqH"),
   ("process_name_specific", "VBFHToGG_M125"),
   ("nof_db_events",         1918000),
@@ -833,7 +833,7 @@ meta_dictionary["/TTZZ_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18MiniAOD-102X_
 ])
 
 meta_dictionary["/VHToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/MINIAODSIM"] =  OD([
-  ("crab_string",           "2018_2020Oct20_VHToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2"),
+  ("crab_string",           "2018_2019Nov24_VHToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2"),
   ("sample_category",       "VH"),
   ("process_name_specific", "VHToNonbb_M125"),
   ("nof_db_events",         1102578),
@@ -846,7 +846,7 @@ meta_dictionary["/VHToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8/RunIIAutumn1
 ])
 
 meta_dictionary["/ZH_HToBB_ZToLL_M125_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/MINIAODSIM"] =  OD([
-  ("crab_string",           "2018_2020Oct20_ZH_HToBB_ZToLL_M125_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2"),
+  ("crab_string",           "2018_2019Sep29_ZH_HToBB_ZToLL_M125_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2"),
   ("sample_category",       "VH"),
   ("process_name_specific", "ZH_HToBB_ZToLL"),
   ("nof_db_events",         4814600),
@@ -859,7 +859,7 @@ meta_dictionary["/ZH_HToBB_ZToLL_M125_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-
 ])
 
 meta_dictionary["/ZH_HToBB_ZToLL_M125_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1/MINIAODSIM"] =  OD([
-  ("crab_string",           "2018_2020Oct20_ZH_HToBB_ZToLL_M125_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1"),
+  ("crab_string",           "2018_2019Oct25_ZH_HToBB_ZToLL_M125_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1"),
   ("sample_category",       "VH"),
   ("process_name_specific", "ZH_HToBB_ZToLL_ext1"),
   ("nof_db_events",         2222100),
@@ -872,7 +872,7 @@ meta_dictionary["/ZH_HToBB_ZToLL_M125_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-
 ])
 
 meta_dictionary["/ZHToTauTau_M125_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/MINIAODSIM"] =  OD([
-  ("crab_string",           "2018_2020Oct20_ZHToTauTau_M125_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2"),
+  ("crab_string",           "2018_2019Sep29_ZHToTauTau_M125_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2"),
   ("sample_category",       "VH"),
   ("process_name_specific", "ZHToTauTau"),
   ("nof_db_events",         4761815),
