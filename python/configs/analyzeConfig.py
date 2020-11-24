@@ -1517,7 +1517,11 @@ class analyzeConfig(object):
              histogramToFit: name of the histogram used for signal extraction
         """
         assert(self.prep_dcard_processesToCopy)
-        category_output = self.channel
+        category_output = None
+        if 'category' in jobOptions.keys() and jobOptions['category']:
+          category_output = jobOptions['category']
+        else:
+          category_output = self.channel
         central_or_shifts_modified = self.central_or_shifts
         if len(self.central_or_shifts) > 1 and "hh_bbWW" in category_output:
           central_or_shift_remove = systematics.ttbar
@@ -1535,7 +1539,9 @@ class analyzeConfig(object):
         lines.append("process.prepareDatacards.makeSubDir = cms.bool(False)")
         lines.append("process.prepareDatacards.categories = cms.VPSet(")
         lines.append("    cms.PSet(")
-        if "BDTOutput" in histogramToFit or "MVAOutput" in histogramToFit:
+        if "/" in jobOptions['histogramDir']:
+          lines.append("        input = cms.string('%s')," % jobOptions['histogramDir'])
+        elif "BDTOutput" in histogramToFit or "MVAOutput" in histogramToFit:
           lines.append("        input = cms.string('%s/sel/datacard')," % jobOptions['histogramDir'])
         else:
           lines.append("        input = cms.string('%s/sel/evt')," % jobOptions['histogramDir'])
