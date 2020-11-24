@@ -631,7 +631,7 @@ class analyzeConfig(object):
             os.environ['CMSSW_BASE'], "src/tthAnalysis/HiggsToTauTau/data/btagSFRatio_{}.root".format(self.era)
           )
         else:
-          self.btagSFRatioFile = "/hdfs/local/karl/btagSFratios_final/2020Nov14/btagSF_{era}_fullSys.root".format(
+          self.btagSFRatioFile = "/hdfs/local/karl/btagSFratios_final/2020Nov24/btagSF_{era}_fullSys.root".format(
             era = self.era,
           )
 
