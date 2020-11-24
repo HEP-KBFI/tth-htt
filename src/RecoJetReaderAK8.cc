@@ -116,13 +116,16 @@ RecoJetReaderAK8::setBranchNames()
       if(isValidFatJetAttribute(idxShift, msoftdrop_str_))
       {
         branchNames_msoftdrop_systematics_[idxShift] = getBranchName_fatJet(branchName_obj_, msoftdrop_str_, idxShift);
+        //-------------------------------------------------------------------------------------------------------------------------------------
+        // CV: temporary work-around until this bug gets fixed with a new nanoAODTools post-production
+        //       https://github.com/HEP-KBFI/nanoAOD-tools/commit/09820f595db490e642b5b636144c75ab32f9dc4c
+        if(idxShift > kFatJet_central_nonNominal)
+        {
+          branchNames_msoftdrop_systematics_[idxShift] = branchNames_msoftdrop_systematics_[kFatJet_central_nonNominal];
+        }
+        //-------------------------------------------------------------------------------------------------------------------------------------
       }
     }
-    //-------------------------------------------------------------------------------------------------------------------------------------
-    // CV: temporary work-around until this bug gets fixed with a new nanoAODTools post-production
-    //       https://github.com/HEP-KBFI/nanoAOD-tools/commit/09820f595db490e642b5b636144c75ab32f9dc4c
-    branchNames_msoftdrop_systematics_[kFatJet_central] = branchNames_msoftdrop_systematics_[kFatJet_central_nonNominal];
-    //-------------------------------------------------------------------------------------------------------------------------------------
     branchName_eta_ = Form("%s_%s", branchName_obj_.data(), "eta");
     branchName_phi_ = Form("%s_%s", branchName_obj_.data(), "phi");
     branchName_subJetIdx1_ = Form("%s_%s", branchName_obj_.data(), "subJetIdx1");
