@@ -155,7 +155,7 @@ class prodNtupleConfig:
 
         self.cvmfs_error_log = {}
         self.executable = "produceNtuple.sh"
-        self.htxsPath = '/hdfs/local/karl/htxs/{}'.format(self.era)
+        self.htxsPath = '/scratch-persistent/karl/htxs/{}'.format(self.era)
         assert(os.path.isdir(self.htxsPath))
 
     def createCfg_prodNtuple(self, jobOptions):
