@@ -26,7 +26,7 @@ RecoJetReaderAK8::RecoJetReaderAK8(Era era,
   , subjetReader_(nullptr)
   , sysOption_central_(isMC_ ? kFatJet_central : kFatJet_central_nonNominal)
   , sysOption_(sysOption_central_)
-  , readSys_(false)
+  , readSys_(true) // TODO: change back to false [*]
   , pt_str_("pt")
   , mass_str_("mass")
   , msoftdrop_str_("msoftdrop")
