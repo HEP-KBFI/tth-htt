@@ -1001,8 +1001,6 @@ class analyzeConfig(object):
         if 'skipEvery' in sample_info:
             assert('skipEvery' not in jobOptions)
             jobOptions['skipEvery'] = sample_info['skipEvery']
-        if 'useObjectMultiplicity' not in jobOptions:
-            jobOptions['useObjectMultiplicity'] = False
         if 'useAssocJetBtag' not in jobOptions:
             jobOptions['useAssocJetBtag'] = False
         if 'leptonFakeRateWeight.applyNonClosureCorrection' not in jobOptions and '0l' not in self.channel:
@@ -1027,8 +1025,10 @@ class analyzeConfig(object):
         if 'lep_mva_cut_mu_forLepton3' not in jobOptions and "default" not in self.lep_mva_cut_mu_forLepton3:
             jobOptions['lep_mva_cut_mu_forLepton3'] = float(self.lep_mva_cut_mu_forLepton3)            
         if 'lep_mva_cut_e_forLepton3' not in jobOptions and "default" not in self.lep_mva_cut_e_forLepton3:
-            jobOptions['lep_mva_cut_e_forLepton3'] = float(self.lep_mva_cut_e_forLepton3)            
-
+            jobOptions['lep_mva_cut_e_forLepton3'] = float(self.lep_mva_cut_e_forLepton3)
+        # We employ different types of lepton selection criteria, and we don't clean the had taus in post-production,
+        # which means that the object mulitplicities determined in post-production cannot be used when running the analysis
+        jobOptions['useObjectMultiplicity'] = False
 
 
         btagSFRatio_args = {}
