@@ -192,6 +192,7 @@ class sbatchManager:
         queue_environ = os.environ.get('SBATCH_PRIORITY')
         verbose_environ = os.environ.get('SBATCH_VERBOSE')
         sbatch_exclude = os.environ.get('SBATCH_EXCLUDE')
+        sbatch_memory = os.environ.get('SBATCH_MEMORY')
         self.queue             = queue_environ if queue_environ else "main"
         self.poll_interval     = 30
         self.queuedJobs        = []
@@ -205,7 +206,7 @@ class sbatchManager:
         self.sbatchArgs        = ''
         self.datetime          = datetime.datetime.now().strftime('%m/%d/%y-%H:%M:%S')
         self.dry_run           = dry_run
-        self.max_mem           = ''
+        self.max_mem           = sbatch_memory if sbatch_memory else ''
         self.use_home          = use_home
         self.max_resubmissions = max_resubmissions
         self.min_file_size     = min_file_size
