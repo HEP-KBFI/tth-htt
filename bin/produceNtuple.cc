@@ -292,7 +292,7 @@ main(int argc,
   hadTauReader->setHadTauPt_central_or_shift(kHadTauPt_uncorrected);
   inputTree -> registerReader(hadTauReader);
   const RecoHadTauCollectionGenMatcher hadTauGenMatcher;
-  const RecoHadTauCollectionCleaner hadTauCleaner(0.3, isDEBUG);
+  //const RecoHadTauCollectionCleaner hadTauCleaner(0.3, isDEBUG);
   RecoHadTauCollectionSelectorLoose looseHadTauSelector(era, -1, isDEBUG);
   looseHadTauSelector.set(hadTauSelection_tauIDwp);
   // CV: lower thresholds on hadronic taus by 2 GeV 
@@ -738,7 +738,10 @@ main(int argc,
     // always used cleaned electron collection in the cleaning of had tau collection to maintain consistency with the analysis
     const std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     const std::vector<const RecoHadTau *> hadTau_ptrs = convert_to_ptrs(hadTaus);
-    const std::vector<const RecoHadTau *> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, preselMuons, preselElectrons);
+    //const std::vector<const RecoHadTau *> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, preselMuons, preselElectrons);
+    // do not clean the taus because we might use a different lepton collection (other than loose) to clean them
+    // see: https://github.com/HEP-KBFI/tth-htt/issues/165
+    const std::vector<const RecoHadTau *> cleanedHadTaus = hadTau_ptrs;
     const std::vector<const RecoHadTau *> looseHadTaus = looseHadTauSelector(cleanedHadTaus, isHigherPt);
     const std::vector<const RecoHadTau *> & selHadTaus = looseHadTaus;
 
