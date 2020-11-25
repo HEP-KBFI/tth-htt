@@ -188,7 +188,7 @@ int main(int argc, char* argv[])
                 throw cmsException(__func__, __LINE__)
                   << "Attempting to add the same histogram twice: " << histogram_input->GetName() << " from " << process_input;
               }
-              histograms_input.push_back(histogram_input);//}
+              histograms_input.push_back(histogram_input);
             }
 
             std::string subdirName_output = Form(
