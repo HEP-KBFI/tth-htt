@@ -849,8 +849,13 @@ CreateMVAOutputMap(const std::vector<double> & MVA_params,
       if ( MVA_params[i] == 0 )
       {
         // SM
-	MVAInputs["SM"] = 1;  
-	key = "SM";
+	if (MVAInputs.find("SM")!=MVAInputs.end()){
+	  MVAInputs["SM"] = 1;  
+	  key = "SM";
+	}
+	else{
+	  key= "Base";
+	}
       }
       else
       {
