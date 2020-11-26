@@ -819,7 +819,7 @@ class analyzeConfig(object):
                       continue
                     nof_events_label_htxs = '{}_{}'.format(nof_events_label, htxs_bin)
                     assert(nof_events_label_htxs in sample_info["nof_events"])
-                    central_or_shift_htxs = '{}_{}'.format(central_or_shift, htxs_bin)
+                    central_or_shift_htxs = '{}|{}'.format(central_or_shift, htxs_bin)
                     nof_events[central_or_shift_htxs] = sample_info["nof_events"][nof_events_label_htxs][nof_events_idx]
                     assert(nof_events[central_or_shift_htxs])
                 stitch_histogram_names[central_or_shift] = '{}_{}'.format(nof_events_label, nof_events_idx)
@@ -860,11 +860,11 @@ class analyzeConfig(object):
           if is_mc and self.use_lumi:
             jobOptions['lumiScale'] = []
             for central_or_shift_tmp in nof_events:
-              central_or_shift_split = central_or_shift_tmp.split('_')
-              is_htxs = len(central_or_shift_split) > 1 and central_or_shift_split[-1] in HTXS_BINS[sample_info["sample_category"]]
+              central_or_shift_split = central_or_shift_tmp.split('|')
+              is_htxs = len(central_or_shift_split) == 2 and central_or_shift_split[1] in HTXS_BINS[sample_info["sample_category"]]
               lumi_figure = self.lumi / nof_events[central_or_shift_tmp]
               if is_htxs:
-                central_or_shift = '_'.join(central_or_shift_split[:-1])
+                central_or_shift = central_or_shift_split[0]
               else:
                 central_or_shift = central_or_shift_tmp
                 lumi_figure *= sample_info["xsection"]
@@ -873,7 +873,7 @@ class analyzeConfig(object):
                   lumi             = cms.double(lumi_figure),
                 )
               if is_htxs:
-                lumiScale_object.bin = cms.string(central_or_shift_split[-1])
+                lumiScale_object.bin = cms.string(central_or_shift_split[1])
               jobOptions['lumiScale'].append(lumiScale_object)
           if use_th_weights:
             tH_weights = []
