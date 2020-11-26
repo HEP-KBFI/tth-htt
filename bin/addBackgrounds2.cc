@@ -145,7 +145,7 @@ namespace
     std::vector<const TDirectory*> subdirs = getSubdirectories(dir);
     for ( std::vector<const TDirectory*>::iterator subdir = subdirs.begin();
           subdir != subdirs.end(); ++subdir ) {
-      processSubdirectory_recursively(fs, *subdir, dirName + "/" + (*subdir)->GetName(), processes_input, process_output, central_or_shifts);
+      processSubdirectory_recursively(fs, *subdir, dirName + "/" + (*subdir)->GetName(), processes_input, process_output, central_or_shifts, isDEBUG);
     }
     for ( const TDirectory* subdir: subdirs )
     {
@@ -201,7 +201,8 @@ int main(int argc, char* argv[])
     central_or_shifts.push_back(""); // CV: add central value
   }
 
-  bool isDEBUG = cfg_addBackgrounds.getParameter<bool>("isDEBUG");
+  bool isDEBUG = cfg_addBackgrounds.exists("isDEBUG") ? cfg_addBackgrounds.getParameter<bool>("isDEBUG") : false;
+  //bool isDEBUG = cfg_addBackgrounds.getParameter<bool>("isDEBUG");
 
   fwlite::InputSource inputFiles(cfg);
   if ( !(inputFiles.files().size() == 1) )
@@ -215,10 +216,10 @@ int main(int argc, char* argv[])
 
   for ( const std::string & category: categories )
   {
+    std::cout << "processing category = " << category << std::endl;
+
     TDirectory* dir = getDirectory(inputFile, category, true);
     assert(dir);
-
-    std::cout << "processing category = " << category << std::endl;
 
     processSubdirectory_recursively(fs, dir, category, processes_input, process_output, central_or_shifts, isDEBUG);
   }

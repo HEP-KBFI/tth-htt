@@ -49,10 +49,13 @@ typedef std::vector<std::string> vstring;
 
 namespace
 {
-  void processSubdirectory_recursively(TFileDirectory& fs, const TDirectory* dir_input, const std::string& dirName)
+  void processSubdirectory_recursively(TFileDirectory& fs, const TDirectory* dir_input, const std::string& dirName, bool isDEBUG = false)
   {
-    std::cout << "<processSubdirectory_recursively>:" << std::endl;
-    std::cout << " processing input directory = " << dirName << std::endl;
+    if ( isDEBUG )
+    {
+      std::cout << "<processSubdirectory_recursively>:" << std::endl;
+      std::cout << " processing input directory = " << dirName << std::endl;
+    }
           
     TDirectory* dir_output = createSubdirectory_recursively(fs, dirName);
     dir_output->cd();
@@ -74,12 +77,12 @@ namespace
     std::vector<const TDirectory*> subdirs_input = getSubdirectories(dir_input);
     for ( std::vector<const TDirectory*>::iterator subdir_input = subdirs_input.begin();
           subdir_input != subdirs_input.end(); ++subdir_input ) {
-      processSubdirectory_recursively(fs, *subdir_input, dirName + "/" + (*subdir_input)->GetName());
+      processSubdirectory_recursively(fs, *subdir_input, dirName + "/" + (*subdir_input)->GetName(), isDEBUG);
     }
     for(const TDirectory* subdir_input: subdirs_input)
     {
       delete subdir_input;
-      subdir_input = 0;
+      subdir_input = nullptr;
     }
   }
 }
@@ -118,13 +121,16 @@ int main(int argc, char* argv[])
   
   edm::ParameterSet cfg = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("process");
 
-  edm::ParameterSet cfgCopyHistograms = cfg.getParameter<edm::ParameterSet>("copyHistograms");
+  edm::ParameterSet cfg_copyHistograms = cfg.getParameter<edm::ParameterSet>("copyHistograms");
 
-  vstring categories = cfgCopyHistograms.getParameter<vstring>("categories");
+  vstring categories = cfg_copyHistograms.getParameter<vstring>("categories");
   if ( !(categories.size() >= 1) )
     throw cms::Exception("copyHistograms_recursively") 
       << "Configuration parameter 'categories' must not be empty !!\n";
   
+  bool isDEBUG = cfg_copyHistograms.exists("isDEBUG") ? cfg_copyHistograms.getParameter<bool>("isDEBUG") : false;
+  //bool isDEBUG = cfg_copyHistograms.getParameter<bool>("isDEBUG");
+
   fwlite::InputSource inputFiles(cfg); 
   if ( !(inputFiles.files().size() == 1) )
     throw cms::Exception("copyHistograms_recursively") 
@@ -139,15 +145,14 @@ int main(int argc, char* argv[])
   fwlite::OutputFiles outputFile(cfg);
   fwlite::TFileService fs = fwlite::TFileService(outputFile.file().data());
 
-  for ( vstring::const_iterator category = categories.begin();
-        category != categories.end(); ++category ) {
-    
-    TDirectory* dir = getDirectory(inputFile, *category, true);
+  for ( const std::string & category: categories )
+  {
+    std::cout << "processing category = " << category << std::endl;
+
+    TDirectory* dir = getDirectory(inputFile, category, true);
     assert(dir);
 
-    std::cout << "processing category = " << (*category) << std::endl;
-
-    processSubdirectory_recursively(fs, dir, *category);
+    processSubdirectory_recursively(fs, dir, category, isDEBUG);
   }
 
   //---------------------------------------------------------------------------------------------------
