@@ -167,49 +167,50 @@ class systematics(object):
 
       full = ISR_().full + FSR_().full + env_().full
     
-    class DY(object):
-
-      class ISR_(object):
-        up   = "CMS_ttHl_PS_DY_ISRUp"
-        down = "CMS_ttHl_PS_DY_ISRDown"
-        full = [ up, down ]
-
-      class FSR_(object):
-        up   = "CMS_ttHl_PS_DY_FSRUp"
-        down = "CMS_ttHl_PS_DY_FSRDown"
-        full = [ up, down ]
-
-      class env_(object):
-        up   = "CMS_ttHl_PS_DYUp"
-        down = "CMS_ttHl_PS_DYDown"
-        full = [ up, down ]
-
-      full = ISR_().full + FSR_().full + env_().full
-    
-    class WJets(object):
-
-      class ISR_(object):
-        up   = "CMS_ttHl_PS_W_ISRUp"
-        down = "CMS_ttHl_PS_W_ISRDown"
-        full = [ up, down ]
-
-      class FSR_(object):
-        up   = "CMS_ttHl_PS_W_FSRUp"
-        down = "CMS_ttHl_PS_W_FSRDown"
-        full = [ up, down ]
-
-      class env_(object):
-        up   = "CMS_ttHl_PS_WUp"
-        down = "CMS_ttHl_PS_WDown"
-        full = [ up, down ]
-
-      full = ISR_().full + FSR_().full + env_().full
+##    class DY(object):
+##
+##      class ISR_(object):
+##        up   = "CMS_ttHl_PS_DY_ISRUp"
+##        down = "CMS_ttHl_PS_DY_ISRDown"
+##        full = [ up, down ]
+##
+##      class FSR_(object):
+##        up   = "CMS_ttHl_PS_DY_FSRUp"
+##        down = "CMS_ttHl_PS_DY_FSRDown"
+##        full = [ up, down ]
+##
+##      class env_(object):
+##        up   = "CMS_ttHl_PS_DYUp"
+##        down = "CMS_ttHl_PS_DYDown"
+##        full = [ up, down ]
+##
+##      full = ISR_().full + FSR_().full + env_().full
+##    
+##    class WJets(object):
+##
+##      class ISR_(object):
+##        up   = "CMS_ttHl_PS_W_ISRUp"
+##        down = "CMS_ttHl_PS_W_ISRDown"
+##        full = [ up, down ]
+##
+##      class FSR_(object):
+##        up   = "CMS_ttHl_PS_W_FSRUp"
+##        down = "CMS_ttHl_PS_W_FSRDown"
+##        full = [ up, down ]
+##
+##      class env_(object):
+##        up   = "CMS_ttHl_PS_WUp"
+##        down = "CMS_ttHl_PS_WDown"
+##        full = [ up, down ]
+##
+##      full = ISR_().full + FSR_().full + env_().full
 
     ttbar = TT().full
-    dy    = DY().full
-    wjets = WJets().full
+##    dy    = DY().full
+##    wjets = WJets().full
 
-    procs = [ TT, DY, WJets ]
+##    procs = [ TT, DY, WJets ]
+    procs = [ TT ]
 
     isr_up   = [ proc.ISR_().up   for proc in procs ]
     isr_down = [ proc.ISR_().down for proc in procs ]
@@ -218,7 +219,8 @@ class systematics(object):
     env_up   = [ proc.env_().up   for proc in procs ]
     env_down = [ proc.env_().down for proc in procs ]
 
-    full = ttbar + dy + wjets
+##    full = ttbar + dy + wjets
+    full = ttbar
 
   class LHE(object):
 
