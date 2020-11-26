@@ -3,7 +3,7 @@ from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg
 from tthAnalysis.HiggsToTauTau.analysisTools import createMakefile as tools_createMakefile, get_tH_weight_str, get_tH_SM_str
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch as tools_createScript_sbatch
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch_hadd_nonBlocking as tools_createScript_sbatch_hadd_nonBlocking
-from tthAnalysis.HiggsToTauTau.analysisSettings import Triggers, systematics, HTXS_BINS
+from tthAnalysis.HiggsToTauTau.analysisSettings import Triggers, systematics, HTXS_BINS, HTXS_BINS_WH, HTXS_BINS_ZH
 from tthAnalysis.HiggsToTauTau.common import logging, DEPENDENCIES
 from tthAnalysis.HiggsToTauTau.samples.stitch import get_branch_type
 
@@ -813,6 +813,10 @@ class analyzeConfig(object):
                 assert(nof_events[central_or_shift] > 0)
                 if self.do_stxs and sample_info["sample_category"] in HTXS_BINS:
                   for htxs_bin in HTXS_BINS[sample_info["sample_category"]]:
+                    if sample_info["sample_category"] == "VH" and \
+                        (("ZH_HToBB_ZToLL" in sample_info["process_name_specific"] and htxs_bin not in HTXS_BINS_ZH) or
+                         ("ZHToTauTau" in sample_info["process_name_specific"] and htxs_bin in HTXS_BINS_WH)):
+                      continue
                     nof_events_label_htxs = '{}_{}'.format(nof_events_label, htxs_bin)
                     assert(nof_events_label_htxs in sample_info["nof_events"])
                     central_or_shift_htxs = '{}_{}'.format(central_or_shift, htxs_bin)
