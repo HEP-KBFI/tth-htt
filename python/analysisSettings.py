@@ -207,9 +207,9 @@ class systematics(object):
 
     ttbar = TT().full
     dy    = DY().full
-    wjets = WJets().full
+    #wjets = WJets().full
 
-    procs = [ TT, DY, WJets ]
+    procs = [ TT, DY, ] #WJets ]
 
     isr_up   = [ proc.ISR_().up   for proc in procs ]
     isr_down = [ proc.ISR_().down for proc in procs ]
@@ -218,7 +218,7 @@ class systematics(object):
     env_up   = [ proc.env_().up   for proc in procs ]
     env_down = [ proc.env_().down for proc in procs ]
 
-    full = ttbar + dy + wjets
+    full = ttbar + dy# + wjets
 
   class LHE(object):
 
