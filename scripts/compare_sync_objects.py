@@ -953,7 +953,7 @@ elif args.analysis == 'hh_bbww':
   del OBJECTS_MAP['jetAK8']
   del OBJECTS_MAP['jetHTTv2']
   del OBJECTS_MAP['ak8lsJet']
-  del OBJECTS_MAP['ak4JetVBF']
+  #del OBJECTS_MAP['ak4JetVBF']
   del OBJECTS_MAP['tau']
 PRESELECTION_COUNTER_BRANCHES = [ 'n_presel_%s' % object_prefix for object_prefix in OBJECTS_MAP ]
 
