@@ -70,7 +70,15 @@ INPUT_SPLIT_LV3=$(echo $INPUT_SPLIT | awk '{print $4}')
 INPUT_SPLIT_LV4=$(echo $INPUT_SPLIT | awk '{print $5}')
 CHANNELS=$(ls $INPUT_DIR/datacards)
 
+INPUT_DIR_REALPATH=$(realpath $INPUT_DIR)
+INPUT_DIR_TMP=$TMP_DIR/"${INPUT_DIR_REALPATH:1}"
+INPUT_DIR_TMP_PARENT=$INPUT_DIR_TMP/..
+
 for CHANNEL in $CHANNELS; do
+  echo "Recreating $INPUT_DIR_TMP";
+  rm -rf $INPUT_DIR_TMP;
+  mkdir -p $INPUT_DIR_TMP;
+
   OUTPUT_FILE_NAME=${INPUT_SPLIT_LV2}_${INPUT_SPLIT_LV3}_${INPUT_SPLIT_LV4}_${CHANNEL}.tar.lz4
   OUTPUT_FILE_PATH=${OUTPUT_DIR}/${OUTPUT_FILE_NAME}
   if [ -f $OUTPUT_FILE_PATH ] && [ $OVERWRITE_OUTPUT_FILE = false ]; then
@@ -81,14 +89,12 @@ for CHANNEL in $CHANNELS; do
   HDFS_SUBDIRS=$(hdfs dfs -ls $INPUT_DIR_HDFS 2>/dev/null | grep ^d | awk '{print $NF}' | tr '/' ' ' | awk '{print $NF}');
   for HDFS_SUBDIR in $HDFS_SUBDIRS; do
     SYMLINK_SRC=/hdfs${INPUT_DIR_HDFS}/${HDFS_SUBDIR}/${CHANNEL};
-    SYMLINK_DST_DIR=${INPUT_DIR}/${HDFS_SUBDIR}_hdfs;
+    SYMLINK_DST_DIR=${INPUT_DIR_TMP}/${HDFS_SUBDIR}_hdfs;
     mkdir -p $SYMLINK_DST_DIR;
     SYMLINK_DST=${SYMLINK_DST_DIR}/${CHANNEL};
     echo "Creating symlink: $SYMLINK_DST -> $SYMLINK_SRC";
-    if [ $DRYRUN = false ]; then
-      rm -f $SYMLINK_DST;
-      ln -s $SYMLINK_SRC $SYMLINK_DST;
-    fi
+    rm -f $SYMLINK_DST;
+    ln -s $SYMLINK_SRC $SYMLINK_DST;
   done
 
   OUTPUT_FILE_TMP=${TMP_DIR}/${OUTPUT_FILE_NAME};
@@ -96,15 +102,22 @@ for CHANNEL in $CHANNELS; do
   if [ $VERBOSE = true ]; then
     TAR_OPTS=${TAR_OPTS}v;
   fi
-  cd $INPUT_DIR/..;
+  cd $INPUT_DIR_TMP_PARENT;
   echo "Current working directory: $PWD";
   echo "Current time: `date`";
   echo "Creating archive: $OUTPUT_FILE_TMP";
-  INPUT_DIR_BASE=$(basename $INPUT_DIR);
-  INPUT_FILES="${INPUT_DIR_BASE}/*${CHANNEL} ${INPUT_DIR_BASE}/*${CHANNEL}.log* ${INPUT_DIR_BASE}/*/${CHANNEL}";
-  echo "Input files: $INPUT_FILES";
+  INPUT_FILES="${INPUT_DIR}/*${CHANNEL} ${INPUT_DIR}/*${CHANNEL}.log* ${INPUT_DIR}/*/${CHANNEL}";
+  for INPUT_FILE in $INPUT_FILES; do
+    SYMLINK_TARGET=$TMP_DIR/"${INPUT_FILE:1}";
+    if [ -d $INPUT_FILE ]; then
+      mkdir -p $(dirname $SYMLINK_TARGET);
+    fi
+    ln -s $INPUT_FILE $SYMLINK_TARGET;
+  done
+  ARCHIVE_TARGET="$(basename $INPUT_DIR_TMP)/*"
+  echo "Input files: $ARCHIVE_TARGET";
   if [ $DRYRUN = false ]; then
-    tar $TAR_OPTS - $INPUT_FILES | lz4 -f - $OUTPUT_FILE_TMP;
+    tar $TAR_OPTS - $ARCHIVE_TARGET | lz4 -f - $OUTPUT_FILE_TMP;
   fi
   echo "Finished at: `date`";
 
@@ -118,14 +131,6 @@ for CHANNEL in $CHANNELS; do
     fi
   fi
   echo "Created archive: $OUTPUT_FILE_PATH";
-
-  for HDFS_SUBDIR in $HDFS_SUBDIRS; do
-    SYMLINK_DST=${INPUT_DIR}/${HDFS_SUBDIR}_hdfs/${CHANNEL};
-    echo "Removing symlink: $SYMLINK_DST";
-    if [ $DRYRUN = false ]; then
-      rm -f $SYMLINK_DST;
-    fi
-  done
 done
 
 echo "If you want to delete the archived files, run:";
