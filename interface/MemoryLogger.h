@@ -56,6 +56,9 @@ public:
   void
   display_lines(int count);
 
+  void
+  record_last(bool flag = true);
+
 protected:
   friend bool
   operator<(const MemoryUnit & lhs,
@@ -73,6 +76,7 @@ protected:
   record() const;
 
   int line_count_;
+  bool record_last_;
   std::vector<std::string> keys_;
   std::map<std::string, std::vector<MemoryUnit>> recordings_;
 };

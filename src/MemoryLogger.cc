@@ -29,6 +29,7 @@ MemoryUnit::display_memory(int value_in_bytes,
 
 MemoryLogger::MemoryLogger(int line_count)
   : line_count_(line_count)
+  , record_last_(false)
 {}
 
 MemoryLogger::~MemoryLogger()
@@ -44,6 +45,10 @@ MemoryLogger::log(const std::string & key)
     assert(! recordings_.count(key));
     keys_.push_back(key);
   }
+  if(record_last_)
+  {
+    recordings_[key].clear();
+  }
   recordings_[key].push_back(record());
 }
 
@@ -58,6 +63,12 @@ void
 MemoryLogger::display_lines(int count)
 {
   line_count_ = count;
+}
+
+void
+MemoryLogger::record_last(bool flag)
+{
+  record_last_ = flag;
 }
 
 MemoryUnit
