@@ -280,7 +280,7 @@ def get_unbinned_event_count_names(samples_to_stitch, split_vars):
       for event_count_key in event_counts:
         if any(split_var_name in event_count_key for split_var_name in SPLIT_VAR_NAMES):
           continue
-        if event_count_key == 'Count' or 'PSWeight' in event_count_key or '_' in event_count_key:
+        if event_count_key == 'Count' or '_' in event_count_key:
           continue
         if event_count_key not in event_counts_unbinned:
           event_counts_unbinned[event_count_key] = [0.] * len(event_counts[event_count_key])

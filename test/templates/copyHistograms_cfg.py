@@ -14,4 +14,5 @@ process.fwliteOutput = cms.PSet(
 
 process.copyHistograms = cms.PSet(
     categories = cms.vstring(),
+    isDEBUG = cms.bool(False)
 )

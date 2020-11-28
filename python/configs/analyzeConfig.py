@@ -735,6 +735,8 @@ class analyzeConfig(object):
       if central_or_shift in systematics.LHE().dy             and sample_category != "DY":                     return False
       if central_or_shift in systematics.LHE().wz             and sample_category != "WZ":                     return False
       if central_or_shift in systematics.LHE().zz             and sample_category != "ZZ":                     return False
+      if central_or_shift in systematics.LHE().gg_zz          and sample_category != "ggZZ":                   return False
+      if central_or_shift in systematics.LHE().qq_zz          and sample_category != "qqZZ":                   return False
       if central_or_shift in systematics.DYMCReweighting      and not is_dymc_reweighting(sample_name):        return False
       if central_or_shift in systematics.DYMCNormScaleFactors and not is_dymc_normalization(sample_name):      return False
       if central_or_shift in systematics.tauIDSF              and 'tau' not in self.channel.lower():           return False
@@ -744,7 +746,7 @@ class analyzeConfig(object):
       if central_or_shift in systematics.EWK_jet              and sample_category not in [ "WZ", "ZZ" ]:       return False
       if central_or_shift in systematics.PartonShower().ttbar and not (sample_category == "TT" and run_ps):    return False
       if central_or_shift in systematics.PartonShower().dy    and not (sample_category == "DY" and run_ps):    return False
-      if central_or_shift in systematics.PartonShower().wjets and not (sample_category == "W" and run_ps):     return False
+      #if central_or_shift in systematics.PartonShower().wjets and not (sample_category == "W" and run_ps):     return False
       if central_or_shift != "central"                        and is_ttbar_sys:                                return False
       return True
 
