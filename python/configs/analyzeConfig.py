@@ -735,6 +735,8 @@ class analyzeConfig(object):
       if central_or_shift in systematics.LHE().dy             and sample_category != "DY":                     return False
       if central_or_shift in systematics.LHE().wz             and sample_category != "WZ":                     return False
       if central_or_shift in systematics.LHE().zz             and sample_category != "ZZ":                     return False
+      if central_or_shift in systematics.LHE().gg_zz          and sample_category != "ggZZ":                   return False
+      if central_or_shift in systematics.LHE().qq_zz          and sample_category != "qqZZ":                   return False
       if central_or_shift in systematics.DYMCReweighting      and not is_dymc_reweighting(sample_name):        return False
       if central_or_shift in systematics.DYMCNormScaleFactors and not is_dymc_normalization(sample_name):      return False
       if central_or_shift in systematics.tauIDSF              and 'tau' not in self.channel.lower():           return False
@@ -744,7 +746,7 @@ class analyzeConfig(object):
       if central_or_shift in systematics.EWK_jet              and sample_category not in [ "WZ", "ZZ" ]:       return False
       if central_or_shift in systematics.PartonShower().ttbar and not (sample_category == "TT" and run_ps):    return False
       if central_or_shift in systematics.PartonShower().dy    and not (sample_category == "DY" and run_ps):    return False
-      if central_or_shift in systematics.PartonShower().wjets and not (sample_category == "W" and run_ps):     return False
+      #if central_or_shift in systematics.PartonShower().wjets and not (sample_category == "W" and run_ps):     return False
       if central_or_shift != "central"                        and is_ttbar_sys:                                return False
       return True
 
@@ -1001,8 +1003,6 @@ class analyzeConfig(object):
         if 'skipEvery' in sample_info:
             assert('skipEvery' not in jobOptions)
             jobOptions['skipEvery'] = sample_info['skipEvery']
-        if 'useObjectMultiplicity' not in jobOptions:
-            jobOptions['useObjectMultiplicity'] = False
         if 'useAssocJetBtag' not in jobOptions:
             jobOptions['useAssocJetBtag'] = False
         if 'leptonFakeRateWeight.applyNonClosureCorrection' not in jobOptions and '0l' not in self.channel:
@@ -1027,8 +1027,10 @@ class analyzeConfig(object):
         if 'lep_mva_cut_mu_forLepton3' not in jobOptions and "default" not in self.lep_mva_cut_mu_forLepton3:
             jobOptions['lep_mva_cut_mu_forLepton3'] = float(self.lep_mva_cut_mu_forLepton3)            
         if 'lep_mva_cut_e_forLepton3' not in jobOptions and "default" not in self.lep_mva_cut_e_forLepton3:
-            jobOptions['lep_mva_cut_e_forLepton3'] = float(self.lep_mva_cut_e_forLepton3)            
-
+            jobOptions['lep_mva_cut_e_forLepton3'] = float(self.lep_mva_cut_e_forLepton3)
+        # We employ different types of lepton selection criteria, and we don't clean the had taus in post-production,
+        # which means that the object mulitplicities determined in post-production cannot be used when running the analysis
+        jobOptions['useObjectMultiplicity'] = False
 
 
         btagSFRatio_args = {}
@@ -1517,7 +1519,11 @@ class analyzeConfig(object):
              histogramToFit: name of the histogram used for signal extraction
         """
         assert(self.prep_dcard_processesToCopy)
-        category_output = self.channel
+        category_output = None
+        if 'category' in jobOptions.keys() and jobOptions['category']:
+          category_output = jobOptions['category']
+        else:
+          category_output = self.channel
         central_or_shifts_modified = self.central_or_shifts
         if len(self.central_or_shifts) > 1 and "hh_bbWW" in category_output:
           central_or_shift_remove = systematics.ttbar
@@ -1535,7 +1541,9 @@ class analyzeConfig(object):
         lines.append("process.prepareDatacards.makeSubDir = cms.bool(False)")
         lines.append("process.prepareDatacards.categories = cms.VPSet(")
         lines.append("    cms.PSet(")
-        if "BDTOutput" in histogramToFit:
+        if "/" in jobOptions['histogramDir']:
+          lines.append("        input = cms.string('%s')," % jobOptions['histogramDir'])
+        elif "BDTOutput" in histogramToFit or "MVAOutput" in histogramToFit:
           lines.append("        input = cms.string('%s/sel/datacard')," % jobOptions['histogramDir'])
         else:
           lines.append("        input = cms.string('%s/sel/evt')," % jobOptions['histogramDir'])

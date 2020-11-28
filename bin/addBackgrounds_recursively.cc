@@ -48,7 +48,11 @@ typedef std::vector<std::string> vstring;
 
 namespace
 {
-  void processSubdirectory_recursively(TFileDirectory& fs, const TDirectory* dir, const std::string& dirName, const vstring& processes_input, const std::string& process_output, const vstring& histogramsToCopy, const vstring& central_or_shifts)
+  void processSubdirectory_recursively(TFileDirectory& fs, 
+                                       const TDirectory* dir, const std::string& dirName, 
+                                       const vstring& processes_input, const std::string& process_output, 
+                                       const vstring& histogramsToCopy, 
+                                       const vstring& central_or_shifts)
   {
     std::cout << "<processSubdirectory_recursively>:" << std::endl;
     std::cout << " dir = '" << dirName << "'" << std::endl;
@@ -60,7 +64,6 @@ namespace
       const TDirectory* subdir_input = dynamic_cast<TDirectory*>((const_cast<TDirectory*>(dir))->Get(process_input->data()));
       if ( !subdir_input ) allProcessesExist = false;
     }
-    // std::cout << "allProcessesExist = " << allProcessesExist << std::endl;
     if ( allProcessesExist ) {
       std::cout << "processing directory = " << dirName << std::endl;
 
@@ -68,7 +71,7 @@ namespace
       std::string the_process_input = processes_input.front();
       const TDirectory* the_subdir_input = dynamic_cast<TDirectory*>((const_cast<TDirectory*>(dir))->Get(the_process_input.data()));      
       assert(the_subdir_input);
-      // the_subdir_input->ls();
+      //the_subdir_input->ls();
       
       std::set<std::string> histograms;
       TList* list = the_subdir_input->GetListOfKeys();
@@ -108,7 +111,6 @@ namespace
         for ( vstring::const_iterator central_or_shift = central_or_shifts.begin();
               central_or_shift != central_or_shifts.end(); ++central_or_shift ) {
 
-
           std::vector<TH1*> histograms_input;
           for ( vstring::const_iterator process_input = processes_input.begin();
                 process_input != processes_input.end(); ++process_input ) {
@@ -138,7 +140,7 @@ namespace
           subdir != subdirs.end(); ++subdir ) {
       processSubdirectory_recursively(fs, *subdir, dirName + "/" + (*subdir)->GetName(), processes_input, process_output, histogramsToCopy, central_or_shifts);
     }
-    for(const TDirectory* subdir: subdirs)
+    for ( const TDirectory* subdir: subdirs )
     {
       delete subdir;
       subdir = 0;

@@ -70,7 +70,7 @@ enum
 enum
 {
   kFatJet_central_nonNominal,     // for data and sync Ntuples
-  kFatJet_central   ,             // for MC
+  kFatJet_central,                // for MC
   kFatJet_jesUp, kFatJet_jesDown, // total JES
   kFatJet_jerUp, kFatJet_jerDown, // total JER
   kFatJet_jmsUp, kFatJet_jmsDown, // mass scale

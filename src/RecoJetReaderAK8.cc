@@ -26,7 +26,7 @@ RecoJetReaderAK8::RecoJetReaderAK8(Era era,
   , subjetReader_(nullptr)
   , sysOption_central_(isMC_ ? kFatJet_central : kFatJet_central_nonNominal)
   , sysOption_(sysOption_central_)
-  , readSys_(false)
+  , readSys_(true) // TODO: change back to false [*]
   , pt_str_("pt")
   , mass_str_("mass")
   , msoftdrop_str_("msoftdrop")
@@ -116,14 +116,6 @@ RecoJetReaderAK8::setBranchNames()
       if(isValidFatJetAttribute(idxShift, msoftdrop_str_))
       {
         branchNames_msoftdrop_systematics_[idxShift] = getBranchName_fatJet(branchName_obj_, msoftdrop_str_, idxShift);
-        //-------------------------------------------------------------------------------------------------------------------------------------
-        // CV: temporary work-around until this bug gets fixed with a new nanoAODTools post-production
-        //       https://github.com/HEP-KBFI/nanoAOD-tools/commit/09820f595db490e642b5b636144c75ab32f9dc4c
-        if(idxShift > kFatJet_central_nonNominal)
-        {
-          branchNames_msoftdrop_systematics_[idxShift] = branchNames_msoftdrop_systematics_[kFatJet_central_nonNominal];
-        }
-        //-------------------------------------------------------------------------------------------------------------------------------------
       }
     }
     branchName_eta_ = Form("%s_%s", branchName_obj_.data(), "eta");
@@ -252,7 +244,7 @@ RecoJetReaderAK8::read() const
       const RecoSubjetAK8 * subJet2 = subjets.size() > 1 ? getSubjet(subjets, gInstance->subjet_idx2_[idxJet]) : nullptr;
       const int jet_pt_sys        = gInstance->jet_pt_systematics_.count(sysOption_)        ? sysOption_ : sysOption_central_;
       const int jet_mass_sys      = gInstance->jet_mass_systematics_.count(sysOption_)      ? sysOption_ : sysOption_central_;
-      const int jet_msoftdrop_sys = gInstance->jet_msoftdrop_systematics_.count(sysOption_) ? sysOption_ : sysOption_central_;
+      //const int jet_msoftdrop_sys = gInstance->jet_msoftdrop_systematics_.count(sysOption_) ? sysOption_ : sysOption_central_; [*]
       jets.push_back({
         {
           gInstance->jet_pt_systematics_.at(jet_pt_sys)[idxJet],
@@ -260,7 +252,7 @@ RecoJetReaderAK8::read() const
           gInstance->jet_phi_[idxJet],
           gInstance->jet_mass_systematics_.at(jet_mass_sys)[idxJet],
         },
-        gInstance->jet_msoftdrop_systematics_.at(jet_msoftdrop_sys)[idxJet],
+        gInstance->jet_msoftdrop_systematics_.at(kFatJet_central_nonNominal)[idxJet], // TODO: use jet_msoftdrop_sys [*]
         subJet1 ? new RecoSubjetAK8(*subJet1) : nullptr,
         subJet2 ? new RecoSubjetAK8(*subJet2) : nullptr,
         gInstance->jet_tau1_[idxJet],
@@ -281,10 +273,10 @@ RecoJetReaderAK8::read() const
           // including the central nominal and central non-nominal values; crucial for RecoJetWriter
           const int jet_pt_sys_local        = gInstance->jet_pt_systematics_.count(idxShift)        ? idxShift : sysOption_central_;
           const int jet_mass_sys_local      = gInstance->jet_mass_systematics_.count(idxShift)      ? idxShift : sysOption_central_;
-          const int jet_msoftdrop_sys_local = gInstance->jet_msoftdrop_systematics_.count(idxShift) ? idxShift : sysOption_central_;
+          //const int jet_msoftdrop_sys_local = gInstance->jet_msoftdrop_systematics_.count(idxShift) ? idxShift : sysOption_central_; [*]
           jet.pt_systematics_[idxShift]        = gInstance->jet_pt_systematics_.at(jet_pt_sys_local)[idxJet];
           jet.mass_systematics_[idxShift]      = gInstance->jet_mass_systematics_.at(jet_mass_sys_local)[idxJet];
-          jet.msoftdrop_systematics_[idxShift] = gInstance->jet_msoftdrop_systematics_.at(jet_msoftdrop_sys_local)[idxJet];
+          jet.msoftdrop_systematics_[idxShift] = gInstance->jet_msoftdrop_systematics_.at(kFatJet_central_nonNominal)[idxJet]; // TODO: use jet_msoftdrop_sys_local [*]
         } // idxShift
       }
       else
@@ -292,9 +284,16 @@ RecoJetReaderAK8::read() const
         // fill the maps with only the central values (either nominal or non-nominal if data)
         jet.pt_systematics_[sysOption_]   = gInstance->jet_pt_systematics_.at(jet_pt_sys)[idxJet];
         jet.mass_systematics_[sysOption_] = gInstance->jet_mass_systematics_.at(jet_mass_sys)[idxJet];
-        jet.msoftdrop_systematics_[sysOption_] = gInstance->jet_msoftdrop_systematics_.at(jet_msoftdrop_sys)[idxJet];
+        jet.msoftdrop_systematics_[sysOption_] = gInstance->jet_msoftdrop_systematics_.at(kFatJet_central_nonNominal)[idxJet]; // TODO: use jet_msoftdrop_sys [*]
       } // isMC_
     } // idxJet
   } // nJets > 0
+
+  //-------------------------------------------------------------------------------------------------------------------------------------
+  // [*]
+  // CV: temporary work-around until this bug gets fixed with a new nanoAODTools post-production
+  //       https://github.com/HEP-KBFI/nanoAOD-tools/commit/09820f595db490e642b5b636144c75ab32f9dc4c
+  //-------------------------------------------------------------------------------------------------------------------------------------
+
   return jets;
 }
