@@ -1113,7 +1113,7 @@ CreateLBNOutputMap(const std::vector<double> & LBN_params,
 	if ( i >= 2 )
         {
           std::string key_prev = Form("BM%i", TMath::Nint(LBN_params[i - 1]));
-          hl_mvaInputs[key] = 0; // Resetting the prev. hot encoder to zero   
+          hl_mvaInputs[key_prev] = 0; // Resetting the prev. hot encoder to zero
         }
       }
     }
