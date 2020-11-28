@@ -30,9 +30,9 @@ struct MemoryUnit
  *
  * MemoryLogger memLogger;
  * // some code
- * memLogger.log(Form("Line %d", __LINE_));
+ * memLogger.log(__LINE__);
  * // some more code
- * memLogger.log(Form("Line %d", __LINE_));
+ * memLogger.log(__LINE__);
  *
  * The results are printed when the class is destroyed. In order to display first and last N measurements at any given
  * point, either inialize the MemoryLogger class with integer N, or call display_lines().
@@ -48,6 +48,10 @@ public:
 
   void
   log(const std::string & key);
+
+  void
+  log(int line,
+      const std::string & fmt = "Line %d");
 
   void
   display_lines(int count);

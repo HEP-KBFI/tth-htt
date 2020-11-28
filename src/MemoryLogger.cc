@@ -7,6 +7,8 @@
 #include <unistd.h> // sysconf(), _SC_PAGESIZE
 #include <numeric> // std::accumulate()
 
+#include <TString.h> // Form()
+
 std::pair<double, std::string>
 MemoryUnit::display_memory(int value_in_bytes,
                                          bool use_si_units)
@@ -43,6 +45,13 @@ MemoryLogger::log(const std::string & key)
     keys_.push_back(key);
   }
   recordings_[key].push_back(record());
+}
+
+void
+MemoryLogger::log(int line,
+                  const std::string & fmt)
+{
+  return this->log(Form(fmt.data(), line));
 }
 
 void
