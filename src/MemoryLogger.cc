@@ -7,9 +7,11 @@
 #include <unistd.h> // sysconf(), _SC_PAGESIZE
 #include <numeric> // std::accumulate()
 
+#include <TString.h> // Form()
+
 std::pair<double, std::string>
 MemoryUnit::display_memory(int value_in_bytes,
-                                         bool use_si_units)
+                           bool use_si_units)
 {
   const static std::vector<std::string> units_si     = { "B", "KB",  "MB",  "GB"  };
   const static std::vector<std::string> units_binary = { "B", "KiB", "MiB", "GiB" };
@@ -27,6 +29,7 @@ MemoryUnit::display_memory(int value_in_bytes,
 
 MemoryLogger::MemoryLogger(int line_count)
   : line_count_(line_count)
+  , record_last_(false)
 {}
 
 MemoryLogger::~MemoryLogger()
@@ -42,13 +45,30 @@ MemoryLogger::log(const std::string & key)
     assert(! recordings_.count(key));
     keys_.push_back(key);
   }
+  if(record_last_)
+  {
+    recordings_[key].clear();
+  }
   recordings_[key].push_back(record());
+}
+
+void
+MemoryLogger::log(int line,
+                  const std::string & fmt)
+{
+  return this->log(Form(fmt.data(), line));
 }
 
 void
 MemoryLogger::display_lines(int count)
 {
   line_count_ = count;
+}
+
+void
+MemoryLogger::record_last(bool flag)
+{
+  record_last_ = flag;
 }
 
 MemoryUnit
@@ -83,8 +103,8 @@ operator<<(std::ostream & stream,
   stream.setf(std::ios::fixed);
   stream.precision(2);
   stream
-    << "VSIZE = " << vsize_display.first << ' ' << vsize_display.second << " , "
-       "RSS = "   << rss_display.first   << ' ' << rss_display.second
+    << "VSIZE = " << vsize_display.first << ' ' << vsize_display.second << " (" << unit.vsize << " b), "
+       "RSS = "   << rss_display.first   << ' ' << rss_display.second << " (" << unit.rss << " b)"
   ;
   stream.flags(stream_flags);
   return stream;

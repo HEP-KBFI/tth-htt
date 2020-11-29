@@ -462,6 +462,54 @@ class systematics(object):
 
       full = x1_().full + y1_().full + x1y1_().full + env_().full
 
+    class ggZZ(object):
+      class x1_(object):
+
+        up   = "CMS_ttHl_thu_shape_ggZZ_x1Up"
+        down = "CMS_ttHl_thu_shape_ggZZ_x1Down"
+        full = [ up, down ]
+
+      class y1_(object):
+        up   = "CMS_ttHl_thu_shape_ggZZ_y1Up"
+        down = "CMS_ttHl_thu_shape_ggZZ_y1Down"
+        full = [ up, down ]
+
+      class x1y1_(object):
+        up   = "CMS_ttHl_thu_shape_ggZZ_x1y1Up"
+        down = "CMS_ttHl_thu_shape_ggZZ_x1y1Down"
+        full = [ up, down ]
+
+      class env_(object):
+        up   = "CMS_ttHl_thu_shape_ggZZUp"
+        down = "CMS_ttHl_thu_shape_ggZZDown"
+        full = [ up, down ]
+
+      full = x1_().full + y1_().full + x1y1_().full + env_().full
+
+    class qqZZ(object):
+      class x1_(object):
+
+        up   = "CMS_ttHl_thu_shape_qqZZ_x1Up"
+        down = "CMS_ttHl_thu_shape_qqZZ_x1Down"
+        full = [ up, down ]
+
+      class y1_(object):
+        up   = "CMS_ttHl_thu_shape_qqZZ_y1Up"
+        down = "CMS_ttHl_thu_shape_qqZZ_y1Down"
+        full = [ up, down ]
+
+      class x1y1_(object):
+        up   = "CMS_ttHl_thu_shape_qqZZ_x1y1Up"
+        down = "CMS_ttHl_thu_shape_qqZZ_x1y1Down"
+        full = [ up, down ]
+
+      class env_(object):
+        up   = "CMS_ttHl_thu_shape_qqZZUp"
+        down = "CMS_ttHl_thu_shape_qqZZDown"
+        full = [ up, down ]
+
+      full = x1_().full + y1_().full + x1y1_().full + env_().full
+
     ttH   = TTH().full
     tHq   = THQ().full
     tHW   = THW().full
@@ -472,8 +520,10 @@ class systematics(object):
     ttbar = TT().full
     wz    = WZ().full
     zz    = ZZ().full
+    gg_zz = ggZZ().full
+    qq_zz = qqZZ().full
 
-    procs = [ TTH, THQ, THW, TTW, TTZ, HH, DY, TT, WZ, ZZ ]
+    procs = [ TTH, THQ, THW, TTW, TTZ, HH, DY, TT, WZ, ZZ, ggZZ, qqZZ ]
 
     x1_up     = [ proc.x1_().up     for proc in procs ]
     x1_down   = [ proc.x1_().down   for proc in procs ]
@@ -484,7 +534,7 @@ class systematics(object):
     env_up    = [ proc.env_().up    for proc in procs ]
     env_down  = [ proc.env_().down  for proc in procs ]
 
-    full = ttH + tHq + tHW + ttW + ttZ + dy + hh + ttbar + wz + zz
+    full = ttH + tHq + tHW + ttW + ttZ + dy + hh + ttbar + wz + zz + gg_zz + qq_zz
 
   class LeptonIDSF(object):
     el_tight = [ "CMS_ttHl_lepEff_eltightUp", "CMS_ttHl_lepEff_eltightDown" ]
@@ -573,8 +623,8 @@ class systematics(object):
   ttbar        = TTbar().full
 
   # Analysis-specific definitions
-  an_leptonFR        =    central +  JES +  JER          + UnclusteredEn  + MET_ResponseSyst +  MET_ResolutionSyst
-  an_leptonFR_opts   = [ "central", "JES", "JER",         "UnclusteredEn", "MET_ResponseSyst", "MET_ResolutionSyst" ]
+  an_leptonFR        =    central +  JES +  JER          + UnclusteredEn
+  an_leptonFR_opts   = [ "central", "JES", "JER",         "UnclusteredEn"]
   an_jetToTauFR      =    central +  JES         + tauES                   + tauIDSF
   an_jetToTauFR_opts = [ "central", "JES", "JER",          "UnclusteredEn", "tauIDSF" ]
   an_addMEM          =    central +  JES +  JER +  tauES +  UnclusteredEn
