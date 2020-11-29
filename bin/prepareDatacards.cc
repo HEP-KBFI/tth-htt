@@ -329,7 +329,7 @@ int main(int argc, char* argv[])
 	  std::cout << " does not match signal = " << (*signal)->GetPattern() << std::endl;
 	}
       }
-      if ( isToCopy || isSignal ) {
+      if ( isToCopy ) {
 	for(const std::string & central_or_shift: central_or_shifts)
 	{
 	  std::cout << "histogramToFit = " << histogramToFit << ", central_or_shift = " << central_or_shift << '\n';
@@ -350,7 +350,6 @@ int main(int argc, char* argv[])
 	  if ( !histogram ) continue;
 	  bool isData = compMatch(subdir->GetName(), data);
 	  bool isFakes = compMatch(subdir->GetName(), fakes);
-	  //	  if ( !(isData || isSignal) ) {
           if(! (isData || isSignal) && is_central && ((quantile_rebinning_in_fakes && isFakes) || ! quantile_rebinning_in_fakes))
           {
 	    std::cout << "adding background = '" << subdir->GetName() << "'" << std::endl;
@@ -371,8 +370,9 @@ int main(int argc, char* argv[])
       TArrayD histogramBinning = getTArraDfromVector(explicitBinning);
       for ( std::vector<histogramEntryType_private*>::iterator histogram = histogramsToRebin.begin();
 	    histogram != histogramsToRebin.end(); ++histogram ) {
-        //getRebinnedHistogram1d((TH1*)(*histogram)->histogram_, 4, histogramBinning);
-	histogramEntryType_private* histogramEntry = new histogramEntryType_private(getRebinnedHistogram1d((TH1*)(*histogram)->histogram_, 4, histogramBinning), (bool)(*histogram)->isData_);
+	histogramEntryType_private* histogramEntry = new histogramEntryType_private(
+          getRebinnedHistogram1d((TH1*)(*histogram)->histogram_, 4, histogramBinning), (bool)(*histogram)->isData_
+        );
 	histogramsRebinned.push_back(histogramEntry);
       }
     }
@@ -384,8 +384,9 @@ int main(int argc, char* argv[])
       TArrayD histogramBinning = getRebinnedBinning(histogramBackgroundSum, minEvents_automatic_rebinning);
       for ( std::vector<histogramEntryType_private*>::iterator histogram = histogramsToRebin.begin();
 	    histogram != histogramsToRebin.end(); ++histogram ) {
-	//getRebinnedHistogram1d((TH1*)(*histogram)->histogram_, 4, histogramBinning);
-	histogramEntryType_private* histogramEntry = new histogramEntryType_private(getRebinnedHistogram1d((TH1*)(*histogram)->histogram_, 4, histogramBinning), (bool)(*histogram)->isData_);
+	histogramEntryType_private* histogramEntry = new histogramEntryType_private(
+          getRebinnedHistogram1d((TH1*)(*histogram)->histogram_, 4, histogramBinning), (bool)(*histogram)->isData_
+        );
 	histogramsRebinned.push_back(histogramEntry);
       }
     }
@@ -405,8 +406,9 @@ int main(int argc, char* argv[])
       for (Int_t i=0;i<nq;i++) histogramBinning[i+1] = yq[i];
       for ( std::vector<histogramEntryType_private*>::iterator histogram = histogramsToRebin.begin();
 	    histogram != histogramsToRebin.end(); ++histogram ) {
-	//getRebinnedHistogram1d((TH1*)(*histogram)->histogram_, 4, histogramBinning);
-	histogramEntryType_private* histogramEntry = new histogramEntryType_private(getRebinnedHistogram1d((TH1*)(*histogram)->histogram_, 4, histogramBinning), (bool)(*histogram)->isData_);
+	histogramEntryType_private* histogramEntry = new histogramEntryType_private(
+          getRebinnedHistogram1d((TH1*)(*histogram)->histogram_, 4, histogramBinning), (bool)(*histogram)->isData_
+        );
 	histogramsRebinned.push_back(histogramEntry);
       }
     }
