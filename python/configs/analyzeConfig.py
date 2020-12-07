@@ -647,7 +647,7 @@ class analyzeConfig(object):
           if self.lep_mva_wp == 'default':
             self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva_{}_CERN_2019Jul08.root".format(self.era)
           elif self.lep_mva_wp == 'hh_multilepton':
-            self.leptonFakeRateWeight_inputFile = "hhAnalysis/multilepton/data/FR_lep_mva_hh_multilepton_{}_KBFI_2020Oct27_woTightCharge_wSysUnc.root".format(self.era)
+            self.leptonFakeRateWeight_inputFile = "hhAnalysis/multilepton/data/FR_lep_mva_hh_multilepton_wFullSyst_woMETSyst_{}_KBFI_2020Nov27.root".format(self.era)
           else:
             raise RuntimeError("No FR files available for the following choice of prompt lepton MVA WP: %s" % self.lep_mva_wp)
           if not os.path.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', self.leptonFakeRateWeight_inputFile)):
