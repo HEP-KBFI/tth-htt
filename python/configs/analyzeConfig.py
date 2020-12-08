@@ -1186,6 +1186,11 @@ class analyzeConfig(object):
             "# Boolean handle for inclusion of MC Closure sidebands (2lss, TT Hadronic)",
             "{}.{:<{len}} = cms.bool({})".format(process_string, 'enable_MC_Closure_sidebands', self.enable_MC_Closure_sidebands, len = max_option_len),
           ])
+          lines.extend([
+            "# boolean handle to include Ntuples for optmizing Lepton I.D. cuts for MC Closure sidebands (2lss, TTHadronic)",
+            "{}.{:<{len}} = cms.bool({})".format(process_string, 'fillNtuple', self.fillNtuple, len = max_option_len),
+          ])
+
         if (not isHTT and not self.do_sync) or self.do_sync:
           lines.extend([
             "{}.{:<{len}} = EvtYieldHistManager_{}".format  (process_string, 'cfgEvtYieldHistManager', self.era, len = max_option_len),

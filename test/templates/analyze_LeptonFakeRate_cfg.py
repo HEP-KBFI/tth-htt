@@ -41,9 +41,6 @@ process.analyze_LeptonFakeRate = cms.PSet(
     triggers_mu_cfg = cms.VPSet(),
     triggers_e_cfg = cms.VPSet(),
 
-    
-
-
     absEtaBins_e = cms.vdouble(0., 1.479, 9.9),
     ptBins_e = cms.vdouble(15., 20., 30., 45., 65., 100000.),
     absEtaBins_mu = cms.vdouble(0., 1.479, 9.9),
@@ -114,6 +111,6 @@ process.analyze_LeptonFakeRate = cms.PSet(
         branchTypeYaxis = cms.string(''),
     ),
     tHweights = cms.VPSet(),
-    fillNtuple = cms.bool(False),
+    fillNtuple = cms.bool(False),  ## Boolean handle to include Ntuples for optmizing Lepton I.D. cuts for MC Closure sidebands (2lss, TTHadronic)
     enable_MC_Closure_sidebands = cms.bool(False) ## Boolean handle to control inclusion of MC Closure sidebands (2lss, TTHadronic)
 )
