@@ -266,6 +266,21 @@
   <use   name="roottmva"/>
   <Flags CXXFLAGS="-g -Wshadow -Werror"/>
 </bin>
+<bin file="addBackgroundLeptonFakes2.cc" name="addBackgroundLeptonFakes2">
+  <use   name="FWCore/FWLite"/>
+  <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/ParameterSetReader"/>
+  <use   name="FWCore/PythonParameterSet"/>
+  <use   name="FWCore/Utilities"/>
+  <use   name="DataFormats/Candidate"/>
+  <use   name="DataFormats/Math"/>
+  <use   name="PhysicsTools/FWLite"/>
+  <use   name="tthAnalysis/HiggsToTauTau"/>
+  <use   name="hhAnalysis/multilepton"/>
+  <use   name="root"/>
+  <use   name="roottmva"/>
+  <Flags CXXFLAGS="-g -Wshadow -Werror"/>
+</bin>
 <bin file="addBackgroundLeptonFlips.cc" name="addBackgroundLeptonFlips">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
