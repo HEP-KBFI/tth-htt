@@ -1817,6 +1817,7 @@ class analyzeConfig(object):
             max_input_files_per_job = max_input_files_per_job,
             use_home                = self.use_home,
             max_mem                 = max_mem,
+            validate_output         = self.check_output_files
         )
         return sbatch_hadd_file
 

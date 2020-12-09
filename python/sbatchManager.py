@@ -387,6 +387,7 @@ class sbatchManager:
             job_template_file      = 'sbatch-node.sh.template',
             copy_output_file       = True,
             nof_submissions        = 0,
+            validate_output        = True,
           ):
         """Waits for all sbatch jobs submitted by this instance of sbatchManager to finish processing
         """
@@ -407,7 +408,7 @@ class sbatchManager:
         if skipIfOutputFileExists:
             outputFiles_missing = [
                 outputFile for outputFile in outputFiles_fullpath \
-                if not is_file_ok(outputFile, validate_outputs = True, min_file_size = self.min_file_size)
+                if not is_file_ok(outputFile, validate_outputs = validate_output, min_file_size = self.min_file_size)
             ]
             if not outputFiles_missing:
                 logging.debug(
@@ -496,7 +497,7 @@ class sbatchManager:
         )
         return job_dir
 
-    def poll(self, nonBlocking):
+    def poll(self, nonBlocking, validate_output=True):
         """Waits for all sbatch jobs submitted by this instance of sbatchManager to finish processing
         """
         text_line = '-' * 120
@@ -673,7 +674,7 @@ class sbatchManager:
                     for job_id in completed_jobs:
                         if not all(map(
                             lambda outputFile: is_file_ok(
-                                outputFile, validate_outputs = True, min_file_size = self.min_file_size
+                                outputFile, validate_outputs = validate_output, min_file_size = self.min_file_size
                             ),
                             self.submittedJobs[job_id]['outputFiles']
                           )):
@@ -719,8 +720,8 @@ class sbatchManager:
 
         return True
 
-    def waitForJobs(self):
-        return self.poll(nonBlocking = False)
+    def waitForJobs(self, validate_output=True):
+        return self.poll(nonBlocking = False, validate_output=validate_output)
 
-    def isDone(self):
-        return self.poll(nonBlocking = True)
+    def isDone(self, validate_output=True):
+        return self.poll(nonBlocking = True, validate_output=validate_output)

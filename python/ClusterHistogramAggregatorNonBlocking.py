@@ -10,6 +10,7 @@ class ClusterHistogramAggregatorNonBlocking(object):
         log_file_name,
         max_input_files_per_job = 10,
         auxDirName              = None,
+        validate_output         = 'True',
      ):
         self.input_files             = input_files
         self.final_output_file       = final_output_file
@@ -19,6 +20,7 @@ class ClusterHistogramAggregatorNonBlocking(object):
         self.cfg_dir                 = os.path.dirname(script_file_name)
         self.log_dir                 = os.path.dirname(log_file_name)
         self.batches                 = []
+        self.validate_output         = True if validate_output == 'True' else False
 
         self.create_jobs()
 
@@ -33,7 +35,7 @@ class ClusterHistogramAggregatorNonBlocking(object):
             return False
 
     def is_done(self):
-        if self.sbatch_manager.isDone():
+        if self.sbatch_manager.isDone(self.validate_output):
             sent_jobs = self.submit()
             return not sent_jobs
         else:
@@ -109,5 +111,6 @@ class ClusterHistogramAggregatorNonBlocking(object):
             'logFile'                : log_file,
             'skipIfOutputFileExists' : False,
             'job_template_file'      : 'sbatch-node.hadd.sh.template',
+            'validate_output'        : self.validate_output,
         }
         return job_args
