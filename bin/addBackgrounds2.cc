@@ -89,7 +89,23 @@ namespace
         TH1* histogram = dynamic_cast<TH1*>(object);
         if ( !histogram ) continue;
         TString histogramName = TString(histogram->GetName()).ReplaceAll(Form("%s_", the_process_input.data()), "");
-        histogramNames.insert(histogramName.Data());
+        for ( auto central_or_shift: central_or_shifts )
+        {
+	  if ( !(central_or_shift == "" || central_or_shift == "central") ) 
+          {
+	    histogramName = histogramName.ReplaceAll(Form("%s_", central_or_shift.data()), "");
+	  }
+	}
+	if ( histogramName.Contains("CMS_") ) continue;
+	if ( histogramName.Contains("cutFlow") ) continue;
+	if ( histogramNames.find(histogramName.Data()) == histogramNames.end() ) 
+        {
+          if ( isDEBUG )
+          {
+	    std::cout << "adding histogram = " << histogramName.Data() << std::endl;
+          }
+	  histogramNames.insert(histogramName.Data());
+	}
       }
       
       // add histograms
@@ -100,6 +116,7 @@ namespace
           std::vector<TH1*> histograms_input;
           for ( auto process_input: processes_input ) 
           {
+//std::cout << "processing histogramName = " << histogramName << ", process_input = " << process_input << std::endl;
             bool enableException = ( central_or_shift == "" || central_or_shift == "central" ) ? true : false;
             TH1* histogram_input = getHistogram(dir, process_input, histogramName, central_or_shift, enableException);
             if ( !histogram_input ) 
@@ -111,6 +128,11 @@ namespace
               throw cmsException(__func__, __LINE__)
                 << "Attempting to add the same histogram twice: " << histogram_input->GetName() << " from " << process_input << " !!\n";
             }
+if ( histogramName == "jpaCategory" && histogram_input->GetNbinsX() != 15 ) 
+{
+  std::cout << "histogramName = " << histogramName << " for process_input = " << process_input << " has the wrong binning --> skipping !!" << std::endl;
+  continue;
+}
             histograms_input.push_back(histogram_input);
           }
 
@@ -143,9 +165,33 @@ namespace
 
     // recursively process all subdirectories
     std::vector<const TDirectory*> subdirs = getSubdirectories(dir);
+    bool stopRecursion = false;
     for ( std::vector<const TDirectory*>::iterator subdir = subdirs.begin();
-          subdir != subdirs.end(); ++subdir ) {
-      processSubdirectory_recursively(fs, *subdir, dirName + "/" + (*subdir)->GetName(), processes_input, process_output, central_or_shifts, isDEBUG);
+          subdir != subdirs.end() && !stopRecursion; ++subdir ) {
+      std::string subdirName = (*subdir)->GetName();
+      for ( vstring::const_iterator process_input = processes_input.begin();
+            process_input != processes_input.end() && !stopRecursion; ++process_input ) {
+        if ( subdirName == (*process_input) || subdirName == "data_obs" )
+        {
+          if ( isDEBUG )
+          {
+            std::cout << "abortion recursion, because " << subdirName << " directory has been found." << std::endl;
+          }
+          stopRecursion = true;
+        }
+      }
+    }
+    if ( !stopRecursion )
+    {
+      for ( std::vector<const TDirectory*>::iterator subdir = subdirs.begin();
+            subdir != subdirs.end(); ++subdir ) {
+        processSubdirectory_recursively(
+          fs, *subdir, dirName + "/" + (*subdir)->GetName(), 
+          processes_input, process_output, 
+          central_or_shifts, 
+          isDEBUG
+        );
+      }
     }
     for ( const TDirectory* subdir: subdirs )
     {
