@@ -163,6 +163,7 @@ int main(int argc, char* argv[])
 		central_or_shift != central_or_shifts.end(); ++central_or_shift ) {
 
 	    int verbosity = ( histogram->find("EventCounter") != std::string::npos && ((*central_or_shift) == "" || (*central_or_shift) == "central") ) ? 1 : 0;
+//verbosity |= (histogram->find("MVAOutput_400_spin0") != std::string::npos && ((*central_or_shift) == "" || (*central_or_shift) == "central"));
 	    //int verbosity = ( histogram->find("EventCounter") != std::string::npos ) ? 1 : 0;
 
 	    TH1* histogramData = getHistogram(*subdir_sideband_level2, processData, *histogram, *central_or_shift, false);
@@ -170,7 +171,9 @@ int main(int argc, char* argv[])
 	      histogramData = getHistogram(*subdir_sideband_level2, processData, *histogram, "central", true);
 	    }
 	    if ( verbosity ) {
-	      std::cout << " integral(data_obs) = " << histogramData->Integral() << std::endl;
+              double integral = compIntegral(histogramData, false, false);
+              double integralErr = compIntegralErr(histogramData, false, false);
+	      std::cout << " integral(data_obs) = " << integral << " +/- " << integralErr << std::endl;
 	    }
 	    
 	    std::vector<TH1*> histogramsToSubtract;
@@ -179,7 +182,9 @@ int main(int argc, char* argv[])
 	      TH1* histogramToSubtract = getHistogram(*subdir_sideband_level2, *processToSubtract, *histogram, *central_or_shift, false);
 	      if ( !histogramToSubtract ) histogramToSubtract = getHistogram(*subdir_sideband_level2, *processToSubtract, *histogram, "central", true);
 	      if ( verbosity ) {
-		std::cout << " integral(" << (*processToSubtract) << ") = " << histogramToSubtract->Integral() << std::endl;
+                double integral = compIntegral(histogramToSubtract, false, false);
+                double integralErr = compIntegralErr(histogramToSubtract, false, false);
+		std::cout << " integral(" << (*processToSubtract) << ") = " << integral << " +/- " << integralErr << std::endl;
 	      }
 	      histogramsToSubtract.push_back(histogramToSubtract);
 	    }
@@ -194,11 +199,25 @@ int main(int argc, char* argv[])
 	    histogramNameLeptonFakes.append(*histogram);
 	    TH1* histogramLeptonFakes = subtractHistograms(histogramNameLeptonFakes, histogramData, histogramsToSubtract, verbosity);
 	    if ( verbosity ) {
-	      std::cout << " integral(Fakes) = " << histogramLeptonFakes->Integral() << std::endl;
+              double integral = compIntegral(histogramLeptonFakes, false, false);
+              double integralErr = compIntegralErr(histogramLeptonFakes, false, false);
+	      std::cout << " integral(Fakes) = " << integral << " +/- " << integralErr << std::endl;
 	    }
 
-            if(!disable_makeBinContentsPositive_forTailFit){ makeBinContentsPositive(histogramLeptonFakes, false, verbosity); } // Treating histogramLeptonFakes as MC background	  
-
+            if ( !disable_makeBinContentsPositive_forTailFit ) {
+//if ( verbosity )
+//{
+//  //if ( histogramLeptonFakes->GetNbinsX() >= 100 ) histogramLeptonFakes->Rebin(20);
+//  std::cout << "BEFORE calling makeBinContentsPositive:" << std::endl;
+//  dumpHistogram(histogramLeptonFakes);
+//}
+              makeBinContentsPositive(histogramLeptonFakes, false, verbosity); // Treating histogramLeptonFakes as MC background	  
+//if ( verbosity )
+//{
+//  std::cout << "AFTER calling makeBinContentsPositive:" << std::endl;
+//  dumpHistogram(histogramLeptonFakes);
+//}
+            }
           }
 	}
       }
