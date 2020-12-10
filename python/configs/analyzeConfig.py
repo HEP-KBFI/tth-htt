@@ -1493,6 +1493,8 @@ class analyzeConfig(object):
             processesToSubtract.extend([ "%s_Convs" % conv_background for conv_background in self.convs_backgrounds])
         lines.append("process.addBackgroundLeptonFakes.processesToSubtract = cms.vstring(%s)" % processesToSubtract)
         lines.append("process.addBackgroundLeptonFakes.sysShifts = cms.vstring(%s)" % self.central_or_shifts)
+        if 'makeBinContentsPositive_forTailFits' in jobOptions.keys():
+            lines.append("process.addBackgroundLeptonFakes.makeBinContentsPositive_forTailFits = cms.bool(%s)" % jobOptions['makeBinContentsPositive_forTailFits'])
         create_cfg(self.cfgFile_addFakes, jobOptions['cfgFile_modified'], lines)
 
     def createCfg_addFlips(self, jobOptions):
