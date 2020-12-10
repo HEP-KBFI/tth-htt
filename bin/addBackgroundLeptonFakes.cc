@@ -163,7 +163,6 @@ int main(int argc, char* argv[])
 		central_or_shift != central_or_shifts.end(); ++central_or_shift ) {
 
 	    int verbosity = ( histogram->find("EventCounter") != std::string::npos && ((*central_or_shift) == "" || (*central_or_shift) == "central") ) ? 1 : 0;
-//verbosity |= (histogram->find("MVAOutput_400_spin0") != std::string::npos && ((*central_or_shift) == "" || (*central_or_shift) == "central"));
 	    //int verbosity = ( histogram->find("EventCounter") != std::string::npos ) ? 1 : 0;
 
 	    TH1* histogramData = getHistogram(*subdir_sideband_level2, processData, *histogram, *central_or_shift, false);
@@ -205,18 +204,7 @@ int main(int argc, char* argv[])
 	    }
 
             if ( !disable_makeBinContentsPositive_forTailFit ) {
-//if ( verbosity )
-//{
-//  //if ( histogramLeptonFakes->GetNbinsX() >= 100 ) histogramLeptonFakes->Rebin(20);
-//  std::cout << "BEFORE calling makeBinContentsPositive:" << std::endl;
-//  dumpHistogram(histogramLeptonFakes);
-//}
               makeBinContentsPositive(histogramLeptonFakes, false, verbosity); // Treating histogramLeptonFakes as MC background	  
-//if ( verbosity )
-//{
-//  std::cout << "AFTER calling makeBinContentsPositive:" << std::endl;
-//  dumpHistogram(histogramLeptonFakes);
-//}
             }
           }
 	}
