@@ -1445,6 +1445,8 @@ class analyzeConfig(object):
             lines.append("process.addBackgrounds.sysShifts = cms.vstring(%s)" % jobOptions['sysShifts'])
         else:
             lines.append("process.addBackgrounds.sysShifts = cms.vstring(%s)" % self.central_or_shifts)
+        if 'max_depth_recursion' in jobOptions.keys():
+            lines.append("process.addBackgrounds.max_depth_recursion = cms.int32(%i)" % jobOptions['max_depth_recursion'])
         create_cfg(self.cfgFile_addBackgrounds, jobOptions['cfgFile_modified'], lines)
 
     def createCfg_addSysTT(self, jobOptions):
@@ -1462,8 +1464,9 @@ class analyzeConfig(object):
             lines.append("process.addSysTT.histogramsToCopy = cms.vstring(%s)" % jobOptions['histogramsToCopy'])
         if 'sysShifts' in jobOptions.keys():
             lines.append("process.addSysTT.sysShifts = cms.vstring(%s)" % jobOptions['sysShifts'])
+        if 'max_depth_recursion' in jobOptions.keys():
+            lines.append("process.addSysTT.max_depth_recursion = cms.int32(%i)" % jobOptions['max_depth_recursion'])
         create_cfg(self.cfgFile_addSysTT, jobOptions['cfgFile_modified'], lines)
-
 
     def createCfg_addFakes(self, jobOptions):
         """Create python configuration file for the addBackgroundLeptonFakes executable (data-driven estimation of 'Fakes' backgrounds)
@@ -1488,6 +1491,8 @@ class analyzeConfig(object):
             processesToSubtract.extend([ "%s_Convs" % conv_background for conv_background in self.convs_backgrounds])
         lines.append("process.addBackgroundLeptonFakes.processesToSubtract = cms.vstring(%s)" % processesToSubtract)
         lines.append("process.addBackgroundLeptonFakes.sysShifts = cms.vstring(%s)" % self.central_or_shifts)
+        if 'max_depth_recursion' in jobOptions.keys():
+            lines.append("process.addBackgroundLeptonFakes.max_depth_recursion = cms.int32(%i)" % jobOptions['max_depth_recursion'])
         create_cfg(self.cfgFile_addFakes, jobOptions['cfgFile_modified'], lines)
 
     def createCfg_addFlips(self, jobOptions):
