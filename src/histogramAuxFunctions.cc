@@ -495,9 +495,13 @@ makeBinContentsPositive(TH1 * histogram, bool isData,
     const double sf = integral_original / integral_modified;
     if(verbosity)
     {
-      std::cout << "--> scaling histogram by factor = " << sf << '\n';
+      std::cout << "--> scaling bin-contents by factor = " << sf << ", while keeping the bin-errors the same" << '\n';
     }
-    histogram->Scale(sf);
+    for(int iBin = initBin; iBin < endBin; ++iBin)
+    {
+      const double binContent = histogram->GetBinContent(iBin);
+      histogram->SetBinContent(iBin, sf*binContent);
+    }
   }
   else if ( !isData )
   {
@@ -509,17 +513,20 @@ makeBinContentsPositive(TH1 * histogram, bool isData,
 
   if(verbosity)
   {
-    std::cout << " integral(" << histogram->GetName() << ") = "
-                              << histogram->Integral() << '\n';
+    double integral = compIntegral(histogram, false, false);
+    double integralErr = compIntegralErr(histogram, false, false);
+    std::cout << " integral(" << histogram->GetName() << ") = " << integral << " +/- " << integralErr << '\n';
   }
 }
 
 void
 dumpHistogram(const TH1 * histogram)
 {
+  double integral = compIntegral(histogram, false, false);
+  double integralErr = compIntegralErr(histogram, false, false);
   std::cout << "<dumpHistogram>:\n"
                "histogram = " << histogram->GetName() << "\n"
-               "integral = "  << histogram->Integral() << '\n';
+               "integral = " << integral << " +/- " << integralErr << '\n';
 
   const TAxis * const xAxis = histogram->GetXaxis();
   const int numBins_plus1 = xAxis->GetNbins() + 1;
