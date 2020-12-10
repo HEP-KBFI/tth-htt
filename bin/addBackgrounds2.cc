@@ -49,6 +49,7 @@ namespace
                                        const TDirectory* dir, const std::string& dirName, 
                                        const vstring& processes_input, const std::string& process_output, 
                                        const vstring& central_or_shifts,
+                                       int depth_recursion, int max_depth_recursion,
                                        bool isDEBUG = false)
   {
     if ( isDEBUG )
@@ -116,7 +117,6 @@ namespace
           std::vector<TH1*> histograms_input;
           for ( auto process_input: processes_input ) 
           {
-//std::cout << "processing histogramName = " << histogramName << ", process_input = " << process_input << std::endl;
             bool enableException = ( central_or_shift == "" || central_or_shift == "central" ) ? true : false;
             TH1* histogram_input = getHistogram(dir, process_input, histogramName, central_or_shift, enableException);
             if ( !histogram_input ) 
@@ -165,22 +165,7 @@ if ( histogramName == "jpaCategory" && histogram_input->GetNbinsX() != 15 )
 
     // recursively process all subdirectories
     std::vector<const TDirectory*> subdirs = getSubdirectories(dir);
-    bool stopRecursion = false;
-    for ( std::vector<const TDirectory*>::iterator subdir = subdirs.begin();
-          subdir != subdirs.end() && !stopRecursion; ++subdir ) {
-      std::string subdirName = (*subdir)->GetName();
-      for ( vstring::const_iterator process_input = processes_input.begin();
-            process_input != processes_input.end() && !stopRecursion; ++process_input ) {
-        if ( subdirName == (*process_input) || subdirName == "data_obs" )
-        {
-          if ( isDEBUG )
-          {
-            std::cout << "abortion recursion, because " << subdirName << " directory has been found." << std::endl;
-          }
-          stopRecursion = true;
-        }
-      }
-    }
+    bool stopRecursion = ( max_depth_recursion != -1 && depth_recursion >= max_depth_recursion ) ? true : false;
     if ( !stopRecursion )
     {
       for ( std::vector<const TDirectory*>::iterator subdir = subdirs.begin();
@@ -188,9 +173,17 @@ if ( histogramName == "jpaCategory" && histogram_input->GetNbinsX() != 15 )
         processSubdirectory_recursively(
           fs, *subdir, dirName + "/" + (*subdir)->GetName(), 
           processes_input, process_output, 
-          central_or_shifts, 
+          central_or_shifts,
+          depth_recursion + 1, max_depth_recursion,
           isDEBUG
         );
+      }
+    }
+    else
+    {
+      if ( isDEBUG )
+      {
+        std::cout << "aborting recursion, because maximum-recursion-depth = " << max_depth_recursion << " has been reached." << std::endl;
       }
     }
     for ( const TDirectory* subdir: subdirs )
@@ -247,6 +240,9 @@ int main(int argc, char* argv[])
     central_or_shifts.push_back(""); // CV: add central value
   }
 
+  int max_depth_recursion = cfg_addBackgrounds.exists("max_depth_recursion") ? cfg_addBackgrounds.getParameter<int>("max_depth_recursion") : -1;
+  //int max_depth_recursion = cfg_addBackgrounds.getParameter<int>("max_depth_recursion");
+
   bool isDEBUG = cfg_addBackgrounds.exists("isDEBUG") ? cfg_addBackgrounds.getParameter<bool>("isDEBUG") : false;
   //bool isDEBUG = cfg_addBackgrounds.getParameter<bool>("isDEBUG");
 
@@ -267,7 +263,13 @@ int main(int argc, char* argv[])
     TDirectory* dir = getDirectory(inputFile, category, true);
     assert(dir);
 
-    processSubdirectory_recursively(fs, dir, category, processes_input, process_output, central_or_shifts, isDEBUG);
+    processSubdirectory_recursively(
+      fs, dir, category, 
+      processes_input, process_output, 
+      central_or_shifts, 
+      1, max_depth_recursion,
+      isDEBUG
+    );
   }
 
   //---------------------------------------------------------------------------------------------------

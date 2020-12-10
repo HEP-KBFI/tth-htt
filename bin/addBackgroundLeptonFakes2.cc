@@ -61,6 +61,7 @@ namespace
                                        const std::string& processData, const std::string& processLeptonFakes, const vstring& processesToSubtract,
                                        const vstring& central_or_shifts,
                                        bool disable_makeBinContentsPositive_forTailFit,
+                                       int depth_recursion, int max_depth_recursion,
                                        bool isDEBUG = false)
   {
     if ( isDEBUG )
@@ -137,7 +138,9 @@ namespace
 	  }
 	  if ( verbosity )
           {
-	    std::cout << " integral(data_obs) = " << histogramData->Integral() << std::endl;
+            double integral = compIntegral(histogramData, false, false);
+            double integralErr = compIntegralErr(histogramData, false, false);
+	    std::cout << " integral(data_obs) = " << integral << " +/- " << integralErr << std::endl;
 	  }
 	    
 	  std::vector<TH1*> histogramsToSubtract;
@@ -150,7 +153,9 @@ namespace
             }
 	    if ( verbosity )
             {
-              std::cout << " integral(" << processToSubtract << ") = " << histogramToSubtract->Integral() << std::endl;
+              double integral = compIntegral(histogramToSubtract, false, false);
+              double integralErr = compIntegralErr(histogramToSubtract, false, false);
+              std::cout << " integral(" << processToSubtract << ") = " << integral << " +/- " << integralErr << std::endl;
 	    }
 if ( histogramName == "jpaCategory" && histogramToSubtract->GetNbinsX() != 15 ) 
 {
@@ -175,7 +180,9 @@ if ( histogramName == "jpaCategory" && histogramToSubtract->GetNbinsX() != 15 )
           TH1* histogramLeptonFakes = subtractHistograms(histogramNameLeptonFakes, histogramData, histogramsToSubtract, verbosity);
           if ( verbosity )
           {
-            std::cout << " integral(Fakes) = " << histogramLeptonFakes->Integral() << std::endl;
+            double integral = compIntegral(histogramLeptonFakes, false, false);
+            double integralErr = compIntegralErr(histogramLeptonFakes, false, false);
+	    std::cout << " integral(Fakes) = " << integral << " +/- " << integralErr << std::endl;
           }
 
           if( !disable_makeBinContentsPositive_forTailFit )
@@ -188,22 +195,7 @@ if ( histogramName == "jpaCategory" && histogramToSubtract->GetNbinsX() != 15 )
 
     // recursively process all subdirectories
     std::vector<const TDirectory*> subdirs = getSubdirectories(dir);
-    bool stopRecursion = false;
-    for ( std::vector<const TDirectory*>::iterator subdir = subdirs.begin();
-          subdir != subdirs.end() && !stopRecursion; ++subdir ) {
-      std::string subdirName = (*subdir)->GetName();
-      for ( vstring::const_iterator process_input = processes_input.begin();
-            process_input != processes_input.end() && !stopRecursion; ++process_input ) {
-        if ( subdirName == (*process_input) || subdirName == "data_obs" )
-        {
-          if ( isDEBUG )
-          {
-            std::cout << "abortion recursion, because " << subdirName << " directory has been found." << std::endl;
-          }
-          stopRecursion = true;
-        }
-      }
-    }
+    bool stopRecursion = ( max_depth_recursion != -1 && depth_recursion >= max_depth_recursion ) ? true : false;
     if ( !stopRecursion )
     {
       for ( std::vector<const TDirectory*>::iterator subdir = subdirs.begin();
@@ -213,8 +205,16 @@ if ( histogramName == "jpaCategory" && histogramToSubtract->GetNbinsX() != 15 )
           processData, processLeptonFakes, processesToSubtract, 
           central_or_shifts, 
           disable_makeBinContentsPositive_forTailFit,
+          depth_recursion + 1, max_depth_recursion,
           isDEBUG
         );
+      }
+    }
+    else
+    {
+      if ( isDEBUG )
+      {
+        std::cout << "aborting recursion, because maximum-recursion-depth = " << max_depth_recursion << " has been reached." << std::endl;
       }
     }
     for ( const TDirectory* subdir: subdirs )
@@ -273,6 +273,9 @@ int main(int argc, char* argv[])
   }
   if ( !contains_central_value ) central_or_shifts.push_back(""); // CV: add central value
 
+  int max_depth_recursion = cfg_addBackgroundLeptonFakes.exists("max_depth_recursion") ? cfg_addBackgroundLeptonFakes.getParameter<int>("max_depth_recursion") : -1;
+  //int max_depth_recursion = cfg_addBackgroundLeptonFakes.getParameter<int>("max_depth_recursion");
+
   bool isDEBUG = cfg_addBackgroundLeptonFakes.exists("isDEBUG") ? cfg_addBackgroundLeptonFakes.getParameter<bool>("isDEBUG") : false;
   //bool isDEBUG = cfg_addBackgroundLeptonFakes.getParameter<bool>("isDEBUG");
 
@@ -297,6 +300,7 @@ int main(int argc, char* argv[])
       processData, processLeptonFakes, processesToSubtract,
       central_or_shifts,
       disable_makeBinContentsPositive_forTailFit,
+      1, max_depth_recursion,
       isDEBUG
     );
   }
