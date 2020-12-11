@@ -158,7 +158,7 @@ def is_file_ok(output_file_name, validate_outputs = True, min_file_size = 10000)
         ret_value = True
     else:
       logging.info(
-        "Deleting output file and resubmitting job because it has size smaller than %d bytes" % min_file_size
+        "Deleting output file and resubmitting job because the output file has size of %d bytes, smaller than %d bytes, indicating that a failure in writing the output file occured." % (output_file_size, min_file_size)
       )
 
   if validate_outputs:
