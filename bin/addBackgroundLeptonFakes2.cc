@@ -60,7 +60,7 @@ namespace
                                        const TDirectory* dir, const std::string& dirName, 
                                        const std::string& processData, const std::string& processLeptonFakes, const vstring& processesToSubtract,
                                        const vstring& central_or_shifts,
-                                       bool disable_makeBinContentsPositive_forTailFit,
+                                       bool makeBinContentsPositive_forTailFit,
                                        int depth_recursion, int max_depth_recursion,
                                        bool isDEBUG = false)
   {
@@ -185,7 +185,7 @@ if ( histogramName == "jpaCategory" && histogramToSubtract->GetNbinsX() != 15 )
 	    std::cout << " integral(Fakes) = " << integral << " +/- " << integralErr << std::endl;
           }
 
-          if( !disable_makeBinContentsPositive_forTailFit )
+          if( makeBinContentsPositive_forTailFit )
           {
             makeBinContentsPositive(histogramLeptonFakes, false, verbosity); // Treating histogramLeptonFakes as MC background
           }
@@ -204,7 +204,7 @@ if ( histogramName == "jpaCategory" && histogramToSubtract->GetNbinsX() != 15 )
           fs, *subdir, dirName + "/" + (*subdir)->GetName(), 
           processData, processLeptonFakes, processesToSubtract, 
           central_or_shifts, 
-          disable_makeBinContentsPositive_forTailFit,
+          makeBinContentsPositive_forTailFit,
           depth_recursion + 1, max_depth_recursion,
           isDEBUG
         );
@@ -263,7 +263,7 @@ int main(int argc, char* argv[])
   std::string processLeptonFakes = cfg_addBackgroundLeptonFakes.getParameter<std::string>("processLeptonFakes");
   vstring processesToSubtract = cfg_addBackgroundLeptonFakes.getParameter<vstring>("processesToSubtract");
 
-  bool disable_makeBinContentsPositive_forTailFit = cfg_addBackgroundLeptonFakes.getParameter<bool>("disable_makeBinContentsPositive_forTailFit");
+  bool makeBinContentsPositive_forTailFit = cfg_addBackgroundLeptonFakes.getParameter<bool>("makeBinContentsPositive_forTailFit");
 
   vstring central_or_shifts = cfg_addBackgroundLeptonFakes.getParameter<vstring>("sysShifts");
   bool contains_central_value = false;
@@ -299,7 +299,7 @@ int main(int argc, char* argv[])
       fs, dir_sideband, category->signal_,
       processData, processLeptonFakes, processesToSubtract,
       central_or_shifts,
-      disable_makeBinContentsPositive_forTailFit,
+      makeBinContentsPositive_forTailFit,
       1, max_depth_recursion,
       isDEBUG
     );

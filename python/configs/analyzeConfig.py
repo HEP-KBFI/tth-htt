@@ -1739,7 +1739,7 @@ class analyzeConfig(object):
     def createScript_sbatch(self, executable, sbatchFile, jobOptions,
                             key_cfg_file = 'cfgFile_modified', key_input_file = 'inputFile',
                             key_output_file = 'outputFile', key_log_file = 'logFile',
-                            min_file_size = 20000):
+                            min_file_size = 10000):
         """Creates the python script necessary to submit 'generic' (addBackgrounds, addBackgroundFakes/addBackgroundFlips) jobs to the batch system
         """
         num_jobs = tools_createScript_sbatch(
@@ -1928,6 +1928,8 @@ class analyzeConfig(object):
         else:
             for job in jobOptions.values():
                 lines_makefile.append("\t%s %s &> %s" % (self.executable_addBackgrounds, job['cfgFile_modified'], job['logFile']))
+        if 'makeBinContentsPositive_forTailFits' in jobOptions.keys():
+            lines.append("process.addBackgroundLeptonFakes.makeBinContentsPositive_forTailFits = cms.bool(%s)" % jobOptions['makeBinContentsPositive_forTailFits'])
         lines_makefile.append("")
         for job in jobOptions.values():
             self.filesToClean.append(job['outputFile'])
