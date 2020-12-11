@@ -37,7 +37,7 @@ def createScript_sbatch(
     job_template_file     = 'sbatch-node.sh.template',
     dry_run               = False,
     validate_outputs      = True,
-    min_file_size         = 20000,
+    min_file_size         = 10000,
     max_num_submittedJobs = 5000,
     use_home              = False,
     copy_output_file      = True,
@@ -92,7 +92,7 @@ def generate_sbatch_lines(
     job_template_file     = 'sbatch-node.sh.template',
     dry_run               = False,
     validate_outputs      = True,
-    min_file_size         = 20000,
+    min_file_size         = 10000,
     max_num_submittedJobs = 5000,
     use_home              = False,
     copy_output_file      = True,
@@ -140,7 +140,7 @@ def generate_sbatch_lines(
     lines_sbatch.append("m.waitForJobs(%s)" %validate_outputs)
     return lines_sbatch, num_jobs
 
-def is_file_ok(output_file_name, validate_outputs = True, min_file_size = 20000):
+def is_file_ok(output_file_name, validate_outputs = True, min_file_size = 10000):
   if not (output_file_name and os.path.exists(output_file_name)):
     return False
 
@@ -191,7 +191,7 @@ def generate_sbatch_line(
     script_file_name,
     log_file_name     = None,
     cvmfs_error_log   = None,
-    min_file_size     = 20000,
+    min_file_size     = 10000,
     job_template_file = 'sbatch-node.sh.template',
     validate_outputs  = True,
     copy_output_file = True,
@@ -283,7 +283,7 @@ def createScript_sbatch_hadd_nonBlocking(
         dry_run                 = False,
         max_input_files_per_job = 10,
         use_home                = False,
-        min_file_size           = 20000,
+        min_file_size           = 10000,
         max_num_submittedJobs   = 5000,
         max_mem                 = '',
         validate_output         = True,
@@ -399,7 +399,7 @@ def createScript_sbatch_hadd(
     dry_run                 = False,
     max_input_files_per_job = 10,
     use_home                = False,
-    min_file_size           = 20000,
+    min_file_size           = 10000,
     max_num_submittedJobs   = 5000,
   ):
     """Creates the python script necessary to submit 'hadd' jobs to the batch system
@@ -440,7 +440,7 @@ def generate_sbatch_lines_hadd(
     dry_run                 = False,
     max_input_files_per_job = 10,
     use_home                = False,
-    min_file_size           = 20000,
+    min_file_size           = 10000,
     max_num_submittedJobs   = 5000,
   ):
     template_vars = {

@@ -175,7 +175,7 @@ class sbatchManager:
             dry_run = False,
             use_home = False,
             max_resubmissions = 6,
-            min_file_size = 20000,
+            min_file_size = 10000,
             max_num_submittedJobs = 5000,
           ):
         self.max_pool_id_length = 256
