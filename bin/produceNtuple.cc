@@ -13,11 +13,9 @@
 #include "tthAnalysis/HiggsToTauTau/interface/convert_to_ptrs.h" // convert_to_ptrs
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionCleaner.h" // Reco*CollectionCleaner
 #include "tthAnalysis/HiggsToTauTau/interface/ParticleCollectionGenMatcher.h" // Reco*CollectionGenMatcher
-#include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorCMSPOG.h" // RecoElectronCollectionSelectorCMSPOG
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorLoose.h" // RecoElectronCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorFakeable.h" // RecoElectronCollectionSelectorFakeable
 #include "tthAnalysis/HiggsToTauTau/interface/RecoElectronCollectionSelectorTight.h" // RecoElectronCollectionSelectorTight
-#include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorCMSPOG.h" // RecoMuonCollectionSelectorCMSPOG
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorLoose.h" // RecoMuonCollectionSelectorLoose
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorFakeable.h" // RecoMuonCollectionSelectorFakeable
 #include "tthAnalysis/HiggsToTauTau/interface/RecoMuonCollectionSelectorTight.h" // RecoMuonCollectionSelectorTight
@@ -267,7 +265,6 @@ main(int argc,
   RecoMuonReader * const muonReader = new RecoMuonReader(era, branchName_muons, isMC, readGenObjects);
   inputTree -> registerReader(muonReader);
   const RecoMuonCollectionGenMatcher muonGenMatcher;
-  const RecoMuonCollectionSelectorCMSPOG pogMuonSelector(era, -1, isDEBUG);
   const RecoMuonCollectionSelectorLoose preselMuonSelector(era, -1, isDEBUG);
   const RecoMuonCollectionSelectorFakeable fakeableMuonSelector_default(era, -1, isDEBUG);
   const RecoMuonCollectionSelectorFakeable_hh_multilepton fakeableMuonSelector_hh_multilepton(era, -1, isDEBUG);
@@ -278,7 +275,6 @@ main(int argc,
   inputTree -> registerReader(electronReader);
   const RecoElectronCollectionGenMatcher electronGenMatcher;
   const RecoElectronCollectionCleaner electronCleaner(0.3, isDEBUG);
-  const RecoElectronCollectionSelectorCMSPOG pogElectronSelector(era, -1, isDEBUG);
   const RecoElectronCollectionSelectorLoose preselElectronSelector(era, -1, isDEBUG);
   const RecoElectronCollectionSelectorFakeable fakeableElectronSelector_default(era, -1, isDEBUG);
   const RecoElectronCollectionSelectorFakeable_hh_multilepton fakeableElectronSelector_hh_multilepton(era, -1, isDEBUG);
@@ -703,16 +699,12 @@ main(int argc,
     const std::vector<RecoMuon> muons = muonReader->read();
     const std::vector<const RecoMuon *> muon_ptrs = convert_to_ptrs(muons);
     // CV: no cleaning needed for muons, as they have the highest priority in the overlap removal
-    const std::vector<const RecoMuon *> pogMuons = pogMuonSelector(muon_ptrs, isHigherConePt);
     const std::vector<const RecoMuon *> preselMuons = preselMuonSelector(muon_ptrs, isHigherConePt);
     const std::vector<const RecoMuon *> fakeableMuons = lep_mva_wp == "hh_multilepton" ?
       fakeableMuonSelector_hh_multilepton(preselMuons, isHigherConePt) :
       fakeableMuonSelector_default(preselMuons, isHigherConePt)
     ;
     const std::vector<const RecoMuon *> tightMuons = tightMuonSelector(preselMuons, isHigherConePt);
-    const std::vector<const RecoMuon *> pog_OR_preselMuons = mergeCollections(
-      pogMuons, preselMuons, isHigherConePt
-    );
     const std::vector<const RecoMuon *> selMuons = selectObjects(
       leptonSelection, preselMuons, fakeableMuons, tightMuons
     );
@@ -720,7 +712,6 @@ main(int argc,
     const std::vector<RecoElectron> electrons = electronReader->read();
     const std::vector<const RecoElectron *> electron_ptrs = convert_to_ptrs(electrons);
     const std::vector<const RecoElectron *> cleanedElectrons = electronCleaner(electron_ptrs, preselMuons);
-    const std::vector<const RecoElectron *> pogElectrons = pogElectronSelector(electron_ptrs, isHigherConePt);
     const std::vector<const RecoElectron *> preselElectronsUncleaned = preselElectronSelector(electron_ptrs,    isHigherConePt);
     const std::vector<const RecoElectron *> preselElectrons = preselElectronSelector(cleanedElectrons, isHigherConePt);
     const std::vector<const RecoElectron *> fakeableElectrons = lep_mva_wp == "hh_multilepton" ?
@@ -728,9 +719,6 @@ main(int argc,
       fakeableElectronSelector_default(preselElectrons, isHigherConePt)
     ;
     const std::vector<const RecoElectron *> tightElectrons = tightElectronSelector(preselElectrons,  isHigherConePt);
-    const std::vector<const RecoElectron *> pog_OR_preselElectronsUncleaned = mergeCollections(
-      pogElectrons, preselElectronsUncleaned, isHigherConePt
-    );
     const std::vector<const RecoElectron *> selElectrons = selectObjects(
       leptonSelection, preselElectrons, fakeableElectrons, tightElectrons
     );
@@ -914,14 +902,14 @@ main(int argc,
         genMatchToHadTauWriter   -> write(hadTauGenMatch);
         genMatchToJetWriter      -> write(jetGenMatch);
 
-        muonGenMatcher.addGenLeptonMatchByIndex(pog_OR_preselMuons, muonGenMatch, GenParticleType::kGenMuon);
-        muonGenMatcher.addGenHadTauMatch       (pog_OR_preselMuons, genHadTaus);
-        muonGenMatcher.addGenJetMatch          (pog_OR_preselMuons, genJets);
+        muonGenMatcher.addGenLeptonMatchByIndex(preselMuons, muonGenMatch, GenParticleType::kGenMuon);
+        muonGenMatcher.addGenHadTauMatch       (preselMuons, genHadTaus);
+        muonGenMatcher.addGenJetMatch          (preselMuons, genJets);
 
-        electronGenMatcher.addGenLeptonMatchByIndex(pog_OR_preselElectronsUncleaned, electronGenMatch, GenParticleType::kGenElectron);
-        electronGenMatcher.addGenPhotonMatchByIndex(pog_OR_preselElectronsUncleaned, electronGenMatch);
-        electronGenMatcher.addGenHadTauMatch       (pog_OR_preselElectronsUncleaned, genHadTaus);
-        electronGenMatcher.addGenJetMatch          (pog_OR_preselElectronsUncleaned, genJets);
+        electronGenMatcher.addGenLeptonMatchByIndex(preselElectronsUncleaned, electronGenMatch, GenParticleType::kGenElectron);
+        electronGenMatcher.addGenPhotonMatchByIndex(preselElectronsUncleaned, electronGenMatch);
+        electronGenMatcher.addGenHadTauMatch       (preselElectronsUncleaned, genHadTaus);
+        electronGenMatcher.addGenJetMatch          (preselElectronsUncleaned, genJets);
 
         hadTauGenMatcher.addGenLeptonMatchByIndex(selHadTaus, hadTauGenMatch, GenParticleType::kGenAnyLepton);
         hadTauGenMatcher.addGenHadTauMatch       (selHadTaus, genHadTaus);
@@ -950,14 +938,14 @@ main(int argc,
           }
         }
 
-        muonGenMatcher.addGenLeptonMatch(pog_OR_preselMuons, genMuons);
-        muonGenMatcher.addGenHadTauMatch(pog_OR_preselMuons, genHadTaus);
-        muonGenMatcher.addGenJetMatch   (pog_OR_preselMuons, genJets);
+        muonGenMatcher.addGenLeptonMatch(preselMuons, genMuons);
+        muonGenMatcher.addGenHadTauMatch(preselMuons, genHadTaus);
+        muonGenMatcher.addGenJetMatch   (preselMuons, genJets);
 
-        electronGenMatcher.addGenLeptonMatch(pog_OR_preselElectronsUncleaned, genElectrons);
-        electronGenMatcher.addGenPhotonMatch(pog_OR_preselElectronsUncleaned, genPhotons);
-        electronGenMatcher.addGenHadTauMatch(pog_OR_preselElectronsUncleaned, genHadTaus);
-        electronGenMatcher.addGenJetMatch(pog_OR_preselElectronsUncleaned, genJets);
+        electronGenMatcher.addGenLeptonMatch(preselElectronsUncleaned, genElectrons);
+        electronGenMatcher.addGenPhotonMatch(preselElectronsUncleaned, genPhotons);
+        electronGenMatcher.addGenHadTauMatch(preselElectronsUncleaned, genHadTaus);
+        electronGenMatcher.addGenJetMatch(preselElectronsUncleaned, genJets);
 
         hadTauGenMatcher.addGenLeptonMatch(selHadTaus, genLeptons);
         hadTauGenMatcher.addGenHadTauMatch(selHadTaus, genHadTaus);
@@ -982,8 +970,8 @@ main(int argc,
     eventInfoWriter.write(eventInfo);
     objectMultiplicityWriter.write(objectMultiplicity);
     hltPathWriter_instance.write(triggers);
-    muonWriter->write(pog_OR_preselMuons);
-    electronWriter->write(pog_OR_preselElectronsUncleaned);
+    muonWriter->write(preselMuons);
+    electronWriter->write(preselElectronsUncleaned);
     hadTauWriter->write(looseHadTaus);
     jetWriter->write(selJets);
     metWriter->write(met);
