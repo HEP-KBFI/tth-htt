@@ -139,6 +139,8 @@ enum class TriggerSFsys
   shift_1l2tauUp,   shift_1l2tauDown,
   shift_1l1tauUp,   shift_1l1tauDown,
   shift_0l2tauUp,   shift_0l2tauDown,
+  shift_1lEUp,      shift_1lEDown,
+  shift_1lMuUp,     shift_1lMuDown,
 };
 
 enum class TriggerSFsysChoice

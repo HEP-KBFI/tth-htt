@@ -177,6 +177,8 @@ namespace aux
       case TriggerSFsys::shift_3lUp:         __attribute__((fallthrough));
       case TriggerSFsys::shift_1l2tauUp:     __attribute__((fallthrough));
       case TriggerSFsys::shift_1l1tauUp:     __attribute__((fallthrough));
+      case TriggerSFsys::shift_1lEUp:        __attribute__((fallthrough));
+      case TriggerSFsys::shift_1lMuUp:       __attribute__((fallthrough));
       case TriggerSFsys::shift_0l2tauUp:     return aux::compSF(eff_data.max, eff_mc.min);
       case TriggerSFsys::shiftDown:          __attribute__((fallthrough));
       case TriggerSFsys::shift_2lssDown:     __attribute__((fallthrough));
@@ -186,6 +188,8 @@ namespace aux
       case TriggerSFsys::shift_3lDown:       __attribute__((fallthrough));
       case TriggerSFsys::shift_1l2tauDown:   __attribute__((fallthrough));
       case TriggerSFsys::shift_1l1tauDown:   __attribute__((fallthrough));
+      case TriggerSFsys::shift_1lEDown:      __attribute__((fallthrough));
+      case TriggerSFsys::shift_1lMuDown:     __attribute__((fallthrough));
       case TriggerSFsys::shift_0l2tauDown:   return aux::compSF(eff_data.min, eff_mc.max);
       default: assert(false);
     }
