@@ -4,7 +4,6 @@ from tthAnalysis.HiggsToTauTau.safe_root import ROOT
 from tthAnalysis.HiggsToTauTau.common import SmartFormatter
 from tthAnalysis.HiggsToTauTau.hdfs import hdfs
 
-import sys
 import os.path
 import array
 import argparse

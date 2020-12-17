@@ -30,6 +30,15 @@ def get_lumi(era):
   else:
     raise ValueError("Invalid era: %s" % era)
 
+# https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageAt13TeV
+WH_xsec = 1.373 # pp -> WH
+ZH_xsec = 0.8839 # pp -> ZH
+VH_xsec = WH_xsec + ZH_xsec
+VH_keys = {
+  'WH' : WH_xsec / VH_xsec,
+  'ZH' : ZH_xsec / VH_xsec,
+}
+
 # Systematic uncertainties
 
 class systematics(object):
