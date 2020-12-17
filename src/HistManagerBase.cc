@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "tthAnalysis/HiggsToTauTau/interface/HistManagerBase.h"
 
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
@@ -36,14 +38,19 @@ HistManagerBase::book1D(TDirectory * dir,
                         double min,
                         double max)
 {
-  dir->cd();
-  TH1 * const retVal = new TH1D(getHistogramName(distribution).data(), title.data(), numBins, min, max);
-  if(! retVal->GetSumw2N())
-  {
-    retVal->Sumw2();
-  }
-  histograms_.push_back(retVal);
-  gHistograms_[dir].push_back(retVal);
+  TH1 * retVal = nullptr;
+  const bool doBookHistogram = checkOptionIsSelected(distribution);
+  if(doBookHistogram)
+    {
+      dir->cd();
+      retVal = new TH1D(getHistogramName(distribution).data(), title.data(), numBins, min, max);
+      if(! retVal->GetSumw2N())
+	{
+	  retVal->Sumw2();
+	}
+      histograms_.push_back(retVal);
+      gHistograms_[dir].push_back(retVal);
+    }
   return retVal;
 }
 
@@ -77,15 +84,20 @@ HistManagerBase::book1D(TFileDirectory & dir,
                         int numBins,
                         const float * binning)
 {
-  TDirectory * const subdir = createHistogramSubdirectory(dir);
-  subdir->cd();
-  TH1 * const retVal = new TH1D(getHistogramName(distribution).data(), title.data(), numBins, binning);
-  if(! retVal->GetSumw2N())
-  {
-    retVal->Sumw2();
-  }
-  histograms_.push_back(retVal);
-  gHistograms_[subdir].push_back(retVal);
+  TH1 * retVal = nullptr;
+  const bool doBookHistogram = checkOptionIsSelected(distribution);
+  if(doBookHistogram)
+    {
+      TDirectory * const subdir = createHistogramSubdirectory(dir);
+      subdir->cd();
+      retVal = new TH1D(getHistogramName(distribution).data(), title.data(), numBins, binning);
+      if(! retVal->GetSumw2N())
+	{
+	  retVal->Sumw2();
+	}
+      histograms_.push_back(retVal);
+      gHistograms_[subdir].push_back(retVal);
+    }
   return retVal;
 }
 
