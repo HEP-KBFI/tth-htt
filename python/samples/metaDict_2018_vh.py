@@ -22,6 +22,7 @@ for dbs_name in dbs_to_keep:
     dbs_name_new = re.sub('^/VH', '/{}'.format(vh_key), dbs_name)
     assert(dbs_name != dbs_name_new)
     dbs_copy["xsection"] *= VH_keys[vh_key]
+    dbs_copy["process_name_specific"] = re.sub("^VH", vh_key, dbs_copy["process_name_specific"])
     dbs_copy["crab_string"] = ""
     assert(dbs_name_new not in meta_dictionary)
     meta_dictionary[dbs_name_new] = dbs_copy
