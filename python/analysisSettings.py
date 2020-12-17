@@ -222,7 +222,8 @@ class systematics(object):
     env_up   = [ proc.env_().up   for proc in procs ]
     env_down = [ proc.env_().down for proc in procs ]
 
-    full = ttbar + dy# + wjets
+    #full = ttbar + dy# + wjets
+    full = isr_up + isr_down + fsr_up + fsr_down
 
   class LHE(object):
 
@@ -538,7 +539,8 @@ class systematics(object):
     env_up    = [ proc.env_().up    for proc in procs ]
     env_down  = [ proc.env_().down  for proc in procs ]
 
-    full = ttH + tHq + tHW + ttW + ttZ + dy + hh + ttbar + wz + zz + gg_zz + qq_zz
+    #full = ttH + tHq + tHW + ttW + ttZ + dy + hh + ttbar + wz + zz + gg_zz + qq_zz
+    full = env_up + env_down
 
   class LeptonIDSF(object):
     el_tight = [ "CMS_ttHl_lepEff_eltightUp", "CMS_ttHl_lepEff_eltightDown" ]
