@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2020-06-23 13:10:34 with the following command:
+# file generated at 2020-12-17 20:54:40 with the following command:
 # create_dictionary.py -m python/samples/metaDict_2017.py -p python/samples/sampleLocations_2017_nanoAOD.txt -N samples_2017 -E 2017 -o python/samples -g tthAnalyzeSamples_2017_nanoAOD.py -M
 
 samples_2017 = OD()
@@ -25224,6 +25224,92 @@ samples_2017["/TTWJetsToLNu_EWK_5f_NLO/RunIIFall17MiniAODv2/USER"] = OD([
     [
       OD([
         ("path",      "/hdfs/cms/store/user/kaehatah/2017v2_2020Jun16/TTWJetsToLNu_EWK_5f_NLO/2017v2_2020Jun16_TTWJetsToLNu_EWK_5f_NLO__RunIIFall17MiniAODv2/000000_000000"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
+samples_2017["/ZHToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "VH"),
+  ("process_name_specific",           "ZHToNonbb_M125"),
+  ("nof_files",                       10),
+  ("nof_db_files",                    35),
+  ("nof_events",                      {
+  }),
+  ("nof_tree_events",                 328024),
+  ("nof_db_events",                   918508),
+  ("fsize_local",                     835073145), # 835.07MB, avg file size 83.51MB
+  ("fsize_db",                        44015654097), # 44.02GB, avg file size 1.26GB
+  ("use_it",                          True),
+  ("xsection",                        0.3691239),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("nof_PSweights",                   1),
+  ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/karl/ttHVHSplitter/2017/2020Dec17/ntuples/ZHToNonbb_M125"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
+samples_2017["/WHToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8/RunIIFall17MiniAODv2-PU2017_12Apr2018_94X_mc2017_realistic_v14-v2/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "VH"),
+  ("process_name_specific",           "WHToNonbb_M125"),
+  ("nof_files",                       10),
+  ("nof_db_files",                    35),
+  ("nof_events",                      {
+  }),
+  ("nof_tree_events",                 590484),
+  ("nof_db_events",                   918508),
+  ("fsize_local",                     1499811993), # 1.50GB, avg file size 149.98MB
+  ("fsize_db",                        44015654097), # 44.02GB, avg file size 1.26GB
+  ("use_it",                          True),
+  ("xsection",                        0.5733761),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("nof_PSweights",                   1),
+  ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/karl/ttHVHSplitter/2017/2020Dec17/ntuples/WHToNonbb_M125"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
