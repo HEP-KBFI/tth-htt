@@ -1186,6 +1186,11 @@ class analyzeConfig(object):
             "# Boolean handle for inclusion of MC Closure sidebands (2lss, TT Hadronic)",
             "{}.{:<{len}} = cms.bool({})".format(process_string, 'enable_MC_Closure_sidebands', self.enable_MC_Closure_sidebands, len = max_option_len),
           ])
+          lines.extend([
+            "# boolean handle to include Ntuples for optmizing Lepton I.D. cuts for MC Closure sidebands (2lss, TTHadronic)",
+            "{}.{:<{len}} = cms.bool({})".format(process_string, 'fillNtuple', self.fillNtuple, len = max_option_len),
+          ])
+
         if (not isHTT and not self.do_sync) or self.do_sync:
           lines.extend([
             "{}.{:<{len}} = EvtYieldHistManager_{}".format  (process_string, 'cfgEvtYieldHistManager', self.era, len = max_option_len),
@@ -1445,6 +1450,8 @@ class analyzeConfig(object):
             lines.append("process.addBackgrounds.sysShifts = cms.vstring(%s)" % jobOptions['sysShifts'])
         else:
             lines.append("process.addBackgrounds.sysShifts = cms.vstring(%s)" % self.central_or_shifts)
+        if 'max_depth_recursion' in jobOptions.keys():
+            lines.append("process.addBackgrounds.max_depth_recursion = cms.int32(%i)" % jobOptions['max_depth_recursion'])
         create_cfg(self.cfgFile_addBackgrounds, jobOptions['cfgFile_modified'], lines)
 
     def createCfg_addSysTT(self, jobOptions):
@@ -1462,8 +1469,9 @@ class analyzeConfig(object):
             lines.append("process.addSysTT.histogramsToCopy = cms.vstring(%s)" % jobOptions['histogramsToCopy'])
         if 'sysShifts' in jobOptions.keys():
             lines.append("process.addSysTT.sysShifts = cms.vstring(%s)" % jobOptions['sysShifts'])
+        if 'max_depth_recursion' in jobOptions.keys():
+            lines.append("process.addSysTT.max_depth_recursion = cms.int32(%i)" % jobOptions['max_depth_recursion'])
         create_cfg(self.cfgFile_addSysTT, jobOptions['cfgFile_modified'], lines)
-
 
     def createCfg_addFakes(self, jobOptions):
         """Create python configuration file for the addBackgroundLeptonFakes executable (data-driven estimation of 'Fakes' backgrounds)
@@ -1488,6 +1496,10 @@ class analyzeConfig(object):
             processesToSubtract.extend([ "%s_Convs" % conv_background for conv_background in self.convs_backgrounds])
         lines.append("process.addBackgroundLeptonFakes.processesToSubtract = cms.vstring(%s)" % processesToSubtract)
         lines.append("process.addBackgroundLeptonFakes.sysShifts = cms.vstring(%s)" % self.central_or_shifts)
+        if 'max_depth_recursion' in jobOptions.keys():
+            lines.append("process.addBackgroundLeptonFakes.max_depth_recursion = cms.int32(%i)" % jobOptions['max_depth_recursion'])
+        if 'makeBinContentsPositive_forTailFits' in jobOptions.keys():
+            lines.append("process.addBackgroundLeptonFakes.makeBinContentsPositive_forTailFits = cms.bool(%s)" % jobOptions['makeBinContentsPositive_forTailFits'])
         create_cfg(self.cfgFile_addFakes, jobOptions['cfgFile_modified'], lines)
 
     def createCfg_addFlips(self, jobOptions):
@@ -1734,7 +1746,7 @@ class analyzeConfig(object):
     def createScript_sbatch(self, executable, sbatchFile, jobOptions,
                             key_cfg_file = 'cfgFile_modified', key_input_file = 'inputFile',
                             key_output_file = 'outputFile', key_log_file = 'logFile',
-                            min_file_size = 20000):
+                            min_file_size = 10000):
         """Creates the python script necessary to submit 'generic' (addBackgrounds, addBackgroundFakes/addBackgroundFlips) jobs to the batch system
         """
         num_jobs = tools_createScript_sbatch(
@@ -1817,6 +1829,7 @@ class analyzeConfig(object):
             max_input_files_per_job = max_input_files_per_job,
             use_home                = self.use_home,
             max_mem                 = max_mem,
+            validate_output         = self.check_output_files
         )
         return sbatch_hadd_file
 
@@ -1922,6 +1935,8 @@ class analyzeConfig(object):
         else:
             for job in jobOptions.values():
                 lines_makefile.append("\t%s %s &> %s" % (self.executable_addBackgrounds, job['cfgFile_modified'], job['logFile']))
+        if 'makeBinContentsPositive_forTailFits' in jobOptions.keys():
+            lines.append("process.addBackgroundLeptonFakes.makeBinContentsPositive_forTailFits = cms.bool(%s)" % jobOptions['makeBinContentsPositive_forTailFits'])
         lines_makefile.append("")
         for job in jobOptions.values():
             self.filesToClean.append(job['outputFile'])

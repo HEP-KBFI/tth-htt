@@ -37,7 +37,7 @@ def createScript_sbatch(
     job_template_file     = 'sbatch-node.sh.template',
     dry_run               = False,
     validate_outputs      = True,
-    min_file_size         = 20000,
+    min_file_size         = 10000,
     max_num_submittedJobs = 5000,
     use_home              = False,
     copy_output_file      = True,
@@ -92,7 +92,7 @@ def generate_sbatch_lines(
     job_template_file     = 'sbatch-node.sh.template',
     dry_run               = False,
     validate_outputs      = True,
-    min_file_size         = 20000,
+    min_file_size         = 10000,
     max_num_submittedJobs = 5000,
     use_home              = False,
     copy_output_file      = True,
@@ -137,10 +137,10 @@ def generate_sbatch_lines(
           (num_jobs, max_num_jobs, num_jobs - max_num_jobs)
         )
 
-    lines_sbatch.append("m.waitForJobs()")
+    lines_sbatch.append("m.waitForJobs(%s)" %validate_outputs)
     return lines_sbatch, num_jobs
 
-def is_file_ok(output_file_name, validate_outputs = True, min_file_size = 20000):
+def is_file_ok(output_file_name, validate_outputs = True, min_file_size = 10000):
   if not (output_file_name and os.path.exists(output_file_name)):
     return False
 
@@ -158,7 +158,7 @@ def is_file_ok(output_file_name, validate_outputs = True, min_file_size = 20000)
         ret_value = True
     else:
       logging.info(
-        "Deleting output file and resubmitting job because it has size smaller than %d bytes" % min_file_size
+        "Deleting output file and resubmitting job because the output file has size of %d bytes, smaller than %d bytes, indicating that a failure in writing the output file occured." % (output_file_size, min_file_size)
       )
 
   if validate_outputs:
@@ -191,7 +191,7 @@ def generate_sbatch_line(
     script_file_name,
     log_file_name     = None,
     cvmfs_error_log   = None,
-    min_file_size     = 20000,
+    min_file_size     = 10000,
     job_template_file = 'sbatch-node.sh.template',
     validate_outputs  = True,
     copy_output_file = True,
@@ -247,6 +247,7 @@ def generate_sbatch_line(
       "  skipIfOutputFileExists = {skipIfOutputFileExists},\n"        \
       "  job_template_file      = '{job_template_file}',\n"           \
       "  copy_output_file       = {copy_output_file},\n"              \
+      "  validate_output        = {validate_outputs},\n"              \
       ")".format(
         input_file_names       = input_file_names,
         executable             = executable,
@@ -258,6 +259,7 @@ def generate_sbatch_line(
         skipIfOutputFileExists = False,
         job_template_file      = job_template_file,
         copy_output_file       = copy_output_file,
+        validate_outputs        = validate_outputs,
     )
     return submissionStatement
 
@@ -281,9 +283,10 @@ def createScript_sbatch_hadd_nonBlocking(
         dry_run                 = False,
         max_input_files_per_job = 10,
         use_home                = False,
-        min_file_size           = 20000,
+        min_file_size           = 10000,
         max_num_submittedJobs   = 5000,
         max_mem                 = '',
+        validate_output         = True,
       ):
 
     header = """
@@ -318,6 +321,7 @@ cluster_histogram_aggregator_{{ idx }} = ClusterHistogramAggregatorNonBlocking(
   auxDirName              = '{{auxDirName}}',
   script_file_name        = '{{script_file_name}}',
   log_file_name           = '{{log_file_name}}',
+  validate_output         = {{validate_output}},
 )
 cluster_histogram_aggregator_{{idx}}.create_jobs()
 cluster_histogram_aggregators.append(cluster_histogram_aggregator_{{idx}})
@@ -338,7 +342,7 @@ while True:
     break
   else:
     time.sleep(60)
-"""
+""" 
     script_str = "ClusterHistogramAggregator"
     
     content = []
@@ -370,6 +374,7 @@ while True:
             'max_num_submittedJobs'   : max_num_submittedJobs,
             'idx'                     : idxKey,
             'max_mem'                 : max_mem,
+            'validate_output'         : validate_output,
         }
         job_code = jinja2.Template(job_template).render(**template_vars)
         content.append(job_code)
@@ -394,7 +399,7 @@ def createScript_sbatch_hadd(
     dry_run                 = False,
     max_input_files_per_job = 10,
     use_home                = False,
-    min_file_size           = 20000,
+    min_file_size           = 10000,
     max_num_submittedJobs   = 5000,
   ):
     """Creates the python script necessary to submit 'hadd' jobs to the batch system
@@ -435,7 +440,7 @@ def generate_sbatch_lines_hadd(
     dry_run                 = False,
     max_input_files_per_job = 10,
     use_home                = False,
-    min_file_size           = 20000,
+    min_file_size           = 10000,
     max_num_submittedJobs   = 5000,
   ):
     template_vars = {

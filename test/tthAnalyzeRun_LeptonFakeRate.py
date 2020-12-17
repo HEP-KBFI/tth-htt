@@ -126,6 +126,7 @@ if __name__ == '__main__':
     denominator_histogram                    = ("mT_fix_L_den",     "m_{T}^{fix,den}"), # or ("EventCounter", "Number of events"),
     prep_dcard                               = True,
     enable_MC_Closure_sidebands              = False, # boolean handle to control inclusion of MC Closure sidebands: (2lss, TT Hadronic)
+    fillNtuple                               = False, # boolean handle to include Ntuples for optmizing Lepton I.D. cuts for MC Closure sidebands (2lss, TTHadronic) 
     max_files_per_job                        = files_per_job,
     era                                      = era,
     use_lumi                                 = True,

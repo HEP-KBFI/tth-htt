@@ -264,6 +264,10 @@ getTriggerSF_option(const std::string & central_or_shift,
   else if(central_or_shift == "CMS_ttHl_trigger_1l1tauDown"   && isHadTauCompatible) central_or_shift_int = TriggerSFsys::shift_1l1tauDown;
   else if(central_or_shift == "CMS_ttHl_trigger_0l2tauUp"     && isHadTauCompatible) central_or_shift_int = TriggerSFsys::shift_0l2tauUp;
   else if(central_or_shift == "CMS_ttHl_trigger_0l2tauDown"   && isHadTauCompatible) central_or_shift_int = TriggerSFsys::shift_0l2tauDown;
+  else if(central_or_shift == "CMS_ttHl_trigger_1lEUp"        && isLeptonCompatible) central_or_shift_int = TriggerSFsys::shift_1lEUp;
+  else if(central_or_shift == "CMS_ttHl_trigger_1lEDown"      && isLeptonCompatible) central_or_shift_int = TriggerSFsys::shift_1lEDown;
+  else if(central_or_shift == "CMS_ttHl_trigger_1lMuUp"       && isLeptonCompatible) central_or_shift_int = TriggerSFsys::shift_1lMuUp;
+  else if(central_or_shift == "CMS_ttHl_trigger_1lMuDown"     && isLeptonCompatible) central_or_shift_int = TriggerSFsys::shift_1lMuDown;
   return central_or_shift_int;
 }
 

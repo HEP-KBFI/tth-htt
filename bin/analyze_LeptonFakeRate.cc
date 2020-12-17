@@ -632,6 +632,7 @@ LeptonPlusJet(Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface_
 	      std::vector<GenParticle> genTauLeptons,
 	      DYMCNormScaleFactors * dyNormScaleFactors = 0,
 	      BtagSFRatioFacility * btagSFRatioFacility = 0,
+	      bool fillNtuple = false,
 	      NtupleFillerBDT<float, int>* bdt_filler_e_LeptonPlusJet = 0,
 	      NtupleFillerBDT<float, int>* bdt_filler_mu_LeptonPlusJet = 0,
 	      bool isDEBUG = false,
@@ -778,9 +779,11 @@ LeptonPlusJet(Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface_
 		    cutFlowTable_e->update("Event passes trigger and MET filters", evtWeight);
 		  }
 
+		if(fillNtuple)
+		  {
 		  // Fill Ntuples for electron
 		  FillNtuples(preselLeptonsFull[0], eventInfo, evtWeight, evtWeight_wo_TrigPrescale,  mT, mT_fix, passesMETandTrigger, bdt_filler_e_LeptonPlusJet);
-		
+		  }
 		  // numerator histograms
 		  numerator_and_denominatorHistManagers * histograms_incl_num = nullptr;
 		  std::vector<numerator_and_denominatorHistManagers *> * histograms_binned_num = nullptr;
@@ -941,9 +944,11 @@ LeptonPlusJet(Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface_
 		  cutFlowTable_mu->update("Event passes trigger and MET filters", evtWeight);
 		}
 
-		// Fill Ntuples for muon
-		FillNtuples(preselLeptonsFull[0], eventInfo, evtWeight, evtWeight_wo_TrigPrescale, mT, mT_fix, passesMETandTrigger, bdt_filler_mu_LeptonPlusJet);
-	
+		if(fillNtuple)
+		  {
+		    // Fill Ntuples for muon
+		    FillNtuples(preselLeptonsFull[0], eventInfo, evtWeight, evtWeight_wo_TrigPrescale, mT, mT_fix, passesMETandTrigger, bdt_filler_mu_LeptonPlusJet);
+		  }
 		// numerator histograms
 		numerator_and_denominatorHistManagers * histograms_incl_num = nullptr;
 		std::vector<numerator_and_denominatorHistManagers *> * histograms_binned_num = nullptr;
@@ -1069,6 +1074,7 @@ DiLeptonSS(Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface_ntu
 	   std::vector<GenParticle> genTauLeptons,
 	   DYMCNormScaleFactors* dyNormScaleFactors = 0,
 	   BtagSFRatioFacility* btagSFRatioFacility = 0,
+	   bool fillNtuple = false,
 	   NtupleFillerBDT<float, int>* bdt_filler_e_diLeptSS = 0,
 	   NtupleFillerBDT<float, int>* bdt_filler_mu_diLeptSS = 0,
 	   bool isDEBUG = false,
@@ -1247,9 +1253,11 @@ DiLeptonSS(Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface_ntu
 		  const double mT     = comp_mT(preselElectron, met_mod.pt(), met_mod.phi());
 		  const double mT_fix = comp_mT_fix(preselElectron, met_mod.pt(), met_mod.phi());
 
-		  // Fill Ntuples for electron
-		  FillNtuples(preselLeptonsFull[ProbeLeptonIndex], eventInfo, evtWeight, evtWeight_wo_TrigPrescale, mT, mT_fix, passesMETandTrigger, bdt_filler_e_diLeptSS);
-
+		  if(fillNtuple)
+		    {
+		      // Fill Ntuples for electron
+		      FillNtuples(preselLeptonsFull[ProbeLeptonIndex], eventInfo, evtWeight, evtWeight_wo_TrigPrescale, mT, mT_fix, passesMETandTrigger, bdt_filler_e_diLeptSS);
+		    }
 		  // numerator histograms
     		  numerator_and_denominatorHistManagers * histograms_incl_num = nullptr;
     		  std::vector<numerator_and_denominatorHistManagers *> * histograms_binned_num = nullptr;
@@ -1320,10 +1328,11 @@ DiLeptonSS(Data_to_MC_CorrectionInterface_Base * dataToMCcorrectionInterface_ntu
 		  const RecoMEt met_mod = METSystComp_LeptonFakeRate(preselLeptonsFull[ProbeLeptonIndex], genmet, met, METScaleSyst, metSyst_option, isDEBUG);
 		  const double mT     = comp_mT(preselMuon, met_mod.pt(), met_mod.phi());
 		  const double mT_fix = comp_mT_fix(preselMuon, met_mod.pt(), met_mod.phi());
-
-		  // Fill Ntuples for muon
-		  FillNtuples(preselLeptonsFull[ProbeLeptonIndex], eventInfo, evtWeight, evtWeight_wo_TrigPrescale, mT, mT_fix, passesMETandTrigger, bdt_filler_mu_diLeptSS);
-
+		  if(fillNtuple)
+		    {
+		      // Fill Ntuples for muon
+		      FillNtuples(preselLeptonsFull[ProbeLeptonIndex], eventInfo, evtWeight, evtWeight_wo_TrigPrescale, mT, mT_fix, passesMETandTrigger, bdt_filler_mu_diLeptSS);
+		    }
 		  // numerator histograms
 		  numerator_and_denominatorHistManagers * histograms_incl_num = nullptr;
 		  std::vector<numerator_and_denominatorHistManagers *> * histograms_binned_num = nullptr;
@@ -2225,7 +2234,8 @@ main(int argc,
   typedef std::remove_pointer<decltype(bdt_filler_mu_diLeptSS)>::type::float_type float_type_mu;
   typedef std::remove_pointer<decltype(bdt_filler_mu_diLeptSS)>::type::int_type   int_type_mu;
 
-  if(enable_MC_Closure_sidebands && fillNtuple ) {
+  //if(enable_MC_Closure_sidebands && fillNtuple ) {
+  if( fillNtuple ) {
     bdt_filler_e_LeptonPlusJet = new std::remove_pointer<decltype(bdt_filler_e_LeptonPlusJet)>::type(
 	    makeHistManager_cfg(process_string, Form("LeptonFakeRate_ntuple_LeptonPlusJet/%s", "electron"), era_string, central_or_shift)
     );
@@ -2700,6 +2710,7 @@ main(int argc,
 				     genTauLeptons,
 				     dyNormScaleFactors,
 				     btagSFRatioFacility,
+				     fillNtuple,	 
 				     bdt_filler_e_diLeptSS,
 				     bdt_filler_mu_diLeptSS,
 				     isDEBUG,
@@ -2759,6 +2770,7 @@ main(int argc,
 					     genTauLeptons,
 					     dyNormScaleFactors,
 					     btagSFRatioFacility,
+					     fillNtuple,		 
 					     bdt_filler_e_LeptonPlusJet,
 					     bdt_filler_mu_LeptonPlusJet,
 					     isDEBUG,

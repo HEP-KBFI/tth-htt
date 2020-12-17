@@ -139,7 +139,8 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
         numerator_histogram,
         denominator_histogram,
         prep_dcard,
-        enable_MC_Closure_sidebands,       
+        enable_MC_Closure_sidebands,
+        fillNtuple,       
         max_files_per_job,
         era,
         use_lumi,
@@ -224,7 +225,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     self.histogramDir_prep_dcard = "LeptonFakeRate"
     self.prep_dcard = prep_dcard
     self.enable_MC_Closure_sidebands = enable_MC_Closure_sidebands
-
+    self.fillNtuple = fillNtuple
 
     self.numerator_histogram = numerator_histogram[0]
     self.denominator_histogram = denominator_histogram[0]

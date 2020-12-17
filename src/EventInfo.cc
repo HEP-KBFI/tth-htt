@@ -19,6 +19,7 @@ const std::map<std::string, Int_t> EventInfo::decayMode_idString_singleHiggs =
   { "htt",     15 },
   { "hzg", 220023 },
   { "hmm",     13 },
+  { "hbb",      5 },
 };
 
 const std::map<std::string, Int_t> EventInfo::decayMode_idString_diHiggs =

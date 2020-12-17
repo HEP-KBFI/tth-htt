@@ -49,6 +49,7 @@ namespace
                                        const TDirectory* dir, const std::string& dirName, 
                                        const vstring& processes_input, const std::string& process_output, 
                                        const vstring& central_or_shifts,
+                                       int depth_recursion, int max_depth_recursion,
                                        bool isDEBUG = false)
   {
     if ( isDEBUG )
@@ -89,7 +90,23 @@ namespace
         TH1* histogram = dynamic_cast<TH1*>(object);
         if ( !histogram ) continue;
         TString histogramName = TString(histogram->GetName()).ReplaceAll(Form("%s_", the_process_input.data()), "");
-        histogramNames.insert(histogramName.Data());
+        for ( auto central_or_shift: central_or_shifts )
+        {
+	  if ( !(central_or_shift == "" || central_or_shift == "central") ) 
+          {
+	    histogramName = histogramName.ReplaceAll(Form("%s_", central_or_shift.data()), "");
+	  }
+	}
+	if ( histogramName.Contains("CMS_") ) continue;
+	if ( histogramName.Contains("cutFlow") ) continue;
+	if ( histogramNames.find(histogramName.Data()) == histogramNames.end() ) 
+        {
+          if ( isDEBUG )
+          {
+	    std::cout << "adding histogram = " << histogramName.Data() << std::endl;
+          }
+	  histogramNames.insert(histogramName.Data());
+	}
       }
       
       // add histograms
@@ -111,6 +128,11 @@ namespace
               throw cmsException(__func__, __LINE__)
                 << "Attempting to add the same histogram twice: " << histogram_input->GetName() << " from " << process_input << " !!\n";
             }
+if ( histogramName == "jpaCategory" && histogram_input->GetNbinsX() != 15 ) 
+{
+  std::cout << "histogramName = " << histogramName << " for process_input = " << process_input << " has the wrong binning --> skipping !!" << std::endl;
+  continue;
+}
             histograms_input.push_back(histogram_input);
           }
 
@@ -143,9 +165,26 @@ namespace
 
     // recursively process all subdirectories
     std::vector<const TDirectory*> subdirs = getSubdirectories(dir);
-    for ( std::vector<const TDirectory*>::iterator subdir = subdirs.begin();
-          subdir != subdirs.end(); ++subdir ) {
-      processSubdirectory_recursively(fs, *subdir, dirName + "/" + (*subdir)->GetName(), processes_input, process_output, central_or_shifts, isDEBUG);
+    bool stopRecursion = ( max_depth_recursion != -1 && depth_recursion >= max_depth_recursion ) ? true : false;
+    if ( !stopRecursion )
+    {
+      for ( std::vector<const TDirectory*>::iterator subdir = subdirs.begin();
+            subdir != subdirs.end(); ++subdir ) {
+        processSubdirectory_recursively(
+          fs, *subdir, dirName + "/" + (*subdir)->GetName(), 
+          processes_input, process_output, 
+          central_or_shifts,
+          depth_recursion + 1, max_depth_recursion,
+          isDEBUG
+        );
+      }
+    }
+    else
+    {
+      if ( isDEBUG )
+      {
+        std::cout << "aborting recursion, because maximum-recursion-depth = " << max_depth_recursion << " has been reached." << std::endl;
+      }
     }
     for ( const TDirectory* subdir: subdirs )
     {
@@ -201,6 +240,9 @@ int main(int argc, char* argv[])
     central_or_shifts.push_back(""); // CV: add central value
   }
 
+  int max_depth_recursion = cfg_addBackgrounds.exists("max_depth_recursion") ? cfg_addBackgrounds.getParameter<int>("max_depth_recursion") : -1;
+  //int max_depth_recursion = cfg_addBackgrounds.getParameter<int>("max_depth_recursion");
+
   bool isDEBUG = cfg_addBackgrounds.exists("isDEBUG") ? cfg_addBackgrounds.getParameter<bool>("isDEBUG") : false;
   //bool isDEBUG = cfg_addBackgrounds.getParameter<bool>("isDEBUG");
 
@@ -221,7 +263,13 @@ int main(int argc, char* argv[])
     TDirectory* dir = getDirectory(inputFile, category, true);
     assert(dir);
 
-    processSubdirectory_recursively(fs, dir, category, processes_input, process_output, central_or_shifts, isDEBUG);
+    processSubdirectory_recursively(
+      fs, dir, category, 
+      processes_input, process_output, 
+      central_or_shifts, 
+      1, max_depth_recursion,
+      isDEBUG
+    );
   }
 
   //---------------------------------------------------------------------------------------------------

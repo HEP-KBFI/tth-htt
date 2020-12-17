@@ -17,6 +17,13 @@ MVAInputVarHistManager::MVAInputVarHistManager(const edm::ParameterSet & cfg)
   binningOptions_["avr_dr_lep_tau"]             = new binningOptionType("avr_dr_lep_tau",             10,  0.,    5.);
   binningOptions_["max_dr_lep_tau"]             = new binningOptionType("max_dr_lep_tau",             10,  0.,    5.);
   binningOptions_["is_OS"]                      = new binningOptionType("is_OS",                       2,  0.,    2.);
+  // ---- From HH 2l2tau MVA training
+  binningOptions_["dr_lep1_tau1_tau2_max"]      = new binningOptionType("dr_lep1_tau1_tau2_max",      10,  0.,    5.);
+  binningOptions_["dr_lep_tau_min_OS"]          = new binningOptionType("dr_lep_tau_min_OS",          11,  -1.,    5.);
+  binningOptions_["dr_lep_tau_min_SS"]          = new binningOptionType("dr_lep_tau_min_SS",          11,  -1.,    5.);
+  binningOptions_["dr_lep1_tau2"]               = new binningOptionType("dr_lep1_tau2",               10,  0.,    5.);  
+  binningOptions_["dr_lep2_tau1"]               = new binningOptionType("dr_lep2_tau1",               10,  0.,    5.);  
+  // --------------------------
   binningOptions_["dr_lep_tau_os"]              = new binningOptionType("dr_lep_tau_os",              10,  0.,    5.);
   binningOptions_["dr_lep_tau_ss"]              = new binningOptionType("dr_lep_tau_ss",              10,  0.,    5.);
   binningOptions_["dr_lep1_tau"]                = new binningOptionType("dr_lep1_tau",                10,  0.,    5.);
@@ -33,6 +40,15 @@ MVAInputVarHistManager::MVAInputVarHistManager(const edm::ParameterSet & cfg)
   binningOptions_["dr_taus"]                    = new binningOptionType("dr_taus",                    10,  0.,    5.);
   binningOptions_["hadTauPairCharge"]           = new binningOptionType("hadTauPairCharge",            5, -2.5,  +2.5);
   binningOptions_["sum_Lep_charge"]             = new binningOptionType("sum_Lep_charge",              9, -4.5,  +4.5);
+  // ---- From HH 2l2tau MVA training
+  binningOptions_["HT"]                         = new binningOptionType("HT",                         50,  0.,  500.);
+  binningOptions_["met"]                        = new binningOptionType("met",                        50,  0.,  500.);
+  binningOptions_["mass_BP2_OS"]                = new binningOptionType("mass_BP2_OS",                51,  -1.,  500.);
+  binningOptions_["diHiggsMass"]                = new binningOptionType("diHiggsMass",                50,  0.,  500.);
+  binningOptions_["Smin_llMEt"]                 = new binningOptionType("Smin_llMEt",                 50,  0.,  500.);
+  binningOptions_["Smin_lltautau"]              = new binningOptionType("Smin_lltautau",              50,  0.,  500.);
+  binningOptions_["ptTauTauVis"]                = new binningOptionType("ptTauTauVis",                50,  0.,  500.);
+  // ------------------------
   binningOptions_["ht"]                         = new binningOptionType("ht",                         40,  0.,  400.);
   binningOptions_["htmiss"]                     = new binningOptionType("htmiss",                     40,  0.,  200.);
   binningOptions_["TMath::Min(htmiss,500)"]     = new binningOptionType("htmiss",                     40,  0.,  200.);
