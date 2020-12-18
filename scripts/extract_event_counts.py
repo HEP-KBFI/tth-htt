@@ -32,7 +32,7 @@ name = args.name
 
 output_dir = os.path.dirname(os.path.abspath(output))
 if not os.path.isdir(output_dir):
-  raise RuntimeError("The directory for the file %s does not exist" % output_dir)
+  raise RuntimeError("The directory for the file %s does not exist" % output)
 
 histograms = collections.OrderedDict()
 for input_fn in inputs:
