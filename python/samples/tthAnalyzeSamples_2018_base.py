@@ -29182,6 +29182,114 @@ samples_2018["/TTWJetsToLNu_EWK_5f_NLO/RunIIAutumn18MiniAOD/USER"] = OD([
   ]),
 ])
 
+samples_2018["/ZHToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "VH"),
+  ("process_name_specific",           "ZHToNonbb_M125"),
+  ("nof_files",                       5),
+  ("nof_db_files",                    30),
+  ("nof_events",                      {
+    'Count'                                                                          : [ 394097, ],
+    'CountWeighted'                                                                  : [ 1.92584688e+05, 1.92678359e+05, 1.92476812e+05, ],
+    'CountWeightedLHEWeightScale'                                                    : [ 1.98236609e+05, 2.00639562e+05, 2.03712484e+05, 1.90423281e+05, 1.92581750e+05, 1.94898500e+05, 1.82207422e+05, 1.84236844e+05, 1.86166047e+05, ],
+    'CountWeightedLHEEnvelope'                                                       : [ 2.20600078e+05, 1.66278609e+05, ],
+    'CountWeightedFull'                                                              : [ 2.28999175e+06, 2.29101700e+06, 2.28869575e+06, ],
+    'CountWeightedFullLHEWeightScale'                                                : [ 2.35715425e+06, 2.38571875e+06, 2.42225025e+06, 2.26424450e+06, 2.28990750e+06, 2.31744675e+06, 2.16654900e+06, 2.19067350e+06, 2.21361425e+06, ],
+    'CountWeightedFullLHEEnvelope'                                                   : [ 2.62306950e+06, 1.97713875e+06, ],
+  }),
+  ("nof_tree_events",                 394097),
+  ("nof_db_events",                   1102578),
+  ("fsize_local",                     1314258103), # 1.31GB, avg file size 262.85MB
+  ("fsize_db",                        51922787567), # 51.92GB, avg file size 1.73GB
+  ("use_it",                          True),
+  ("xsection",                        0.3691239),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("nof_PSweights",                   1),
+  ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec17_woPresel_nom_all/ntuples/ZHToNonbb_M125"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+    "HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg",
+    "HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg",
+    "HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg",
+    "HLT_Ele24_eta2p1_WPTight_Gsf_LooseChargedIsoPFTau30_eta2p1_CrossL1",
+    "HLT_IsoMu20_eta2p1_LooseChargedIsoPFTau27_eta2p1_CrossL1",
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
+samples_2018["/WHToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/MINIAODSIM"] = OD([
+  ("type",                            "mc"),
+  ("sample_category",                 "VH"),
+  ("process_name_specific",           "WHToNonbb_M125"),
+  ("nof_files",                       5),
+  ("nof_db_files",                    30),
+  ("nof_events",                      {
+    'Count'                                                                          : [ 708481, ],
+    'CountWeighted'                                                                  : [ 3.51102750e+05, 3.51042250e+05, 3.51116875e+05, ],
+    'CountWeightedLHEWeightScale'                                                    : [ 3.62366906e+05, 3.66134375e+05, 3.71064500e+05, 3.47541688e+05, 3.51089812e+05, 3.54933219e+05, 3.32372000e+05, 3.35797125e+05, 3.39126031e+05, ],
+    'CountWeightedLHEEnvelope'                                                       : [ 4.03396938e+05, 3.02478406e+05, ],
+    'CountWeightedFull'                                                              : [ 4.17393725e+06, 4.17334325e+06, 4.17441250e+06, ],
+    'CountWeightedFullLHEWeightScale'                                                : [ 4.30810050e+06, 4.35288900e+06, 4.41151900e+06, 4.13184150e+06, 4.17382675e+06, 4.21972700e+06, 3.95149575e+06, 3.99220950e+06, 4.03180525e+06, ],
+    'CountWeightedFullLHEEnvelope'                                                   : [ 4.79590700e+06, 3.59609825e+06, ],
+  }),
+  ("nof_tree_events",                 708481),
+  ("nof_db_events",                   1102578),
+  ("fsize_local",                     2373417899), # 2.37GB, avg file size 474.68MB
+  ("fsize_db",                        51922787567), # 51.92GB, avg file size 1.73GB
+  ("use_it",                          True),
+  ("xsection",                        0.5733761),
+  ("genWeight",                       True),
+  ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
+  ("has_LHE",                         True),
+  ("nof_PSweights",                   1),
+  ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
+  ("nof_reweighting",                 0),
+  ("local_paths",
+    [
+      OD([
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec17_woPresel_nom_all/ntuples/WHToNonbb_M125"),
+        ("selection", "*"),
+        ("blacklist", []),
+      ]),
+    ]
+  ),
+  ("missing_completely",           [
+    # not computed
+  ]),
+  ("missing_from_superset",        [
+    # not computed
+  ]),
+  ("missing_hlt_paths",            [
+    "HLT_DoubleMediumChargedIsoPFTau40_Trk1_TightID_eta2p1_Reg",
+    "HLT_DoubleTightChargedIsoPFTau35_Trk1_TightID_eta2p1_Reg",
+    "HLT_DoubleTightChargedIsoPFTau40_Trk1_eta2p1_Reg",
+    "HLT_Ele24_eta2p1_WPTight_Gsf_LooseChargedIsoPFTau30_eta2p1_CrossL1",
+    "HLT_IsoMu20_eta2p1_LooseChargedIsoPFTau27_eta2p1_CrossL1",
+  ]),
+  ("hlt_paths",                    [
+    # not computed
+  ]),
+])
+
 samples_2018["sum_events"] = [
   [ 'ZZTo4L_ext1',                                     'ZZTo4L_ext2',                                      ],
   [ 'TTToSemiLeptonic',                                'TTToSemiLeptonic_ext3',                            ],
