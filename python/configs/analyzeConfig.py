@@ -204,9 +204,12 @@ class analyzeConfig(object):
           for dbs_key in dbs_list:
             samples[dbs_key]['nof_events'] = copy.deepcopy(nof_events)
 
+        use_vh_split, use_vh_unsplit = False, False
         self.samples = copy.deepcopy(samples)
         for sample_key, sample_info in self.samples.items():
           if sample_key == 'sum_events': continue
+          use_vh_split |= (sample_info["use_it"] and sample_key.startswith(("/ZHToNonbb", "/WHToNonbb")))
+          use_vh_unsplit |= (sample_info["use_it"] and sample_key.startswith("/VHToNonbb"))
           sample_info["dbs_name"] = sample_key
           sample_info["apply_toppt_rwgt"] = sample_key.startswith('/TTTo')
           if any('{}PSWeight'.format(self.weight_prefix) in event_count for event_count in sample_info['nof_events']):
@@ -229,6 +232,9 @@ class analyzeConfig(object):
             for event_count in event_counts_remove:
               logging.warning("Removing event yield {} from sample {}".format(event_count, sample_info["process_name_specific"]))
               del sample_info['nof_events'][event_count]
+
+        if use_vh_split and use_vh_unsplit:
+          raise RuntimeError("Cannot use both split and unsplit VH samples")
 
         self.lep_mva_wp = lep_mva_wp
         self.disableFRwgts = disableFRwgts
