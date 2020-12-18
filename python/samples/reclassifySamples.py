@@ -62,9 +62,9 @@ def reclassifySamples(samples_era_base, samples_era_hh_multilepton = None, sampl
         sample_info["use_it"] = True
 
       if sample_info["sample_category"] == "VH":
-        if sample_name.startswith("/WH"):
+        if sample_name.startswith(("/WH", "/WplusH", "/WminusH")):
           sample_info["sample_category"] = "WH"
-        elif sample_name.startswith("/ZH"):
+        elif sample_name.startswith(("/ZH", "/HZJ")):
           sample_info["sample_category"] = "ZH"
         else:
           assert(sample_name.startswith("/VH"))
