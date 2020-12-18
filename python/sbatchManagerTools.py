@@ -321,7 +321,7 @@ cluster_histogram_aggregator_{{ idx }} = ClusterHistogramAggregatorNonBlocking(
   auxDirName              = '{{auxDirName}}',
   script_file_name        = '{{script_file_name}}',
   log_file_name           = '{{log_file_name}}',
-  validate_output         = '{{validate_output}}',
+  validate_output         = {{validate_output}},
 )
 cluster_histogram_aggregator_{{idx}}.create_jobs()
 cluster_histogram_aggregators.append(cluster_histogram_aggregator_{{idx}})

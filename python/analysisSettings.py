@@ -30,6 +30,15 @@ def get_lumi(era):
   else:
     raise ValueError("Invalid era: %s" % era)
 
+# https://twiki.cern.ch/twiki/bin/view/LHCPhysics/CERNYellowReportPageAt13TeV
+WH_xsec = 1.373 # pp -> WH
+ZH_xsec = 0.8839 # pp -> ZH
+VH_xsec = WH_xsec + ZH_xsec
+VH_keys = {
+  'WH' : WH_xsec / VH_xsec,
+  'ZH' : ZH_xsec / VH_xsec,
+}
+
 # Systematic uncertainties
 
 class systematics(object):
@@ -55,16 +64,20 @@ class systematics(object):
   MET_ResolutionSyst   = [ "MET_ResolUp",                     "MET_ResolDown"                     ]
 
   triggerSF_2lss   = [
-    "CMS_ttHl_trigger_2lssUp",     "CMS_ttHl_trigger_2lssDown",
+#    "CMS_ttHl_trigger_2lssUp",     "CMS_ttHl_trigger_2lssDown",
     "CMS_ttHl_trigger_2lssEEUp",   "CMS_ttHl_trigger_2lssEEDown",
     "CMS_ttHl_trigger_2lssEMuUp",  "CMS_ttHl_trigger_2lssEMuDown",
     "CMS_ttHl_trigger_2lssMuMuUp", "CMS_ttHl_trigger_2lssMuMuDown",
+  ]
+  triggerSF_1l = [
+    "CMS_ttHl_trigger_1lEUp",  "CMS_ttHl_trigger_1lEDown",
+    "CMS_ttHl_trigger_1lMuUp", "CMS_ttHl_trigger_1lMuDown",
   ]
   triggerSF_3l     = [ "CMS_ttHl_trigger_3lUp",     "CMS_ttHl_trigger_3lDown"     ]
   triggerSF_1l2tau = [ "CMS_ttHl_trigger_1l2tauUp", "CMS_ttHl_trigger_1l2tauDown" ]
   triggerSF_1l1tau = [ "CMS_ttHl_trigger_1l1tauUp", "CMS_ttHl_trigger_1l1tauDown" ]
   triggerSF_0l2tau = [ "CMS_ttHl_trigger_0l2tauUp", "CMS_ttHl_trigger_0l2tauDown" ]
-  triggerSF_split = triggerSF_2lss + triggerSF_3l + triggerSF_1l2tau + triggerSF_1l1tau + triggerSF_0l2tau
+  triggerSF_split = triggerSF_2lss + triggerSF_1l + triggerSF_3l + triggerSF_1l2tau + triggerSF_1l1tau + triggerSF_0l2tau
 
   JES_HEM = "CMS_ttHl_JESHEMDown" # addresses HEM15/16, see https://hypernews.cern.ch/HyperNews/CMS/get/JetMET/2000.html
 
@@ -218,7 +231,8 @@ class systematics(object):
     env_up   = [ proc.env_().up   for proc in procs ]
     env_down = [ proc.env_().down for proc in procs ]
 
-    full = ttbar + dy# + wjets
+    #full = ttbar + dy# + wjets
+    full = isr_up + isr_down + fsr_up + fsr_down
 
   class LHE(object):
 
@@ -534,7 +548,8 @@ class systematics(object):
     env_up    = [ proc.env_().up    for proc in procs ]
     env_down  = [ proc.env_().down  for proc in procs ]
 
-    full = ttH + tHq + tHW + ttW + ttZ + dy + hh + ttbar + wz + zz + gg_zz + qq_zz
+    #full = ttH + tHq + tHW + ttW + ttZ + dy + hh + ttbar + wz + zz + gg_zz + qq_zz
+    full = env_up + env_down
 
   class LeptonIDSF(object):
     el_tight = [ "CMS_ttHl_lepEff_eltightUp", "CMS_ttHl_lepEff_eltightDown" ]
@@ -649,8 +664,6 @@ class systematics(object):
 
   an_hh_multilepton      = an_tth      +    leptonIDSF_hh_recomp +  topPtReweighting
   an_opts_hh_multilepton = an_tth_opts + [ "leptonIDSF_hh_recomp", "topPtReweighting" ]
-  an_hh_bbww      = an_tth      +    ttbar +  AK8  + pileupJetID +  topPtReweighting +  leptonIDSF_hh_recomp
-  an_opts_hh_bbww = an_tth_opts + [ "ttbar", "AK8", "pileupJetID", "topPtReweighting", "leptonIDSF_hh_recomp" ]
 
   an_internal_no_mem = central + leptonIDSF + tauIDSF + btag + FR_t + lhe + triggerSF + PU + L1PreFiring + \
                        FRe_shape + FRm_shape + DYMCReweighting + DYMCNormScaleFactors + topPtReweighting + \

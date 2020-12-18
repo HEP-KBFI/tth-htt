@@ -74,6 +74,7 @@ fill(TH1 * histogram,
      double evtWeight,
      double evtWeightErr)
 {
+  if(!histogram) return;
   const TAxis * const xAxis = histogram->GetXaxis();
   const int bin     = xAxis->FindBin(x);
   const int numBins = xAxis->GetNbins();
@@ -94,6 +95,7 @@ fillWithOverFlow(TH1 * histogram,
                  double evtWeight,
                  double evtWeightErr)
 {
+  if(!histogram) return;
   const TAxis * const xAxis = histogram->GetXaxis();
   const int bin = constrainValue(xAxis->FindBin(x), 1, xAxis->GetNbins());
   const double binContent = histogram->GetBinContent(bin);
@@ -109,6 +111,7 @@ fill2d(TH2 * histogram,
        double evtWeight,
        double evtWeightErr)
 {
+  if(!histogram) return;
   const TAxis * const xAxis = histogram->GetXaxis();
   const int binX     = xAxis->FindBin(x);
   const int numBinsX = xAxis->GetNbins();
@@ -138,6 +141,7 @@ fillWithOverFlow2d(TH2 * histogram,
                    double evtWeight,
                    double evtWeightErr)
 {
+  if(!histogram) return;
   const TAxis * const xAxis = histogram->GetXaxis();
   const int binX = constrainValue(xAxis->FindBin(x), 1, xAxis->GetNbins());
 

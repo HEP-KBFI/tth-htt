@@ -10,7 +10,9 @@ CutFlowTableHistManager::CutFlowTableHistManager(const edm::ParameterSet & cfg,
   : HistManagerBase(cfg)
   , histogram_cutFlow_(nullptr)
   , cuts_(cuts)
-{}
+{
+  central_or_shiftOptions_["cutFlow"] = { "*" };
+}
 
 void
 CutFlowTableHistManager::bookHistograms(TFileDirectory & dir)

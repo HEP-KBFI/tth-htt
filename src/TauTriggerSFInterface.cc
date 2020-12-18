@@ -90,6 +90,10 @@ TauTriggerSFInterface::getTauTriggerEvalData(TriggerSFsys central_or_shift,
       case TriggerSFsys::shift_1l1tauDown:   __attribute__((fallthrough));
       case TriggerSFsys::shift_0l2tauUp:     __attribute__((fallthrough));
       case TriggerSFsys::shift_0l2tauDown:   __attribute__((fallthrough));
+      case TriggerSFsys::shift_1lEUp:        __attribute__((fallthrough));
+      case TriggerSFsys::shift_1lEDown:      __attribute__((fallthrough));
+      case TriggerSFsys::shift_1lMuUp:       __attribute__((fallthrough));
+      case TriggerSFsys::shift_1lMuDown:     __attribute__((fallthrough));
       default: assert(false);
     }
   }
@@ -116,6 +120,10 @@ TauTriggerSFInterface::getTauTriggerEvalData(TriggerSFsys central_or_shift,
       case TriggerSFsys::shift_1l1tauDown:   __attribute__((fallthrough));
       case TriggerSFsys::shift_0l2tauUp:     __attribute__((fallthrough));
       case TriggerSFsys::shift_0l2tauDown:   __attribute__((fallthrough));
+      case TriggerSFsys::shift_1lEUp:        __attribute__((fallthrough));
+      case TriggerSFsys::shift_1lEDown:      __attribute__((fallthrough));
+      case TriggerSFsys::shift_1lMuUp:       __attribute__((fallthrough));
+      case TriggerSFsys::shift_1lMuDown:     __attribute__((fallthrough));
       default: assert(false);
     }
   }
@@ -157,6 +165,10 @@ TauTriggerSFInterface::getTauTriggerEvalMC(TriggerSFsys central_or_shift,
       case TriggerSFsys::shift_1l1tauDown:   __attribute__((fallthrough));
       case TriggerSFsys::shift_0l2tauUp:     __attribute__((fallthrough));
       case TriggerSFsys::shift_0l2tauDown:   __attribute__((fallthrough));
+      case TriggerSFsys::shift_1lEUp:        __attribute__((fallthrough));
+      case TriggerSFsys::shift_1lEDown:      __attribute__((fallthrough));
+      case TriggerSFsys::shift_1lMuUp:       __attribute__((fallthrough));
+      case TriggerSFsys::shift_1lMuDown:     __attribute__((fallthrough));
       default: assert(false);
     }
   }
@@ -183,6 +195,10 @@ TauTriggerSFInterface::getTauTriggerEvalMC(TriggerSFsys central_or_shift,
       case TriggerSFsys::shift_1l1tauDown:   __attribute__((fallthrough));
       case TriggerSFsys::shift_0l2tauUp:     __attribute__((fallthrough));
       case TriggerSFsys::shift_0l2tauDown:   __attribute__((fallthrough));
+      case TriggerSFsys::shift_1lEUp:        __attribute__((fallthrough));
+      case TriggerSFsys::shift_1lEDown:      __attribute__((fallthrough));
+      case TriggerSFsys::shift_1lMuUp:       __attribute__((fallthrough));
+      case TriggerSFsys::shift_1lMuDown:     __attribute__((fallthrough));
       default: assert(false);
     }
   }
