@@ -235,7 +235,7 @@ sh_str = """#!/bin/bash
 """
 
 class PathEntry:
-  def __init__(self, path, indices, histogram_names):
+  def __init__(self, path, indices, histogram_names, blacklist_ext):
     self.path            = path
     self.indices         = indices
     self.is_presel       = 'wPresel' in self.path
@@ -256,6 +256,7 @@ class PathEntry:
     self.nof_tree_events = sum(index_entry[TREE_COUNT_KEY]      for index_entry in self.indices.values())
     self.fsize           = sum(index_entry[FSIZE_KEY]           for index_entry in self.indices.values())
     self.nof_files       = max(self.indices.keys())
+    self.blacklist_ext   = blacklist_ext
     self.blacklist       = []
     self.selection       = [] # if empty, select all
 
@@ -409,10 +410,12 @@ def process_paths(meta_dict, key, count_histograms):
           if event_count_int != 0.:
             event_count_diff = abs(event_count_int - event_count_ext) / event_count_int
             if event_count_diff > 1.e-2:
-              raise RuntimeError(
-                "Observed too large difference of %.3f%% in %s at index %d of process %s" % \
+              error_msg = "Observed too large difference of %.3f%% in %s at index %d of process %s" % \
                 (event_count_diff * 100., count_histogram_name, count_idx, process_name)
-              )
+              if local_path_choice.blacklist_ext:
+                logging.error(error_msg)
+              else:
+                raise RuntimeError(error_msg)
           else:
             if event_count_int != event_count_ext:
               raise RuntimeError(
@@ -443,7 +446,7 @@ def process_paths(meta_dict, key, count_histograms):
   meta_dict[key]['local_paths'] = [{
     'path'      : local_path_choice.path,
     'selection' : '*',
-    'blacklist' : local_path_choice.blacklist,
+    'blacklist' : local_path_choice.blacklist_ext + local_path_choice.blacklist,
   }]
   meta_dict[key]['nof_files'] = local_path_choice.nof_files
 
@@ -514,7 +517,7 @@ def get_is_njet(process_name):
   )
 
 def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missing_branches,
-                    filetracker, file_idx, era, triggerTable, count_histograms):
+                    filetracker, file_idx, era, triggerTable, count_histograms, lost_ntuples):
   ''' Assume that the following subdirectories are of the form: 0000, 0001, 0002, ...
       In these directories we expect root files of the form: tree_1.root, tree_2.root, ...
       If either of those assumptions doesn't hold, we bail out; no clever event count needed
@@ -629,6 +632,7 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
   reweighting_tried = not is_rwgt
   nof_PSweights = 0
   PS_tried = False
+  blacklist = []
   for entry in entries_valid:
 
     subentries = get_dir_entries(use_fuse, entry)
@@ -647,6 +651,11 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
       matched_idx = int(digit_match.group('i'))
       if file_idx > 0 and matched_idx != file_idx:
         logging.debug("Skipping file {path}".format(path = subentry_file.name))
+        continue
+
+      if subentry_file.name in lost_ntuples:
+        logging.info("Excluding file {} as it has been found in the list of lost Ntuples".format(subentry_file.name))
+        blacklist.append(matched_idx)
         continue
 
       if subentry_file.size == 0:
@@ -836,13 +845,13 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
     meta_dict[key]['LHE_set']                         = lhe_set
     meta_dict[key]['nof_reweighting']                 = nof_reweighting_weights
   meta_dict[key]['paths'].append(
-    PathEntry(path_obj.name, indices, histogram_names)
+    PathEntry(path_obj.name, indices, histogram_names, blacklist)
   )
 
   return
 
 def traverse_double(use_fuse, meta_dict, path_obj, key, check_every_event, missing_branches,
-                    filetracker, file_idx, era, triggerTable, count_histograms):
+                    filetracker, file_idx, era, triggerTable, count_histograms, lost_ntuples):
   ''' Assume that the name of the following subdirectories are the CRAB job IDs
       The tree structure inside those directories should be the same as described in
       traverse_single()
@@ -864,7 +873,7 @@ def traverse_double(use_fuse, meta_dict, path_obj, key, check_every_event, missi
   for entry in entries:
     traverse_single(
       use_fuse, meta_dict, entry, key, check_every_event, missing_branches,
-      filetracker, file_idx, era, triggerTable, count_histograms
+      filetracker, file_idx, era, triggerTable, count_histograms, lost_ntuples
     )
   return
 
@@ -965,6 +974,8 @@ if __name__ == '__main__':
   parser.add_argument('-q', '--count-histograms', dest = 'count_histograms', metavar = 'file',
                       type = str, default = '', required = False,
                       help = 'R|A ROOT file with histograms storing the event sums')
+  parser.add_argument('-l', '--lost', dest = 'lost', metavar = 'file', type = str, default = '', required = False,
+                      help = 'R|File containing list of lost Ntuples')
   parser.add_argument('-v', '--verbose', dest = 'verbose', action = 'store_true', default = False,
                       help = 'R|Enable verbose printout')
   args = parser.parse_args()
@@ -991,6 +1002,12 @@ if __name__ == '__main__':
 
   if args.save_corrupted and not args.check_every_event:
     logging.warning("The flag -C/--save-corrupted has no effect w/o -c/--check-every-event option")
+
+  lost_ntuples = []
+  if args.lost:
+    with open(args.lost, 'r') as lost_file:
+      for line in lost_file:
+        lost_ntuples.append(line.strip())
 
   count_histograms = {}
   count_histogram_input = args.count_histograms
@@ -1079,7 +1096,7 @@ if __name__ == '__main__':
           traverse_single(
             use_fuse, meta_dict, path, process_names[path.basename],
             args.check_every_event, args.missing_branches, filetracker, args.file_idx, args.era,
-            triggerTable, count_histograms
+            triggerTable, count_histograms, lost_ntuples
           )
     elif path.basename in crab_strings:
       expected_key = meta_dict[crab_strings[path.basename]]['process_name_specific']
@@ -1094,18 +1111,18 @@ if __name__ == '__main__':
             traverse_double(
               use_fuse, meta_dict, path, crab_strings[path.basename],
               args.check_every_event, args.missing_branches, filetracker, args.file_idx, args.era,
-              triggerTable, count_histograms
+              triggerTable, count_histograms, lost_ntuples
             )
             traverse_single(
               use_fuse, meta_dict, path, crab_strings[path.basename],
               args.check_every_event, args.missing_branches, filetracker, args.file_idx, args.era,
-              triggerTable, count_histograms
+              triggerTable, count_histograms, lost_ntuples
             )
           else:
             traverse_double(
               use_fuse, meta_dict, path, crab_strings[path.basename],
               args.check_every_event, args.missing_branches, filetracker, args.file_idx, args.era,
-              triggerTable, count_histograms
+              triggerTable, count_histograms, lost_ntuples
             )
     else:
       entries = get_dir_entries(use_fuse, path)
