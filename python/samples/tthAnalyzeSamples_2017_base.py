@@ -1,7 +1,7 @@
 from collections import OrderedDict as OD
 
 # file generated at 2020-11-07 21:03:25 with the following command:
-# create_dictionary.py -m python/samples/metaDict_2017.py -p python/samples/sampleLocations_2017.txt -N samples_2017 -E 2017 -o python/samples -g tthAnalyzeSamples_2017_base.py -M -q /hdfs/local/karl/count_final/2020Nov07/count_2017.root
+# create_dictionary.py -m python/samples/metaDict_2017.py -p python/samples/sampleLocations_2017.txt -N samples_2017 -E 2017 -o python/samples -g tthAnalyzeSamples_2017_base.py -M -q /hdfs/local/karl/count_final/2020Dec18/count_2017.root
 
 samples_2017 = OD()
 samples_2017["/SingleElectron/Run2017B-31Mar2018-v1/MINIAOD"] = OD([
