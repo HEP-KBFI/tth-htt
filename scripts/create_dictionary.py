@@ -446,7 +446,7 @@ def process_paths(meta_dict, key, count_histograms):
   meta_dict[key]['local_paths'] = [{
     'path'      : local_path_choice.path,
     'selection' : '*',
-    'blacklist' : local_path_choice.blacklist_ext + local_path_choice.blacklist,
+    'blacklist' : list(sorted(set(local_path_choice.blacklist_ext) | set(local_path_choice.blacklist))),
   }]
   meta_dict[key]['nof_files'] = local_path_choice.nof_files
 
