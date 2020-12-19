@@ -409,12 +409,13 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso(std::size_t numLepto
     {
       continue;
     }
-    const int error_shift_tmp = recompSF > 0. ? 0 : error_shift;
+    const bool has_recompSF = std::fpclassify(recompSF) != FP_ZERO;
+    const int error_shift_tmp = has_recompSF ? 0 : error_shift;
     const double sf_tmp = get_from_lut_err(corrections, lepton_pt[idxLepton], lepton_eta[idxLepton], error_shift_tmp, isDEBUG_);
     assert(sf_tmp > 0.);
 
     double corrFactor = 1.;
-    if(recompSF > 0.)
+    if(has_recompSF)
     {
       // https://indico.cern.ch/event/961689/contributions/4047547/attachments/2114588/3557570/HHTo4W_3l_Updates_20201002_LooseLeptonSFCorrection_1.pdf
       assert(recompTightSF_);
@@ -424,10 +425,10 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso(std::size_t numLepto
       corrFactor = sf_recomp / sf_tmp;
       if(isDEBUG_)
       {
-	std::cout << get_human_line(this, __func__, __LINE__)
-		  << "recompTightSF:: recompSF: " << recompSF
-		  << ", sf: " << sf_tmp
-		  << ", sf_corrected: " << sf_tmp * corrFactor << "\n"; 
+        std::cout << get_human_line(this, __func__, __LINE__)
+                  << "recompTightSF:: recompSF: " << recompSF
+                  << ", sf: " << sf_tmp
+                  << ", sf_corrected: " << sf_tmp * corrFactor << "\n";
       }
     }
     sf *= sf_tmp * corrFactor;
