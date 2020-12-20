@@ -59,6 +59,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/jetToTauFakeRateAuxFunctions.h" // getEtaBin(), getPtBin()
 #include "tthAnalysis/HiggsToTauTau/interface/leptonTypes.h" // kElectron, kMuon, getLeptonType
 #include "tthAnalysis/HiggsToTauTau/interface/AnalysisConfig.h" // AnalysisConfig
+#include "tthAnalysis/HiggsToTauTau/interface/RecoVertex.h" // RecoVertex
 
 #include "hhAnalysis/multilepton/interface/RecoElectronCollectionSelectorFakeable_hh_multilepton.h" // RecoElectronCollectionSelectorFakeable
 #include "hhAnalysis/multilepton/interface/RecoMuonCollectionSelectorFakeable_hh_multilepton.h" // RecoMuonCollectionSelectorFakeable
@@ -1746,7 +1747,8 @@ main(int argc,
   }
   inputTree->registerReader(&eventInfoReader);
 
-  RecoVertexReader vertexReader(branchName_vertex);
+  RecoVertex vertex;
+  RecoVertexReader vertexReader(&vertex, branchName_vertex);
   inputTree -> registerReader(&vertexReader);
 
   ObjectMultiplicity objectMultiplicity;
@@ -2454,7 +2456,6 @@ main(int argc,
       }
     }
 
-    const RecoVertex vertex = vertexReader.read();
     if(vertex.ndof() <= min_PV_ndof)
     {
       if(run_lumi_eventSelector)

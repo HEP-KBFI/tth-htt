@@ -2,17 +2,20 @@
 #define tthAnalysis_HiggsToTauTau_RecoVertexReader_h
 
 #include "tthAnalysis/HiggsToTauTau/interface/ReaderBase.h" // ReaderBase
-#include "tthAnalysis/HiggsToTauTau/interface/RecoVertex.h" // RecoVertex
+
+#include <map> // std::map<,>
 
 // forward declarations
 class TTree;
+class RecoVertex;
 
 class RecoVertexReader
   : public ReaderBase
 {
 public:
-  explicit RecoVertexReader();
-  explicit RecoVertexReader(const std::string & branchName);
+  explicit RecoVertexReader(RecoVertex * recoVertex);
+  explicit RecoVertexReader(RecoVertex * recoVertex,
+                            const std::string & branchName);
   ~RecoVertexReader() override;
 
   /**
@@ -22,11 +25,11 @@ public:
   setBranchAddresses(TTree * tree) override;
 
   /**
-   * @brief Read branches from tree and use information to fill RecoVertex object
-   * @return RecoVertex object (the primary vertex with the hightest sum(pT^2) of clustered objects)
+   * @brief Set reco vertex member
+   * @param recoVertex Pointer to the reco vertex object
    */
-  RecoVertex
-  read() const;
+  void
+  set_recoVertex(RecoVertex * recoVertex);
 
 protected:
  /**
@@ -46,14 +49,7 @@ protected:
   std::string branchName_npvs_;
   std::string branchName_npvsGood_;
 
-  Float_t vertex_x_;
-  Float_t vertex_y_;
-  Float_t vertex_z_;
-  Float_t vertex_ndof_;
-  Float_t vertex_chi2_;
-  Float_t vertex_score_;
-  Int_t vertex_npvs_;
-  Int_t vertex_npvsGood_;
+  RecoVertex * recoVertex_;
 
   // CV: make sure that only one RecoVertexReader instance exists for a given branchName,
   //     as ROOT cannot handle multiple TTree::SetBranchAddress calls for the same branch.
