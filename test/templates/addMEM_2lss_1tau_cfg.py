@@ -27,6 +27,7 @@ process.addMEM_2lss_1tau = cms.PSet(
     branchName_hadTaus = cms.string('Tau'),
     branchName_jets = cms.string('Jet'),
     branchName_met = cms.string('MET'),
+    branchName_vertex = cms.string('PV'),
 
     copy_all_branches = cms.bool(True),
     copy_histograms = cms.vstring('Count.*'),

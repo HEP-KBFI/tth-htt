@@ -97,6 +97,7 @@ process.analyze_4l = cms.PSet(
     branchName_hadTaus = cms.string('Tau'),
     branchName_jets = cms.string('Jet'),
     branchName_met = cms.string('MET'),
+    branchName_vertex = cms.string('PV'),
     branchName_memOutput = cms.string(''),
 
     branchName_genLeptons = cms.string('GenLep'),

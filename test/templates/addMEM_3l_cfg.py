@@ -25,6 +25,7 @@ process.addMEM_3l = cms.PSet(
     branchName_muons = cms.string('Muon'),
     branchName_jets = cms.string('Jet'),
     branchName_met = cms.string('MET'),
+    branchName_vertex = cms.string('PV'),
 
     copy_all_branches = cms.bool(True),
     copy_histograms = cms.vstring('Count.*'),
