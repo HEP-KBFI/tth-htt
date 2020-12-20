@@ -539,7 +539,7 @@ double
 Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_loose(LeptonIDSFsys central_or_shift) const
 {
   const bool sfForTightSelection = false;
-  const double recompSF = -1.;
+  const double recompSF = 0.;
   if(isDEBUG_)
   {
     std::cout << get_human_line(this, __func__, __LINE__) << "Computing SF for electrons\n"
@@ -599,7 +599,7 @@ double
 Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_tight_to_loose_woTightCharge(LeptonIDSFsys central_or_shift) const
 {
   const bool sfForTightSelection = true;
-  const double recompSF = -1.;
+  const double recompSF = 0.;
   const int error_shift = 0;
   if(isDEBUG_)
   {
@@ -607,7 +607,7 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_tight_to_loose_woTig
                 "sfForTightSelection: " << sfForTightSelection << '\n'
     ;
   }
-  const double recompSF_el = recompTightSF_ ? recompTightSF_el_woTightCharge_ : -1.;
+  const double recompSF_el = recompTightSF_ ? recompTightSF_el_woTightCharge_ : 0.;
   int error_shift_el = 0;
   if(recompTightSF_)
   {
@@ -647,7 +647,7 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_tight_to_loose_woTig
     ;
   }
 
-  const double recompSF_mu = recompTightSF_ ? recompTightSF_mu_woTightCharge_ : -1.;
+  const double recompSF_mu = recompTightSF_ ? recompTightSF_mu_woTightCharge_ : 0.;
   int error_shift_mu = 0;
   if(recompTightSF_)
   {
@@ -694,13 +694,13 @@ double
 Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_tight_to_loose_wTightCharge(LeptonIDSFsys central_or_shift) const
 {
   const bool sfForTightSelection = true;
-  const double recompSF = -1.;
+  const double recompSF = 0.;
   const int error_shift = 0;
   if(isDEBUG_)
   {
     std::cout << get_human_line(this, __func__, __LINE__) << "Computing SF for electrons\n";
   }
-  const double recompSF_el = recompTightSF_ ? recompTightSF_el_wTightCharge_ : -1.;
+  const double recompSF_el = recompTightSF_ ? recompTightSF_el_wTightCharge_ : 0.;
   int error_shift_el = 0;
   if(recompTightSF_)
   {
@@ -740,7 +740,7 @@ Data_to_MC_CorrectionInterface_Base::getSF_leptonID_and_Iso_tight_to_loose_wTigh
     ;
   }
 
-  const double recompSF_mu = recompTightSF_ ? recompTightSF_mu_wTightCharge_ : -1.;
+  const double recompSF_mu = recompTightSF_ ? recompTightSF_mu_wTightCharge_ : 0.;
   int error_shift_mu = 0;
   if(recompTightSF_)
   {
