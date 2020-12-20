@@ -39,6 +39,9 @@ public:
   Float_t   gen_cosThetaStar;    ///< LHE parton-level cos(theta*) variable
   Float_t   topPtRwgtSF;         ///< SF correct ttbar samples in top quark pT distribution (only if MC)
 
+  bool
+  isMC() const;
+
   double
   genWeight_tH() const;
 
