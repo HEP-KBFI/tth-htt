@@ -55,8 +55,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/branchEntryTypeAuxFunctions.h" // copyBranches_singleType(), copyBranches_vectorType()
 #include "tthAnalysis/HiggsToTauTau/interface/branchEntryType.h" // branchEntryBaseType
 #include "tthAnalysis/HiggsToTauTau/interface/AnalysisConfig.h" // AnalysisConfig
-#include "tthAnalysis/HiggsToTauTau/interface/RecoVertex.h" // RecoVertex
-#include "tthAnalysis/HiggsToTauTau/interface/RecoVertexReader.h" // RecoVertexReader
 
 #include <boost/algorithm/string/predicate.hpp> // boost::algorithm::starts_with(), boost::algorithm::ends_with()
 
@@ -115,7 +113,6 @@ int main(int argc,
   const std::string branchName_hadTaus   = cfg_addMEM.getParameter<std::string>("branchName_hadTaus");
   const std::string branchName_jets      = cfg_addMEM.getParameter<std::string>("branchName_jets");
   const std::string branchName_met       = cfg_addMEM.getParameter<std::string>("branchName_met");
-  const std::string branchName_vertex    = cfg_addMEM.getParameter<std::string>("branchName_vertex");
   const vstring copy_histograms          = cfg_addMEM.getParameter<vstring>("copy_histograms");
 
   std::vector<std::regex> copy_histograms_regex;
@@ -183,10 +180,6 @@ int main(int argc,
   EventInfoReader eventInfoReader(&eventInfo);
   eventInfoReader.setBranchAddresses(inputTree);
 
-  RecoVertex vertex;
-  RecoVertexReader vertexReader(&vertex, branchName_vertex);
-  vertexReader.setBranchAddresses(inputTree);
-
   const std::string branchName_maxPermutations_addMEM = get_memPermutationBranchName(
     "3l_1tau", leptonSelection_string, hadTauSelection_part1, hadTauSelection_part2
   );
@@ -238,7 +231,6 @@ int main(int argc,
   RecoMEtReader* metReader = new RecoMEtReader(era, isMC, branchName_met);
   metReader->setMEt_central_or_shift(useNonNominal_jetmet ? kJetMET_central_nonNominal : kJetMET_central);
   metReader->read_ptPhi_systematics(isMC);
-  metReader->set_phiModulationCorrDetails(&eventInfo, &vertex);
   metReader->setBranchAddresses(inputTree);
 
   std::string outputTreeName = treeName;
