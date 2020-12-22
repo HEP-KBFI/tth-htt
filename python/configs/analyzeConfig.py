@@ -684,14 +684,14 @@ class analyzeConfig(object):
                     logging.error(str(time))
 
     def set_leptonFakeRateWeightHistogramNames(self, central_or_shift, lepton_and_hadTau_selection):
-        suffix = 'QCD' if 'mcClosure' in lepton_and_hadTau_selection or self.run_mcClosure else 'data_comb'
-        
+        suffix = 'QCD' if 'mcClosure' in lepton_and_hadTau_selection else 'data_comb'
+
         # e.g. FR_mva080_el_QCD_NC, FR_mva085_mu_data_comb
         self.leptonFakeRateWeight_histogramName_e = "FR_mva%s_el_%s_NC" % (convert_lep_wp(self.lep_mva_cut_e), suffix)
         self.leptonFakeRateWeight_histogramName_mu = "FR_mva%s_mu_%s" % (convert_lep_wp(self.lep_mva_cut_mu), suffix)
         
         if self.lep_mva_wp == 'hh_multilepton':
-          suffix = 'data_comb_QCD_fakes' if 'mcClosure' in lepton_and_hadTau_selection or self.run_mcClosure else 'data_comb'
+          suffix = 'data_comb_QCD_fakes' if 'mcClosure' in lepton_and_hadTau_selection else 'data_comb'
           
           self.leptonFakeRateWeight_histogramName_e = "FR_mva%s_el_%s" % (convert_lep_wp(self.lep_mva_cut_e),  suffix)
           self.leptonFakeRateWeight_histogramName_mu = "FR_mva%s_mu_%s" % (convert_lep_wp(self.lep_mva_cut_mu),  suffix)
