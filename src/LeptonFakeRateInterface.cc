@@ -126,7 +126,7 @@ LeptonFakeRateInterface::getWeight_e(double electronPt,
     std::cout
       << get_human_line(this, __func__, __LINE__)
       << "FR(e pT = " << electronPt << ", |eta| = " << electronAbsEta << ") = " << jetToEleFakeRate
-      << " @ central_or_shift = " << central_or_shift_e
+      << " @ central_or_shift = " << central_or_shift_e << '\n'
     ;
   }
   if(central_or_shift == kFRe_shape_corrUp)
@@ -164,7 +164,7 @@ LeptonFakeRateInterface::getWeight_mu(double muonPt,
     std::cout
       << get_human_line(this, __func__, __LINE__)
       << "FR(e pT = " << muonPt << ", |eta| = " << muonAbsEta << ") = " << jetToMuFakeRate
-      << " @ central_or_shift = " << central_or_shift_m
+      << " @ central_or_shift = " << central_or_shift_m << '\n'
     ;
   }
   if(central_or_shift == kFRm_shape_corrUp)
