@@ -1,5 +1,5 @@
-#ifndef hhAnalysis_multilepton_HHWeightInterface2_h
-#define hhAnalysis_multilepton_HHWeightInterface2_h
+#ifndef tthAnalysis_HiggsToTauTau_HHWeightInterface2_h
+#define tthAnalysis_HiggsToTauTau_HHWeightInterface2_h
 
 #include <FWCore/ParameterSet/interface/ParameterSet.h> // edm::ParameterSet
 
@@ -44,6 +44,13 @@ class HHWeightInterface2
               double mHH,
               double cosThetaStar,
               bool isDEBUG = false) const;
+
+  static const std::vector<double> & klJHEP();
+  static const std::vector<double> & ktJHEP();
+  static const std::vector<double> & c2JHEP();
+  static const std::vector<double> & cgJHEP();
+  static const std::vector<double> & c2gJHEP();
+  static const std::vector<double> & normJHEP();
 
  private:
   void loadScanFile(const std::string & filePath, const std::string & prefix, int indx, bool isDEBUG);
