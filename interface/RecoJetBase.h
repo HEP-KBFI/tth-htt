@@ -60,5 +60,9 @@ protected:
   std::shared_ptr<const GenJet> genJet_;
 };
 
+std::ostream &
+operator<<(std::ostream & stream,
+           const RecoJetBase & jet);
+
 #endif // tthAnalysis_HiggsToTauTau_RecoJetBase_h
 

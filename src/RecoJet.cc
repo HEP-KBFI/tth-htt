@@ -198,31 +198,13 @@ std::ostream &
 operator<<(std::ostream & stream,
            const RecoJet & jet)
 {
-  stream << static_cast<const GenJet &>(jet)                                 << ","
-            " charge = "          << jet.charge()                            << ","
+  stream << static_cast<const RecoJetBase &>(jet)                            << "\n,"
             " CSV = "             << jet.BtagCSV()                           << ","
             " jet ID = "          << jet.jetId()                             << ","
             " PU ID = "           << jet.puId()                              << ","
             " QGL = "             << jet.QGDiscr()                           << ","
             " bReg corr (res) = " << jet.bRegCorr() << " (" << jet.bRegRes() << "),"
-            " sysunc = "          << jet.get_default_systematics()           << ","
-            "\n"
-            " gen. matching:";
-  stream << ",\n  lepton = " << jet.genLepton();
-  if(jet.genLepton())
-  {
-    stream << ": " << *(jet.genLepton());
-  }
-  stream << ",\n  hadTau = " << jet.genHadTau();
-  if(jet.genHadTau())
-  {
-    stream << ": " << *(jet.genHadTau());
-  }
-  stream << ",\n  jet    = " << jet.genJet();
-  if(jet.genJet())
-  {
-    stream << ": " << *(jet.genJet());
-  }
-  stream << '\n';
+            " sysunc = "          << jet.get_default_systematics()           << '\n'
+  ;
   return stream;
 }
