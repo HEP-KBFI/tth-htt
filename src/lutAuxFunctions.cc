@@ -50,7 +50,7 @@ openFile(const LocalFileInPath & fileName)
   if(fileName.fullPath().empty())
   {
     throw cmsException(__func__, __LINE__)
-      << " Failed to find file = " << fileName;
+      << " Failed to find file = '" << fileName << "' !!\n";
   }
   TFile * inputFile = new TFile(fileName.fullPath().data());
   return inputFile;
