@@ -529,7 +529,7 @@ dumpHistogram(const TH1 * histogram)
   double integral = compIntegral(histogram, false, false);
   double integralErr = compIntegralErr(histogram, false, false);
   std::cout << "<dumpHistogram>:\n"
-               "histogram = " << histogram->GetName() << "\n"
+               "histogram = '" << histogram->GetName() << "'\n"
                "integral = " << integral << " +/- " << integralErr << '\n';
 
   const TAxis * const xAxis = histogram->GetXaxis();
