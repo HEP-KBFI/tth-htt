@@ -34,6 +34,8 @@ private:
 
   std::map<int, lutWrapperBase *> lutFakeRate_e_;
   std::map<int, lutWrapperBase *> lutFakeRate_mu_;
+
+  bool isDEBUG_;
 };
 
 #endif

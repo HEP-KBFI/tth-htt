@@ -33,7 +33,7 @@ public:
              Int_t npvsGood);
   ~RecoVertex();
 
-  const Particle::Point& position() const;
+  const Particle::Point position() const;
   Double_t x() const;
   Double_t y() const;
   Double_t z() const; 
@@ -43,14 +43,18 @@ public:
   Int_t npvs() const;
   Int_t npvsGood() const;
 
-private:
-  Particle::Point position_; ///< vertex position (x,y,z coordinates in units of cm)
-  Double_t ndof_;            ///< number of degrees of freedom in vertex fit
-  Double_t chi2_;            ///< chi^2 per degree of freedom
-  Double_t score_;           ///< vertex score, i.e. sum pT^2 of clustered objects
-  Int_t    npvs_;            ///< total number of reconstructed primary vertices 
-  Int_t    npvsGood_;        ///< number of good reconstructed primary vertices
-                             ///< (selection = !isFake && ndof > 4 && abs(z) <= 24 && position.Rho <= 2)
+  friend class RecoVertexReader;
+
+protected:
+  Float_t position_x_;      ///< x-component of the vertex position (in units of cm)
+  Float_t position_y_;      ///< y-component of the vertex position (in units of cm)
+  Float_t position_z_;      ///< z-component of the vertex position (in units of cm)
+  Float_t ndof_;            ///< number of degrees of freedom in vertex fit
+  Float_t chi2_;            ///< chi^2 per degree of freedom
+  Float_t score_;           ///< vertex score, i.e. sum pT^2 of clustered objects
+  Int_t   npvs_;            ///< total number of reconstructed primary vertices
+  Int_t   npvsGood_;        ///< number of good reconstructed primary vertices
+                            ///< (selection = !isFake && ndof > 4 && abs(z) <= 24 && position.Rho <= 2)
 };
 
 std::ostream &

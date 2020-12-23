@@ -11,6 +11,7 @@ LeptonFakeRateInterface::LeptonFakeRateInterface(const edm::ParameterSet & cfg)
   : jetToEleFakeRateCorr_(1.)
   , jetToMuFakeRateCorr_(1.)
   , applyNonClosureCorrection_(cfg.getParameter<bool>("applyNonClosureCorrection"))
+  , isDEBUG_(cfg.exists("debug") ? cfg.getParameter<bool>("debug") : false)
 {
   const std::string inputFileName    = cfg.getParameter<std::string>("inputFileName");
   const std::string histogramName_e  = cfg.getParameter<std::string>("histogramName_e");
@@ -42,6 +43,7 @@ LeptonFakeRateInterface::LeptonFakeRateInterface(const edm::ParameterSet & cfg)
       case Era::k2018: jetToEleFakeRateCorr_ = 1.325; jetToMuFakeRateCorr_ = 1.067; break;
     }
   }
+  std::cout << "Non-closure corr to FR of muons = " << jetToMuFakeRateCorr_ << ", electrons = " << jetToEleFakeRateCorr_ << '\n';
 
   for(int FR_option = kFRl_central; FR_option <= kFRm_shape_eta_barrelDown; ++FR_option)
   {
@@ -119,6 +121,14 @@ LeptonFakeRateInterface::getWeight_e(double electronPt,
     throw cmsException(this, __func__, __LINE__) << "Invalid option: " << central_or_shift_e;
   }
   const double jetToEleFakeRate = lutFakeRate_e_.at(central_or_shift_e)->getSF(electronPt, electronAbsEta);
+  if(isDEBUG_)
+  {
+    std::cout
+      << get_human_line(this, __func__, __LINE__)
+      << "FR(e pT = " << electronPt << ", |eta| = " << electronAbsEta << ") = " << jetToEleFakeRate
+      << " @ central_or_shift = " << central_or_shift_e << '\n'
+    ;
+  }
   if(central_or_shift == kFRe_shape_corrUp)
   {
     return jetToEleFakeRate * jetToEleFakeRateCorr_ * jetToEleFakeRateCorr_;
@@ -149,6 +159,14 @@ LeptonFakeRateInterface::getWeight_mu(double muonPt,
     throw cmsException(this, __func__, __LINE__) << "Invalid option: " << central_or_shift_m;
   }
   const double jetToMuFakeRate = lutFakeRate_mu_.at(central_or_shift_m)->getSF(muonPt, muonAbsEta);
+  if(isDEBUG_)
+  {
+    std::cout
+      << get_human_line(this, __func__, __LINE__)
+      << "FR(e pT = " << muonPt << ", |eta| = " << muonAbsEta << ") = " << jetToMuFakeRate
+      << " @ central_or_shift = " << central_or_shift_m << '\n'
+    ;
+  }
   if(central_or_shift == kFRm_shape_corrUp)
   {
     return jetToMuFakeRate * jetToMuFakeRateCorr_ * jetToMuFakeRateCorr_;

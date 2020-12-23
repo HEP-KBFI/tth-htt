@@ -23,7 +23,7 @@ systematics.full = systematics.an_leptonFR
 parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
 parser.add_sys(sys_choices)
-parser.add_lep_mva_wp(default_wp = 'default')
+parser.add_lep_mva_wp()
 parser.add_lep_useTightChargeCut(default_option = 'False')
 parser.add_files_per_job()
 parser.add_use_home()

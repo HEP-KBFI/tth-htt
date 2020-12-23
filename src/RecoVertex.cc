@@ -1,17 +1,20 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RecoVertex.h"
 
 RecoVertex::RecoVertex()
+  : RecoVertex(0., 0., 0., 0., 0., 0., 0, 0)
 {}
 
-RecoVertex::RecoVertex(Double_t x, 
-                       Double_t y, 
-                       Double_t z, 
+RecoVertex::RecoVertex(Double_t x,
+                       Double_t y,
+                       Double_t z,
                        Double_t ndof,
                        Double_t chi2,
                        Double_t score,
                        Int_t npvs,
                        Int_t npvsGood)
-  : position_(x, y, z)
+  : position_x_(x)
+  , position_y_(y)
+  , position_z_(z)
   , ndof_(ndof)
   , chi2_(chi2)
   , score_(score)
@@ -22,28 +25,28 @@ RecoVertex::RecoVertex(Double_t x,
 RecoVertex::~RecoVertex()
 {}
 
-const Particle::Point& 
+const Particle::Point
 RecoVertex::position() const
 {
-  return position_;
+  return { position_x_, position_y_, position_z_ };
 }
 
 Double_t 
 RecoVertex::x() const
 {
-  return position_.x();
+  return position_x_;
 }
 
 Double_t 
 RecoVertex::y() const
 {
-  return position_.y();
+  return position_y_;
 }
 
 Double_t 
 RecoVertex::z() const
 {
-  return position_.z();
+  return position_z_;
 }
 
 Double_t 

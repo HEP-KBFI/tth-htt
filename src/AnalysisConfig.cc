@@ -22,9 +22,12 @@ AnalysisConfig::AnalysisConfig(const std::string & analysis, const edm::Paramete
   isMC_ggH_ = process_string_ == "ggH";
   isMC_qqH_ = process_string_ == "qqH";
   isMC_VH_  = process_string_ == "VH";
-  isMC_H_   = isMC_tH_ || isMC_ttH_ || isMC_ggH_ || isMC_qqH_ || isMC_VH_ || process_string_ == "TTWH" || process_string_ == "TTZH";
+  isMC_WH_  = process_string_ == "WH";
+  isMC_ZH_  = process_string_ == "ZH";
+  isMC_H_   = isMC_tH_ || isMC_ttH_ || isMC_ggH_ || isMC_qqH_ || isMC_VH_ || isMC_WH_ || isMC_ZH_ ||
+              process_string_ == "TTWH" || process_string_ == "TTZH";
 
-  decayModes_H_ = { "hww", "hzz", "htt", "hzg", "hmm" };
+  decayModes_H_ = { "hww", "hzz", "htt", "hzg", "hmm", "hbb" };
 
   TPRegexp parser_HH_resonant_spin0("signal_(ggf|vbf)_spin0_[0-9]+_*");
   isMC_HH_resonant_spin0_ = parser_HH_resonant_spin0.Match(process_string_.data());
@@ -124,6 +127,18 @@ bool
 AnalysisConfig::isMC_VH() const
 {
   return isMC_VH_;
+}
+
+bool
+AnalysisConfig::isMC_WH() const
+{
+  return isMC_WH_;
+}
+
+bool
+AnalysisConfig::isMC_ZH() const
+{
+  return isMC_ZH_;
 }
 
 bool
