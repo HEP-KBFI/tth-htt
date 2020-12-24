@@ -97,11 +97,18 @@ operator<<(std::ostream & stream,
   {
     stream << ": " << *(jet.subJet1());
   }
-  stream << "\n  idx2 = " << jet.subJet2();
+  else
+  {
+    stream << '\n';
+  }
+  stream << "  idx2 = " << jet.subJet2();
   if(jet.subJet2())
   {
     stream << ": " << *(jet.subJet2());
   }
-  stream << '\n';
+  else
+  {
+    stream << '\n';
+  }
   return stream;
 }
