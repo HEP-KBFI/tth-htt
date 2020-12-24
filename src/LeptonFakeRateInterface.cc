@@ -121,23 +121,27 @@ LeptonFakeRateInterface::getWeight_e(double electronPt,
     throw cmsException(this, __func__, __LINE__) << "Invalid option: " << central_or_shift_e;
   }
   const double jetToEleFakeRate = lutFakeRate_e_.at(central_or_shift_e)->getSF(electronPt, electronAbsEta);
+
+  const double jetToEleFakeRate_final = [&,this]() -> double {
+    if(central_or_shift == kFRe_shape_corrUp)
+    {
+      return jetToEleFakeRate * jetToEleFakeRateCorr_ * jetToEleFakeRateCorr_;
+    }
+    else if(central_or_shift == kFRe_shape_corrDown)
+    {
+      return jetToEleFakeRate;
+    }
+    return jetToEleFakeRate * jetToEleFakeRateCorr_;
+  }();
   if(isDEBUG_)
   {
     std::cout
       << get_human_line(this, __func__, __LINE__)
       << "FR(e pT = " << electronPt << ", |eta| = " << electronAbsEta << ") = " << jetToEleFakeRate
-      << " @ central_or_shift = " << central_or_shift_e << '\n'
+      << " @ central_or_shift = " << central_or_shift_e << " => FR(jet->e) = " << jetToEleFakeRate_final << '\n';
     ;
   }
-  if(central_or_shift == kFRe_shape_corrUp)
-  {
-    return jetToEleFakeRate * jetToEleFakeRateCorr_ * jetToEleFakeRateCorr_;
-  }
-  else if(central_or_shift == kFRe_shape_corrDown)
-  {
-    return jetToEleFakeRate;
-  }
-  return jetToEleFakeRate * jetToEleFakeRateCorr_;
+  return jetToEleFakeRate_final;
 }
 
 double
@@ -159,21 +163,24 @@ LeptonFakeRateInterface::getWeight_mu(double muonPt,
     throw cmsException(this, __func__, __LINE__) << "Invalid option: " << central_or_shift_m;
   }
   const double jetToMuFakeRate = lutFakeRate_mu_.at(central_or_shift_m)->getSF(muonPt, muonAbsEta);
+  const double jetToMuFakeRate_final = [&,this]() -> double {
+    if(central_or_shift == kFRm_shape_corrUp)
+    {
+      return jetToMuFakeRate * jetToMuFakeRateCorr_ * jetToMuFakeRateCorr_;
+    }
+    else if(central_or_shift == kFRm_shape_corrDown)
+    {
+      return jetToMuFakeRate;
+    }
+    return jetToMuFakeRate * jetToMuFakeRateCorr_;
+  }();
   if(isDEBUG_)
   {
     std::cout
       << get_human_line(this, __func__, __LINE__)
-      << "FR(e pT = " << muonPt << ", |eta| = " << muonAbsEta << ") = " << jetToMuFakeRate
-      << " @ central_or_shift = " << central_or_shift_m << '\n'
+      << "FR(mu pT = " << muonPt << ", |eta| = " << muonAbsEta << ") = " << jetToMuFakeRate
+      << " @ central_or_shift = " << central_or_shift_m << " => FR(jet->mu) = " << jetToMuFakeRate_final << '\n';
     ;
   }
-  if(central_or_shift == kFRm_shape_corrUp)
-  {
-    return jetToMuFakeRate * jetToMuFakeRateCorr_ * jetToMuFakeRateCorr_;
-  }
-  else if(central_or_shift == kFRm_shape_corrDown)
-  {
-    return jetToMuFakeRate;
-  }
-  return jetToMuFakeRate * jetToMuFakeRateCorr_;
+  return jetToMuFakeRate_final;
 }
