@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2019-10-18 00:58:15 with the following command:
+# file generated at 2020-12-24 16:17:57 with the following command:
 # find_samples.py -V -m python/samples/metaDict_2017_data.py -d ../NanoAOD/test/datasets/txt/datasets_data_2017_31Mar18.txt -p SingleElectron SingleMuon DoubleEG DoubleMuon MuonEG Tau -g ../NanoAOD/data/Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON_v1.txt -v 9_4_5_cand1 -r 2017 -C +31Mar2018 -c python/samples/sampleLocations_2017_nanoAOD.txt
 
 meta_dictionary = OD()
@@ -21,7 +21,7 @@ meta_dictionary["/SingleElectron/Run2017B-31Mar2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/SingleElectron/Run2017C-31Mar2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2017v2_2019Aug29_SingleElectron__Run2017C-31Mar2018-v1"),
+  ("crab_string",           "2017v2_2020Dec20_SingleElectron__Run2017C-31Mar2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleElectron_Run2017C_31Mar2018_v1"),
   ("nof_db_events",         136637888),
@@ -66,7 +66,7 @@ meta_dictionary["/SingleElectron/Run2017E-31Mar2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/SingleElectron/Run2017F-31Mar2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2017v2_2019Aug29_SingleElectron__Run2017F-31Mar2018-v1"),
+  ("crab_string",           "2017v2_2020Dec20_SingleElectron__Run2017F-31Mar2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleElectron_Run2017F_31Mar2018_v1"),
   ("nof_db_events",         128467223),
@@ -126,7 +126,7 @@ meta_dictionary["/SingleMuon/Run2017D-31Mar2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/SingleMuon/Run2017E-31Mar2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2017v2_2019Aug29_SingleMuon__Run2017E-31Mar2018-v1"),
+  ("crab_string",           "2017v2_2020Dec20_SingleMuon__Run2017E-31Mar2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleMuon_Run2017E_31Mar2018_v1"),
   ("nof_db_events",         154630534),
@@ -141,7 +141,7 @@ meta_dictionary["/SingleMuon/Run2017E-31Mar2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/SingleMuon/Run2017F-31Mar2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2017v2_2019Aug29_SingleMuon__Run2017F-31Mar2018-v1"),
+  ("crab_string",           "2017v2_2020Dec20_SingleMuon__Run2017F-31Mar2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleMuon_Run2017F_31Mar2018_v1"),
   ("nof_db_events",         242135500),
@@ -186,7 +186,7 @@ meta_dictionary["/DoubleEG/Run2017C-31Mar2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/DoubleEG/Run2017D-31Mar2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2017v2_2019Aug29_DoubleEG__Run2017D-31Mar2018-v1"),
+  ("crab_string",           "2017v2_2020Dec20_DoubleEG__Run2017D-31Mar2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "DoubleEG_Run2017D_31Mar2018_v1"),
   ("nof_db_events",         25911432),
@@ -396,7 +396,7 @@ meta_dictionary["/Tau/Run2017B-31Mar2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/Tau/Run2017C-31Mar2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2017v2_2019Aug29_Tau__Run2017C-31Mar2018-v1"),
+  ("crab_string",           "2017v2_2020Dec20_Tau__Run2017C-31Mar2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "Tau_Run2017C_31Mar2018_v1"),
   ("nof_db_events",         55416425),
@@ -426,7 +426,7 @@ meta_dictionary["/Tau/Run2017D-31Mar2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/Tau/Run2017E-31Mar2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2017v2_2019Aug29_Tau__Run2017E-31Mar2018-v1"),
+  ("crab_string",           "2017v2_2020Dec20_Tau__Run2017E-31Mar2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "Tau_Run2017E_31Mar2018_v1"),
   ("nof_db_events",         44318231),
