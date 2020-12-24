@@ -84,7 +84,7 @@ std::ostream &
 operator<<(std::ostream & stream,
            const RecoJetAK8 & jet)
 {
-  stream << static_cast<const RecoJetBase &>(jet)            << ","
+  stream << static_cast<const RecoJetBase &>(jet)            << ",\n"
             " jet ID = "    << jet.jetId()                   << ","
             " msoftdrop = " << jet.msoftdrop()               << ","
             " tau1 = "      << jet.tau1()                    << ","
