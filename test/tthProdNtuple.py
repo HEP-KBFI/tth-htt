@@ -73,8 +73,8 @@ golden_json_2018 = os.path.join(
   'Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt'
 )
 
-if not preselection and lep_mva_wp != 'default':
-  raise ValueError("Non-default lepton selection can only be used in the skimming")
+#if not preselection and lep_mva_wp != 'default':
+#  raise ValueError("Non-default lepton selection can only be used in the skimming")
 
 # Use the arguments
 version = "%s_w%sPresel_%s_%s_%s" % (
