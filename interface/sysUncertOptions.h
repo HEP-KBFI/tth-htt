@@ -54,17 +54,17 @@ enum
   kJetMET_jesHF_EraUp,             kJetMET_jesHF_EraDown,
   kJetMET_jesRelativeBalUp,        kJetMET_jesRelativeBalDown,
   kJetMET_jesRelativeSample_EraUp, kJetMET_jesRelativeSample_EraDown,
-  // additional sources
+  kJetMET_jesHEMUp,                kJetMET_jesHEMDown,
+  // JER
   kJetMET_jerUp,                   kJetMET_jerDown, // total JER
-  kJetMET_UnclusteredEnUp,         kJetMET_UnclusteredEnDown, // unclustered energy (only for MET)
-  // JER split
   kJetMET_jerBarrelUp,             kJetMET_jerBarrelDown,
   kJetMET_jerEndcap1Up,            kJetMET_jerEndcap1Down,
   kJetMET_jerEndcap2LowPtUp,       kJetMET_jerEndcap2LowPtDown,
   kJetMET_jerEndcap2HighPtUp,      kJetMET_jerEndcap2HighPtDown,
   kJetMET_jerForwardLowPtUp,       kJetMET_jerForwardLowPtDown,
   kJetMET_jerForwardHighPtUp,      kJetMET_jerForwardHighPtDown,
-                                   kJetMET_jesHEMDown,
+  // unclustered energy (only for MET)
+  kJetMET_UnclusteredEnUp,         kJetMET_UnclusteredEnDown,
 };
 
 enum
