@@ -180,6 +180,7 @@ class prodNtupleConfig:
           inputFiles: list of input files (Ntuples)
           outputFile: output file of the job -- a ROOT file containing histogram
         """
+        skip_count = self.skip_count or not jobOptions['is_mc']
         recomp_run_ls = jobOptions['recomp_run_ls']
         if self.skip_tools_step:
             inputFiles_prepended = jobOptions['inputFiles']
@@ -188,7 +189,7 @@ class prodNtupleConfig:
             for inputFile in jobOptions['inputFiles']:
                 inputFile_split = os.path.splitext(os.path.basename(inputFile))
                 infix = "{}_i".format("_jj" if recomp_run_ls else "")
-                if not self.skip_count:
+                if not skip_count:
                     infix += "i"
                 inputFiles_prepended.append('%s%s%s' % (inputFile_split[0], infix, inputFile_split[1]))
         if len(inputFiles_prepended) != len(set(inputFiles_prepended)):
@@ -228,7 +229,7 @@ class prodNtupleConfig:
             "golden_json             = '%s'" % self.golden_json,
             "process_name            = '%s'" % jobOptions['process_name'],
             "skip_tools_step         = %s" % self.skip_tools_step,
-            "skip_count              = %s" % self.skip_count,
+            "skip_count              = %s" % skip_count,
             "remove_intermediate     = %s" % (not self.do_sync),
             "compTopRwgt             = %s" % jobOptions['compTopRwgt'],
             "compHTXS                = %s" % jobOptions['compHTXS'],
