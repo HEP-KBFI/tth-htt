@@ -71,10 +71,30 @@ enum
 {
   kFatJet_central_nonNominal,     // for data and sync Ntuples
   kFatJet_central,                // for MC
-  kFatJet_jesUp, kFatJet_jesDown, // total JES
-  kFatJet_jerUp, kFatJet_jerDown, // total JER
-  kFatJet_jmsUp, kFatJet_jmsDown, // mass scale
-  kFatJet_jmrUp, kFatJet_jmrDown, // mass resolution
+  kFatJet_jesUp,                   kFatJet_jesDown, // total JES
+  // regrouped JES
+  kFatJet_jesAbsoluteUp,           kFatJet_jesAbsoluteDown,
+  kFatJet_jesAbsolute_EraUp,       kFatJet_jesAbsolute_EraDown,
+  kFatJet_jesBBEC1Up,              kFatJet_jesBBEC1Down,
+  kFatJet_jesBBEC1_EraUp,          kFatJet_jesBBEC1_EraDown,
+  kFatJet_jesEC2Up,                kFatJet_jesEC2Down,
+  kFatJet_jesEC2_EraUp,            kFatJet_jesEC2_EraDown,
+  kFatJet_jesFlavorQCDUp,          kFatJet_jesFlavorQCDDown,
+  kFatJet_jesHFUp,                 kFatJet_jesHFDown,
+  kFatJet_jesHF_EraUp,             kFatJet_jesHF_EraDown,
+  kFatJet_jesRelativeBalUp,        kFatJet_jesRelativeBalDown,
+  kFatJet_jesRelativeSample_EraUp, kFatJet_jesRelativeSample_EraDown,
+  kFatJet_jesHEMUp,                kFatJet_jesHEMDown,
+  kFatJet_jerUp,                   kFatJet_jerDown, // total JER
+  // split JER
+//  kFatJet_jerBarrelUp,             kFatJet_jerBarrelDown,
+//  kFatJet_jerEndcap1Up,            kFatJet_jerEndcap1Down,
+//  kFatJet_jerEndcap2LowPtUp,       kFatJet_jerEndcap2LowPtDown,
+//  kFatJet_jerEndcap2HighPtUp,      kFatJet_jerEndcap2HighPtDown,
+//  kFatJet_jerForwardLowPtUp,       kFatJet_jerForwardLowPtDown,
+//  kFatJet_jerForwardHighPtUp,      kFatJet_jerForwardHighPtDown,
+  kFatJet_jmsUp,                   kFatJet_jmsDown, // mass scale
+  kFatJet_jmrUp,                   kFatJet_jmrDown, // mass resolution
 };
 
 enum class METSyst
@@ -250,7 +270,8 @@ isTTbarSys(const std::string & central_or_shift);
 
 bool
 isValidJESsource(Era era,
-                 int central_or_shift);
+                 int central_or_shift,
+                 bool isFatJet = false);
 
 bool
 isValidFatJetAttribute(int central_or_shift,
@@ -366,6 +387,7 @@ getBranchName_jetMET(const std::string & default_branchName,
 
 std::string
 getBranchName_fatJet(const std::string & default_branchName,
+                     Era era,
                      const std::string & attribute_name,
                      int central_or_shift);
 

@@ -109,7 +109,14 @@ class systematics(object):
   AK8_JER = [ "CMS_ttHl_AK8JERUp", "CMS_ttHl_AK8JERDown" ]
   AK8_JMS = [ "CMS_ttHl_AK8JMSUp", "CMS_ttHl_AK8JMSDown" ]
   AK8_JMR = [ "CMS_ttHl_AK8JMRUp", "CMS_ttHl_AK8JMRDown" ]
+
+  AK8_JEC_regrouped = [ central_or_shift.replace('_JES', '_AK8JES') for central_or_shift in JEC_regrouped ]
+  #AK8_JER_split     = [ central_or_shift.replace('_JER', '_AK8JER') for central_or_shift in JER_split     ]
+
   AK8 = AK8_JES + AK8_JER + AK8_JMS + AK8_JMR
+
+  JEC_regrouped_ALL = JEC_regrouped + AK8_JEC_regrouped
+  JER_split_ALL     = JER_split     #+ AK8_JER_split
 
   pileupJetID = [
     "CMS_ttHl_puJetIDEffUp",    "CMS_ttHl_puJetIDEffDown",

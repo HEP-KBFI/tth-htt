@@ -6,6 +6,20 @@
 
 #include <boost/algorithm/string/predicate.hpp> // boost::algorithm::starts_with(), boost::algorithm::ends_with()
 
+namespace {
+  std::string
+  era_str(Era era)
+  {
+    switch(era)
+    {
+      case Era::k2016 : return "2016";
+      case Era::k2017 : return "2017";
+      case Era::k2018 : return "2018";
+      default: throw cmsException(__func__, __LINE__) << "Invalid era: " << static_cast<int>(era);
+    }
+  }
+}
+
 bool
 isTTbarSys(const std::string & central_or_shift)
 {
@@ -20,9 +34,12 @@ isTTbarSys(const std::string & central_or_shift)
 
 bool
 isValidJESsource(Era era,
-                 int central_or_shift)
+                 int central_or_shift,
+                 bool isFatJet)
 {
-  if((central_or_shift == kJetMET_jesHEMUp || central_or_shift == kJetMET_jesHEMDown) && era != Era::k2018)
+  if((((central_or_shift == kJetMET_jesHEMUp || central_or_shift == kJetMET_jesHEMDown) && ! isFatJet) ||
+      ((central_or_shift == kFatJet_jesHEMUp || central_or_shift == kFatJet_jesHEMDown) &&   isFatJet)  ) &&
+     era != Era::k2018)
   {
     return false;
   }
@@ -34,19 +51,12 @@ isValidFatJetAttribute(int central_or_shift,
                        const std::string & attribute_name)
 {
   std::vector<std::string> attribute_whitelist = { "mass", "msoftdrop" };
-  if(central_or_shift == kFatJet_jesUp || central_or_shift == kFatJet_jesUp)
+  if(central_or_shift >= kFatJet_central_nonNominal && central_or_shift < kFatJet_jmsUp)
   {
     attribute_whitelist.push_back("pt");
   }
-  else if(central_or_shift == kFatJet_jmsUp || central_or_shift == kFatJet_jmsDown ||
-          central_or_shift == kFatJet_jmrUp || central_or_shift == kFatJet_jmrDown)
+  if(central_or_shift >= kFatJet_jerUp || central_or_shift == kFatJet_central)
   {
-    attribute_whitelist.push_back("msoftdrop_tau21DDT");
-  }
-  else
-  {
-    // includes JER, nominal, non-nominal
-    attribute_whitelist.push_back("pt");
     attribute_whitelist.push_back("msoftdrop_tau21DDT");
   }
   return std::find(attribute_whitelist.cbegin(), attribute_whitelist.cend(), attribute_name) != attribute_whitelist.cend();
@@ -162,14 +172,50 @@ getFatJet_option(const std::string & central_or_shift,
                  bool isMC)
 {
   int central_or_shift_int = isMC ? kFatJet_central : kFatJet_central_nonNominal;
-  if     (central_or_shift == "CMS_ttHl_AK8JESUp"  ) central_or_shift_int = kFatJet_jesUp;
-  else if(central_or_shift == "CMS_ttHl_AK8JESDown") central_or_shift_int = kFatJet_jesDown;
-  else if(central_or_shift == "CMS_ttHl_AK8JERUp"  ) central_or_shift_int = kFatJet_jerUp;
-  else if(central_or_shift == "CMS_ttHl_AK8JERDown") central_or_shift_int = kFatJet_jerDown;
-  else if(central_or_shift == "CMS_ttHl_AK8JMSUp"  ) central_or_shift_int = kFatJet_jmsUp;
-  else if(central_or_shift == "CMS_ttHl_AK8JMSDown") central_or_shift_int = kFatJet_jmsDown;
-  else if(central_or_shift == "CMS_ttHl_AK8JMRUp"  ) central_or_shift_int = kFatJet_jmrUp;
-  else if(central_or_shift == "CMS_ttHl_AK8JMRDown") central_or_shift_int = kFatJet_jmrDown;
+  if     (central_or_shift == "CMS_ttHl_AK8JESUp"                    ) central_or_shift_int = kFatJet_jesUp;
+  else if(central_or_shift == "CMS_ttHl_AK8JESDown"                  ) central_or_shift_int = kFatJet_jesDown;
+  else if(central_or_shift == "CMS_ttHl_AK8JESAbsoluteUp"            ) central_or_shift_int = kFatJet_jesAbsoluteUp;
+  else if(central_or_shift == "CMS_ttHl_AK8JESAbsoluteDown"          ) central_or_shift_int = kFatJet_jesAbsoluteDown;
+  else if(central_or_shift == "CMS_ttHl_AK8JESAbsolute_EraUp"        ) central_or_shift_int = kFatJet_jesAbsolute_EraUp;
+  else if(central_or_shift == "CMS_ttHl_AK8JESAbsolute_EraDown"      ) central_or_shift_int = kFatJet_jesAbsolute_EraDown;
+  else if(central_or_shift == "CMS_ttHl_AK8JESBBEC1Up"               ) central_or_shift_int = kFatJet_jesBBEC1Up;
+  else if(central_or_shift == "CMS_ttHl_AK8JESBBEC1Down"             ) central_or_shift_int = kFatJet_jesBBEC1Down;
+  else if(central_or_shift == "CMS_ttHl_AK8JESBBEC1_EraUp"           ) central_or_shift_int = kFatJet_jesBBEC1_EraUp;
+  else if(central_or_shift == "CMS_ttHl_AK8JESBBEC1_EraDown"         ) central_or_shift_int = kFatJet_jesBBEC1_EraDown;
+  else if(central_or_shift == "CMS_ttHl_AK8JESEC2Up"                 ) central_or_shift_int = kFatJet_jesEC2Up;
+  else if(central_or_shift == "CMS_ttHl_AK8JESEC2Down"               ) central_or_shift_int = kFatJet_jesEC2Down;
+  else if(central_or_shift == "CMS_ttHl_AK8JESEC2_EraUp"             ) central_or_shift_int = kFatJet_jesEC2_EraUp;
+  else if(central_or_shift == "CMS_ttHl_AK8JESEC2_EraDown"           ) central_or_shift_int = kFatJet_jesEC2_EraDown;
+  else if(central_or_shift == "CMS_ttHl_AK8JESFlavorQCDUp"           ) central_or_shift_int = kFatJet_jesFlavorQCDUp;
+  else if(central_or_shift == "CMS_ttHl_AK8JESFlavorQCDDown"         ) central_or_shift_int = kFatJet_jesFlavorQCDDown;
+  else if(central_or_shift == "CMS_ttHl_AK8JESHFUp"                  ) central_or_shift_int = kFatJet_jesHFUp;
+  else if(central_or_shift == "CMS_ttHl_AK8JESHFDown"                ) central_or_shift_int = kFatJet_jesHFDown;
+  else if(central_or_shift == "CMS_ttHl_AK8JESHF_EraUp"              ) central_or_shift_int = kFatJet_jesHF_EraUp;
+  else if(central_or_shift == "CMS_ttHl_AK8JESHF_EraDown"            ) central_or_shift_int = kFatJet_jesHF_EraDown;
+  else if(central_or_shift == "CMS_ttHl_AK8JESRelativeBalUp"         ) central_or_shift_int = kFatJet_jesRelativeBalUp;
+  else if(central_or_shift == "CMS_ttHl_AK8JESRelativeBalDown"       ) central_or_shift_int = kFatJet_jesRelativeBalDown;
+  else if(central_or_shift == "CMS_ttHl_AK8JESRelativeSample_EraUp"  ) central_or_shift_int = kFatJet_jesRelativeSample_EraUp;
+  else if(central_or_shift == "CMS_ttHl_AK8JESRelativeSample_EraDown") central_or_shift_int = kFatJet_jesRelativeSample_EraDown;
+  else if(central_or_shift == "CMS_ttHl_AK8JESHEMUp"                 ) central_or_shift_int = kFatJet_jesHEMUp;
+  else if(central_or_shift == "CMS_ttHl_AK8JESHEMDown"               ) central_or_shift_int = kFatJet_jesHEMDown;
+  else if(central_or_shift == "CMS_ttHl_AK8JERUp"                    ) central_or_shift_int = kFatJet_jerUp;
+  else if(central_or_shift == "CMS_ttHl_AK8JERDown"                  ) central_or_shift_int = kFatJet_jerDown;
+//  else if(central_or_shift == "CMS_ttHl_AK8JERBarrelUp"              ) central_or_shift_int = kFatJet_jerBarrelUp;
+//  else if(central_or_shift == "CMS_ttHl_AK8JERBarrelDown"            ) central_or_shift_int = kFatJet_jerBarrelDown;
+//  else if(central_or_shift == "CMS_ttHl_AK8JEREndcap1Up"             ) central_or_shift_int = kFatJet_jerEndcap1Up;
+//  else if(central_or_shift == "CMS_ttHl_AK8JEREndcap1Down"           ) central_or_shift_int = kFatJet_jerEndcap1Down;
+//  else if(central_or_shift == "CMS_ttHl_AK8JEREndcap2LowPtUp"        ) central_or_shift_int = kFatJet_jerEndcap2LowPtUp;
+//  else if(central_or_shift == "CMS_ttHl_AK8JEREndcap2LowPtDown"      ) central_or_shift_int = kFatJet_jerEndcap2LowPtDown;
+//  else if(central_or_shift == "CMS_ttHl_AK8JEREndcap2HighPtUp"       ) central_or_shift_int = kFatJet_jerEndcap2HighPtUp;
+//  else if(central_or_shift == "CMS_ttHl_AK8JEREndcap2HighPtDown"     ) central_or_shift_int = kFatJet_jerEndcap2HighPtDown;
+//  else if(central_or_shift == "CMS_ttHl_AK8JERForwardLowPtUp"        ) central_or_shift_int = kFatJet_jerForwardLowPtUp;
+//  else if(central_or_shift == "CMS_ttHl_AK8JERForwardLowPtDown"      ) central_or_shift_int = kFatJet_jerForwardLowPtDown;
+//  else if(central_or_shift == "CMS_ttHl_AK8JERForwardHighPtUp"       ) central_or_shift_int = kFatJet_jerForwardHighPtUp;
+//  else if(central_or_shift == "CMS_ttHl_AK8JERForwardHighPtDown"     ) central_or_shift_int = kFatJet_jerForwardHighPtDown;
+  else if(central_or_shift == "CMS_ttHl_AK8JMSUp"                    ) central_or_shift_int = kFatJet_jmsUp;
+  else if(central_or_shift == "CMS_ttHl_AK8JMSDown"                  ) central_or_shift_int = kFatJet_jmsDown;
+  else if(central_or_shift == "CMS_ttHl_AK8JMRUp"                    ) central_or_shift_int = kFatJet_jmrUp;
+  else if(central_or_shift == "CMS_ttHl_AK8JMRDown"                  ) central_or_shift_int = kFatJet_jmrDown;
   return central_or_shift_int;
 }
 
@@ -506,15 +552,7 @@ getBranchName_jetMET(const std::string & default_branchName,
   static std::map<int, std::string> branchNames_sys;
   const bool isJet = boost::starts_with(default_branchName, "Jet");
   const bool isMET = default_branchName == "MET";
-  const std::string era_str = [era]() -> std::string {
-    switch(era)
-    {
-      case Era::k2016 : return "2016";
-      case Era::k2017 : return "2017";
-      case Era::k2018 : return "2018";
-      default: throw cmsException(__func__, __LINE__) << "Invalid era: " << static_cast<int>(era);
-    }
-  }();
+  const std::string era_str = ::era_str(era);
   if(! isJet && ! isMET)
   {
     throw cmsException(__func__, __LINE__) << "Invalid branch name provided: " << default_branchName;
@@ -568,6 +606,7 @@ getBranchName_jetMET(const std::string & default_branchName,
   branchNames_sys[kJetMET_jerForwardLowPtDown]       = branchName_corrected + "_jer4Down";
   branchNames_sys[kJetMET_jerForwardHighPtUp]        = branchName_corrected + "_jer5Up";
   branchNames_sys[kJetMET_jerForwardHighPtDown]      = branchName_corrected + "_jer5Down";
+  //
   branchNames_sys[kJetMET_UnclusteredEnUp]           = branchName_corrected + "_unclustEnUp";
   branchNames_sys[kJetMET_UnclusteredEnDown]         = branchName_corrected + "_unclustEnDown";
   //
@@ -579,24 +618,65 @@ getBranchName_jetMET(const std::string & default_branchName,
 
 std::string
 getBranchName_fatJet(const std::string & default_branchName,
+                     Era era,
                      const std::string & attribute_name,
                      int central_or_shift)
 {
   assert(boost::starts_with(default_branchName, "FatJet"));
+  const std::string era_str = ::era_str(era);
   static std::map<int, std::string> branchNames_sys;
   branchNames_sys[kFatJet_central_nonNominal] = Form(
     "%s_%s", default_branchName.data(), attribute_name.data()
   );
-  branchNames_sys[kFatJet_central] = branchNames_sys[kFatJet_central_nonNominal] + "_nom";
-  branchNames_sys[kFatJet_jesUp]   = branchNames_sys[kFatJet_central_nonNominal] + "_jesTotalUp";
-  branchNames_sys[kFatJet_jesDown] = branchNames_sys[kFatJet_central_nonNominal] + "_jesTotalDown";
-  branchNames_sys[kFatJet_jerUp]   = branchNames_sys[kFatJet_central_nonNominal] + "_jerUp";
-  branchNames_sys[kFatJet_jerDown] = branchNames_sys[kFatJet_central_nonNominal] + "_jerDown";
-  branchNames_sys[kFatJet_jmsUp]   = branchNames_sys[kFatJet_central_nonNominal] + "_jmsUp";
-  branchNames_sys[kFatJet_jmsDown] = branchNames_sys[kFatJet_central_nonNominal] + "_jmsDown";
-  branchNames_sys[kFatJet_jmrUp]   = branchNames_sys[kFatJet_central_nonNominal] + "_jmrUp";
-  branchNames_sys[kFatJet_jmrDown] = branchNames_sys[kFatJet_central_nonNominal] + "_jmrDown";
+  branchNames_sys[kFatJet_central]                   = branchNames_sys[kFatJet_central_nonNominal] + "_nom";
+  branchNames_sys[kFatJet_jesUp]                     = branchNames_sys[kFatJet_central_nonNominal] + "_jesTotalUp";
+  branchNames_sys[kFatJet_jesDown]                   = branchNames_sys[kFatJet_central_nonNominal] + "_jesTotalDown";
+  branchNames_sys[kFatJet_jesAbsoluteUp]             = branchNames_sys[kFatJet_central_nonNominal] + "_jesAbsoluteUp";
+  branchNames_sys[kFatJet_jesAbsoluteDown]           = branchNames_sys[kFatJet_central_nonNominal] + "_jesAbsoluteDown";
+  branchNames_sys[kFatJet_jesAbsolute_EraUp]         = branchNames_sys[kFatJet_central_nonNominal] + Form("_jesAbsolute_%sUp",    era_str.data());
+  branchNames_sys[kFatJet_jesAbsolute_EraDown]       = branchNames_sys[kFatJet_central_nonNominal] + Form("_jesAbsolute_%sDown", era_str.data());
+  branchNames_sys[kFatJet_jesBBEC1Up]                = branchNames_sys[kFatJet_central_nonNominal] + "_jesBBEC1Up";
+  branchNames_sys[kFatJet_jesBBEC1Down]              = branchNames_sys[kFatJet_central_nonNominal] + "_jesBBEC1Down";
+  branchNames_sys[kFatJet_jesBBEC1_EraUp]            = branchNames_sys[kFatJet_central_nonNominal] + Form("_jesBBEC1_%sUp",   era_str.data());
+  branchNames_sys[kFatJet_jesBBEC1_EraDown]          = branchNames_sys[kFatJet_central_nonNominal] + Form("_jesBBEC1_%sDown", era_str.data());
+  branchNames_sys[kFatJet_jesEC2Up]                  = branchNames_sys[kFatJet_central_nonNominal] + "_jesEC2Up";
+  branchNames_sys[kFatJet_jesEC2Down]                = branchNames_sys[kFatJet_central_nonNominal] + "_jesEC2Down";
+  branchNames_sys[kFatJet_jesEC2_EraUp]              = branchNames_sys[kFatJet_central_nonNominal] + Form("_jesEC2_%sUp",   era_str.data());
+  branchNames_sys[kFatJet_jesEC2_EraDown]            = branchNames_sys[kFatJet_central_nonNominal] + Form("_jesEC2_%sDown", era_str.data());
+  branchNames_sys[kFatJet_jesFlavorQCDUp]            = branchNames_sys[kFatJet_central_nonNominal] + "_jesFlavorQCDUp";
+  branchNames_sys[kFatJet_jesFlavorQCDDown]          = branchNames_sys[kFatJet_central_nonNominal] + "_jesFlavorQCDDown";
+  branchNames_sys[kFatJet_jesHFUp]                   = branchNames_sys[kFatJet_central_nonNominal] + "_jesHFUp";
+  branchNames_sys[kFatJet_jesHFDown]                 = branchNames_sys[kFatJet_central_nonNominal] + "_jesHFDown";
+  branchNames_sys[kFatJet_jesHF_EraUp]               = branchNames_sys[kFatJet_central_nonNominal] + Form("_jesHF_%sUp",   era_str.data());
+  branchNames_sys[kFatJet_jesHF_EraDown]             = branchNames_sys[kFatJet_central_nonNominal] + Form("_jesHF_%sDown", era_str.data());
+  branchNames_sys[kFatJet_jesRelativeBalUp]          = branchNames_sys[kFatJet_central_nonNominal] + "_jesRelativeBalUp";
+  branchNames_sys[kFatJet_jesRelativeBalDown]        = branchNames_sys[kFatJet_central_nonNominal] + "_jesRelativeBalDown";
+  branchNames_sys[kFatJet_jesRelativeSample_EraUp]   = branchNames_sys[kFatJet_central_nonNominal] + Form("_jesRelativeSample_%sUp",   era_str.data());
+  branchNames_sys[kFatJet_jesRelativeSample_EraDown] = branchNames_sys[kFatJet_central_nonNominal] + Form("_jesRelativeSample_%sDown", era_str.data());
+  branchNames_sys[kFatJet_jesHEMUp]                  = branchNames_sys[kFatJet_central_nonNominal] + "_jesHEMIssueUp";
+  branchNames_sys[kFatJet_jesHEMDown]                = branchNames_sys[kFatJet_central_nonNominal] + "_jesHEMIssueDown";
+  //
+  branchNames_sys[kFatJet_jerUp]                     = branchNames_sys[kFatJet_central_nonNominal] + "_jerUp";
+  branchNames_sys[kFatJet_jerDown]                   = branchNames_sys[kFatJet_central_nonNominal] + "_jerDown";
+//  branchNames_sys[kFatJet_jerBarrelUp]               = branchNames_sys[kFatJet_central_nonNominal] + "_jer0Up";
+//  branchNames_sys[kFatJet_jerBarrelDown]             = branchNames_sys[kFatJet_central_nonNominal] + "_jer0Down";
+//  branchNames_sys[kFatJet_jerEndcap1Up]              = branchNames_sys[kFatJet_central_nonNominal] + "_jer1Up";
+//  branchNames_sys[kFatJet_jerEndcap1Down]            = branchNames_sys[kFatJet_central_nonNominal] + "_jer1Down";
+//  branchNames_sys[kFatJet_jerEndcap2LowPtUp]         = branchNames_sys[kFatJet_central_nonNominal] + "_jer2Up";
+//  branchNames_sys[kFatJet_jerEndcap2LowPtDown]       = branchNames_sys[kFatJet_central_nonNominal] + "_jer2Down";
+//  branchNames_sys[kFatJet_jerEndcap2HighPtUp]        = branchNames_sys[kFatJet_central_nonNominal] + "_jer3Up";
+//  branchNames_sys[kFatJet_jerEndcap2HighPtDown]      = branchNames_sys[kFatJet_central_nonNominal] + "_jer3Down";
+//  branchNames_sys[kFatJet_jerForwardLowPtUp]         = branchNames_sys[kFatJet_central_nonNominal] + "_jer4Up";
+//  branchNames_sys[kFatJet_jerForwardLowPtDown]       = branchNames_sys[kFatJet_central_nonNominal] + "_jer4Down";
+//  branchNames_sys[kFatJet_jerForwardHighPtUp]        = branchNames_sys[kFatJet_central_nonNominal] + "_jer5Up";
+//  branchNames_sys[kFatJet_jerForwardHighPtDown]      = branchNames_sys[kFatJet_central_nonNominal] + "_jer5Down";
+  //
+  branchNames_sys[kFatJet_jmsUp]                     = branchNames_sys[kFatJet_central_nonNominal] + "_jmsUp";
+  branchNames_sys[kFatJet_jmsDown]                   = branchNames_sys[kFatJet_central_nonNominal] + "_jmsDown";
+  branchNames_sys[kFatJet_jmrUp]                     = branchNames_sys[kFatJet_central_nonNominal] + "_jmrUp";
+  branchNames_sys[kFatJet_jmrDown]                   = branchNames_sys[kFatJet_central_nonNominal] + "_jmrDown";
   assert(branchNames_sys.count(central_or_shift));
+  assert(isValidJESsource(era, central_or_shift, false));
   assert(isValidFatJetAttribute(central_or_shift, attribute_name));
   return branchNames_sys.at(central_or_shift);
 }

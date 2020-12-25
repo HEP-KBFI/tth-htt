@@ -26,7 +26,7 @@ RecoJetReaderAK8::RecoJetReaderAK8(Era era,
   , subjetReader_(nullptr)
   , sysOption_central_(isMC_ ? kFatJet_central : kFatJet_central_nonNominal)
   , sysOption_(sysOption_central_)
-  , readSys_(true) // TODO: change back to false [*]
+  , readSys_(false)
   , pt_str_("pt")
   , mass_str_("mass")
   , msoftdrop_str_("msoftdrop")
@@ -85,6 +85,10 @@ RecoJetReaderAK8::set_central_or_shift(int central_or_shift)
   {
     throw cmsException(this, __func__, __LINE__) << "Data has only non-nominal attributes";
   }
+  if(! isValidJESsource(era_, central_or_shift, true))
+  {
+    throw cmsException(this, __func__, __LINE__) << "Invalid option for the era = " << static_cast<int>(era_) << ": " << central_or_shift;
+  }
   sysOption_ = central_or_shift;
   if(! readSys_)
   {
@@ -105,17 +109,21 @@ RecoJetReaderAK8::setBranchNames()
   {
     for(int idxShift = kFatJet_central_nonNominal; idxShift <= kFatJet_jmrDown; ++idxShift)
     {
+      if(! isValidJESsource(era_, idxShift, true))
+      {
+        continue;
+      }
       if(isValidFatJetAttribute(idxShift, pt_str_))
       {
-        branchNames_pt_systematics_[idxShift] = getBranchName_fatJet(branchName_obj_, pt_str_, idxShift);
+        branchNames_pt_systematics_[idxShift] = getBranchName_fatJet(branchName_obj_, era_, pt_str_, idxShift);
       }
       if(isValidFatJetAttribute(idxShift, mass_str_))
       {
-        branchNames_mass_systematics_[idxShift] = getBranchName_fatJet(branchName_obj_, mass_str_, idxShift);
+        branchNames_mass_systematics_[idxShift] = getBranchName_fatJet(branchName_obj_, era_, mass_str_, idxShift);
       }
       if(isValidFatJetAttribute(idxShift, msoftdrop_str_))
       {
-        branchNames_msoftdrop_systematics_[idxShift] = getBranchName_fatJet(branchName_obj_, msoftdrop_str_, idxShift);
+        branchNames_msoftdrop_systematics_[idxShift] = getBranchName_fatJet(branchName_obj_, era_, msoftdrop_str_, idxShift);
       }
     }
     branchName_eta_ = Form("%s_%s", branchName_obj_.data(), "eta");
@@ -161,6 +169,10 @@ RecoJetReaderAK8::setBranchAddresses(TTree * tree)
     {
       for(int idxShift = kFatJet_central_nonNominal; idxShift <= kFatJet_jmrDown; ++idxShift)
       {
+        if(! isValidJESsource(era_, idxShift, true))
+        {
+          continue;
+        }
         if(idxShift == sysOption_central_)
         {
           continue; // do not bind the same branch twice
@@ -244,7 +256,7 @@ RecoJetReaderAK8::read() const
       const RecoSubjetAK8 * subJet2 = subjets.size() > 1 ? getSubjet(subjets, gInstance->subjet_idx2_[idxJet]) : nullptr;
       const int jet_pt_sys        = gInstance->jet_pt_systematics_.count(sysOption_)        ? sysOption_ : sysOption_central_;
       const int jet_mass_sys      = gInstance->jet_mass_systematics_.count(sysOption_)      ? sysOption_ : sysOption_central_;
-      //const int jet_msoftdrop_sys = gInstance->jet_msoftdrop_systematics_.count(sysOption_) ? sysOption_ : sysOption_central_; [*]
+      const int jet_msoftdrop_sys = gInstance->jet_msoftdrop_systematics_.count(sysOption_) ? sysOption_ : sysOption_central_;
       jets.push_back({
         {
           gInstance->jet_pt_systematics_.at(jet_pt_sys)[idxJet],
@@ -252,7 +264,7 @@ RecoJetReaderAK8::read() const
           gInstance->jet_phi_[idxJet],
           gInstance->jet_mass_systematics_.at(jet_mass_sys)[idxJet],
         },
-        gInstance->jet_msoftdrop_systematics_.at(kFatJet_central_nonNominal)[idxJet], // TODO: use jet_msoftdrop_sys [*]
+        gInstance->jet_msoftdrop_systematics_.at(jet_msoftdrop_sys)[idxJet],
         subJet1 ? new RecoSubjetAK8(*subJet1) : nullptr,
         subJet2 ? new RecoSubjetAK8(*subJet2) : nullptr,
         gInstance->jet_tau1_[idxJet],
@@ -269,14 +281,18 @@ RecoJetReaderAK8::read() const
       {
         for(int idxShift = kFatJet_central_nonNominal; idxShift <= kFatJet_jmrDown; ++idxShift)
         {
+          if(! isValidJESsource(era_, idxShift, true))
+          {
+            continue;
+          }
           // we want to save all pT-s and masses that have been shifted by systematic uncertainties to the maps,
           // including the central nominal and central non-nominal values; crucial for RecoJetWriter
           const int jet_pt_sys_local        = gInstance->jet_pt_systematics_.count(idxShift)        ? idxShift : sysOption_central_;
           const int jet_mass_sys_local      = gInstance->jet_mass_systematics_.count(idxShift)      ? idxShift : sysOption_central_;
-          //const int jet_msoftdrop_sys_local = gInstance->jet_msoftdrop_systematics_.count(idxShift) ? idxShift : sysOption_central_; [*]
+          const int jet_msoftdrop_sys_local = gInstance->jet_msoftdrop_systematics_.count(idxShift) ? idxShift : sysOption_central_;
           jet.pt_systematics_[idxShift]        = gInstance->jet_pt_systematics_.at(jet_pt_sys_local)[idxJet];
           jet.mass_systematics_[idxShift]      = gInstance->jet_mass_systematics_.at(jet_mass_sys_local)[idxJet];
-          jet.msoftdrop_systematics_[idxShift] = gInstance->jet_msoftdrop_systematics_.at(kFatJet_central_nonNominal)[idxJet]; // TODO: use jet_msoftdrop_sys_local [*]
+          jet.msoftdrop_systematics_[idxShift] = gInstance->jet_msoftdrop_systematics_.at(jet_msoftdrop_sys_local)[idxJet];
         } // idxShift
       }
       else
@@ -284,16 +300,10 @@ RecoJetReaderAK8::read() const
         // fill the maps with only the central values (either nominal or non-nominal if data)
         jet.pt_systematics_[sysOption_]   = gInstance->jet_pt_systematics_.at(jet_pt_sys)[idxJet];
         jet.mass_systematics_[sysOption_] = gInstance->jet_mass_systematics_.at(jet_mass_sys)[idxJet];
-        jet.msoftdrop_systematics_[sysOption_] = gInstance->jet_msoftdrop_systematics_.at(kFatJet_central_nonNominal)[idxJet]; // TODO: use jet_msoftdrop_sys [*]
+        jet.msoftdrop_systematics_[sysOption_] = gInstance->jet_msoftdrop_systematics_.at(jet_msoftdrop_sys)[idxJet];
       } // isMC_
     } // idxJet
   } // nJets > 0
-
-  //-------------------------------------------------------------------------------------------------------------------------------------
-  // [*]
-  // CV: temporary work-around until this bug gets fixed with a new nanoAODTools post-production
-  //       https://github.com/HEP-KBFI/nanoAOD-tools/commit/09820f595db490e642b5b636144c75ab32f9dc4c
-  //-------------------------------------------------------------------------------------------------------------------------------------
 
   return jets;
 }
