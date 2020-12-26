@@ -25,7 +25,7 @@ def get_pileup_histograms(pileup_filename):
     pileup_file.Close()
     return histogram_names
 
-HH_NONRES_CATEGORY_RE = re.compile('signal_\w+_nonresonant_hh_\w+')
+HH_NONRES_CATEGORY_RE = re.compile('signal_\w+_nonresonant(_cHHH.*)?_hh_\w+')
 def is_hh_nonres(jobOptions):
     return jobOptions['is_mc'] and bool(HH_NONRES_CATEGORY_RE.match(jobOptions['category_name']))
 
