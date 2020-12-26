@@ -180,8 +180,8 @@ HHWeightInterface2::HHWeightInterface2(const edm::ParameterSet & cfg)
   std::cout << "<HHWeightInterface2>: Scanning " << bmNames_.size() << " benchmark scenarios: " << format_vstring(bmNames_) << std::endl;
 }
 
-
-void HHWeightInterface2::loadScanFile(const std::string & filePath, const std::string & prefix, int idx, bool isDEBUG)
+void 
+HHWeightInterface2::loadScanFile(const std::string & filePath, const std::string & prefix, int idx, bool isDEBUG)
 {
   // CV: read coupling scans from text files
   std::ifstream inFile_scan(filePath);
@@ -324,16 +324,18 @@ HHWeightInterface2::getWeight(const std::string & bmName, double mHH, double cos
 double
 HHWeightInterface2::getReWeight(const std::string & bmName, double mHH, double cosThetaStar, bool isDEBUG) const
 {
+  double reWeight = 1.;
   if ( bmName == "SM" )
   {
-    return 1.;
+    reWeight = 1.;
   }
   else
   {
     double smWeight = getWeight("SM", mHH, cosThetaStar, isDEBUG);
     double bmWeight = getWeight(bmName, mHH, cosThetaStar, isDEBUG);
-    return ( smWeight > 0. ) ? bmWeight/smWeight : 1.;
+    reWeight = ( smWeight > 0. ) ? bmWeight/smWeight : 1.;
   }
+  return reWeight;
 }
 
 std::vector<std::string>
@@ -346,4 +348,40 @@ std::vector<std::string>
 HHWeightInterface2::get_bm_names() const
 {
   return bmNames_;
+}
+
+const std::vector<double> &
+HHWeightInterface2::klJHEP()
+{ 
+  return klJHEP_;
+}
+
+const std::vector<double> &
+HHWeightInterface2::ktJHEP()
+{ 
+  return ktJHEP_;
+}
+
+const std::vector<double> &
+HHWeightInterface2::c2JHEP()
+{
+  return c2JHEP_;
+}
+
+const std::vector<double> &
+HHWeightInterface2::cgJHEP()
+{
+  return cgJHEP_;
+}
+
+const std::vector<double> &
+HHWeightInterface2::c2gJHEP()
+{ 
+  return c2gJHEP_;
+}
+
+const std::vector<double> &
+HHWeightInterface2::normJHEP()
+{
+  return normJHEP_;
 }

@@ -2,6 +2,16 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 
+#define _USE_MATH_DEFINES // M_PI
+
+namespace {
+  double constexpr
+  pow2(double x)
+  {
+    return x * x;
+  }
+}
+
 RecoMEt::RecoMEt()
   : RecoMEt(0., 0., 0., 0., 0.)
 {}
@@ -191,6 +201,16 @@ RecoMEt::get_default_systematics() const
   return default_systematics_;
 }
 
+void
+RecoMEt::shift_PxPy(const std::pair<double, double> & PxPyCorr)
+{
+  for(auto & kv: systematics_)
+  {
+    kv.second.shift_PxPy(PxPyCorr);
+  }
+  default_.shift_PxPy(PxPyCorr);
+}
+
 std::ostream &
 operator<<(std::ostream & stream,
            const RecoMEt & met)
@@ -230,6 +250,19 @@ double
 RecoMEt::MEt::py() const
 {
   return pt_ * std::sin(phi_);
+}
+
+void
+RecoMEt::MEt::shift_PxPy(const std::pair<double, double> & PxPyCorr)
+{
+  const double shifted_x = this->px() + PxPyCorr.first;
+  const double shifted_y = this->py() + PxPyCorr.second;
+
+  pt_ = std::sqrt(::pow2(shifted_x) + ::pow2(shifted_y));
+  phi_ = 0.;
+  if     (shifted_x > 0) { phi_ = std::atan(shifted_y / shifted_x); }
+  else if(shifted_x < 0) { phi_ = std::atan(shifted_y / shifted_x) + ((shifted_y > 0. ? +1. : -1.) * M_PI);  }
+  else                   { phi_ = (shifted_y > 0. ? +1. : -1.) * M_PI; }
 }
 
 std::ostream &

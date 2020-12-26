@@ -35,6 +35,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenPhotonReader.h" // GenPhotonReader
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticleReader.h" // GenParticleReader
 #include "tthAnalysis/HiggsToTauTau/interface/AnalysisConfig.h" // AnalysisConfig
+#include "tthAnalysis/HiggsToTauTau/interface/RecoVertex.h" // RecoVertex
+#include "tthAnalysis/HiggsToTauTau/interface/RecoVertexReader.h" // RecoVertexReader
 
 #include "tthAnalysis/HiggsToTauTau/interface/TensorFlowInterface.h"
 #include "tthAnalysis/HiggsToTauTau/interface/HadTopTagger.h" // HadTopTagger
@@ -195,6 +197,7 @@ main(int argc,
   const std::string branchName_hadTaus    = cfg_analyze.getParameter<std::string>("branchName_hadTaus");
   const std::string branchName_jets       = cfg_analyze.getParameter<std::string>("branchName_jets");
   const std::string branchName_met        = cfg_analyze.getParameter<std::string>("branchName_met");
+  const std::string branchName_vertex     = cfg_analyze.getParameter<std::string>("branchName_vertex");
   const std::string branchName_genLeptons = cfg_analyze.getParameter<std::string>("branchName_genLeptons");
   const std::string branchName_genHadTaus = cfg_analyze.getParameter<std::string>("branchName_genHadTaus");
   const std::string branchName_genPhotons = cfg_analyze.getParameter<std::string>("branchName_genPhotons");
@@ -249,6 +252,10 @@ main(int argc,
   EventInfo eventInfo(analysisConfig);
   EventInfoReader eventInfoReader(&eventInfo);
   inputTree->registerReader(&eventInfoReader);
+
+  RecoVertex vertex;
+  RecoVertexReader vertexReader(&vertex, branchName_vertex);
+  inputTree -> registerReader(&vertexReader);
 
   hltPathReader hltPathReader_instance({
     triggers_1e, triggers_1mu, triggers_2e, triggers_1e1mu, triggers_2mu,
@@ -310,6 +317,7 @@ main(int argc,
 //--- declare missing transverse energy
   RecoMEtReader * const metReader = new RecoMEtReader(era, isMC, branchName_met);
   metReader->setMEt_central_or_shift(met_option);
+  metReader->set_phiModulationCorrDetails(&eventInfo, &vertex);
   inputTree->registerReader(metReader);
 
   GenLeptonReader * genLeptonReader = nullptr;

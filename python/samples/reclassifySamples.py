@@ -61,6 +61,15 @@ def reclassifySamples(samples_era_base, samples_era_hh_multilepton = None, sampl
       if sample_info["process_name_specific"] == "TTWJetsToLNu_EWK_5f_NLO":
         sample_info["use_it"] = True
 
+    if sample_info["sample_category"] == "VH":
+      if sample_name.startswith(("/WH", "/WplusH", "/WminusH")):
+        sample_info["sample_category"] = "WH"
+      elif sample_name.startswith(("/ZH", "/HZJ")):
+        sample_info["sample_category"] = "ZH"
+      else:
+        assert(sample_name.startswith("/VH"))
+        sample_info["use_it"] = False
+
     if sample_info["process_name_specific"].startswith('signal') and 'hh' in sample_info["process_name_specific"]:
       if is_nonresonant(sample_info["sample_category"]) and not sample_info["process_name_specific"].endswith('2b2v_sl'):
         # HH->bbWW single-leptonic samples are disabled because we decided to process these samples too late in ttH analysis

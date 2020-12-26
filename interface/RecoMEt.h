@@ -64,6 +64,9 @@ public:
     double
     py() const;
 
+    void
+    shift_PxPy(const std::pair<double, double> & PxPyCorr);
+
     MEt &
     operator=(const MEt & other);
 
@@ -87,6 +90,9 @@ public:
 
   int
   get_default_systematics() const;
+
+  void
+  shift_PxPy(const std::pair<double, double> & PxPyCorr);
 
 protected:
   MEt default_; ///< Default values

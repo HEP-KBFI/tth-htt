@@ -11,6 +11,7 @@ LeptonFakeRateInterface::LeptonFakeRateInterface(const edm::ParameterSet & cfg)
   : jetToEleFakeRateCorr_(1.)
   , jetToMuFakeRateCorr_(1.)
   , applyNonClosureCorrection_(cfg.getParameter<bool>("applyNonClosureCorrection"))
+  , isDEBUG_(cfg.exists("debug") ? cfg.getParameter<bool>("debug") : false)
 {
   const std::string inputFileName    = cfg.getParameter<std::string>("inputFileName");
   const std::string histogramName_e  = cfg.getParameter<std::string>("histogramName_e");
@@ -42,6 +43,7 @@ LeptonFakeRateInterface::LeptonFakeRateInterface(const edm::ParameterSet & cfg)
       case Era::k2018: jetToEleFakeRateCorr_ = 1.325; jetToMuFakeRateCorr_ = 1.067; break;
     }
   }
+  std::cout << "Non-closure corr to FR of muons = " << jetToMuFakeRateCorr_ << ", electrons = " << jetToEleFakeRateCorr_ << '\n';
 
   for(int FR_option = kFRl_central; FR_option <= kFRm_shape_eta_barrelDown; ++FR_option)
   {
@@ -119,15 +121,27 @@ LeptonFakeRateInterface::getWeight_e(double electronPt,
     throw cmsException(this, __func__, __LINE__) << "Invalid option: " << central_or_shift_e;
   }
   const double jetToEleFakeRate = lutFakeRate_e_.at(central_or_shift_e)->getSF(electronPt, electronAbsEta);
-  if(central_or_shift == kFRe_shape_corrUp)
+
+  const double jetToEleFakeRate_final = [&,this]() -> double {
+    if(central_or_shift == kFRe_shape_corrUp)
+    {
+      return jetToEleFakeRate * jetToEleFakeRateCorr_ * jetToEleFakeRateCorr_;
+    }
+    else if(central_or_shift == kFRe_shape_corrDown)
+    {
+      return jetToEleFakeRate;
+    }
+    return jetToEleFakeRate * jetToEleFakeRateCorr_;
+  }();
+  if(isDEBUG_)
   {
-    return jetToEleFakeRate * jetToEleFakeRateCorr_ * jetToEleFakeRateCorr_;
+    std::cout
+      << get_human_line(this, __func__, __LINE__)
+      << "FR(e pT = " << electronPt << ", |eta| = " << electronAbsEta << ") = " << jetToEleFakeRate
+      << " @ central_or_shift = " << central_or_shift_e << " => FR(jet->e) = " << jetToEleFakeRate_final << '\n';
+    ;
   }
-  else if(central_or_shift == kFRe_shape_corrDown)
-  {
-    return jetToEleFakeRate;
-  }
-  return jetToEleFakeRate * jetToEleFakeRateCorr_;
+  return jetToEleFakeRate_final;
 }
 
 double
@@ -149,13 +163,24 @@ LeptonFakeRateInterface::getWeight_mu(double muonPt,
     throw cmsException(this, __func__, __LINE__) << "Invalid option: " << central_or_shift_m;
   }
   const double jetToMuFakeRate = lutFakeRate_mu_.at(central_or_shift_m)->getSF(muonPt, muonAbsEta);
-  if(central_or_shift == kFRm_shape_corrUp)
+  const double jetToMuFakeRate_final = [&,this]() -> double {
+    if(central_or_shift == kFRm_shape_corrUp)
+    {
+      return jetToMuFakeRate * jetToMuFakeRateCorr_ * jetToMuFakeRateCorr_;
+    }
+    else if(central_or_shift == kFRm_shape_corrDown)
+    {
+      return jetToMuFakeRate;
+    }
+    return jetToMuFakeRate * jetToMuFakeRateCorr_;
+  }();
+  if(isDEBUG_)
   {
-    return jetToMuFakeRate * jetToMuFakeRateCorr_ * jetToMuFakeRateCorr_;
+    std::cout
+      << get_human_line(this, __func__, __LINE__)
+      << "FR(mu pT = " << muonPt << ", |eta| = " << muonAbsEta << ") = " << jetToMuFakeRate
+      << " @ central_or_shift = " << central_or_shift_m << " => FR(jet->mu) = " << jetToMuFakeRate_final << '\n';
+    ;
   }
-  else if(central_or_shift == kFRm_shape_corrDown)
-  {
-    return jetToMuFakeRate;
-  }
-  return jetToMuFakeRate * jetToMuFakeRateCorr_;
+  return jetToMuFakeRate_final;
 }

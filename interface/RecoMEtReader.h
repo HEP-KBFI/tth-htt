@@ -9,6 +9,8 @@
 
 // forward declarations
 class TTree;
+class EventInfo;
+class RecoVertex;
 
 class RecoMEtReader
   : public ReaderBase
@@ -33,6 +35,11 @@ public:
    */
   std::vector<std::string>
   setBranchAddresses(TTree * tree) override;
+
+  void
+  set_phiModulationCorrDetails(const EventInfo * const eventInfo,
+                               const RecoVertex * const recoVertex,
+                               bool enable_phiModulationCorr = true);
 
   /**
    * @brief Read branches from tree and use information to fill RecoMEt object
@@ -61,6 +68,9 @@ protected:
   std::string branchName_covYY_;
 
   RecoMEt met_;
+  const EventInfo * eventInfo_;
+  const RecoVertex * recoVertex_;
+  bool enable_phiModulationCorr_;
 
   int ptPhiOption_;
   bool read_ptPhi_systematics_;

@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2019-10-17 23:15:07 with the following command:
+# file generated at 2020-12-24 16:03:12 with the following command:
 # find_samples.py -V -m python/samples/metaDict_2016_data.py -d ../NanoAOD/test/datasets/txt/datasets_data_2016_17Jul18.txt -p SingleElectron SingleMuon DoubleEG DoubleMuon MuonEG Tau -g ../NanoAOD/data/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt -v 9_4_9 -r 2016 -C +17Jul2018 xDoubleEG/Run2016B-17Jul2018_ver1-v1 -c python/samples/sampleLocations_2016_nanoAOD.txt
 
 meta_dictionary = OD()
@@ -66,7 +66,7 @@ meta_dictionary["/SingleElectron/Run2016E-17Jul2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/SingleElectron/Run2016F-17Jul2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2016v3_2019Aug29_SingleElectron__Run2016F-17Jul2018-v1"),
+  ("crab_string",           "2016v3_2020Dec20_SingleElectron__Run2016F-17Jul2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleElectron_Run2016F_17Jul2018_v1"),
   ("nof_db_events",         70593532),
@@ -99,19 +99,19 @@ meta_dictionary["/SingleElectron/Run2016H-17Jul2018-v1/MINIAOD"] =  OD([
   ("crab_string",           "2016v3_2019Aug29_SingleElectron__Run2016H-17Jul2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleElectron_Run2016H_17Jul2018_v1"),
-  ("nof_db_events",         128854598),
-  ("nof_db_files",          968),
-  ("fsize_db",              3618123957596),
+  ("nof_db_events",         129021893),
+  ("nof_db_files",          969),
+  ("fsize_db",              3621865647527),
   ("xsection",              None),
   ("use_it",                True),
   ("genWeight",             False),
   ("run_range",             [281613, 284044]),
   ("golden_run_range",      [281613, 284044]),
-  ("comment",               "100.0%; status: VALID; size: 3.62TB; nevents: 128.85M; release: 9_4_9; last modified: 2018-08-01 15:36:39"),
+  ("comment",               "100.0%; status: VALID; size: 3.62TB; nevents: 129.02M; release: 9_4_9; last modified: 2018-08-01 15:36:39"),
 ])
 
 meta_dictionary["/SingleMuon/Run2016B-17Jul2018_ver2-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2016v3_2019Aug29_SingleMuon__Run2016B-17Jul2018_ver2-v1"),
+  ("crab_string",           "2016v3_2020Dec20_SingleMuon__Run2016B-17Jul2018_ver2-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleMuon_Run2016B_17Jul2018_ver2_v1"),
   ("nof_db_events",         158145722),
@@ -186,7 +186,7 @@ meta_dictionary["/SingleMuon/Run2016F-17Jul2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/SingleMuon/Run2016G-17Jul2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2016v3_2019Aug29_SingleMuon__Run2016G-17Jul2018-v1"),
+  ("crab_string",           "2016v3_2020Dec20_SingleMuon__Run2016G-17Jul2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleMuon_Run2016G_17Jul2018_v1"),
   ("nof_db_events",         149912248),

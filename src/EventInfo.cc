@@ -151,6 +151,12 @@ EventInfo::copy(const EventInfo & eventInfo)
 EventInfo::~EventInfo()
 {}
 
+bool
+EventInfo::isMC() const
+{
+  return isMC_;
+}
+
 double
 EventInfo::genWeight_tH() const
 {

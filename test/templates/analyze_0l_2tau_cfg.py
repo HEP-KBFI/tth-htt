@@ -78,6 +78,7 @@ process.analyze_0l_2tau = cms.PSet(
     branchName_jetsAK8 = cms.string('FatJet'),
     branchName_subjetsAK8 = cms.string('SubJet'),
     branchName_met = cms.string('MET'),
+    branchName_vertex = cms.string('PV'),
 
     branchName_genLeptons = cms.string('GenLep'),
     branchName_genHadTaus = cms.string('GenVisTau'),

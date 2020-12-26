@@ -2,16 +2,19 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h"             // cmsException()
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
+#include "tthAnalysis/HiggsToTauTau/interface/RecoVertex.h"               // RecoVertex
 
 std::map<std::string, int> RecoVertexReader::numInstances_;
 std::map<std::string, RecoVertexReader *> RecoVertexReader::instances_;
 
-RecoVertexReader::RecoVertexReader()
-  : RecoVertexReader("PV")
+RecoVertexReader::RecoVertexReader(RecoVertex * recoVertex)
+  : RecoVertexReader(recoVertex, "PV")
 {}
 
-RecoVertexReader::RecoVertexReader(const std::string & branchName)
+RecoVertexReader::RecoVertexReader(RecoVertex * recoVertex,
+                                   const std::string & branchName)
   : branchName_(branchName)
+  , recoVertex_(recoVertex)
 {
   setBranchNames();
 }
@@ -51,33 +54,23 @@ RecoVertexReader::setBranchAddresses(TTree * tree)
 {
   if(instances_[branchName_] == this)
   {
+    assert(recoVertex_);
     BranchAddressInitializer bai(tree);
-    bai.setBranchAddress(vertex_x_, branchName_x_);
-    bai.setBranchAddress(vertex_y_, branchName_y_);
-    bai.setBranchAddress(vertex_z_, branchName_z_);
-    bai.setBranchAddress(vertex_ndof_, branchName_ndof_);
-    bai.setBranchAddress(vertex_chi2_, branchName_chi2_);
-    bai.setBranchAddress(vertex_score_, branchName_score_);
-    bai.setBranchAddress(vertex_npvs_, branchName_npvs_);
-    bai.setBranchAddress(vertex_npvsGood_, branchName_npvsGood_);
+    bai.setBranchAddress(recoVertex_->position_x_, branchName_x_);
+    bai.setBranchAddress(recoVertex_->position_y_, branchName_y_);
+    bai.setBranchAddress(recoVertex_->position_z_, branchName_z_);
+    bai.setBranchAddress(recoVertex_->ndof_, branchName_ndof_);
+    bai.setBranchAddress(recoVertex_->chi2_, branchName_chi2_);
+    bai.setBranchAddress(recoVertex_->score_, branchName_score_);
+    bai.setBranchAddress(recoVertex_->npvs_, branchName_npvs_);
+    bai.setBranchAddress(recoVertex_->npvsGood_, branchName_npvsGood_);
     return bai.getBoundBranchNames();
   }
   return {};
 }
 
-RecoVertex
-RecoVertexReader::read() const
+void
+RecoVertexReader::set_recoVertex(RecoVertex * recoVertex)
 {
-  const RecoVertexReader * const gInstance = instances_[branchName_];
-  assert(gInstance);
-
-  RecoVertex vertex(gInstance->vertex_x_,
-                    gInstance->vertex_y_,
-                    gInstance->vertex_z_,
-                    gInstance->vertex_ndof_,
-                    gInstance->vertex_chi2_,
-                    gInstance->vertex_score_,
-                    gInstance->vertex_npvs_,
-                    gInstance->vertex_npvsGood_);
-  return vertex;
+  recoVertex_ = recoVertex;
 }

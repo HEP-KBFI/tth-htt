@@ -34,6 +34,8 @@ class AnalysisConfig
   virtual bool isMC_ggH() const;
   virtual bool isMC_qqH() const;
   virtual bool isMC_VH() const;
+  virtual bool isMC_WH() const;
+  virtual bool isMC_ZH() const;
   virtual bool isMC_H() const;                 // single Higgs boson production (either tH, ttH, ggH, qqH, VH, ttZH, or ttWH)
   virtual bool isMC_HH_resonant() const;       // resonant HH production (either spin 0 or spin 2)
   virtual bool isMC_HH_resonant_spin0() const; // resonant HH production (spin 0 only)
@@ -64,6 +66,8 @@ class AnalysisConfig
   bool isMC_ggH_;
   bool isMC_qqH_;
   bool isMC_VH_;
+  bool isMC_WH_;
+  bool isMC_ZH_;
   bool isMC_H_;
   bool isMC_HH_resonant_spin0_;
   bool isMC_HH_resonant_spin2_;

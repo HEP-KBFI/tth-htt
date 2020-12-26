@@ -4,6 +4,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h"             // cmsException()
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
 #include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h"         // kJetMET_*
+#include "tthAnalysis/HiggsToTauTau/interface/metPhiModulation.h"         // METXYCorr_Met_MetPhi()
 
 std::map<std::string, int> RecoMEtReader::numInstances_;
 std::map<std::string, RecoMEtReader *> RecoMEtReader::instances_;
@@ -21,6 +22,9 @@ RecoMEtReader::RecoMEtReader(Era era,
   , isMC_(isMC)
   , branchName_obj_(branchName_obj)
   , branchName_cov_(branchName_cov.empty() ? branchName_obj_ : branchName_cov)
+  , eventInfo_(nullptr)
+  , recoVertex_(nullptr)
+  , enable_phiModulationCorr_(false)
   , ptPhiOption_(isMC_ ? kJetMET_central : kJetMET_central_nonNominal)
   , read_ptPhi_systematics_(false)
 {
@@ -134,12 +138,27 @@ RecoMEtReader::setBranchAddresses(TTree * tree)
   return {};
 }
 
+void
+RecoMEtReader::set_phiModulationCorrDetails(const EventInfo * const eventInfo,
+                                            const RecoVertex * const recoVertex,
+                                            bool enable_phiModulationCorr)
+{
+  eventInfo_ = eventInfo;
+  recoVertex_ = recoVertex;
+  enable_phiModulationCorr_ = enable_phiModulationCorr;
+}
+
 RecoMEt
 RecoMEtReader::read() const
 {
   const RecoMEtReader * const gInstance = instances_[branchName_obj_];
   assert(gInstance);
   RecoMEt met = met_;
+  if(enable_phiModulationCorr_)
+  {
+    const std::pair TheXYCorr_Met_MetPhi = METXYCorr_Met_MetPhi(eventInfo_, recoVertex_, era_);
+    met.shift_PxPy(TheXYCorr_Met_MetPhi);
+  }
   met.set_default(ptPhiOption_);
   return met;
 }

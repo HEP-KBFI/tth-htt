@@ -69,3 +69,29 @@ RecoJetBase::hasAnyGenMatch() const
   return !! genLepton_ || !! genHadTau_ || !! genJet_;
 }
 
+std::ostream &
+operator<<(std::ostream & stream,
+           const RecoJetBase & jet)
+{
+  stream << static_cast<const GenJet &>(jet)      << ","
+            " charge = "          << jet.charge() << ","
+            "\n"
+            " gen. matching:";
+  stream << ",\n  lepton = " << jet.genLepton();
+  if(jet.genLepton())
+  {
+    stream << ": " << *(jet.genLepton());
+  }
+  stream << ",\n  hadTau = " << jet.genHadTau();
+  if(jet.genHadTau())
+  {
+    stream << ": " << *(jet.genHadTau());
+  }
+  stream << ",\n  jet    = " << jet.genJet();
+  if(jet.genJet())
+  {
+    stream << ": " << *(jet.genJet());
+  }
+  return stream;
+}
+

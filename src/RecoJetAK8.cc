@@ -84,24 +84,31 @@ std::ostream &
 operator<<(std::ostream & stream,
            const RecoJetAK8 & jet)
 {
-  stream << static_cast<const GenJet &>(jet)                 << ","
-            " jet ID = " << jet.jetId()                      << ","
+  stream << static_cast<const RecoJetBase &>(jet)            << ",\n"
+            " jet ID = "    << jet.jetId()                   << ","
             " msoftdrop = " << jet.msoftdrop()               << ","
             " tau1 = "      << jet.tau1()                    << ","
             " tau2 = "      << jet.tau2()                    << ","
             " tau3 = "      << jet.tau3()                    << ","
             " sysunc = "    << jet.get_default_systematics() << ",\n"
             " subjets:";
-  stream << ",\n  idx1 = " << jet.subJet1();
+  stream << "\n  idx1 = " << jet.subJet1();
   if(jet.subJet1())
   {
     stream << ": " << *(jet.subJet1());
   }
-  stream << ",\n  idx2 = " << jet.subJet2();
+  else
+  {
+    stream << '\n';
+  }
+  stream << "  idx2 = " << jet.subJet2();
   if(jet.subJet2())
   {
     stream << ": " << *(jet.subJet2());
   }
-  stream << '\n';
+  else
+  {
+    stream << '\n';
+  }
   return stream;
 }
