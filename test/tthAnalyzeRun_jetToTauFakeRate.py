@@ -21,6 +21,7 @@ systematics.full = systematics.an_jetToTauFR
 parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
 parser.add_sys(sys_choices)
+parser.add_lep_mva_wp()
 parser.add_tau_id_wp(required = True, choices = [ 'dR03mvaVVLoose', 'dR03mvaVLoose', 'deepVSjVVVLoose', 'deepVSjVVLoose' ])
 parser.add_files_per_job()
 parser.add_use_home()
@@ -44,6 +45,7 @@ running_method     = args.running_method
 # Additional arguments
 mode              = args.mode
 systematics_label = args.systematics
+lep_mva_wp        = args.lep_mva_wp
 tau_id_wp         = args.tau_id_wp
 files_per_job     = args.files_per_job
 use_home          = args.use_home
@@ -115,6 +117,7 @@ if __name__ == '__main__':
     absEtaBins                       = [ -1., 1.479, 9.9 ],
     ptBins                           = [ 20., 25., 30., 35., 40., 45., 50., 60., 70., 80., 100., 200. ],
     decayModes                       = [ -1, 0, 1, 2, 5, 6, 10, 11 ],
+    lep_mva_wp                       = lep_mva_wp,
     jet_cleaning_by_index            = jet_cleaning_by_index,
     gen_matching_by_index            = gen_matching_by_index,
     central_or_shifts                = central_or_shifts,
