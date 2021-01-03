@@ -82,6 +82,10 @@ RecoJetWriterAK8::set_central_or_shift(int central_or_shift)
   {
     throw cmsException(this, __func__, __LINE__) << "Data has only non-nominal attributes";
   }
+  if(! isValidJESsource(era_, central_or_shift, true))
+  {
+    throw cmsException(this, __func__, __LINE__) << "Invalid option for the era = " << static_cast<int>(era_) << ": " << central_or_shift;
+  }
   sysOption_ = central_or_shift;
 }
 
@@ -100,17 +104,21 @@ RecoJetWriterAK8::setBranchNames()
 
   for(int idxShift = kFatJet_central_nonNominal; idxShift <= kFatJet_jmrDown; ++idxShift)
   {
+    if(! isValidJESsource(era_, idxShift, true))
+    {
+      continue;
+    }
     if(isValidFatJetAttribute(idxShift, pt_str_))
     {
-      branchNames_pt_systematics_[idxShift] = getBranchName_fatJet(branchName_obj_, pt_str_, idxShift);
+      branchNames_pt_systematics_[idxShift] = getBranchName_fatJet(branchName_obj_, era_, pt_str_, idxShift);
     }
     if(isValidFatJetAttribute(idxShift, mass_str_))
     {
-      branchNames_mass_systematics_[idxShift] = getBranchName_fatJet(branchName_obj_, mass_str_, idxShift);
+      branchNames_mass_systematics_[idxShift] = getBranchName_fatJet(branchName_obj_, era_, mass_str_, idxShift);
     }
     if(isValidFatJetAttribute(idxShift, msoftdrop_str_))
     {
-      branchNames_msoftdrop_systematics_[idxShift] = getBranchName_fatJet(branchName_obj_, msoftdrop_str_, idxShift);
+      branchNames_msoftdrop_systematics_[idxShift] = getBranchName_fatJet(branchName_obj_, era_, msoftdrop_str_, idxShift);
     }
   }
 }
@@ -136,6 +144,10 @@ RecoJetWriterAK8::setBranches(TTree * tree)
   {
     for(int idxShift = kFatJet_central_nonNominal; idxShift <= kFatJet_jmrDown; ++idxShift)
     {
+      if(! isValidJESsource(era_, idxShift, true))
+      {
+        continue;
+      }
       if(idxShift == sysOption_)
       {
         continue; // do not overwrite the default branch
@@ -203,6 +215,10 @@ RecoJetWriterAK8::write(const std::vector<const RecoJetAK8 *> & jets)
     {
       for(int idxShift = kFatJet_central_nonNominal; idxShift <= kFatJet_jmrDown; ++idxShift)
       {
+        if(! isValidJESsource(era_, idxShift, true))
+        {
+          continue;
+        }
         if(idxShift == sysOption_)
         {
           continue; // do not overwrite the value (it doesn't do any harm, but still)

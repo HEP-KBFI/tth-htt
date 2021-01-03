@@ -21,6 +21,8 @@ systematics.full = systematics.an_jetToTauFR
 parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
 parser.add_sys(sys_choices)
+parser.add_lep_mva_wp()
+parser.add_preselect()
 parser.add_tau_id_wp(required = True, choices = [ 'dR03mvaVVLoose', 'dR03mvaVLoose', 'deepVSjVVVLoose', 'deepVSjVVLoose' ])
 parser.add_files_per_job()
 parser.add_use_home()
@@ -44,7 +46,9 @@ running_method     = args.running_method
 # Additional arguments
 mode              = args.mode
 systematics_label = args.systematics
+lep_mva_wp        = args.lep_mva_wp
 tau_id_wp         = args.tau_id_wp
+use_preselected   = args.use_preselected
 files_per_job     = args.files_per_job
 use_home          = args.use_home
 hlt_filter        = args.hlt_filter
@@ -80,7 +84,15 @@ logging.info(
     ', '.join(hadTau_numerators)),
 )
 
-samples = load_samples(era)
+preselection_suffix = ""
+if use_preselected:
+  if lep_mva_wp == "default":
+    preselection_suffix = "preselected"
+  elif lep_mva_wp == "hh_multilepton":
+    preselection_suffix = "preselected_hh_multilepton"
+  else:
+    raise RuntimeError("Invalid prompt lepton MVA WP: %s" % lep_mva_wp)
+samples = load_samples(era, suffix = preselection_suffix)
 for sample_name, sample_info in samples.items():
   if sample_name == 'sum_events':
     continue
@@ -115,6 +127,7 @@ if __name__ == '__main__':
     absEtaBins                       = [ -1., 1.479, 9.9 ],
     ptBins                           = [ 20., 25., 30., 35., 40., 45., 50., 60., 70., 80., 100., 200. ],
     decayModes                       = [ -1, 0, 1, 2, 5, 6, 10, 11 ],
+    lep_mva_wp                       = lep_mva_wp,
     jet_cleaning_by_index            = jet_cleaning_by_index,
     gen_matching_by_index            = gen_matching_by_index,
     central_or_shifts                = central_or_shifts,
