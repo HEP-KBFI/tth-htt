@@ -22,6 +22,7 @@ parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
 parser.add_sys(sys_choices)
 parser.add_lep_mva_wp()
+parser.add_preselect()
 parser.add_tau_id_wp(required = True, choices = [ 'dR03mvaVVLoose', 'dR03mvaVLoose', 'deepVSjVVVLoose', 'deepVSjVVLoose' ])
 parser.add_files_per_job()
 parser.add_use_home()
@@ -47,6 +48,7 @@ mode              = args.mode
 systematics_label = args.systematics
 lep_mva_wp        = args.lep_mva_wp
 tau_id_wp         = args.tau_id_wp
+use_preselected   = args.use_preselected
 files_per_job     = args.files_per_job
 use_home          = args.use_home
 hlt_filter        = args.hlt_filter
@@ -82,7 +84,15 @@ logging.info(
     ', '.join(hadTau_numerators)),
 )
 
-samples = load_samples(era)
+preselection_suffix = ""
+if use_preselected:
+  if lep_mva_wp == "default":
+    preselection_suffix = "preselected"
+  elif lep_mva_wp == "hh_multilepton":
+    preselection_suffix = "preselected_hh_multilepton"
+  else:
+    raise RuntimeError("Invalid prompt lepton MVA WP: %s" % lep_mva_wp)
+samples = load_samples(era, suffix = preselection_suffix)
 for sample_name, sample_info in samples.items():
   if sample_name == 'sum_events':
     continue

@@ -51,9 +51,6 @@ jet_cleaning      = args.jet_cleaning
 gen_matching      = args.gen_matching
 use_stitched      = args.use_stitched
 
-if lep_mva_wp != 'default' and use_preselected:
-  raise RuntimeError("Cannot use skimmed samples with non-default lepton definition")
-
 # Use the arguments
 central_or_shifts = []
 for systematic_label in systematics_label:
@@ -64,7 +61,15 @@ lumi = get_lumi(era)
 jet_cleaning_by_index = (jet_cleaning == 'by_index')
 gen_matching_by_index = (gen_matching == 'by_index')
 
-samples = load_samples(era, suffix = "preselected" if use_preselected else "")
+preselection_suffix = ""
+if use_preselected:
+  if lep_mva_wp == "default":
+    preselection_suffix = "preselected"
+  elif lep_mva_wp == "hh_multilepton":
+    preselection_suffix = "preselected_hh_multilepton"
+  else:
+    raise RuntimeError("Invalid prompt lepton MVA WP: %s" % lep_mva_wp)
+samples = load_samples(era, suffix = preselection_suffix)
 samples = load_samples_stitched(samples, era, use_stitched)
 
 for sample_name, sample_info in samples.items():
