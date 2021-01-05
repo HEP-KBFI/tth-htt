@@ -301,8 +301,10 @@ class tthAnalyzeParser(argparse.ArgumentParser):
         help = 'M|do not run data',
     )
 
-  def enable_regrouped_jerc(self, default = 'both'):
+  def enable_regrouped_jerc(self, default = 'both', include_ak8 = False):
     choices = [ 'both', 'jes', 'jer' ]
+    if include_ak8:
+      choices.extend([ 'jes_ak8', 'jes_all', 'all' ])
     assert(default in choices)
     self.add_argument('-G', '--enable-regrouped-jerc',
       type = str, dest = 'enable_regrouped_jerc', metavar = 'choice', default = '', const = default, choices = choices, nargs = '?', action = 'store',

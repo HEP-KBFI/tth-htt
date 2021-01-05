@@ -1674,7 +1674,7 @@ class analyzeConfig(object):
     def createCfg_makePlots_addShapes(self, lines):
         central_or_shifts_prefix = []
         for central_or_shift in self.central_or_shifts:
-            if central_or_shift in systematics.JEC_regrouped or central_or_shift in systematics.JER_split:
+            if central_or_shift in systematics.JEC_regrouped_ALL or central_or_shift in systematics.JER_split_ALL:
                 continue
             if central_or_shift.startswith('CMS_ttHl_FR'):
                 continue

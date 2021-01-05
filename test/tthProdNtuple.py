@@ -18,7 +18,7 @@ mode_choices = [
 parser = tthAnalyzeParser()
 parser.add_modes(mode_choices)
 parser.add_nonnominal()
-parser.add_lep_mva_wp(default_wp = 'default')
+parser.add_lep_mva_wp(default_wp = 'hh_multilepton')
 parser.add_tau_id_wp('dR03mvaVVLoose&dR05mvaVVLoose&deepVSjVVVLoose')
 parser.add_files_per_job(5)
 parser.add_use_home(False)
@@ -73,12 +73,12 @@ golden_json_2018 = os.path.join(
   'Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt'
 )
 
-if not preselection and lep_mva_wp != 'default':
-  raise ValueError("Non-default lepton selection can only be used in the skimming")
+#if not preselection and lep_mva_wp != 'default':
+#  raise ValueError("Non-default lepton selection can only be used in the skimming")
 
 # Use the arguments
-version = "%s_w%sPresel_%s_%s" % (
-  version, ("" if preselection else "o"), "nonNom" if use_nonnominal else "nom", mode
+version = "%s_w%sPresel_%s_%s_%s" % (
+  version, ("" if preselection else "o"), "nonNom" if use_nonnominal else "nom", mode, lep_mva_wp
 )
 gen_matching_by_index = (gen_matching == 'by_index')
 do_sync = 'sync' in mode

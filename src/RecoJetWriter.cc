@@ -92,7 +92,7 @@ RecoJetWriter::~RecoJetWriter()
 void
 RecoJetWriter::setBranchNames()
 {
-  for(int idxShift = kJetMET_central_nonNominal; idxShift <= kJetMET_jerDown; ++idxShift)
+  for(int idxShift = kJetMET_central_nonNominal; idxShift <= kJetMET_jerForwardHighPtDown; ++idxShift)
   {
     if(! isValidJESsource(era_, idxShift))
     {
@@ -184,7 +184,7 @@ RecoJetWriter::setBranches(TTree * tree)
   bai.setBranch(jet_mass_systematics_[ptMassOption_], branchNames_mass_systematics_[ptMassOption_]);
   if(isMC_)
   {
-    for(int idxShift = kJetMET_central_nonNominal; idxShift <= kJetMET_jerDown; ++idxShift)
+    for(int idxShift = kJetMET_central_nonNominal; idxShift <= kJetMET_jerForwardHighPtDown; ++idxShift)
     {
       if(! isValidJESsource(era_, idxShift))
       {
@@ -262,7 +262,7 @@ RecoJetWriter::write(const std::vector<const RecoJet *> & jets)
 
     if(isMC_)
     {
-      for(int idxShift = kJetMET_central_nonNominal; idxShift <= kJetMET_jerDown; ++idxShift)
+      for(int idxShift = kJetMET_central_nonNominal; idxShift <= kJetMET_jerForwardHighPtDown; ++idxShift)
       {
         if(! isValidJESsource(era_, idxShift))
         {

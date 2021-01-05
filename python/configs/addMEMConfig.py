@@ -5,6 +5,7 @@ from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch as 
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch_hadd as tools_createScript_sbatch_hadd
 from tthAnalysis.HiggsToTauTau.safe_root import ROOT
 from tthAnalysis.HiggsToTauTau.common import logging, DEPENDENCIES
+from tthAnalysis.HiggsToTauTau.analyzeConfig import get_lep_mva_map
 
 import os
 import array
@@ -51,6 +52,7 @@ class addMEMConfig:
             use_nonnominal,
             use_home,
             channel,
+            lep_mva_wp = 'default',
             rle_filter_file = '',
             submission_cmd = None,
             pool_id = '',
@@ -72,12 +74,18 @@ class addMEMConfig:
         self.rle_filter_file = rle_filter_file
         self.leptonSelection = leptonSelection
         self.hadTauSelection = hadTauSelection
+        self.lep_mva_wp = lep_mva_wp
         if self.hadTauSelection:
             self.hadTauDefinition = self.hadTauSelection.split('|')[0]
             self.hadTauWorkingPoint = self.hadTauSelection.split('|')[1]
         else:
             self.hadTauDefinition = None
             self.hadTauWorkingPoint = None
+
+        lep_mva_cut_map = get_lep_mva_map(self.lep_mva_wp)
+        self.lep_mva_cut_mu = lep_mva_cut_map['mu']
+        self.lep_mva_cut_e = lep_mva_cut_map['e']
+
         self.maxPermutations_branchName = None
         self.integration_choice = integration_choice
         self.jet_cleaning_by_index = jet_cleaning_by_index

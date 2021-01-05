@@ -405,6 +405,7 @@
   <use   name="DataFormats/Math"/>
   <use   name="PhysicsTools/FWLite"/>
   <use   name="tthAnalysis/HiggsToTauTau"/>
+  <use   name="hhAnalysis/multilepton"/>
   <use   name="root"/>
   <use   name="roottmva"/>
   <use   name="boost"/>
@@ -420,6 +421,7 @@
   <use   name="DataFormats/Math"/>
   <use   name="PhysicsTools/FWLite"/>
   <use   name="tthAnalysis/HiggsToTauTau"/>
+  <use   name="hhAnalysis/multilepton"/>
   <use   name="root"/>
   <use   name="roottmva"/>
   <use   name="boost"/>
