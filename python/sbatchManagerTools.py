@@ -8,6 +8,10 @@ import jinja2
 import math
 import uuid
 
+MIN_FILE_SIZE_DEFAULT = 5000
+MAX_NOF_RUNNING_JOBS_DEFAULT = 5000
+MAX_INPUTS_PER_JOB_DEFAULT = 10
+
 def find_duplicates(input_file_names):
   input_file_names_occurrence = {}
   for input_file_name in input_file_names:
@@ -37,8 +41,8 @@ def createScript_sbatch(
     job_template_file     = 'sbatch-node.sh.template',
     dry_run               = False,
     validate_outputs      = True,
-    min_file_size         = 10000,
-    max_num_submittedJobs = 5000,
+    min_file_size         = MIN_FILE_SIZE_DEFAULT,
+    max_num_submittedJobs = MAX_NOF_RUNNING_JOBS_DEFAULT,
     use_home              = False,
     copy_output_file      = True,
   ):
@@ -92,8 +96,8 @@ def generate_sbatch_lines(
     job_template_file     = 'sbatch-node.sh.template',
     dry_run               = False,
     validate_outputs      = True,
-    min_file_size         = 10000,
-    max_num_submittedJobs = 5000,
+    min_file_size         = MIN_FILE_SIZE_DEFAULT,
+    max_num_submittedJobs = MAX_NOF_RUNNING_JOBS_DEFAULT,
     use_home              = False,
     copy_output_file      = True,
   ):
@@ -140,7 +144,7 @@ def generate_sbatch_lines(
     lines_sbatch.append("m.waitForJobs(%s)" %validate_outputs)
     return lines_sbatch, num_jobs
 
-def is_file_ok(output_file_name, validate_outputs = True, min_file_size = 10000):
+def is_file_ok(output_file_name, validate_outputs = True, min_file_size = MIN_FILE_SIZE_DEFAULT):
   if not (output_file_name and os.path.exists(output_file_name)):
     return False
 
@@ -191,7 +195,7 @@ def generate_sbatch_line(
     script_file_name,
     log_file_name     = None,
     cvmfs_error_log   = None,
-    min_file_size     = 10000,
+    min_file_size     = MIN_FILE_SIZE_DEFAULT,
     job_template_file = 'sbatch-node.sh.template',
     validate_outputs  = True,
     copy_output_file = True,
@@ -281,10 +285,10 @@ def createScript_sbatch_hadd_nonBlocking(
         auxDirName              = '',
         verbose                 = False,
         dry_run                 = False,
-        max_input_files_per_job = 10,
+        max_input_files_per_job = MAX_INPUTS_PER_JOB_DEFAULT,
         use_home                = False,
-        min_file_size           = 10000,
-        max_num_submittedJobs   = 5000,
+        min_file_size           = MIN_FILE_SIZE_DEFAULT,
+        max_num_submittedJobs   = MAX_NOF_RUNNING_JOBS_DEFAULT,
         max_mem                 = '',
         validate_output         = True,
       ):
@@ -397,10 +401,10 @@ def createScript_sbatch_hadd(
     pool_id                 = '',
     verbose                 = False,
     dry_run                 = False,
-    max_input_files_per_job = 10,
+    max_input_files_per_job = MAX_INPUTS_PER_JOB_DEFAULT,
     use_home                = False,
-    min_file_size           = 10000,
-    max_num_submittedJobs   = 5000,
+    min_file_size           = MIN_FILE_SIZE_DEFAULT,
+    max_num_submittedJobs   = MAX_NOF_RUNNING_JOBS_DEFAULT,
   ):
     """Creates the python script necessary to submit 'hadd' jobs to the batch system
     """
@@ -438,10 +442,10 @@ def generate_sbatch_lines_hadd(
     pool_id                 = '',
     verbose                 = False,
     dry_run                 = False,
-    max_input_files_per_job = 10,
+    max_input_files_per_job = MAX_INPUTS_PER_JOB_DEFAULT,
     use_home                = False,
-    min_file_size           = 10000,
-    max_num_submittedJobs   = 5000,
+    min_file_size           = MIN_FILE_SIZE_DEFAULT,
+    max_num_submittedJobs   = MAX_NOF_RUNNING_JOBS_DEFAULT,
   ):
     template_vars = {
         'working_dir'             : working_dir,

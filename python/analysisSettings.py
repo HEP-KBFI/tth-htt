@@ -111,6 +111,8 @@ class systematics(object):
   AK8_JMR = [ "CMS_ttHl_AK8JMRUp", "CMS_ttHl_AK8JMRDown" ]
 
   AK8_JEC_regrouped = [ central_or_shift.replace('_JES', '_AK8JES') for central_or_shift in JEC_regrouped ]
+  AK8_JES_HEM = JES_HEM.replace('_JES', '_AK8JES')
+  assert(AK8_JES_HEM in AK8_JEC_regrouped)
   #AK8_JER_split     = [ central_or_shift.replace('_JER', '_AK8JER') for central_or_shift in JER_split     ]
 
   AK8 = AK8_JES + AK8_JER + AK8_JMS + AK8_JMR
