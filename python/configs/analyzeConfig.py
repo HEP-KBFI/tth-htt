@@ -304,9 +304,14 @@ class analyzeConfig(object):
             self.central_or_shifts.remove(central_or_shift)
         # ------------------------------------------------------------------------
         if self.era != "2018":
+          jes_hem_to_remove = []
           if systematics.JES_HEM in self.central_or_shifts:
-            logging.warning('Removing systematics {} from {} era'.format(systematics.JES_HEM, self.era))
-            self.central_or_shifts.remove(systematics.JES_HEM)
+            jes_hem_to_remove.append(systematics.JES_HEM)
+          if systematics.AK8_JES_HEM in self.central_or_shifts:
+            jes_hem_to_remove.append(systematics.AK8_JES_HEM)
+          for central_or_shift in jes_hem_to_remove:
+            logging.warning('Removing systematics {} from {} era'.format(central_or_shift, self.era))
+            self.central_or_shifts.remove(central_or_shift)
         # ------------------------------------------------------------------------
         self.ttbar_syst_enabled = False
         for central_or_shift in self.central_or_shifts:
