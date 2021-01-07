@@ -99,12 +99,21 @@ class ClusterHistogramAggregatorNonBlocking(object):
         print("ClusterHistogramAggregatorNonBlocking#prepare_job(input_files={}, output_file={}, output_dir={})".format(
             input_files, output_file, output_dir
         ))
+        if len(input_files) > 1:
+            executable = "hadd -cachesize 1GiB" # CV: use 1 Gb of cache memory to reduce random disk access
+            command_line_parameter = " ".join([ os.path.basename(output_file) ] + input_files)
+            skip_copy = False
+        elif len(input_files) == 1:
+            executable = "cp -f"
+            command_line_parameter = "{} {}".format(input_files[0], output_file)
+            skip_copy = True
+        else:
+            raise RuntimeError("No input files found")
 
-        output_and_input_files = [ os.path.basename(output_file) ] + input_files
         job_args = {
             'inputFiles'             : input_files,
-            'executable'             : "hadd -cachesize 1GiB", # CV: use 1 Gb of cache memory to reduce random disk access
-            'command_line_parameter' : " ".join(output_and_input_files),
+            'executable'             : executable,
+            'command_line_parameter' : command_line_parameter,
             'outputFilePath'         : os.path.dirname(output_file),
             'outputFiles'            : [ os.path.basename(output_file) ],
             'scriptFile'             : script_file,
@@ -112,5 +121,6 @@ class ClusterHistogramAggregatorNonBlocking(object):
             'skipIfOutputFileExists' : False,
             'job_template_file'      : 'sbatch-node.hadd.sh.template',
             'validate_output'        : self.validate_output,
+            'skip_copy'              : int(skip_copy),
         }
         return job_args

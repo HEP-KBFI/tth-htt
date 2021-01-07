@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from tthAnalysis.HiggsToTauTau.sbatchManager import sbatchManager, \
-  sbatchManagerTimeoutError, sbatchManagerMemoryError, sbatchManagerSyntaxError, sbatchManagerBusError
+  sbatchManagerTimeoutError, sbatchManagerMemoryError, sbatchManagerSyntaxError, sbatchManagerSigBusError
 from tthAnalysis.HiggsToTauTau.hdfs import hdfs
 
 import os
@@ -80,7 +80,7 @@ class SbatchStatusTestCase(unittest.TestCase):
       scriptFile             = os.path.join(testDir, 'dummy_bus.sh'),
     )
     # if passes, true negative; otherwise true positive
-    self.assertRaises(sbatchManagerBusError, self.manager.waitForJobs)
+    self.assertRaises(sbatchManagerSigBusError, self.manager.waitForJobs)
 
   def testMemory(self):
     cmd = 'python -c "`echo -e "a = []\\nwhile True:\\n\\ta.append(\' \' * 1024 * 1024)"`"'

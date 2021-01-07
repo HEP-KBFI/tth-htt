@@ -1,5 +1,5 @@
 from tthAnalysis.HiggsToTauTau.jobTools import run_cmd, get_log_version
-from tthAnalysis.HiggsToTauTau.sbatchManagerTools import is_file_ok
+from tthAnalysis.HiggsToTauTau.sbatchManagerTools import is_file_ok, MIN_FILE_SIZE_DEFAULT, MAX_NOF_RUNNING_JOBS_DEFAULT
 from tthAnalysis.HiggsToTauTau.common import logging
 
 import codecs
@@ -47,7 +47,13 @@ class sbatchManagerCopyError(sbatchManagerError):
 class sbatchManagerValidationError(sbatchManagerError):
     pass
 
+class sbatchManagerSigBusError(sbatchManagerError):
+    pass
+
 class sbatchManagerBusError(sbatchManagerError):
+    pass
+
+class sbatchManagerBufferError(sbatchManagerError):
     pass
 
 # Define Status
@@ -67,7 +73,9 @@ class Status:
   missing_file     = 17
   cp_error         = 18
   validation_error = 19
-  bus_error        = 20
+  sigbus_error     = 20
+  bus_error        = 21
+  buffer_error     = 22
 
   @staticmethod
   def classify_error(ExitCode, DerivedExitCode, State):
@@ -79,7 +87,7 @@ class Status:
           return Status.memory_exceeded
       if (ExitCode == '7:0' and State == 'FAILED'):
           # ignoring: https://wiki.hpc.uconn.edu/index.php/Job_FAILED_due_to_lack_of_memory
-          return Status.bus_error
+          return Status.sigbus_error
       if (ExitCode.startswith('0:') and DerivedExitCode == '0:0' and State == 'TIMEOUT'):
           return Status.timeout
       if (ExitCode == '2:0' and DerivedExitCode == '0:0' and State == 'FAILED'):
@@ -120,8 +128,12 @@ class Status:
           return 'cp_error'
       if status_type == Status.validation_error:
           return 'validation_error'
+      if status_type == Status.sigbus_error:
+          return 'sigbus_error'
       if status_type == Status.bus_error:
           return 'bus_error'
+      if status_type == Status.buffer_error:
+          return 'buffer_error'
       if status_type == Status.other_error:
           return 'other_error'
       return 'unknown_error'
@@ -144,8 +156,12 @@ class Status:
           return sbatchManagerCopyError
       if status_type == Status.validation_error:
           return sbatchManagerValidationError
+      if status_type == Status.sigbus_error:
+          return sbatchManagerSigBusError
       if status_type == Status.bus_error:
           return sbatchManagerBusError
+      if status_type == Status.buffer_error:
+          return sbatchManagerBufferError
       return sbatchManagerError
 
 # Define JobCompletion class to hold information about finished jobs
@@ -175,8 +191,8 @@ class sbatchManager:
             dry_run = False,
             use_home = False,
             max_resubmissions = 6,
-            min_file_size = 10000,
-            max_num_submittedJobs = 5000,
+            min_file_size = MIN_FILE_SIZE_DEFAULT,
+            max_num_submittedJobs = MAX_NOF_RUNNING_JOBS_DEFAULT,
           ):
         self.max_pool_id_length = 256
         if not pool_id:
@@ -210,13 +226,10 @@ class sbatchManager:
         self.max_resubmissions = max_resubmissions
         self.min_file_size     = min_file_size
 
-        sbatch_exclude_nodes = [ "comp-d-058" ]
+        self.sbatch_exclude_nodes = [ "comp-d-058" ]
         if sbatch_exclude:
-            sbatch_exclude_nodes += sbatch_exclude.split(",")
-            sbatch_exclude_nodes = list(set(sbatch_exclude_nodes))
-
-        if sbatch_exclude_nodes:
-            self.sbatchArgs += ' -x {}'.format(",".join(sbatch_exclude_nodes))
+            self.sbatch_exclude_nodes += sbatch_exclude.split(",")
+            self.sbatch_exclude_nodes = list(set(self.sbatch_exclude_nodes))
 
         verbose = bool(verbose_environ) if verbose_environ else verbose
         if verbose:
@@ -431,12 +444,15 @@ class sbatchManager:
         executable_log_file = logFile.replace('.log', '_executable.log')
         wrapper_log_file, executable_log_file = get_log_version((wrapper_log_file, executable_log_file))
 
+        sbatchArgs = self.sbatchArgs
+        if self.sbatch_exclude_nodes:
+            sbatchArgs += ' -x {}'.format(",".join(self.sbatch_exclude_nodes))
         sbatch_command = "sbatch --partition={partition} --output={output} --comment='{comment}' " \
                          "{max_mem} {args} {cmd}".format(
           partition = self.queue,
           output    = wrapper_log_file,
           comment   = self.pool_id,
-          args      = self.sbatchArgs,
+          args      = sbatchArgs,
           cmd       = scriptFile,
           max_mem   = '--mem={}'.format(self.max_mem) if self.max_mem else '',
         )
@@ -629,12 +645,27 @@ class sbatchManager:
 
                         sys.stderr.write('%s\n' % text_line)
                         for failed_job in failed_jobs:
+                            hostname = ''
                             for log in zip(['wrapper', 'executable'], ['log_wrap', 'log_exec']):
                                 logfile = self.submittedJobs[failed_job][log[1]]
                                 if os.path.isfile(logfile):
                                     logfile_contents = open(logfile, 'r').read()
                                 else:
                                     logfile_contents = '<file is missing>'
+
+                                if log[1] == 'log_wrap':
+                                  logfile_split = [ line for line in logfile_contents.split('\n') if line.startswith('Network') ]
+                                  if len(logfile_split) == 1:
+                                    logfile_split = logfile_split[0].split()
+                                  if len(logfile_split) == 7 and logfile_split[-1].startswith('comp-'):
+                                    hostname = logfile_split[-1]
+
+                                if completion[failed_job].status == Status.validation_error and log[1] == 'log_exec':
+                                  if 'bus error' in logfile_contents.lower():
+                                    completion[failed_job].status = Status.bus_error
+                                  elif 'Error in <TFile::ReadBuffer>' in logfile_contents:
+                                    completion[failed_job].status = Status.buffer_error
+
                                 sys.stderr.write('Job ID {id} {description} log ({path}):\n{line}\n{log}\n{line}\n'.format(
                                     id          = failed_job,
                                     description = log[0],
@@ -644,10 +675,18 @@ class sbatchManager:
                                   )
                                 )
 
+                            if completion[failed_job].status == Status.bus_error and \
+                                hostname and hostname not in self.sbatch_exclude_nodes:
+                              logging.error("Disabling node {} as there was a bus error which likely indicates CVMFS dismount".format(
+                                hostname
+                              ))
+                              self.sbatch_exclude_nodes.append(hostname)
+
                             if self.submittedJobs[failed_job]['nof_submissions'] < self.max_resubmissions and \
-                               completion[failed_job].status == Status.io_error:
+                               completion[failed_job].status in [ Status.io_error, Status.bus_error, Status.buffer_error ]:
                                 # The job is eligible for resubmission if the job hasn't been resubmitted more
-                                # than a preset limit of resubmissions AND if the job failed due to I/O errors
+                                # than a preset limit of resubmissions AND if the job failed due to I/O errors,
+                                # buffer errors or bus errors
                                 logging.warning(
                                     "Job w/ ID {id} and arguments {args} FAILED because: {reason} "
                                     "-> resubmission attempt #{attempt}".format(
