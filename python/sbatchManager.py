@@ -1,5 +1,5 @@
 from tthAnalysis.HiggsToTauTau.jobTools import run_cmd, get_log_version
-from tthAnalysis.HiggsToTauTau.sbatchManagerTools import is_file_ok
+from tthAnalysis.HiggsToTauTau.sbatchManagerTools import is_file_ok, MIN_FILE_SIZE_DEFAULT, MAX_NOF_RUNNING_JOBS_DEFAULT
 from tthAnalysis.HiggsToTauTau.common import logging
 
 import codecs
@@ -175,8 +175,8 @@ class sbatchManager:
             dry_run = False,
             use_home = False,
             max_resubmissions = 6,
-            min_file_size = 10000,
-            max_num_submittedJobs = 5000,
+            min_file_size = MIN_FILE_SIZE_DEFAULT,
+            max_num_submittedJobs = MAX_NOF_RUNNING_JOBS_DEFAULT,
           ):
         self.max_pool_id_length = 256
         if not pool_id:
