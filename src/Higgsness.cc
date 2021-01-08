@@ -47,12 +47,6 @@ Higgsness::Higgsness(modeType mode, int maxObjFunctionCalls)
   }
   chi2_of_permutation_ = new double[numPermutations_];
   fitStatus_of_permutation_ = new int[numPermutations_];
-
-//--- set verbosity level of minimizer
-//      -1 quiet (also suppresses all warnings)
-//       0 normal
-//       1 verbose
-  minimizer_->SetPrintLevel(-1);
 }
 
 Higgsness::~Higgsness()
@@ -153,6 +147,14 @@ Higgsness::operator()(const double * x) const
     return -1.;
   }
 
+  if ( std::isnan(x[0]) || 
+       std::isnan(x[1]) ||
+       std::isnan(x[2]) || 
+       std::isnan(x[3]) )
+  {
+    return 1.e+6;
+  } 
+
   const double nu1Px = x[0];
   const double nu1Py = x[1];
   const double nu1Pz = x[2];
@@ -200,9 +202,6 @@ void Higgsness::fit(const Particle::LorentzVector& lepton1P4,
   const auto currentIgnoreLevel = gErrorIgnoreLevel;
   gErrorIgnoreLevel = kWarning;
 
-//--- clear minimizer
-  minimizer_->Clear();
-
   for(int idxPermutation = 0; idxPermutation < numPermutations_; ++idxPermutation)
   {
 //--- set reconstructed momenta
@@ -223,6 +222,9 @@ void Higgsness::fit(const Particle::LorentzVector& lepton1P4,
     metPx_ = metPx;
     metPy_ = metPy;
     
+//--- clear minimizer
+    minimizer_->Clear();
+
 //--- set interface to MINUIT
     const ROOT::Math::Functor toMinimize(objectiveFunctionAdapterMINUIT_, 4);
     minimizer_->SetFunction(toMinimize); 
@@ -236,6 +238,12 @@ void Higgsness::fit(const Particle::LorentzVector& lepton1P4,
 //--- set MINUIT strategy = 2, in order to get reliable error estimates:
 //     http://www-cdf.fnal.gov/physics/statistics/recommendations/minuit.html
     minimizer_->SetStrategy(2);
+
+//--- set verbosity level of minimizer
+//      -1 quiet (also suppresses all warnings)
+//       0 normal
+//       1 verbose
+    minimizer_->SetPrintLevel(-1);
 
 //--- do the minimization  
     numObjFunctionCalls_ = 0;
