@@ -401,6 +401,7 @@ class sbatchManager:
             copy_output_file       = True,
             nof_submissions        = 0,
             validate_output        = True,
+            skip_copy              = False,
           ):
         """Waits for all sbatch jobs submitted by this instance of sbatchManager to finish processing
         """
@@ -478,6 +479,7 @@ class sbatchManager:
             RUNNING_COMMAND        = sbatch_command,
             random_sleep           = random_delay,
             copy_output_file       = copy_output_file,
+            skip_copy              = skip_copy,
         )
         logging.debug("writing sbatch script file = '%s'" % scriptFile)
         with codecs.open(scriptFile, "w", "utf-8") as f:
