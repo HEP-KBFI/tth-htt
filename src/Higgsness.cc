@@ -47,12 +47,6 @@ Higgsness::Higgsness(modeType mode, int maxObjFunctionCalls)
   }
   chi2_of_permutation_ = new double[numPermutations_];
   fitStatus_of_permutation_ = new int[numPermutations_];
-
-//--- set verbosity level of minimizer
-//      -1 quiet (also suppresses all warnings)
-//       0 normal
-//       1 verbose
-  minimizer_->SetPrintLevel(-1);
 }
 
 Higgsness::~Higgsness()
@@ -244,6 +238,12 @@ void Higgsness::fit(const Particle::LorentzVector& lepton1P4,
 //--- set MINUIT strategy = 2, in order to get reliable error estimates:
 //     http://www-cdf.fnal.gov/physics/statistics/recommendations/minuit.html
     minimizer_->SetStrategy(2);
+
+//--- set verbosity level of minimizer
+//      -1 quiet (also suppresses all warnings)
+//       0 normal
+//       1 verbose
+    minimizer_->SetPrintLevel(-1);
 
 //--- do the minimization  
     numObjFunctionCalls_ = 0;
