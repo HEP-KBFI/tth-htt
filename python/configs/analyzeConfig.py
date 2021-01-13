@@ -1130,6 +1130,8 @@ class analyzeConfig(object):
             'apply_hlt_filter',
             'branchName_memOutput',
             'branchName_hmeOutput',
+            'fillHistograms_BDT',
+            'fillHistograms_LBN',
             'leptonFakeRateWeight.inputFileName',
             'leptonFakeRateWeight.histogramName_e',
             'leptonFakeRateWeight.histogramName_mu',
