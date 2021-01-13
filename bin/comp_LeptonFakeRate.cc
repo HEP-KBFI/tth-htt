@@ -506,8 +506,8 @@ TH2* bookHistogram(fwlite::TFileService& fs, const std::string& histogramName, c
 }
 
 
-void fillHistogram(TH2* histogram, const std::map<std::string, fitResultType*>& fitResults_pass, const std::map<std::string, fitResultType*>& fitResults_fail, int prefit_or_postfit, 
-		   bool is_data_fakes = true, bool is_TT_fakes = false, bool is_QCD_fakes = false, 
+void fillHistogram(TH2* histogram, const std::map<std::string, fitResultType*>& fitResults_pass, const std::map<std::string, fitResultType*>& fitResults_fail, int prefit_or_postfit,
+		   bool apply_ConvCorrsToData = false, bool is_data_fakes = true, bool is_TT_fakes = false, bool is_QCD_fakes = false, 
 		   bool use_Conv_Corrected_QCD = false, bool is_TTj_minus_TTg = false, bool is_TT_fakes2 = false)
 {
   
@@ -588,21 +588,25 @@ void fillHistogram(TH2* histogram, const std::map<std::string, fitResultType*>& 
         compFakeRate(nPass, nPassErr, nFail, nFailErr, avFakeRate, avFakeRateErrUp, avFakeRateErrDown, errorFlag);
 
 
-	if((fitResult_pass->second->lepton_type_ == fitResultType::kElectron) && is_data_fakes){ // Applying Conv corrections to electrons in case of data fakes (numerator) only                                               
-          avFakeRate *= fitResult_pass->second->Conv_corr_e_ ; // apply the correction                                                                                                                                                  
-          double def_avFakeRateErrUp = avFakeRateErrUp;
+	if(apply_ConvCorrsToData && (fitResult_pass->second->lepton_type_ == fitResultType::kElectron) && is_data_fakes){ // Applying Conv corrections to electrons in case of data fakes (numerator) only
+	  avFakeRate *= fitResult_pass->second->Conv_corr_e_ ; // apply the correction
+	  double def_avFakeRateErrUp = avFakeRateErrUp;
           double def_avFakeRateErrDown = avFakeRateErrDown;
           avFakeRateErrUp = TMath::Sqrt(TMath::Power(def_avFakeRateErrUp, 2.0) + TMath::Power((fitResult_pass->second->Err_Conv_corr_e_), 2.0));
           avFakeRateErrDown = TMath::Sqrt(TMath::Power(def_avFakeRateErrDown, 2.0) + TMath::Power((fitResult_pass->second->Err_Conv_corr_e_), 2.0));
         }else{
-	  std::cout << "Not applying Conversion corrections (since it is applicable only to elctrons in data fakes)" << std::endl;
+	  if(!apply_ConvCorrsToData){
+	    std::cout << "Conversion corrections for electrons in data disabled" << std::endl;
+	  }else{
+	    std::cout << "Not applying Conversion corrections (since it is applicable only to elctrons in data fakes)" << std::endl;
+	  }
 	}
 
 	if ( !errorFlag ) {
           double avFakeRateErr = TMath::Sqrt(0.5*(avFakeRateErrUp*avFakeRateErrUp + avFakeRateErrDown*avFakeRateErrDown));
-          histogram->SetBinContent(idxBinX, idxBinY, avFakeRate);  // 2D HISTOGRAM FILED HERE                                                                                                                                           
-          histogram->SetBinError(idxBinX, idxBinY, avFakeRateErr); // 2D HISTOGRAM FILED HERE                                                                                                                                           
-        } else {
+          histogram->SetBinContent(idxBinX, idxBinY, avFakeRate);  // 2D HISTOGRAM FILED HERE
+	  histogram->SetBinError(idxBinX, idxBinY, avFakeRateErr); // 2D HISTOGRAM FILED HERE                                                                                                
+	} else {
           throw cms::Exception("fillHistogram")
             << "Failed to compute fake rate for " << minPt << " < pT < " << maxPt << " && " << minAbsEta << " < abs(eta) < " << maxAbsEta
             << " (nPass = " << nPass << " +/- " << nPassErr << ", nFail = " << nFail << " +/- " << nFailErr << ") !!\n";
@@ -960,10 +964,10 @@ int main(int argc, char* argv[])
 
   // ------- FOR ELECTRONS --------
   TH2* histogram_e_data_fakes_postfit = bookHistogram(fs, histogramName_e, ptBins_e_array, absEtaBins_e_array);
-  fillHistogram(histogram_e_data_fakes_postfit, fitResults_e_pass, fitResults_e_fail, kPostfit);
+  fillHistogram(histogram_e_data_fakes_postfit, fitResults_e_pass, fitResults_e_fail, kPostfit, false); // Conv. corr.s disabled
 
   TH2* histogram_e_data_fakes_prefit = bookHistogram(fs, Form("%s_prefit", histogramName_e.data()), ptBins_e_array, absEtaBins_e_array);
-  fillHistogram(histogram_e_data_fakes_prefit, fitResults_e_pass, fitResults_e_fail, kPrefit);
+  fillHistogram(histogram_e_data_fakes_prefit, fitResults_e_pass, fitResults_e_fail, kPrefit, false); // Conv. corr.s disabled
 
 
 
@@ -975,23 +979,23 @@ int main(int argc, char* argv[])
   if(enable_MC_Closure_sidebands){
     // Using Old (LeptonPlusJet) TT MC fakes (Uncorrected for Conversions)  
     histogram_e_mc_TT_fakes = bookHistogram(fs, Form("%s_TT_fakes", histogramName_e.data()), ptBins_e_array, absEtaBins_e_array);
-    fillHistogram(histogram_e_mc_TT_fakes, fitResults_e_pass, fitResults_e_fail, kPrefit, false, true, false, false, false, false);
+    fillHistogram(histogram_e_mc_TT_fakes, fitResults_e_pass, fitResults_e_fail, kPrefit, false, false, true, false, false, false, false);
 
     // Using Old (LeptonPlusJet) TT MC fakes (w Conversion Corrections)  
     histogram_e_mc_TTj_minus_TTg_fakes = bookHistogram(fs, Form("%s_TTj_minus_TTg_fakes", histogramName_e.data()), ptBins_e_array, absEtaBins_e_array);
-    fillHistogram(histogram_e_mc_TTj_minus_TTg_fakes, fitResults_e_pass, fitResults_e_fail, kPrefit, false, false, false, false, true, false);
+    fillHistogram(histogram_e_mc_TTj_minus_TTg_fakes, fitResults_e_pass, fitResults_e_fail, kPrefit, false, false, false, false, false, true, false);
 
     // Using (LeptonPlusJet) QCD MC fakes (Uncorrected for Conversions) 
     histogram_e_mc_QCD_fakes = bookHistogram(fs, Form("%s_QCD_fakes", histogramName_e.data()), ptBins_e_array, absEtaBins_e_array);
-    fillHistogram(histogram_e_mc_QCD_fakes, fitResults_e_pass, fitResults_e_fail, kPrefit, false, false, true, false, false, false); 
+    fillHistogram(histogram_e_mc_QCD_fakes, fitResults_e_pass, fitResults_e_fail, kPrefit, false, false, false, true, false, false, false); 
 
     // Using (LeptonPlusJet) QCD MC fakes (w Conversion Corrections)  
     histogram_e_mc_QCD_fakes_Conv_Corrected = bookHistogram(fs, Form("%s_QCD_fakes_Conv_Corr", histogramName_e.data()), ptBins_e_array, absEtaBins_e_array);
-    fillHistogram(histogram_e_mc_QCD_fakes_Conv_Corrected, fitResults_e_pass, fitResults_e_fail, kPrefit, false, false, true, true, false, false); 
+    fillHistogram(histogram_e_mc_QCD_fakes_Conv_Corrected, fitResults_e_pass, fitResults_e_fail, kPrefit, false, false, false, true, true, false, false); 
 
     // Using (DiLeptSS) TT MC fakes
     histogram_e_mc_TT_fakes2 = bookHistogram(fs, Form("%s_TT_fakes2", histogramName_e.data()), ptBins_e_array, absEtaBins_e_array);
-    fillHistogram(histogram_e_mc_TT_fakes2, fitResults_e_pass, fitResults_e_fail, kPrefit, false, false, false, false, false, true); 
+    fillHistogram(histogram_e_mc_TT_fakes2, fitResults_e_pass, fitResults_e_fail, kPrefit, false, false, false, false, false, false, true); 
   }
 
   TAxis* yAxis_e = histogram_e_data_fakes_postfit->GetYaxis();
@@ -1064,30 +1068,30 @@ int main(int argc, char* argv[])
 
   // ------- FOR MUONS --------
   TH2* histogram_mu_data_fakes_postfit = bookHistogram(fs, histogramName_mu, ptBins_mu_array, absEtaBins_mu_array);
-  fillHistogram(histogram_mu_data_fakes_postfit, fitResults_mu_pass, fitResults_mu_fail, kPostfit);
+  fillHistogram(histogram_mu_data_fakes_postfit, fitResults_mu_pass, fitResults_mu_fail, kPostfit, false);
 
   TH2* histogram_mu_data_fakes_prefit = bookHistogram(fs, Form("%s_prefit", histogramName_mu.data()), ptBins_mu_array, absEtaBins_mu_array);
-  fillHistogram(histogram_mu_data_fakes_prefit, fitResults_mu_pass, fitResults_mu_fail, kPrefit);
+  fillHistogram(histogram_mu_data_fakes_prefit, fitResults_mu_pass, fitResults_mu_fail, kPrefit, false);
 
   TH2* histogram_mu_mc_TT_fakes = 0;
   if(enable_MC_Closure_sidebands){
     // Using Old (LeptonPlusJet) TT MC fakes (Using MC Uncorrected for Conv.s, since photon conv.s important only for electrons) 
     histogram_mu_mc_TT_fakes = bookHistogram(fs, Form("%s_TT_fakes_prefit", histogramName_mu.data()), ptBins_mu_array, absEtaBins_mu_array);
-    fillHistogram(histogram_mu_mc_TT_fakes, fitResults_mu_pass, fitResults_mu_fail, kPrefit, false, true, false, false, false, false);
+    fillHistogram(histogram_mu_mc_TT_fakes, fitResults_mu_pass, fitResults_mu_fail, kPrefit, false, false, true, false, false, false, false);
   }
 
   TH2* histogram_mu_mc_QCD_fakes = 0;
   if(enable_MC_Closure_sidebands){
     // Using Uncorrected QCD MC (Using MC Uncorrected for Conv.s, since photon conv.s important only for electrons) 
     histogram_mu_mc_QCD_fakes = bookHistogram(fs, Form("%s_QCD_fakes", histogramName_mu.data()), ptBins_mu_array, absEtaBins_mu_array);
-    fillHistogram(histogram_mu_mc_QCD_fakes, fitResults_mu_pass, fitResults_mu_fail, kPrefit, false, false, true, false, false, false); 
+    fillHistogram(histogram_mu_mc_QCD_fakes, fitResults_mu_pass, fitResults_mu_fail, kPrefit, false, false, false, true, false, false, false); 
   }
 
   TH2* histogram_mu_mc_TT_fakes2 = 0;
   if(enable_MC_Closure_sidebands){
     // Using (DiLeptSS) TT fakes
     histogram_mu_mc_TT_fakes2 = bookHistogram(fs, Form("%s_TT_fakes2_prefit", histogramName_mu.data()), ptBins_mu_array, absEtaBins_mu_array);
-    fillHistogram(histogram_mu_mc_TT_fakes2, fitResults_mu_pass, fitResults_mu_fail, kPrefit, false, false, false, false, false, true); 
+    fillHistogram(histogram_mu_mc_TT_fakes2, fitResults_mu_pass, fitResults_mu_fail, kPrefit, false, false, false, false, false, false, true); 
   }
 
   TAxis* yAxis_mu = histogram_mu_data_fakes_postfit->GetYaxis();

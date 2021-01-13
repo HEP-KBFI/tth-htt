@@ -69,8 +69,8 @@ compFakeRate(double nPass,
     double dummy;
     graph_pass_div_pass_plus_fail_tmp->GetPoint(0, dummy, avFakeRate);
 
-    avFakeRateErrUp   = std::max(graph_pass_div_pass_plus_fail_tmp->GetErrorYhigh(0), 2.e-2);
-    avFakeRateErrDown = std::max(graph_pass_div_pass_plus_fail_tmp->GetErrorYlow(0), 2.e-2);
+    avFakeRateErrUp   = std::max(graph_pass_div_pass_plus_fail_tmp->GetErrorYhigh(0), 1.e-2); 
+    avFakeRateErrDown = std::max(graph_pass_div_pass_plus_fail_tmp->GetErrorYlow(0), 1.e-2);  
 
     delete histogram_pass_tmp;
     delete histogram_pass_plus_fail_tmp;
