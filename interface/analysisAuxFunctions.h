@@ -799,6 +799,10 @@ InitializeInputVarMap(const std::map<std::string, double> & AllVars_Map,
 		      const std::vector<std::string> & BDTInputVariables,
 		      bool isNonRes);
 
+std::map<std::string, double>
+InitializeInputVarMap(const std::map<std::string, double> & AllVars_Map,
+                      const std::vector<std::string> & BDTInputVariables);
+
 std::string 
 DoubleToUInt_Convertor(double BDT_param,
                        bool isNonRes,
@@ -806,9 +810,54 @@ DoubleToUInt_Convertor(double BDT_param,
 
 namespace
 {
+  template <typename T_algo, typename T_retVal>
+    std::map<std::string, T_retVal>
+CreateMVAOutputMap(const std::vector<double> & MVA_params,
+                   std::vector<T_algo *>& MVA,
+                   std::map<std::string, double> & MVAInputs,
+                   int event_number,
+                   bool isNonRes,
+                   const std::string & spin_label)
+  {
+    std::map<std::string, T_retVal> MVAOutput_Map;
+    for ( size_t i = 0; i < MVA_params.size(); ++i ) // Loop over MVA_params: signal mass (Reso.)/BM index (Non Reso.)
+    {
+      std::string key = "";
+      if ( !isNonRes )
+      {
+        // resonant case
+        MVAInputs["gen_mHH"] = MVA_params[i];
+        key = DoubleToUInt_Convertor(MVA_params[i], isNonRes, spin_label);
+      }
+      else
+      {
+        // non-resonant case
+        if ( MVA_params[i] == 0 )
+        {
+            key = "SM";
+        }
+        else
+        {
+          // non-SM coupling scenario
+          key = Form("BM%i", TMath::Nint(MVA_params[i]));
+        }
+      }
+      if ( event_number != -1 )
+      {
+        // use odd-even method
+        MVAOutput_Map.insert(std::make_pair(key, (*MVA[i])(MVAInputs, event_number)));
+      }
+      else
+      {
+        // use same BDT/DNN for all events
+        MVAOutput_Map.insert(std::make_pair(key, (*MVA[i])(MVAInputs)));
+      }
+    }
+    return MVAOutput_Map;
+  }
 
-template <typename T_algo, typename T_retVal>
-std::map<std::string, T_retVal>
+  template <typename T_algo, typename T_retVal>
+    std::map<std::string, T_retVal>
 CreateMVAOutputMap(const std::vector<double> & MVA_params,
                    T_algo * MVA,
                    std::map<std::string, double> & MVAInputs,
@@ -878,6 +927,18 @@ CreateMVAOutputMap(const std::vector<double> & MVA_params,
 template <typename T>
 std::map<std::string, double> // key = gen_mHH/bmName
 CreateBDTOutputMap(const std::vector<double> & BDT_params,
+  std::vector<T *> & BDT,
+  std::map<std::string, double> & BDTInputs,
+  int event_number,
+  bool isNonRes,
+  const std::string & spin_label)
+{
+  return CreateMVAOutputMap<T, double>(BDT_params, BDT, BDTInputs, event_number, isNonRes, spin_label);
+}
+
+template <typename T>
+std::map<std::string, double> // key = gen_mHH/bmName
+CreateBDTOutputMap(const std::vector<double> & BDT_params,
 		   T * BDT,
 		   std::map<std::string, double> & BDTInputs,
 		   int event_number,
@@ -901,6 +962,15 @@ CreateDNNOutputMap(const std::vector<double> & DNN_params,
  *  NOTE: Use this function for LBNs
  *
  */
+std::map<std::string, std::map<std::string, double>> // keys = gen_mHH/bmName, event category
+CreateLBNOutputMap(const std::vector<double> & LBN_params,
+  std::vector<TensorFlowInterfaceLBN *> & LBN,
+  const std::map<std::string, const Particle*> & ll_particles,
+  std::map<std::string, double> & hl_mvaInputs,
+  int event_number,
+  bool isNonRes,
+  const std::string & spin_label);
+
 std::map<std::string, std::map<std::string, double>> // keys = gen_mHH/bmName, event category
 CreateLBNOutputMap(const std::vector<double> & LBN_params,
 		   TensorFlowInterfaceLBN * LBN,
