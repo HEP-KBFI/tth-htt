@@ -656,9 +656,16 @@ class analyzeConfig(object):
         self.leptonFakeRateWeight_inputFile = ''
         if self.channel != 'LeptonFakeRate':
           if self.lep_mva_wp == 'default':
-            self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva_{}_CERN_2019Jul08.root".format(self.era)
+            if self.channel == '2lss': ## 2lss channel now runs with KBFI Lepton Fake Rates computed with Tight charge cuts applied to both numerator and denominator
+                self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_mva_tth_multilepton_wFullSyst_{}_KBFI_2021Jan16_wCERNUncs2_FRErrTheshold_0p01_wTightChargeCut.root".format(self.era)
+            else: ## all other channels now run with Lepton Fake Rates computed w/o Tight charge cuts applied to both numerator and denominator      
+                self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_ttH_mva_{}_CERN_2019Jul08.root".format(self.era) ## Still using CERN Fake Rates for legacy reasons
+                #self.leptonFakeRateWeight_inputFile = "tthAnalysis/HiggsToTauTau/data/FR_lep_mva_tth_multilepton_wFullSyst_{}_KBFI_2021Jan10_wCERNUncs2_FRErrTheshold_0p01.root".format(self.era) ## Uncomment this line and remove the above line to use KBFI Fake Rate files throughout   
           elif self.lep_mva_wp == 'hh_multilepton':
-            self.leptonFakeRateWeight_inputFile = "hhAnalysis/multilepton/data/FR_lep_mva_hh_multilepton_wFullSyst_{}_KBFI_2020Dec21_wCERNUncs2_FRErrTheshold_0p01.root".format(self.era)
+              if self.channel == '2lss': ## 2lss channel now runs with KBFI Lepton Fake Rates computed with Tight charge cuts applied to both numerator and denominator
+                self.leptonFakeRateWeight_inputFile = "hhAnalysis/multilepton/data/FR_lep_mva_hh_multilepton_wFullSyst_{}_KBFI_2021Jan18_wCERNUncs2_FRErrTheshold_0p01_wTightChargeCut.root".format(self.era)
+              else: ## all other channels now run with KBFI Lepton Fake Rates computed w/o Tight charge cuts applied to both numerator and denominator      
+                self.leptonFakeRateWeight_inputFile = "hhAnalysis/multilepton/data/FR_lep_mva_hh_multilepton_wFullSyst_{}_KBFI_2020Dec21_wCERNUncs2_FRErrTheshold_0p01.root".format(self.era)
           else:
             raise RuntimeError("No FR files available for the following choice of prompt lepton MVA WP: %s" % self.lep_mva_wp)
           if not os.path.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', self.leptonFakeRateWeight_inputFile)):
