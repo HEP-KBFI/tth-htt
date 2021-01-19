@@ -604,6 +604,12 @@ countFakeMuons(const std::vector<const RecoLepton *> & leptons);
 int
 countFakeHadTaus(const std::vector<const RecoHadTau *> & hadTaus);
 
+int
+countElectrons(const std::vector<const RecoLepton *> & leptons);
+
+int
+countMuons(const std::vector<const RecoLepton *> & leptons);
+
 /**
  * @brief Count number of reconstructed electrons, muons, hadronic taus, or jets that pass given pT cut
  */
