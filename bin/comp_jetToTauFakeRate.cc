@@ -262,6 +262,9 @@ int main(int argc, char* argv[])
       initialParameters[*fitParameterName] = initialParameter_value;
     }
   }
+  const std::string yScale_str = cfg_comp.getParameter<std::string>("yScale");
+  assert(yScale_str == "linear" || yScale_str == "log");
+  const bool useYLogScale = yScale_str == "log";
   double xMin = cfg_comp.getParameter<double>("xMin");
   double xMax = cfg_comp.getParameter<double>("xMax");
   std::cout << "xMin = " << xMin << ", xMax = " << xMax << std::endl;
@@ -367,7 +370,7 @@ int main(int argc, char* argv[])
             graph_data_jetToTauFakeRate, "Data",
 	    graph_mc_jetToTauFakeRate, "MC",
   	    graph_data_div_mc_jetToTauFakeRate, 
-	    xMin, xMax, "p_{T} [GeV]", true, 1.e-2, 4.9e0, "f_{#tau}", -1.50, +1.50, "#frac{f_{#tau}^{data} - f_{#tau}^{mc}}{f_{#tau}^{mc}}", 
+            xMin, xMax, "p_{T} [GeV]", useYLogScale, 1.e-2, useYLogScale ? 4.9e0 : 0.6, "f_{#tau}", -1.50, +1.50, "#frac{f_{#tau}^{data} - f_{#tau}^{mc}}{f_{#tau}^{mc}}",
 	    outputFileName_graphs);
 
 	  std::string fitFunctionName = Form("fitFunction_data_div_mc_%s", TString(histogramToFit->data()).ReplaceAll("/", "_").Data());

@@ -385,6 +385,18 @@ countFakeHadTaus(const std::vector<const RecoHadTau *> & hadTaus)
 }
 
 int
+countElectrons(const std::vector<const RecoLepton *> & leptons)
+{
+  return std::count_if(leptons.cbegin(), leptons.cend(), [](const RecoLepton * lepton) -> bool { return lepton->is_electron(); });
+}
+
+int
+countMuons(const std::vector<const RecoLepton *> & leptons)
+{
+  return std::count_if(leptons.cbegin(), leptons.cend(), [](const RecoLepton * lepton) -> bool { return lepton->is_muon(); });
+}
+
+int
 nCombinationsK(int n,
                int k)
 {
