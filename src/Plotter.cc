@@ -149,7 +149,7 @@ namespace
       const double w = histogramRef->GetBinWidth(iBin);
       const double s = ( histogramSignal ) ? histogramSignal->GetBinContent(iBin) : 0.;
       const double b = histogramBackgroundSum->GetBinContent(iBin);
-      if((s / std::sqrt(b + std::pow(0.09 * b, 2))) >= 0.5)
+      if((s / std::sqrt(b + std::pow(0.09 * b, 2))) >= 0.2)
       {
 	const double xmin = x - 0.5 * w;
         const double xmax = x + 0.5 * w;
