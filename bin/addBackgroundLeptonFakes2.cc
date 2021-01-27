@@ -60,7 +60,7 @@ namespace
                                        const TDirectory* dir, const std::string& dirName, 
                                        const std::string& processData, const std::string& processLeptonFakes, const vstring& processesToSubtract,
                                        const vstring& central_or_shifts,
-                                       bool makeBinContentsPositive_forTailFit,
+                                       bool makeBinContentsPositive_dir,
                                        int depth_recursion, int max_depth_recursion,
                                        bool isDEBUG = false)
   {
@@ -130,6 +130,7 @@ namespace
         {
           int verbosity = ( histogramName.find("EventCounter") != std::string::npos && (central_or_shift == "" || central_or_shift == "central") ) ? 1 : 0;
 	  //int verbosity = ( histogramName.find("EventCounter") != std::string::npos ) ? 1 : 0;
+          //if ( histogramName.find("sumXY") != std::string::npos ) verbosity = 1;
 
 	  TH1* histogramData = getHistogram(dir, processData, histogramName, central_or_shift, false);
 	  if ( !histogramData ) 
@@ -157,11 +158,6 @@ namespace
               double integralErr = compIntegralErr(histogramToSubtract, false, false);
               std::cout << " integral(" << processToSubtract << ") = " << integral << " +/- " << integralErr << std::endl;
 	    }
-if ( histogramName == "jpaCategory" && histogramToSubtract->GetNbinsX() != 15 ) 
-{
-  std::cout << "histogramName = " << histogramName << " for processToSubtract = " << processToSubtract << " has the wrong binning --> skipping !!" << std::endl;
-  continue;
-}
             histogramsToSubtract.push_back(histogramToSubtract);
           }
 	    
@@ -185,7 +181,7 @@ if ( histogramName == "jpaCategory" && histogramToSubtract->GetNbinsX() != 15 )
 	    std::cout << " integral(Fakes) = " << integral << " +/- " << integralErr << std::endl;
           }
 
-          if( makeBinContentsPositive_forTailFit )
+          if( makeBinContentsPositive_dir )
           {
             makeBinContentsPositive(histogramLeptonFakes, false, verbosity); // Treating histogramLeptonFakes as MC background
           }
@@ -200,11 +196,16 @@ if ( histogramName == "jpaCategory" && histogramToSubtract->GetNbinsX() != 15 )
     {
       for ( std::vector<const TDirectory*>::iterator subdir = subdirs.begin();
             subdir != subdirs.end(); ++subdir ) {
+        bool makeBinContentsPositive_subdir = makeBinContentsPositive_dir;
+        if ( std::string((*subdir)->GetName()).find("mvaInputVarCorrelation") != std::string::npos ) 
+        {
+          makeBinContentsPositive_subdir = false;
+        }
         processSubdirectory_recursively(
           fs, *subdir, dirName + "/" + (*subdir)->GetName(), 
           processData, processLeptonFakes, processesToSubtract, 
           central_or_shifts, 
-          makeBinContentsPositive_forTailFit,
+          makeBinContentsPositive_subdir,
           depth_recursion + 1, max_depth_recursion,
           isDEBUG
         );
@@ -263,7 +264,8 @@ int main(int argc, char* argv[])
   std::string processLeptonFakes = cfg_addBackgroundLeptonFakes.getParameter<std::string>("processLeptonFakes");
   vstring processesToSubtract = cfg_addBackgroundLeptonFakes.getParameter<vstring>("processesToSubtract");
 
-  bool makeBinContentsPositive_forTailFit = cfg_addBackgroundLeptonFakes.getParameter<bool>("makeBinContentsPositive_forTailFit");
+  const bool makeBinContentsPositive_forTailFit = ( cfg_addBackgroundLeptonFakes.exists("makeBinContentsPositive_forTailFit") ) ? 
+    cfg_addBackgroundLeptonFakes.getParameter<bool>("makeBinContentsPositive_forTailFit") : false;
 
   vstring central_or_shifts = cfg_addBackgroundLeptonFakes.getParameter<vstring>("sysShifts");
   bool contains_central_value = false;

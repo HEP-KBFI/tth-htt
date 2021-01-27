@@ -81,24 +81,24 @@ int main(int argc, char* argv[])
   
   edm::ParameterSet cfg = edm::readPSetsFrom(argv[1])->getParameter<edm::ParameterSet>("process");
 
-  edm::ParameterSet cfgAddBackgroundLeptonFakes = cfg.getParameter<edm::ParameterSet>("addBackgroundLeptonFakes");
+  edm::ParameterSet cfg_addBackgroundLeptonFakes = cfg.getParameter<edm::ParameterSet>("addBackgroundLeptonFakes");
   
   std::vector<categoryEntryType*> categories;
-  edm::VParameterSet cfgCategories = cfgAddBackgroundLeptonFakes.getParameter<edm::VParameterSet>("categories");
+  edm::VParameterSet cfgCategories = cfg_addBackgroundLeptonFakes.getParameter<edm::VParameterSet>("categories");
   for ( edm::VParameterSet::const_iterator cfgCategory = cfgCategories.begin();
 	cfgCategory != cfgCategories.end(); ++cfgCategory ) {
     categoryEntryType* category = new categoryEntryType(*cfgCategory);
     categories.push_back(category);
   }
 
-  std::string processData = cfgAddBackgroundLeptonFakes.getParameter<std::string>("processData");
-  std::string processLeptonFakes = cfgAddBackgroundLeptonFakes.getParameter<std::string>("processLeptonFakes");
-  vstring processesToSubtract = cfgAddBackgroundLeptonFakes.getParameter<vstring>("processesToSubtract");
+  std::string processData = cfg_addBackgroundLeptonFakes.getParameter<std::string>("processData");
+  std::string processLeptonFakes = cfg_addBackgroundLeptonFakes.getParameter<std::string>("processLeptonFakes");
+  vstring processesToSubtract = cfg_addBackgroundLeptonFakes.getParameter<vstring>("processesToSubtract");
 
-  const bool makeBinContentsPositive_forTailFit = ( cfgAddBackgroundLeptonFakes.exists("makeBinContentsPositive_forTailFit") ) ? 
-    cfgAddBackgroundLeptonFakes.getParameter<bool>("makeBinContentsPositive_forTailFit") : false;
+  const bool makeBinContentsPositive_forTailFit = ( cfg_addBackgroundLeptonFakes.exists("makeBinContentsPositive_forTailFit") ) ? 
+    cfg_addBackgroundLeptonFakes.getParameter<bool>("makeBinContentsPositive_forTailFit") : false;
 
-  vstring central_or_shifts = cfgAddBackgroundLeptonFakes.getParameter<vstring>("sysShifts");
+  vstring central_or_shifts = cfg_addBackgroundLeptonFakes.getParameter<vstring>("sysShifts");
   bool contains_central_value = false;
   for ( vstring::const_iterator central_or_shift = central_or_shifts.begin();
 	central_or_shift != central_or_shifts.end(); ++central_or_shift ) {
@@ -165,6 +165,7 @@ int main(int argc, char* argv[])
 
 	    int verbosity = ( histogram->find("EventCounter") != std::string::npos && ((*central_or_shift) == "" || (*central_or_shift) == "central") ) ? 1 : 0;
 	    //int verbosity = ( histogram->find("EventCounter") != std::string::npos ) ? 1 : 0;
+            //if ( histogram->find("sumXY") != std::string::npos ) verbosity = 1;
 
 	    TH1* histogramData = getHistogram(*subdir_sideband_level2, processData, *histogram, *central_or_shift, false);
 	    if ( !histogramData ) {
@@ -204,7 +205,12 @@ int main(int argc, char* argv[])
 	      std::cout << " integral(Fakes) = " << integral << " +/- " << integralErr << std::endl;
 	    }
 
-            if ( makeBinContentsPositive_forTailFit ) {
+            bool makeBinContentsPositive_subdir = makeBinContentsPositive_forTailFit;
+            if ( subdirName_output.find("mvaInputVarCorrelation") != std::string::npos ) 
+            {
+              makeBinContentsPositive_subdir = false;
+            }
+            if ( makeBinContentsPositive_subdir ) {
               makeBinContentsPositive(histogramLeptonFakes, false, verbosity); // Treating histogramLeptonFakes as MC background	  
             }
           }
