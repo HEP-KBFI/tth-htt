@@ -45,14 +45,23 @@ MVAInputVarCorrelationHistManager::bookHistograms(TFileDirectory & dir,
   int numBins = mvaInputVariables_.size();
 
   histogram_sumX_  = book1D(dir, "sumX", "sumX", numBins, -0.5, numBins - 0.5);
-  setAxisLabels(histogram_sumX_->GetXaxis(), mvaInputVariables_);
+  if ( histogram_sumX_ )
+  {
+    setAxisLabels(histogram_sumX_->GetXaxis(), mvaInputVariables_);
+  }
 
   histogram_sumX2_ = book1D(dir, "sumX2", "sumX2", numBins, -0.5, numBins - 0.5);
-  setAxisLabels(histogram_sumX2_->GetXaxis(), mvaInputVariables_);
+  if ( histogram_sumX2_ )
+  {
+    setAxisLabels(histogram_sumX2_->GetXaxis(), mvaInputVariables_);
+  }
 
   histogram_sumXY_ = book2D(dir, "sumXY", "sumXY", numBins, -0.5, numBins - 0.5, numBins, -0.5, numBins - 0.5);
-  setAxisLabels(histogram_sumXY_->GetXaxis(), mvaInputVariables_);
-  setAxisLabels(histogram_sumXY_->GetYaxis(), mvaInputVariables_);
+  if ( histogram_sumXY_ )
+  {
+    setAxisLabels(histogram_sumXY_->GetXaxis(), mvaInputVariables_);
+    setAxisLabels(histogram_sumXY_->GetYaxis(), mvaInputVariables_);
+  }
 
   histogram_sumWeights_ = book1D(dir, "sumWeights", "sumWeights", 1, -0.5, +0.5);
 }
@@ -61,7 +70,8 @@ void
 MVAInputVarCorrelationHistManager::fillHistograms(const std::map<std::string, double> & mvaInputs,
                                                   double evtWeight)
 {
-  assert(histogram_sumX_ && histogram_sumX2_ && histogram_sumXY_ && histogram_sumWeights_);
+  if ( !(histogram_sumX_ && histogram_sumX2_ && histogram_sumXY_ && histogram_sumWeights_) ) return;
+
   double x = 0.;
   for ( const auto & mvaInputVariableX: mvaInputVariables_ )
   {
