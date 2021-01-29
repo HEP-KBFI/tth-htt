@@ -50,7 +50,7 @@ TH1* loadHistogram(TFile* inputFile, const std::string& directoryName, const std
 void
 showHistogram2d(double canvasSizeX,
                 double canvasSizeY,
-                TH2* histogram,
+                TH2* histogram, const std::string& drawOption,
                 const std::string& outputFileName)
 {
   TCanvas* canvas = new TCanvas("canvas", "canvas", canvasSizeX, canvasSizeY);
@@ -65,8 +65,9 @@ showHistogram2d(double canvasSizeX,
   histogram->SetStats(false);
 
   gStyle->SetPaintTextFormat("1.4f");
+  gStyle->SetPalette(1);
 
-  histogram->Draw("TEXT");
+  histogram->Draw(drawOption.data());
   
   canvas->Update();
   const std::size_t idx = outputFileName.find_last_of('.');
@@ -95,7 +96,7 @@ fillWithOverFlow(TH1 * histogram,
 void
 showHistogram1d(double canvasSizeX,
                 double canvasSizeY,
-                TH1* histogram,
+                TH1* histogram, const std::string& drawOption, 
                 const std::string& outputFileName)
 {
   TCanvas* canvas = new TCanvas("canvas", "canvas", canvasSizeX, canvasSizeY);
@@ -123,7 +124,7 @@ showHistogram1d(double canvasSizeX,
   histogram->SetLineColor(1);
   histogram->SetLineWidth(1);
 
-  histogram->Draw("e1p");
+  histogram->Draw(drawOption.data());
   
   canvas->Update();
   const std::size_t idx = outputFileName.find_last_of('.');
@@ -245,8 +246,10 @@ void compMVAInputVarCorrelation()
   histogramCorr_data->Sumw2();
   TH2* histogramCorr_mc = new TH2D("corr_mc", "corr_mc", numBins, -0.5, numBins - 0.5, numBins, -0.5, numBins - 0.5);
   histogramCorr_mc->Sumw2();
+  TH2* histogramCorr_diff2d = new TH2D("corr_diff2d", "corr_diff2d", numBins, -0.5, numBins - 0.5, numBins, -0.5, numBins - 0.5);
+  histogramCorr_diff2d->Sumw2();
 
-  TH1* histogramCorr_diff = new TH1D("corr_diff", "corr_diff", 100, -0.5, +0.5);
+  TH1* histogramCorr_diff1d = new TH1D("corr_diff1d", "corr_diff1d", 100, -0.5, +0.5);
 
   for ( int idxBinX = 1; idxBinX <= numBins; ++idxBinX ) {
     std::string mvaInputVariableX = axis->GetBinLabel(idxBinX);
@@ -297,24 +300,31 @@ void compMVAInputVarCorrelation()
       histogramCorr_mc->GetXaxis()->SetBinLabel(idxBinX, mvaInputVariableX.data());
       histogramCorr_mc->GetYaxis()->SetBinLabel(idxBinY, mvaInputVariableY.data());
 
-      if ( idxBinX > idxBinY ) {
-        fillWithOverFlow(histogramCorr_diff, corr_diff);
+      histogramCorr_diff2d->SetBinContent(idxBinX, idxBinY, corr_diff);
+      histogramCorr_diff2d->SetBinError(idxBinX, idxBinY, 0.);
+      histogramCorr_diff2d->GetXaxis()->SetBinLabel(idxBinX, mvaInputVariableX.data());
+      histogramCorr_diff2d->GetYaxis()->SetBinLabel(idxBinY, mvaInputVariableY.data());
+
+      if ( idxBinX > idxBinY ) { // CV: don't fill correlation of variable with itself and fill each pair of variables only once
+        fillWithOverFlow(histogramCorr_diff1d, corr_diff);
       }
     }
   }
 
   delete inputFile;
 
-  showHistogram2d(1500, 800, histogramCorr_data, Form("compMVAInputVarCorrelation_%s_data.pdf", channel.data()));
-  showHistogram2d(1500, 800, histogramCorr_mc, Form("compMVAInputVarCorrelation_%s_mc.pdf", channel.data()));
-  
-  showHistogram1d(1000, 800, histogramCorr_diff, Form("compMVAInputVarCorrelation_%s_diff.pdf", channel.data()));
+  showHistogram2d(1500, 800, histogramCorr_data, "TEXT", Form("compMVAInputVarCorrelation_%s_data.pdf", channel.data()));
+  showHistogram2d(1500, 800, histogramCorr_mc, "TEXT", Form("compMVAInputVarCorrelation_%s_mc.pdf", channel.data()));
+  showHistogram2d(1500, 800, histogramCorr_diff2d, "COLZTEXT", Form("compMVAInputVarCorrelation_%s_diff2d.pdf", channel.data()));
+
+  showHistogram1d(1000, 800, histogramCorr_diff1d, "e1p", Form("compMVAInputVarCorrelation_%s_diff1d.pdf", channel.data()));
 
   TFile* outputFile = new TFile(Form("compMVAInputVarCorrelation_%s.root", channel.data()), "RECREATE");
   outputFile->cd();
   histogramCorr_data->Write();
   histogramCorr_mc->Write();
-  histogramCorr_diff->Write();
+  histogramCorr_diff2d->Write();
+  histogramCorr_diff1d->Write();
   delete outputFile;
 }
 
