@@ -30,7 +30,7 @@ public:
   pileupJetID get_pileupJetId() const;
 
   /**
-   * @brief Check if jet given as function argument passes pT and eta cuts (pT > 25 GeV and |eta| < 2.4, cf. Section 3.1 of AN-2015/321)
+   * @brief Check if jet given as function argument passes the selection cuts
    * @return True if jet passes selection; false otherwise
    */
   bool
