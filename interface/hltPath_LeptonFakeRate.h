@@ -30,6 +30,8 @@ class hltPath_LeptonFakeRate
   ~hltPath_LeptonFakeRate() {}
 
   std::string getPathName() const;
+  double getMinPt() const;
+  double getMaxPt() const;
   double getMinJetPt() const;
   double getMinRecoPt() const;
   double getPrescale() const;
@@ -43,6 +45,8 @@ class hltPath_LeptonFakeRate
   friend class hltPathReader;
 
  private:
+  double minPt_;
+  double maxPt_;
   double minRecoPt_;
   double minJetPt_;
   double prescale_;

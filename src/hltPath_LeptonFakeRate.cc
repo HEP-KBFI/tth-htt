@@ -13,6 +13,8 @@ hltPath_LeptonFakeRate::hltPath_LeptonFakeRate(const std::string & branchName,
                                                double min_jetPt,
                                                double prescale) 
   : hltPath(branchName, minPt, maxPt)
+  , minPt_(minPt)
+  , maxPt_(maxPt)
   , minRecoPt_(minRecoPt)
   , minJetPt_(min_jetPt)
   , prescale_(prescale)
@@ -27,6 +29,18 @@ std::string
 hltPath_LeptonFakeRate::getPathName() const
 {
   return branchName_;
+}
+
+double
+hltPath_LeptonFakeRate::getMinPt() const
+{
+  return minPt_;
+}
+
+double
+hltPath_LeptonFakeRate::getMaxPt() const
+{
+  return maxPt_;
 }
 
 double
