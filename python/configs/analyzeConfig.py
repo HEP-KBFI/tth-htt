@@ -1188,6 +1188,7 @@ class analyzeConfig(object):
             'useAssocJetBtag',
             'mode',
             'applyBtagSFRatio',
+            'gen_mHH',
         ]
         jobOptions_typeMapping = {
           'central_or_shifts_local' : 'cms.vstring(%s)',
