@@ -1026,7 +1026,9 @@ class analyzeConfig(object):
         if 'useAssocJetBtag' not in jobOptions:
             jobOptions['useAssocJetBtag'] = False
         if 'leptonFakeRateWeight.applyNonClosureCorrection' not in jobOptions and '0l' not in self.channel:
-            jobOptions['leptonFakeRateWeight.applyNonClosureCorrection'] = self.apply_nc_correction
+          if self.channel == 'hh_bb1l': ## Disabling MC Non Closure Corrections for bbWW SL channel (since they were derived for the ttH analysis)
+            self.apply_nc_correction = False
+          jobOptions['leptonFakeRateWeight.applyNonClosureCorrection'] = self.apply_nc_correction
         if 'applyBtagSFRatio' not in jobOptions:
             jobOptions['applyBtagSFRatio'] = jobOptions["isMC"]
         if 'lep_mva_cut_e' not in jobOptions:
