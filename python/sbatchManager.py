@@ -76,6 +76,7 @@ class Status:
   sigbus_error     = 20
   bus_error        = 21
   buffer_error     = 22
+  cvmfs_error      = 23
 
   @staticmethod
   def classify_error(ExitCode, DerivedExitCode, State):
@@ -104,6 +105,8 @@ class Status:
           return Status.cp_error
       if (ExitCode == '6:0' and DerivedExitCode == '0:0' and State == 'FAILED'):
           return Status.validation_error
+      if (ExitCode == '8:0' and State == 'FAILED'):
+          return Status.cvmfs_error
       return Status.other_error
 
   @staticmethod
@@ -136,6 +139,8 @@ class Status:
           return 'buffer_error'
       if status_type == Status.other_error:
           return 'other_error'
+      if status_type == Status.cvmfs_error:
+          return 'cvmfs_error'
       return 'unknown_error'
 
   @staticmethod
@@ -677,7 +682,7 @@ class sbatchManager:
                                   )
                                 )
 
-                            if completion[failed_job].status == Status.bus_error and \
+                            if completion[failed_job].status in [ Status.bus_error, Status.cvmfs_error ] and \
                                 hostname and hostname not in self.sbatch_exclude_nodes:
                               logging.error("Disabling node {} as there was a bus error which likely indicates CVMFS dismount".format(
                                 hostname
@@ -685,7 +690,7 @@ class sbatchManager:
                               self.sbatch_exclude_nodes.append(hostname)
 
                             if self.submittedJobs[failed_job]['nof_submissions'] < self.max_resubmissions and \
-                               completion[failed_job].status in [ Status.io_error, Status.bus_error, Status.buffer_error ]:
+                               completion[failed_job].status in [ Status.io_error, Status.bus_error, Status.buffer_error, Status.cvmfs_error ]:
                                 # The job is eligible for resubmission if the job hasn't been resubmitted more
                                 # than a preset limit of resubmissions AND if the job failed due to I/O errors,
                                 # buffer errors or bus errors

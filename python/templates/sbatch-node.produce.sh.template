@@ -16,42 +16,6 @@ export JOB_DIR="{{ job_dir }}/$SLURM_JOBID"
 
 # Runs executable, wrapped into failure wrapper
 
-main() {
-    run_failure_wrapped_executable &>> "{{ wrapper_log_file }}"
-    EXIT_CODE=$?
-    return $EXIT_CODE
-}
-
-# Executed on node, checks that CVMFS is mounted to this cluster node, or redirects task
-
-run_failure_wrapped_executable() {
-    TRY_COUNT=$[TRY_COUNT+1]
-    echo "Started (Try $TRY_COUNT)"
-    EXIT_CODE=1
-
-    if [[ -f /cvmfs/cms.cern.ch/cmsset_default.sh ]]; then
-        echo "Network drive mounted, started running on $HOSTNAME"
-        run_wrapped_executable
-        EXIT_CODE=$?
-    else
-        echo "Unable to use node $HOSTNAME, will mark node offline: sudo scontrol update nodename=$HOSTNAME state=drain reason=Testing"
-        sudo scontrol update nodename=$HOSTNAME state=drain reason=Testing
-
-        if [[ $TRY_COUNT -lt 3 ]]; then
-            echo "Will resubmit job to other node: TRY_COUNT=$TRY_COUNT $RUNNING_COMMAND"
-            TRY_COUNT=$TRY_COUNT $RUNNING_COMMAND
-            EXIT_CODE=$?
-        else
-            echo "Maximum tries reached, will not try to resubmit any more. GL & HF"
-        fi
-    fi
-
-    echo "Delete job directory: rm -rf $JOB_DIR"
-    rm -rf $JOB_DIR
-
-    return $EXIT_CODE
-}
-
 cleanup() {
     if [ ! -z "$1" ]; then
         echo "Deleting directory: rm -r $1"
@@ -59,9 +23,23 @@ cleanup() {
     fi
 }
 
+main() {
+    run_wrapped_executable &>> "{{ wrapper_log_file }}"
+    EXIT_CODE=$?
+
+    cleanup "$JOB_DIR"
+
+    return $EXIT_CODE
+}
+
 # Creates scratch dir on cluster node or a directory under $HOME and runs the executable
 
 run_wrapped_executable() {
+    if [[ ! -f /cvmfs/cms.cern.ch/cmsset_default.sh ]]; then
+        echo "Network drive not mounted on $HOSTNAME"
+        return 8
+    fi
+
     EXECUTABLE_LOG_FILE="{{ executable_log_file }}"
     EXECUTABLE_LOG_DIR="`dirname $EXECUTABLE_LOG_FILE`"
     EXECUTABLE_LOG_FILE_NAME="`basename $EXECUTABLE_LOG_FILE`"
