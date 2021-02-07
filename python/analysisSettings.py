@@ -591,9 +591,7 @@ class systematics(object):
     cErr1 = [ "CMS_ttHl_btag_cErr1Up", "CMS_ttHl_btag_cErr1Down" ]
     cErr2 = [ "CMS_ttHl_btag_cErr2Up", "CMS_ttHl_btag_cErr2Down" ]
 
-    JESbtag = [ "CMS_ttHl_btag_JESUp", "CMS_ttHl_btag_JESDown" ]
-
-    full = HF + HFStats1 + HFStats2 + LF + LFStats1 + LFStats2 + cErr1 + cErr2 + JESbtag
+    full = HF + HFStats1 + HFStats2 + LF + LFStats1 + LFStats2 + cErr1 + cErr2
 
   class FakeRate_e_shape(object):
     pt         = [ "CMS_ttHl_FRe_shape_ptUp",         "CMS_ttHl_FRe_shape_ptDown"         ]
