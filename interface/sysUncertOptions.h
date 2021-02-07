@@ -23,8 +23,6 @@ enum
 
   kBtag_cErr1Up, kBtag_cErr1Down,
   kBtag_cErr2Up, kBtag_cErr2Down,
-
-  kBtag_jesUp, kBtag_jesDown,
 };
 
 //--- declare systematic uncertainties on data/MC corrections for

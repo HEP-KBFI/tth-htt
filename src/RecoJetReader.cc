@@ -130,7 +130,7 @@ RecoJetReader::setBranchName_BtagWeight(int central_or_shift)
       << "No systematic uncertainties on b-tagging SFs available for data"
     ;
   }
-  assert(central_or_shift >= kBtag_central && central_or_shift <= kBtag_jesDown);
+  assert(central_or_shift >= kBtag_central && central_or_shift <= kBtag_cErr2Down);
   btag_central_or_shift_ = central_or_shift;
 }
 
@@ -194,7 +194,7 @@ RecoJetReader::setBranchNames()
         continue;
       }
       branchNames_BtagWeight_systematics_[kv.first] = {};
-      for(int idxShift = kBtag_central; idxShift <= kBtag_jesDown; ++idxShift)
+      for(int idxShift = kBtag_central; idxShift <= kBtag_cErr2Down; ++idxShift)
       {
         branchNames_BtagWeight_systematics_[kv.first][idxShift] = getBranchName_bTagWeight(
           kv.first, branchName_obj_, idxShift
@@ -270,7 +270,7 @@ RecoJetReader::setBranchAddresses(TTree * tree)
 
     for(const auto & kv: branchNames_BtagWeight_systematics_)
     {
-      for(int idxShift = kBtag_central; idxShift <= kBtag_jesDown; ++idxShift)
+      for(int idxShift = kBtag_central; idxShift <= kBtag_cErr2Down; ++idxShift)
       {
         if(read_btag_systematics_ || (! read_btag_systematics_ && idxShift == btag_central_or_shift_))
         {
@@ -374,7 +374,7 @@ RecoJetReader::read() const
       {
         for(const auto & kv: gInstance->jet_BtagWeights_systematics_)
         {
-          for(int idxShift = kBtag_central; idxShift <= kBtag_jesDown; ++idxShift)
+          for(int idxShift = kBtag_central; idxShift <= kBtag_cErr2Down; ++idxShift)
           {
             if(! read_btag_systematics_ && idxShift != btag_central_or_shift_)
             {

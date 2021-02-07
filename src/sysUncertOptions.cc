@@ -82,8 +82,6 @@ getBTagWeight_option(const std::string & central_or_shift)
   else if(central_or_shift == "CMS_ttHl_btag_cErr1Down"   ) central_or_shift_int = kBtag_cErr1Down;
   else if(central_or_shift == "CMS_ttHl_btag_cErr2Up"     ) central_or_shift_int = kBtag_cErr2Up;
   else if(central_or_shift == "CMS_ttHl_btag_cErr2Down"   ) central_or_shift_int = kBtag_cErr2Down;
-  else if(central_or_shift == "CMS_ttHl_btag_JESUp"       ) central_or_shift_int = kBtag_jesUp;
-  else if(central_or_shift == "CMS_ttHl_btag_JESDown"     ) central_or_shift_int = kBtag_jesDown;
   return central_or_shift_int;
 }
 
@@ -537,8 +535,6 @@ getBranchName_bTagWeight(Btag btag,
   branchNames_bTagWeight[kBtag_cErr1Down]    = branchNames_bTagWeight[kBtag_central] + "_down_cferr1";
   branchNames_bTagWeight[kBtag_cErr2Up]      = branchNames_bTagWeight[kBtag_central] + "_up_cferr2";
   branchNames_bTagWeight[kBtag_cErr2Down]    = branchNames_bTagWeight[kBtag_central] + "_down_cferr2";
-  branchNames_bTagWeight[kBtag_jesUp]        = branchNames_bTagWeight[kBtag_central] + "_up_jes";
-  branchNames_bTagWeight[kBtag_jesDown]      = branchNames_bTagWeight[kBtag_central] + "_down_jes";
   assert(branchNames_bTagWeight.count(central_or_shift));
   return branchNames_bTagWeight.at(central_or_shift);
 }
