@@ -744,6 +744,7 @@ class analyzeConfig(object):
       is_HHmc = sample_category.startswith("signal") or sample_category == "HH"
       is_ttbar_sys = sample_info["sample_category"].replace("TT_", "") in systematics.ttbar
       ttHProcs = self.ttHProcs + [ "TTH" ]
+      is_EWK = sample_category not in [ "WZ", "ZZ", "ggZZ", "qqZZ" ]
 
       if central_or_shift in systematics.LHE().full           and not has_LHE:                                 return False
       if central_or_shift in systematics.LHE().ttH            and sample_category not in ttHProcs:             return False
@@ -763,7 +764,7 @@ class analyzeConfig(object):
       if central_or_shift in systematics.leptonIDSF           and '0l' in self.channel.lower():                return False
       if central_or_shift in systematics.topPtReweighting     and not enable_toppt_rwgt:                       return False
       if central_or_shift in systematics.LHE().hh             and not is_HHmc:                                 return False
-      if central_or_shift in systematics.EWK_jet              and sample_category not in [ "WZ", "ZZ" ]:       return False
+      if central_or_shift in systematics.EWK_jet              and is_EWK:                                      return False
       if central_or_shift in systematics.PartonShower().ttbar and not (sample_category == "TT" and run_ps):    return False
       if central_or_shift in systematics.PartonShower().dy    and not (sample_category == "DY" and run_ps):    return False
       #if central_or_shift in systematics.PartonShower().wjets and not (sample_category == "W" and run_ps):     return False
