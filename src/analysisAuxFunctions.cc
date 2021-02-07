@@ -343,12 +343,13 @@ countFakeElectrons(const std::vector<const RecoLepton *> & leptons)
 {
   int numGenMatchedLeptons = 0;
   int numGenMatchedPhotons = 0;
+  int numGenMatchedHadTaus = 0;
   int numGenMatchedJets = 0;
   for(const RecoLepton * const lepton: leptons)
   {
     if(lepton->is_electron())
     {
-      countLeptonGenMatches(lepton, numGenMatchedLeptons, numGenMatchedPhotons, numGenMatchedJets);
+      countLeptonGenMatches(lepton, numGenMatchedLeptons, numGenMatchedPhotons, numGenMatchedHadTaus, numGenMatchedJets);
     }
   }
   return numGenMatchedJets;
@@ -359,12 +360,13 @@ countFakeMuons(const std::vector<const RecoLepton *> & leptons)
 {
   int numGenMatchedLeptons = 0;
   int numGenMatchedPhotons = 0;
+  int numGenMatchedHadTaus = 0;
   int numGenMatchedJets = 0;
   for(const RecoLepton * const lepton: leptons)
   {
     if(lepton->is_muon())
     {
-      countLeptonGenMatches(lepton, numGenMatchedLeptons, numGenMatchedPhotons, numGenMatchedJets);
+      countLeptonGenMatches(lepton, numGenMatchedLeptons, numGenMatchedPhotons, numGenMatchedHadTaus, numGenMatchedJets);
     }
   }
   return numGenMatchedJets;
