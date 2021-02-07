@@ -156,12 +156,12 @@ int main(int argc, char* argv[])
   std::string treeName = cfg_analyze.getParameter<std::string>("treeName");
 
   std::string process_string = cfg_analyze.getParameter<std::string>("process");
-  const bool isMC_tH = process_string == "tHq" || process_string == "tHW";
-  const bool isMC_VH = process_string == "VH";
-  const bool isMC_H  = process_string == "ggH" || process_string == "qqH" || process_string == "TTWH" || process_string == "TTZH";
-  const bool isMC_HH = process_string == "HH";
-  const bool isMC_EWK = process_string == "WZ" || process_string == "ZZ";
-  const bool isMC_signal = process_string == "ttH" || process_string == "ttH_ctcvcp";
+  const bool isMC_tH = analysisConfig.isMC_tH();
+  const bool isMC_VH = analysisConfig.isMC_VH();
+  const bool isMC_H  = analysisConfig.isMC_H();
+  const bool isMC_HH = analysisConfig.isMC_HH();
+  const bool isMC_EWK = analysisConfig.isMC_EWK();
+  const bool isMC_signal = analysisConfig.isMC_ttH();
   const bool isSignal = isMC_signal || isMC_tH || isMC_VH || isMC_HH || isMC_H;
 
   std::string histogramDir = cfg_analyze.getParameter<std::string>("histogramDir");

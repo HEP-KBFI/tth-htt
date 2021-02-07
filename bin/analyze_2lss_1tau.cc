@@ -175,7 +175,7 @@ int main(int argc, char* argv[])
   const bool isMC_WZ     = analysisConfig.isMC_WZ();
   const bool isMC_H      = analysisConfig.isMC_H();
   const bool isMC_HH     = analysisConfig.isMC_HH();
-  const bool isMC_EWK    = analysisConfig.isMC_WZ() || analysisConfig.isMC_ZZ();
+  const bool isMC_EWK    = analysisConfig.isMC_EWK();
   const bool isMC_ttH    = analysisConfig.isMC_ttH();
   const bool isMC_signal = isMC_ttH || isMC_tH || isMC_VH || isMC_HH || isMC_H;
 

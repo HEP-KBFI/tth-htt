@@ -29,6 +29,8 @@ class AnalysisConfig
   virtual bool isMC() const;
   virtual bool isMC_WZ() const;
   virtual bool isMC_ZZ() const;
+  virtual bool isMC_EWK() const;
+  virtual bool isMC_QCD() const;
   virtual bool isMC_tH() const;
   virtual bool isMC_ttH() const;
   virtual bool isMC_ggH() const;
@@ -61,6 +63,8 @@ class AnalysisConfig
   bool isMC_;  
   bool isMC_WZ_;
   bool isMC_ZZ_;
+  bool isMC_EWK_;
+  bool isMC_QCD_;
   bool isMC_tH_;
   bool isMC_ttH_;
   bool isMC_ggH_;

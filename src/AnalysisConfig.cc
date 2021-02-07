@@ -16,7 +16,9 @@ AnalysisConfig::AnalysisConfig(const std::string & analysis, const edm::Paramete
   isMC_     = cfg.getParameter<bool>("isMC");
   isData_   = !isMC_;
   isMC_WZ_  = process_string_ == "WZ";
-  isMC_ZZ_  = process_string_ == "ZZ";
+  isMC_ZZ_  = process_string_ == "ZZ" || process_string_ == "ggZZ" || process_string_ == "qqZZ";
+  isMC_EWK_ = isMC_WZ_ || isMC_ZZ_;
+  isMC_QCD_ = process_string_ == "QCD";
   isMC_tH_  = process_string_ == "tHq" || process_string_ == "tHW" || process_string_ == "TH";
   isMC_ttH_ = process_string_ == "ttH" || process_string_ == "ttH_ctcvcp" || process_string_ == "TTH";
   isMC_ggH_ = process_string_ == "ggH";
@@ -97,6 +99,18 @@ bool
 AnalysisConfig::isMC_ZZ() const
 {
   return isMC_ZZ_;
+}
+
+bool
+AnalysisConfig::isMC_EWK() const
+{
+  return isMC_EWK_;
+}
+
+bool
+AnalysisConfig::isMC_QCD() const
+{
+  return isMC_QCD_;
 }
 
 bool

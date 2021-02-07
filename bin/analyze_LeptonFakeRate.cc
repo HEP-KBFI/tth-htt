@@ -1446,12 +1446,10 @@ main(int argc,
   AnalysisConfig analysisConfig("ttH->multilepton+tau", cfg_analyze);
   const std::string treeName = cfg_analyze.getParameter<std::string>("treeName");
   const std::string process_string = cfg_analyze.getParameter<std::string>("process");
-  const bool isMC_tHq = process_string == "tHq";
-  const bool isMC_tHW = process_string == "tHW";
-  const bool isMC_tH = isMC_tHq || isMC_tHW;
-  const bool isSignal = process_string == "ttH" || process_string == "ttH_ctcvcp";
-  const bool isMC_QCD = process_string == "QCD";
-  const bool isMC_EWK = process_string == "WZ" || process_string == "ZZ"; // Taken from HH 3l
+  const bool isMC_tH = analysisConfig.isMC_tH();
+  const bool isMC_signal = analysisConfig.isMC_ttH();
+  const bool isMC_QCD = analysisConfig.isMC_QCD();
+  const bool isMC_EWK = analysisConfig.isMC_EWK(); // Taken from HH 3l
 
   const std::string era_string = cfg_analyze.getParameter<std::string>("era");
   const Era era = get_era(era_string);
