@@ -1447,7 +1447,7 @@ main(int argc,
   const std::string treeName = cfg_analyze.getParameter<std::string>("treeName");
   const std::string process_string = cfg_analyze.getParameter<std::string>("process");
   const bool isMC_tH = analysisConfig.isMC_tH();
-  const bool isMC_signal = analysisConfig.isMC_ttH();
+  const bool isSignal = analysisConfig.isMC_ttH();
   const bool isMC_QCD = analysisConfig.isMC_QCD();
   const bool isMC_EWK = analysisConfig.isMC_EWK(); // Taken from HH 3l
 
