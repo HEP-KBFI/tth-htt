@@ -14,7 +14,7 @@ WeightHistManager::WeightHistManager(const edm::ParameterSet & cfg)
   binningOptions_["leptonEff"] = new binningOptionType("leptonEff", 200, 0., 2.);
   binningOptions_["hadTauEff"] = new binningOptionType("hadTauEff", 200, 0., 2.);
   binningOptions_["data_to_MC_correction"] = new binningOptionType("data_to_MC_correction", 200, 0., 2.);
-  binningOptions_["fakeRate"] = new binningOptionType("fakeRate", 200,-1., +1.);
+  binningOptions_["fakeRate"] = new binningOptionType("fakeRate", 200,-10., +10.);
 
   for(auto & kv: binningOptions_)
   {
