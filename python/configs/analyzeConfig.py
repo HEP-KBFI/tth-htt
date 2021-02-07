@@ -307,8 +307,9 @@ class analyzeConfig(object):
           jes_hem_to_remove = []
           if systematics.JES_HEM in self.central_or_shifts:
             jes_hem_to_remove.append(systematics.JES_HEM)
-          if systematics.AK8_JES_HEM in self.central_or_shifts:
-            jes_hem_to_remove.append(systematics.AK8_JES_HEM)
+          #if systematics.AK8_JES_HEM in self.central_or_shifts:
+          #  jes_hem_to_remove.append(systematics.AK8_JES_HEM)
+          # varying JES for AK4 and AK8 jets simultaneously
           for central_or_shift in jes_hem_to_remove:
             logging.warning('Removing systematics {} from {} era'.format(central_or_shift, self.era))
             self.central_or_shifts.remove(central_or_shift)
