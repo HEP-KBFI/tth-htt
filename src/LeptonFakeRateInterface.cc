@@ -121,18 +121,18 @@ LeptonFakeRateInterface::getWeight_e(double electronPt,
     throw cmsException(this, __func__, __LINE__) << "Invalid option: " << central_or_shift_e;
   }
   const double jetToEleFakeRate = lutFakeRate_e_.at(central_or_shift_e)->getSF(electronPt, electronAbsEta);
-
-  const double jetToEleFakeRate_final = [&,this]() -> double {
-    if(central_or_shift == kFRe_shape_corrUp)
-    {
-      return jetToEleFakeRate * jetToEleFakeRateCorr_ * jetToEleFakeRateCorr_;
-    }
-    else if(central_or_shift == kFRe_shape_corrDown)
-    {
-      return jetToEleFakeRate;
-    }
-    return jetToEleFakeRate * jetToEleFakeRateCorr_;
-  }();
+  double jetToEleFakeRate_tmp = -1.0;
+  if(central_or_shift == kFRe_shape_corrUp)
+  {
+    jetToEleFakeRate_tmp = (jetToEleFakeRate * jetToEleFakeRateCorr_ * jetToEleFakeRateCorr_);
+  }
+  else if(central_or_shift == kFRe_shape_corrDown)
+  {
+    jetToEleFakeRate_tmp = jetToEleFakeRate;
+  }else{
+    jetToEleFakeRate_tmp = (jetToEleFakeRate * jetToEleFakeRateCorr_);
+  }
+  const double jetToEleFakeRate_final = CapLeptonFakeRate(jetToEleFakeRate_tmp, 0.80, isDEBUG_);  
   if(isDEBUG_)
   {
     std::cout
@@ -163,17 +163,18 @@ LeptonFakeRateInterface::getWeight_mu(double muonPt,
     throw cmsException(this, __func__, __LINE__) << "Invalid option: " << central_or_shift_m;
   }
   const double jetToMuFakeRate = lutFakeRate_mu_.at(central_or_shift_m)->getSF(muonPt, muonAbsEta);
-  const double jetToMuFakeRate_final = [&,this]() -> double {
-    if(central_or_shift == kFRm_shape_corrUp)
-    {
-      return jetToMuFakeRate * jetToMuFakeRateCorr_ * jetToMuFakeRateCorr_;
-    }
-    else if(central_or_shift == kFRm_shape_corrDown)
-    {
-      return jetToMuFakeRate;
-    }
-    return jetToMuFakeRate * jetToMuFakeRateCorr_;
-  }();
+  double jetToMuFakeRate_tmp = -1.0;
+  if(central_or_shift == kFRm_shape_corrUp)
+  {
+    jetToMuFakeRate_tmp = (jetToMuFakeRate * jetToMuFakeRateCorr_ * jetToMuFakeRateCorr_);
+  }
+  else if(central_or_shift == kFRm_shape_corrDown)
+  {
+    jetToMuFakeRate_tmp = jetToMuFakeRate;
+  }else{
+    jetToMuFakeRate_tmp = (jetToMuFakeRate * jetToMuFakeRateCorr_);
+  }
+  const double jetToMuFakeRate_final = CapLeptonFakeRate(jetToMuFakeRate_tmp, 0.80, isDEBUG_);  
   if(isDEBUG_)
   {
     std::cout

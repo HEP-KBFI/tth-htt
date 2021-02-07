@@ -1091,3 +1091,28 @@ CreateLBNOutputMap(const std::vector<double> & LBN_params,
   }
   return LBNOutput_Map;
 }
+
+double
+CapLeptonFakeRate(double LeptonFakeRate,
+                  double cap_threshold,
+		  bool isDEBUG)
+{
+  double LeptonFakeRate_final = -1.;
+
+  if(LeptonFakeRate > cap_threshold)
+  {
+    LeptonFakeRate_final = cap_threshold;
+    if(isDEBUG){
+      std::cout << "LeptonFakeRate: " << LeptonFakeRate 
+		<< " has exceeded cap threshold: " 
+		<< cap_threshold 
+		<< " hence fixing it to "
+	        << cap_threshold
+		<< '\n';
+    }
+  }else{
+    LeptonFakeRate_final = LeptonFakeRate;
+  }
+
+  return LeptonFakeRate_final;
+}

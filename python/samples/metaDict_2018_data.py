@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2020-12-24 17:12:26 with the following command:
+# file generated at 2021-02-05 12:58:55 with the following command:
 # find_samples.py -V -m python/samples/metaDict_2018_data.py -d ../NanoAOD/test/datasets/txt/datasets_data_2018_17Sep18_22Jan19.txt -p SingleMuon EGamma DoubleMuon MuonEG Tau -g ../NanoAOD/data/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt -v 10_2_4_patch1 -r 2018 -C +17Sep2018 +Run2018D-PromptReco +22Jan2019 x/SingleMuon/Run2018D-PromptReco-v2/MINIAOD x/EGamma/Run2018D-PromptReco-v2/MINIAOD -c python/samples/sampleLocations_2018_nanoAOD.txt
 
 meta_dictionary = OD()
@@ -21,7 +21,7 @@ meta_dictionary["/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2018_2019Oct07_SingleMuon__Run2018B-17Sep2018-v1"),
+  ("crab_string",           "2018_2021Feb02_SingleMuon__Run2018B-17Sep2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "SingleMuon_Run2018B_17Sep2018_v1"),
   ("nof_db_events",         119918017),
@@ -81,7 +81,7 @@ meta_dictionary["/EGamma/Run2018A-17Sep2018-v2/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/EGamma/Run2018B-17Sep2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2018_2019Oct18_EGamma__Run2018B-17Sep2018-v1"),
+  ("crab_string",           "2018_2021Feb02_EGamma__Run2018B-17Sep2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "EGamma_Run2018B_17Sep2018_v1"),
   ("nof_db_events",         153822427),
@@ -111,7 +111,7 @@ meta_dictionary["/EGamma/Run2018C-17Sep2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/EGamma/Run2018D-22Jan2019-v2/MINIAOD"] =  OD([
-  ("crab_string",           "2018prompt_2019Oct18_EGamma__Run2018D-22Jan2019-v2"),
+  ("crab_string",           "2018prompt_2021Feb02_EGamma__Run2018D-22Jan2019-v2"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "EGamma_Run2018D_22Jan2019_v2"),
   ("nof_db_events",         754798781),
@@ -126,7 +126,7 @@ meta_dictionary["/EGamma/Run2018D-22Jan2019-v2/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/DoubleMuon/Run2018A-17Sep2018-v2/MINIAOD"] =  OD([
-  ("crab_string",           "2018_2019Oct09_DoubleMuon__Run2018A-17Sep2018-v2"),
+  ("crab_string",           "2018_2021Feb02_DoubleMuon__Run2018A-17Sep2018-v2"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "DoubleMuon_Run2018A_17Sep2018_v2"),
   ("nof_db_events",         75499908),
@@ -141,7 +141,7 @@ meta_dictionary["/DoubleMuon/Run2018A-17Sep2018-v2/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/DoubleMuon/Run2018B-17Sep2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2018_2019Oct07_DoubleMuon__Run2018B-17Sep2018-v1"),
+  ("crab_string",           "2018_2021Feb02_DoubleMuon__Run2018B-17Sep2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "DoubleMuon_Run2018B_17Sep2018_v1"),
   ("nof_db_events",         35057758),
@@ -156,7 +156,7 @@ meta_dictionary["/DoubleMuon/Run2018B-17Sep2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/DoubleMuon/Run2018C-17Sep2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2018_2019Oct07_DoubleMuon__Run2018C-17Sep2018-v1"),
+  ("crab_string",           "2018_2021Feb02_DoubleMuon__Run2018C-17Sep2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "DoubleMuon_Run2018C_17Sep2018_v1"),
   ("nof_db_events",         34565869),
@@ -186,7 +186,7 @@ meta_dictionary["/DoubleMuon/Run2018D-PromptReco-v2/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/MuonEG/Run2018A-17Sep2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2018_2019Oct07_MuonEG__Run2018A-17Sep2018-v1"),
+  ("crab_string",           "2018_2021Feb02_MuonEG__Run2018A-17Sep2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "MuonEG_Run2018A_17Sep2018_v1"),
   ("nof_db_events",         32958503),
@@ -231,7 +231,7 @@ meta_dictionary["/MuonEG/Run2018C-17Sep2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/MuonEG/Run2018D-PromptReco-v2/MINIAOD"] =  OD([
-  ("crab_string",           "2018prompt_2019Oct08_MuonEG__Run2018D-PromptReco-v2"),
+  ("crab_string",           "2018prompt_2021Feb02_MuonEG__Run2018D-PromptReco-v2"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "MuonEG_Run2018D_PromptReco_v2"),
   ("nof_db_events",         71962991),
@@ -246,7 +246,7 @@ meta_dictionary["/MuonEG/Run2018D-PromptReco-v2/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/Tau/Run2018A-17Sep2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2018_2019Oct07_Tau__Run2018A-17Sep2018-v1"),
+  ("crab_string",           "2018_2021Feb02_Tau__Run2018A-17Sep2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "Tau_Run2018A_17Sep2018_v1"),
   ("nof_db_events",         63153347),
@@ -261,7 +261,7 @@ meta_dictionary["/Tau/Run2018A-17Sep2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/Tau/Run2018B-17Sep2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2018_2019Oct07_Tau__Run2018B-17Sep2018-v1"),
+  ("crab_string",           "2018_2021Feb02_Tau__Run2018B-17Sep2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "Tau_Run2018B_17Sep2018_v1"),
   ("nof_db_events",         32678961),
@@ -276,7 +276,7 @@ meta_dictionary["/Tau/Run2018B-17Sep2018-v1/MINIAOD"] =  OD([
 ])
 
 meta_dictionary["/Tau/Run2018C-17Sep2018-v1/MINIAOD"] =  OD([
-  ("crab_string",           "2018_2019Oct07_Tau__Run2018C-17Sep2018-v1"),
+  ("crab_string",           "2018_2021Feb02_Tau__Run2018C-17Sep2018-v1"),
   ("sample_category",       "data_obs"),
   ("process_name_specific", "Tau_Run2018C_17Sep2018_v1"),
   ("nof_db_events",         31974422),

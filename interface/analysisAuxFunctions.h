@@ -986,4 +986,8 @@ CreateLBNOutputMap(const std::vector<double> & LBN_params,
 		   bool isNonRes,
 		   const std::string & spin_label);
 
+double 
+CapLeptonFakeRate(double LeptonFakeRate, 
+		  double cap_threshold,
+		  bool isDEBUG);
 #endif
