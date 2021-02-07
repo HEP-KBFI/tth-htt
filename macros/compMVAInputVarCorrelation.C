@@ -147,7 +147,7 @@ void compMVAInputVarCorrelation()
 
   std::string inputFilePath, inputFileName, directoryName;
   if ( channel == "2lss" ) {
-    inputFilePath = "/hdfs/local/veelken/hhAnalysis/2016/2021Jan27_2lss_mvaInputVarCorrelation/histograms/hh_2lss/Tight_SS/hadd/";
+    inputFilePath = "/hdfs/local/veelken/hhAnalysis/2016/2021Feb03_2lss_mvaInputVarCorrelation_wLimits/histograms/hh_2lss/Tight_SS/hadd/";
     inputFileName = "hadd_stage2_Tight_SS.root";
     directoryName = "hh_2lss_SS_Tight/sel/mvaInputVarCorrelation/%s/";
   } else if ( channel == "3l" ) {
