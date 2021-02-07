@@ -121,6 +121,7 @@ GenMatchInterface::getGenMatch(const std::vector<const RecoLepton*>& selLeptons,
   int selLeptons_numGenMatchedLeptons              = 0;
   int selLeptons_numChargeFlippedGenMatchedLeptons = 0;
   int selLeptons_numGenMatchedPhotons              = 0;
+  int selLeptons_numGenMatchedHadTaus              = 0;
   int selLeptons_numGenMatchedJets                 = 0;
   assert(selLeptons.size() >= numLeptons_);
   for ( size_t idxLepton = 0; idxLepton < numLeptons_; ++idxLepton ) 
@@ -128,11 +129,11 @@ GenMatchInterface::getGenMatch(const std::vector<const RecoLepton*>& selLeptons,
     const RecoLepton* selLepton = selLeptons[idxLepton];
     if ( useFlips_ )
     {
-      countLeptonChargeFlipGenMatches(selLepton, selLeptons_numGenMatchedLeptons, selLeptons_numChargeFlippedGenMatchedLeptons, selLeptons_numGenMatchedPhotons, selLeptons_numGenMatchedJets);
+      countLeptonChargeFlipGenMatches(selLepton, selLeptons_numGenMatchedLeptons, selLeptons_numChargeFlippedGenMatchedLeptons, selLeptons_numGenMatchedPhotons, selLeptons_numGenMatchedHadTaus, selLeptons_numGenMatchedJets);
     }
     else
     {
-      countLeptonGenMatches(selLepton, selLeptons_numGenMatchedLeptons, selLeptons_numGenMatchedPhotons, selLeptons_numGenMatchedJets);
+      countLeptonGenMatches(selLepton, selLeptons_numGenMatchedLeptons, selLeptons_numGenMatchedPhotons, selLeptons_numGenMatchedHadTaus, selLeptons_numGenMatchedJets);
     }
   }
 
