@@ -1,7 +1,7 @@
 from collections import OrderedDict as OD
 
-# file generated at 2020-12-20 00:52:42 with the following command:
-# create_dictionary.py -m python/samples/metaDict_2016.py -p python/samples/sampleLocations_2016_nanoAOD.txt -N samples_2016 -E 2016 -o python/samples -g tthAnalyzeSamples_2016_nanoAOD.py -M -l /hdfs/local/karl/lost_ntuples.txt
+# file generated at 2021-02-06 16:32:06 with the following command:
+# create_dictionary.py -m python/samples/metaDict_2016.py -p python/samples/sampleLocations_2016_nanoAOD.txt -N samples_2016 -E 2016 -o python/samples -g tthAnalyzeSamples_2016_nanoAOD.py -M
 
 samples_2016 = OD()
 samples_2016["/SingleElectron/Run2016B-17Jul2018_ver2-v1/MINIAOD"] = OD([
@@ -25806,7 +25806,7 @@ samples_2016["/ttHJetTobb_M125_13TeV_amcatnloFXFX_madspin_pythia8/RunIISummer16M
       OD([
         ("path",      "/hdfs/cms/store/user/kaehatah/2016v3_2020Jul24/ttHJetTobb_M125_13TeV_amcatnloFXFX_madspin_pythia8/2016v3_2020Jul24_ttHJetTobb_M125_13TeV_amcatnloFXFX_madspin_pythia8__RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext3-v2/200724_181451"),
         ("selection", "*"),
-        ("blacklist", [7, 9, 42, 51, 63, 78, 81, 85, 92, 97]),
+        ("blacklist", [7, 9, 42, 51, 63, 78, 81, 85, 92]),
       ]),
     ]
   ),
