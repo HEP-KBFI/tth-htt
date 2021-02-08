@@ -665,7 +665,7 @@ class analyzeConfig(object):
           elif self.lep_mva_wp == 'hh_multilepton':
               if self.channel == 'hh_2lss': ## 2lss channel now runs with KBFI Lepton Fake Rates computed with Tight charge cuts applied to both numerator and denominator
                 self.leptonFakeRateWeight_inputFile = "hhAnalysis/multilepton/data/FR_lep_mva_hh_multilepton_wFullSyst_{}_KBFI_2021Jan18_wCERNUncs2_FRErrTheshold_0p01_wTightChargeCut.root".format(self.era)
-              if self.channel == 'hh_bb1l': ## bb1l channel now runs with KBFI 'isolated single lepton triggered' Lepton Fake Rates computed w/o Tight charge cuts applied to both numerator and denominator
+              elif self.channel == 'hh_bb1l': ## bb1l channel now runs with KBFI 'isolated single lepton triggered' Lepton Fake Rates computed w/o Tight charge cuts applied to both numerator and denominator
                 self.leptonFakeRateWeight_inputFile = "hhAnalysis/bbww/data/FR_lep_mva_hh_bbWW_wFullSyst_{}_KBFI_2021Feb3_wCERNUncs2_FRErrTheshold_0p01.root".format(self.era)
               else: ## all other channels now run with KBFI Lepton Fake Rates computed w/o Tight charge cuts applied to both numerator and denominator      
                 self.leptonFakeRateWeight_inputFile = "hhAnalysis/multilepton/data/FR_lep_mva_hh_multilepton_wFullSyst_{}_KBFI_2020Dec21_wCERNUncs2_FRErrTheshold_0p01.root".format(self.era)
