@@ -394,7 +394,7 @@ class prodNtupleConfig:
                     'HLTcuts'                 : hlt_cuts,
                     'compTopRwgt'             : sample_name.startswith('/TTTo'),
                     'compHTXS'                : sample_info['sample_category'].startswith('ttH'),
-                    'isTuneCP5'               : (self.era == "2016" and 'TuneCP5' in sample_name),
+                    'isTuneCP5'               : (self.era == "2016"),# and 'TuneCP5' in sample_name), #TODO change it back
                     'splitByNlheJet'          : splitByNlheJet,
                     'splitByNlheHT'           : splitByNlheHT,
                     'splitByNlheJetHT'        : splitByNlheJetHT,

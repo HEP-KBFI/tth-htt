@@ -81,7 +81,6 @@ NANO_BTAGGING_SF_MODULE="btagSF_deepFlav_${ERA}"
 if [ "$IS_TUNECP5" == "True" ]; then
   NANO_BTAGGING_SF_MODULE="${NANO_BTAGGING_SF_MODULE}_TuneCP5";
 fi
-NANO_MODULES_MC="$NANO_MODULES_MC,$NANO_BTAGGING_SF_MODULE"
 
 if [ "$IS_HH_NONRES" == "True" ]; then
   NANO_MODULES_MC="$NANO_MODULES_MC,diHiggsVar_${ERA}"
@@ -159,7 +158,7 @@ if [ "$SKIP_TOOLS_STEP" == "False" ]; then
       elif [ "$SPLIT_BY_LHENJETHT" == "True" ]; then
         COUNTHISTOGRAM_MODULE="${COUNTHISTOGRAM_MODULE}SplitByLHENjetHT";
       fi
-      COUNTHISTOGRAM_MODULE="$COUNTHISTOGRAM_MODULE(;;$REF_GENWEIGHT)";
+      COUNTHISTOGRAM_MODULE="$COUNTHISTOGRAM_MODULE(;;$REF_GENWEIGHT),$NANO_BTAGGING_SF_MODULE";
       nano_postproc.py -s i -I tthAnalysis.NanoAODTools.postprocessing.tthModules "$COUNTHISTOGRAM_MODULE" \
                        . $F_i;
       test_exit_code $?
