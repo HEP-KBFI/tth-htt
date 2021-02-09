@@ -168,9 +168,9 @@ class syncNtupleConfig:
       if 'inclusive' not in channel:
         cmd_args += " -p %s" % use_preselected
         if method:
-          cmd_args += " -M %s" % method
+          cmd_args += " -M %s" % ' '.join(method)
         if spin:
-          cmd_args += " -F %s" % spin
+          cmd_args += " -F %s" % ' '.join(spin)
 
       mode_str = ''
       if mode:
