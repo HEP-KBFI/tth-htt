@@ -72,6 +72,7 @@ class syncNtupleConfig:
         submission_cmd = None,
         mode = None,
         method = '',
+        spin = '',
       ):
 
     self.running_method     = running_method
@@ -168,6 +169,8 @@ class syncNtupleConfig:
         cmd_args += " -p %s" % use_preselected
         if method:
           cmd_args += " -M %s" % method
+        if spin:
+          cmd_args += " -F %s" % spin
 
       mode_str = ''
       if mode:
