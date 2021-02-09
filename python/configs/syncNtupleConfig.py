@@ -71,6 +71,7 @@ class syncNtupleConfig:
         suffix = '',
         submission_cmd = None,
         mode = None,
+        method = '',
       ):
 
     self.running_method     = running_method
@@ -165,6 +166,8 @@ class syncNtupleConfig:
       cmd_args = common_args if 'inclusive' not in channel else inclusive_args
       if 'inclusive' not in channel:
         cmd_args += " -p %s" % use_preselected
+        if method:
+          cmd_args += " -M %s" % method
 
       mode_str = ''
       if mode:
