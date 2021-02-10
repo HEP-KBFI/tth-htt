@@ -253,6 +253,8 @@ class analyzeConfig(object):
             logging.warning('Running with systematic uncertainties, but without central value, is not supported --> adding central value.')
             self.central_or_shifts.append('central')
         self.apply_nc_correction = apply_nc_correction
+        if self.channel == 'hh_bb1l':  ## Disabling MC Non Closure Corrections for bbWW SL channel (since they were derived for the ttH analysis)
+          self.apply_nc_correction = False
         if not self.apply_nc_correction:
           central_or_shift_nc = [
             central_or_shift for central_or_shift in self.central_or_shifts if central_or_shift in systematics.FakeRate_l_shape_corr
@@ -1028,8 +1030,6 @@ class analyzeConfig(object):
         if 'useAssocJetBtag' not in jobOptions:
             jobOptions['useAssocJetBtag'] = False
         if 'leptonFakeRateWeight.applyNonClosureCorrection' not in jobOptions and '0l' not in self.channel:
-          if self.channel == 'hh_bb1l': ## Disabling MC Non Closure Corrections for bbWW SL channel (since they were derived for the ttH analysis)
-            self.apply_nc_correction = False
           jobOptions['leptonFakeRateWeight.applyNonClosureCorrection'] = self.apply_nc_correction
         if 'applyBtagSFRatio' not in jobOptions:
             jobOptions['applyBtagSFRatio'] = jobOptions["isMC"]
