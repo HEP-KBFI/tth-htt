@@ -31,73 +31,117 @@ def getPtBin(minPt, maxPt):
 #### CERN BINNING SCHEME ####
 fit_param_range_map = {
   'electron' : {
-    'tight' : {
-      'incl'                            : '0.01,10.0',
-      'absEtaLt1_5_Pt15_0to25_0'        : '0.01,10.0',
-      'absEtaLt1_5_Pt25_0to35_0'        : '0.01,10.0',
-      'absEtaLt1_5_Pt35_0to45_0'        : '0.01,10.0',
-      'absEtaLt1_5_Pt45_0to65_0'        : '0.01,10.0',
-      'absEtaLt1_5_Pt65_0to100_0'       : '0.01,10.0', ## CERN RESTRICTED BINNING TO 100
-      'absEta1_5to2_5_Pt15_0to25_0'     : '0.01,10.0',
-      'absEta1_5to2_5_Pt25_0to35_0'     : '0.0,10.0',  ## CHANGED TO MAKE FIT CONVERGE
-      'absEta1_5to2_5_Pt35_0to45_0'     : '0.01,10.0',
-      'absEta1_5to2_5_Pt45_0to65_0'     : '0.01,10.0',
-      'absEta1_5to2_5_Pt65_0to100_0'    : '0.01,10.0', ## CERN RESTRICTED BINNING TO 100
+    'bbWW_SL':{
+      'tight' : {
+        'incl'                            : '0.01,10.0',
+        'absEtaLt1_5_Pt32_0to45_0'        : '0.01,10.0',
+        'absEtaLt1_5_Pt45_0to65_0'        : '0.01,10.0',
+        'absEtaLt1_5_Pt65_0to100_0'       : '0.01,10.0', ## CERN RESTRICTED BINNING TO 100
+        'absEta1_5to2_5_Pt32_0to45_0'     : '0.01,10.0',
+        'absEta1_5to2_5_Pt45_0to65_0'     : '0.01,10.0',
+        'absEta1_5to2_5_Pt65_0to100_0'    : '0.01,10.0', ## CERN RESTRICTED BINNING TO 100
+      },
+      'fakeable' : {
+        'incl'                            : '0.01,10.0',
+        'absEtaLt1_5_Pt32_0to45_0'        : '0.01,10.0',
+        'absEtaLt1_5_Pt45_0to65_0'        : '0.01,10.0',
+        'absEtaLt1_5_Pt65_0to100_0'       : '0.01,10.0', ## CERN RESTRICTED BINNING TO 100
+        'absEta1_5to2_5_Pt32_0to45_0'     : '0.01,10.0',
+        'absEta1_5to2_5_Pt45_0to65_0'     : '0.01,10.0',
+        'absEta1_5to2_5_Pt65_0to100_0'    : '0.01,10.0', ## CERN RESTRICTED BINNING TO 100
+      },
     },
-    'fakeable' : {
-      'incl'                            : '0.01,10.0',
-      'absEtaLt1_5_Pt15_0to25_0'        : '0.01,10.0',
-      'absEtaLt1_5_Pt25_0to35_0'        : '0.01,10.0',
-      'absEtaLt1_5_Pt35_0to45_0'        : '0.01,10.0',
-      'absEtaLt1_5_Pt45_0to65_0'        : '0.01,10.0',
-      'absEtaLt1_5_Pt65_0to100_0'       : '0.01,10.0', ## CERN RESTRICTED BINNING TO 100
-      'absEta1_5to2_5_Pt15_0to25_0'     : '0.01,10.0',
-      'absEta1_5to2_5_Pt25_0to35_0'     : '0.01,10.0',
-      'absEta1_5to2_5_Pt35_0to45_0'     : '0.01,10.0',
-      'absEta1_5to2_5_Pt45_0to65_0'     : '0.01,10.0',
-      'absEta1_5to2_5_Pt65_0to100_0'    : '0.01,10.0', ## CERN RESTRICTED BINNING TO 100
+    'HHorTTH':{
+      'tight' : {
+        'incl'                            : '0.01,10.0',
+        'absEtaLt1_5_Pt15_0to25_0'        : '0.01,10.0',
+        'absEtaLt1_5_Pt25_0to35_0'        : '0.01,10.0',
+        'absEtaLt1_5_Pt35_0to45_0'        : '0.01,10.0',
+        'absEtaLt1_5_Pt45_0to65_0'        : '0.01,10.0',
+        'absEtaLt1_5_Pt65_0to100_0'       : '0.01,10.0', ## CERN RESTRICTED BINNING TO 100
+        'absEta1_5to2_5_Pt15_0to25_0'     : '0.01,10.0',
+        'absEta1_5to2_5_Pt25_0to35_0'     : '0.0,10.0',  ## CHANGED TO MAKE FIT CONVERGE
+        'absEta1_5to2_5_Pt35_0to45_0'     : '0.01,10.0',
+        'absEta1_5to2_5_Pt45_0to65_0'     : '0.01,10.0',
+        'absEta1_5to2_5_Pt65_0to100_0'    : '0.01,10.0', ## CERN RESTRICTED BINNING TO 100
+      },
+      'fakeable' : {
+        'incl'                            : '0.01,10.0',
+        'absEtaLt1_5_Pt15_0to25_0'        : '0.01,10.0',
+        'absEtaLt1_5_Pt25_0to35_0'        : '0.01,10.0',
+        'absEtaLt1_5_Pt35_0to45_0'        : '0.01,10.0',
+        'absEtaLt1_5_Pt45_0to65_0'        : '0.01,10.0',
+        'absEtaLt1_5_Pt65_0to100_0'       : '0.01,10.0', ## CERN RESTRICTED BINNING TO 100
+        'absEta1_5to2_5_Pt15_0to25_0'     : '0.01,10.0',
+        'absEta1_5to2_5_Pt25_0to35_0'     : '0.01,10.0',
+        'absEta1_5to2_5_Pt35_0to45_0'     : '0.01,10.0',
+        'absEta1_5to2_5_Pt45_0to65_0'     : '0.01,10.0',
+        'absEta1_5to2_5_Pt65_0to100_0'    : '0.01,10.0', ## CERN RESTRICTED BINNING TO 100
+      },
     },
   },
   'muon' : {
-    'tight' : {
-      'incl'                            : '0.01,10.0',
-      'absEtaLt1_2_Pt10_0to15_0'        : '0.01,10.0',
-      'absEtaLt1_2_Pt15_0to20_0'        : '0.01,10.0',
-      'absEtaLt1_2_Pt20_0to32_0'        : '0.01,10.0',
-      'absEtaLt1_2_Pt32_0to45_0'        : '0.01,10.0',
-      'absEtaLt1_2_Pt45_0to65_0'        : '0.01,10.0',
-      'absEtaLt1_2_Pt65_0to100_0'       : '0.01,10.0',
-      'absEta1_2to2_4_Pt10_0to15_0'     : '0.01,10.0',
-      'absEta1_2to2_4_Pt15_0to20_0'     : '0.01,10.0',
-      'absEta1_2to2_4_Pt20_0to32_0'     : '0.01,10.0',
-      'absEta1_2to2_4_Pt32_0to45_0'     : '0.01,10.0',
-      'absEta1_2to2_4_Pt45_0to65_0'     : '0.01,10.0',
-      'absEta1_2to2_4_Pt65_0to100_0'    : '0.01,10.0',
+    'bbWW_SL':{
+      'tight' : {
+        'incl'                            : '0.01,10.0',
+        'absEtaLt1_2_Pt25_0to45_0'        : '0.01,10.0',
+        'absEtaLt1_2_Pt45_0to65_0'        : '0.01,10.0',
+        'absEtaLt1_2_Pt65_0to100_0'       : '0.01,10.0',
+        'absEta1_2to2_4_Pt25_0to45_0'     : '0.01,10.0',
+        'absEta1_2to2_4_Pt45_0to65_0'     : '0.01,10.0',
+        'absEta1_2to2_4_Pt65_0to100_0'    : '0.01,10.0',
+      },
+      'fakeable' : {
+        'incl'                            : '0.01,10.0',
+        'absEtaLt1_2_Pt25_0to45_0'        : '0.01,10.0',
+        'absEtaLt1_2_Pt45_0to65_0'        : '0.01,10.0',
+        'absEtaLt1_2_Pt65_0to100_0'       : '0.01,10.0',
+        'absEta1_2to2_4_Pt25_0to45_0'     : '0.01,10.0',
+        'absEta1_2to2_4_Pt45_0to65_0'     : '0.01,10.0',
+        'absEta1_2to2_4_Pt65_0to100_0'    : '0.01,10.0',
+      }
     },
-    'fakeable' : {
-      'incl'                            : '0.01,10.0',
-      'absEtaLt1_2_Pt10_0to15_0'        : '0.01,10.0',
-      'absEtaLt1_2_Pt15_0to20_0'        : '0.01,10.0',
-      'absEtaLt1_2_Pt20_0to32_0'        : '0.01,10.0',
-      'absEtaLt1_2_Pt32_0to45_0'        : '0.01,10.0',
-      'absEtaLt1_2_Pt45_0to65_0'        : '0.01,10.0',
-      'absEtaLt1_2_Pt65_0to100_0'       : '0.01,10.0',
-      'absEta1_2to2_4_Pt10_0to15_0'     : '0.01,10.0',
-      'absEta1_2to2_4_Pt15_0to20_0'     : '0.01,10.0',
-      'absEta1_2to2_4_Pt20_0to32_0'     : '0.01,10.0',
-      'absEta1_2to2_4_Pt32_0to45_0'     : '0.01,10.0',
-      'absEta1_2to2_4_Pt45_0to65_0'     : '0.01,10.0',
-      'absEta1_2to2_4_Pt65_0to100_0'    : '0.01,10.0',
-    }
+    'HHorTTH':{
+      'tight' : {
+        'incl'                            : '0.01,10.0',
+        'absEtaLt1_2_Pt10_0to15_0'        : '0.01,10.0',
+        'absEtaLt1_2_Pt15_0to20_0'        : '0.01,10.0',
+        'absEtaLt1_2_Pt20_0to32_0'        : '0.01,10.0',
+        'absEtaLt1_2_Pt32_0to45_0'        : '0.01,10.0',
+        'absEtaLt1_2_Pt45_0to65_0'        : '0.01,10.0',
+        'absEtaLt1_2_Pt65_0to100_0'       : '0.01,10.0',
+        'absEta1_2to2_4_Pt10_0to15_0'     : '0.01,10.0',
+        'absEta1_2to2_4_Pt15_0to20_0'     : '0.01,10.0',
+        'absEta1_2to2_4_Pt20_0to32_0'     : '0.01,10.0',
+        'absEta1_2to2_4_Pt32_0to45_0'     : '0.01,10.0',
+        'absEta1_2to2_4_Pt45_0to65_0'     : '0.01,10.0',
+        'absEta1_2to2_4_Pt65_0to100_0'    : '0.01,10.0',
+      },
+      'fakeable' : {
+        'incl'                            : '0.01,10.0',
+        'absEtaLt1_2_Pt10_0to15_0'        : '0.01,10.0',
+        'absEtaLt1_2_Pt15_0to20_0'        : '0.01,10.0',
+        'absEtaLt1_2_Pt20_0to32_0'        : '0.01,10.0',
+        'absEtaLt1_2_Pt32_0to45_0'        : '0.01,10.0',
+        'absEtaLt1_2_Pt45_0to65_0'        : '0.01,10.0',
+        'absEtaLt1_2_Pt65_0to100_0'       : '0.01,10.0',
+        'absEta1_2to2_4_Pt10_0to15_0'     : '0.01,10.0',
+        'absEta1_2to2_4_Pt15_0to20_0'     : '0.01,10.0',
+        'absEta1_2to2_4_Pt20_0to32_0'     : '0.01,10.0',
+        'absEta1_2to2_4_Pt32_0to45_0'     : '0.01,10.0',
+        'absEta1_2to2_4_Pt45_0to65_0'     : '0.01,10.0',
+        'absEta1_2to2_4_Pt65_0to100_0'    : '0.01,10.0',
+      }
+    },
   }
 }
 
-def construct_lepton_params(lepton, lepton_short, selection, absEtaPtBinString, error_msg):
-  if absEtaPtBinString not in fit_param_range_map[lepton][selection]:
+def construct_lepton_params(lepton, lepton_short, LFR_type, selection, absEtaPtBinString, error_msg):
+  if absEtaPtBinString not in fit_param_range_map[lepton][LFR_type][selection]:
     raise ValueError(error_msg)
   lepton_id = '%ss_%s_%s' % (lepton, selection, absEtaPtBinString)
   lepton_id_short = lepton_id.replace('%ss_' % lepton, '%s_' % lepton_short)
-  lepton_range = fit_param_range_map[lepton][selection][absEtaPtBinString]
+  lepton_range = fit_param_range_map[lepton][LFR_type][selection][absEtaPtBinString]
   return (lepton_id_short, lepton_range, lepton_id)
 
 category_template = """{% for input, output in categories %}
@@ -132,6 +176,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
         ptBins_mu,
         lep_mva_wp,
         lep_useTightChargeCut,       
+        enable_LeptonFakeRate_bbwSL,
         fillGenEvtHistograms,
         jet_cleaning_by_index,
         gen_matching_by_index,
@@ -179,13 +224,14 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
       num_parallel_jobs     = num_parallel_jobs,
       histograms_to_fit     = { numerator_histogram[0] : {}, denominator_histogram[0] : {} },
       executable_prep_dcard = executable_prep_dcard,
-      triggers              = [ '1e', '1mu', '2e', '2mu' ],
+      triggers              = ([ '1e', '1mu', '2e', '2mu' ] if enable_LeptonFakeRate_bbwSL == 'False' else ['1e', '1mu']),
       verbose               = verbose,
       dry_run               = dry_run,
       isDebug               = isDebug,
       use_home              = use_home,
       lep_mva_wp            = lep_mva_wp,
-      lep_useTightChargeCut = lep_useTightChargeCut,                     
+      lep_useTightChargeCut = lep_useTightChargeCut,
+      enable_LeptonFakeRate_bbwSL = enable_LeptonFakeRate_bbwSL,
       submission_cmd        = submission_cmd,
       apply_nc_correction   = None,
     )
@@ -195,15 +241,17 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
        not os.path.isdir(os.path.join(self.cmssw_base_dir_combine, 'src', 'HiggsAnalysis', 'CombinedLimit')):
       raise ValueError('CMSSW path for combine not valid: %s' % self.cmssw_base_dir_combine)
 
+    self.enable_LeptonFakeRate_bbwSL = enable_LeptonFakeRate_bbwSL
     self.use_QCD_fromMC = use_QCD_fromMC
     self.absEtaBins_e = absEtaBins_e
     self.ptBins_e = ptBins_e
     self.absEtaBins_mu = absEtaBins_mu
     self.ptBins_mu = ptBins_mu
-
-    self.cfgFile_analyze = os.path.join(self.template_dir, "analyze_LeptonFakeRate_cfg.py")
+    if enable_LeptonFakeRate_bbwSL == 'False': ## Template config for ttH/HH Multi-Lepton Fake Rates
+      self.cfgFile_analyze = os.path.join(self.template_dir, "analyze_LeptonFakeRate_cfg.py")
+    else: ## Template config for HH bbWW Single Lepton Fake Rates
+      self.cfgFile_analyze = os.path.join(self.template_dir, "analyze_LeptonFakeRate_bbWW_SL_cfg.py")
     self.fillGenEvtHistograms = fillGenEvtHistograms
-
     self.executable_addBackgrounds = executable_addBackgrounds
     self.executable_addBackgrounds_recursively = executable_addBackgrounds_recursively
     self.executable_addBackgrounds_LeptonFakeRate = executable_addBackgrounds_LeptonFakeRate
@@ -378,6 +426,10 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
   def create(self):
     """Creates all necessary config files and runs the complete analysis workfow -- either locally or on the batch system
     """
+    if self.enable_LeptonFakeRate_bbwSL == 'False':
+      LFR_type = "HHorTTH"
+    else:
+      LFR_type = "bbWW_SL"
 
     for sample_name, sample_info in self.samples.items():
       if not sample_info["use_it"]:
@@ -632,7 +684,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
 
             lepton_bins[lepton][selection].append(
               construct_lepton_params(
-                lepton, lepton_short, selection, absEta_and_ptBinString,
+                lepton, lepton_short, LFR_type, selection, absEta_and_ptBinString,
                 error_msg = "No fit parameter range specified for abs(eta) range = (%.3f, %.3f) and "
                             "pT range = (%.3f, %.3f) for lepton type '%s' !!" % \
                             (absEtaBinLowerEdge, absEtaBinUpperEdge, ptBinsLowerEdge, ptBinsUpperEdge, lepton)
@@ -649,7 +701,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
         # Let's also add inclusive category
         lepton_bins[lepton][selection].append(
           construct_lepton_params(
-            lepton, lepton_short, selection, 'incl',
+            lepton, lepton_short, LFR_type, selection, 'incl',
             error_msg = "No fit parameter range specified for lepton type %s" % lepton
           ) + (-1., -1., -1., -1., 1)
         )

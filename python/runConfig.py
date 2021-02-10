@@ -327,7 +327,12 @@ class tthAnalyzeParser(argparse.ArgumentParser):
       choices = STITCHING_OPTIONS,
       help = 'R|Load stitched samples (choices: %s)' % tthAnalyzeParser.cat(STITCHING_OPTIONS),
     )
-
+  def enable_leptonFR_bbWW_SL_mode(self, default_option = 'False'):
+    self.add_argument('-L_enable_LeptonFakeRate_bbwSL', '--enable-LeptonFakeRate-bbwSL',
+     type = str, dest = 'enable_LeptonFakeRate_bbwSL', metavar = 'handle to run LeptonFakeRates for bbWW Single Lepton analysis', choices = ['True', 'False'],
+     required = bool(default_option), default = default_option,
+     help = 'R|Flag to run LeptonFakeRates for bbWW Single Lepton analysis',
+    )
   @staticmethod
   def cat(choices):
     return ', '.join(map(lambda choice: "'%s'" % str(choice), choices))

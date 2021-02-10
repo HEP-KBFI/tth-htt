@@ -1,8 +1,9 @@
 import FWCore.ParameterSet.Config as cms
 import os
 
-#from tthAnalysis.NanoAOD.LeptonFakeRate_trigger_cfi import * ## DEFAULT TRIGGER FILE (USED IN LFR MEASUREMENT FOR BOTH TTH AND HH MULTILEPTON ANALYSIS)
-from tthAnalysis.NanoAOD.LeptonFakeRate_bbWWSL_trigger_cfi import * ## TRIGGER FILE (USED IN LFR MEASUREMENT FOR HH BBWW SL ANALYSIS)
+
+
+from tthAnalysis.NanoAOD.LeptonFakeRate_bbWWSL_trigger_cfi import *
 from tthAnalysis.HiggsToTauTau.configs.recommendedMEtFilters_cfi import *
 from tthAnalysis.HiggsToTauTau.configs.EvtYieldHistManager_cfi import *
 from tthAnalysis.HiggsToTauTau.analysisSettings import *
