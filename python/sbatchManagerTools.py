@@ -182,6 +182,10 @@ def is_file_ok(output_file_name, validate_outputs = True, min_file_size = MIN_FI
           ret_value = True
       root_tfile.Close()
 
+  # no other checks were performed -> assume that the file is OK
+  if min_file_size <= 0 and not validate_outputs:
+    ret_value = True
+
   if not ret_value:
     run_cmd(command)
 
