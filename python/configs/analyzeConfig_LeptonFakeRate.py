@@ -224,7 +224,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
       num_parallel_jobs     = num_parallel_jobs,
       histograms_to_fit     = { numerator_histogram[0] : {}, denominator_histogram[0] : {} },
       executable_prep_dcard = executable_prep_dcard,
-      triggers              = ([ '1e', '1mu', '2e', '2mu' ] if enable_LeptonFakeRate_bbwSL == 'False' else ['1e', '1mu']),
+      triggers              = ([ '1e', '1mu', '2e', '2mu' ] if not enable_LeptonFakeRate_bbwSL else ['1e', '1mu']),
       verbose               = verbose,
       dry_run               = dry_run,
       isDebug               = isDebug,
@@ -247,7 +247,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     self.ptBins_e = ptBins_e
     self.absEtaBins_mu = absEtaBins_mu
     self.ptBins_mu = ptBins_mu
-    if enable_LeptonFakeRate_bbwSL == 'False': ## Template config for ttH/HH Multi-Lepton Fake Rates
+    if not enable_LeptonFakeRate_bbwSL: ## Template config for ttH/HH Multi-Lepton Fake Rates
       self.cfgFile_analyze = os.path.join(self.template_dir, "analyze_LeptonFakeRate_cfg.py")
     else: ## Template config for HH bbWW Single Lepton Fake Rates
       self.cfgFile_analyze = os.path.join(self.template_dir, "analyze_LeptonFakeRate_bbWW_SL_cfg.py")
@@ -426,7 +426,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
   def create(self):
     """Creates all necessary config files and runs the complete analysis workfow -- either locally or on the batch system
     """
-    if self.enable_LeptonFakeRate_bbwSL == 'False':
+    if not self.enable_LeptonFakeRate_bbwSL:
       LFR_type = "HHorTTH"
     else:
       LFR_type = "bbWW_SL"

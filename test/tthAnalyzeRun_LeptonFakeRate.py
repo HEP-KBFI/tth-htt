@@ -53,12 +53,16 @@ parser.add_modes(mode_choices)
 parser.add_sys(sys_choices)
 parser.add_lep_mva_wp()
 parser.add_lep_useTightChargeCut(default_option = 'False')
-parser.enable_leptonFR_bbWW_SL_mode(default_option = 'False')
 parser.add_files_per_job()
 parser.add_use_home()
 parser.add_jet_cleaning()
 parser.add_gen_matching()
 parser.add_stitched([ 'dy_lo', 'wjets' ])
+parser.add_argument('-L_enable_LeptonFakeRate_bbwSL', '--enable-LeptonFakeRate-bbwSL',
+  type = str, dest = 'enable_LeptonFakeRate_bbwSL', metavar = 'handle to run LeptonFakeRates for bbWW Single Lepton analysis',
+  choices = ['True', 'False'], default = 'False',
+  help = 'R|Flag to run LeptonFakeRates for bbWW Single Lepton analysis',
+)
 args = parser.parse_args()
 
 # Common arguments
@@ -78,7 +82,7 @@ mode              = args.mode
 systematics_label = args.systematics
 lep_mva_wp        = args.lep_mva_wp
 lep_useTightChargeCut       = args.lep_useTightChargeCut
-enable_LeptonFakeRate_bbwSL = args.enable_LeptonFakeRate_bbwSL
+enable_LeptonFakeRate_bbwSL = True if args.enable_LeptonFakeRate_bbwSL == 'True' else False
 files_per_job     = args.files_per_job
 use_home          = args.use_home
 jet_cleaning      = args.jet_cleaning
@@ -107,14 +111,14 @@ for sample_name, sample_info in samples.items():
   if sample_name == 'sum_events':
     continue
   if sample_info["type"] == "mc":
-    sample_info["triggers"] = ([ "1e", "1mu", "2e", "2mu" ] if enable_LeptonFakeRate_bbwSL == 'False' else [ "1e", "1mu"])
+    sample_info["triggers"] = ([ "1e", "1mu", "2e", "2mu" ] if not enable_LeptonFakeRate_bbwSL else [ "1e", "1mu"])
   if sample_info["sample_category"] == "QCD": 
     sample_info["use_it"] = True
     if sample_info["process_name_specific"].endswith("_Mu5"):
       sample_info["use_it"] = qcd_inclusive
     elif sample_info["process_name_specific"] == "QCD_Mu15":
       sample_info["use_it"] = qcd_inclusive
-  if enable_LeptonFakeRate_bbwSL == 'False': ## For TTH or HH Lepton Fake Rates    
+  if not enable_LeptonFakeRate_bbwSL: ## For TTH or HH Lepton Fake Rates
     if sample_name.startswith(('/MuonEG/Run', '/Tau/Run')):
       sample_info["use_it"] = False
     if era == "2016":
@@ -142,6 +146,9 @@ if __name__ == '__main__':
   if sample_filter:
     samples = filter_samples(samples, sample_filter)
 
+  ptBins_e = ([ 15., 25., 35., 45., 65., 100. ] if not enable_LeptonFakeRate_bbwSL else [ 32., 45., 65., 100. ])      ## CERN (Reduced) bins for ttH/HH (bbWW)
+  ptBins_mu = ([ 10., 15., 20., 32., 45., 65., 100. ] if not enable_LeptonFakeRate_bbwSL else [ 25., 45., 65., 100. ]) ## CERN (Reduced) bins for ttH/HH (bbWW)
+
   analysis = analyzeConfig_LeptonFakeRate(
     configDir = os.path.join("/home",       getpass.getuser(), "ttHAnalysis", era, version),
     outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis", era, version),
@@ -150,8 +157,8 @@ if __name__ == '__main__':
     samples                                  = samples,
     absEtaBins_e                             = [ 0., 1.479, 2.5 ],                     ## CERN binning scheme
     absEtaBins_mu                            = [ 0., 1.2, 2.4 ],                       ## CERN binning scheme
-    ptBins_e                                 = ([ 15., 25., 35., 45., 65., 100. ] if enable_LeptonFakeRate_bbwSL == 'False' else [ 32., 45., 65., 100. ]),      ## CERN (Reduced) bins for ttH/HH (bbWW)
-    ptBins_mu                                = ([ 10., 15., 20., 32., 45., 65., 100. ] if enable_LeptonFakeRate_bbwSL == 'False' else [ 25., 45., 65., 100. ]), ## CERN (Reduced) bins for ttH/HH (bbWW)
+    ptBins_e                                 = ptBins_e,
+    ptBins_mu                                = ptBins_mu,
     lep_mva_wp                               = lep_mva_wp,
     lep_useTightChargeCut                    = lep_useTightChargeCut,
     enable_LeptonFakeRate_bbwSL              = enable_LeptonFakeRate_bbwSL,

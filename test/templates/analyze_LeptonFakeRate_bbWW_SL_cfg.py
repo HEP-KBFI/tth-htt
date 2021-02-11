@@ -1,8 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 import os
 
-
-
 from tthAnalysis.NanoAOD.LeptonFakeRate_bbWWSL_trigger_cfi import *
 from tthAnalysis.HiggsToTauTau.configs.recommendedMEtFilters_cfi import *
 from tthAnalysis.HiggsToTauTau.configs.EvtYieldHistManager_cfi import *
