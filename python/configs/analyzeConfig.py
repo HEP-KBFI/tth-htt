@@ -811,8 +811,8 @@ class analyzeConfig(object):
           
           jobOptions['hhWeight_cfg.apply_rwgt'] = 'hh' in self.channel
 
-        if 'apply_genPhotonFilter' in sample_info.keys():
-          if sample_info['apply_genPhotonFilter']:
+        if 'genPhotonFilter' in sample_info.keys():
+          if sample_info['genPhotonFilter']:
             jobOptions['apply_genPhotonFilter'] = "enabled"
           else:
             jobOptions['apply_genPhotonFilter'] = "inverted"
