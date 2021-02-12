@@ -810,6 +810,16 @@ class analyzeConfig(object):
           
           jobOptions['hhWeight_cfg.apply_rwgt'] = 'hh' in self.channel
 
+        if 'apply_genPhotonFilter' in sample_info.keys():
+          if sample_info['apply_genPhotonFilter']:
+            jobOptions['apply_genPhotonFilter'] = "enabled"
+          else:
+            jobOptions['apply_genPhotonFilter'] = "inverted"
+          if not sample_info['sample_category'] in self.convs_backgrounds:
+            self.convs_backgrounds.append(sample_info['sample_category'])
+        else:
+          jobOptions['apply_genPhotonFilter'] = "disabled"
+
         sample_category_ttbar = sample_info["sample_category"].replace("TT_", "")
         is_ttbar_sys = sample_category_ttbar in systematics.ttbar
         if 'process' not in jobOptions:
@@ -1030,7 +1040,7 @@ class analyzeConfig(object):
         if 'useAssocJetBtag' not in jobOptions:
             jobOptions['useAssocJetBtag'] = False
         if 'leptonFakeRateWeight.applyNonClosureCorrection' not in jobOptions and '0l' not in self.channel:
-          jobOptions['leptonFakeRateWeight.applyNonClosureCorrection'] = self.apply_nc_correction
+            jobOptions['leptonFakeRateWeight.applyNonClosureCorrection'] = self.apply_nc_correction
         if 'applyBtagSFRatio' not in jobOptions:
             jobOptions['applyBtagSFRatio'] = jobOptions["isMC"]
         if 'lep_mva_cut_e' not in jobOptions:
@@ -1055,7 +1065,6 @@ class analyzeConfig(object):
         # We employ different types of lepton selection criteria, and we don't clean the had taus in post-production,
         # which means that the object mulitplicities determined in post-production cannot be used when running the analysis
         jobOptions['useObjectMultiplicity'] = False
-
 
         btagSFRatio_args = {}
         if jobOptions['applyBtagSFRatio']:
@@ -1193,11 +1202,12 @@ class analyzeConfig(object):
             'mode',
             'applyBtagSFRatio',
             'gen_mHH',
+            'apply_genPhotonFilter', 
         ]
         jobOptions_typeMapping = {
-          'central_or_shifts_local' : 'cms.vstring(%s)',
-          'evtCategories'           : 'cms.vstring(%s)',
-          'skipEvery'               : 'cms.uint32(%s)',
+            'central_or_shifts_local' : 'cms.vstring(%s)',
+            'evtCategories'           : 'cms.vstring(%s)',
+            'skipEvery'               : 'cms.uint32(%s)',
         }
         jobOptions_keys = jobOptions_local + additionalJobOptions
         max_option_len = max(map(len, [ key for key in jobOptions_keys if key in jobOptions ]))
