@@ -821,6 +821,11 @@ class analyzeConfig(object):
         else:
           jobOptions['apply_genPhotonFilter'] = "disabled"
 
+        # if we estimate the conversions from TT, W or DY samples, skip XGamma
+        assert(len(self.convs_backgrounds) == len(set(self.convs_backgrounds)))
+        if len(self.convs_backgrounds) > 1 and "XGamma" in self.convs_backgrounds:
+          self.convs_backgrounds.remove("XGamma")
+
         sample_category_ttbar = sample_info["sample_category"].replace("TT_", "")
         is_ttbar_sys = sample_category_ttbar in systematics.ttbar
         if 'process' not in jobOptions:
