@@ -24,7 +24,7 @@ GenPhotonFilter::operator()(const std::vector<GenPhoton> & genPhotons) const
   int numSelPhotons = 0;  
   for ( std::vector<GenPhoton>::const_iterator genPhoton = genPhotons.begin();
         genPhoton != genPhotons.end(); ++genPhoton ) {
-    bool isPromptPhoton = genPhoton->pdgId() == 22 && (genPhoton->statusFlags() & (1 << (int)StatusFlag::isPrompt));
+    const bool isPromptPhoton = genPhoton->pdgId() == 22 && genPhoton->checkStatusFlag(StatusFlag::isPrompt);
     if ( isPromptPhoton && genPhoton->pt() > minPt_ && genPhoton->absEta() < maxAbsEta_ ) ++numSelPhotons;
   }
 
