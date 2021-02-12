@@ -106,6 +106,7 @@ class analyzeConfig(object):
           lep_mva_wp                      = "default",
           disableFRwgts                   = "default",
           lep_useTightChargeCut           = "default",
+          enable_LeptonFakeRate_bbwSL     = "default",  
           lep_useSFCor                    = "default",       
           lep_useDifferentMVACutForLepton3 = False,
           lep_mva_cut_mu_forLepton3        = "default",

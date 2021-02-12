@@ -327,7 +327,6 @@ class tthAnalyzeParser(argparse.ArgumentParser):
       choices = STITCHING_OPTIONS,
       help = 'R|Load stitched samples (choices: %s)' % tthAnalyzeParser.cat(STITCHING_OPTIONS),
     )
-
   @staticmethod
   def cat(choices):
     return ', '.join(map(lambda choice: "'%s'" % str(choice), choices))
