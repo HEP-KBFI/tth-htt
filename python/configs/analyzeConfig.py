@@ -1827,17 +1827,17 @@ class analyzeConfig(object):
     def createScript_sbatch_copyHistograms(self, executable, sbatchFile, jobOptions):
         """Creates the python script necessary to submit the 'copyHistograms' jobs to the batch system
         """
-        self.num_jobs['copyHistograms'] += self.createScript_sbatch(executable, sbatchFile, jobOptions, min_file_size = 5000)
+        self.num_jobs['copyHistograms'] += self.createScript_sbatch(executable, sbatchFile, jobOptions, min_file_size = 2500)
 
     def createScript_sbatch_addSysTT(self, executable, sbatchFile, jobOptions):
         """Creates the python script necessary to submit the 'addSysTT' jobs to the batch system                                                                                                      
         """
-        self.num_jobs['addSysTT'] += self.createScript_sbatch(executable, sbatchFile, jobOptions, min_file_size = 5000)
+        self.num_jobs['addSysTT'] += self.createScript_sbatch(executable, sbatchFile, jobOptions, min_file_size = 2500)
 
     def createScript_sbatch_addBackgrounds(self, executable, sbatchFile, jobOptions):
         """Creates the python script necessary to submit the 'addBackgrounds' jobs to the batch system
         """
-        self.num_jobs['addBackgrounds'] += self.createScript_sbatch(executable, sbatchFile, jobOptions, min_file_size = 5000)
+        self.num_jobs['addBackgrounds'] += self.createScript_sbatch(executable, sbatchFile, jobOptions, min_file_size = 2500)
 
     def createScript_sbatch_addFakes(self, executable, sbatchFile, jobOptions):
         """Creates the python script necessary to submit the 'addBackgroundLeptonFakes' jobs to the batch system
