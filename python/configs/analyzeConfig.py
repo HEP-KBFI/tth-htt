@@ -1292,7 +1292,10 @@ class analyzeConfig(object):
             trigger_string     = '%s.triggers_%s'     % (process_string, trigger)
             trigger_use_string = '%s.use_triggers_%s' % (process_string, trigger)
             if isLeptonFR:
-                available_triggers = list(self.triggerTable.triggers_leptonFR[trigger] - blacklist)
+                if self.enable_LeptonFakeRate_bbwSL:
+                  available_triggers = list(self.triggerTable.triggers_leptonFR_bbWWSL[trigger] - blacklist)
+                else:
+                  available_triggers = list(self.triggerTable.triggers_leptonFR[trigger] - blacklist)
             else:
                 available_triggers = list(set(trigger_stat['name'] for trigger_stat in self.triggerTable.triggers_analysis[trigger]) - blacklist)
             use_trigger = bool(trigger in sample_info['triggers'])
@@ -1535,7 +1538,8 @@ class analyzeConfig(object):
         lines.append("        sideband = cms.string('%s')" % jobOptions['category_sideband'])
         lines.append("    )")
         lines.append(")")
-        nonfake_backgrounds = [ category for category in self.nonfake_backgrounds if category not in [ "WH", "ZH" ] ]
+        vh_samples_to_skip = [ "WH", "ZH" ] if "VH" in self.nonfake_backgrounds else []
+        nonfake_backgrounds = [ category for category in self.nonfake_backgrounds if category not in vh_samples_to_skip ]
         processesToSubtract = []
         processesToSubtract.extend(nonfake_backgrounds)
         if '0l' not in self.channel:
