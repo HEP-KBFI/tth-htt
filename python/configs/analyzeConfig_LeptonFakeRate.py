@@ -241,6 +241,8 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
        not os.path.isdir(os.path.join(self.cmssw_base_dir_combine, 'src', 'HiggsAnalysis', 'CombinedLimit')):
       raise ValueError('CMSSW path for combine not valid: %s' % self.cmssw_base_dir_combine)
 
+
+    self.lep_mva_wp = lep_mva_wp 
     self.enable_LeptonFakeRate_bbwSL = enable_LeptonFakeRate_bbwSL
     self.use_QCD_fromMC = use_QCD_fromMC
     self.absEtaBins_e = absEtaBins_e
@@ -267,6 +269,8 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     self.executable_comp_LeptonFakeRate = executable_comp_LeptonFakeRate
     self.cfgFile_comp_LeptonFakeRate = os.path.join(self.template_dir, "comp_LeptonFakeRate_cfg.py")
     self.jobOptions_comp_LeptonFakeRate = {}
+    self.script_addCERNSyst = (self.template_dir).replace("test/templates", "scripts/apply_FR_relErrors.py")
+    self.jobOptions_add_CERNSysts = {}
 
     self.nonfake_backgrounds = [ "TT", "EWK", "Rares", "QCD"]
     self.prep_dcard_processesToCopy = [ "data_obs", "TTW", "TTZ", "TT", "Rares", "EWK", "ttH", "TTWW", "tHq", "tHW", "VH", "ttH_hbb", "data_fakes" ]
@@ -422,6 +426,13 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
       lines_makefile.append("\t%s %s" % (self.executable_comp_LeptonFakeRate, jobOptions['cfgFile_modified']))
       lines_makefile.append("")
       self.filesToClean.append(jobOptions['outputFile'])
+
+  def addToMakefile_add_CERNSysts_LeptonFakeRate(self, lines_makefile): 
+     for jobOptions in self.jobOptions_add_CERNSysts.values():
+       lines_makefile.append("%s: %s" % (jobOptions['outputFile'], jobOptions['inputFile']))
+       lines_makefile.append("\tpython %s -i %s -o %s -a %s -n %s" % (jobOptions['script'], jobOptions['inputFile'], jobOptions['outputFile'], jobOptions['mode'], jobOptions['useNorm']))
+       lines_makefile.append("")
+       self.filesToClean.append(jobOptions['outputFile'])
 
   def create(self):
     """Creates all necessary config files and runs the complete analysis workfow -- either locally or on the batch system
@@ -859,6 +870,17 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
       self.createCfg_comp_LeptonFakeRate(self.jobOptions_comp_LeptonFakeRate[key_comp_LeptonFakeRate])
       self.targets.append(self.jobOptions_comp_LeptonFakeRate[key_comp_LeptonFakeRate]['outputFile'])
 
+      key_add_CERNSysts = getKey('')
+      leptonFR_final_output_wCERNSysts = os.path.join(combine_output_dir, 'leptonFakeRates_wCERNSysts.root')
+      self.jobOptions_add_CERNSysts[key_add_CERNSysts] = {
+        'inputFile'            : leptonFR_final_output,
+        'outputFile'           : leptonFR_final_output_wCERNSysts,
+        'script'               : self.script_addCERNSyst,
+        'useNorm'              : "True",
+        'mode'                 : "hh" if self.lep_mva_wp == 'hh_multilepton' else "tth"
+      }
+      self.targets.append(self.jobOptions_add_CERNSysts[key_add_CERNSysts]['outputFile'])
+
     self.sbatchFile_analyze = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_analyze_LeptonFakeRate.py")
     self.sbatchFile_addBackgrounds_sum = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_addBackgrounds_sum_LeptonFakeRate.py")
     self.sbatchFile_addBackgrounds_LeptonFakeRate = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_addBackgrounds_LeptonFakeRate.py")
@@ -884,6 +906,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     self.addToMakefile_prep_dcard(lines_makefile)
     self.addToMakefile_combine(lines_makefile)
     self.addToMakefile_comp_LeptonFakeRate(lines_makefile)
+    self.addToMakefile_add_CERNSysts_LeptonFakeRate(lines_makefile)
     self.createMakefile(lines_makefile)
 
     logging.info("Done.")
