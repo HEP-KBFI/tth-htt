@@ -1538,7 +1538,8 @@ class analyzeConfig(object):
         lines.append("        sideband = cms.string('%s')" % jobOptions['category_sideband'])
         lines.append("    )")
         lines.append(")")
-        nonfake_backgrounds = [ category for category in self.nonfake_backgrounds if category not in [ "WH", "ZH" ] ]
+        vh_samples_to_skip = [ "WH", "ZH" ] if "VH" in self.nonfake_backgrounds else []
+        nonfake_backgrounds = [ category for category in self.nonfake_backgrounds if category not in vh_samples_to_skip ]
         processesToSubtract = []
         processesToSubtract.extend(nonfake_backgrounds)
         if '0l' not in self.channel:

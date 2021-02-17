@@ -128,11 +128,6 @@ namespace
               throw cmsException(__func__, __LINE__)
                 << "Attempting to add the same histogram twice: " << histogram_input->GetName() << " from " << process_input << " !!\n";
             }
-if ( histogramName == "jpaCategory" && histogram_input->GetNbinsX() != 15 ) 
-{
-  std::cout << "histogramName = " << histogramName << " for process_input = " << process_input << " has the wrong binning --> skipping !!" << std::endl;
-  continue;
-}
             histograms_input.push_back(histogram_input);
           }
 

@@ -69,7 +69,11 @@ namespace
       TH1* histogram_input = dynamic_cast<TH1*>(object);
       if ( histogram_input ) {
 	std::string histogramName_output = histogram_input->GetName();
-	addHistograms(histogramName_output, { histogram_input });
+        TH1* histogram_output = static_cast<TH1*>(histogram_input->Clone(histogramName_output.data()));
+        if(! histogram_output->GetSumw2N())
+        {
+          histogram_output->Sumw2();
+        }
       }
     }
 

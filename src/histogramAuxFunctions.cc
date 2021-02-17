@@ -245,44 +245,44 @@ checkCompatibleBinning(const TH1 * histogram1,
 bool
 checkIfLabeledAxis(const TAxis * axis)
 {
-  bool areAllLabelled = true;
+  bool isLabelled = false;
   const int numBins = axis->GetNbins();
   for(int idxBin = 1; idxBin <= numBins; ++idxBin)
   {
     const std::string binLabel = axis->GetBinLabel(idxBin);
-    if(binLabel.empty())
+    if(!binLabel.empty())
     {
-      areAllLabelled = false;
+      isLabelled = true;
       break;
     }
   }
-  return areAllLabelled;
+  return isLabelled;
 }
 
 bool
 checkIfLabeledHistogram(const TH1 * histogram)
 {
-  bool areAllLabelled = checkIfLabeledAxis(histogram->GetXaxis());
+  bool isLabelled = checkIfLabeledAxis(histogram->GetXaxis());
   if(histogram->GetDimension() == 2)
   {
-    if(!checkIfLabeledAxis(histogram->GetYaxis())) areAllLabelled = false;
+    if(checkIfLabeledAxis(histogram->GetYaxis())) isLabelled = true;
   }
-  return areAllLabelled;
+  return isLabelled;
 }
 
 bool
 checkIfLabeledHistograms(const std::vector<TH1 *> & histograms)
 {
-  bool areAllLabelled = true;
+  bool isLabelled = false;
   for(const TH1 * histogram: histograms)
   {
-    areAllLabelled = checkIfLabeledHistogram(histogram);
-    if(! areAllLabelled)
+    isLabelled = checkIfLabeledHistogram(histogram);
+    if(isLabelled)
     {
       break;
     }
   }
-  return areAllLabelled;
+  return isLabelled;
 }
 
 TH1 *
