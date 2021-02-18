@@ -601,7 +601,7 @@ class systematics(object):
     ww    = WW().full
     vv    = VV().full
 
-    procs = [ TTH, THQ, THW, TTW, TTZ, HH, DY, TT, WZ, ZZ, ggZZ, qqZZ, ww, vv ]
+    procs = [ TTH, THQ, THW, TTW, TTZ, HH, DY, TT, WZ, ZZ, ggZZ, qqZZ, WW, VV ]
 
     x1_up     = [ proc.x1_().up     for proc in procs ]
     x1_down   = [ proc.x1_().down   for proc in procs ]
