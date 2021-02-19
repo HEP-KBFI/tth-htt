@@ -727,6 +727,9 @@ class systematics(object):
   an_hh_multilepton      = an_tth      +    leptonIDSF_hh_recomp +  topPtReweighting
   an_opts_hh_multilepton = an_tth_opts + [ "leptonIDSF_hh_recomp", "topPtReweighting" ]
 
+  an_hh_multilepton_wAK8      = an_hh_multilepton      +    AK8
+  an_opts_hh_multilepton_wAK8 = an_opts_hh_multilepton + [ "AK8" ]
+
   an_internal_no_mem = central + leptonIDSF + tauIDSF + btag + FR_t + lhe + triggerSF + PU + L1PreFiring + \
                        FRe_shape + FRm_shape + DYMCReweighting + DYMCNormScaleFactors + topPtReweighting + \
                        EWK_jet + EWK_bjet + partonShower + leptonIDSF_hh_recomp + pileupJetID
