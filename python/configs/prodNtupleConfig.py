@@ -373,7 +373,7 @@ class prodNtupleConfig:
                 splitByNlheJet = isSplitByNlheJet(process_name)
                 splitByNlheHT = isSplitByNlheHT(process_name)
                 splitByNlheJetHT = isSplitByNlheJetHT(process_name, sample_name)
-                mllForWZTo3LNu = process_name.startswith('WZTo3LNu') and 'amcatnlo' not in sample_name and 'mllmin01' not in sample_name
+                mllForWZTo3LNu = False #process_name.startswith('WZTo3LNu') and 'amcatnlo' not in sample_name and 'mllmin01' not in sample_name
                 mllForWZTo3LNu_mllmin01 = process_name.startswith('WZTo3LNu_mllmin01')
                 sample_category = sample_info["sample_category"]
                 recomp_run_ls = sample_name.endswith('/USER') and self.era == '2017' and sample_category in [
