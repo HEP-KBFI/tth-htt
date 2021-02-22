@@ -1155,7 +1155,7 @@ getRebinnedBinning(TH1 * histogram,
 }
 
 TArrayD
-getTArraDfromVector(const std::vector<double> & histogramBinning)
+getTArrayDfromVector(const std::vector<double> & histogramBinning)
 {
   TArrayD binning_tarray(histogramBinning.size());
   for(std::size_t idxBin = 0; idxBin < histogramBinning.size(); ++idxBin)

@@ -404,7 +404,7 @@ Plotter::makePlots()
           TArrayD histogramBinning;
           if(distribution->hasExplicitBinning())
           {
-            histogramBinning = getTArraDfromVector(distribution->explicitBinning_);
+            histogramBinning = getTArrayDfromVector(distribution->explicitBinning_);
           }
           else
           {
