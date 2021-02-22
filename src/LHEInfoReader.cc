@@ -204,13 +204,15 @@ LHEInfoReader::getWeight_scale_xyDown() const
 double
 LHEInfoReader::getWeight_scale_Up() const
 {
-  return clip(correctiveFactor_ * weight_scale_Up_);
+  // the envelope values already take the corrective factor into account
+  return clip(weight_scale_Up_);
 }
 
 double
 LHEInfoReader::getWeight_scale_Down() const
 {
-  return clip(correctiveFactor_ * weight_scale_Down_);
+  // the envelope values already take the corrective factor into account
+  return clip(weight_scale_Down_);
 }
 
 double
