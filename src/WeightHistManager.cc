@@ -8,6 +8,9 @@ WeightHistManager::WeightHistManager(const edm::ParameterSet & cfg)
 {
   binningOptions_["genWeight"] = new binningOptionType("genWeight", 200, -10., +10.);
   binningOptions_["lheWeight"] = new binningOptionType("lheWeight", 200, -10., +10.);
+  binningOptions_["HHReweight"] = new binningOptionType("HHReweight", 200, 0., 2.);
+  binningOptions_["HHReweight_LOtoNLO_V1"] = new binningOptionType("HHReweight_LOtoNLO_V1", 200, 0., 2.);
+  binningOptions_["HHReweight_LOtoNLO_V2"] = new binningOptionType("HHReweight_LOtoNLO_V2", 200, 0., 2.);
   binningOptions_["pileupWeight"] = new binningOptionType("pileupWeight", 200, 0., 2.);
   binningOptions_["triggerWeight"] = new binningOptionType("triggerWeight", 100, 0., 10.);
   binningOptions_["btagWeight"] = new binningOptionType("btagWeight", 200, 0., 2.);
