@@ -19,7 +19,15 @@ RecoElectronSelectorLoose::RecoElectronSelectorLoose(Era era,
   , apply_tightCharge_(false)
   , apply_conversionVeto_(false)
   , max_nLostHits_(1)
+  , invert_nLostHits_(false)
+  , min_nLostHits_fornLostHitsInversion_(1)
 {}
+
+void
+RecoElectronSelectorLoose::set_selection_flags(bool selection_flag)
+{
+  set_selection_flags_ = selection_flag;
+}
 
 void
 RecoElectronSelectorLoose::set_min_pt(double min_pt)
@@ -31,6 +39,14 @@ void
 RecoElectronSelectorLoose::set_max_absEta(double max_absEta)
 {
   max_absEta_ = max_absEta;
+}
+
+void
+RecoElectronSelectorLoose::invert_max_nLostHits(Int_t min_nLostHits_fornLostHitsInversion)
+{
+  invert_nLostHits_ = true;
+  min_nLostHits_fornLostHitsInversion_ = min_nLostHits_fornLostHitsInversion;
+  std::cout << "RecoElectronSelectorLoose::invert_max_nLostHits():: invert_nLostHits_ with min_nLostHits " << min_nLostHits_fornLostHitsInversion_ << ".\n";
 }
 
 double
@@ -101,13 +117,27 @@ RecoElectronSelectorLoose::operator()(const RecoElectron & electron) const
     }
     return false;
   }
-  if(electron.nLostHits() > max_nLostHits_)
+  if ( ! invert_nLostHits_ )
   {
-    if(debug_)
+    if(electron.nLostHits() > max_nLostHits_)
     {
-      std::cout << "FAILS nLostHits = " << electron.nLostHits() << " <= " << max_nLostHits_ << " loose cut\n";
+      if(debug_)
+      {
+	std::cout << "FAILS nLostHits = " << electron.nLostHits() << " <= " << max_nLostHits_ << " loose cut\n";
+      }
+      return false;
     }
-    return false;
+  }
+  else
+  {  // for conversion bkg CR
+    if(electron.nLostHits() < min_nLostHits_fornLostHitsInversion_)
+    {
+      if(debug_)
+      {
+	std::cout << "FAILS nLostHits = " << electron.nLostHits() << " >= " << min_nLostHits_fornLostHitsInversion_ << " (invert_nLostHits) loose cut\n";
+      }
+      return false;
+    }
   }
   if(apply_conversionVeto_ && ! electron.passesConversionVeto())
   {
@@ -141,4 +171,21 @@ RecoElectronSelectorLoose::operator()(const RecoElectron & electron) const
   }
 
   return true;
+}
+
+
+
+RecoElectronCollectionSelectorLoose::RecoElectronCollectionSelectorLoose(Era era,
+									 int index,
+									 bool debug,
+									 bool set_selection_flags)
+  : ParticleCollectionSelector<RecoElectron, RecoElectronSelectorLoose>(era, index, debug)
+{
+  selector_.set_selection_flags(set_selection_flags);
+}
+
+void
+RecoElectronCollectionSelectorLoose::invert_max_nLostHits(Int_t min_nLostHits_fornLostHitsInversion)
+{
+  selector_.invert_max_nLostHits(min_nLostHits_fornLostHitsInversion);
 }
