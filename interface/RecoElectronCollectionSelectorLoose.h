@@ -18,8 +18,10 @@ public:
   /**
    * @brief Set cut thresholds
    */
+  void set_selection_flags(bool selection_flag);
   void set_min_pt(double min_pt);
   void set_max_absEta(double max_absEta);
+  void invert_max_nLostHits(Int_t min_nLostHits_fornLostHitsInversion); // for conversion bkg CR
 
   /**
    * @brief Get cut thresholds
@@ -48,9 +50,23 @@ protected:
   const bool apply_tightCharge_;            ///< apply (True) or do not apply (False) tight charge cut
   const bool apply_conversionVeto_;         ///< apply (True) or do not apply (False) conversion veto
   const Int_t max_nLostHits_;               ///< upper cut threshold on lost hits in the innermost layer of the tracker (electrons with lost_hits equal to cut threshold pass)
+  bool invert_nLostHits_;                     /// for conversion bkg CR
+  Int_t min_nLostHits_fornLostHitsInversion_; ///<fornLostHitsInversion: lower cut threshold on lost hits in the innermost layer of the tracker (electrons with lost_hits equal to cut threshold pass)
 //-------------------------------------------------------------------------------
 };
 
-typedef ParticleCollectionSelector<RecoElectron, RecoElectronSelectorLoose> RecoElectronCollectionSelectorLoose;
+class RecoElectronCollectionSelectorLoose
+  : public ParticleCollectionSelector<RecoElectron, RecoElectronSelectorLoose>
+{
+public:
+  explicit
+  RecoElectronCollectionSelectorLoose(Era era,
+				      int index = -1,
+				      bool debug = false,
+				      bool set_selection_flags = true);
+  ~RecoElectronCollectionSelectorLoose() {}
+
+  void invert_max_nLostHits(Int_t min_nLostHits_fornLostHitsInversion); // for conversion bkg CR
+};
 
 #endif // tthAnalysis_HiggsToTauTau_RecoElectronCollectionSelectorLoose_h

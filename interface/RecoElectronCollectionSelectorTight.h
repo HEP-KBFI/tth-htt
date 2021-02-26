@@ -26,6 +26,9 @@ public:
   void enable_conversionVeto();
   void disable_conversionVeto();
 
+  void invert_max_nLostHits(Int_t min_nLostHits_fornLostHitsInversion); // for conversion bkg CR
+  void invert_conversionVeto();
+
   void set_min_lepton_pt(double min_lepton_pt);
   void set_min_cone_pt(double min_cone_pt);
   void set_max_absEta(double max_absEta);
@@ -71,6 +74,9 @@ protected:
   const Double_t max_jetBtagCSV_;            ///< upper cut threshold on CSV b-tagging discriminator value of nearby jet
   const Int_t max_nLostHits_;                ///< upper cut threshold on lost hits in the innermost layer of the tracker (electrons with lost_hits equal to cut threshold pass)
   bool apply_conversionVeto_;                ///< apply (True) or do not apply (False) conversion veto
+  bool invert_nLostHits_;                     /// for conversion bkg CR
+  Int_t min_nLostHits_fornLostHitsInversion_; ///<fornLostHitsInversion: lower cut threshold on lost hits in the innermost layer of the tracker (electrons with lost_hits equal to cut threshold pass)
+  bool invert_conversionVeto_;                ///< invert (True) or do not invert (False) conversion veto
 //-------------------------------------------------------------------------------
   bool useAssocJetBtag_;                     ///< if true, use finalJets instead of updatedJets
 };
@@ -93,6 +99,9 @@ public:
   // enable/disable photon conversion veto
   void enable_conversionVeto();
   void disable_conversionVeto();
+
+  void invert_max_nLostHits(Int_t min_nLostHits_fornLostHitsInversion); // for conversion bkg CR
+  void invert_conversionVeto();
 };
 
 #endif // tthAnalysis_HiggsToTauTau_RecoElectronCollectionSelectorTight_h
