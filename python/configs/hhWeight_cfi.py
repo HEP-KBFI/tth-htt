@@ -14,6 +14,6 @@ hhWeight = cms.PSet(
     do_ktscan = cms.bool(False),
     apply_rwgt = cms.bool(False),
     scanMode = cms.string('default'),
-    apply_rwgt_LOtoNLO = cms.bool(False),
+    apply_rwgt_LOtoNLO = cms.bool(True),
     apply_coupling_fix_Run2 = cms.bool(True)
 )
