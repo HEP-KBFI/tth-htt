@@ -162,6 +162,7 @@ main(int argc,
   const int maxNumBJets_loose         = cfg_produceNtuple.getParameter<int>("maxNumBJets_loose");
   const int maxNumBJets_medium        = cfg_produceNtuple.getParameter<int>("maxNumBJets_medium");
   const bool applyJetEtaCut           = cfg_produceNtuple.getParameter<bool>("applyJetEtaCut");
+  const double minJetPtCut            = cfg_produceNtuple.getParameter<double>("minJetPtCut");
 
   const bool isMC                    = cfg_produceNtuple.getParameter<bool>("isMC");
   const bool redoGenMatching         = cfg_produceNtuple.getParameter<bool>("redoGenMatching");
@@ -325,6 +326,10 @@ main(int argc,
   if(! applyJetEtaCut)
   {
     jetSelector.set_max_absEta(-1.);
+  }
+  if(minJetPtCut > 0.)
+  {
+    jetSelector.set_min_pt(minJetPtCut);
   }
   const double min_jetSelector_pT     = jetSelector.get_min_pt();
   const double max_jetSelector_absEta = jetSelector.get_max_absEta();

@@ -1,6 +1,6 @@
 from collections import OrderedDict as OD
 
-# file generated at 2021-01-02 17:21:29 with the following command:
+# file generated at 2021-02-24 15:13:44 with the following command:
 # create_dictionary.py -m python/samples/metaDict_2018.py -p python/samples/sampleLocations_2018.txt -N samples_2018 -E 2018 -o python/samples -g tthAnalyzeSamples_2018_base.py -M
 
 samples_2018 = OD()
@@ -14162,7 +14162,7 @@ samples_2018["/ttHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/Run
   }),
   ("nof_tree_events",                 9687113),
   ("nof_db_events",                   9687113),
-  ("fsize_local",                     81888864616), # 81.89GB, avg file size 2.05GB
+  ("fsize_local",                     94945852317), # 94.95GB, avg file size 2.37GB
   ("fsize_db",                        614458243265), # 614.46GB, avg file size 2.35GB
   ("use_it",                          True),
   ("xsection",                        0.2118),
@@ -14175,7 +14175,7 @@ samples_2018["/ttHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/Run
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/ttHJetToNonbb_M125_amcatnlo"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/ttHJetToNonbb_M125_amcatnlo"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -14272,7 +14272,7 @@ samples_2018["/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD
   }),
   ("nof_tree_events",                 7475991),
   ("nof_db_events",                   7525991),
-  ("fsize_local",                     61140074830), # 61.14GB, avg file size 2.04GB
+  ("fsize_local",                     70780659403), # 70.78GB, avg file size 2.36GB
   ("fsize_db",                        469867184231), # 469.87GB, avg file size 2.10GB
   ("use_it",                          False),
   ("xsection",                        0.2118),
@@ -14285,7 +14285,7 @@ samples_2018["/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/ttHToNonbb_M125_powheg"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/ttHToNonbb_M125_powheg"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -14418,7 +14418,7 @@ samples_2018["/ttHJetTobb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/RunIIA
   }),
   ("nof_tree_events",                 8076526),
   ("nof_db_events",                   10069708),
-  ("fsize_local",                     67348407551), # 67.35GB, avg file size 3.96GB
+  ("fsize_local",                     77959698170), # 77.96GB, avg file size 4.59GB
   ("fsize_db",                        647202462083), # 647.20GB, avg file size 2.48GB
   ("use_it",                          False),
   ("xsection",                        0.2953),
@@ -14431,7 +14431,7 @@ samples_2018["/ttHJetTobb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/RunIIA
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/ttHJetTobb_M125"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/ttHJetTobb_M125"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -17282,7 +17282,7 @@ samples_2018["/TTH_4f_ctcvcp_TuneCP5_13TeV_madgraph_pythia8/RunIIAutumn18MiniAOD
   }),
   ("nof_tree_events",                 29043000),
   ("nof_db_events",                   29093000),
-  ("fsize_local",                     238127551284), # 238.13GB, avg file size 818.31MB
+  ("fsize_local",                     273404490429), # 273.40GB, avg file size 939.53MB
   ("fsize_db",                        1815791395391), # 1.82TB, avg file size 2.52GB
   ("use_it",                          False),
   ("xsection",                        0.5071),
@@ -17295,7 +17295,7 @@ samples_2018["/TTH_4f_ctcvcp_TuneCP5_13TeV_madgraph_pythia8/RunIIAutumn18MiniAOD
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/TTH_4f_ctcvcp"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/TTH_4f_ctcvcp"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -17323,339 +17323,547 @@ samples_2018["/THQ_ctcvcp_4f_Hincl_13TeV_madgraph_pythia8/RunIIAutumn18MiniAOD-1
   ("type",                            "mc"),
   ("sample_category",                 "tHq"),
   ("process_name_specific",           "THQ_ctcvcp"),
-  ("nof_files",                       149),
+  ("nof_files",                       298),
   ("nof_db_files",                    793),
   ("nof_events",                      {
     'Count'                                                                          : [ 29683974, ],
-    'CountWeighted'                                                                  : [ 2.95234634e+07, 2.95258902e+07, 2.95199803e+07, ],
-    'CountWeightedLHEWeightScale'                                                    : [ 3.70013645e+07, 3.38400785e+07, 3.10854122e+07, 3.22867192e+07, 2.95229855e+07, 2.71151797e+07, 2.86750453e+07, 2.62154236e+07, 2.40757296e+07, ],
-    'CountWeightedLHEEnvelope'                                                       : [ 3.70993258e+07, 2.40426360e+07, ],
-    'CountWeightedFull'                                                              : [ 2.95107361e+07, 2.95127596e+07, 2.95075919e+07, ],
-    'CountWeightedFullLHEWeightScale'                                                : [ 3.69857925e+07, 3.38255552e+07, 3.10718540e+07, 3.22731131e+07, 2.95102750e+07, 2.71033392e+07, 2.86629547e+07, 2.62041485e+07, 2.40652095e+07, ],
-    'CountWeightedFullLHEEnvelope'                                                   : [ 3.70836402e+07, 2.40321979e+07, ],
-    'CountWeighted_rwgt0'                                                            : [ 1.15613818e+08, 1.15610553e+08, 1.15616795e+08, ],
-    'CountWeightedLHEWeightScale_rwgt0'                                              : [ 1.44511482e+08, 1.32452785e+08, 1.21890994e+08, 1.26166722e+08, 1.15612636e+08, 1.06380060e+08, 1.12099521e+08, 1.02706801e+08, 9.44938703e+07, ],
-    'CountWeightedLHEEnvelope_rwgt0'                                                 : [ 1.44904105e+08, 9.43616144e+07, ],
-    'CountWeightedFull_rwgt0'                                                        : [ 1.15563935e+08, 1.15560627e+08, 1.15566965e+08, ],
-    'CountWeightedFullLHEWeightScale_rwgt0'                                          : [ 1.44450453e+08, 1.32395699e+08, 1.21837634e+08, 1.26113360e+08, 1.15562756e+08, 1.06333442e+08, 1.12052076e+08, 1.02662438e+08, 9.44524099e+07, ],
-    'CountWeightedFullLHEEnvelope_rwgt0'                                             : [ 1.44842613e+08, 9.43204811e+07, ],
-    'CountWeighted_rwgt1'                                                            : [ 6.52262603e+07, 6.52251309e+07, 6.52273832e+07, ],
-    'CountWeightedLHEWeightScale_rwgt1'                                              : [ 8.16004443e+07, 7.47404382e+07, 6.87415105e+07, 7.12283902e+07, 6.52256074e+07, 5.99827354e+07, 6.32775802e+07, 5.79362715e+07, 5.32731639e+07, ],
-    'CountWeightedLHEEnvelope_rwgt1'                                                 : [ 8.18204743e+07, 5.31989429e+07, ],
-    'CountWeightedFull_rwgt1'                                                        : [ 6.51981642e+07, 6.51970244e+07, 6.51993238e+07, ],
-    'CountWeightedFullLHEWeightScale_rwgt1'                                          : [ 8.15660453e+07, 7.47082930e+07, 6.87114827e+07, 7.11983237e+07, 6.51975103e+07, 5.99564970e+07, 6.32508530e+07, 5.79113034e+07, 5.32498421e+07, ],
-    'CountWeightedFullLHEEnvelope_rwgt1'                                             : [ 8.17858112e+07, 5.31758069e+07, ],
-    'CountWeighted_rwgt2'                                                            : [ 4.55387986e+07, 4.55382794e+07, 4.55392386e+07, ],
-    'CountWeightedLHEWeightScale_rwgt2'                                              : [ 5.70119074e+07, 5.21888378e+07, 4.79767831e+07, 4.97579863e+07, 4.55383364e+07, 4.18577574e+07, 4.41988887e+07, 4.04446966e+07, 3.71715381e+07, ],
-    'CountWeightedLHEEnvelope_rwgt2'                                                 : [ 5.71645911e+07, 3.71199985e+07, ],
-    'CountWeightedFull_rwgt2'                                                        : [ 4.55192026e+07, 4.55186705e+07, 4.55196646e+07, ],
-    'CountWeightedFullLHEWeightScale_rwgt2'                                          : [ 5.69879060e+07, 5.21664124e+07, 4.79558368e+07, 4.97370039e+07, 4.55187408e+07, 4.18394668e+07, 4.41802391e+07, 4.04272780e+07, 3.71552787e+07, ],
-    'CountWeightedFullLHEEnvelope_rwgt2'                                             : [ 5.71404084e+07, 3.71038678e+07, ],
-    'CountWeighted_rwgt3'                                                            : [ 3.70716214e+07, 3.70713168e+07, 3.70720697e+07, ],
-    'CountWeightedLHEWeightScale_rwgt3'                                              : [ 4.64344024e+07, 4.24891530e+07, 3.90469158e+07, 4.05224687e+07, 3.70712479e+07, 3.40636628e+07, 3.59926106e+07, 3.29222804e+07, 3.02479121e+07, ],
-    'CountWeightedLHEEnvelope_rwgt3'                                                 : [ 4.65581350e+07, 3.02061210e+07, ],
-    'CountWeightedFull_rwgt3'                                                        : [ 3.70556848e+07, 3.70553637e+07, 3.70561391e+07, ],
-    'CountWeightedFullLHEWeightScale_rwgt3'                                          : [ 4.64148596e+07, 4.24709083e+07, 3.90298826e+07, 4.05053872e+07, 3.70553114e+07, 3.40487835e+07, 3.59774301e+07, 3.29081146e+07, 3.02346920e+07, ],
-    'CountWeightedFullLHEEnvelope_rwgt3'                                             : [ 4.65384483e+07, 3.01930047e+07, ],
-    'CountWeighted_rwgt4'                                                            : [ 2.28903162e+07, 2.28902971e+07, 2.28904180e+07, ],
-    'CountWeightedLHEWeightScale_rwgt4'                                              : [ 2.87128459e+07, 2.62420489e+07, 2.40922500e+07, 2.50508139e+07, 2.28900823e+07, 2.10122973e+07, 2.22461967e+07, 2.03244099e+07, 1.86550055e+07, ],
-    'CountWeightedLHEEnvelope_rwgt4'                                                 : [ 2.87881772e+07, 1.86295470e+07, ],
-    'CountWeightedFull_rwgt4'                                                        : [ 2.28804780e+07, 2.28804501e+07, 2.28805879e+07, ],
-    'CountWeightedFullLHEWeightScale_rwgt4'                                          : [ 2.87007636e+07, 2.62307851e+07, 2.40817455e+07, 2.50402582e+07, 2.28802451e+07, 2.10031224e+07, 2.22368153e+07, 2.03156674e+07, 1.86468532e+07, ],
-    'CountWeightedFullLHEEnvelope_rwgt4'                                             : [ 2.87760080e+07, 1.86214581e+07, ],
-    'CountWeighted_rwgt5'                                                            : [ 1.71762688e+07, 1.71762321e+07, 1.71762137e+07, ],
-    'CountWeightedLHEWeightScale_rwgt5'                                              : [ 2.15688160e+07, 1.96946884e+07, 1.80674251e+07, 1.88146742e+07, 1.71760962e+07, 1.57550135e+07, 1.67060344e+07, 1.52489017e+07, 1.39857285e+07, ],
-    'CountWeightedLHEEnvelope_rwgt5'                                                 : [ 2.16246908e+07, 1.39668498e+07, ],
-    'CountWeightedFull_rwgt5'                                                        : [ 1.71688818e+07, 1.71688411e+07, 1.71688342e+07, ],
-    'CountWeightedFullLHEWeightScale_rwgt5'                                          : [ 2.15597352e+07, 1.96862261e+07, 1.80595446e+07, 1.88067435e+07, 1.71687091e+07, 1.57481310e+07, 1.66989857e+07, 1.52423393e+07, 1.39796140e+07, ],
-    'CountWeightedFullLHEEnvelope_rwgt5'                                             : [ 2.16155420e+07, 1.39607815e+07, ],
-    'CountWeighted_rwgt6'                                                            : [ 1.23798982e+07, 1.23798144e+07, 1.23798311e+07, ],
-    'CountWeightedLHEWeightScale_rwgt6'                                              : [ 1.55693002e+07, 1.41980545e+07, 1.30109418e+07, 1.35783333e+07, 1.23797727e+07, 1.13433432e+07, 1.20546033e+07, 1.09889832e+07, 1.00679056e+07, ],
-    'CountWeightedLHEEnvelope_rwgt6'                                                 : [ 1.56088593e+07, 1.00545481e+07, ],
-    'CountWeightedFull_rwgt6'                                                        : [ 1.23745643e+07, 1.23744788e+07, 1.23745002e+07, ],
-    'CountWeightedFullLHEWeightScale_rwgt6'                                          : [ 1.55627339e+07, 1.41919426e+07, 1.30052549e+07, 1.35725998e+07, 1.23744388e+07, 1.13383784e+07, 1.20495079e+07, 1.09842445e+07, 1.00634946e+07, ],
-    'CountWeightedFullLHEEnvelope_rwgt6'                                             : [ 1.56022462e+07, 1.00501705e+07, ],
-    'CountWeighted_rwgt7'                                                            : [ 8.50261362e+06, 8.50240321e+06, 8.50257894e+06, ],
-    'CountWeightedLHEWeightScale_rwgt7'                                              : [ 1.07159783e+07, 9.75375250e+06, 8.92424637e+06, 9.34327429e+06, 8.50252677e+06, 7.77853738e+06, 8.29321059e+06, 7.54590875e+06, 6.90264786e+06, ],
-    'CountWeightedLHEEnvelope_rwgt7'                                                 : [ 1.07423914e+07, 6.89375218e+06, ],
-    'CountWeightedFull_rwgt7'                                                        : [ 8.49893106e+06, 8.49872246e+06, 8.49889750e+06, ],
-    'CountWeightedFullLHEWeightScale_rwgt7'                                          : [ 1.07114381e+07, 9.74953393e+06, 8.92032559e+06, 9.33931198e+06, 8.49884450e+06, 7.77511554e+06, 8.28968944e+06, 7.54263876e+06, 6.89960808e+06, ],
-    'CountWeightedFullLHEEnvelope_rwgt7'                                             : [ 1.07378194e+07, 6.89073453e+06, ],
-    'CountWeighted_rwgt8'                                                            : [ 5.54029124e+06, 5.53989417e+06, 5.54035782e+06, ],
-    'CountWeightedLHEWeightScale_rwgt8'                                              : [ 7.00372290e+06, 6.35707767e+06, 5.80300847e+06, 6.10502433e+06, 5.54023502e+06, 5.05681604e+06, 5.41787707e+06, 4.91601356e+06, 4.48661217e+06, ],
-    'CountWeightedLHEEnvelope_rwgt8'                                                 : [ 7.02013840e+06, 4.48112239e+06, ],
-    'CountWeightedFull_rwgt8'                                                        : [ 5.53786411e+06, 5.53747078e+06, 5.53792743e+06, ],
-    'CountWeightedFullLHEWeightScale_rwgt8'                                          : [ 7.00072340e+06, 6.35429622e+06, 5.80042681e+06, 6.10240677e+06, 5.53780806e+06, 5.05456421e+06, 5.41555222e+06, 4.91385897e+06, 4.48461237e+06, ],
-    'CountWeightedFullLHEEnvelope_rwgt8'                                             : [ 7.01711881e+06, 4.47913623e+06, ],
-    'CountWeighted_rwgt9'                                                            : [ 3.49704903e+06, 3.49638979e+06, 3.49726204e+06, ],
-    'CountWeightedLHEWeightScale_rwgt9'                                              : [ 4.43768499e+06, 4.01273020e+06, 3.65155103e+06, 3.86806126e+06, 3.49701342e+06, 3.18196105e+06, 3.43257847e+06, 3.10294510e+06, 2.82314317e+06, ],
-    'CountWeightedLHEEnvelope_rwgt9'                                                 : [ 4.44726330e+06, 2.82000175e+06, ],
-    'CountWeightedFull_rwgt9'                                                        : [ 3.49547708e+06, 3.49482299e+06, 3.49568454e+06, ],
-    'CountWeightedFullLHEWeightScale_rwgt9'                                          : [ 4.43573671e+06, 4.01092771e+06, 3.64988035e+06, 3.86636150e+06, 3.49544147e+06, 3.18050441e+06, 3.43106989e+06, 3.10154929e+06, 2.82184985e+06, ],
-    'CountWeightedFullLHEEnvelope_rwgt9'                                             : [ 4.44530218e+06, 2.81871631e+06, ],
-    'CountWeighted_rwgt10'                                                           : [ 2.37149823e+06, 2.37051001e+06, 2.37190901e+06, ],
-    'CountWeightedLHEWeightScale_rwgt10'                                             : [ 3.01611067e+06, 2.71911828e+06, 2.46842213e+06, 2.63086644e+06, 2.37147436e+06, 2.15269493e+06, 2.33598083e+06, 2.10547481e+06, 1.91110813e+06, ],
-    'CountWeightedLHEEnvelope_rwgt10'                                                : [ 3.02201007e+06, 1.90925675e+06, ],
-    'CountWeightedFull_rwgt10'                                                       : [ 2.37038112e+06, 2.36940005e+06, 2.37078421e+06, ],
-    'CountWeightedFullLHEWeightScale_rwgt10'                                         : [ 3.01472747e+06, 2.71783806e+06, 2.46723496e+06, 2.62965931e+06, 2.37035730e+06, 2.15165943e+06, 2.33490833e+06, 2.10448265e+06, 1.91018855e+06, ],
-    'CountWeightedFullLHEEnvelope_rwgt10'                                            : [ 3.02061772e+06, 1.90834199e+06, ],
-    'CountWeighted_rwgt11'                                                           : [ 2.16367068e+06, 2.16228175e+06, 2.16433765e+06, ],
-    'CountWeightedLHEWeightScale_rwgt11'                                             : [ 2.73907168e+06, 2.47630004e+06, 2.25365183e+06, 2.39349454e+06, 2.16364886e+06, 1.96904775e+06, 2.12810718e+06, 1.92363636e+06, 1.75054236e+06, ],
-    'CountWeightedLHEEnvelope_rwgt11'                                                : [ 2.74444902e+06, 1.74892333e+06, ],
-    'CountWeightedFull_rwgt11'                                                       : [ 2.16260892e+06, 2.16122931e+06, 2.16326647e+06, ],
-    'CountWeightedFullLHEWeightScale_rwgt11'                                         : [ 2.73776577e+06, 2.47508481e+06, 2.25252045e+06, 2.39235312e+06, 2.16258711e+06, 1.96805967e+06, 2.12709213e+06, 1.92269253e+06, 1.74966406e+06, ],
-    'CountWeightedFullLHEEnvelope_rwgt11'                                            : [ 2.74313397e+06, 1.74804944e+06, ],
-    'CountWeighted_rwgt12'                                                           : [ 2.87356796e+06, 2.87170626e+06, 2.87454804e+06, ],
-    'CountWeightedLHEWeightScale_rwgt12'                                             : [ 3.60654755e+06, 3.28424884e+06, 3.00723997e+06, 3.15592480e+06, 2.87353904e+06, 2.63102702e+06, 2.80896429e+06, 2.55742673e+06, 2.34144798e+06, ],
-    'CountWeightedLHEEnvelope_rwgt12'                                                : [ 3.61456035e+06, 2.33900338e+06, ],
-    'CountWeightedFull_rwgt12'                                                       : [ 2.87216220e+06, 2.87031168e+06, 2.87313154e+06, ],
-    'CountWeightedFullLHEWeightScale_rwgt12'                                         : [ 3.60483156e+06, 3.28264244e+06, 3.00573675e+06, 3.15442290e+06, 2.87213329e+06, 2.62971234e+06, 2.80762752e+06, 2.55617621e+06, 2.34027864e+06, ],
-    'CountWeightedFullLHEEnvelope_rwgt12'                                            : [ 3.61283128e+06, 2.33784064e+06, ],
-    'CountWeighted_rwgt13'                                                           : [ 4.50115978e+06, 4.49875750e+06, 4.50250122e+06, ],
-    'CountWeightedLHEWeightScale_rwgt13'                                             : [ 5.61849515e+06, 5.14294767e+06, 4.72915578e+06, 4.91813582e+06, 4.50111430e+06, 4.13859130e+06, 4.37851856e+06, 4.00681721e+06, 3.68378584e+06, ],
-    'CountWeightedLHEEnvelope_rwgt13'                                                : [ 5.63230260e+06, 3.67945776e+06, ],
-    'CountWeightedFull_rwgt13'                                                       : [ 4.49901072e+06, 4.49662105e+06, 4.50033902e+06, ],
-    'CountWeightedFullLHEWeightScale_rwgt13'                                         : [ 5.61588071e+06, 5.14049281e+06, 4.72685292e+06, 4.91584695e+06, 4.49896534e+06, 4.13657613e+06, 4.37648046e+06, 4.00490449e+06, 3.68199227e+06, ],
-    'CountWeightedFullLHEEnvelope_rwgt13'                                            : [ 5.62966751e+06, 3.67767567e+06, ],
-    'CountWeighted_rwgt14'                                                           : [ 1.05094437e+07, 1.05057562e+07, 1.05116710e+07, ],
-    'CountWeightedLHEWeightScale_rwgt14'                                             : [ 1.30758726e+07, 1.20126117e+07, 1.10780024e+07, 1.14419218e+07, 1.05093376e+07, 9.69053538e+06, 1.01837514e+07, 9.35243534e+06, 8.62281810e+06, ],
-    'CountWeightedLHEEnvelope_rwgt14'                                                : [ 1.31107395e+07, 8.61155004e+06, ],
-    'CountWeightedFull_rwgt14'                                                       : [ 1.05046118e+07, 1.05009385e+07, 1.05068216e+07, ],
-    'CountWeightedFullLHEWeightScale_rwgt14'                                         : [ 1.30700010e+07, 1.20070886e+07, 1.10728168e+07, 1.14367794e+07, 1.05045058e+07, 9.68599761e+06, 1.01791736e+07, 9.34813328e+06, 8.61877875e+06, ],
-    'CountWeightedFullLHEEnvelope_rwgt14'                                            : [ 1.31048201e+07, 8.60753969e+06, ],
-    'CountWeighted_rwgt15'                                                           : [ 3.35384922e+07, 3.35314106e+07, 3.35431014e+07, ],
-    'CountWeightedLHEWeightScale_rwgt15'                                             : [ 4.17245379e+07, 3.83610365e+07, 3.53957785e+07, 3.64869836e+07, 3.35381508e+07, 3.09416488e+07, 3.24587340e+07, 2.98309781e+07, 2.75182610e+07, ],
-    'CountWeightedLHEEnvelope_rwgt15'                                                : [ 4.18394086e+07, 2.74804227e+07, ],
-    'CountWeightedFull_rwgt15'                                                       : [ 3.35234951e+07, 3.35164345e+07, 3.35280872e+07, ],
-    'CountWeightedFullLHEWeightScale_rwgt15'                                         : [ 4.17063016e+07, 3.83438954e+07, 3.53796887e+07, 3.64710192e+07, 3.35231541e+07, 3.09275777e+07, 3.24445234e+07, 2.98176316e+07, 2.75057384e+07, ],
-    'CountWeightedFullLHEEnvelope_rwgt15'                                            : [ 4.18210258e+07, 2.74679961e+07, ],
-    'CountWeighted_rwgt17'                                                           : [ 8.95441845e+07, 8.95434406e+07, 8.95451236e+07, ],
-    'CountWeightedLHEWeightScale_rwgt17'                                             : [ 1.12139092e+08, 1.02626438e+08, 9.43238659e+07, 9.78651171e+07, 8.95432746e+07, 8.22888311e+07, 8.69273944e+07, 7.95237993e+07, 7.30727697e+07, ],
-    'CountWeightedLHEEnvelope_rwgt17'                                                : [ 1.12438483e+08, 7.29716851e+07, ],
-    'CountWeightedFull_rwgt17'                                                       : [ 8.95056711e+07, 8.95048950e+07, 8.95066637e+07, ],
-    'CountWeightedFullLHEWeightScale_rwgt17'                                         : [ 1.12091878e+08, 1.02582360e+08, 9.42827088e+07, 9.78238685e+07, 8.95047623e+07, 8.22528790e+07, 8.68907122e+07, 7.94895696e+07, 7.30408276e+07, ],
-    'CountWeightedFullLHEEnvelope_rwgt17'                                            : [ 1.12390921e+08, 7.29399924e+07, ],
-    'CountWeighted_rwgt19'                                                           : [ 5.62575250e+07, 5.62574857e+07, 5.62577911e+07, ],
-    'CountWeightedLHEWeightScale_rwgt19'                                             : [ 7.05462500e+07, 6.44919672e+07, 5.92210243e+07, 6.15518786e+07, 5.62569440e+07, 5.16527659e+07, 5.46627787e+07, 4.99532634e+07, 4.58597729e+07, ],
-    'CountWeightedLHEEnvelope_rwgt19'                                                : [ 7.07319831e+07, 4.57970222e+07, ],
-    'CountWeightedFull_rwgt19'                                                       : [ 5.62333509e+07, 5.62332890e+07, 5.62336363e+07, ],
-    'CountWeightedFullLHEWeightScale_rwgt19'                                         : [ 7.05165687e+07, 6.44642883e+07, 5.91952054e+07, 6.15259479e+07, 5.62327702e+07, 5.16302187e+07, 5.46397186e+07, 4.99317777e+07, 4.58397344e+07, ],
-    'CountWeightedFullLHEEnvelope_rwgt19'                                            : [ 7.07020879e+07, 4.57771393e+07, ],
-    'CountWeighted_rwgt20'                                                           : [ 4.69974263e+07, 4.69974546e+07, 4.69975371e+07, ],
-    'CountWeightedLHEWeightScale_rwgt20'                                             : [ 5.89709663e+07, 5.38819440e+07, 4.94567495e+07, 5.14470645e+07, 4.69969440e+07, 4.31319725e+07, 4.56853318e+07, 4.17275649e+07, 3.82916547e+07, ],
-    'CountWeightedLHEEnvelope_rwgt20'                                                : [ 5.91251246e+07, 3.82395635e+07, ],
-    'CountWeightedFull_rwgt20'                                                       : [ 4.69772262e+07, 4.69772352e+07, 4.69773489e+07, ],
-    'CountWeightedFullLHEWeightScale_rwgt20'                                         : [ 5.89461471e+07, 5.38588110e+07, 4.94351824e+07, 5.14253964e+07, 4.69767447e+07, 4.31131416e+07, 4.56660636e+07, 4.17096160e+07, 3.82749215e+07, ],
-    'CountWeightedFullLHEEnvelope_rwgt20'                                            : [ 5.91001261e+07, 3.82229599e+07, ],
-    'CountWeighted_rwgt22'                                                           : [ 3.12303888e+07, 3.12302750e+07, 3.12301579e+07, ],
-    'CountWeightedLHEWeightScale_rwgt22'                                             : [ 3.92538281e+07, 3.58142985e+07, 3.28332744e+07, 3.42367756e+07, 3.12300698e+07, 2.86272013e+07, 3.03965752e+07, 2.77231558e+07, 2.54098133e+07, ],
-    'CountWeightedLHEEnvelope_rwgt22'                                                : [ 3.93543191e+07, 2.53758749e+07, ],
-    'CountWeightedFull_rwgt22'                                                       : [ 3.12169464e+07, 3.12168235e+07, 3.12167242e+07, ],
-    'CountWeightedFullLHEWeightScale_rwgt22'                                         : [ 3.92372867e+07, 3.57989012e+07, 3.28189320e+07, 3.42223313e+07, 3.12166278e+07, 2.86146835e+07, 3.03837422e+07, 2.77112128e+07, 2.53986907e+07, ],
-    'CountWeightedFullLHEEnvelope_rwgt22'                                            : [ 3.93376586e+07, 2.53648362e+07, ],
-    'CountWeighted_rwgt23'                                                           : [ 2.47233983e+07, 2.47231477e+07, 2.47231889e+07, ],
-    'CountWeightedLHEWeightScale_rwgt23'                                             : [ 3.11120213e+07, 2.83565980e+07, 2.59740326e+07, 2.71313338e+07, 2.47231472e+07, 2.26432219e+07, 2.40852703e+07, 2.19443655e+07, 2.00960612e+07, ],
-    'CountWeightedLHEEnvelope_rwgt23'                                                : [ 3.11904121e+07, 2.00696092e+07, ],
-    'CountWeightedFull_rwgt23'                                                       : [ 2.47127341e+07, 2.47124822e+07, 2.47125273e+07, ],
-    'CountWeightedFullLHEWeightScale_rwgt23'                                         : [ 3.10988892e+07, 2.83443796e+07, 2.59626655e+07, 2.71198656e+07, 2.47124838e+07, 2.26332996e+07, 2.40750808e+07, 2.19348911e+07, 2.00872468e+07, ],
-    'CountWeightedFullLHEEnvelope_rwgt23'                                            : [ 3.11771873e+07, 2.00608610e+07, ],
-    'CountWeighted_rwgt25'                                                           : [ 1.44625429e+07, 1.44618106e+07, 1.44625214e+07, ],
-    'CountWeightedLHEWeightScale_rwgt25'                                             : [ 1.82618956e+07, 1.65934831e+07, 1.51605994e+07, 1.59198053e+07, 1.44623966e+07, 1.32120789e+07, 1.41287833e+07, 1.28336079e+07, 1.17229065e+07, ],
-    'CountWeightedLHEEnvelope_rwgt25'                                                : [ 1.83055562e+07, 1.17082632e+07, ],
-    'CountWeightedFull_rwgt25'                                                       : [ 1.44562405e+07, 1.44555158e+07, 1.44562142e+07, ],
-    'CountWeightedFullLHEWeightScale_rwgt25'                                         : [ 1.82541120e+07, 1.65862590e+07, 1.51538914e+07, 1.59130119e+07, 1.44560943e+07, 1.32062262e+07, 1.41227490e+07, 1.28280112e+07, 1.17177089e+07, ],
-    'CountWeightedFullLHEEnvelope_rwgt25'                                            : [ 1.82977189e+07, 1.17031020e+07, ],
-    'CountWeighted_rwgt26'                                                           : [ 1.07086788e+07, 1.07075984e+07, 1.07088389e+07, ],
-    'CountWeightedLHEWeightScale_rwgt26'                                             : [ 1.35535711e+07, 1.22880639e+07, 1.12063913e+07, 1.18137381e+07, 1.07085704e+07, 9.76492395e+06, 1.04836127e+07, 9.50165548e+06, 8.66351880e+06, ],
-    'CountWeightedLHEEnvelope_rwgt26'                                                : [ 1.35846046e+07, 8.65318987e+06, ],
-    'CountWeightedFull_rwgt26'                                                       : [ 1.07039582e+07, 1.07028852e+07, 1.07041098e+07, ],
-    'CountWeightedFullLHEWeightScale_rwgt26'                                         : [ 1.35477305e+07, 1.22826530e+07, 1.12013716e+07, 1.18086436e+07, 1.07038500e+07, 9.76054584e+06, 1.04790862e+07, 9.49746470e+06, 8.65963272e+06, ],
-    'CountWeightedFullLHEEnvelope_rwgt26'                                            : [ 1.35787253e+07, 8.64932939e+06, ],
-    'CountWeighted_rwgt28'                                                           : [ 5.95404677e+06, 5.95207454e+06, 5.95471070e+06, ],
-    'CountWeightedLHEWeightScale_rwgt28'                                             : [ 7.57041129e+06, 6.82949180e+06, 6.20298791e+06, 6.60096236e+06, 5.95398700e+06, 5.40740285e+06, 5.85938285e+06, 5.28456874e+06, 4.79908212e+06, ],
-    'CountWeightedLHEEnvelope_rwgt28'                                                : [ 7.58566305e+06, 4.79421164e+06, ],
-    'CountWeightedFull_rwgt28'                                                       : [ 5.95129043e+06, 5.94933369e+06, 5.95193887e+06, ],
-    'CountWeightedFullLHEWeightScale_rwgt28'                                         : [ 7.56699562e+06, 6.82633220e+06, 6.20006000e+06, 6.59798227e+06, 5.95123057e+06, 5.40484891e+06, 5.85673662e+06, 5.28212182e+06, 4.79681482e+06, ],
-    'CountWeightedFullLHEEnvelope_rwgt28'                                            : [ 7.58222505e+06, 4.79195694e+06, ],
-    'CountWeighted_rwgt29'                                                           : [ 4.95325553e+06, 4.95073616e+06, 4.95425224e+06, ],
-    'CountWeightedLHEWeightScale_rwgt29'                                             : [ 6.29549588e+06, 5.67628406e+06, 5.15375230e+06, 5.49420157e+06, 4.95320624e+06, 4.49700988e+06, 4.88029921e+06, 4.39940528e+06, 3.99398848e+06, ],
-    'CountWeightedLHEEnvelope_rwgt29'                                                : [ 6.30759368e+06, 3.99026027e+06, ],
-    'CountWeightedFull_rwgt29'                                                       : [ 4.95088266e+06, 4.94838122e+06, 4.95186049e+06, ],
-    'CountWeightedFullLHEWeightScale_rwgt29'                                         : [ 6.29256238e+06, 5.67356576e+06, 5.15122956e+06, 5.49163999e+06, 4.95083332e+06, 4.49480792e+06, 4.87802316e+06, 4.39729764e+06, 3.99203331e+06, ],
-    'CountWeightedFullLHEEnvelope_rwgt29'                                            : [ 6.30464050e+06, 3.98831507e+06, ],
-    'CountWeighted_rwgt31'                                                           : [ 7.45732800e+06, 7.45272214e+06, 7.45967181e+06, ],
-    'CountWeightedLHEWeightScale_rwgt31'                                             : [ 9.33810242e+06, 8.52153395e+06, 7.81633010e+06, 8.17297501e+06, 7.45725304e+06, 6.83965939e+06, 7.27552119e+06, 6.63780909e+06, 6.08764986e+06, ],
-    'CountWeightedLHEEnvelope_rwgt31'                                                : [ 9.35968348e+06, 6.08100367e+06, ],
-    'CountWeightedFull_rwgt31'                                                       : [ 7.45370775e+06, 7.44912803e+06, 7.45602475e+06, ],
-    'CountWeightedFullLHEWeightScale_rwgt31'                                         : [ 9.33368906e+06, 8.51739729e+06, 7.81245623e+06, 8.16911162e+06, 7.45363286e+06, 6.83627060e+06, 7.27208320e+06, 6.63458762e+06, 6.08463378e+06, ],
-    'CountWeightedFullLHEEnvelope_rwgt31'                                            : [ 9.35523586e+06, 6.07800526e+06, ],
-    'CountWeighted_rwgt33'                                                           : [ 8.87096910e+07, 8.87055578e+07, 8.87130855e+07, ],
-    'CountWeightedLHEWeightScale_rwgt33'                                             : [ 1.10767657e+08, 1.01605047e+08, 9.35651305e+07, 9.67305231e+07, 8.87087910e+07, 8.16787453e+07, 8.59615958e+07, 7.88210113e+07, 7.25659951e+07, ],
-    'CountWeightedLHEEnvelope_rwgt33'                                                : [ 1.11070988e+08, 7.24640228e+07, ],
-    'CountWeightedFull_rwgt33'                                                       : [ 8.86713068e+07, 8.86671418e+07, 8.86747272e+07, ],
-    'CountWeightedFullLHEWeightScale_rwgt33'                                         : [ 1.10720726e+08, 1.01561118e+08, 9.35240509e+07, 9.66894780e+07, 8.86704070e+07, 8.16428239e+07, 8.59250941e+07, 7.87868692e+07, 7.25340568e+07, ],
-    'CountWeightedFullLHEEnvelope_rwgt33'                                            : [ 1.11023700e+08, 7.24323398e+07, ],
-    'CountWeighted_rwgt34'                                                           : [ 4.51647206e+07, 4.51630707e+07, 4.51660616e+07, ],
-    'CountWeightedLHEWeightScale_rwgt34'                                             : [ 5.64257727e+07, 5.17369715e+07, 4.76266005e+07, 4.92685887e+07, 4.51642613e+07, 4.15706883e+07, 4.37791022e+07, 4.01260241e+07, 3.69290384e+07, ],
-    'CountWeightedLHEEnvelope_rwgt34'                                                : [ 5.65796774e+07, 3.68772444e+07, ],
-    'CountWeightedFull_rwgt34'                                                       : [ 4.51452041e+07, 4.51435481e+07, 4.51465670e+07, ],
-    'CountWeightedFullLHEWeightScale_rwgt34'                                         : [ 5.64019112e+07, 5.17146519e+07, 4.76057199e+07, 4.92477199e+07, 4.51447445e+07, 4.15524390e+07, 4.37605541e+07, 4.01086696e+07, 3.69128217e+07, ],
-    'CountWeightedFullLHEEnvelope_rwgt34'                                            : [ 5.65556331e+07, 3.68611557e+07, ],
-    'CountWeighted_rwgt36'                                                           : [ 2.21418924e+07, 2.21413628e+07, 2.21423188e+07, ],
-    'CountWeightedLHEWeightScale_rwgt36'                                             : [ 2.76865687e+07, 2.53688864e+07, 2.33402843e+07, 2.41699650e+07, 2.21416687e+07, 2.03684999e+07, 2.14737611e+07, 1.96687541e+07, 1.80915515e+07, ],
-    'CountWeightedLHEEnvelope_rwgt36'                                                : [ 2.77615538e+07, 1.80662764e+07, ],
-    'CountWeightedFull_rwgt36'                                                       : [ 2.21323434e+07, 2.21318098e+07, 2.21327817e+07, ],
-    'CountWeightedFullLHEWeightScale_rwgt36'                                         : [ 2.76748871e+07, 2.53579621e+07, 2.33300749e+07, 2.41597536e+07, 2.21321203e+07, 2.03595822e+07, 2.14646792e+07, 1.96602707e+07, 1.80836227e+07, ],
-    'CountWeightedFullLHEEnvelope_rwgt36'                                            : [ 2.77497825e+07, 1.80584106e+07, ],
-    'CountWeighted_rwgt46'                                                           : [ 5.05008862e+06, 5.04882557e+06, 5.05093985e+06, ],
-    'CountWeightedLHEWeightScale_rwgt46'                                             : [ 6.28151131e+06, 5.77468382e+06, 5.32812081e+06, 5.49447120e+06, 5.05003757e+06, 4.65891924e+06, 4.88886597e+06, 4.49275819e+06, 4.14431760e+06, ],
-    'CountWeightedLHEEnvelope_rwgt46'                                                : [ 6.29866312e+06, 4.13870449e+06, ],
-    'CountWeightedFull_rwgt46'                                                       : [ 5.04780777e+06, 5.04654930e+06, 5.04865516e+06, ],
-    'CountWeightedFullLHEWeightScale_rwgt46'                                         : [ 6.27873815e+06, 5.77207815e+06, 5.32567424e+06, 5.49204490e+06, 5.04775684e+06, 4.65677827e+06, 4.88670568e+06, 4.49072835e+06, 4.14241265e+06, ],
-    'CountWeightedFullLHEEnvelope_rwgt46'                                            : [ 6.29586801e+06, 4.13681387e+06, ],
-    'CountWeighted_rwgt48'                                                           : [ 1.78178317e+07, 1.78149859e+07, 1.78198244e+07, ],
-    'CountWeightedLHEWeightScale_rwgt48'                                             : [ 2.21776485e+07, 2.03862309e+07, 1.88071200e+07, 1.93877619e+07, 1.78176492e+07, 1.64353260e+07, 1.72432568e+07, 1.58443992e+07, 1.46134277e+07, ],
-    'CountWeightedLHEEnvelope_rwgt48'                                                : [ 2.22390230e+07, 1.45930861e+07, ],
-    'CountWeightedFull_rwgt48'                                                       : [ 1.78099391e+07, 1.78071011e+07, 1.78119290e+07, ],
-    'CountWeightedFullLHEWeightScale_rwgt48'                                         : [ 2.21680450e+07, 2.03772097e+07, 1.87986612e+07, 1.93793603e+07, 1.78097569e+07, 1.64279275e+07, 1.72357762e+07, 1.58373774e+07, 1.46068449e+07, ],
-    'CountWeightedFullLHEEnvelope_rwgt48'                                            : [ 2.22293428e+07, 1.45865553e+07, ],
-    'CountWeighted_rwgt49'                                                           : [ 4.76892955e+07, 4.76834190e+07, 4.76935648e+07, ],
-    'CountWeightedLHEWeightScale_rwgt49'                                             : [ 5.93954286e+07, 5.45788261e+07, 5.03358289e+07, 5.19091690e+07, 4.76888110e+07, 4.39756019e+07, 4.61576910e+07, 4.23984904e+07, 3.90925750e+07, ],
-    'CountWeightedLHEEnvelope_rwgt49'                                                : [ 5.95599680e+07, 3.90377902e+07, ],
-    'CountWeightedFull_rwgt49'                                                       : [ 4.76683360e+07, 4.76624572e+07, 4.76725989e+07, ],
-    'CountWeightedFullLHEWeightScale_rwgt49'                                         : [ 5.93698841e+07, 5.45548586e+07, 5.03133606e+07, 5.18868211e+07, 4.76678515e+07, 4.39559596e+07, 4.61378064e+07, 4.23798368e+07, 3.90750951e+07, ],
-    'CountWeightedFullLHEEnvelope_rwgt49'                                            : [ 5.95342245e+07, 3.90204478e+07, ],
-    'CountWeighted_rwgt50'                                                           : [ 2.70037668e+07, 2.70039532e+07, 2.70035332e+07, ],
-    'CountWeightedLHEWeightScale_rwgt50'                                             : [ 3.38564337e+07, 3.09543116e+07, 2.84271598e+07, 2.95417497e+07, 2.70034925e+07, 2.47958221e+07, 2.62366066e+07, 2.39788069e+07, 2.20159286e+07, ],
-    'CountWeightedLHEEnvelope_rwgt50'                                                : [ 3.39455766e+07, 2.19858264e+07, ],
-    'CountWeightedFull_rwgt50'                                                       : [ 2.69921643e+07, 2.69923443e+07, 2.69919382e+07, ],
-    'CountWeightedFullLHEWeightScale_rwgt50'                                         : [ 3.38421892e+07, 3.09410268e+07, 2.84147710e+07, 2.95293060e+07, 2.69918901e+07, 2.47850005e+07, 2.62255423e+07, 2.39684935e+07, 2.20063088e+07, ],
-    'CountWeightedFullLHEEnvelope_rwgt50'                                            : [ 3.39312290e+07, 2.19762806e+07, ],
-    'CountWeighted_rwgt51'                                                           : [ 2.45671025e+07, 2.45672789e+07, 2.45667428e+07, ],
-    'CountWeightedLHEWeightScale_rwgt51'                                             : [ 3.08137835e+07, 2.81620654e+07, 2.58550312e+07, 2.68859896e+07, 2.45668526e+07, 2.25515534e+07, 2.38773760e+07, 2.18145646e+07, 2.00228199e+07, ],
-    'CountWeightedLHEEnvelope_rwgt51'                                                : [ 3.08944233e+07, 1.99955916e+07, ],
-    'CountWeightedFull_rwgt51'                                                       : [ 2.45565424e+07, 2.45567155e+07, 2.45561985e+07, ],
-    'CountWeightedFullLHEWeightScale_rwgt51'                                         : [ 3.08008194e+07, 2.81499796e+07, 2.58437607e+07, 2.68746631e+07, 2.45562930e+07, 2.25417109e+07, 2.38673122e+07, 2.18051822e+07, 2.00140713e+07, ],
-    'CountWeightedFullLHEEnvelope_rwgt51'                                            : [ 3.08813661e+07, 1.99869098e+07, ],
-    'CountWeighted_rwgt52'                                                           : [ 2.22553261e+07, 2.22554637e+07, 2.22550009e+07, ],
-    'CountWeightedLHEWeightScale_rwgt52'                                             : [ 2.79264891e+07, 2.55128513e+07, 2.34149882e+07, 2.43659053e+07, 2.22550995e+07, 2.04226058e+07, 2.16387530e+07, 1.97613213e+07, 1.81321524e+07, ],
-    'CountWeightedLHEEnvelope_rwgt52'                                                : [ 2.79990852e+07, 1.81076465e+07, ],
-    'CountWeightedFull_rwgt52'                                                       : [ 2.22457649e+07, 2.22458933e+07, 2.22454471e+07, ],
-    'CountWeightedFullLHEWeightScale_rwgt52'                                         : [ 2.79147431e+07, 2.55019012e+07, 2.34047864e+07, 2.43556403e+07, 2.22455388e+07, 2.04136943e+07, 2.16296317e+07, 1.97528216e+07, 1.81242317e+07, ],
-    'CountWeightedFullLHEEnvelope_rwgt52'                                            : [ 2.79872551e+07, 1.80997869e+07, ],
-    'CountWeighted_rwgt53'                                                           : [ 2.00694687e+07, 2.00695783e+07, 2.00691513e+07, ],
-    'CountWeightedLHEWeightScale_rwgt53'                                             : [ 2.51958805e+07, 2.30078390e+07, 2.11081513e+07, 2.19826364e+07, 2.00692644e+07, 1.84099331e+07, 1.95217034e+07, 1.78199384e+07, 1.63447725e+07, ],
-    'CountWeightedLHEEnvelope_rwgt53'                                                : [ 2.52608857e+07, 1.63228351e+07, ],
-    'CountWeightedFull_rwgt53'                                                       : [ 2.00608450e+07, 2.00609492e+07, 2.00605339e+07, ],
-    'CountWeightedFullLHEWeightScale_rwgt53'                                         : [ 2.51852784e+07, 2.29979637e+07, 2.10989491e+07, 2.19733756e+07, 2.00606412e+07, 1.84018985e+07, 1.95134751e+07, 1.78122741e+07, 1.63376327e+07, ],
-    'CountWeightedFullLHEEnvelope_rwgt53'                                            : [ 2.52502079e+07, 1.63157499e+07, ],
-    'CountWeighted_rwgt54'                                                           : [ 1.80079892e+07, 1.80080484e+07, 1.80076804e+07, ],
-    'CountWeightedLHEWeightScale_rwgt54'                                             : [ 2.26199674e+07, 2.06453149e+07, 1.89328776e+07, 1.97344972e+07, 1.80078086e+07, 1.65121221e+07, 1.75247405e+07, 1.59890917e+07, 1.46594521e+07, ],
-    'CountWeightedLHEEnvelope_rwgt54'                                                : [ 2.26778364e+07, 1.46399303e+07, ],
-    'CountWeightedFull_rwgt54'                                                       : [ 1.80002506e+07, 1.80003049e+07, 1.79999476e+07, ],
-    'CountWeightedFullLHEWeightScale_rwgt54'                                         : [ 2.26104528e+07, 2.06364524e+07, 1.89246217e+07, 1.97261845e+07, 1.80000701e+07, 1.65049133e+07, 1.75173519e+07, 1.59822126e+07, 1.46530472e+07, ],
-    'CountWeightedFullLHEEnvelope_rwgt54'                                            : [ 2.26682527e+07, 1.46335738e+07, ],
-    'CountWeighted_rwgt55'                                                           : [ 1.60724814e+07, 1.60724915e+07, 1.60722129e+07, ],
-    'CountWeightedLHEWeightScale_rwgt55'                                             : [ 2.02007858e+07, 1.84270552e+07, 1.68908545e+07, 1.76232281e+07, 1.60723195e+07, 1.47306449e+07, 1.56494225e+07, 1.42701643e+07, 1.30774775e+07, ],
-    'CountWeightedLHEEnvelope_rwgt55'                                                : [ 2.02519728e+07, 1.30602198e+07, ],
-    'CountWeightedFull_rwgt55'                                                       : [ 1.60655693e+07, 1.60655799e+07, 1.60653094e+07, ],
-    'CountWeightedFullLHEWeightScale_rwgt55'                                         : [ 2.01922837e+07, 1.84191434e+07, 1.68834868e+07, 1.76158048e+07, 1.60654077e+07, 1.47242121e+07, 1.56428238e+07, 1.42640232e+07, 1.30717617e+07, ],
-    'CountWeightedFullLHEEnvelope_rwgt55'                                            : [ 2.02434109e+07, 1.30545471e+07, ],
-    'CountWeighted_rwgt56'                                                           : [ 1.42603491e+07, 1.42602999e+07, 1.42601117e+07, ],
-    'CountWeightedLHEWeightScale_rwgt56'                                             : [ 1.79350954e+07, 1.63500962e+07, 1.49793404e+07, 1.56459948e+07, 1.42602034e+07, 1.30630989e+07, 1.38932092e+07, 1.26608558e+07, 1.15967412e+07, ],
-    'CountWeightedLHEEnvelope_rwgt56'                                                : [ 1.79800411e+07, 1.15815950e+07, ],
-    'CountWeightedFull_rwgt56'                                                       : [ 1.42542130e+07, 1.42541626e+07, 1.42539812e+07, ],
-    'CountWeightedFullLHEWeightScale_rwgt56'                                         : [ 1.79275460e+07, 1.63430736e+07, 1.49728022e+07, 1.56393997e+07, 1.42540674e+07, 1.30573887e+07, 1.38873471e+07, 1.26554050e+07, 1.15916695e+07, ],
-    'CountWeightedFullLHEEnvelope_rwgt56'                                            : [ 1.79724385e+07, 1.15765611e+07, ],
-    'CountWeighted_rwgt57'                                                           : [ 1.25779664e+07, 1.25778485e+07, 1.25777846e+07, ],
-    'CountWeightedLHEWeightScale_rwgt57'                                             : [ 1.58308678e+07, 1.44217443e+07, 1.32050549e+07, 1.38097688e+07, 1.25778382e+07, 1.15153446e+07, 1.22623016e+07, 1.11668356e+07, 1.02224294e+07, ],
-    'CountWeightedLHEEnvelope_rwgt57'                                                : [ 1.58700473e+07, 1.02092386e+07, ],
-    'CountWeightedFull_rwgt57'                                                       : [ 1.25725497e+07, 1.25724309e+07, 1.25723723e+07, ],
-    'CountWeightedFullLHEWeightScale_rwgt57'                                         : [ 1.58241985e+07, 1.44155428e+07, 1.31992859e+07, 1.38039436e+07, 1.25724215e+07, 1.15103087e+07, 1.22571254e+07, 1.11620227e+07, 1.02179544e+07, ],
-    'CountWeightedFullLHEEnvelope_rwgt57'                                            : [ 1.58633315e+07, 1.02047969e+07, ],
-    'CountWeighted_rwgt58'                                                           : [ 1.10189935e+07, 1.10188159e+07, 1.10188708e+07, ],
-    'CountWeightedLHEWeightScale_rwgt58'                                             : [ 1.38801500e+07, 1.26347482e+07, 1.15613462e+07, 1.21075923e+07, 1.10188827e+07, 1.00815713e+07, 1.07505476e+07, 9.78248612e+06, 8.94938336e+06, ],
-    'CountWeightedLHEEnvelope_rwgt58'                                                : [ 1.39140110e+07, 8.93799700e+06, ],
-    'CountWeightedFull_rwgt58'                                                       : [ 1.10142443e+07, 1.10140649e+07, 1.10141228e+07, ],
-    'CountWeightedFullLHEWeightScale_rwgt58'                                         : [ 1.38742941e+07, 1.26293095e+07, 1.15562882e+07, 1.21024780e+07, 1.10141332e+07, 1.00771556e+07, 1.07460034e+07, 9.77826695e+06, 8.94545974e+06, ],
-    'CountWeightedFullLHEEnvelope_rwgt58'                                            : [ 1.39081140e+07, 8.93410254e+06, ],
-    'CountWeighted_rwgt59'                                                           : [ 9.58695427e+06, 9.58670324e+06, 9.58689441e+06, ],
-    'CountWeightedLHEWeightScale_rwgt59'                                             : [ 1.20873533e+07, 1.09931194e+07, 1.00518789e+07, 1.05433395e+07, 9.58685672e+06, 8.76500461e+06, 9.36134811e+06, 8.51091439e+06, 7.78047470e+06, ],
-    'CountWeightedLHEEnvelope_rwgt59'                                                : [ 1.21163504e+07, 7.77073878e+06, ],
-    'CountWeightedFull_rwgt59'                                                       : [ 9.58281340e+06, 9.58256322e+06, 9.58275573e+06, ],
-    'CountWeightedFullLHEWeightScale_rwgt59'                                         : [ 1.20822467e+07, 1.09883777e+07, 1.00474720e+07, 1.05388804e+07, 9.58271580e+06, 8.76115900e+06, 9.35738555e+06, 8.50723613e+06, 7.77705597e+06, ],
-    'CountWeightedFullLHEEnvelope_rwgt59'                                            : [ 1.21112087e+07, 7.76734539e+06, ],
-    'CountWeighted_rwgt60'                                                           : [ 8.27774168e+06, 8.27740930e+06, 8.27774888e+06, ],
-    'CountWeightedLHEWeightScale_rwgt60'                                             : [ 1.04473425e+07, 9.49217404e+06, 8.67236460e+06, 9.11251048e+06, 8.27765810e+06, 7.56188346e+06, 8.09073104e+06, 7.34848130e+06, 6.71235161e+06, ],
-    'CountWeightedLHEEnvelope_rwgt60'                                                : [ 1.04719255e+07, 6.70411616e+06, ],
-    'CountWeightedFull_rwgt60'                                                       : [ 8.27415775e+06, 8.27382577e+06, 8.27416415e+06, ],
-    'CountWeightedFullLHEWeightScale_rwgt60'                                         : [ 1.04429195e+07, 9.48806874e+06, 8.66855206e+06, 9.10864730e+06, 8.27407414e+06, 7.55855450e+06, 8.08729816e+06, 7.34529649e+06, 6.70939382e+06, ],
-    'CountWeightedFullLHEEnvelope_rwgt60'                                            : [ 1.04674707e+07, 6.70117990e+06, ],
-    'CountWeighted_rwgt61'                                                           : [ 7.09548752e+06, 7.09507279e+06, 7.09557072e+06, ],
-    'CountWeightedLHEWeightScale_rwgt61'                                             : [ 8.96528707e+06, 8.13663739e+06, 7.42714066e+06, 7.81962754e+06, 7.09541572e+06, 6.47599670e+06, 6.94269892e+06, 6.29886100e+06, 5.74838901e+06, ],
-    'CountWeightedLHEEnvelope_rwgt61'                                                : [ 8.98591293e+06, 5.74150051e+06, ],
-    'CountWeightedFull_rwgt61'                                                       : [ 7.09240495e+06, 7.09199139e+06, 7.09248768e+06, ],
-    'CountWeightedFullLHEWeightScale_rwgt61'                                         : [ 8.96147703e+06, 8.13310512e+06, 7.42386245e+06, 7.81630164e+06, 7.09233319e+06, 6.47313471e+06, 6.93974374e+06, 6.29612081e+06, 5.74584644e+06, ],
-    'CountWeightedFullLHEEnvelope_rwgt61'                                            : [ 8.98207678e+06, 5.73897617e+06, ],
-    'CountWeighted_rwgt62'                                                           : [ 6.03754996e+06, 6.03703921e+06, 6.03771460e+06, ],
-    'CountWeightedLHEWeightScale_rwgt62'                                             : [ 7.63785488e+06, 6.92347386e+06, 6.31343168e+06, 6.66178616e+06, 6.03748874e+06, 5.50491950e+06, 5.91467463e+06, 5.35969785e+06, 4.88643035e+06, ],
-    'CountWeightedLHEEnvelope_rwgt62'                                                : [ 7.65497789e+06, 4.88073749e+06, ],
-    'CountWeightedFull_rwgt62'                                                       : [ 6.03491311e+06, 6.03440436e+06, 6.03507486e+06, ],
-    'CountWeightedFullLHEWeightScale_rwgt62'                                         : [ 7.63459426e+06, 6.92045349e+06, 6.31062936e+06, 6.65893893e+06, 6.03485184e+06, 5.50247419e+06, 5.91214466e+06, 5.35735467e+06, 4.88425787e+06, ],
-    'CountWeightedFullLHEEnvelope_rwgt62'                                            : [ 7.65169479e+06, 4.87858002e+06, ],
-    'CountWeighted_rwgt63'                                                           : [ 5.10782728e+06, 5.10720887e+06, 5.10807318e+06, ],
-    'CountWeightedLHEWeightScale_rwgt63'                                             : [ 6.46997214e+06, 5.85716434e+06, 5.33532604e+06, 5.64326671e+06, 5.10777595e+06, 4.65222569e+06, 5.01047001e+06, 4.53445485e+06, 4.12963874e+06, ],
-    'CountWeightedLHEEnvelope_rwgt63'                                                : [ 6.48405245e+06, 4.12498552e+06, ],
-    'CountWeightedFull_rwgt63'                                                       : [ 5.10558070e+06, 5.10496538e+06, 5.10582259e+06, ],
-    'CountWeightedFullLHEWeightScale_rwgt63'                                         : [ 6.46719207e+06, 5.85458989e+06, 5.33294066e+06, 5.64083945e+06, 5.10552943e+06, 4.65014328e+06, 5.00831392e+06, 4.53245904e+06, 4.12778897e+06, ],
-    'CountWeightedFullLHEEnvelope_rwgt63'                                            : [ 6.48125369e+06, 4.12314825e+06, ],
-    'CountWeighted_rwgt64'                                                           : [ 4.30245541e+06, 4.30173276e+06, 4.30279117e+06, ],
-    'CountWeightedLHEWeightScale_rwgt64'                                             : [ 5.45676662e+06, 4.93328021e+06, 4.48878919e+06, 4.75983375e+06, 4.30241164e+06, 3.91438509e+06, 4.22631455e+06, 3.81970944e+06, 3.47489934e+06, ],
-    'CountWeightedLHEEnvelope_rwgt64'                                                : [ 5.46825395e+06, 3.47113402e+06, ],
-    'CountWeightedFull_rwgt64'                                                       : [ 4.30054428e+06, 4.29982546e+06, 4.30087569e+06, ],
-    'CountWeightedFullLHEWeightScale_rwgt64'                                         : [ 5.45440102e+06, 4.93109126e+06, 4.48676098e+06, 4.75776751e+06, 4.30050056e+06, 3.91261428e+06, 4.22447988e+06, 3.81801209e+06, 3.47332722e+06, ],
-    'CountWeightedFullLHEEnvelope_rwgt64'                                            : [ 5.46587241e+06, 3.46957210e+06, ],
-    'CountWeighted_rwgt65'                                                           : [ 3.62294535e+06, 3.62211240e+06, 3.62337245e+06, ],
-    'CountWeightedLHEWeightScale_rwgt65'                                             : [ 4.60013056e+06, 4.15354722e+06, 3.77538890e+06, 4.01313100e+06, 3.62290905e+06, 3.29277604e+06, 3.56367340e+06, 3.21679896e+06, 2.92342373e+06, ],
-    'CountWeightedLHEEnvelope_rwgt65'                                                : [ 4.60948319e+06, 2.92039351e+06, ],
-    'CountWeightedFull_rwgt65'                                                       : [ 3.62131573e+06, 3.62048838e+06, 3.62173711e+06, ],
-    'CountWeightedFullLHEWeightScale_rwgt65'                                         : [ 4.59811187e+06, 4.15168086e+06, 3.77365921e+06, 4.01136864e+06, 3.62127944e+06, 3.29126659e+06, 3.56210778e+06, 3.21535102e+06, 2.92208268e+06, ],
-    'CountWeightedFullLHEEnvelope_rwgt65'                                            : [ 4.60745102e+06, 2.91906102e+06, ],
-    'CountWeighted_rwgt66'                                                           : [ 3.06880261e+06, 3.06784967e+06, 3.06932100e+06, ],
-    'CountWeightedLHEWeightScale_rwgt66'                                             : [ 3.89943658e+06, 3.51739939e+06, 3.19461949e+06, 3.40261794e+06, 3.06877142e+06, 2.78695288e+06, 3.02206134e+06, 2.72528295e+06, 2.47482136e+06, ],
-    'CountWeightedLHEEnvelope_rwgt66'                                                : [ 3.90710733e+06, 2.47237417e+06, ],
-    'CountWeightedFull_rwgt66'                                                       : [ 3.06739847e+06, 3.06645159e+06, 3.06791066e+06, ],
-    'CountWeightedFullLHEWeightScale_rwgt66'                                         : [ 3.89769793e+06, 3.51579062e+06, 3.19312960e+06, 3.40109995e+06, 3.06736739e+06, 2.78565221e+06, 3.02071253e+06, 2.72403529e+06, 2.47366602e+06, ],
-    'CountWeightedFullLHEEnvelope_rwgt66'                                            : [ 3.90535720e+06, 2.47122571e+06, ],
-    'CountWeighted_rwgt67'                                                           : [ 2.64065704e+06, 2.63957312e+06, 2.64126139e+06, ],
-    'CountWeightedLHEWeightScale_rwgt67'                                             : [ 3.35546801e+06, 3.02555910e+06, 2.74714528e+06, 2.92897141e+06, 2.64063050e+06, 2.39749491e+06, 2.60208301e+06, 2.34572208e+06, 2.12959960e+06, ],
-    'CountWeightedLHEEnvelope_rwgt67'                                                : [ 3.36191430e+06, 2.12758236e+06, ],
-    'CountWeightedFull_rwgt67'                                                       : [ 2.63942338e+06, 2.63834623e+06, 2.64002062e+06, ],
-    'CountWeightedFullLHEWeightScale_rwgt67'                                         : [ 3.35394217e+06, 3.02414654e+06, 2.74583590e+06, 2.92763844e+06, 2.63939680e+06, 2.39635176e+06, 2.60089884e+06, 2.34462628e+06, 2.12858379e+06, ],
-    'CountWeightedFullLHEEnvelope_rwgt67'                                            : [ 3.36037826e+06, 2.12657234e+06, ],
-    'CountWeighted_rwgt68'                                                           : [ 2.33842455e+06, 2.33720138e+06, 2.33910557e+06, ],
-    'CountWeightedLHEWeightScale_rwgt68'                                             : [ 2.96809374e+06, 2.67792780e+06, 2.43289597e+06, 2.59208433e+06, 2.33840104e+06, 2.12434029e+06, 2.30364427e+06, 2.07804188e+06, 1.88771297e+06, ],
-    'CountWeightedLHEEnvelope_rwgt68'                                                : [ 2.97377200e+06, 1.88597260e+06, ],
-    'CountWeightedFull_rwgt68'                                                       : [ 2.33730657e+06, 2.33609096e+06, 2.33797912e+06, ],
-    'CountWeightedFullLHEWeightScale_rwgt68'                                         : [ 2.96671365e+06, 2.67664779e+06, 2.43170731e+06, 2.59087825e+06, 2.33728305e+06, 2.12330230e+06, 2.30257223e+06, 2.07704807e+06, 1.88679042e+06, ],
-    'CountWeightedFullLHEEnvelope_rwgt68'                                            : [ 2.97238263e+06, 1.88505491e+06, ],
+    'CountWeighted'                                                                  : [ 2.95221226e+07, 2.95195918e+07, 2.95234162e+07, ],
+    'CountWeightedLHEWeightScale'                                                    : [ 3.70013756e+07, 3.38402338e+07, 3.10854173e+07, 3.22867398e+07, 2.95215856e+07, 2.71151671e+07, 2.86750390e+07, 2.62155573e+07, 2.40757357e+07, ],
+    'CountWeightedLHEEnvelope'                                                       : [ 3.70993353e+07, 2.40426417e+07, ],
+    'CountWeightedPSWeight'                                                          : [ 2.95233855e+08, 2.95228724e+08, 2.95228724e+08, 2.95233855e+08, 2.95228724e+08, 2.95234007e+08, ],
+    'CountWeightedPSWeightOriginalXWGTUP'                                            : [ 2.96822366e+07, 2.96844502e+07, 4.32633230e+07, 2.96821805e+07, 2.96299081e+07, 1.74719365e+07, ],
+    'CountWeightedFull'                                                              : [ 2.95094923e+07, 2.95068747e+07, 2.95107192e+07, ],
+    'CountWeightedFullLHEWeightScale'                                                : [ 3.69858025e+07, 3.38257033e+07, 3.10718615e+07, 3.22731365e+07, 2.95089736e+07, 2.71033292e+07, 2.86629454e+07, 2.62042797e+07, 2.40652156e+07, ],
+    'CountWeightedFullLHEEnvelope'                                                   : [ 3.70836478e+07, 2.40322037e+07, ],
+    'CountWeightedFullPSWeight'                                                      : [ 2.95102922e+08, 2.95102920e+08, 2.95102920e+08, 2.95102922e+08, 2.95102920e+08, 2.95102922e+08, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP'                                        : [ 2.96683568e+07, 2.96691260e+07, 4.32409600e+07, 2.96681969e+07, 2.96145224e+07, 1.74637416e+07, ],
+    'CountWeighted_rwgt0'                                                            : [ 1.15613853e+08, 1.15610553e+08, 1.15616789e+08, ],
+    'CountWeightedLHEWeightScale_rwgt0'                                              : [ 1.44511468e+08, 1.32452805e+08, 1.21891092e+08, 1.26166697e+08, 1.15612673e+08, 1.06380035e+08, 1.12099557e+08, 1.02706767e+08, 9.44938450e+07, ],
+    'CountWeightedLHEEnvelope_rwgt0'                                                 : [ 1.44904092e+08, 9.43615878e+07, ],
+    'CountWeightedPSWeight_rwgt0'                                                    : [ 1.15615800e+09, 1.15613814e+09, 1.15613814e+09, 1.15615801e+09, 1.15613814e+09, 1.15615860e+09, ],
+    'CountWeightedPSWeightOriginalXWGTUP_rwgt0'                                      : [ 1.16230948e+08, 1.16221888e+08, 1.69563264e+08, 1.16228844e+08, 1.16088634e+08, 6.83272982e+07, ],
+    'CountWeightedFull_rwgt0'                                                        : [ 1.15563964e+08, 1.15560629e+08, 1.15566950e+08, ],
+    'CountWeightedFullLHEWeightScale_rwgt0'                                          : [ 1.44450433e+08, 1.32395723e+08, 1.21837739e+08, 1.26113342e+08, 1.15562784e+08, 1.06333420e+08, 1.12052116e+08, 1.02662421e+08, 9.44523946e+07, ],
+    'CountWeightedFullLHEEnvelope_rwgt0'                                             : [ 1.44842591e+08, 9.43204649e+07, ],
+    'CountWeightedFullPSWeight_rwgt0'                                                : [ 1.15563935e+09, 1.15563934e+09, 1.15563934e+09, 1.15563935e+09, 1.15563934e+09, 1.15563935e+09, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_rwgt0'                                  : [ 1.16176442e+08, 1.16161828e+08, 1.69475141e+08, 1.16173917e+08, 1.16027878e+08, 6.82951847e+07, ],
+    'CountWeighted_rwgt1'                                                            : [ 6.52263095e+07, 6.52251577e+07, 6.52274495e+07, ],
+    'CountWeightedLHEWeightScale_rwgt1'                                              : [ 8.16004406e+07, 7.47404381e+07, 6.87414977e+07, 7.12283873e+07, 6.52256470e+07, 5.99827724e+07, 6.32776055e+07, 5.79362511e+07, 5.32731745e+07, ],
+    'CountWeightedLHEEnvelope_rwgt1'                                                 : [ 8.18204729e+07, 5.31989575e+07, ],
+    'CountWeightedPSWeight_rwgt1'                                                    : [ 6.52274192e+08, 6.52262942e+08, 6.52262942e+08, 6.52274196e+08, 6.52262942e+08, 6.52274532e+08, ],
+    'CountWeightedPSWeightOriginalXWGTUP_rwgt1'                                      : [ 6.55761247e+07, 6.55763358e+07, 9.56310809e+07, 6.55753723e+07, 6.54767886e+07, 3.85673306e+07, ],
+    'CountWeightedFull_rwgt1'                                                        : [ 6.51982195e+07, 6.51970418e+07, 6.51993859e+07, ],
+    'CountWeightedFullLHEWeightScale_rwgt1'                                          : [ 8.15660402e+07, 7.47082871e+07, 6.87114664e+07, 7.11983204e+07, 6.51975573e+07, 5.99565344e+07, 6.32508688e+07, 5.79112759e+07, 5.32498516e+07, ],
+    'CountWeightedFullLHEEnvelope_rwgt1'                                             : [ 8.17858130e+07, 5.31758178e+07, ],
+    'CountWeightedFullPSWeight_rwgt1'                                                : [ 6.51982037e+08, 6.51982034e+08, 6.51982034e+08, 6.51982037e+08, 6.51982034e+08, 6.51982038e+08, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_rwgt1'                                  : [ 6.55454178e+07, 6.55424666e+07, 9.55815100e+07, 6.55444253e+07, 6.54426535e+07, 3.85492226e+07, ],
+    'CountWeighted_rwgt2'                                                            : [ 4.55388049e+07, 4.55382958e+07, 4.55393193e+07, ],
+    'CountWeightedLHEWeightScale_rwgt2'                                              : [ 5.70119194e+07, 5.21888038e+07, 4.79767686e+07, 4.97579624e+07, 4.55383412e+07, 4.18577568e+07, 4.41988901e+07, 4.04446683e+07, 3.71715572e+07, ],
+    'CountWeightedLHEEnvelope_rwgt2'                                                 : [ 5.71645975e+07, 3.71200182e+07, ],
+    'CountWeightedPSWeight_rwgt2'                                                    : [ 4.55395964e+08, 4.55388087e+08, 4.55388087e+08, 4.55395968e+08, 4.55388087e+08, 4.55396200e+08, ],
+    'CountWeightedPSWeightOriginalXWGTUP_rwgt2'                                      : [ 4.57840729e+07, 4.57861829e+07, 6.67516513e+07, 4.57837362e+07, 4.57077298e+07, 2.69365586e+07, ],
+    'CountWeightedFull_rwgt2'                                                        : [ 4.55192117e+07, 4.55186893e+07, 4.55197474e+07, ],
+    'CountWeightedFullLHEWeightScale_rwgt2'                                          : [ 5.69879065e+07, 5.21663803e+07, 4.79558287e+07, 4.97369784e+07, 4.55187485e+07, 4.18394679e+07, 4.41802322e+07, 4.04272513e+07, 3.71553018e+07, ],
+    'CountWeightedFullLHEEnvelope_rwgt2'                                             : [ 5.71404053e+07, 3.71038903e+07, ],
+    'CountWeightedFullPSWeight_rwgt2'                                                : [ 4.55192152e+08, 4.55192150e+08, 4.55192150e+08, 4.55192152e+08, 4.55192150e+08, 4.55192152e+08, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_rwgt2'                                  : [ 4.57626497e+07, 4.57625419e+07, 6.67171074e+07, 4.57621523e+07, 4.56839526e+07, 2.69239188e+07, ],
+    'CountWeighted_rwgt3'                                                            : [ 3.70716085e+07, 3.70713189e+07, 3.70718743e+07, ],
+    'CountWeightedLHEWeightScale_rwgt3'                                              : [ 4.64344000e+07, 4.24891371e+07, 3.90469184e+07, 4.05224581e+07, 3.70712238e+07, 3.40636695e+07, 3.59926156e+07, 3.29223136e+07, 3.02479195e+07, ],
+    'CountWeightedLHEEnvelope_rwgt3'                                                 : [ 4.65581404e+07, 3.02061328e+07, ],
+    'CountWeightedPSWeight_rwgt3'                                                    : [ 3.70722307e+08, 3.70715883e+08, 3.70715883e+08, 3.70722309e+08, 3.70715883e+08, 3.70722497e+08, ],
+    'CountWeightedPSWeightOriginalXWGTUP_rwgt3'                                      : [ 3.72718633e+07, 3.72742756e+07, 5.43336024e+07, 3.72716983e+07, 3.72074167e+07, 2.19334820e+07, ],
+    'CountWeightedFull_rwgt3'                                                        : [ 3.70556659e+07, 3.70553630e+07, 3.70559462e+07, ],
+    'CountWeightedFullLHEWeightScale_rwgt3'                                          : [ 4.64148497e+07, 4.24708879e+07, 3.90298856e+07, 4.05053792e+07, 3.70552817e+07, 3.40487920e+07, 3.59774314e+07, 3.29081439e+07, 3.02346959e+07, ],
+    'CountWeightedFullLHEEnvelope_rwgt3'                                             : [ 4.65384457e+07, 3.01930126e+07, ],
+    'CountWeightedFullPSWeight_rwgt3'                                                : [ 3.70556464e+08, 3.70556462e+08, 3.70556462e+08, 3.70556464e+08, 3.70556462e+08, 3.70556464e+08, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_rwgt3'                                  : [ 3.72544293e+07, 3.72550319e+07, 5.43055014e+07, 3.72541339e+07, 3.71880834e+07, 2.19231929e+07, ],
+    'CountWeighted_rwgt4'                                                            : [ 2.28903334e+07, 2.28902981e+07, 2.28903238e+07, ],
+    'CountWeightedLHEWeightScale_rwgt4'                                              : [ 2.87128493e+07, 2.62420759e+07, 2.40922494e+07, 2.50508105e+07, 2.28901015e+07, 2.10122911e+07, 2.22461863e+07, 2.03244169e+07, 1.86550069e+07, ],
+    'CountWeightedLHEEnvelope_rwgt4'                                                 : [ 2.87881855e+07, 1.86295491e+07, ],
+    'CountWeightedPSWeight_rwgt4'                                                    : [ 2.28907331e+08, 2.28903340e+08, 2.28903340e+08, 2.28907330e+08, 2.28903340e+08, 2.28907449e+08, ],
+    'CountWeightedPSWeightOriginalXWGTUP_rwgt4'                                      : [ 2.30151452e+07, 2.30167449e+07, 3.35408422e+07, 2.30151810e+07, 2.29751999e+07, 1.35519304e+07, ],
+    'CountWeightedFull_rwgt4'                                                        : [ 2.28804937e+07, 2.28804510e+07, 2.28804961e+07, ],
+    'CountWeightedFullLHEWeightScale_rwgt4'                                          : [ 2.87007683e+07, 2.62308100e+07, 2.40817452e+07, 2.50402568e+07, 2.28802619e+07, 2.10031185e+07, 2.22368047e+07, 2.03156727e+07, 1.86468564e+07, ],
+    'CountWeightedFullLHEEnvelope_rwgt4'                                             : [ 2.87760169e+07, 1.86214620e+07, ],
+    'CountWeightedFullPSWeight_rwgt4'                                                : [ 2.28804946e+08, 2.28804945e+08, 2.28804945e+08, 2.28804947e+08, 2.28804945e+08, 2.28804947e+08, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_rwgt4'                                  : [ 2.30043838e+07, 2.30048627e+07, 3.35235004e+07, 2.30043369e+07, 2.29632680e+07, 1.35455743e+07, ],
+    'CountWeighted_rwgt5'                                                            : [ 1.71762636e+07, 1.71762368e+07, 1.71762066e+07, ],
+    'CountWeightedLHEWeightScale_rwgt5'                                              : [ 2.15688268e+07, 1.96946822e+07, 1.80674237e+07, 1.88146768e+07, 1.71760879e+07, 1.57550172e+07, 1.67060437e+07, 1.52488974e+07, 1.39857311e+07, ],
+    'CountWeightedLHEEnvelope_rwgt5'                                                 : [ 2.16246970e+07, 1.39668512e+07, ],
+    'CountWeightedPSWeight_rwgt5'                                                    : [ 1.71765591e+08, 1.71762585e+08, 1.71762585e+08, 1.71765589e+08, 1.71762585e+08, 1.71765678e+08, ],
+    'CountWeightedPSWeightOriginalXWGTUP_rwgt5'                                      : [ 1.72706133e+07, 1.72711358e+07, 2.51661195e+07, 1.72707098e+07, 1.72433051e+07, 1.01734605e+07, ],
+    'CountWeightedFull_rwgt5'                                                        : [ 1.71688767e+07, 1.71688456e+07, 1.71688259e+07, ],
+    'CountWeightedFullLHEWeightScale_rwgt5'                                          : [ 2.15597459e+07, 1.96862230e+07, 1.80595411e+07, 1.88067468e+07, 1.71687011e+07, 1.57481347e+07, 1.66989955e+07, 1.52423345e+07, 1.39796161e+07, ],
+    'CountWeightedFullLHEEnvelope_rwgt5'                                             : [ 2.16155506e+07, 1.39607829e+07, ],
+    'CountWeightedFullPSWeight_rwgt5'                                                : [ 1.71688718e+08, 1.71688717e+08, 1.71688717e+08, 1.71688718e+08, 1.71688717e+08, 1.71688718e+08, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_rwgt5'                                  : [ 1.72625337e+07, 1.72622171e+07, 2.51530913e+07, 1.72625685e+07, 1.72343357e+07, 1.01686872e+07, ],
+    'CountWeighted_rwgt6'                                                            : [ 1.23799000e+07, 1.23798199e+07, 1.23798251e+07, ],
+    'CountWeightedLHEWeightScale_rwgt6'                                              : [ 1.55692928e+07, 1.41980512e+07, 1.30109420e+07, 1.35783326e+07, 1.23797739e+07, 1.13433443e+07, 1.20546083e+07, 1.09889892e+07, 1.00679037e+07, ],
+    'CountWeightedLHEEnvelope_rwgt6'                                                 : [ 1.56088530e+07, 1.00545456e+07, ],
+    'CountWeightedPSWeight_rwgt6'                                                    : [ 1.23801161e+08, 1.23798985e+08, 1.23798985e+08, 1.23801160e+08, 1.23798985e+08, 1.23801224e+08, ],
+    'CountWeightedPSWeightOriginalXWGTUP_rwgt6'                                      : [ 1.24486427e+07, 1.24476377e+07, 1.81391754e+07, 1.24487533e+07, 1.24342171e+07, 7.33652705e+06, ],
+    'CountWeightedFull_rwgt6'                                                        : [ 1.23745657e+07, 1.23744837e+07, 1.23744939e+07, ],
+    'CountWeightedFullLHEWeightScale_rwgt6'                                          : [ 1.55627268e+07, 1.41919414e+07, 1.30052539e+07, 1.35725987e+07, 1.23744397e+07, 1.13383794e+07, 1.20495132e+07, 1.09842499e+07, 1.00634930e+07, ],
+    'CountWeightedFullLHEEnvelope_rwgt6'                                             : [ 1.56022404e+07, 1.00501679e+07, ],
+    'CountWeightedFullPSWeight_rwgt6'                                                : [ 1.23745648e+08, 1.23745647e+08, 1.23745647e+08, 1.23745648e+08, 1.23745647e+08, 1.23745648e+08, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_rwgt6'                                  : [ 1.24428094e+07, 1.24412040e+07, 1.81297509e+07, 1.24428745e+07, 1.24277180e+07, 7.33308163e+06, ],
+    'CountWeighted_rwgt7'                                                            : [ 8.50261272e+06, 8.50240555e+06, 8.50258147e+06, ],
+    'CountWeightedLHEWeightScale_rwgt7'                                              : [ 1.07159740e+07, 9.75375462e+06, 8.92424499e+06, 9.34327857e+06, 8.50252591e+06, 7.77853534e+06, 8.29321561e+06, 7.54590921e+06, 6.90264930e+06, ],
+    'CountWeightedLHEEnvelope_rwgt7'                                                 : [ 1.07423884e+07, 6.89375341e+06, ],
+    'CountWeightedPSWeight_rwgt7'                                                    : [ 8.50276037e+07, 8.50260991e+07, 8.50260991e+07, 8.50276010e+07, 8.50260991e+07, 8.50276464e+07, ],
+    'CountWeightedPSWeightOriginalXWGTUP_rwgt7'                                      : [ 8.55060354e+06, 8.54761482e+06, 1.24620137e+07, 8.55069119e+06, 8.54930315e+06, 5.04194042e+06, ],
+    'CountWeightedFull_rwgt7'                                                        : [ 8.49893148e+06, 8.49872494e+06, 8.49889999e+06, ],
+    'CountWeightedFullLHEWeightScale_rwgt7'                                          : [ 1.07114341e+07, 9.74953622e+06, 8.92032338e+06, 9.33931554e+06, 8.49884475e+06, 7.77511409e+06, 8.28969494e+06, 7.54263961e+06, 6.89961005e+06, ],
+    'CountWeightedFullLHEEnvelope_rwgt7'                                             : [ 1.07378168e+07, 6.89073606e+06, ],
+    'CountWeightedFullPSWeight_rwgt7'                                                : [ 8.49892940e+07, 8.49892934e+07, 8.49892934e+07, 8.49892940e+07, 8.49892934e+07, 8.49892940e+07, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_rwgt7'                                  : [ 8.54657999e+06, 8.54318617e+06, 1.24554821e+07, 8.54663492e+06, 8.54478268e+06, 5.03956654e+06, ],
+    'CountWeighted_rwgt8'                                                            : [ 5.54029491e+06, 5.53989613e+06, 5.54035952e+06, ],
+    'CountWeightedLHEWeightScale_rwgt8'                                              : [ 7.00372600e+06, 6.35707809e+06, 5.80300689e+06, 6.10502677e+06, 5.54023857e+06, 5.05681843e+06, 5.41787919e+06, 4.91601494e+06, 4.48661146e+06, ],
+    'CountWeightedLHEEnvelope_rwgt8'                                                 : [ 7.02014090e+06, 4.48112249e+06, ],
+    'CountWeightedPSWeight_rwgt8'                                                    : [ 5.54039277e+07, 5.54029405e+07, 5.54029405e+07, 5.54039252e+07, 5.54029405e+07, 5.54039550e+07, ],
+    'CountWeightedPSWeightOriginalXWGTUP_rwgt8'                                      : [ 5.57236641e+06, 5.56694593e+06, 8.12862695e+06, 5.57239812e+06, 5.58445908e+06, 3.28726943e+06, ],
+    'CountWeightedFull_rwgt8'                                                        : [ 5.53786823e+06, 5.53747235e+06, 5.53793015e+06, ],
+    'CountWeightedFullLHEWeightScale_rwgt8'                                          : [ 7.00072644e+06, 6.35429688e+06, 5.80042491e+06, 6.10240881e+06, 5.53781188e+06, 5.05456602e+06, 5.41555430e+06, 4.91385978e+06, 4.48461162e+06, ],
+    'CountWeightedFullLHEEnvelope_rwgt8'                                             : [ 7.01712128e+06, 4.47913621e+06, ],
+    'CountWeightedFullPSWeight_rwgt8'                                                : [ 5.53786735e+07, 5.53786731e+07, 5.53786731e+07, 5.53786735e+07, 5.53786731e+07, 5.53786735e+07, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_rwgt8'                                  : [ 5.56971922e+06, 5.56404627e+06, 8.12427980e+06, 5.56972616e+06, 5.58142537e+06, 3.28571189e+06, ],
+    'CountWeighted_rwgt9'                                                            : [ 3.49705283e+06, 3.49639276e+06, 3.49726656e+06, ],
+    'CountWeightedLHEWeightScale_rwgt9'                                              : [ 4.43768808e+06, 4.01273318e+06, 3.65155392e+06, 3.86806354e+06, 3.49701753e+06, 3.18196244e+06, 3.43258365e+06, 3.10294757e+06, 2.82314336e+06, ],
+    'CountWeightedLHEEnvelope_rwgt9'                                                 : [ 4.44726585e+06, 2.82000200e+06, ],
+    'CountWeightedPSWeight_rwgt9'                                                    : [ 3.49711579e+07, 3.49705314e+07, 3.49705314e+07, 3.49711551e+07, 3.49705314e+07, 3.49711742e+07, ],
+    'CountWeightedPSWeightOriginalXWGTUP_rwgt9'                                      : [ 3.51806648e+06, 3.50975947e+06, 5.14501766e+06, 3.51800070e+06, 3.54379121e+06, 2.07494462e+06, ],
+    'CountWeightedFull_rwgt9'                                                        : [ 3.49548065e+06, 3.49482563e+06, 3.49568918e+06, ],
+    'CountWeightedFullLHEWeightScale_rwgt9'                                          : [ 4.43574032e+06, 4.01093045e+06, 3.64988322e+06, 3.86636417e+06, 3.49544534e+06, 3.18050538e+06, 3.43107448e+06, 3.10155164e+06, 2.82185021e+06, ],
+    'CountWeightedFullLHEEnvelope_rwgt9'                                             : [ 4.44530525e+06, 2.81871680e+06, ],
+    'CountWeightedFullPSWeight_rwgt9'                                                : [ 3.49548063e+07, 3.49548061e+07, 3.49548061e+07, 3.49548063e+07, 3.49548061e+07, 3.49548063e+07, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_rwgt9'                                  : [ 3.51635862e+06, 3.50791012e+06, 5.14214331e+06, 3.51627302e+06, 3.54175077e+06, 2.07394719e+06, ],
+    'CountWeighted_rwgt10'                                                           : [ 2.37151484e+06, 2.37052332e+06, 2.37193024e+06, ],
+    'CountWeightedLHEWeightScale_rwgt10'                                             : [ 3.01613853e+06, 2.71914111e+06, 2.46843826e+06, 2.63088763e+06, 2.37149096e+06, 2.15270872e+06, 2.33599582e+06, 2.10549054e+06, 1.91112303e+06, ],
+    'CountWeightedLHEEnvelope_rwgt10'                                                : [ 3.02203776e+06, 1.90927165e+06, ],
+    'CountWeightedPSWeight_rwgt10'                                                   : [ 2.37155557e+07, 2.37151342e+07, 2.37151342e+07, 2.37155530e+07, 2.37151342e+07, 2.37155659e+07, ],
+    'CountWeightedPSWeightOriginalXWGTUP_rwgt10'                                     : [ 2.38631732e+06, 2.37467127e+06, 3.50917267e+06, 2.38611761e+06, 2.42592087e+06, 1.40415260e+06, ],
+    'CountWeightedFull_rwgt10'                                                       : [ 2.37039752e+06, 2.36941314e+06, 2.37080527e+06, ],
+    'CountWeightedFullLHEWeightScale_rwgt10'                                         : [ 3.01475538e+06, 2.71786053e+06, 2.46725123e+06, 2.62968040e+06, 2.37037369e+06, 2.15167320e+06, 2.33492336e+06, 2.10449838e+06, 1.91020338e+06, ],
+    'CountWeightedFullLHEEnvelope_rwgt10'                                            : [ 3.02064531e+06, 1.90835684e+06, ],
+    'CountWeightedFullPSWeight_rwgt10'                                               : [ 2.37039613e+07, 2.37039611e+07, 2.37039611e+07, 2.37039613e+07, 2.37039611e+07, 2.37039613e+07, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_rwgt10'                                 : [ 2.38511306e+06, 2.37339344e+06, 3.50706090e+06, 2.38489493e+06, 2.42438159e+06, 1.40345972e+06, ],
+    'CountWeighted_rwgt11'                                                           : [ 2.16368842e+06, 2.16229618e+06, 2.16436020e+06, ],
+    'CountWeightedLHEWeightScale_rwgt11'                                             : [ 2.73909562e+06, 2.47631739e+06, 2.25366815e+06, 2.39351152e+06, 2.16366670e+06, 1.96906476e+06, 2.12812409e+06, 1.92365210e+06, 1.75055857e+06, ],
+    'CountWeightedLHEEnvelope_rwgt11'                                                : [ 2.74447311e+06, 1.74893930e+06, ],
+    'CountWeightedPSWeight_rwgt11'                                                   : [ 2.16372483e+07, 2.16368760e+07, 2.16368760e+07, 2.16372457e+07, 2.16368760e+07, 2.16372571e+07, ],
+    'CountWeightedPSWeightOriginalXWGTUP_rwgt11'                                     : [ 2.17712824e+06, 2.16169196e+06, 3.22111658e+06, 2.17675874e+06, 2.23086736e+06, 1.27490131e+06, ],
+    'CountWeightedFull_rwgt11'                                                       : [ 2.16262662e+06, 2.16124347e+06, 2.16328877e+06, ],
+    'CountWeightedFullLHEWeightScale_rwgt11'                                         : [ 2.73778942e+06, 2.47510220e+06, 2.25253677e+06, 2.39237011e+06, 2.16260493e+06, 1.96807654e+06, 2.12710910e+06, 1.92270839e+06, 1.74968025e+06, ],
+    'CountWeightedFullLHEEnvelope_rwgt11'                                            : [ 2.74315772e+06, 1.74806541e+06, ],
+    'CountWeightedFullPSWeight_rwgt11'                                               : [ 2.16262582e+07, 2.16262581e+07, 2.16262581e+07, 2.16262582e+07, 2.16262581e+07, 2.16262582e+07, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_rwgt11'                                 : [ 2.17599217e+06, 2.16050764e+06, 3.21905711e+06, 2.17560186e+06, 2.22933670e+06, 1.27425709e+06, ],
+    'CountWeighted_rwgt12'                                                           : [ 2.87357437e+06, 2.87171217e+06, 2.87455767e+06, ],
+    'CountWeightedLHEWeightScale_rwgt12'                                             : [ 3.60655545e+06, 3.28425859e+06, 3.00724755e+06, 3.15593227e+06, 2.87354551e+06, 2.63103152e+06, 2.80897000e+06, 2.55743320e+06, 2.34145230e+06, ],
+    'CountWeightedLHEEnvelope_rwgt12'                                                : [ 3.61456903e+06, 2.33900760e+06, ],
+    'CountWeightedPSWeight_rwgt12'                                                   : [ 2.87362252e+07, 2.87357458e+07, 2.87357458e+07, 2.87362224e+07, 2.87357458e+07, 2.87362370e+07, ],
+    'CountWeightedPSWeightOriginalXWGTUP_rwgt12'                                     : [ 2.89050136e+06, 2.87082315e+06, 4.28085042e+06, 2.88992385e+06, 2.95863198e+06, 1.68718897e+06, ],
+    'CountWeightedFull_rwgt12'                                                       : [ 2.87216853e+06, 2.87031742e+06, 2.87314056e+06, ],
+    'CountWeightedFullLHEWeightScale_rwgt12'                                         : [ 3.60483882e+06, 3.28265162e+06, 3.00574415e+06, 3.15443018e+06, 2.87213969e+06, 2.62971688e+06, 2.80763327e+06, 2.55618250e+06, 2.34028259e+06, ],
+    'CountWeightedFullLHEEnvelope_rwgt12'                                            : [ 3.61283916e+06, 2.33784449e+06, ],
+    'CountWeightedFullPSWeight_rwgt12'                                               : [ 2.87216877e+07, 2.87216875e+07, 2.87216875e+07, 2.87216877e+07, 2.87216875e+07, 2.87216877e+07, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_rwgt12'                                 : [ 2.88899754e+06, 2.86925391e+06, 4.27813311e+06, 2.88839311e+06, 2.95661777e+06, 1.68633773e+06, ],
+    'CountWeighted_rwgt13'                                                           : [ 4.50116321e+06, 4.49876215e+06, 4.50251175e+06, ],
+    'CountWeightedLHEWeightScale_rwgt13'                                             : [ 5.61850527e+06, 5.14295479e+06, 4.72916463e+06, 4.91814228e+06, 4.50111791e+06, 4.13859852e+06, 4.37852321e+06, 4.00682314e+06, 3.68379146e+06, ],
+    'CountWeightedLHEEnvelope_rwgt13'                                                : [ 5.63231189e+06, 3.67946341e+06, ],
+    'CountWeightedPSWeight_rwgt13'                                                   : [ 4.50123771e+07, 4.50116349e+07, 4.50116349e+07, 4.50123747e+07, 4.50116349e+07, 4.50123968e+07, ],
+    'CountWeightedPSWeightOriginalXWGTUP_rwgt13'                                     : [ 4.52642776e+06, 4.50205407e+06, 6.68834948e+06, 4.52560374e+06, 4.60919483e+06, 2.64100951e+06, ],
+    'CountWeightedFull_rwgt13'                                                       : [ 4.49901461e+06, 4.49662541e+06, 4.50034980e+06, ],
+    'CountWeightedFullLHEWeightScale_rwgt13'                                         : [ 5.61589065e+06, 5.14049944e+06, 4.72686153e+06, 4.91585335e+06, 4.49896932e+06, 4.13658316e+06, 4.37648521e+06, 4.00491026e+06, 3.68199802e+06, ],
+    'CountWeightedFullLHEEnvelope_rwgt13'                                            : [ 5.62967652e+06, 3.67768143e+06, ],
+    'CountWeightedFullPSWeight_rwgt13'                                               : [ 4.49901453e+07, 4.49901450e+07, 4.49901450e+07, 4.49901453e+07, 4.49901450e+07, 4.49901453e+07, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_rwgt13'                                 : [ 4.52412047e+06, 4.49962203e+06, 6.68426383e+06, 4.52325969e+06, 4.60620396e+06, 2.63969545e+06, ],
+    'CountWeighted_rwgt14'                                                           : [ 1.05094623e+07, 1.05057769e+07, 1.05116995e+07, ],
+    'CountWeightedLHEWeightScale_rwgt14'                                             : [ 1.30758948e+07, 1.20126244e+07, 1.10780208e+07, 1.14419370e+07, 1.05093564e+07, 9.69055023e+06, 1.01837650e+07, 9.35244498e+06, 8.62282865e+06, ],
+    'CountWeightedLHEEnvelope_rwgt14'                                                : [ 1.31107611e+07, 8.61156107e+06, ],
+    'CountWeightedPSWeight_rwgt14'                                                   : [ 1.05096332e+08, 1.05094597e+08, 1.05094597e+08, 1.05096331e+08, 1.05094597e+08, 1.05096382e+08, ],
+    'CountWeightedPSWeightOriginalXWGTUP_rwgt14'                                     : [ 1.05659453e+07, 1.05308239e+07, 1.55466749e+07, 1.05645204e+07, 1.06787351e+07, 6.17325804e+06, ],
+    'CountWeightedFull_rwgt14'                                                       : [ 1.05046285e+07, 1.05009586e+07, 1.05068492e+07, ],
+    'CountWeightedFullLHEWeightScale_rwgt14'                                         : [ 1.30700207e+07, 1.20071018e+07, 1.10728357e+07, 1.14367959e+07, 1.05045227e+07, 9.68601204e+06, 1.01791871e+07, 9.34814269e+06, 8.61878934e+06, ],
+    'CountWeightedFullLHEEnvelope_rwgt14'                                            : [ 1.31048401e+07, 8.60755082e+06, ],
+    'CountWeightedFullPSWeight_rwgt14'                                               : [ 1.05046262e+08, 1.05046261e+08, 1.05046261e+08, 1.05046262e+08, 1.05046261e+08, 1.05046262e+08, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_rwgt14'                                 : [ 1.05607244e+07, 1.05252312e+07, 1.55377227e+07, 1.05592327e+07, 1.06723156e+07, 6.17025165e+06, ],
+    'CountWeighted_rwgt15'                                                           : [ 3.35385430e+07, 3.35314556e+07, 3.35431878e+07, ],
+    'CountWeightedLHEWeightScale_rwgt15'                                             : [ 4.17246327e+07, 3.83610948e+07, 3.53958250e+07, 3.64870333e+07, 3.35382008e+07, 3.09416998e+07, 3.24587844e+07, 2.98310600e+07, 2.75183137e+07, ],
+    'CountWeightedLHEEnvelope_rwgt15'                                                : [ 4.18395075e+07, 2.74804736e+07, ],
+    'CountWeightedPSWeight_rwgt15'                                                   : [ 3.35391080e+08, 3.35385485e+08, 3.35385485e+08, 3.35391079e+08, 3.35385485e+08, 3.35391245e+08, ],
+    'CountWeightedPSWeightOriginalXWGTUP_rwgt15'                                     : [ 3.37156547e+07, 3.36536115e+07, 4.94366371e+07, 3.37125779e+07, 3.38915002e+07, 1.97361909e+07, ],
+    'CountWeightedFull_rwgt15'                                                       : [ 3.35235464e+07, 3.35164773e+07, 3.35281722e+07, ],
+    'CountWeightedFullLHEWeightScale_rwgt15'                                         : [ 4.17063933e+07, 3.83439554e+07, 3.53797411e+07, 3.64710706e+07, 3.35232045e+07, 3.09276272e+07, 3.24445766e+07, 2.98177132e+07, 2.75057910e+07, ],
+    'CountWeightedFullLHEEnvelope_rwgt15'                                            : [ 4.18211233e+07, 2.74680468e+07, ],
+    'CountWeightedFullPSWeight_rwgt15'                                               : [ 3.35235512e+08, 3.35235510e+08, 3.35235510e+08, 3.35235512e+08, 3.35235510e+08, 3.35235512e+08, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_rwgt15'                                 : [ 3.36993767e+07, 3.36359588e+07, 4.94094270e+07, 3.36961257e+07, 3.38723108e+07, 1.97267309e+07, ],
+    'CountWeighted_rwgt17'                                                           : [ 8.95441830e+07, 8.95434431e+07, 8.95450188e+07, ],
+    'CountWeightedLHEWeightScale_rwgt17'                                             : [ 1.12139130e+08, 1.02626421e+08, 9.43238633e+07, 9.78650938e+07, 8.95432700e+07, 8.22887904e+07, 8.69274081e+07, 7.95238405e+07, 7.30727945e+07, ],
+    'CountWeightedLHEEnvelope_rwgt17'                                                : [ 1.12438521e+08, 7.29717102e+07, ],
+    'CountWeightedPSWeight_rwgt17'                                                   : [ 8.95457280e+08, 8.95441770e+08, 8.95441770e+08, 8.95457277e+08, 8.95441770e+08, 8.95457740e+08, ],
+    'CountWeightedPSWeightOriginalXWGTUP_rwgt17'                                     : [ 9.00274410e+07, 9.00328619e+07, 1.31244529e+08, 9.00269829e+07, 8.98728158e+07, 5.29745495e+07, ],
+    'CountWeightedFull_rwgt17'                                                       : [ 8.95056744e+07, 8.95048990e+07, 8.95065423e+07, ],
+    'CountWeightedFullLHEWeightScale_rwgt17'                                         : [ 1.12091917e+08, 1.02582344e+08, 9.42827116e+07, 9.78238356e+07, 8.95047629e+07, 8.22528497e+07, 8.68907236e+07, 7.94896095e+07, 7.30408481e+07, ],
+    'CountWeightedFullLHEEnvelope_rwgt17'                                            : [ 1.12390962e+08, 7.29400146e+07, ],
+    'CountWeightedFullPSWeight_rwgt17'                                               : [ 8.95056601e+08, 8.95056598e+08, 8.95056598e+08, 8.95056602e+08, 8.95056598e+08, 8.95056602e+08, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_rwgt17'                                 : [ 8.99853353e+07, 8.99863863e+07, 1.31176629e+08, 8.99845401e+07, 8.98261036e+07, 5.29496977e+07, ],
+    'CountWeighted_rwgt19'                                                           : [ 5.62575829e+07, 5.62574917e+07, 5.62577142e+07, ],
+    'CountWeightedLHEWeightScale_rwgt19'                                             : [ 7.05462443e+07, 6.44919369e+07, 5.92210322e+07, 6.15518659e+07, 5.62570099e+07, 5.16527620e+07, 5.46627776e+07, 4.99532356e+07, 4.58597648e+07, ],
+    'CountWeightedLHEEnvelope_rwgt19'                                                : [ 7.07319747e+07, 4.57970083e+07, ],
+    'CountWeightedPSWeight_rwgt19'                                                   : [ 5.62585695e+08, 5.62575899e+08, 5.62575899e+08, 5.62585694e+08, 5.62575899e+08, 5.62585985e+08, ],
+    'CountWeightedPSWeightOriginalXWGTUP_rwgt19'                                     : [ 5.65637971e+07, 5.65678217e+07, 8.24366448e+07, 5.65638163e+07, 5.64649403e+07, 3.33024062e+07, ],
+    'CountWeightedFull_rwgt19'                                                       : [ 5.62334007e+07, 5.62332913e+07, 5.62335549e+07, ],
+    'CountWeightedFullLHEWeightScale_rwgt19'                                         : [ 7.05165577e+07, 6.44642527e+07, 5.91952077e+07, 6.15259288e+07, 5.62328281e+07, 5.16302137e+07, 5.46397257e+07, 4.99317452e+07, 4.58397270e+07, ],
+    'CountWeightedFullLHEEnvelope_rwgt19'                                            : [ 7.07020705e+07, 4.57771257e+07, ],
+    'CountWeightedFullPSWeight_rwgt19'                                               : [ 5.62334106e+08, 5.62334102e+08, 5.62334102e+08, 5.62334105e+08, 5.62334102e+08, 5.62334106e+08, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_rwgt19'                                 : [ 5.65373469e+07, 5.65386218e+07, 8.23940270e+07, 5.65371710e+07, 5.64356212e+07, 3.32867898e+07, ],
+    'CountWeighted_rwgt20'                                                           : [ 4.69974896e+07, 4.69974490e+07, 4.69973820e+07, ],
+    'CountWeightedLHEWeightScale_rwgt20'                                             : [ 5.89709512e+07, 5.38819638e+07, 4.94567785e+07, 5.14470489e+07, 4.69970108e+07, 4.31319607e+07, 4.56853312e+07, 4.17275921e+07, 3.82916566e+07, ],
+    'CountWeightedLHEEnvelope_rwgt20'                                                : [ 5.91251028e+07, 3.82395659e+07, ],
+    'CountWeightedPSWeight_rwgt20'                                                   : [ 4.69983064e+08, 4.69974861e+08, 4.69974861e+08, 4.69983061e+08, 4.69974861e+08, 4.69983305e+08, ],
+    'CountWeightedPSWeightOriginalXWGTUP_rwgt20'                                     : [ 4.72543713e+07, 4.72570042e+07, 6.88629247e+07, 4.72544612e+07, 4.71745869e+07, 2.78281098e+07, ],
+    'CountWeightedFull_rwgt20'                                                       : [ 4.69772878e+07, 4.69772324e+07, 4.69771960e+07, ],
+    'CountWeightedFullLHEWeightScale_rwgt20'                                         : [ 5.89461314e+07, 5.38588309e+07, 4.94352131e+07, 5.14253716e+07, 4.69768094e+07, 4.31131316e+07, 4.56660682e+07, 4.17096394e+07, 3.82749215e+07, ],
+    'CountWeightedFullLHEEnvelope_rwgt20'                                            : [ 5.91001034e+07, 3.82229603e+07, ],
+    'CountWeightedFullPSWeight_rwgt20'                                               : [ 4.69772822e+08, 4.69772819e+08, 4.69772819e+08, 4.69772823e+08, 4.69772819e+08, 4.69772823e+08, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_rwgt20'                                 : [ 4.72322751e+07, 4.72326105e+07, 6.88273160e+07, 4.72321962e+07, 4.71500834e+07, 2.78150572e+07, ],
+    'CountWeighted_rwgt22'                                                           : [ 3.12303949e+07, 3.12302793e+07, 3.12301553e+07, ],
+    'CountWeightedLHEWeightScale_rwgt22'                                             : [ 3.92538378e+07, 3.58142890e+07, 3.28332827e+07, 3.42367822e+07, 3.12300774e+07, 2.86272002e+07, 3.03965742e+07, 2.77231550e+07, 2.54098075e+07, ],
+    'CountWeightedLHEEnvelope_rwgt22'                                                : [ 3.93543221e+07, 2.53758700e+07, ],
+    'CountWeightedPSWeight_rwgt22'                                                   : [ 3.12309391e+08, 3.12303909e+08, 3.12303909e+08, 3.12309388e+08, 3.12303909e+08, 3.12309551e+08, ],
+    'CountWeightedPSWeightOriginalXWGTUP_rwgt22'                                     : [ 3.14031707e+07, 3.14017219e+07, 4.57588128e+07, 3.14033310e+07, 3.13623078e+07, 1.85040990e+07, ],
+    'CountWeightedFull_rwgt22'                                                       : [ 3.12169518e+07, 3.12168296e+07, 3.12167185e+07, ],
+    'CountWeightedFullLHEWeightScale_rwgt22'                                         : [ 3.92372967e+07, 3.57988899e+07, 3.28189415e+07, 3.42223368e+07, 3.12166344e+07, 2.86146834e+07, 3.03837390e+07, 2.77112097e+07, 2.53986871e+07, ],
+    'CountWeightedFullLHEEnvelope_rwgt22'                                            : [ 3.93376628e+07, 2.53648332e+07, ],
+    'CountWeightedFullPSWeight_rwgt22'                                               : [ 3.12169489e+08, 3.12169487e+08, 3.12169487e+08, 3.12169488e+08, 3.12169487e+08, 3.12169489e+08, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_rwgt22'                                 : [ 3.13884661e+07, 3.13854985e+07, 4.57350767e+07, 3.13885123e+07, 3.13459525e+07, 1.84954142e+07, ],
+    'CountWeighted_rwgt23'                                                           : [ 2.47233975e+07, 2.47231443e+07, 2.47231848e+07, ],
+    'CountWeightedLHEWeightScale_rwgt23'                                             : [ 3.11120269e+07, 2.83565952e+07, 2.59740457e+07, 2.71313305e+07, 2.47231465e+07, 2.26432245e+07, 2.40852660e+07, 2.19443606e+07, 2.00960571e+07, ],
+    'CountWeightedLHEEnvelope_rwgt23'                                                : [ 3.11904119e+07, 2.00696077e+07, ],
+    'CountWeightedPSWeight_rwgt23'                                                   : [ 2.47238302e+08, 2.47233947e+08, 2.47233947e+08, 2.47238297e+08, 2.47233947e+08, 2.47238426e+08, ],
+    'CountWeightedPSWeightOriginalXWGTUP_rwgt23'                                     : [ 2.48613942e+07, 2.48572278e+07, 3.62284083e+07, 2.48615254e+07, 2.48403794e+07, 1.46544140e+07, ],
+    'CountWeightedFull_rwgt23'                                                       : [ 2.47127318e+07, 2.47124783e+07, 2.47125239e+07, ],
+    'CountWeightedFullLHEWeightScale_rwgt23'                                         : [ 3.10988948e+07, 2.83443804e+07, 2.59626767e+07, 2.71198621e+07, 2.47124811e+07, 2.26333037e+07, 2.40750749e+07, 2.19348859e+07, 2.00872418e+07, ],
+    'CountWeightedFullLHEEnvelope_rwgt23'                                            : [ 3.11771877e+07, 2.00608582e+07, ],
+    'CountWeightedFullPSWeight_rwgt23'                                               : [ 2.47127313e+08, 2.47127312e+08, 2.47127312e+08, 2.47127314e+08, 2.47127312e+08, 2.47127314e+08, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_rwgt23'                                 : [ 2.48497351e+07, 2.48443729e+07, 3.62095469e+07, 2.48497741e+07, 2.48273610e+07, 1.46475288e+07, ],
+    'CountWeighted_rwgt25'                                                           : [ 1.44625477e+07, 1.44618122e+07, 1.44625267e+07, ],
+    'CountWeightedLHEWeightScale_rwgt25'                                             : [ 1.82619030e+07, 1.65934820e+07, 1.51606059e+07, 1.59198166e+07, 1.44624000e+07, 1.32120843e+07, 1.41287847e+07, 1.28336097e+07, 1.17229122e+07, ],
+    'CountWeightedLHEEnvelope_rwgt25'                                                : [ 1.83055616e+07, 1.17082680e+07, ],
+    'CountWeightedPSWeight_rwgt25'                                                   : [ 1.44627989e+08, 1.44625419e+08, 1.44625419e+08, 1.44627984e+08, 1.44625419e+08, 1.44628061e+08, ],
+    'CountWeightedPSWeightOriginalXWGTUP_rwgt25'                                     : [ 1.45455443e+07, 1.45345615e+07, 2.12109590e+07, 1.45455011e+07, 1.45649503e+07, 8.57963192e+06, ],
+    'CountWeightedFull_rwgt25'                                                       : [ 1.44562440e+07, 1.44555141e+07, 1.44562199e+07, ],
+    'CountWeightedFullLHEWeightScale_rwgt25'                                         : [ 1.82541185e+07, 1.65862589e+07, 1.51538973e+07, 1.59130218e+07, 1.44560963e+07, 1.32062318e+07, 1.41227496e+07, 1.28280117e+07, 1.17177146e+07, ],
+    'CountWeightedFullLHEEnvelope_rwgt25'                                            : [ 1.82977242e+07, 1.17031069e+07, ],
+    'CountWeightedFullPSWeight_rwgt25'                                               : [ 1.44562397e+08, 1.44562396e+08, 1.44562396e+08, 1.44562397e+08, 1.44562396e+08, 1.44562397e+08, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_rwgt25'                                 : [ 1.45386645e+07, 1.45270080e+07, 2.11997135e+07, 1.45385590e+07, 1.45571298e+07, 8.57557863e+06, ],
+    'CountWeighted_rwgt26'                                                           : [ 1.07086800e+07, 1.07075981e+07, 1.07088442e+07, ],
+    'CountWeightedLHEWeightScale_rwgt26'                                             : [ 1.35535837e+07, 1.22880664e+07, 1.12063974e+07, 1.18137451e+07, 1.07085714e+07, 9.76492323e+06, 1.04836119e+07, 9.50165389e+06, 8.66352107e+06, ],
+    'CountWeightedLHEEnvelope_rwgt26'                                                : [ 1.35846173e+07, 8.65319210e+06, ],
+    'CountWeightedPSWeight_rwgt26'                                                   : [ 1.07088693e+08, 1.07086781e+08, 1.07086781e+08, 1.07088688e+08, 1.07086781e+08, 1.07088746e+08, ],
+    'CountWeightedPSWeightOriginalXWGTUP_rwgt26'                                     : [ 1.07714498e+07, 1.07563815e+07, 1.57238964e+07, 1.07712638e+07, 1.08114457e+07, 6.35454778e+06, ],
+    'CountWeightedFull_rwgt26'                                                       : [ 1.07039591e+07, 1.07028861e+07, 1.07041147e+07, ],
+    'CountWeightedFullLHEWeightScale_rwgt26'                                         : [ 1.35477437e+07, 1.22826550e+07, 1.12013770e+07, 1.18086495e+07, 1.07038504e+07, 9.76054415e+06, 1.04790863e+07, 9.49746217e+06, 8.65963295e+06, ],
+    'CountWeightedFullLHEEnvelope_rwgt26'                                            : [ 1.35787381e+07, 8.64932979e+06, ],
+    'CountWeightedFullPSWeight_rwgt26'                                               : [ 1.07039573e+08, 1.07039572e+08, 1.07039572e+08, 1.07039573e+08, 1.07039572e+08, 1.07039573e+08, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_rwgt26'                                 : [ 1.07663052e+07, 1.07507630e+07, 1.57153928e+07, 1.07660689e+07, 1.08054845e+07, 6.35152662e+06, ],
+    'CountWeighted_rwgt28'                                                           : [ 5.95406492e+06, 5.95208697e+06, 5.95474340e+06, ],
+    'CountWeightedLHEWeightScale_rwgt28'                                             : [ 7.57043448e+06, 6.82951079e+06, 6.20300799e+06, 6.60098500e+06, 5.95400473e+06, 5.40741542e+06, 5.85940013e+06, 5.28458377e+06, 4.79909036e+06, ],
+    'CountWeightedLHEEnvelope_rwgt28'                                                : [ 7.58568615e+06, 4.79422019e+06, ],
+    'CountWeightedPSWeight_rwgt28'                                                   : [ 5.95417214e+07, 5.95406580e+07, 5.95406580e+07, 5.95417155e+07, 5.95406580e+07, 5.95417480e+07, ],
+    'CountWeightedPSWeightOriginalXWGTUP_rwgt28'                                     : [ 5.99092515e+06, 5.96633544e+06, 8.79309391e+06, 5.99035159e+06, 6.07284981e+06, 3.52898219e+06, ],
+    'CountWeightedFull_rwgt28'                                                       : [ 5.95130867e+06, 5.94934590e+06, 5.95197184e+06, ],
+    'CountWeightedFullLHEWeightScale_rwgt28'                                         : [ 7.56701966e+06, 6.82635137e+06, 6.20008036e+06, 6.59800534e+06, 5.95124856e+06, 5.40486228e+06, 5.85675361e+06, 5.28213646e+06, 4.79682334e+06, ],
+    'CountWeightedFullLHEEnvelope_rwgt28'                                            : [ 7.58224897e+06, 4.79196565e+06, ],
+    'CountWeightedFullPSWeight_rwgt28'                                               : [ 5.95130975e+07, 5.95130971e+07, 5.95130971e+07, 5.95130974e+07, 5.95130971e+07, 5.95130975e+07, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_rwgt28'                                 : [ 5.98794636e+06, 5.96315030e+06, 8.78794450e+06, 5.98733102e+06, 6.06913037e+06, 3.52725840e+06, ],
+    'CountWeighted_rwgt29'                                                           : [ 4.95330867e+06, 4.95077899e+06, 4.95432197e+06, ],
+    'CountWeightedLHEWeightScale_rwgt29'                                             : [ 6.29558283e+06, 5.67635828e+06, 5.15381133e+06, 5.49427607e+06, 4.95325895e+06, 4.49706077e+06, 4.88035322e+06, 4.39945804e+06, 3.99404080e+06, ],
+    'CountWeightedLHEEnvelope_rwgt29'                                                : [ 6.30768058e+06, 3.99031280e+06, ],
+    'CountWeightedPSWeight_rwgt29'                                                   : [ 4.95338999e+07, 4.95330276e+07, 4.95330276e+07, 4.95338940e+07, 4.95330276e+07, 4.95339208e+07, ],
+    'CountWeightedPSWeightOriginalXWGTUP_rwgt29'                                     : [ 4.98449069e+06, 4.95445573e+06, 7.34933016e+06, 4.98366084e+06, 5.08774465e+06, 2.92849358e+06, ],
+    'CountWeightedFull_rwgt29'                                                       : [ 4.95093560e+06, 4.94842387e+06, 4.95193039e+06, ],
+    'CountWeightedFullLHEWeightScale_rwgt29'                                         : [ 6.29264971e+06, 5.67363934e+06, 5.15128843e+06, 5.49171480e+06, 4.95088598e+06, 4.49485922e+06, 4.87807767e+06, 4.39735011e+06, 3.99208522e+06, ],
+    'CountWeightedFullLHEEnvelope_rwgt29'                                            : [ 6.30472764e+06, 3.98836707e+06, ],
+    'CountWeightedFullPSWeight_rwgt29'                                               : [ 4.95092973e+07, 4.95092969e+07, 4.95092969e+07, 4.95092973e+07, 4.95092969e+07, 4.95092973e+07, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_rwgt29'                                 : [ 4.98194064e+06, 4.95176999e+06, 7.34479280e+06, 4.98106843e+06, 5.08440835e+06, 2.92703513e+06, ],
+    'CountWeighted_rwgt31'                                                           : [ 7.45734163e+06, 7.45273225e+06, 7.45969767e+06, ],
+    'CountWeightedLHEWeightScale_rwgt31'                                             : [ 9.33812096e+06, 8.52155012e+06, 7.81634764e+06, 8.17299241e+06, 7.45726695e+06, 6.83967658e+06, 7.27553910e+06, 6.63782084e+06, 6.08766102e+06, ],
+    'CountWeightedLHEEnvelope_rwgt31'                                                : [ 9.35970242e+06, 6.08101458e+06, ],
+    'CountWeightedPSWeight_rwgt31'                                                   : [ 7.45746535e+07, 7.45734167e+07, 7.45734167e+07, 7.45746474e+07, 7.45734167e+07, 7.45746848e+07, ],
+    'CountWeightedPSWeightOriginalXWGTUP_rwgt31'                                     : [ 7.50057866e+06, 7.45150632e+06, 1.11048358e+07, 7.49876668e+06, 7.66936391e+06, 4.37629737e+06, ],
+    'CountWeightedFull_rwgt31'                                                       : [ 7.45372182e+06, 7.44913794e+06, 7.45605005e+06, ],
+    'CountWeightedFullLHEWeightScale_rwgt31'                                         : [ 9.33370786e+06, 8.51741294e+06, 7.81247218e+06, 8.16912973e+06, 7.45364708e+06, 6.83628675e+06, 7.27210051e+06, 6.63459936e+06, 6.08464472e+06, ],
+    'CountWeightedFullLHEEnvelope_rwgt31'                                            : [ 9.35525493e+06, 6.07801599e+06, ],
+    'CountWeightedFullPSWeight_rwgt31'                                               : [ 7.45372166e+07, 7.45372161e+07, 7.45372161e+07, 7.45372166e+07, 7.45372161e+07, 7.45372166e+07, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_rwgt31'                                 : [ 7.49670195e+06, 7.44744866e+06, 1.10978706e+07, 7.49482237e+06, 7.66422031e+06, 4.37409955e+06, ],
+    'CountWeighted_rwgt33'                                                           : [ 8.87097231e+07, 8.87056223e+07, 8.87130883e+07, ],
+    'CountWeightedLHEWeightScale_rwgt33'                                             : [ 1.10767684e+08, 1.01605108e+08, 9.35651667e+07, 9.67304912e+07, 8.87088204e+07, 8.16787421e+07, 8.59615726e+07, 7.88210000e+07, 7.25660286e+07, ],
+    'CountWeightedLHEEnvelope_rwgt33'                                                : [ 1.11071033e+08, 7.24640595e+07, ],
+    'CountWeightedPSWeight_rwgt33'                                                   : [ 8.87112286e+08, 8.87097115e+08, 8.87097115e+08, 8.87112298e+08, 8.87097115e+08, 8.87112744e+08, ],
+    'CountWeightedPSWeightOriginalXWGTUP_rwgt33'                                     : [ 8.91808560e+07, 8.91597972e+07, 1.30175382e+08, 8.91781674e+07, 8.91223428e+07, 5.23929550e+07, ],
+    'CountWeightedFull_rwgt33'                                                       : [ 8.86713233e+07, 8.86672026e+07, 8.86747174e+07, ],
+    'CountWeightedFullLHEWeightScale_rwgt33'                                         : [ 1.10720752e+08, 1.01561181e+08, 9.35240786e+07, 9.66894588e+07, 8.86704203e+07, 8.16428217e+07, 8.59250818e+07, 7.87868548e+07, 7.25340888e+07, ],
+    'CountWeightedFullLHEEnvelope_rwgt33'                                            : [ 1.11023743e+08, 7.24323735e+07, ],
+    'CountWeightedFullPSWeight_rwgt33'                                               : [ 8.86713131e+08, 8.86713126e+08, 8.86713126e+08, 8.86713131e+08, 8.86713126e+08, 8.86713131e+08, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_rwgt33'                                 : [ 8.91389225e+07, 8.91136554e+07, 1.30107386e+08, 8.91359020e+07, 8.90753748e+07, 5.23682863e+07, ],
+    'CountWeighted_rwgt34'                                                           : [ 4.51647227e+07, 4.51630679e+07, 4.51660818e+07, ],
+    'CountWeightedLHEWeightScale_rwgt34'                                             : [ 5.64257780e+07, 5.17369794e+07, 4.76265989e+07, 4.92685751e+07, 4.51642634e+07, 4.15706945e+07, 4.37791090e+07, 4.01260408e+07, 3.69290355e+07, ],
+    'CountWeightedLHEEnvelope_rwgt34'                                                : [ 5.65796685e+07, 3.68772350e+07, ],
+    'CountWeightedPSWeight_rwgt34'                                                   : [ 4.51654947e+08, 4.51647203e+08, 4.51647203e+08, 4.51654952e+08, 4.51647203e+08, 4.51655180e+08, ],
+    'CountWeightedPSWeightOriginalXWGTUP_rwgt34'                                     : [ 4.54051838e+07, 4.53981979e+07, 6.62570112e+07, 4.54040345e+07, 4.53618924e+07, 2.66840412e+07, ],
+    'CountWeightedFull_rwgt34'                                                       : [ 4.51452068e+07, 4.51435410e+07, 4.51465850e+07, ],
+    'CountWeightedFullLHEWeightScale_rwgt34'                                         : [ 5.64019097e+07, 5.17146520e+07, 4.76057240e+07, 4.92477136e+07, 4.51447484e+07, 4.15524481e+07, 4.37605605e+07, 4.01086888e+07, 3.69128163e+07, ],
+    'CountWeightedFullLHEEnvelope_rwgt34'                                            : [ 5.65556183e+07, 3.68611445e+07, ],
+    'CountWeightedFullPSWeight_rwgt34'                                               : [ 4.51452085e+08, 4.51452083e+08, 4.51452083e+08, 4.51452085e+08, 4.51452083e+08, 4.51452085e+08, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_rwgt34'                                 : [ 4.53838648e+07, 4.53747217e+07, 6.62224997e+07, 4.53825490e+07, 4.53380778e+07, 2.66714900e+07, ],
+    'CountWeighted_rwgt36'                                                           : [ 2.21418853e+07, 2.21413617e+07, 2.21423390e+07, ],
+    'CountWeightedLHEWeightScale_rwgt36'                                             : [ 2.76865777e+07, 2.53688825e+07, 2.33402770e+07, 2.41699680e+07, 2.21416601e+07, 2.03685049e+07, 2.14737565e+07, 1.96687649e+07, 1.80915520e+07, ],
+    'CountWeightedLHEEnvelope_rwgt36'                                                : [ 2.77615568e+07, 1.80662778e+07, ],
+    'CountWeightedPSWeight_rwgt36'                                                   : [ 2.21422617e+08, 2.21418805e+08, 2.21418805e+08, 2.21422618e+08, 2.21418805e+08, 2.21422732e+08, ],
+    'CountWeightedPSWeightOriginalXWGTUP_rwgt36'                                     : [ 2.22602934e+07, 2.22591035e+07, 3.24698816e+07, 2.22598801e+07, 2.22310204e+07, 1.30884752e+07, ],
+    'CountWeightedFull_rwgt36'                                                       : [ 2.21323388e+07, 2.21318091e+07, 2.21328021e+07, ],
+    'CountWeightedFullLHEWeightScale_rwgt36'                                         : [ 2.76748948e+07, 2.53579590e+07, 2.33300692e+07, 2.41597548e+07, 2.21321138e+07, 2.03595843e+07, 2.14646752e+07, 1.96602780e+07, 1.80836224e+07, ],
+    'CountWeightedFullLHEEnvelope_rwgt36'                                            : [ 2.77497871e+07, 1.80584109e+07, ],
+    'CountWeightedFullPSWeight_rwgt36'                                               : [ 2.21323361e+08, 2.21323360e+08, 2.21323360e+08, 2.21323362e+08, 2.21323360e+08, 2.21323362e+08, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_rwgt36'                                 : [ 2.22498626e+07, 2.22476033e+07, 3.24530266e+07, 2.22493664e+07, 2.22194065e+07, 1.30823273e+07, ],
+    'CountWeighted_rwgt46'                                                           : [ 5.05009769e+06, 5.04883115e+06, 5.05095276e+06, ],
+    'CountWeightedLHEWeightScale_rwgt46'                                             : [ 6.28152413e+06, 5.77469378e+06, 5.32813096e+06, 5.49448010e+06, 5.05004673e+06, 4.65892533e+06, 4.88887210e+06, 4.49276503e+06, 4.14432384e+06, ],
+    'CountWeightedLHEEnvelope_rwgt46'                                                : [ 6.29867498e+06, 4.13871069e+06, ],
+    'CountWeightedPSWeight_rwgt46'                                                   : [ 5.05018006e+07, 5.05009622e+07, 5.05009622e+07, 5.05018002e+07, 5.05009622e+07, 5.05018252e+07, ],
+    'CountWeightedPSWeightOriginalXWGTUP_rwgt46'                                     : [ 5.07684039e+06, 5.06555416e+06, 7.45163972e+06, 5.07647326e+06, 5.11060473e+06, 2.96978663e+06, ],
+    'CountWeightedFull_rwgt46'                                                       : [ 5.04781685e+06, 5.04655474e+06, 5.04866767e+06, ],
+    'CountWeightedFullLHEWeightScale_rwgt46'                                         : [ 6.27875157e+06, 5.77208759e+06, 5.32568402e+06, 5.49205348e+06, 5.04776588e+06, 4.65678453e+06, 4.88671177e+06, 4.49073477e+06, 4.14241853e+06, ],
+    'CountWeightedFullLHEEnvelope_rwgt46'                                            : [ 6.29588015e+06, 4.13681974e+06, ],
+    'CountWeightedFullPSWeight_rwgt46'                                               : [ 5.04781568e+07, 5.04781565e+07, 5.04781565e+07, 5.04781568e+07, 5.04781565e+07, 5.04781569e+07, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_rwgt46'                                 : [ 5.07436919e+06, 5.06288577e+06, 7.44747302e+06, 5.07397383e+06, 5.10764918e+06, 2.96835491e+06, ],
+    'CountWeighted_rwgt48'                                                           : [ 1.78178557e+07, 1.78150168e+07, 1.78198706e+07, ],
+    'CountWeightedLHEWeightScale_rwgt48'                                             : [ 2.21776890e+07, 2.03862635e+07, 1.88071549e+07, 1.93877952e+07, 1.78176738e+07, 1.64353540e+07, 1.72432924e+07, 1.58444350e+07, 1.46134626e+07, ],
+    'CountWeightedLHEEnvelope_rwgt48'                                                : [ 2.22390607e+07, 1.45931212e+07, ],
+    'CountWeightedPSWeight_rwgt48'                                                   : [ 1.78181477e+08, 1.78178489e+08, 1.78178489e+08, 1.78181478e+08, 1.78178489e+08, 1.78181565e+08, ],
+    'CountWeightedPSWeightOriginalXWGTUP_rwgt48'                                     : [ 1.79116485e+07, 1.78885178e+07, 2.62278021e+07, 1.79105739e+07, 1.79692070e+07, 1.04941329e+07, ],
+    'CountWeightedFull_rwgt48'                                                       : [ 1.78099648e+07, 1.78071309e+07, 1.78119747e+07, ],
+    'CountWeightedFullLHEWeightScale_rwgt48'                                         : [ 2.21680841e+07, 2.03772439e+07, 1.87986955e+07, 1.93793913e+07, 1.78097830e+07, 1.64279550e+07, 1.72358121e+07, 1.58374137e+07, 1.46068792e+07, ],
+    'CountWeightedFullLHEEnvelope_rwgt48'                                            : [ 2.22293798e+07, 1.45865891e+07, ],
+    'CountWeightedFullPSWeight_rwgt48'                                               : [ 1.78099588e+08, 1.78099587e+08, 1.78099587e+08, 1.78099588e+08, 1.78099587e+08, 1.78099588e+08, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_rwgt48'                                 : [ 1.79030685e+07, 1.78791738e+07, 2.62135909e+07, 1.79019101e+07, 1.79592476e+07, 1.04891296e+07, ],
+    'CountWeighted_rwgt49'                                                           : [ 4.76894194e+07, 4.76835067e+07, 4.76937179e+07, ],
+    'CountWeightedLHEWeightScale_rwgt49'                                             : [ 5.93955161e+07, 5.45789788e+07, 5.03359513e+07, 5.19092967e+07, 4.76889356e+07, 4.39757134e+07, 4.61578119e+07, 4.23985915e+07, 3.90926388e+07, ],
+    'CountWeightedLHEEnvelope_rwgt49'                                                : [ 5.95600578e+07, 3.90378563e+07, ],
+    'CountWeightedPSWeight_rwgt49'                                                   : [ 4.76902200e+08, 4.76894165e+08, 4.76894165e+08, 4.76902202e+08, 4.76894165e+08, 4.76902439e+08, ],
+    'CountWeightedPSWeightOriginalXWGTUP_rwgt49'                                     : [ 4.79405102e+07, 4.78952459e+07, 7.01315585e+07, 4.79379654e+07, 4.80332936e+07, 2.81080884e+07, ],
+    'CountWeightedFull_rwgt49'                                                       : [ 4.76684571e+07, 4.76625444e+07, 4.76727501e+07, ],
+    'CountWeightedFullLHEWeightScale_rwgt49'                                         : [ 5.93699759e+07, 5.45550152e+07, 5.03134852e+07, 5.18869531e+07, 4.76679725e+07, 4.39560658e+07, 4.61379316e+07, 4.23799432e+07, 3.90751615e+07, ],
+    'CountWeightedFullLHEEnvelope_rwgt49'                                            : [ 5.95343164e+07, 3.90205168e+07, ],
+    'CountWeightedFullPSWeight_rwgt49'                                               : [ 4.76684551e+08, 4.76684548e+08, 4.76684548e+08, 4.76684550e+08, 4.76684548e+08, 4.76684551e+08, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_rwgt49'                                 : [ 4.79176858e+07, 4.78703054e+07, 7.00940103e+07, 4.79149331e+07, 4.80071010e+07, 2.80947410e+07, ],
+    'CountWeighted_rwgt50'                                                           : [ 2.70037587e+07, 2.70039660e+07, 2.70034491e+07, ],
+    'CountWeightedLHEWeightScale_rwgt50'                                             : [ 3.38564228e+07, 3.09543035e+07, 2.84271599e+07, 2.95417477e+07, 2.70034857e+07, 2.47958138e+07, 2.62365886e+07, 2.39788010e+07, 2.20159421e+07, ],
+    'CountWeightedLHEEnvelope_rwgt50'                                                : [ 3.39455638e+07, 2.19858387e+07, ],
+    'CountWeightedPSWeight_rwgt50'                                                   : [ 2.70042373e+08, 2.70037659e+08, 2.70037659e+08, 2.70042372e+08, 2.70037659e+08, 2.70042512e+08, ],
+    'CountWeightedPSWeightOriginalXWGTUP_rwgt50'                                     : [ 2.71506918e+07, 2.71513982e+07, 3.95739572e+07, 2.71506980e+07, 2.71058883e+07, 1.59829038e+07, ],
+    'CountWeightedFull_rwgt50'                                                       : [ 2.69921542e+07, 2.69923519e+07, 2.69918552e+07, ],
+    'CountWeightedFullLHEWeightScale_rwgt50'                                         : [ 3.38421776e+07, 3.09410173e+07, 2.84147677e+07, 2.95293019e+07, 2.69918811e+07, 2.47849898e+07, 2.62255253e+07, 2.39684844e+07, 2.20063252e+07, ],
+    'CountWeightedFullLHEEnvelope_rwgt50'                                            : [ 3.39312153e+07, 2.19762957e+07, ],
+    'CountWeightedFullPSWeight_rwgt50'                                               : [ 2.69921582e+08, 2.69921580e+08, 2.69921580e+08, 2.69921582e+08, 2.69921580e+08, 2.69921582e+08, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_rwgt50'                                 : [ 2.71379969e+07, 2.71373841e+07, 3.95534965e+07, 2.71379077e+07, 2.70918090e+07, 1.59754085e+07, ],
+    'CountWeighted_rwgt51'                                                           : [ 2.45670969e+07, 2.45672838e+07, 2.45667723e+07, ],
+    'CountWeightedLHEWeightScale_rwgt51'                                             : [ 3.08137723e+07, 2.81620641e+07, 2.58550299e+07, 2.68859791e+07, 2.45668475e+07, 2.25515475e+07, 2.38773801e+07, 2.18145803e+07, 2.00228125e+07, ],
+    'CountWeightedLHEEnvelope_rwgt51'                                                : [ 3.08944134e+07, 1.99955865e+07, ],
+    'CountWeightedPSWeight_rwgt51'                                                   : [ 2.45675252e+08, 2.45670945e+08, 2.45670945e+08, 2.45675249e+08, 2.45670945e+08, 2.45675377e+08, ],
+    'CountWeightedPSWeightOriginalXWGTUP_rwgt51'                                     : [ 2.47011968e+07, 2.47013117e+07, 3.60037255e+07, 2.47011800e+07, 2.46619695e+07, 1.45416789e+07, ],
+    'CountWeightedFull_rwgt51'                                                       : [ 2.45565392e+07, 2.45567197e+07, 2.45562270e+07, ],
+    'CountWeightedFullLHEWeightScale_rwgt51'                                         : [ 3.08008070e+07, 2.81499775e+07, 2.58437602e+07, 2.68746546e+07, 2.45562902e+07, 2.25417049e+07, 2.38673123e+07, 2.18051972e+07, 2.00140661e+07, ],
+    'CountWeightedFullLHEEnvelope_rwgt51'                                            : [ 3.08813547e+07, 1.99869071e+07, ],
+    'CountWeightedFullPSWeight_rwgt51'                                               : [ 2.45565386e+08, 2.45565385e+08, 2.45565385e+08, 2.45565386e+08, 2.45565385e+08, 2.45565386e+08, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_rwgt51'                                 : [ 2.46896483e+07, 2.46885595e+07, 3.59851045e+07, 2.46895414e+07, 2.46491537e+07, 1.45348589e+07, ],
+    'CountWeighted_rwgt52'                                                           : [ 2.22553299e+07, 2.22554676e+07, 2.22549974e+07, ],
+    'CountWeightedLHEWeightScale_rwgt52'                                             : [ 2.79264862e+07, 2.55128474e+07, 2.34150013e+07, 2.43659075e+07, 2.22551017e+07, 2.04226055e+07, 2.16387510e+07, 1.97613188e+07, 1.81321427e+07, ],
+    'CountWeightedLHEEnvelope_rwgt52'                                                : [ 2.79990799e+07, 1.81076365e+07, ],
+    'CountWeightedPSWeight_rwgt52'                                                   : [ 2.22557162e+08, 2.22553244e+08, 2.22553244e+08, 2.22557160e+08, 2.22553244e+08, 2.22557275e+08, ],
+    'CountWeightedPSWeightOriginalXWGTUP_rwgt52'                                     : [ 2.23772336e+07, 2.23768345e+07, 3.26165287e+07, 2.23771968e+07, 2.23432354e+07, 1.31742536e+07, ],
+    'CountWeightedFull_rwgt52'                                                       : [ 2.22457672e+07, 2.22458970e+07, 2.22454439e+07, ],
+    'CountWeightedFullLHEWeightScale_rwgt52'                                         : [ 2.79147367e+07, 2.55018977e+07, 2.34047958e+07, 2.43556471e+07, 2.22455393e+07, 2.04136921e+07, 2.16296286e+07, 1.97528195e+07, 1.81242233e+07, ],
+    'CountWeightedFullLHEEnvelope_rwgt52'                                            : [ 2.79872458e+07, 1.80997780e+07, ],
+    'CountWeightedFullPSWeight_rwgt52'                                               : [ 2.22457637e+08, 2.22457636e+08, 2.22457636e+08, 2.22457637e+08, 2.22457636e+08, 2.22457638e+08, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_rwgt52'                                 : [ 2.23667674e+07, 2.23652784e+07, 3.25996513e+07, 2.23666526e+07, 2.23316185e+07, 1.31680741e+07, ],
+    'CountWeighted_rwgt53'                                                           : [ 2.00694645e+07, 2.00695704e+07, 2.00691472e+07, ],
+    'CountWeightedLHEWeightScale_rwgt53'                                             : [ 2.51958585e+07, 2.30078534e+07, 2.11081491e+07, 2.19826343e+07, 2.00692595e+07, 1.84099294e+07, 1.95216980e+07, 1.78199399e+07, 1.63447678e+07, ],
+    'CountWeightedLHEEnvelope_rwgt53'                                                : [ 2.52608634e+07, 1.63228303e+07, ],
+    'CountWeightedPSWeight_rwgt53'                                                   : [ 2.00698171e+08, 2.00694623e+08, 2.00694623e+08, 2.00698169e+08, 2.00694623e+08, 2.00698273e+08, ],
+    'CountWeightedPSWeightOriginalXWGTUP_rwgt53'                                     : [ 2.01798235e+07, 2.01789439e+07, 2.94139202e+07, 2.01797843e+07, 2.01508066e+07, 1.18812211e+07, ],
+    'CountWeightedFull_rwgt53'                                                       : [ 2.00608402e+07, 2.00609408e+07, 2.00605300e+07, ],
+    'CountWeightedFullLHEWeightScale_rwgt53'                                         : [ 2.51852590e+07, 2.29979780e+07, 2.10989465e+07, 2.19733756e+07, 2.00606356e+07, 1.84018944e+07, 1.95134678e+07, 1.78122752e+07, 1.63376273e+07, ],
+    'CountWeightedFullLHEEnvelope_rwgt53'                                            : [ 2.52501880e+07, 1.63157445e+07, ],
+    'CountWeightedFullPSWeight_rwgt53'                                               : [ 2.00608386e+08, 2.00608385e+08, 2.00608385e+08, 2.00608386e+08, 2.00608385e+08, 2.00608386e+08, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_rwgt53'                                 : [ 2.01703821e+07, 2.01685163e+07, 2.93986865e+07, 2.01702717e+07, 2.01403204e+07, 1.18756464e+07, ],
+    'CountWeighted_rwgt54'                                                           : [ 1.80079910e+07, 1.80080497e+07, 1.80076927e+07, ],
+    'CountWeightedLHEWeightScale_rwgt54'                                             : [ 2.26199675e+07, 2.06453154e+07, 1.89328772e+07, 1.97345016e+07, 1.80078070e+07, 1.65121241e+07, 1.75247488e+07, 1.59890861e+07, 1.46594507e+07, ],
+    'CountWeightedLHEEnvelope_rwgt54'                                                : [ 2.26778325e+07, 1.46399292e+07, ],
+    'CountWeightedPSWeight_rwgt54'                                                   : [ 1.80083094e+08, 1.80079896e+08, 1.80079896e+08, 1.80083091e+08, 1.80079896e+08, 1.80083186e+08, ],
+    'CountWeightedPSWeightOriginalXWGTUP_rwgt54'                                     : [ 1.81074324e+07, 1.81061011e+07, 2.63937033e+07, 1.81074038e+07, 1.80831919e+07, 1.06616755e+07, ],
+    'CountWeightedFull_rwgt54'                                                       : [ 1.80002513e+07, 1.80003049e+07, 1.79999605e+07, ],
+    'CountWeightedFullLHEWeightScale_rwgt54'                                         : [ 2.26104506e+07, 2.06364542e+07, 1.89246217e+07, 1.97261887e+07, 1.80000676e+07, 1.65049158e+07, 1.75173595e+07, 1.59822086e+07, 1.46530456e+07, ],
+    'CountWeightedFullLHEEnvelope_rwgt54'                                            : [ 2.26682474e+07, 1.46335731e+07, ],
+    'CountWeightedFullPSWeight_rwgt54'                                               : [ 1.80002488e+08, 1.80002487e+08, 1.80002487e+08, 1.80002488e+08, 1.80002487e+08, 1.80002488e+08, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_rwgt54'                                 : [ 1.80989575e+07, 1.80967403e+07, 2.63800179e+07, 1.80988632e+07, 1.80737703e+07, 1.06566721e+07, ],
+    'CountWeighted_rwgt55'                                                           : [ 1.60724758e+07, 1.60724893e+07, 1.60722115e+07, ],
+    'CountWeightedLHEWeightScale_rwgt55'                                             : [ 2.02007957e+07, 1.84270500e+07, 1.68908502e+07, 1.76232371e+07, 1.60723119e+07, 1.47306396e+07, 1.56494200e+07, 1.42701556e+07, 1.30774777e+07, ],
+    'CountWeightedLHEEnvelope_rwgt55'                                                : [ 2.02519778e+07, 1.30602193e+07, ],
+    'CountWeightedPSWeight_rwgt55'                                                   : [ 1.60727644e+08, 1.60724776e+08, 1.60724776e+08, 1.60727641e+08, 1.60724776e+08, 1.60727726e+08, ],
+    'CountWeightedPSWeightOriginalXWGTUP_rwgt55'                                     : [ 1.61616523e+07, 1.61598785e+07, 2.35582144e+07, 1.61616472e+07, 1.61420476e+07, 9.51654648e+06, ],
+    'CountWeightedFull_rwgt55'                                                       : [ 1.60655668e+07, 1.60655750e+07, 1.60653072e+07, ],
+    'CountWeightedFullLHEWeightScale_rwgt55'                                         : [ 2.01922946e+07, 1.84191384e+07, 1.68834822e+07, 1.76158121e+07, 1.60654030e+07, 1.47242062e+07, 1.56428207e+07, 1.42640151e+07, 1.30717609e+07, ],
+    'CountWeightedFullLHEEnvelope_rwgt55'                                            : [ 2.02434166e+07, 1.30545458e+07, ],
+    'CountWeightedFullPSWeight_rwgt55'                                               : [ 1.60655688e+08, 1.60655686e+08, 1.60655686e+08, 1.60655688e+08, 1.60655686e+08, 1.60655688e+08, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_rwgt55'                                 : [ 1.61540845e+07, 1.61515181e+07, 2.35459848e+07, 1.61540205e+07, 1.61336240e+07, 9.51207885e+06, ],
+    'CountWeighted_rwgt56'                                                           : [ 1.42603515e+07, 1.42603033e+07, 1.42601215e+07, ],
+    'CountWeightedLHEWeightScale_rwgt56'                                             : [ 1.79350919e+07, 1.63500932e+07, 1.49793539e+07, 1.56459958e+07, 1.42602055e+07, 1.30631034e+07, 1.38932084e+07, 1.26608585e+07, 1.15967432e+07, ],
+    'CountWeightedLHEEnvelope_rwgt56'                                                : [ 1.79800386e+07, 1.15815967e+07, ],
+    'CountWeightedPSWeight_rwgt56'                                                   : [ 1.42606006e+08, 1.42603449e+08, 1.42603449e+08, 1.42606004e+08, 1.42603449e+08, 1.42606079e+08, ],
+    'CountWeightedPSWeightOriginalXWGTUP_rwgt56'                                     : [ 1.43398916e+07, 1.43376650e+07, 2.09037060e+07, 1.43399053e+07, 1.43247918e+07, 8.44430386e+06, ],
+    'CountWeightedFull_rwgt56'                                                       : [ 1.42542162e+07, 1.42541652e+07, 1.42539907e+07, ],
+    'CountWeightedFullLHEWeightScale_rwgt56'                                         : [ 1.79275415e+07, 1.63430680e+07, 1.49728157e+07, 1.56394017e+07, 1.42540704e+07, 1.30573949e+07, 1.38873475e+07, 1.26554071e+07, 1.15916706e+07, ],
+    'CountWeightedFullLHEEnvelope_rwgt56'                                            : [ 1.79724349e+07, 1.15765623e+07, ],
+    'CountWeightedFullPSWeight_rwgt56'                                               : [ 1.42542107e+08, 1.42542106e+08, 1.42542106e+08, 1.42542107e+08, 1.42542106e+08, 1.42542107e+08, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_rwgt56'                                 : [ 1.43331717e+07, 1.43302403e+07, 2.08928342e+07, 1.43331326e+07, 1.43172999e+07, 8.44033756e+06, ],
+    'CountWeighted_rwgt57'                                                           : [ 1.25779597e+07, 1.25778524e+07, 1.25777815e+07, ],
+    'CountWeightedLHEWeightScale_rwgt57'                                             : [ 1.58308607e+07, 1.44217471e+07, 1.32050609e+07, 1.38097630e+07, 1.25778320e+07, 1.15153424e+07, 1.22623042e+07, 1.11668388e+07, 1.02224259e+07, ],
+    'CountWeightedLHEEnvelope_rwgt57'                                                : [ 1.58700399e+07, 1.02092357e+07, ],
+    'CountWeightedPSWeight_rwgt57'                                                   : [ 1.25781864e+08, 1.25779597e+08, 1.25779597e+08, 1.25781861e+08, 1.25779597e+08, 1.25781928e+08, ],
+    'CountWeightedPSWeightOriginalXWGTUP_rwgt57'                                     : [ 1.26485286e+07, 1.26458537e+07, 1.84395014e+07, 1.26485769e+07, 1.26378348e+07, 7.44871808e+06, ],
+    'CountWeightedFull_rwgt57'                                                       : [ 1.25725444e+07, 1.25724348e+07, 1.25723697e+07, ],
+    'CountWeightedFullLHEWeightScale_rwgt57'                                         : [ 1.58241915e+07, 1.44155452e+07, 1.31992912e+07, 1.38039388e+07, 1.25724168e+07, 1.15103058e+07, 1.22571274e+07, 1.11620262e+07, 1.02179504e+07, ],
+    'CountWeightedFullLHEEnvelope_rwgt57'                                            : [ 1.58633238e+07, 1.02047936e+07, ],
+    'CountWeightedFullPSWeight_rwgt57'                                               : [ 1.25725434e+08, 1.25725434e+08, 1.25725434e+08, 1.25725434e+08, 1.25725434e+08, 1.25725435e+08, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_rwgt57'                                 : [ 1.26425951e+07, 1.26392990e+07, 1.84298883e+07, 1.26425956e+07, 1.26312060e+07, 7.44521646e+06, ],
+    'CountWeighted_rwgt58'                                                           : [ 1.10189959e+07, 1.10188170e+07, 1.10188689e+07, ],
+    'CountWeightedLHEWeightScale_rwgt58'                                             : [ 1.38801541e+07, 1.26347482e+07, 1.15613415e+07, 1.21075993e+07, 1.10188837e+07, 1.00815710e+07, 1.07505496e+07, 9.78248759e+06, 8.94938652e+06, ],
+    'CountWeightedLHEEnvelope_rwgt58'                                                : [ 1.39140132e+07, 8.93800029e+06, ],
+    'CountWeightedPSWeight_rwgt58'                                                   : [ 1.10191941e+08, 1.10189944e+08, 1.10189944e+08, 1.10191938e+08, 1.10189944e+08, 1.10191997e+08, ],
+    'CountWeightedPSWeightOriginalXWGTUP_rwgt58'                                     : [ 1.10812261e+07, 1.10780686e+07, 1.61563662e+07, 1.10813127e+07, 1.10748728e+07, 6.52603907e+06, ],
+    'CountWeightedFull_rwgt58'                                                       : [ 1.10142461e+07, 1.10140664e+07, 1.10141212e+07, ],
+    'CountWeightedFullLHEWeightScale_rwgt58'                                         : [ 1.38742996e+07, 1.26293083e+07, 1.15562840e+07, 1.21024867e+07, 1.10141341e+07, 1.00771553e+07, 1.07460059e+07, 9.77826717e+06, 8.94546272e+06, ],
+    'CountWeightedFullLHEEnvelope_rwgt58'                                            : [ 1.39081179e+07, 8.93410550e+06, ],
+    'CountWeightedFullPSWeight_rwgt58'                                               : [ 1.10142448e+08, 1.10142447e+08, 1.10142447e+08, 1.10142447e+08, 1.10142447e+08, 1.10142448e+08, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_rwgt58'                                 : [ 1.10760201e+07, 1.10723200e+07, 1.61479183e+07, 1.10760646e+07, 1.10690409e+07, 6.52296875e+06, ],
+    'CountWeighted_rwgt59'                                                           : [ 9.58695734e+06, 9.58670415e+06, 9.58689277e+06, ],
+    'CountWeightedLHEWeightScale_rwgt59'                                             : [ 1.20873578e+07, 1.09931222e+07, 1.00518842e+07, 1.05433408e+07, 9.58685940e+06, 8.76500700e+06, 9.36134808e+06, 8.51091327e+06, 7.78047596e+06, ],
+    'CountWeightedLHEEnvelope_rwgt59'                                                : [ 1.21163560e+07, 7.77073979e+06, ],
+    'CountWeightedPSWeight_rwgt59'                                                   : [ 9.58713113e+07, 9.58695639e+07, 9.58695639e+07, 9.58713084e+07, 9.58695639e+07, 9.58713604e+07, ],
+    'CountWeightedPSWeightOriginalXWGTUP_rwgt59'                                     : [ 9.64149700e+06, 9.63783267e+06, 1.40594526e+07, 9.64161773e+06, 9.63944188e+06, 5.67833700e+06, ],
+    'CountWeightedFull_rwgt59'                                                       : [ 9.58281737e+06, 9.58256388e+06, 9.58275364e+06, ],
+    'CountWeightedFullLHEWeightScale_rwgt59'                                         : [ 1.20822516e+07, 1.09883800e+07, 1.00474779e+07, 1.05388810e+07, 9.58271971e+06, 8.76116024e+06, 9.35738513e+06, 8.50723437e+06, 7.77705810e+06, ],
+    'CountWeightedFullLHEEnvelope_rwgt59'                                            : [ 1.21112143e+07, 7.76734714e+06, ],
+    'CountWeightedFullPSWeight_rwgt59'                                               : [ 9.58281615e+07, 9.58281610e+07, 9.58281610e+07, 9.58281615e+07, 9.58281610e+07, 9.58281615e+07, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_rwgt59'                                 : [ 9.63695956e+06, 9.63282379e+06, 1.40520707e+07, 9.63704218e+06, 9.63433869e+06, 5.67566163e+06, ],
+    'CountWeighted_rwgt60'                                                           : [ 8.27774446e+06, 8.27741247e+06, 8.27775287e+06, ],
+    'CountWeightedLHEWeightScale_rwgt60'                                             : [ 1.04473446e+07, 9.49217288e+06, 8.67236253e+06, 9.11251354e+06, 8.27766011e+06, 7.56188601e+06, 8.09072848e+06, 7.34848258e+06, 6.71235115e+06, ],
+    'CountWeightedLHEEnvelope_rwgt60'                                                : [ 1.04719278e+07, 6.70411600e+06, ],
+    'CountWeightedPSWeight_rwgt60'                                                   : [ 8.27789482e+07, 8.27774302e+07, 8.27774302e+07, 8.27789448e+07, 8.27774302e+07, 8.27789903e+07, ],
+    'CountWeightedPSWeightOriginalXWGTUP_rwgt60'                                     : [ 8.32522269e+06, 8.32101612e+06, 1.21427894e+07, 8.32538440e+06, 8.32746347e+06, 4.90318972e+06, ],
+    'CountWeightedFull_rwgt60'                                                       : [ 8.27415999e+06, 8.27382844e+06, 8.27416831e+06, ],
+    'CountWeightedFullLHEWeightScale_rwgt60'                                         : [ 1.04429206e+07, 9.48806806e+06, 8.66855014e+06, 9.10865035e+06, 8.27407555e+06, 7.55855773e+06, 8.08729540e+06, 7.34529813e+06, 6.70939430e+06, ],
+    'CountWeightedFullLHEEnvelope_rwgt60'                                            : [ 1.04674733e+07, 6.70118062e+06, ],
+    'CountWeightedFullPSWeight_rwgt60'                                               : [ 8.27415891e+07, 8.27415887e+07, 8.27415887e+07, 8.27415891e+07, 8.27415887e+07, 8.27415891e+07, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_rwgt60'                                 : [ 8.32129406e+06, 8.31668216e+06, 1.21363791e+07, 8.32142227e+06, 8.32302393e+06, 4.90087557e+06, ],
+    'CountWeighted_rwgt61'                                                           : [ 7.09549047e+06, 7.09506839e+06, 7.09557380e+06, ],
+    'CountWeightedLHEWeightScale_rwgt61'                                             : [ 8.96528586e+06, 8.13663521e+06, 7.42714002e+06, 7.81963001e+06, 7.09541860e+06, 6.47599691e+06, 6.94269767e+06, 6.29885790e+06, 5.74838661e+06, ],
+    'CountWeightedLHEEnvelope_rwgt61'                                                : [ 8.98591340e+06, 5.74149850e+06, ],
+    'CountWeightedPSWeight_rwgt61'                                                   : [ 7.09562023e+07, 7.09548936e+07, 7.09548936e+07, 7.09561988e+07, 7.09548936e+07, 7.09562379e+07, ],
+    'CountWeightedPSWeightOriginalXWGTUP_rwgt61'                                     : [ 7.13656075e+06, 7.13176454e+06, 1.04124366e+07, 7.13676223e+06, 7.14311266e+06, 4.20303931e+06, ],
+    'CountWeightedFull_rwgt61'                                                       : [ 7.09240664e+06, 7.09198676e+06, 7.09248865e+06, ],
+    'CountWeightedFullLHEWeightScale_rwgt61'                                         : [ 8.96147751e+06, 8.13310329e+06, 7.42386204e+06, 7.81630411e+06, 7.09233490e+06, 6.47313536e+06, 6.93974221e+06, 6.29611872e+06, 5.74584481e+06, ],
+    'CountWeightedFullLHEEnvelope_rwgt61'                                            : [ 8.98207896e+06, 5.73897480e+06, ],
+    'CountWeightedFullPSWeight_rwgt61'                                               : [ 7.09240603e+07, 7.09240598e+07, 7.09240598e+07, 7.09240602e+07, 7.09240598e+07, 7.09240603e+07, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_rwgt61'                                 : [ 7.13318151e+06, 7.12804084e+06, 1.04069003e+07, 7.13335286e+06, 7.13926858e+06, 4.20105097e+06, ],
+    'CountWeighted_rwgt62'                                                           : [ 6.03755326e+06, 6.03703844e+06, 6.03771528e+06, ],
+    'CountWeightedLHEWeightScale_rwgt62'                                             : [ 7.63785828e+06, 6.92347658e+06, 6.31343437e+06, 6.66178417e+06, 6.03749177e+06, 5.50492371e+06, 5.91467567e+06, 5.35969856e+06, 4.88643032e+06, ],
+    'CountWeightedLHEEnvelope_rwgt62'                                                : [ 7.65498001e+06, 4.88073663e+06, ],
+    'CountWeightedPSWeight_rwgt62'                                                   : [ 6.03766613e+07, 6.03755418e+07, 6.03755418e+07, 6.03766579e+07, 6.03755418e+07, 6.03766915e+07, ],
+    'CountWeightedPSWeightOriginalXWGTUP_rwgt62'                                     : [ 6.07285337e+06, 6.06740244e+06, 8.86455357e+06, 6.07308912e+06, 6.08376281e+06, 3.57631850e+06, ],
+    'CountWeightedFull_rwgt62'                                                       : [ 6.03491595e+06, 6.03440402e+06, 6.03507606e+06, ],
+    'CountWeightedFullLHEWeightScale_rwgt62'                                         : [ 7.63459814e+06, 6.92045594e+06, 6.31063188e+06, 6.65893799e+06, 6.03485445e+06, 5.50247794e+06, 5.91214610e+06, 5.35735574e+06, 4.88425793e+06, ],
+    'CountWeightedFullLHEEnvelope_rwgt62'                                            : [ 7.65169775e+06, 4.87857943e+06, ],
+    'CountWeightedFullPSWeight_rwgt62'                                               : [ 6.03491698e+07, 6.03491693e+07, 6.03491693e+07, 6.03491697e+07, 6.03491693e+07, 6.03491698e+07, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_rwgt62'                                 : [ 6.06996440e+06, 6.06422448e+06, 8.85979443e+06, 6.07017360e+06, 6.08044742e+06, 3.57462130e+06, ],
+    'CountWeighted_rwgt63'                                                           : [ 5.10782434e+06, 5.10721116e+06, 5.10807281e+06, ],
+    'CountWeightedLHEWeightScale_rwgt63'                                             : [ 6.46997141e+06, 5.85716517e+06, 5.33532737e+06, 5.64326623e+06, 5.10777261e+06, 4.65222519e+06, 5.01047015e+06, 4.53445323e+06, 4.12963986e+06, ],
+    'CountWeightedLHEEnvelope_rwgt63'                                                : [ 6.48405190e+06, 4.12498628e+06, ],
+    'CountWeightedPSWeight_rwgt63'                                                   : [ 5.10791847e+07, 5.10782333e+07, 5.10782333e+07, 5.10791811e+07, 5.10782333e+07, 5.10792099e+07, ],
+    'CountWeightedPSWeightOriginalXWGTUP_rwgt63'                                     : [ 5.13801923e+06, 5.13183756e+06, 7.50487260e+06, 5.13828234e+06, 5.15338127e+06, 3.02533306e+06, ],
+    'CountWeightedFull_rwgt63'                                                       : [ 5.10557769e+06, 5.10496750e+06, 5.10582268e+06, ],
+    'CountWeightedFullLHEWeightScale_rwgt63'                                         : [ 6.46719141e+06, 5.85459119e+06, 5.33294149e+06, 5.64083869e+06, 5.10552605e+06, 4.65014289e+06, 5.00831351e+06, 4.53245712e+06, 4.12779004e+06, ],
+    'CountWeightedFullLHEEnvelope_rwgt63'                                            : [ 6.48125324e+06, 4.12314907e+06, ],
+    'CountWeightedFullPSWeight_rwgt63'                                               : [ 5.10557682e+07, 5.10557679e+07, 5.10557679e+07, 5.10557682e+07, 5.10557679e+07, 5.10557682e+07, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_rwgt63'                                 : [ 5.13556005e+06, 5.12913985e+06, 7.50079273e+06, 5.13579842e+06, 5.15052652e+06, 3.02389133e+06, ],
+    'CountWeighted_rwgt64'                                                           : [ 4.30245661e+06, 4.30173507e+06, 4.30279403e+06, ],
+    'CountWeightedLHEWeightScale_rwgt64'                                             : [ 5.45676495e+06, 4.93328234e+06, 4.48878697e+06, 4.75983271e+06, 4.30241289e+06, 3.91438572e+06, 4.22631484e+06, 3.81971138e+06, 3.47490144e+06, ],
+    'CountWeightedLHEEnvelope_rwgt64'                                                : [ 5.46825427e+06, 3.47113632e+06, ],
+    'CountWeightedPSWeight_rwgt64'                                                   : [ 4.30253712e+07, 4.30245678e+07, 4.30245678e+07, 4.30253678e+07, 4.30245678e+07, 4.30253923e+07, ],
+    'CountWeightedPSWeightOriginalXWGTUP_rwgt64'                                     : [ 4.32818567e+06, 4.32118325e+06, 6.32779251e+06, 4.32846595e+06, 4.34814589e+06, 2.54779742e+06, ],
+    'CountWeightedFull_rwgt64'                                                       : [ 4.30054597e+06, 4.29982844e+06, 4.30087890e+06, ],
+    'CountWeightedFullLHEWeightScale_rwgt64'                                         : [ 5.45439950e+06, 4.93109309e+06, 4.48675871e+06, 4.75776749e+06, 4.30050230e+06, 3.91261564e+06, 4.22447930e+06, 3.81801374e+06, 3.47332904e+06, ],
+    'CountWeightedFullLHEEnvelope_rwgt64'                                            : [ 5.46587301e+06, 3.46957430e+06, ],
+    'CountWeightedFullPSWeight_rwgt64'                                               : [ 4.30054587e+07, 4.30054583e+07, 4.30054583e+07, 4.30054587e+07, 4.30054583e+07, 4.30054588e+07, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_rwgt64'                                 : [ 4.32609707e+06, 4.31890015e+06, 6.32429515e+06, 4.32635460e+06, 4.34568384e+06, 2.54657656e+06, ],
+    'CountWeighted_rwgt65'                                                           : [ 3.62294619e+06, 3.62211255e+06, 3.62337527e+06, ],
+    'CountWeightedLHEWeightScale_rwgt65'                                             : [ 4.60013147e+06, 4.15354954e+06, 3.77539036e+06, 4.01313255e+06, 3.62290973e+06, 3.29277668e+06, 3.56367430e+06, 3.21679950e+06, 2.92342515e+06, ],
+    'CountWeightedLHEEnvelope_rwgt65'                                                : [ 4.60948410e+06, 2.92039547e+06, ],
+    'CountWeightedPSWeight_rwgt65'                                                   : [ 3.62301476e+07, 3.62294716e+07, 3.62294716e+07, 3.62301444e+07, 3.62294716e+07, 3.62301651e+07, ],
+    'CountWeightedPSWeightOriginalXWGTUP_rwgt65'                                     : [ 3.64486356e+06, 3.63692207e+06, 5.33556538e+06, 3.64514870e+06, 3.66963920e+06, 2.14459792e+06, ],
+    'CountWeightedFull_rwgt65'                                                       : [ 3.62131624e+06, 3.62048776e+06, 3.62174008e+06, ],
+    'CountWeightedFullLHEWeightScale_rwgt65'                                         : [ 4.59811272e+06, 4.15168238e+06, 3.77366086e+06, 4.01136978e+06, 3.62127974e+06, 3.29126701e+06, 3.56210826e+06, 3.21535123e+06, 2.92208417e+06, ],
+    'CountWeightedFullLHEEnvelope_rwgt65'                                            : [ 4.60745203e+06, 2.91906287e+06, ],
+    'CountWeightedFullPSWeight_rwgt65'                                               : [ 3.62131728e+07, 3.62131725e+07, 3.62131725e+07, 3.62131727e+07, 3.62131725e+07, 3.62131728e+07, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_rwgt65'                                 : [ 3.64308589e+06, 3.63498924e+06, 5.33255436e+06, 3.64334939e+06, 3.66750235e+06, 2.14356267e+06, ],
+    'CountWeighted_rwgt66'                                                           : [ 3.06880486e+06, 3.06784962e+06, 3.06932568e+06, ],
+    'CountWeightedLHEWeightScale_rwgt66'                                             : [ 3.89943780e+06, 3.51740293e+06, 3.19462289e+06, 3.40261886e+06, 3.06877378e+06, 2.78695466e+06, 3.02206339e+06, 2.72528589e+06, 2.47482219e+06, ],
+    'CountWeightedLHEEnvelope_rwgt66'                                                : [ 3.90710918e+06, 2.47237531e+06, ],
+    'CountWeightedPSWeight_rwgt66'                                                   : [ 3.06886262e+07, 3.06880572e+07, 3.06880572e+07, 3.06886231e+07, 3.06880572e+07, 3.06886406e+07, ],
+    'CountWeightedPSWeightOriginalXWGTUP_rwgt66'                                     : [ 3.08756106e+06, 3.07852857e+06, 4.52755351e+06, 3.08782680e+06, 3.11747799e+06, 1.81543800e+06, ],
+    'CountWeightedFull_rwgt66'                                                       : [ 3.06740090e+06, 3.06645155e+06, 3.06791546e+06, ],
+    'CountWeightedFullLHEWeightScale_rwgt66'                                         : [ 3.89769956e+06, 3.51579481e+06, 3.19313298e+06, 3.40110081e+06, 3.06736983e+06, 2.78565400e+06, 3.02071408e+06, 2.72403845e+06, 2.47366686e+06, ],
+    'CountWeightedFullLHEEnvelope_rwgt66'                                            : [ 3.90535943e+06, 2.47122684e+06, ],
+    'CountWeightedFullPSWeight_rwgt66'                                               : [ 3.06740178e+07, 3.06740177e+07, 3.06740177e+07, 3.06740178e+07, 3.06740177e+07, 3.06740178e+07, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_rwgt66'                                 : [ 3.08603450e+06, 3.07688111e+06, 4.52493047e+06, 3.08627958e+06, 3.11559856e+06, 1.81455356e+06, ],
+    'CountWeighted_rwgt67'                                                           : [ 2.64065839e+06, 2.63957448e+06, 2.64126645e+06, ],
+    'CountWeightedLHEWeightScale_rwgt67'                                             : [ 3.35546954e+06, 3.02556124e+06, 2.74714742e+06, 2.92897389e+06, 2.64063175e+06, 2.39749565e+06, 2.60208592e+06, 2.34572454e+06, 2.12960282e+06, ],
+    'CountWeightedLHEEnvelope_rwgt67'                                                : [ 3.36191613e+06, 2.12758573e+06, ],
+    'CountWeightedPSWeight_rwgt67'                                                   : [ 2.64070569e+07, 2.64065742e+07, 2.64065742e+07, 2.64070537e+07, 2.64065742e+07, 2.64070686e+07, ],
+    'CountWeightedPSWeightOriginalXWGTUP_rwgt67'                                     : [ 2.65691656e+06, 2.64657390e+06, 3.90481082e+06, 2.65712879e+06, 2.69248489e+06, 1.56067872e+06, ],
+    'CountWeightedFull_rwgt67'                                                       : [ 2.63942489e+06, 2.63834780e+06, 2.64002571e+06, ],
+    'CountWeightedFullLHEWeightScale_rwgt67'                                         : [ 3.35394439e+06, 3.02414861e+06, 2.74583790e+06, 2.92764131e+06, 2.63939832e+06, 2.39635237e+06, 2.60090156e+06, 2.34462874e+06, 2.12858715e+06, ],
+    'CountWeightedFullLHEEnvelope_rwgt67'                                            : [ 3.36038069e+06, 2.12657576e+06, ],
+    'CountWeightedFullPSWeight_rwgt67'                                               : [ 2.63942411e+07, 2.63942409e+07, 2.63942409e+07, 2.63942411e+07, 2.63942409e+07, 2.63942411e+07, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_rwgt67'                                 : [ 2.65558141e+06, 2.64514637e+06, 3.90247816e+06, 2.65577356e+06, 2.69079473e+06, 1.55990995e+06, ],
+    'CountWeighted_rwgt68'                                                           : [ 2.33842768e+06, 2.33720418e+06, 2.33911185e+06, ],
+    'CountWeightedLHEWeightScale_rwgt68'                                             : [ 2.96810026e+06, 2.67793227e+06, 2.43290024e+06, 2.59208814e+06, 2.33840417e+06, 2.12434340e+06, 2.30364699e+06, 2.07804586e+06, 1.88771609e+06, ],
+    'CountWeightedLHEEnvelope_rwgt68'                                                : [ 2.97377868e+06, 1.88597582e+06, ],
+    'CountWeightedPSWeight_rwgt68'                                                   : [ 2.33846881e+07, 2.33842709e+07, 2.33842709e+07, 2.33846852e+07, 2.33842709e+07, 2.33846982e+07, ],
+    'CountWeightedPSWeightOriginalXWGTUP_rwgt68'                                     : [ 2.35286376e+06, 2.34084438e+06, 3.46755471e+06, 2.35295829e+06, 2.39503478e+06, 1.38025280e+06, ],
+    'CountWeightedFull_rwgt68'                                                       : [ 2.33730952e+06, 2.33609370e+06, 2.33798541e+06, ],
+    'CountWeightedFullLHEWeightScale_rwgt68'                                         : [ 2.96671995e+06, 2.67665194e+06, 2.43171147e+06, 2.59088217e+06, 2.33728606e+06, 2.12330526e+06, 2.30257490e+06, 2.07705208e+06, 1.88679365e+06, ],
+    'CountWeightedFullLHEEnvelope_rwgt68'                                            : [ 2.97238903e+06, 1.88505824e+06, ],
+    'CountWeightedFullPSWeight_rwgt68'                                               : [ 2.33730908e+07, 2.33730907e+07, 2.33730907e+07, 2.33730908e+07, 2.33730907e+07, 2.33730908e+07, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_rwgt68'                                 : [ 2.35165968e+06, 2.33957172e+06, 3.46541291e+06, 2.35173411e+06, 2.39346423e+06, 1.37956453e+06, ],
   }),
   ("nof_tree_events",                 29683974),
   ("nof_db_events",                   29683974),
-  ("fsize_local",                     199958835050), # 199.96GB, avg file size 1.34GB
+  ("fsize_local",                     235010595563), # 235.01GB, avg file size 788.63MB
   ("fsize_db",                        1681088947501), # 1.68TB, avg file size 2.12GB
   ("use_it",                          True),
   ("xsection",                        0.07096),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
-  ("nof_PSweights",                   1),
+  ("nof_PSweights",                   4),
   ("LHE_set",                         "LHA IDs 306000 - 306102 -> NNPDF31_nnlo_hessian_pdfas PDF set, expecting 103 weights (counted 103 weights)"),
   ("nof_reweighting",                 69),
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/THQ_ctcvcp"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/THQ_ctcvcp"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -18002,7 +18210,7 @@ samples_2018["/THW_ctcvcp_5f_Hincl_13TeV_madgraph_pythia8/RunIIAutumn18MiniAOD-1
   }),
   ("nof_tree_events",                 14198988),
   ("nof_db_events",                   14998988),
-  ("fsize_local",                     117950389905), # 117.95GB, avg file size 1.66GB
+  ("fsize_local",                     134039036879), # 134.04GB, avg file size 1.89GB
   ("fsize_db",                        958252346048), # 958.25GB, avg file size 2.20GB
   ("use_it",                          True),
   ("xsection",                        0.01561),
@@ -18015,7 +18223,7 @@ samples_2018["/THW_ctcvcp_5f_Hincl_13TeV_madgraph_pythia8/RunIIAutumn18MiniAOD-1
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/THW_ctcvcp"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/THW_ctcvcp"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -18056,7 +18264,7 @@ samples_2018["/GluGluHToTauTau_M125_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-10
   }),
   ("nof_tree_events",                 12575000),
   ("nof_db_events",                   12575000),
-  ("fsize_local",                     36143385631), # 36.14GB, avg file size 1.39GB
+  ("fsize_local",                     46083761543), # 46.08GB, avg file size 1.77GB
   ("fsize_db",                        515475856207), # 515.48GB, avg file size 2.74GB
   ("use_it",                          True),
   ("xsection",                        3.0469),
@@ -18069,7 +18277,7 @@ samples_2018["/GluGluHToTauTau_M125_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-10
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/GluGluHToTauTau"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/GluGluHToTauTau"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -18110,7 +18318,7 @@ samples_2018["/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8/RunIIAutum
   }),
   ("nof_tree_events",                 958000),
   ("nof_db_events",                   958000),
-  ("fsize_local",                     3506029119), # 3.51GB, avg file size 1.75GB
+  ("fsize_local",                     4392219060), # 4.39GB, avg file size 2.20GB
   ("fsize_db",                        44997251487), # 45.00GB, avg file size 1.50GB
   ("use_it",                          True),
   ("xsection",                        0.01297),
@@ -18123,7 +18331,7 @@ samples_2018["/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8/RunIIAutum
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/GluGluHToZZTo4L"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/GluGluHToZZTo4L"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -18164,7 +18372,7 @@ samples_2018["/GluGluHToZZTo2L2Q_M125_13TeV_powheg2_JHUGenV7011_pythia8/RunIIAut
   }),
   ("nof_tree_events",                 984000),
   ("nof_db_events",                   984000),
-  ("fsize_local",                     3277660444), # 3.28GB, avg file size 819.42MB
+  ("fsize_local",                     4182657426), # 4.18GB, avg file size 1.05GB
   ("fsize_db",                        43841613956), # 43.84GB, avg file size 1.46GB
   ("use_it",                          True),
   ("xsection",                        0.17963),
@@ -18177,7 +18385,7 @@ samples_2018["/GluGluHToZZTo2L2Q_M125_13TeV_powheg2_JHUGenV7011_pythia8/RunIIAut
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/GluGluHToZZTo2L2Q_M125"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/GluGluHToZZTo2L2Q_M125"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -18218,7 +18426,7 @@ samples_2018["/GluGluHToWWToLNuQQ_M125_13TeV_powheg2_JHUGenV714_pythia8/RunIIAut
   }),
   ("nof_tree_events",                 1000000),
   ("nof_db_events",                   1000000),
-  ("fsize_local",                     2956478354), # 2.96GB, avg file size 1.48GB
+  ("fsize_local",                     3823685280), # 3.82GB, avg file size 1.91GB
   ("fsize_db",                        41944951726), # 41.94GB, avg file size 1.61GB
   ("use_it",                          True),
   ("xsection",                        4.5621),
@@ -18231,7 +18439,7 @@ samples_2018["/GluGluHToWWToLNuQQ_M125_13TeV_powheg2_JHUGenV714_pythia8/RunIIAut
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/GluGluHToWWToLNuQQ_M125"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/GluGluHToWWToLNuQQ_M125"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -18259,33 +18467,37 @@ samples_2018["/GluGluHToWWTo2L2Nu_M125_13TeV_powheg2_JHUGenV714_pythia8/RunIIAut
   ("type",                            "mc"),
   ("sample_category",                 "ggH"),
   ("process_name_specific",           "GluGluHToWWTo2L2Nu_M125"),
-  ("nof_files",                       2),
+  ("nof_files",                       4),
   ("nof_db_files",                    33),
   ("nof_events",                      {
     'Count'                                                                          : [ 1000000, ],
-    'CountWeighted'                                                                  : [ 9.89309594e+05, 9.89607188e+05, 9.89526812e+05, ],
-    'CountWeightedLHEWeightScale'                                                    : [ 1.16039762e+06, 1.18819700e+06, 1.21097062e+06, 9.62605906e+05, 9.89294219e+05, 1.01059447e+06, 8.11900625e+05, 8.37247312e+05, 8.56589531e+05, ],
-    'CountWeightedLHEEnvelope'                                                       : [ 1.23794331e+06, 8.10205312e+05, ],
-    'CountWeightedFull'                                                              : [ 2.88670370e+07, 2.88637580e+07, 2.88559570e+07, ],
-    'CountWeightedFullLHEWeightScale'                                                : [ 3.38462040e+07, 3.46569540e+07, 3.53212720e+07, 2.80767270e+07, 2.88663890e+07, 2.94768440e+07, 2.36812810e+07, 2.44197580e+07, 2.49846940e+07, ],
-    'CountWeightedFullLHEEnvelope'                                                   : [ 3.61080200e+07, 2.36316370e+07, ],
+    'CountWeighted'                                                                  : [ 9.89481391e+05, 9.89591172e+05, 9.89393672e+05, ],
+    'CountWeightedLHEWeightScale'                                                    : [ 1.16040434e+06, 1.18817559e+06, 1.21097266e+06, 9.62599859e+05, 9.89450750e+05, 1.01059592e+06, 8.11900656e+05, 8.37216953e+05, 8.56586906e+05, ],
+    'CountWeightedLHEEnvelope'                                                       : [ 1.23793497e+06, 8.10197641e+05, ],
+    'CountWeightedPSWeight'                                                          : [ 9.89550828e+05, 9.89567594e+05, 1.32985266e+06, 9.89427719e+05, 9.88835422e+05, 6.79652047e+05, ],
+    'CountWeightedPSWeightOriginalXWGTUP'                                            : [ 1.00007898e+07, 9.99438475e+06, 1.00007898e+07, 1.00007898e+07, 9.92588275e+06, 9.91947800e+06, ],
+    'CountWeightedFull'                                                              : [ 2.88617740e+07, 2.88621220e+07, 2.88590305e+07, ],
+    'CountWeightedFullLHEWeightScale'                                                : [ 3.38462350e+07, 3.46563840e+07, 3.53212740e+07, 2.80767905e+07, 2.88604720e+07, 2.94767730e+07, 2.36813120e+07, 2.44193570e+07, 2.49846985e+07, ],
+    'CountWeightedFullLHEEnvelope'                                                   : [ 3.61076950e+07, 2.36314570e+07, ],
+    'CountWeightedFullPSWeight'                                                      : [ 2.88629975e+07, 2.88633795e+07, 3.87888120e+07, 2.88593115e+07, 2.88421255e+07, 1.98239050e+07, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP'                                        : [ 2.91654640e+08, 2.91468104e+08, 2.91654640e+08, 2.91654640e+08, 2.89471888e+08, 2.89285352e+08, ],
   }),
   ("nof_tree_events",                 1000000),
   ("nof_db_events",                   1000000),
-  ("fsize_local",                     2897605615), # 2.90GB, avg file size 1.45GB
+  ("fsize_local",                     3747097917), # 3.75GB, avg file size 936.77MB
   ("fsize_db",                        42174074205), # 42.17GB, avg file size 1.28GB
   ("use_it",                          True),
   ("xsection",                        1.1033),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
-  ("nof_PSweights",                   1),
+  ("nof_PSweights",                   4),
   ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
   ("nof_reweighting",                 0),
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/GluGluHToWWTo2L2Nu_M125"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/GluGluHToWWTo2L2Nu_M125"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -18326,7 +18538,7 @@ samples_2018["/GluGluHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8/RunIIA
   }),
   ("nof_tree_events",                 476000),
   ("nof_db_events",                   476000),
-  ("fsize_local",                     1562049415), # 1.56GB, avg file size 1.56GB
+  ("fsize_local",                     1912428612), # 1.91GB, avg file size 1.91GB
   ("fsize_db",                        20929777970), # 20.93GB, avg file size 1.31GB
   ("use_it",                          True),
   ("xsection",                        0.010571),
@@ -18339,7 +18551,7 @@ samples_2018["/GluGluHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8/RunIIA
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/GluGluHToMuMu_M125"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/GluGluHToMuMu_M125"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -18367,33 +18579,37 @@ samples_2018["/GluGluHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8/RunIIA
   ("type",                            "mc"),
   ("sample_category",                 "ggH"),
   ("process_name_specific",           "GluGluHToMuMu_M125_ext1"),
-  ("nof_files",                       3),
+  ("nof_files",                       6),
   ("nof_db_files",                    37),
   ("nof_events",                      {
-    'Count'                                                                          : [ 1344000, ],
-    'CountWeighted'                                                                  : [ 1.32968781e+06, 1.32979844e+06, 1.32982062e+06, ],
-    'CountWeightedLHEWeightScale'                                                    : [ 1.55969019e+06, 1.59686969e+06, 1.62734734e+06, 1.29381228e+06, 1.32968781e+06, 1.35815947e+06, 1.09127106e+06, 1.12523684e+06, 1.15118853e+06, ],
-    'CountWeightedLHEEnvelope'                                                       : [ 1.66386456e+06, 1.08883594e+06, ],
-    'CountWeightedFull'                                                              : [ 2.88533810e+07, 2.88499170e+07, 2.88533865e+07, ],
-    'CountWeightedFullLHEWeightScale'                                                : [ 3.38372730e+07, 3.46439070e+07, 3.53050800e+07, 2.80690425e+07, 2.88533810e+07, 2.94652350e+07, 2.36749075e+07, 2.44114845e+07, 2.49750325e+07, ],
-    'CountWeightedFullLHEEnvelope'                                                   : [ 3.60971900e+07, 2.36220300e+07, ],
+    'Count'                                                                          : [ 1444000, ],
+    'CountWeighted'                                                                  : [ 1.42880431e+06, 1.42879380e+06, 1.42877047e+06, ],
+    'CountWeightedLHEWeightScale'                                                    : [ 1.67564902e+06, 1.71560352e+06, 1.74843883e+06, 1.39002052e+06, 1.42880431e+06, 1.45922858e+06, 1.17243967e+06, 1.20894258e+06, 1.23686453e+06, ],
+    'CountWeightedLHEEnvelope'                                                       : [ 1.78755331e+06, 1.16988875e+06, ],
+    'CountWeightedPSWeight'                                                          : [ 1.42897828e+06, 1.42934845e+06, 1.92062755e+06, 1.42851591e+06, 1.42763320e+06, 9.81166250e+05, ],
+    'CountWeightedPSWeightOriginalXWGTUP'                                            : [ 1.44366292e+07, 1.43912535e+07, 1.44366488e+07, 1.44366320e+07, 1.41179260e+07, 1.40725119e+07, ],
+    'CountWeightedFull'                                                              : [ 3.09972035e+07, 3.09983965e+07, 3.09964440e+07, ],
+    'CountWeightedFullLHEWeightScale'                                                : [ 3.63528705e+07, 3.72205695e+07, 3.79321315e+07, 3.01563170e+07, 3.09972035e+07, 3.16577715e+07, 2.54358745e+07, 2.62282032e+07, 2.68335935e+07, ],
+    'CountWeightedFullLHEEnvelope'                                                   : [ 3.87811735e+07, 2.53806855e+07, ],
+    'CountWeightedFullPSWeight'                                                      : [ 3.10015135e+07, 3.10095322e+07, 4.16676720e+07, 3.09914052e+07, 3.09722475e+07, 2.12862735e+07, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP'                                        : [ 3.13247936e+08, 3.12262016e+08, 3.13248012e+08, 3.13248004e+08, 3.06327352e+08, 3.05341320e+08, ],
   }),
-  ("nof_tree_events",                 1344000),
+  ("nof_tree_events",                 1444000),
   ("nof_db_events",                   1444000),
-  ("fsize_local",                     4411383931), # 4.41GB, avg file size 1.47GB
+  ("fsize_local",                     5836338034), # 5.84GB, avg file size 972.72MB
   ("fsize_db",                        63445199195), # 63.45GB, avg file size 1.71GB
   ("use_it",                          True),
   ("xsection",                        0.010571),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
-  ("nof_PSweights",                   1),
+  ("nof_PSweights",                   4),
   ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
   ("nof_reweighting",                 0),
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/GluGluHToMuMu_M125_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/GluGluHToMuMu_M125_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -18434,7 +18650,7 @@ samples_2018["/GluGluHToBB_M125_13TeV_amcatnloFXFX_pythia8/RunIIAutumn18MiniAOD-
   }),
   ("nof_tree_events",                 14934589),
   ("nof_db_events",                   15034579),
-  ("fsize_local",                     48038238630), # 48.04GB, avg file size 1.60GB
+  ("fsize_local",                     60282064414), # 60.28GB, avg file size 2.01GB
   ("fsize_db",                        654781502160), # 654.78GB, avg file size 2.05GB
   ("use_it",                          True),
   ("xsection",                        28.293),
@@ -18447,7 +18663,7 @@ samples_2018["/GluGluHToBB_M125_13TeV_amcatnloFXFX_pythia8/RunIIAutumn18MiniAOD-
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/GluGluHToBB_M125"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/GluGluHToBB_M125"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -18488,7 +18704,7 @@ samples_2018["/GluGluHToGG_M125_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18
   }),
   ("nof_tree_events",                 1927927),
   ("nof_db_events",                   1927927),
-  ("fsize_local",                     6334467408), # 6.33GB, avg file size 1.58GB
+  ("fsize_local",                     7919000578), # 7.92GB, avg file size 1.98GB
   ("fsize_db",                        85222416854), # 85.22GB, avg file size 1.35GB
   ("use_it",                          True),
   ("xsection",                        0.11028),
@@ -18501,7 +18717,7 @@ samples_2018["/GluGluHToGG_M125_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/GluGluHToGG_M125"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/GluGluHToGG_M125"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -18542,7 +18758,7 @@ samples_2018["/VBFHToTauTau_M125_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102X_
   }),
   ("nof_tree_events",                 3000000),
   ("nof_db_events",                   3000000),
-  ("fsize_local",                     12334033442), # 12.33GB, avg file size 2.06GB
+  ("fsize_local",                     14858136113), # 14.86GB, avg file size 2.48GB
   ("fsize_db",                        133643341940), # 133.64GB, avg file size 1.86GB
   ("use_it",                          True),
   ("xsection",                        0.2372),
@@ -18555,7 +18771,7 @@ samples_2018["/VBFHToTauTau_M125_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102X_
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/VBFHToTauTau_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/VBFHToTauTau_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -18583,33 +18799,37 @@ samples_2018["/VBF_HToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8/RunIIAutumn1
   ("type",                            "mc"),
   ("sample_category",                 "qqH"),
   ("process_name_specific",           "VBF_HToZZTo4L"),
-  ("nof_files",                       1),
+  ("nof_files",                       3),
   ("nof_db_files",                    29),
   ("nof_events",                      {
     'Count'                                                                          : [ 500000, ],
-    'CountWeighted'                                                                  : [ 4.99338781e+05, 4.99353000e+05, 4.99456188e+05, ],
-    'CountWeightedLHEWeightScale'                                                    : [ 4.96039312e+05, 4.97520844e+05, 5.01967312e+05, 4.98948125e+05, 4.99331000e+05, 5.02242531e+05, 5.01307281e+05, 5.00817031e+05, 5.02448969e+05, ],
-    'CountWeightedLHEEnvelope'                                                       : [ 5.24122656e+05, 4.73925375e+05, ],
-    'CountWeightedFull'                                                              : [ 1.96730962e+06, 1.96759288e+06, 1.96738375e+06, ],
-    'CountWeightedFullLHEWeightScale'                                                : [ 1.95442200e+06, 1.96025825e+06, 1.97777462e+06, 1.96588288e+06, 1.96728675e+06, 1.97887025e+06, 1.97518400e+06, 1.97325350e+06, 1.97968675e+06, ],
-    'CountWeightedFullLHEEnvelope'                                                   : [ 2.06507638e+06, 1.86728900e+06, ],
+    'CountWeighted'                                                                  : [ 4.99353295e+05, 4.99432637e+05, 4.99368556e+05, ],
+    'CountWeightedLHEWeightScale'                                                    : [ 4.96037750e+05, 4.97521274e+05, 5.01964397e+05, 4.98947663e+05, 4.99337727e+05, 5.02241107e+05, 5.01308318e+05, 5.00816331e+05, 5.02449281e+05, ],
+    'CountWeightedLHEEnvelope'                                                       : [ 5.24122248e+05, 4.73923146e+05, ],
+    'CountWeightedPSWeight'                                                          : [ 4.99352784e+05, 4.99287982e+05, 6.54158771e+05, 4.99327661e+05, 4.98933221e+05, 3.54128815e+05, ],
+    'CountWeightedPSWeightOriginalXWGTUP'                                            : [ 1.97039779e+06, 1.96977377e+06, 2.54106710e+06, 1.97029372e+06, 1.92894293e+06, 1.39736767e+06, ],
+    'CountWeightedFull'                                                              : [ 1.96778474e+06, 1.96748751e+06, 1.96743536e+06, ],
+    'CountWeightedFullLHEWeightScale'                                                : [ 1.95442432e+06, 1.96026356e+06, 1.97777619e+06, 1.96588062e+06, 1.96774035e+06, 1.97886663e+06, 1.97518219e+06, 1.97324780e+06, 1.97967973e+06, ],
+    'CountWeightedFullLHEEnvelope'                                                   : [ 2.06507774e+06, 1.86728546e+06, ],
+    'CountWeightedFullPSWeight'                                                      : [ 1.96755767e+06, 1.96723397e+06, 2.57743148e+06, 1.96745944e+06, 1.96582791e+06, 1.39530358e+06, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP'                                        : [ 7.76325207e+06, 7.76102373e+06, 1.00119440e+07, 7.76282665e+06, 7.60019901e+06, 5.50575514e+06, ],
   }),
   ("nof_tree_events",                 500000),
   ("nof_db_events",                   500000),
-  ("fsize_local",                     2477261432), # 2.48GB, avg file size 2.48GB
+  ("fsize_local",                     3010971736), # 3.01GB, avg file size 1.00GB
   ("fsize_db",                        25644711769), # 25.64GB, avg file size 884.30MB
   ("use_it",                          True),
   ("xsection",                        0.0010099),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
-  ("nof_PSweights",                   1),
+  ("nof_PSweights",                   4),
   ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
   ("nof_reweighting",                 0),
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/VBF_HToZZTo4L"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/VBF_HToZZTo4L"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -18650,7 +18870,7 @@ samples_2018["/VBFHToWWToLNuQQ_M125_13TeV_powheg_JHUGen_pythia8/RunIIAutumn18Min
   }),
   ("nof_tree_events",                 1000000),
   ("nof_db_events",                   1000000),
-  ("fsize_local",                     4264834908), # 4.26GB, avg file size 1.07GB
+  ("fsize_local",                     5175949649), # 5.18GB, avg file size 1.29GB
   ("fsize_db",                        45701320185), # 45.70GB, avg file size 1.90GB
   ("use_it",                          True),
   ("xsection",                        0.35517),
@@ -18663,7 +18883,7 @@ samples_2018["/VBFHToWWToLNuQQ_M125_13TeV_powheg_JHUGen_pythia8/RunIIAutumn18Min
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/VBFHToWWToLNuQQ_M125"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/VBFHToWWToLNuQQ_M125"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -18704,7 +18924,7 @@ samples_2018["/VBFHToWWTo2L2Nu_M125_13TeV_powheg2_JHUGenV714_pythia8/RunIIAutumn
   }),
   ("nof_tree_events",                 1000000),
   ("nof_db_events",                   1000000),
-  ("fsize_local",                     4232533179), # 4.23GB, avg file size 2.12GB
+  ("fsize_local",                     5083036553), # 5.08GB, avg file size 2.54GB
   ("fsize_db",                        44096001436), # 44.10GB, avg file size 1.30GB
   ("use_it",                          True),
   ("xsection",                        0.085894),
@@ -18717,7 +18937,7 @@ samples_2018["/VBFHToWWTo2L2Nu_M125_13TeV_powheg2_JHUGenV714_pythia8/RunIIAutumn
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/VBFHToWWTo2L2Nu_M125"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/VBFHToWWTo2L2Nu_M125"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -18758,7 +18978,7 @@ samples_2018["/VBFHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8/RunIIAutu
   }),
   ("nof_tree_events",                 1000000),
   ("nof_db_events",                   1000000),
-  ("fsize_local",                     4483027649), # 4.48GB, avg file size 2.24GB
+  ("fsize_local",                     5310605199), # 5.31GB, avg file size 2.66GB
   ("fsize_db",                        47787832887), # 47.79GB, avg file size 1.26GB
   ("use_it",                          True),
   ("xsection",                        0.00082296),
@@ -18771,7 +18991,7 @@ samples_2018["/VBFHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8/RunIIAutu
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/VBFHToMuMu_M125"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/VBFHToMuMu_M125"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -18812,7 +19032,7 @@ samples_2018["/VBFHToBB_M-125_13TeV_powheg_pythia8_weightfix/RunIIAutumn18MiniAO
   }),
   ("nof_tree_events",                 7587200),
   ("nof_db_events",                   7587200),
-  ("fsize_local",                     31186727427), # 31.19GB, avg file size 1.95GB
+  ("fsize_local",                     37522233299), # 37.52GB, avg file size 2.35GB
   ("fsize_db",                        348209185809), # 348.21GB, avg file size 1.68GB
   ("use_it",                          True),
   ("xsection",                        2.2026),
@@ -18825,7 +19045,7 @@ samples_2018["/VBFHToBB_M-125_13TeV_powheg_pythia8_weightfix/RunIIAutumn18MiniAO
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/VBFHToBB_M125"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/VBFHToBB_M125"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -18853,33 +19073,37 @@ samples_2018["/VBFHToGG_M125_13TeV_amcatnlo_pythia8/RunIIAutumn18MiniAOD-102X_up
   ("type",                            "mc"),
   ("sample_category",                 "qqH"),
   ("process_name_specific",           "VBFHToGG_M125"),
-  ("nof_files",                       4),
+  ("nof_files",                       8),
   ("nof_db_files",                    44),
   ("nof_events",                      {
     'Count'                                                                          : [ 1918000, ],
-    'CountWeighted'                                                                  : [ 5.90542586e+05, 5.90417242e+05, 5.90604156e+05, ],
-    'CountWeightedLHEWeightScale'                                                    : [ 5.86495789e+05, 5.89684828e+05, 5.95838180e+05, 5.88570852e+05, 5.90549602e+05, 5.94822883e+05, 5.90227711e+05, 5.91217961e+05, 5.93994992e+05, ],
-    'CountWeightedLHEEnvelope'                                                       : [ 6.74769531e+05, 5.08894781e+05, ],
-    'CountWeightedFull'                                                              : [ 7.68733188e+06, 7.68525138e+06, 7.68829712e+06, ],
-    'CountWeightedFullLHEWeightScale'                                                : [ 7.63429512e+06, 7.67587338e+06, 7.75601925e+06, 7.66132275e+06, 7.68741388e+06, 7.74281838e+06, 7.68291025e+06, 7.69585838e+06, 7.73205525e+06, ],
-    'CountWeightedFullLHEEnvelope'                                                   : [ 8.78342975e+06, 6.62423575e+06, ],
+    'CountWeighted'                                                                  : [ 5.90563941e+05, 5.90428316e+05, 5.90644359e+05, ],
+    'CountWeightedLHEWeightScale'                                                    : [ 5.86496117e+05, 5.89684793e+05, 5.95836773e+05, 5.88570848e+05, 5.90561504e+05, 5.94823281e+05, 5.90228074e+05, 5.91218383e+05, 5.93994730e+05, ],
+    'CountWeightedLHEEnvelope'                                                       : [ 6.74769652e+05, 5.08895125e+05, ],
+    'CountWeightedPSWeight'                                                          : [ 5.90739984e+05, 5.90035504e+05, 7.76042461e+05, 5.90356102e+05, 5.92271746e+05, 4.21243086e+05, ],
+    'CountWeightedPSWeightOriginalXWGTUP'                                            : [ 1.91670361e+07, 1.84965348e+07, 1.91799369e+07, 1.91769124e+07, 1.72909945e+07, 1.66024949e+07, ],
+    'CountWeightedFull'                                                              : [ 7.68710200e+06, 7.68523462e+06, 7.68818706e+06, ],
+    'CountWeightedFullLHEWeightScale'                                                : [ 7.63430306e+06, 7.67587781e+06, 7.75602606e+06, 7.66133000e+06, 7.68712725e+06, 7.74282006e+06, 7.68290694e+06, 7.69585056e+06, 7.73205444e+06, ],
+    'CountWeightedFullLHEEnvelope'                                                   : [ 8.78343912e+06, 6.62423906e+06, ],
+    'CountWeightedFullPSWeight'                                                      : [ 7.68947162e+06, 7.68042281e+06, 1.01017569e+07, 7.68446825e+06, 7.70967056e+06, 5.48321088e+06, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP'                                        : [ 2.49493008e+08, 2.40763336e+08, 2.49656918e+08, 2.49621528e+08, 2.25073220e+08, 2.16115478e+08, ],
   }),
   ("nof_tree_events",                 1918000),
   ("nof_db_events",                   1918000),
-  ("fsize_local",                     7831939348), # 7.83GB, avg file size 1.96GB
+  ("fsize_local",                     9485183110), # 9.49GB, avg file size 1.19GB
   ("fsize_db",                        87691426436), # 87.69GB, avg file size 1.99GB
   ("use_it",                          True),
   ("xsection",                        0.0085851),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
-  ("nof_PSweights",                   1),
+  ("nof_PSweights",                   4),
   ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
   ("nof_reweighting",                 0),
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/VBFHToGG_M125"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/VBFHToGG_M125"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -18907,33 +19131,37 @@ samples_2018["/TTZToLLNuNu_M-10_TuneCP5_13TeV-amcatnlo-pythia8/RunIIAutumn18Mini
   ("type",                            "mc"),
   ("sample_category",                 "TTZ"),
   ("process_name_specific",           "TTZToLL_M10_ext1"),
-  ("nof_files",                       27),
+  ("nof_files",                       56),
   ("nof_db_files",                    340),
   ("nof_events",                      {
-    'Count'                                                                          : [ 12608000, ],
-    'CountWeighted'                                                                  : [ 5.95570974e+06, 5.95602542e+06, 5.95516307e+06, ],
-    'CountWeightedLHEWeightScale'                                                    : [ 6.51312366e+06, 6.42251766e+06, 6.35772644e+06, 6.11176530e+06, 5.95555970e+06, 5.82843706e+06, 5.65634566e+06, 5.46718574e+06, 5.30820714e+06, ],
-    'CountWeightedLHEEnvelope'                                                       : [ 6.93925140e+06, 5.04858987e+06, ],
-    'CountWeightedFull'                                                              : [ 3.06301726e+06, 3.06292550e+06, 3.06296854e+06, ],
-    'CountWeightedFullLHEWeightScale'                                                : [ 3.34973229e+06, 3.30312223e+06, 3.26979641e+06, 3.14330978e+06, 3.06295020e+06, 2.99757682e+06, 2.90908150e+06, 2.81179175e+06, 2.73002017e+06, ],
-    'CountWeightedFullLHEEnvelope'                                                   : [ 3.56887873e+06, 2.59651193e+06, ],
+    'Count'                                                                          : [ 13280000, ],
+    'CountWeighted'                                                                  : [ 6.27413296e+06, 6.27440834e+06, 6.27410691e+06, ],
+    'CountWeightedLHEWeightScale'                                                    : [ 6.86191459e+06, 6.76647948e+06, 6.69815803e+06, 6.43895232e+06, 6.27396093e+06, 6.14043450e+06, 5.95906901e+06, 5.75975595e+06, 5.59225511e+06, ],
+    'CountWeightedLHEEnvelope'                                                       : [ 7.31077027e+06, 5.31881013e+06, ],
+    'CountWeightedPSWeight'                                                          : [ 6.27423736e+06, 6.27424770e+06, 9.21304829e+06, 6.27521058e+06, 6.26269243e+06, 3.65101225e+06, ],
+    'CountWeightedPSWeightOriginalXWGTUP'                                            : [ 6.83702072e+06, 6.83648870e+06, 1.01913670e+07, 6.83750162e+06, 6.83542021e+06, 3.86280759e+06, ],
+    'CountWeightedFull'                                                              : [ 3.22703887e+06, 3.22702594e+06, 3.22690301e+06, ],
+    'CountWeightedFullLHEWeightScale'                                                : [ 3.52911901e+06, 3.48002534e+06, 3.44488503e+06, 3.31158266e+06, 3.22695955e+06, 3.15804127e+06, 3.06477423e+06, 2.96225950e+06, 2.87610743e+06, ],
+    'CountWeightedFullLHEEnvelope'                                                   : [ 3.75995634e+06, 2.73548447e+06, ],
+    'CountWeightedFullPSWeight'                                                      : [ 3.22685085e+06, 3.22685746e+06, 4.73830498e+06, 3.22731671e+06, 3.22094188e+06, 1.87771135e+06, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP'                                        : [ 3.51626127e+06, 3.51590934e+06, 5.24129969e+06, 3.51647035e+06, 3.51539177e+06, 1.98662164e+06, ],
   }),
-  ("nof_tree_events",                 12608000),
+  ("nof_tree_events",                 13280000),
   ("nof_db_events",                   13280000),
-  ("fsize_local",                     93963166475), # 93.96GB, avg file size 3.48GB
+  ("fsize_local",                     115720341139), # 115.72GB, avg file size 2.07GB
   ("fsize_db",                        798948554766), # 798.95GB, avg file size 2.35GB
   ("use_it",                          True),
   ("xsection",                        0.2814),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
-  ("nof_PSweights",                   1),
+  ("nof_PSweights",                   4),
   ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
   ("nof_reweighting",                 0),
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/TTZToLL_M10_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/TTZToLL_M10_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -18978,7 +19206,7 @@ samples_2018["/TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8/RunIIAutumn18MiniAOD-102X_
   }),
   ("nof_tree_events",                 650000),
   ("nof_db_events",                   750000),
-  ("fsize_local",                     5393086525), # 5.39GB, avg file size 2.70GB
+  ("fsize_local",                     6236011726), # 6.24GB, avg file size 3.12GB
   ("fsize_db",                        47083718012), # 47.08GB, avg file size 1.57GB
   ("use_it",                          False),
   ("xsection",                        0.5868),
@@ -18991,7 +19219,7 @@ samples_2018["/TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8/RunIIAutumn18MiniAOD-102X_
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/TTZToQQ"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/TTZToQQ"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -19036,7 +19264,7 @@ samples_2018["/TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8/RunIIAutumn18MiniAOD-102X_
   }),
   ("nof_tree_events",                 4891000),
   ("nof_db_events",                   8891000),
-  ("fsize_local",                     40561299691), # 40.56GB, avg file size 4.06GB
+  ("fsize_local",                     46906168634), # 46.91GB, avg file size 4.69GB
   ("fsize_db",                        555110604743), # 555.11GB, avg file size 2.33GB
   ("use_it",                          False),
   ("xsection",                        0.5868),
@@ -19049,7 +19277,7 @@ samples_2018["/TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8/RunIIAutumn18MiniAOD-102X_
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/TTZToQQ_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/TTZToQQ_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -19090,7 +19318,7 @@ samples_2018["/TTZToLL_M-1to10_TuneCP5_13TeV-amcatnlo-pythia8/RunIIAutumn18MiniA
   }),
   ("nof_tree_events",                 250000),
   ("nof_db_events",                   250000),
-  ("fsize_local",                     1772771006), # 1.77GB, avg file size 1.77GB
+  ("fsize_local",                     2063716703), # 2.06GB, avg file size 2.06GB
   ("fsize_db",                        15016634796), # 15.02GB, avg file size 790.35MB
   ("use_it",                          True),
   ("xsection",                        0.0822),
@@ -19103,7 +19331,7 @@ samples_2018["/TTZToLL_M-1to10_TuneCP5_13TeV-amcatnlo-pythia8/RunIIAutumn18MiniA
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/TTZToLL_M-1to10"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/TTZToLL_M-1to10"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -19144,7 +19372,7 @@ samples_2018["/ttZJets_TuneCP5_13TeV_madgraphMLM_pythia8/RunIIAutumn18MiniAOD-10
   }),
   ("nof_tree_events",                 22550366),
   ("nof_db_events",                   22646257),
-  ("fsize_local",                     174753296536), # 174.75GB, avg file size 1.86GB
+  ("fsize_local",                     202059333052), # 202.06GB, avg file size 2.15GB
   ("fsize_db",                        1397818296718), # 1.40TB, avg file size 2.21GB
   ("use_it",                          False),
   ("xsection",                        0.8854),
@@ -19157,7 +19385,7 @@ samples_2018["/ttZJets_TuneCP5_13TeV_madgraphMLM_pythia8/RunIIAutumn18MiniAOD-10
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/TTZJets_LO_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/TTZJets_LO_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -19185,33 +19413,37 @@ samples_2018["/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIIAutu
   ("type",                            "mc"),
   ("sample_category",                 "TTW"),
   ("process_name_specific",           "TTWJetsToLNu_ext1"),
-  ("nof_files",                       9),
+  ("nof_files",                       20),
   ("nof_db_files",                    149),
   ("nof_events",                      {
-    'Count'                                                                          : [ 4419989, ],
-    'CountWeighted'                                                                  : [ 2.41737792e+06, 2.41725353e+06, 2.41721409e+06, ],
-    'CountWeightedLHEWeightScale'                                                    : [ 2.71175738e+06, 2.67384000e+06, 2.64968469e+06, 2.47159031e+06, 2.41736164e+06, 2.37472000e+06, 2.21936773e+06, 2.15957692e+06, 2.11026833e+06, ],
-    'CountWeightedLHEEnvelope'                                                       : [ 2.89192209e+06, 1.99042350e+06, ],
-    'CountWeightedFull'                                                              : [ 1.52097778e+06, 1.52120339e+06, 1.52077533e+06, ],
-    'CountWeightedFullLHEWeightScale'                                                : [ 1.70624488e+06, 1.68238116e+06, 1.66717931e+06, 1.55512909e+06, 1.52096014e+06, 1.49417048e+06, 1.39642920e+06, 1.35880405e+06, 1.32777736e+06, ],
-    'CountWeightedFullLHEEnvelope'                                                   : [ 1.81960378e+06, 1.25237130e+06, ],
+    'Count'                                                                          : [ 4764261, ],
+    'CountWeighted'                                                                  : [ 2.60487595e+06, 2.60501955e+06, 2.60452888e+06, ],
+    'CountWeightedLHEWeightScale'                                                    : [ 2.92208263e+06, 2.88140366e+06, 2.85550705e+06, 2.66331839e+06, 2.60484108e+06, 2.55914971e+06, 2.39150999e+06, 2.32718693e+06, 2.27411015e+06, ],
+    'CountWeightedLHEEnvelope'                                                       : [ 3.11615972e+06, 2.14502588e+06, ],
+    'CountWeightedPSWeight'                                                          : [ 2.63605697e+06, 2.60687475e+06, 3.76797685e+06, 2.56581367e+06, 2.59416980e+06, 1.54602508e+06, ],
+    'CountWeightedPSWeightOriginalXWGTUP'                                            : [ 3.02961097e+06, 3.00494440e+06, 4.39658589e+06, 2.96579776e+06, 2.99378012e+06, 1.74055091e+06, ],
+    'CountWeightedFull'                                                              : [ 1.63890293e+06, 1.63910288e+06, 1.63877265e+06, ],
+    'CountWeightedFullLHEWeightScale'                                                : [ 1.83857824e+06, 1.81297725e+06, 1.79667904e+06, 1.67576217e+06, 1.63889364e+06, 1.61021216e+06, 1.50473792e+06, 1.46426402e+06, 1.43086416e+06, ],
+    'CountWeightedFullLHEEnvelope'                                                   : [ 1.96069287e+06, 1.34964405e+06, ],
+    'CountWeightedFullPSWeight'                                                      : [ 1.65856632e+06, 1.64024152e+06, 2.37080540e+06, 1.61436405e+06, 1.63224944e+06, 9.72732152e+05, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP'                                        : [ 1.90618398e+06, 1.89058630e+06, 2.76615683e+06, 1.86602732e+06, 1.88357581e+06, 1.09512812e+06, ],
   }),
-  ("nof_tree_events",                 4419989),
+  ("nof_tree_events",                 4764261),
   ("nof_db_events",                   4911941),
-  ("fsize_local",                     33442232025), # 33.44GB, avg file size 3.72GB
+  ("fsize_local",                     41967525292), # 41.97GB, avg file size 2.10GB
   ("fsize_db",                        298983454636), # 298.98GB, avg file size 2.01GB
   ("use_it",                          True),
   ("xsection",                        0.196),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
-  ("nof_PSweights",                   1),
+  ("nof_PSweights",                   4),
   ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
   ("nof_reweighting",                 0),
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/TTWJetsToLNu_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/TTWJetsToLNu_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -19256,7 +19488,7 @@ samples_2018["/TTWJetsToQQ_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIIAutum
   }),
   ("nof_tree_events",                 736928),
   ("nof_db_events",                   835296),
-  ("fsize_local",                     5930787881), # 5.93GB, avg file size 2.97GB
+  ("fsize_local",                     6855212475), # 6.86GB, avg file size 3.43GB
   ("fsize_db",                        51705071156), # 51.71GB, avg file size 1.85GB
   ("use_it",                          False),
   ("xsection",                        0.4049),
@@ -19269,7 +19501,7 @@ samples_2018["/TTWJetsToQQ_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIIAutum
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/TTWJetsToQQ"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/TTWJetsToQQ"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -19297,33 +19529,37 @@ samples_2018["/ttWJets_TuneCP5_13TeV_madgraphMLM_pythia8/RunIIAutumn18MiniAOD-10
   ("type",                            "mc"),
   ("sample_category",                 "TTW"),
   ("process_name_specific",           "TTWJets_LO_ext1"),
-  ("nof_files",                       25),
+  ("nof_files",                       52),
   ("nof_db_files",                    374),
   ("nof_events",                      {
-    'Count'                                                                          : [ 11927236, ],
-    'CountWeighted'                                                                  : [ 1.18865104e+07, 1.18848130e+07, 1.18822172e+07, ],
-    'CountWeightedLHEWeightScale'                                                    : [ 1.54173617e+07, 1.46293091e+07, 1.39191169e+07, 1.25082681e+07, 1.18865103e+07, 1.13223723e+07, 1.03569003e+07, 9.85291738e+06, 9.39587888e+06, ],
-    'CountWeightedLHEEnvelope'                                                       : [ 1.54279751e+07, 9.39199471e+06, ],
-    'CountWeightedFull'                                                              : [ 1.18787613e+07, 1.18770562e+07, 1.18746443e+07, ],
-    'CountWeightedFullLHEWeightScale'                                                : [ 1.54072940e+07, 1.46197469e+07, 1.39100186e+07, 1.25000952e+07, 1.18787612e+07, 1.13149693e+07, 1.03501335e+07, 9.84648573e+06, 9.38973861e+06, ],
-    'CountWeightedFullLHEEnvelope'                                                   : [ 1.54178852e+07, 9.38586718e+06, ],
+    'Count'                                                                          : [ 12816567, ],
+    'CountWeighted'                                                                  : [ 1.27711157e+07, 1.27716558e+07, 1.27722197e+07, ],
+    'CountWeightedLHEWeightScale'                                                    : [ 1.65672653e+07, 1.57203746e+07, 1.49573848e+07, 1.34412326e+07, 1.27711157e+07, 1.21669830e+07, 1.11294554e+07, 1.05879597e+07, 1.00967923e+07, ],
+    'CountWeightedLHEEnvelope'                                                       : [ 1.65786869e+07, 1.00926014e+07, ],
+    'CountWeightedPSWeight'                                                          : [ 1.27721620e+08, 1.27720915e+08, 1.27720915e+08, 1.27721640e+08, 1.27720915e+08, 1.27721668e+08, ],
+    'CountWeightedPSWeightOriginalXWGTUP'                                            : [ 1.29872760e+07, 1.28346283e+07, 1.86810991e+07, 1.25983003e+07, 1.27640914e+07, 7.48730237e+06, ],
+    'CountWeightedFull'                                                              : [ 1.27628746e+07, 1.27632997e+07, 1.27638792e+07, ],
+    'CountWeightedFullLHEWeightScale'                                                : [ 1.65564502e+07, 1.57101026e+07, 1.49476131e+07, 1.34324563e+07, 1.27628746e+07, 1.21590350e+07, 1.11221881e+07, 1.05810462e+07, 1.00901972e+07, ],
+    'CountWeightedFullLHEEnvelope'                                                   : [ 1.65678514e+07, 1.00860189e+07, ],
+    'CountWeightedFullPSWeight'                                                      : [ 1.27636770e+08, 1.27636770e+08, 1.27636770e+08, 1.27636770e+08, 1.27636770e+08, 1.27636770e+08, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP'                                        : [ 1.29786055e+07, 1.28257625e+07, 1.86681743e+07, 1.25898546e+07, 1.27552702e+07, 7.48231772e+06, ],
   }),
-  ("nof_tree_events",                 11927236),
+  ("nof_tree_events",                 12816567),
   ("nof_db_events",                   12816567),
-  ("fsize_local",                     90646120174), # 90.65GB, avg file size 3.63GB
+  ("fsize_local",                     112829108934), # 112.83GB, avg file size 2.17GB
   ("fsize_db",                        780624312046), # 780.62GB, avg file size 2.09GB
   ("use_it",                          False),
   ("xsection",                        0.6008),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
-  ("nof_PSweights",                   1),
+  ("nof_PSweights",                   4),
   ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
   ("nof_reweighting",                 0),
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/TTWJets_LO_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/TTWJets_LO_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -19364,7 +19600,7 @@ samples_2018["/TTWW_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18MiniAOD-102X_upg
   }),
   ("nof_tree_events",                 185000),
   ("nof_db_events",                   185000),
-  ("fsize_local",                     1636895026), # 1.64GB, avg file size 1.64GB
+  ("fsize_local",                     1872708920), # 1.87GB, avg file size 1.87GB
   ("fsize_db",                        12337520794), # 12.34GB, avg file size 949.04MB
   ("use_it",                          True),
   ("xsection",                        0.006981),
@@ -19377,7 +19613,7 @@ samples_2018["/TTWW_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18MiniAOD-102X_upg
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/TTWW_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/TTWW_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -19418,7 +19654,7 @@ samples_2018["/TTWW_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18MiniAOD-102X_upg
   }),
   ("nof_tree_events",                 800000),
   ("nof_db_events",                   800000),
-  ("fsize_local",                     7057635813), # 7.06GB, avg file size 1.76GB
+  ("fsize_local",                     8093119970), # 8.09GB, avg file size 2.02GB
   ("fsize_db",                        52851826665), # 52.85GB, avg file size 1.96GB
   ("use_it",                          True),
   ("xsection",                        0.006981),
@@ -19431,7 +19667,7 @@ samples_2018["/TTWW_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18MiniAOD-102X_upg
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/TTWW_ext2"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/TTWW_ext2"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -19472,7 +19708,7 @@ samples_2018["/ST_s-channel_4f_leptonDecays_TuneCP5_13TeV-madgraph-pythia8/RunII
   }),
   ("nof_tree_events",                 19952000),
   ("nof_db_events",                   19952000),
-  ("fsize_local",                     81292532356), # 81.29GB, avg file size 1.94GB
+  ("fsize_local",                     97262501033), # 97.26GB, avg file size 2.32GB
   ("fsize_db",                        914449200019), # 914.45GB, avg file size 2.59GB
   ("use_it",                          True),
   ("xsection",                        3.364),
@@ -19485,7 +19721,7 @@ samples_2018["/ST_s-channel_4f_leptonDecays_TuneCP5_13TeV-madgraph-pythia8/RunII
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/ST_s-channel_4f_leptonDecays_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/ST_s-channel_4f_leptonDecays_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -19526,7 +19762,7 @@ samples_2018["/ST_t-channel_antitop_4f_InclusiveDecays_TuneCP5_13TeV-powheg-mads
   }),
   ("nof_tree_events",                 79090800),
   ("nof_db_events",                   79090800),
-  ("fsize_local",                     341701135580), # 341.70GB, avg file size 2.15GB
+  ("fsize_local",                     412369284805), # 412.37GB, avg file size 2.59GB
   ("fsize_db",                        3668166205835), # 3.67TB, avg file size 2.78GB
   ("use_it",                          True),
   ("xsection",                        80.95),
@@ -19539,7 +19775,7 @@ samples_2018["/ST_t-channel_antitop_4f_InclusiveDecays_TuneCP5_13TeV-powheg-mads
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/ST_t-channel_antitop_4f_inclusiveDecays"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/ST_t-channel_antitop_4f_inclusiveDecays"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -19580,7 +19816,7 @@ samples_2018["/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-
   }),
   ("nof_tree_events",                 154307600),
   ("nof_db_events",                   154307600),
-  ("fsize_local",                     673201753198), # 673.20GB, avg file size 1.41GB
+  ("fsize_local",                     812403918937), # 812.40GB, avg file size 1.70GB
   ("fsize_db",                        7123325826717), # 7.12TB, avg file size 2.97GB
   ("use_it",                          True),
   ("xsection",                        136.02),
@@ -19593,7 +19829,7 @@ samples_2018["/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/ST_t-channel_top_4f_inclusiveDecays"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/ST_t-channel_top_4f_inclusiveDecays"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -19634,7 +19870,7 @@ samples_2018["/ST_tW_antitop_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8/Run
   }),
   ("nof_tree_events",                 7623000),
   ("nof_db_events",                   7623000),
-  ("fsize_local",                     40139250434), # 40.14GB, avg file size 2.51GB
+  ("fsize_local",                     47722045567), # 47.72GB, avg file size 2.98GB
   ("fsize_db",                        387298031075), # 387.30GB, avg file size 2.42GB
   ("use_it",                          True),
   ("xsection",                        35.85),
@@ -19647,7 +19883,7 @@ samples_2018["/ST_tW_antitop_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8/Run
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/ST_tW_antitop_5f_inclusiveDecays_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/ST_tW_antitop_5f_inclusiveDecays_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -19688,7 +19924,7 @@ samples_2018["/ST_tW_top_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8/RunIIAu
   }),
   ("nof_tree_events",                 8698000),
   ("nof_db_events",                   9598000),
-  ("fsize_local",                     45781174277), # 45.78GB, avg file size 2.54GB
+  ("fsize_local",                     54420802371), # 54.42GB, avg file size 3.02GB
   ("fsize_db",                        487035275580), # 487.04GB, avg file size 2.82GB
   ("use_it",                          True),
   ("xsection",                        35.85),
@@ -19701,7 +19937,7 @@ samples_2018["/ST_tW_top_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8/RunIIAu
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/ST_tW_top_5f_inclusiveDecays_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/ST_tW_top_5f_inclusiveDecays_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -19740,7 +19976,7 @@ samples_2018["/ST_tWll_5f_LO_TuneCP5_PSweights_13TeV-madgraph-pythia8/RunIIAutum
   }),
   ("nof_tree_events",                 248600),
   ("nof_db_events",                   248600),
-  ("fsize_local",                     1834702066), # 1.83GB, avg file size 1.83GB
+  ("fsize_local",                     2125523129), # 2.13GB, avg file size 2.13GB
   ("fsize_db",                        15676809884), # 15.68GB, avg file size 746.51MB
   ("use_it",                          True),
   ("xsection",                        0.01096),
@@ -19753,7 +19989,7 @@ samples_2018["/ST_tWll_5f_LO_TuneCP5_PSweights_13TeV-madgraph-pythia8/RunIIAutum
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/ST_tWll_PSweights_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/ST_tWll_PSweights_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -19878,7 +20114,7 @@ samples_2018["/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_
   }),
   ("nof_tree_events",                 64310000),
   ("nof_db_events",                   64310000),
-  ("fsize_local",                     356810634671), # 356.81GB, avg file size 1.38GB
+  ("fsize_local",                     418519056191), # 418.52GB, avg file size 1.62GB
   ("fsize_db",                        3413760837047), # 3.41TB, avg file size 3.53GB
   ("use_it",                          True),
   ("xsection",                        88.4),
@@ -19891,7 +20127,7 @@ samples_2018["/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/TTTo2L2Nu"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/TTTo2L2Nu"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -20016,7 +20252,7 @@ samples_2018["/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAO
   }),
   ("nof_tree_events",                 101500000),
   ("nof_db_events",                   101550000),
-  ("fsize_local",                     611827828740), # 611.83GB, avg file size 1.51GB
+  ("fsize_local",                     718463451832), # 718.46GB, avg file size 1.77GB
   ("fsize_db",                        5446585250527), # 5.45TB, avg file size 3.58GB
   ("use_it",                          True),
   ("xsection",                        365.52),
@@ -20029,7 +20265,7 @@ samples_2018["/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAO
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/TTToSemiLeptonic"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/TTToSemiLeptonic"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -20154,7 +20390,7 @@ samples_2018["/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAO
   }),
   ("nof_tree_events",                 199925998),
   ("nof_db_events",                   199925998),
-  ("fsize_local",                     1205172130098), # 1.21TB, avg file size 1.51GB
+  ("fsize_local",                     1415213947097), # 1.42TB, avg file size 1.77GB
   ("fsize_db",                        12212064828531), # 12.21TB, avg file size 3.48GB
   ("use_it",                          True),
   ("xsection",                        365.52),
@@ -20167,7 +20403,7 @@ samples_2018["/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAO
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/TTToSemiLeptonic_ext3"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/TTToSemiLeptonic_ext3"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -20292,7 +20528,7 @@ samples_2018["/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-10
   }),
   ("nof_tree_events",                 133808000),
   ("nof_db_events",                   133808000),
-  ("fsize_local",                     853313601981), # 853.31GB, avg file size 1.53GB
+  ("fsize_local",                     1003401494661), # 1.00TB, avg file size 1.80GB
   ("fsize_db",                        7273064972485), # 7.27TB, avg file size 2.20GB
   ("use_it",                          True),
   ("xsection",                        377.85),
@@ -20305,7 +20541,7 @@ samples_2018["/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-10
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/TTToHadronic"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/TTToHadronic"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -20430,7 +20666,7 @@ samples_2018["/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-10
   }),
   ("nof_tree_events",                 199524000),
   ("nof_db_events",                   199524000),
-  ("fsize_local",                     1272107256527), # 1.27TB, avg file size 1.59GB
+  ("fsize_local",                     1496113675670), # 1.50TB, avg file size 1.87GB
   ("fsize_db",                        12273002936208), # 12.27TB, avg file size 3.26GB
   ("use_it",                          True),
   ("xsection",                        377.85),
@@ -20443,7 +20679,7 @@ samples_2018["/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-10
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/TTToHadronic_ext2"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/TTToHadronic_ext2"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -20482,7 +20718,7 @@ samples_2018["/TTJets_DiLept_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18Mini
   }),
   ("nof_tree_events",                 28501520),
   ("nof_db_events",                   28701360),
-  ("fsize_local",                     156240675651), # 156.24GB, avg file size 2.69GB
+  ("fsize_local",                     183577972563), # 183.58GB, avg file size 3.17GB
   ("fsize_db",                        1591205272331), # 1.59TB, avg file size 1.89GB
   ("use_it",                          False),
   ("xsection",                        88.4),
@@ -20495,7 +20731,7 @@ samples_2018["/TTJets_DiLept_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18Mini
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/TTJets_DiLept"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/TTJets_DiLept"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -20534,7 +20770,7 @@ samples_2018["/TTJets_SingleLeptFromT_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAut
   }),
   ("nof_tree_events",                 56860254),
   ("nof_db_events",                   61658409),
-  ("fsize_local",                     339338553902), # 339.34GB, avg file size 2.98GB
+  ("fsize_local",                     398947132953), # 398.95GB, avg file size 3.50GB
   ("fsize_db",                        3396470873673), # 3.40TB, avg file size 2.11GB
   ("use_it",                          False),
   ("xsection",                        182.76),
@@ -20547,7 +20783,7 @@ samples_2018["/TTJets_SingleLeptFromT_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAut
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/TTJets_SingleLeptFromT"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/TTJets_SingleLeptFromT"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -20586,7 +20822,7 @@ samples_2018["/TTJets_SingleLeptFromTbar_TuneCP5_13TeV-madgraphMLM-pythia8/RunII
   }),
   ("nof_tree_events",                 58929254),
   ("nof_db_events",                   59929205),
-  ("fsize_local",                     351620566159), # 351.62GB, avg file size 2.98GB
+  ("fsize_local",                     413430964018), # 413.43GB, avg file size 3.50GB
   ("fsize_db",                        3384871119793), # 3.38TB, avg file size 2.20GB
   ("use_it",                          False),
   ("xsection",                        182.76),
@@ -20599,7 +20835,7 @@ samples_2018["/TTJets_SingleLeptFromTbar_TuneCP5_13TeV-madgraphMLM-pythia8/RunII
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/TTJets_SingleLeptFromTbar"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/TTJets_SingleLeptFromTbar"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -20640,7 +20876,7 @@ samples_2018["/TTJets_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18MiniAOD-10
   }),
   ("nof_tree_events",                 140857568),
   ("nof_db_events",                   142155064),
-  ("fsize_local",                     916471707566), # 916.47GB, avg file size 3.24GB
+  ("fsize_local",                     1073717094989), # 1.07TB, avg file size 3.79GB
   ("fsize_db",                        7849430055124), # 7.85TB, avg file size 2.25GB
   ("use_it",                          False),
   ("xsection",                        831.76),
@@ -20653,7 +20889,7 @@ samples_2018["/TTJets_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18MiniAOD-10
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/TTJets_amcatnloFXFX_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/TTJets_amcatnloFXFX_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -20692,7 +20928,7 @@ samples_2018["/TTJets_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAOD-102
   }),
   ("nof_tree_events",                 10244307),
   ("nof_db_events",                   10244307),
-  ("fsize_local",                     62839756531), # 62.84GB, avg file size 2.99GB
+  ("fsize_local",                     73771178677), # 73.77GB, avg file size 3.51GB
   ("fsize_db",                        569352569399), # 569.35GB, avg file size 1.84GB
   ("use_it",                          False),
   ("xsection",                        831.76),
@@ -20705,7 +20941,7 @@ samples_2018["/TTJets_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAOD-102
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/TTJets_madgraphMLM"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/TTJets_madgraphMLM"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -20746,7 +20982,7 @@ samples_2018["/TTWH_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18MiniAOD-102X_upg
   }),
   ("nof_tree_events",                 200000),
   ("nof_db_events",                   200000),
-  ("fsize_local",                     1766416242), # 1.77GB, avg file size 1.77GB
+  ("fsize_local",                     2026379884), # 2.03GB, avg file size 2.03GB
   ("fsize_db",                        13560607150), # 13.56GB, avg file size 1.04GB
   ("use_it",                          True),
   ("xsection",                        0.001582),
@@ -20759,7 +20995,7 @@ samples_2018["/TTWH_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18MiniAOD-102X_upg
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/TTWH_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/TTWH_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -20800,7 +21036,7 @@ samples_2018["/TTZH_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18MiniAOD-102X_upg
   }),
   ("nof_tree_events",                 200000),
   ("nof_db_events",                   200000),
-  ("fsize_local",                     1837388390), # 1.84GB, avg file size 1.84GB
+  ("fsize_local",                     2095947995), # 2.10GB, avg file size 2.10GB
   ("fsize_db",                        13899288356), # 13.90GB, avg file size 926.62MB
   ("use_it",                          True),
   ("xsection",                        0.001535),
@@ -20813,7 +21049,7 @@ samples_2018["/TTZH_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18MiniAOD-102X_upg
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/TTZH_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/TTZH_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -20854,7 +21090,7 @@ samples_2018["/WWW_4F_TuneCP5_13TeV-amcatnlo-pythia8/RunIIAutumn18MiniAOD-102X_u
   }),
   ("nof_tree_events",                 240000),
   ("nof_db_events",                   240000),
-  ("fsize_local",                     1355988867), # 1.36GB, avg file size 1.36GB
+  ("fsize_local",                     1593602699), # 1.59GB, avg file size 1.59GB
   ("fsize_db",                        12122543635), # 12.12GB, avg file size 1.01GB
   ("use_it",                          True),
   ("xsection",                        0.2086),
@@ -20867,7 +21103,7 @@ samples_2018["/WWW_4F_TuneCP5_13TeV-amcatnlo-pythia8/RunIIAutumn18MiniAOD-102X_u
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/WWW_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/WWW_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -20908,7 +21144,7 @@ samples_2018["/WWZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIIAutumn18MiniAOD-102X_upgr
   }),
   ("nof_tree_events",                 250000),
   ("nof_db_events",                   250000),
-  ("fsize_local",                     1505982570), # 1.51GB, avg file size 1.51GB
+  ("fsize_local",                     1754158349), # 1.75GB, avg file size 1.75GB
   ("fsize_db",                        12987521478), # 12.99GB, avg file size 865.83MB
   ("use_it",                          True),
   ("xsection",                        0.1676),
@@ -20921,7 +21157,7 @@ samples_2018["/WWZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIIAutumn18MiniAOD-102X_upgr
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/WWZ_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/WWZ_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -20962,7 +21198,7 @@ samples_2018["/WZZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIIAutumn18MiniAOD-102X_upgr
   }),
   ("nof_tree_events",                 250000),
   ("nof_db_events",                   250000),
-  ("fsize_local",                     1444841860), # 1.44GB, avg file size 1.44GB
+  ("fsize_local",                     1694390125), # 1.69GB, avg file size 1.69GB
   ("fsize_db",                        13168809687), # 13.17GB, avg file size 940.63MB
   ("use_it",                          True),
   ("xsection",                        0.05701),
@@ -20975,7 +21211,7 @@ samples_2018["/WZZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIIAutumn18MiniAOD-102X_upgr
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/WZZ_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/WZZ_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -21016,7 +21252,7 @@ samples_2018["/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIIAutumn18MiniAOD-102X_upgr
   }),
   ("nof_tree_events",                 250000),
   ("nof_db_events",                   250000),
-  ("fsize_local",                     1303377917), # 1.30GB, avg file size 1.30GB
+  ("fsize_local",                     1542780868), # 1.54GB, avg file size 1.54GB
   ("fsize_db",                        12595171655), # 12.60GB, avg file size 899.66MB
   ("use_it",                          True),
   ("xsection",                        0.01473),
@@ -21029,7 +21265,7 @@ samples_2018["/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIIAutumn18MiniAOD-102X_upgr
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/ZZZ_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/ZZZ_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -21070,7 +21306,7 @@ samples_2018["/WZG_TuneCP5_13TeV-amcatnlo-pythia8/RunIIAutumn18MiniAOD-102X_upgr
   }),
   ("nof_tree_events",                 1960000),
   ("nof_db_events",                   1960000),
-  ("fsize_local",                     10464463156), # 10.46GB, avg file size 2.62GB
+  ("fsize_local",                     12240678654), # 12.24GB, avg file size 3.06GB
   ("fsize_db",                        99260714863), # 99.26GB, avg file size 2.11GB
   ("use_it",                          True),
   ("xsection",                        0.04345),
@@ -21083,7 +21319,7 @@ samples_2018["/WZG_TuneCP5_13TeV-amcatnlo-pythia8/RunIIAutumn18MiniAOD-102X_upgr
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/WZG"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/WZG"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -21124,7 +21360,7 @@ samples_2018["/WGToLNuG_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAOD-1
   }),
   ("nof_tree_events",                 6108186),
   ("nof_db_events",                   6108186),
-  ("fsize_local",                     14714362815), # 14.71GB, avg file size 1.13GB
+  ("fsize_local",                     19122776153), # 19.12GB, avg file size 1.47GB
   ("fsize_db",                        247084202479), # 247.08GB, avg file size 2.11GB
   ("use_it",                          False),
   ("xsection",                        464.8),
@@ -21137,7 +21373,7 @@ samples_2018["/WGToLNuG_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAOD-1
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/WGToLNuG"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/WGToLNuG"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -21178,7 +21414,7 @@ samples_2018["/WGToLNuG_01J_5f_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18M
   }),
   ("nof_tree_events",                 27933663),
   ("nof_db_events",                   27933663),
-  ("fsize_local",                     77150995844), # 77.15GB, avg file size 682.75MB
+  ("fsize_local",                     98326131080), # 98.33GB, avg file size 870.14MB
   ("fsize_db",                        1116678822480), # 1.12TB, avg file size 2.60GB
   ("use_it",                          True),
   ("xsection",                        191.6),
@@ -21191,7 +21427,7 @@ samples_2018["/WGToLNuG_01J_5f_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18M
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/WGToLNuG_01J"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/WGToLNuG_01J"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -21232,7 +21468,7 @@ samples_2018["/ZGToLLG_01J_5f_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18Mi
   }),
   ("nof_tree_events",                 13946364),
   ("nof_db_events",                   13946364),
-  ("fsize_local",                     44480082471), # 44.48GB, avg file size 1.53GB
+  ("fsize_local",                     56004737171), # 56.00GB, avg file size 1.93GB
   ("fsize_db",                        596900709674), # 596.90GB, avg file size 2.24GB
   ("use_it",                          True),
   ("xsection",                        55.59),
@@ -21245,7 +21481,7 @@ samples_2018["/ZGToLLG_01J_5f_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18Mi
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/ZGTo2LG_01J_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/ZGTo2LG_01J_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -21286,7 +21522,7 @@ samples_2018["/TGJets_leptonDecays_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18M
   }),
   ("nof_tree_events",                 6785000),
   ("nof_db_events",                   6785000),
-  ("fsize_local",                     32677141197), # 32.68GB, avg file size 2.33GB
+  ("fsize_local",                     39354608898), # 39.35GB, avg file size 2.81GB
   ("fsize_db",                        338039977991), # 338.04GB, avg file size 2.32GB
   ("use_it",                          True),
   ("xsection",                        1.018),
@@ -21299,7 +21535,7 @@ samples_2018["/TGJets_leptonDecays_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18M
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/TGJets"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/TGJets"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -21327,33 +21563,37 @@ samples_2018["/TTGJets_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIIAutumn18M
   ("type",                            "mc"),
   ("sample_category",                 "Rares"),
   ("process_name_specific",           "TTGJets"),
-  ("nof_files",                       9),
+  ("nof_files",                       20),
   ("nof_db_files",                    133),
   ("nof_events",                      {
-    'Count'                                                                          : [ 4293870, ],
-    'CountWeighted'                                                                  : [ 1.68513120e+06, 1.68531679e+06, 1.68504652e+06, ],
-    'CountWeightedLHEWeightScale'                                                    : [ 1.93369806e+06, 1.91685619e+06, 1.90636717e+06, 1.72755305e+06, 1.68509888e+06, 1.65016754e+06, 1.51661310e+06, 1.46451912e+06, 1.42030326e+06, ],
-    'CountWeightedLHEEnvelope'                                                       : [ 2.12156291e+06, 1.30087796e+06, ],
-    'CountWeightedFull'                                                              : [ 3.08955505e+07, 3.08971000e+07, 3.08953075e+07, ],
-    'CountWeightedFullLHEWeightScale'                                                : [ 3.54528452e+07, 3.51441390e+07, 3.49518785e+07, 3.16733170e+07, 3.08951892e+07, 3.02546970e+07, 2.78059725e+07, 2.68509175e+07, 2.60403005e+07, ],
-    'CountWeightedFullLHEEnvelope'                                                   : [ 3.88972338e+07, 2.38506978e+07, ],
+    'Count'                                                                          : [ 4691915, ],
+    'CountWeighted'                                                                  : [ 1.84178132e+06, 1.84208403e+06, 1.84143528e+06, ],
+    'CountWeightedLHEWeightScale'                                                    : [ 2.11365710e+06, 2.09499325e+06, 2.08331906e+06, 1.88828848e+06, 1.84175878e+06, 1.80341706e+06, 1.65770437e+06, 1.60066071e+06, 1.55224382e+06, ],
+    'CountWeightedLHEEnvelope'                                                       : [ 2.31886481e+06, 1.42175176e+06, ],
+    'CountWeightedPSWeight'                                                          : [ 1.87453368e+06, 1.84390605e+06, 2.71517704e+06, 1.80267329e+06, 1.83263392e+06, 1.05648017e+06, ],
+    'CountWeightedPSWeightOriginalXWGTUP'                                            : [ 4.69131160e+07, 4.57243489e+07, 4.69136864e+07, 4.69130849e+07, 4.19910448e+07, 4.08011440e+07, ],
+    'CountWeightedFull'                                                              : [ 3.37689824e+07, 3.37714358e+07, 3.37613221e+07, ],
+    'CountWeightedFullLHEWeightScale'                                                : [ 3.87522566e+07, 3.84101428e+07, 3.81962134e+07, 3.46203357e+07, 3.37685018e+07, 3.30644106e+07, 3.03927638e+07, 2.93469574e+07, 2.84593241e+07, ],
+    'CountWeightedFullLHEEnvelope'                                                   : [ 4.25146743e+07, 2.60667849e+07, ],
+    'CountWeightedFullPSWeight'                                                      : [ 3.43679715e+07, 3.38065711e+07, 4.97807832e+07, 3.30502271e+07, 3.36001469e+07, 1.93696052e+07, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP'                                        : [ 8.60209613e+08, 8.38396359e+08, 8.60211567e+08, 8.60209079e+08, 7.69929796e+08, 7.48108830e+08, ],
   }),
-  ("nof_tree_events",                 4293870),
+  ("nof_tree_events",                 4691915),
   ("nof_db_events",                   4691915),
-  ("fsize_local",                     31025066533), # 31.03GB, avg file size 3.45GB
+  ("fsize_local",                     39885130390), # 39.89GB, avg file size 1.99GB
   ("fsize_db",                        279233368180), # 279.23GB, avg file size 2.10GB
   ("use_it",                          True),
   ("xsection",                        4.215),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
-  ("nof_PSweights",                   1),
+  ("nof_PSweights",                   4),
   ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
   ("nof_reweighting",                 0),
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/TTGJets"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/TTGJets"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -21381,33 +21621,37 @@ samples_2018["/tZq_ll_4f_ckm_NLO_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18Min
   ("type",                            "mc"),
   ("sample_category",                 "Rares"),
   ("process_name_specific",           "tZq_ll_4f_ext1"),
-  ("nof_files",                       27),
+  ("nof_files",                       57),
   ("nof_db_files",                    382),
   ("nof_events",                      {
-    'Count'                                                                          : [ 13136000, ],
-    'CountWeighted'                                                                  : [ 3.43165543e+06, 3.43112306e+06, 3.43225247e+06, ],
-    'CountWeightedLHEWeightScale'                                                    : [ 3.72120192e+06, 3.66897447e+06, 3.63456316e+06, 3.51025132e+06, 3.43156246e+06, 3.37087466e+06, 3.31287452e+06, 3.21788041e+06, 3.14071693e+06, ],
-    'CountWeightedLHEEnvelope'                                                       : [ 3.99064931e+06, 2.93922805e+06, ],
-    'CountWeightedFull'                                                              : [ 9.79233283e+05, 9.79075397e+05, 9.79338979e+05, ],
-    'CountWeightedFullLHEWeightScale'                                                : [ 1.06181862e+06, 1.04691694e+06, 1.03709988e+06, 1.00162567e+06, 9.79215823e+05, 9.61857272e+05, 9.45304937e+05, 9.18200069e+05, 8.96182488e+05, ],
-    'CountWeightedFullLHEEnvelope'                                                   : [ 1.13870467e+06, 8.38689154e+05, ],
+    'Count'                                                                          : [ 13592000, ],
+    'CountWeighted'                                                                  : [ 3.55017989e+06, 3.54968649e+06, 3.55051695e+06, ],
+    'CountWeightedLHEWeightScale'                                                    : [ 3.84957130e+06, 3.79549090e+06, 3.75985080e+06, 3.63144539e+06, 3.55005574e+06, 3.48715730e+06, 3.42730939e+06, 3.32898766e+06, 3.24913009e+06, ],
+    'CountWeightedLHEEnvelope'                                                       : [ 4.12831848e+06, 3.04069200e+06, ],
+    'CountWeightedPSWeight'                                                          : [ 3.54899810e+06, 3.54907703e+06, 5.01489561e+06, 3.55176010e+06, 3.54897526e+06, 2.22998940e+06, ],
+    'CountWeightedPSWeightOriginalXWGTUP'                                            : [ 3.88166265e+06, 3.88143956e+06, 5.54919873e+06, 3.88193240e+06, 3.88277716e+06, 2.38149401e+06, ],
+    'CountWeightedFull'                                                              : [ 1.01299236e+06, 1.01285404e+06, 1.01309926e+06, ],
+    'CountWeightedFullLHEWeightScale'                                                : [ 1.09844419e+06, 1.08301471e+06, 1.07284649e+06, 1.03620382e+06, 1.01296271e+06, 9.95035378e+05, 9.77956310e+05, 9.49901786e+05, 9.27115086e+05, ],
+    'CountWeightedFullLHEEnvelope'                                                   : [ 1.17798381e+06, 8.67638432e+05, ],
+    'CountWeightedFullPSWeight'                                                      : [ 1.01265290e+06, 1.01270055e+06, 1.43095832e+06, 1.01343738e+06, 1.01267491e+06, 6.36293065e+05, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP'                                        : [ 1.10757771e+06, 1.10747057e+06, 1.58332563e+06, 1.10765173e+06, 1.10785305e+06, 6.79527395e+05, ],
   }),
-  ("nof_tree_events",                 13136000),
+  ("nof_tree_events",                 13592000),
   ("nof_db_events",                   13736000),
-  ("fsize_local",                     86560782286), # 86.56GB, avg file size 3.21GB
+  ("fsize_local",                     105506480725), # 105.51GB, avg file size 1.85GB
   ("fsize_db",                        775261524542), # 775.26GB, avg file size 2.03GB
   ("use_it",                          True),
   ("xsection",                        0.07358),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
-  ("nof_PSweights",                   1),
+  ("nof_PSweights",                   4),
   ("LHE_set",                         "LHA IDs 306000 - 306102 -> NNPDF31_nnlo_hessian_pdfas PDF set, expecting 103 weights (counted 103 weights)"),
   ("nof_reweighting",                 0),
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/tZq_ll_4f_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/tZq_ll_4f_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -21448,7 +21692,7 @@ samples_2018["/WpWpJJ_EWK-QCD_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18MiniAO
   }),
   ("nof_tree_events",                 150000),
   ("nof_db_events",                   150000),
-  ("fsize_local",                     901386365), # 901.39MB, avg file size 901.39MB
+  ("fsize_local",                     1044462194), # 1.04GB, avg file size 1.04GB
   ("fsize_db",                        8416160335), # 8.42GB, avg file size 841.62MB
   ("use_it",                          True),
   ("xsection",                        0.04926),
@@ -21461,7 +21705,7 @@ samples_2018["/WpWpJJ_EWK-QCD_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18MiniAO
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/WpWpJJ_EWK_QCD"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/WpWpJJ_EWK_QCD"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -21498,7 +21742,7 @@ samples_2018["/WWTo2L2Nu_DoubleScattering_13TeV-pythia8/RunIIAutumn18MiniAOD-102
   }),
   ("nof_tree_events",                 871500),
   ("nof_db_events",                   871500),
-  ("fsize_local",                     2172628868), # 2.17GB, avg file size 1.09GB
+  ("fsize_local",                     2887949892), # 2.89GB, avg file size 1.44GB
   ("fsize_db",                        35977937003), # 35.98GB, avg file size 734.24MB
   ("use_it",                          True),
   ("xsection",                        0.2232),
@@ -21511,7 +21755,7 @@ samples_2018["/WWTo2L2Nu_DoubleScattering_13TeV-pythia8/RunIIAutumn18MiniAOD-102
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/WWTo2L2Nu_DoubleScattering"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/WWTo2L2Nu_DoubleScattering"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -21552,7 +21796,7 @@ samples_2018["/TTTT_TuneCP5_13TeV-amcatnlo-pythia8/RunIIAutumn18MiniAOD-102X_upg
   }),
   ("nof_tree_events",                 1163212),
   ("nof_db_events",                   2359420),
-  ("fsize_local",                     13202062421), # 13.20GB, avg file size 2.64GB
+  ("fsize_local",                     14949693796), # 14.95GB, avg file size 2.99GB
   ("fsize_db",                        184341115381), # 184.34GB, avg file size 1.88GB
   ("use_it",                          True),
   ("xsection",                        0.008213),
@@ -21565,7 +21809,7 @@ samples_2018["/TTTT_TuneCP5_13TeV-amcatnlo-pythia8/RunIIAutumn18MiniAOD-102X_upg
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/TTTT_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/TTTT_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -21606,7 +21850,7 @@ samples_2018["/TTTW_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18MiniAOD-102X_upg
   }),
   ("nof_tree_events",                 200000),
   ("nof_db_events",                   200000),
-  ("fsize_local",                     1977032161), # 1.98GB, avg file size 1.98GB
+  ("fsize_local",                     2247758984), # 2.25GB, avg file size 2.25GB
   ("fsize_db",                        14488761312), # 14.49GB, avg file size 1.03GB
   ("use_it",                          True),
   ("xsection",                        0.000732),
@@ -21619,7 +21863,7 @@ samples_2018["/TTTW_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18MiniAOD-102X_upg
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/TTTW_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/TTTW_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -21660,7 +21904,7 @@ samples_2018["/TTTJ_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18MiniAOD-102X_upg
   }),
   ("nof_tree_events",                 184000),
   ("nof_db_events",                   184000),
-  ("fsize_local",                     1695516425), # 1.70GB, avg file size 1.70GB
+  ("fsize_local",                     1937036468), # 1.94GB, avg file size 1.94GB
   ("fsize_db",                        12835341800), # 12.84GB, avg file size 987.33MB
   ("use_it",                          True),
   ("xsection",                        0.000397),
@@ -21673,7 +21917,7 @@ samples_2018["/TTTJ_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18MiniAOD-102X_upg
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/TTTJ_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/TTTJ_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -21714,7 +21958,7 @@ samples_2018["/TTWZ_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18MiniAOD-102X_upg
   }),
   ("nof_tree_events",                 200000),
   ("nof_db_events",                   200000),
-  ("fsize_local",                     1702047790), # 1.70GB, avg file size 1.70GB
+  ("fsize_local",                     1949435428), # 1.95GB, avg file size 1.95GB
   ("fsize_db",                        13169455329), # 13.17GB, avg file size 1.32GB
   ("use_it",                          True),
   ("xsection",                        0.003884),
@@ -21727,7 +21971,7 @@ samples_2018["/TTWZ_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18MiniAOD-102X_upg
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/TTWZ_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/TTWZ_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -21768,7 +22012,7 @@ samples_2018["/TTZZ_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18MiniAOD-102X_upg
   }),
   ("nof_tree_events",                 200000),
   ("nof_db_events",                   200000),
-  ("fsize_local",                     1726171390), # 1.73GB, avg file size 1.73GB
+  ("fsize_local",                     1980038861), # 1.98GB, avg file size 1.98GB
   ("fsize_db",                        13292793715), # 13.29GB, avg file size 1.02GB
   ("use_it",                          True),
   ("xsection",                        0.001982),
@@ -21781,7 +22025,7 @@ samples_2018["/TTZZ_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18MiniAOD-102X_upg
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/TTZZ_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/TTZZ_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -21822,7 +22066,7 @@ samples_2018["/VHToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8/RunIIAutumn18Mi
   }),
   ("nof_tree_events",                 1102578),
   ("nof_db_events",                   1102578),
-  ("fsize_local",                     4953261966), # 4.95GB, avg file size 990.65MB
+  ("fsize_local",                     6036367058), # 6.04GB, avg file size 1.21GB
   ("fsize_db",                        51922787567), # 51.92GB, avg file size 1.73GB
   ("use_it",                          True),
   ("xsection",                        0.9425),
@@ -21835,7 +22079,7 @@ samples_2018["/VHToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8/RunIIAutumn18Mi
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/VHToNonbb_M125"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/VHToNonbb_M125"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -21876,7 +22120,7 @@ samples_2018["/ZH_HToBB_ZToLL_M125_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102
   }),
   ("nof_tree_events",                 4814600),
   ("nof_db_events",                   4814600),
-  ("fsize_local",                     22635702301), # 22.64GB, avg file size 2.26GB
+  ("fsize_local",                     26943748200), # 26.94GB, avg file size 2.69GB
   ("fsize_db",                        246564660597), # 246.56GB, avg file size 1.44GB
   ("use_it",                          True),
   ("xsection",                        0.05198),
@@ -21889,7 +22133,7 @@ samples_2018["/ZH_HToBB_ZToLL_M125_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/ZH_HToBB_ZToLL"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/ZH_HToBB_ZToLL"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -21917,33 +22161,37 @@ samples_2018["/ZH_HToBB_ZToLL_M125_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102
   ("type",                            "mc"),
   ("sample_category",                 "VH"),
   ("process_name_specific",           "ZH_HToBB_ZToLL_ext1"),
-  ("nof_files",                       5),
+  ("nof_files",                       9),
   ("nof_db_files",                    108),
   ("nof_events",                      {
     'Count'                                                                          : [ 2222100, ],
-    'CountWeighted'                                                                  : [ 2.09182159e+06, 2.09142150e+06, 2.09227109e+06, ],
-    'CountWeightedLHEWeightScale'                                                    : [ 2.10084680e+06, 2.14815500e+06, 2.13783769e+06, 1.97885458e+06, 2.09182159e+06, 2.14776488e+06, 1.88412958e+06, 2.02164077e+06, 2.09998214e+06, ],
-    'CountWeightedLHEEnvelope'                                                       : [ 2.49379798e+06, 1.68287548e+06, ],
-    'CountWeightedFull'                                                              : [ 1.76283609e+05, 1.76259717e+05, 1.76289363e+05, ],
-    'CountWeightedFullLHEWeightScale'                                                : [ 1.77043197e+05, 1.81029898e+05, 1.80160566e+05, 1.66763395e+05, 1.76283609e+05, 1.80998236e+05, 1.58780138e+05, 1.70369266e+05, 1.76971576e+05, ],
-    'CountWeightedFullLHEEnvelope'                                                   : [ 2.10158701e+05, 1.41819932e+05, ],
+    'CountWeighted'                                                                  : [ 2.09180886e+06, 2.09187231e+06, 2.09176477e+06, ],
+    'CountWeightedLHEWeightScale'                                                    : [ 2.10084872e+06, 2.14814959e+06, 2.13783505e+06, 1.97885867e+06, 2.09180886e+06, 2.14776800e+06, 1.88412609e+06, 2.02163961e+06, 2.09998100e+06, ],
+    'CountWeightedLHEEnvelope'                                                       : [ 2.49379089e+06, 1.68287981e+06, ],
+    'CountWeightedPSWeight'                                                          : [ 2.09165503e+06, 2.09105361e+06, 2.84382234e+06, 2.09195745e+06, 2.09145386e+06, 1.38910820e+06, ],
+    'CountWeightedPSWeightOriginalXWGTUP'                                            : [ 1.87253668e+05, 1.87213223e+05, 2.54249053e+05, 1.87282994e+05, 1.87391521e+05, 1.24748151e+05, ],
+    'CountWeightedFull'                                                              : [ 1.76253184e+05, 1.76254818e+05, 1.76273066e+05, ],
+    'CountWeightedFullLHEWeightScale'                                                : [ 1.77043293e+05, 1.81029836e+05, 1.80160650e+05, 1.66763035e+05, 1.76253184e+05, 1.80998334e+05, 1.58780232e+05, 1.70369318e+05, 1.76971660e+05, ],
+    'CountWeightedFullLHEEnvelope'                                                   : [ 2.10158871e+05, 1.41819869e+05, ],
+    'CountWeightedFullPSWeight'                                                      : [ 1.76262141e+05, 1.76218848e+05, 2.39655512e+05, 1.76287727e+05, 1.76252314e+05, 1.17064486e+05, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP'                                        : [ 1.57807595e+04, 1.57769897e+04, 2.14261614e+04, 1.57832017e+04, 1.57919723e+04, 1.05129424e+04, ],
   }),
   ("nof_tree_events",                 2222100),
   ("nof_db_events",                   2222100),
-  ("fsize_local",                     10450179903), # 10.45GB, avg file size 2.09GB
+  ("fsize_local",                     12514053238), # 12.51GB, avg file size 1.39GB
   ("fsize_db",                        114249380345), # 114.25GB, avg file size 1.06GB
   ("use_it",                          True),
   ("xsection",                        0.05198),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
-  ("nof_PSweights",                   1),
+  ("nof_PSweights",                   4),
   ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
   ("nof_reweighting",                 0),
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/ZH_HToBB_ZToLL_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/ZH_HToBB_ZToLL_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -21984,7 +22232,7 @@ samples_2018["/ZHToTauTau_M125_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102X_up
   }),
   ("nof_tree_events",                 4761815),
   ("nof_db_events",                   4761815),
-  ("fsize_local",                     19991000630), # 19.99GB, avg file size 2.00GB
+  ("fsize_local",                     24134820634), # 24.13GB, avg file size 2.41GB
   ("fsize_db",                        222037043876), # 222.04GB, avg file size 1.36GB
   ("use_it",                          True),
   ("xsection",                        0.05544),
@@ -21997,7 +22245,7 @@ samples_2018["/ZHToTauTau_M125_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102X_up
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/ZHToTauTau"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/ZHToTauTau"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -22042,7 +22290,7 @@ samples_2018["/HZJ_HToWW_M125_13TeV_powheg_jhugen714_pythia8_TuneCP5/RunIIAutumn
   }),
   ("nof_tree_events",                 999993),
   ("nof_db_events",                   999993),
-  ("fsize_local",                     4584608389), # 4.58GB, avg file size 2.29GB
+  ("fsize_local",                     5548031836), # 5.55GB, avg file size 2.77GB
   ("fsize_db",                        45663026359), # 45.66GB, avg file size 1.30GB
   ("use_it",                          False),
   ("xsection",                        0.1889),
@@ -22055,7 +22303,7 @@ samples_2018["/HZJ_HToWW_M125_13TeV_powheg_jhugen714_pythia8_TuneCP5/RunIIAutumn
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/HZJ_HToWW"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/HZJ_HToWW"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -22100,7 +22348,7 @@ samples_2018["/WminusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8/RunIIAutumn18MiniA
   }),
   ("nof_tree_events",                 2435200),
   ("nof_db_events",                   2435200),
-  ("fsize_local",                     9773564460), # 9.77GB, avg file size 1.95GB
+  ("fsize_local",                     11732782198), # 11.73GB, avg file size 2.35GB
   ("fsize_db",                        114172425100), # 114.17GB, avg file size 1.87GB
   ("use_it",                          False),
   ("xsection",                        0.1012),
@@ -22113,7 +22361,7 @@ samples_2018["/WminusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8/RunIIAutumn18MiniA
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/WminusH_HToBB_WToLNu"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/WminusH_HToBB_WToLNu"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -22158,7 +22406,7 @@ samples_2018["/WminusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8/RunIIAutumn18MiniA
   }),
   ("nof_tree_events",                 1200000),
   ("nof_db_events",                   1200000),
-  ("fsize_local",                     4818738482), # 4.82GB, avg file size 1.61GB
+  ("fsize_local",                     5785006684), # 5.79GB, avg file size 1.93GB
   ("fsize_db",                        56354082060), # 56.35GB, avg file size 1.48GB
   ("use_it",                          False),
   ("xsection",                        0.1012),
@@ -22171,7 +22419,7 @@ samples_2018["/WminusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8/RunIIAutumn18MiniA
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/WminusH_HToBB_WToLNu_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/WminusH_HToBB_WToLNu_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -22216,7 +22464,7 @@ samples_2018["/WplusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8/RunIIAutumn18MiniAO
   }),
   ("nof_tree_events",                 2409200),
   ("nof_db_events",                   2409200),
-  ("fsize_local",                     9793356083), # 9.79GB, avg file size 1.96GB
+  ("fsize_local",                     11746476826), # 11.75GB, avg file size 2.35GB
   ("fsize_db",                        113941396858), # 113.94GB, avg file size 1.75GB
   ("use_it",                          False),
   ("xsection",                        0.1595),
@@ -22229,7 +22477,7 @@ samples_2018["/WplusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8/RunIIAutumn18MiniAO
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/WplusH_HToBB_WToLNu"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/WplusH_HToBB_WToLNu"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -22274,7 +22522,7 @@ samples_2018["/WplusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8/RunIIAutumn18MiniAO
   }),
   ("nof_tree_events",                 1200000),
   ("nof_db_events",                   1200000),
-  ("fsize_local",                     4876397141), # 4.88GB, avg file size 1.63GB
+  ("fsize_local",                     5849324602), # 5.85GB, avg file size 1.95GB
   ("fsize_db",                        56822247371), # 56.82GB, avg file size 1.42GB
   ("use_it",                          False),
   ("xsection",                        0.1595),
@@ -22287,7 +22535,7 @@ samples_2018["/WplusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8/RunIIAutumn18MiniAO
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/WplusH_HToBB_WToLNu_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/WplusH_HToBB_WToLNu_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -22354,7 +22602,7 @@ samples_2018["/DYJetsToLL_0J_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18Min
   }),
   ("nof_tree_events",                 93979507),
   ("nof_db_events",                   93979507),
-  ("fsize_local",                     210678603815), # 210.68GB, avg file size 1.11GB
+  ("fsize_local",                     273909000480), # 273.91GB, avg file size 1.45GB
   ("fsize_db",                        3831294218269), # 3.83TB, avg file size 2.73GB
   ("use_it",                          False),
   ("xsection",                        4843.6),
@@ -22367,7 +22615,7 @@ samples_2018["/DYJetsToLL_0J_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18Min
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/DYToLL_0J"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/DYToLL_0J"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -22434,7 +22682,7 @@ samples_2018["/DYJetsToLL_1J_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18Min
   }),
   ("nof_tree_events",                 96530534),
   ("nof_db_events",                   96929140),
-  ("fsize_local",                     304254958495), # 304.25GB, avg file size 1.57GB
+  ("fsize_local",                     379937667962), # 379.94GB, avg file size 1.96GB
   ("fsize_db",                        4318408661253), # 4.32TB, avg file size 2.85GB
   ("use_it",                          False),
   ("xsection",                        897.8),
@@ -22447,7 +22695,7 @@ samples_2018["/DYJetsToLL_1J_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18Min
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/DYToLL_1J"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/DYToLL_1J"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -22514,7 +22762,7 @@ samples_2018["/DYJetsToLL_2J_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18Min
   }),
   ("nof_tree_events",                 61848731),
   ("nof_db_events",                   61848731),
-  ("fsize_local",                     271066423543), # 271.07GB, avg file size 2.19GB
+  ("fsize_local",                     327314755431), # 327.31GB, avg file size 2.64GB
   ("fsize_db",                        2780018207316), # 2.78TB, avg file size 2.52GB
   ("use_it",                          False),
   ("xsection",                        335.8),
@@ -22527,7 +22775,7 @@ samples_2018["/DYJetsToLL_2J_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18Min
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/DYToLL_2J"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/DYToLL_2J"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -22627,7 +22875,7 @@ samples_2018["/DYJetsToLL_M-10to50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn
   }),
   ("nof_tree_events",                 39392062),
   ("nof_db_events",                   39392062),
-  ("fsize_local",                     50740927975), # 50.74GB, avg file size 264.28MB
+  ("fsize_local",                     74327258145), # 74.33GB, avg file size 387.12MB
   ("fsize_db",                        1384328487602), # 1.38TB, avg file size 2.43GB
   ("use_it",                          True),
   ("xsection",                        18610.0),
@@ -22640,7 +22888,7 @@ samples_2018["/DYJetsToLL_M-10to50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/DYJetsToLL_M-10to50"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/DYJetsToLL_M-10to50"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -22919,7 +23167,7 @@ samples_2018["/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18Mi
   }),
   ("nof_tree_events",                 99100315),
   ("nof_db_events",                   100194597),
-  ("fsize_local",                     244656063496), # 244.66GB, avg file size 1.22GB
+  ("fsize_local",                     313346971283), # 313.35GB, avg file size 1.57GB
   ("fsize_db",                        4107561163369), # 4.11TB, avg file size 3.28GB
   ("use_it",                          False),
   ("xsection",                        6077.22),
@@ -22932,7 +23180,7 @@ samples_2018["/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18Mi
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/DYJetsToLL_M-50"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/DYJetsToLL_M-50"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -23021,7 +23269,7 @@ samples_2018["/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18M
   }),
   ("nof_tree_events",                 997561),
   ("nof_db_events",                   997561),
-  ("fsize_local",                     2743107183), # 2.74GB, avg file size 685.78MB
+  ("fsize_local",                     3464531141), # 3.46GB, avg file size 866.13MB
   ("fsize_db",                        40601589470), # 40.60GB, avg file size 2.71GB
   ("use_it",                          True),
   ("xsection",                        6077.22),
@@ -23034,7 +23282,7 @@ samples_2018["/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18M
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/DYJetsToLL_M-50_amcatnloFXFX"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/DYJetsToLL_M-50_amcatnloFXFX"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -23123,7 +23371,7 @@ samples_2018["/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18M
   }),
   ("nof_tree_events",                 193215674),
   ("nof_db_events",                   193465480),
-  ("fsize_local",                     530860944417), # 530.86GB, avg file size 946.28MB
+  ("fsize_local",                     670607216435), # 670.61GB, avg file size 1.20GB
   ("fsize_db",                        7864644678843), # 7.86TB, avg file size 2.80GB
   ("use_it",                          True),
   ("xsection",                        6077.22),
@@ -23136,7 +23384,7 @@ samples_2018["/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18M
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/DYJetsToLL_M-50_amcatnloFXFX_ext2"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/DYJetsToLL_M-50_amcatnloFXFX_ext2"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -23233,7 +23481,7 @@ samples_2018["/DY1JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18M
   }),
   ("nof_tree_events",                 68130834),
   ("nof_db_events",                   68898175),
-  ("fsize_local",                     191883126610), # 191.88GB, avg file size 1.35GB
+  ("fsize_local",                     243179181768), # 243.18GB, avg file size 1.71GB
   ("fsize_db",                        2932072952401), # 2.93TB, avg file size 3.00GB
   ("use_it",                          False),
   ("xsection",                        998.61),
@@ -23246,7 +23494,7 @@ samples_2018["/DY1JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18M
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/DY1JetsToLL_M-50"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/DY1JetsToLL_M-50"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -23350,7 +23598,7 @@ samples_2018["/DY2JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18M
   }),
   ("nof_tree_events",                 20456037),
   ("nof_db_events",                   20456037),
-  ("fsize_local",                     70969264211), # 70.97GB, avg file size 1.69GB
+  ("fsize_local",                     88325774393), # 88.33GB, avg file size 2.10GB
   ("fsize_db",                        941788605215), # 941.79GB, avg file size 2.89GB
   ("use_it",                          False),
   ("xsection",                        349.25),
@@ -23363,7 +23611,7 @@ samples_2018["/DY2JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18M
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/DY2JetsToLL_M-50"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/DY2JetsToLL_M-50"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -23467,7 +23715,7 @@ samples_2018["/DY3JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18M
   }),
   ("nof_tree_events",                 5652357),
   ("nof_db_events",                   5652357),
-  ("fsize_local",                     23576520442), # 23.58GB, avg file size 1.96GB
+  ("fsize_local",                     28936062921), # 28.94GB, avg file size 2.41GB
   ("fsize_db",                        270141096577), # 270.14GB, avg file size 2.39GB
   ("use_it",                          False),
   ("xsection",                        127.52),
@@ -23480,7 +23728,7 @@ samples_2018["/DY3JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18M
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/DY3JetsToLL_M-50"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/DY3JetsToLL_M-50"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -23584,7 +23832,7 @@ samples_2018["/DY4JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18M
   }),
   ("nof_tree_events",                 2817812),
   ("nof_db_events",                   2817812),
-  ("fsize_local",                     15218220347), # 15.22GB, avg file size 2.54GB
+  ("fsize_local",                     18293768783), # 18.29GB, avg file size 3.05GB
   ("fsize_db",                        150363439120), # 150.36GB, avg file size 817.19MB
   ("use_it",                          False),
   ("xsection",                        50.039),
@@ -23597,7 +23845,7 @@ samples_2018["/DY4JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18M
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/DY4JetsToLL_M-50"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/DY4JetsToLL_M-50"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -23666,7 +23914,7 @@ samples_2018["/DYJetsToLL_M-50_HT-70to100_TuneCP5_PSweights_13TeV-madgraphMLM-py
   }),
   ("nof_tree_events",                 10019684),
   ("nof_db_events",                   10019684),
-  ("fsize_local",                     35636180471), # 35.64GB, avg file size 1.70GB
+  ("fsize_local",                     43944109778), # 43.94GB, avg file size 2.09GB
   ("fsize_db",                        458054839968), # 458.05GB, avg file size 1.93GB
   ("use_it",                          False),
   ("xsection",                        167.33),
@@ -23679,7 +23927,7 @@ samples_2018["/DYJetsToLL_M-50_HT-70to100_TuneCP5_PSweights_13TeV-madgraphMLM-py
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/DYJetsToLL_M50_HT70to100_PSweights"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/DYJetsToLL_M50_HT70to100_PSweights"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -23748,7 +23996,7 @@ samples_2018["/DYJetsToLL_M-50_HT-100to200_TuneCP5_PSweights_13TeV-madgraphMLM-p
   }),
   ("nof_tree_events",                 11530510),
   ("nof_db_events",                   11530510),
-  ("fsize_local",                     49503094590), # 49.50GB, avg file size 2.06GB
+  ("fsize_local",                     59839110637), # 59.84GB, avg file size 2.49GB
   ("fsize_db",                        555247647975), # 555.25GB, avg file size 2.39GB
   ("use_it",                          False),
   ("xsection",                        183.53),
@@ -23761,7 +24009,7 @@ samples_2018["/DYJetsToLL_M-50_HT-100to200_TuneCP5_PSweights_13TeV-madgraphMLM-p
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/DYJetsToLL_M50_HT100to200_PSweights"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/DYJetsToLL_M50_HT100to200_PSweights"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -23830,7 +24078,7 @@ samples_2018["/DYJetsToLL_M-50_HT-200to400_TuneCP5_PSweights_13TeV-madgraphMLM-p
   }),
   ("nof_tree_events",                 11225887),
   ("nof_db_events",                   11225887),
-  ("fsize_local",                     64610792340), # 64.61GB, avg file size 2.81GB
+  ("fsize_local",                     75440126007), # 75.44GB, avg file size 3.28GB
   ("fsize_db",                        602756696070), # 602.76GB, avg file size 1.94GB
   ("use_it",                          False),
   ("xsection",                        55.411),
@@ -23843,7 +24091,7 @@ samples_2018["/DYJetsToLL_M-50_HT-200to400_TuneCP5_PSweights_13TeV-madgraphMLM-p
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/DYJetsToLL_M50_HT200to400_PSweights"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/DYJetsToLL_M50_HT200to400_PSweights"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -23912,7 +24160,7 @@ samples_2018["/DYJetsToLL_M-50_HT-400to600_TuneCP5_PSweights_13TeV-madgraphMLM-p
   }),
   ("nof_tree_events",                 9498126),
   ("nof_db_events",                   9697098),
-  ("fsize_local",                     67952867785), # 67.95GB, avg file size 3.40GB
+  ("fsize_local",                     77651843677), # 77.65GB, avg file size 3.88GB
   ("fsize_db",                        564664803510), # 564.66GB, avg file size 2.27GB
   ("use_it",                          False),
   ("xsection",                        7.9592),
@@ -23925,7 +24173,7 @@ samples_2018["/DYJetsToLL_M-50_HT-400to600_TuneCP5_PSweights_13TeV-madgraphMLM-p
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/DYJetsToLL_M50_HT400to600_PSweights"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/DYJetsToLL_M50_HT400to600_PSweights"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -23994,7 +24242,7 @@ samples_2018["/DYJetsToLL_M-50_HT-400to600_TuneCP5_PSweights_13TeV-madgraphMLM-p
   }),
   ("nof_tree_events",                 9058506),
   ("nof_db_events",                   9358053),
-  ("fsize_local",                     64805450293), # 64.81GB, avg file size 3.41GB
+  ("fsize_local",                     74060641078), # 74.06GB, avg file size 3.90GB
   ("fsize_db",                        546455118878), # 546.46GB, avg file size 2.16GB
   ("use_it",                          False),
   ("xsection",                        7.9592),
@@ -24007,7 +24255,7 @@ samples_2018["/DYJetsToLL_M-50_HT-400to600_TuneCP5_PSweights_13TeV-madgraphMLM-p
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/DYJetsToLL_M50_HT400to600_PSweights_ext2"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/DYJetsToLL_M50_HT400to600_PSweights_ext2"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -24076,7 +24324,7 @@ samples_2018["/DYJetsToLL_M-50_HT-600to800_TuneCP5_PSweights_13TeV-madgraphMLM-p
   }),
   ("nof_tree_events",                 8662533),
   ("nof_db_events",                   8862104),
-  ("fsize_local",                     67214103229), # 67.21GB, avg file size 3.73GB
+  ("fsize_local",                     76240316196), # 76.24GB, avg file size 4.24GB
   ("fsize_db",                        542689599939), # 542.69GB, avg file size 2.06GB
   ("use_it",                          False),
   ("xsection",                        2.0041),
@@ -24089,7 +24337,7 @@ samples_2018["/DYJetsToLL_M-50_HT-600to800_TuneCP5_PSweights_13TeV-madgraphMLM-p
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/DYJetsToLL_M50_HT600to800_PSweights"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/DYJetsToLL_M50_HT600to800_PSweights"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -24158,7 +24406,7 @@ samples_2018["/DYJetsToLL_M-50_HT-800to1200_TuneCP5_PSweights_13TeV-madgraphMLM-
   }),
   ("nof_tree_events",                 2937951),
   ("nof_db_events",                   3138129),
-  ("fsize_local",                     23850770674), # 23.85GB, avg file size 3.98GB
+  ("fsize_local",                     27013591144), # 27.01GB, avg file size 4.50GB
   ("fsize_db",                        201483591965), # 201.48GB, avg file size 1.85GB
   ("use_it",                          False),
   ("xsection",                        0.92367),
@@ -24171,7 +24419,7 @@ samples_2018["/DYJetsToLL_M-50_HT-800to1200_TuneCP5_PSweights_13TeV-madgraphMLM-
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/DYJetsToLL_M50_HT800to1200_PSweights"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/DYJetsToLL_M50_HT800to1200_PSweights"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -24240,7 +24488,7 @@ samples_2018["/DYJetsToLL_M-50_HT-1200to2500_TuneCP5_PSweights_13TeV-madgraphMLM
   }),
   ("nof_tree_events",                 486093),
   ("nof_db_events",                   536416),
-  ("fsize_local",                     4102067778), # 4.10GB, avg file size 2.05GB
+  ("fsize_local",                     4641274115), # 4.64GB, avg file size 2.32GB
   ("fsize_db",                        36172277071), # 36.17GB, avg file size 1.57GB
   ("use_it",                          False),
   ("xsection",                        0.22025),
@@ -24253,7 +24501,7 @@ samples_2018["/DYJetsToLL_M-50_HT-1200to2500_TuneCP5_PSweights_13TeV-madgraphMLM
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/DYJetsToLL_M50_HT1200to2500_PSweights"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/DYJetsToLL_M50_HT1200to2500_PSweights"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -24322,7 +24570,7 @@ samples_2018["/DYJetsToLL_M-50_HT-2500toInf_TuneCP5_PSweights_13TeV-madgraphMLM-
   }),
   ("nof_tree_events",                 377131),
   ("nof_db_events",                   427051),
-  ("fsize_local",                     3264465417), # 3.26GB, avg file size 1.63GB
+  ("fsize_local",                     3688545318), # 3.69GB, avg file size 1.84GB
   ("fsize_db",                        31050128812), # 31.05GB, avg file size 1.35GB
   ("use_it",                          False),
   ("xsection",                        0.004007),
@@ -24335,7 +24583,7 @@ samples_2018["/DYJetsToLL_M-50_HT-2500toInf_TuneCP5_PSweights_13TeV-madgraphMLM-
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/DYJetsToLL_M50_HT2500toInf_PSweights"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/DYJetsToLL_M50_HT2500toInf_PSweights"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -24376,7 +24624,7 @@ samples_2018["/DYBBJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18
   }),
   ("nof_tree_events",                 5039926),
   ("nof_db_events",                   5158752),
-  ("fsize_local",                     20280531043), # 20.28GB, avg file size 1.84GB
+  ("fsize_local",                     24947582945), # 24.95GB, avg file size 2.27GB
   ("fsize_db",                        256525597601), # 256.53GB, avg file size 1.61GB
   ("use_it",                          False),
   ("xsection",                        14.6),
@@ -24389,7 +24637,7 @@ samples_2018["/DYBBJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/DYBBJetsToLL_M-50"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/DYBBJetsToLL_M-50"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -24808,7 +25056,7 @@ samples_2018["/WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAOD
   }),
   ("nof_tree_events",                 71026861),
   ("nof_db_events",                   71072199),
-  ("fsize_local",                     138892215842), # 138.89GB, avg file size 466.08MB
+  ("fsize_local",                     183731273268), # 183.73GB, avg file size 616.55MB
   ("fsize_db",                        2702061580245), # 2.70TB, avg file size 2.73GB
   ("use_it",                          True),
   ("xsection",                        61526.7),
@@ -24821,7 +25069,7 @@ samples_2018["/WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAOD
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/WJetsToLNu_madgraphMLM"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/WJetsToLNu_madgraphMLM"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -24849,82 +25097,114 @@ samples_2018["/W1JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAO
   ("type",                            "mc"),
   ("sample_category",                 "EWK"),
   ("process_name_specific",           "W1JetsToLNu"),
-  ("nof_files",                       104),
+  ("nof_files",                       209),
   ("nof_db_files",                    743),
   ("nof_events",                      {
-    'Count'                                                                          : [ 50984636, ],
-    'CountWeighted'                                                                  : [ 5.09590282e+07, 5.09507607e+07, 5.09381102e+07, ],
-    'CountWeightedLHEWeightScale'                                                    : [ 4.44795227e+07, 5.14619065e+07, 5.73243140e+07, 4.40075948e+07, 5.09585875e+07, 5.67953252e+07, 4.36207352e+07, 5.05446462e+07, 5.63619212e+07, ],
-    'CountWeightedLHEEnvelope'                                                       : [ 5.71044085e+07, 4.38393686e+07, ],
-    'CountWeightedFull'                                                              : [ 5.09524428e+07, 5.09441601e+07, 5.09318516e+07, ],
-    'CountWeightedFullLHEWeightScale'                                                : [ 4.44737921e+07, 5.14552385e+07, 5.73171345e+07, 4.40019415e+07, 5.09519841e+07, 5.67882312e+07, 4.36151467e+07, 5.05381338e+07, 5.63548976e+07, ],
-    'CountWeightedFullLHEEnvelope'                                                   : [ 5.70972433e+07, 4.38337634e+07, ],
-    'Count_LHEHT0to70'                                                               : [ 48067170, ],
-    'CountWeighted_LHEHT0to70'                                                       : [ 4.80412784e+07, 4.80349379e+07, 4.80242377e+07, ],
-    'CountWeightedLHEWeightScale_LHEHT0to70'                                         : [ 4.16037101e+07, 4.84693492e+07, 5.42559563e+07, 4.12052232e+07, 4.80408542e+07, 5.38029414e+07, 4.08793958e+07, 4.76895338e+07, 5.34326515e+07, ],
-    'CountWeightedLHEEnvelope_LHEHT0to70'                                            : [ 5.40303816e+07, 4.10988642e+07, ],
-    'CountWeightedFull_LHEHT0to70'                                                   : [ 4.80355076e+07, 4.80291532e+07, 4.80187228e+07, ],
-    'CountWeightedFullLHEWeightScale_LHEHT0to70'                                     : [ 4.15987566e+07, 4.84635122e+07, 5.42495998e+07, 4.12003262e+07, 4.80350662e+07, 5.37966481e+07, 4.08745444e+07, 4.76838138e+07, 5.34264095e+07, ],
-    'CountWeightedFullLHEEnvelope_LHEHT0to70'                                        : [ 5.40240436e+07, 4.10939952e+07, ],
-    'Count_LHEHT70to100'                                                             : [ 2015341, ],
-    'CountWeighted_LHEHT70to100'                                                     : [ 2.01446989e+06, 2.01416742e+06, 2.01471442e+06, ],
-    'CountWeightedLHEWeightScale_LHEHT70to100'                                       : [ 1.96271500e+06, 2.06404208e+06, 2.13669663e+06, 1.91465049e+06, 2.01442541e+06, 2.08607568e+06, 1.87484089e+06, 1.97335219e+06, 2.04415390e+06, ],
-    'CountWeightedLHEEnvelope_LHEHT70to100'                                          : [ 2.13052649e+06, 1.88386263e+06, ],
-    'CountWeightedFull_LHEHT70to100'                                                 : [ 2.01398710e+06, 2.01368501e+06, 2.01423102e+06, ],
-    'CountWeightedFullLHEWeightScale_LHEHT70to100'                                   : [ 1.96224294e+06, 2.06354638e+06, 2.13618376e+06, 1.91419085e+06, 2.01394255e+06, 2.08557588e+06, 1.87439157e+06, 1.97287992e+06, 2.04366493e+06, ],
-    'CountWeightedFullLHEEnvelope_LHEHT70to100'                                      : [ 2.13001510e+06, 1.88341111e+06, ],
-    'Count_LHEHT100to200'                                                            : [ 849987, ],
-    'CountWeighted_LHEHT100to200'                                                    : [ 8.49003269e+05, 8.49123199e+05, 8.48918833e+05, ],
-    'CountWeightedLHEWeightScale_LHEHT100to200'                                      : [ 8.57747991e+05, 8.72868799e+05, 8.79707019e+05, 8.33996597e+05, 8.48979746e+05, 8.55864571e+05, 8.14159577e+05, 8.29041763e+05, 8.35954338e+05, ],
-    'CountWeightedLHEEnvelope_LHEHT100to200'                                         : [ 8.88004001e+05, 8.07563086e+05, ],
-    'CountWeightedFull_LHEHT100to200'                                                : [ 8.48730621e+05, 8.48850068e+05, 8.48646450e+05, ],
-    'CountWeightedFullLHEWeightScale_LHEHT100to200'                                  : [ 8.57471311e+05, 8.72587995e+05, 8.79424661e+05, 8.33727999e+05, 8.48707042e+05, 8.55590278e+05, 8.13897718e+05, 8.28775809e+05, 8.35686776e+05, ],
-    'CountWeightedFullLHEEnvelope_LHEHT100to200'                                     : [ 8.87718564e+05, 8.07303720e+05, ],
-    'Count_LHEHT200to400'                                                            : [ 50669, ],
-    'CountWeighted_LHEHT200to400'                                                    : [ 5.06441962e+04, 5.05986616e+04, 5.06985903e+04, ],
-    'CountWeightedLHEWeightScale_LHEHT200to400'                                      : [ 5.37222692e+04, 5.21670983e+04, 5.05373883e+04, 5.21441952e+04, 5.06429109e+04, 4.90683466e+04, 5.08087846e+04, 4.93539718e+04, 4.78253273e+04, ],
-    'CountWeightedLHEEnvelope_LHEHT200to400'                                         : [ 5.38197825e+04, 4.77330675e+04, ],
-    'CountWeightedFull_LHEHT200to400'                                                : [ 5.06191261e+04, 5.05736216e+04, 5.06734679e+04, ],
-    'CountWeightedFullLHEWeightScale_LHEHT200to400'                                  : [ 5.36955733e+04, 5.21412326e+04, 5.05123778e+04, 5.21183255e+04, 5.06178420e+04, 4.90441036e+04, 5.07836141e+04, 4.93295760e+04, 4.78017320e+04, ],
-    'CountWeightedFullLHEEnvelope_LHEHT200to400'                                     : [ 5.37930530e+04, 4.77095049e+04, ],
-    'Count_LHEHT400to600'                                                            : [ 1327, ],
-    'CountWeighted_LHEHT400to600'                                                    : [ 1.32365771e+03, 1.32960258e+03, 1.31563119e+03, ],
-    'CountWeightedLHEWeightScale_LHEHT400to600'                                      : [ 1.46466880e+03, 1.36425163e+03, 1.27432016e+03, 1.42096163e+03, 1.32362461e+03, 1.23646529e+03, 1.38353145e+03, 1.28885460e+03, 1.20404629e+03, ],
-    'CountWeightedLHEEnvelope_LHEHT400to600'                                         : [ 1.46472332e+03, 1.20400312e+03, ],
-    'CountWeightedFull_LHEHT400to600'                                                : [ 1.32273449e+03, 1.32868238e+03, 1.31470560e+03, ],
-    'CountWeightedFullLHEWeightScale_LHEHT400to600'                                  : [ 1.46364771e+03, 1.36329940e+03, 1.27342974e+03, 1.41997188e+03, 1.32270141e+03, 1.23560186e+03, 1.38256854e+03, 1.28795627e+03, 1.20320598e+03, ],
-    'CountWeightedFullLHEEnvelope_LHEHT400to600'                                     : [ 1.46370205e+03, 1.20316294e+03, ],
+    'Count'                                                                          : [ 51082776, ],
+    'CountWeighted'                                                                  : [ 5.10433088e+07, 5.10451907e+07, 5.10482592e+07, ],
+    'CountWeightedLHEWeightScale'                                                    : [ 4.45651908e+07, 5.15479187e+07, 5.74347587e+07, 4.40923535e+07, 5.10426102e+07, 5.69047504e+07, 4.37047676e+07, 5.06293493e+07, 5.64705160e+07, ],
+    'CountWeightedLHEEnvelope'                                                       : [ 5.72143107e+07, 4.39238081e+07, ],
+    'CountWeightedPSWeight'                                                          : [ 2.01111836e+07, 1.93761961e+07, 2.52090375e+07, 1.83782199e+07, 1.92696513e+07, 1.38957562e+07, ],
+    'CountWeightedPSWeightOriginalXWGTUP'                                            : [ 5.31375654e+07, 5.11953770e+07, 6.65945707e+07, 4.85579348e+07, 5.09025499e+07, 3.67158212e+07, ],
+    'CountWeightedFull'                                                              : [ 5.10368715e+07, 5.10387345e+07, 5.10417943e+07, ],
+    'CountWeightedFullLHEWeightScale'                                                : [ 4.45594466e+07, 5.15413836e+07, 5.74275663e+07, 4.40866872e+07, 5.10361578e+07, 5.68976431e+07, 4.36991651e+07, 5.06229652e+07, 5.64634780e+07, ],
+    'CountWeightedFullLHEEnvelope'                                                   : [ 5.72071348e+07, 4.39181877e+07, ],
+    'CountWeightedFullPSWeight'                                                      : [ 2.01086285e+07, 1.93737537e+07, 2.52058211e+07, 1.83758654e+07, 1.92672025e+07, 1.38940019e+07, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP'                                        : [ 5.31308165e+07, 5.11887512e+07, 6.65858735e+07, 4.85517128e+07, 5.08959323e+07, 3.67111857e+07, ],
+    'Count_LHEHT0to70'                                                               : [ 48159735, ],
+    'CountWeighted_LHEHT0to70'                                                       : [ 4.81224398e+07, 4.81243321e+07, 4.81270434e+07, ],
+    'CountWeightedLHEWeightScale_LHEHT0to70'                                         : [ 4.16838626e+07, 4.85517720e+07, 5.43605293e+07, 4.12846115e+07, 4.81217414e+07, 5.39066393e+07, 4.09581656e+07, 4.77708814e+07, 5.35356394e+07, ],
+    'CountWeightedLHEEnvelope_LHEHT0to70'                                            : [ 5.41344471e+07, 4.11780667e+07, ],
+    'CountWeightedPSWeight_LHEHT0to70'                                               : [ 1.89277465e+07, 1.82642144e+07, 2.37412345e+07, 1.73642040e+07, 1.81700483e+07, 1.31229652e+07, ],
+    'CountWeightedPSWeightOriginalXWGTUP_LHEHT0to70'                                 : [ 5.00101155e+07, 4.82568052e+07, 6.27166021e+07, 4.58782942e+07, 4.79975203e+07, 3.46735320e+07, ],
+    'CountWeightedFull_LHEHT0to70'                                                   : [ 4.81167877e+07, 4.81186651e+07, 4.81213580e+07, ],
+    'CountWeightedFullLHEWeightScale_LHEHT0to70'                                     : [ 4.16788968e+07, 4.85460484e+07, 5.43541591e+07, 4.12797022e+07, 4.81160788e+07, 5.39003330e+07, 4.09533018e+07, 4.77652685e+07, 5.35293840e+07, ],
+    'CountWeightedFullLHEEnvelope_LHEHT0to70'                                        : [ 5.41280974e+07, 4.11731844e+07, ],
+    'CountWeightedFullPSWeight_LHEHT0to70'                                           : [ 1.89255080e+07, 1.82620697e+07, 2.37384126e+07, 1.73621217e+07, 1.81678956e+07, 1.31214177e+07, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_LHEHT0to70'                             : [ 5.00042040e+07, 4.82509671e+07, 6.27089481e+07, 4.58727919e+07, 4.79916847e+07, 3.46694429e+07, ],
+    'Count_LHEHT70to100'                                                             : [ 2019208, ],
+    'CountWeighted_LHEHT70to100'                                                     : [ 2.01834789e+06, 2.01803401e+06, 2.01860182e+06, ],
+    'CountWeightedLHEWeightScale_LHEHT70to100'                                       : [ 1.96649763e+06, 2.06800640e+06, 2.14080785e+06, 1.91833989e+06, 2.01829100e+06, 2.09008907e+06, 1.87845332e+06, 1.97714162e+06, 2.04808610e+06, ],
+    'CountWeightedLHEEnvelope_LHEHT70to100'                                          : [ 2.13462858e+06, 1.88748951e+06, ],
+    'CountWeightedPSWeight_LHEHT70to100'                                             : [ 8.15271503e+05, 7.67148811e+05, 1.01181600e+06, 7.03317286e+05, 7.61209901e+05, 5.36244283e+05, ],
+    'CountWeightedPSWeightOriginalXWGTUP_LHEHT70to100'                               : [ 2.15445113e+06, 2.02725801e+06, 2.67319915e+06, 1.85854982e+06, 2.01100440e+06, 1.41712126e+06, ],
+    'CountWeightedFull_LHEHT70to100'                                                 : [ 2.01786403e+06, 2.01755025e+06, 2.01811752e+06, ],
+    'CountWeightedFullLHEWeightScale_LHEHT70to100'                                   : [ 1.96602466e+06, 2.06750958e+06, 2.14029399e+06, 1.91787939e+06, 2.01780704e+06, 2.08958830e+06, 1.87800313e+06, 1.97666827e+06, 2.04759619e+06, ],
+    'CountWeightedFullLHEEnvelope_LHEHT70to100'                                      : [ 2.13411618e+06, 1.88703714e+06, ],
+    'CountWeightedFullPSWeight_LHEHT70to100'                                         : [ 8.15076893e+05, 7.66965188e+05, 1.01157296e+06, 7.03148187e+05, 7.61026888e+05, 5.36116039e+05, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_LHEHT70to100'                           : [ 2.15393652e+06, 2.02677167e+06, 2.67255606e+06, 1.85810268e+06, 2.01052001e+06, 1.41678204e+06, ],
+    'Count_LHEHT100to200'                                                            : [ 851578, ],
+    'CountWeighted_LHEHT100to200'                                                    : [ 8.50600511e+05, 8.50718051e+05, 8.50520804e+05, ],
+    'CountWeightedLHEWeightScale_LHEHT100to200'                                      : [ 8.59364053e+05, 8.74513478e+05, 8.81363324e+05, 8.35567141e+05, 8.50578901e+05, 8.57475144e+05, 8.15692063e+05, 8.30602330e+05, 8.37526716e+05, ],
+    'CountWeightedLHEEnvelope_LHEHT100to200'                                         : [ 8.89677581e+05, 8.09081763e+05, ],
+    'CountWeightedPSWeight_LHEHT100to200'                                            : [ 3.46607040e+05, 3.24674552e+05, 4.29391087e+05, 2.93015387e+05, 3.19150730e+05, 2.23151300e+05, ],
+    'CountWeightedPSWeightOriginalXWGTUP_LHEHT100to200'                              : [ 9.15984500e+05, 8.58008883e+05, 1.13445464e+06, 7.74333834e+05, 8.43152950e+05, 5.89744508e+05, ],
+    'CountWeightedFull_LHEHT100to200'                                                : [ 8.50327168e+05, 8.50444255e+05, 8.50247870e+05, ],
+    'CountWeightedFullLHEWeightScale_LHEHT100to200'                                  : [ 8.59086785e+05, 8.74232082e+05, 8.81080341e+05, 8.35297954e+05, 8.50305621e+05, 8.57200243e+05, 8.15429632e+05, 8.30335822e+05, 8.37258575e+05, ],
+    'CountWeightedFullLHEEnvelope_LHEHT100to200'                                     : [ 8.89391515e+05, 8.08821834e+05, ],
+    'CountWeightedFullPSWeight_LHEHT100to200'                                        : [ 3.46495853e+05, 3.24570496e+05, 4.29252954e+05, 2.92921016e+05, 3.19047756e+05, 2.23079506e+05, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_LHEHT100to200'                          : [ 9.15690840e+05, 8.57734056e+05, 1.13408988e+06, 7.74084593e+05, 8.42881055e+05, 5.89554887e+05, ],
+    'Count_LHEHT200to400'                                                            : [ 50784, ],
+    'CountWeighted_LHEHT200to400'                                                    : [ 5.07569686e+04, 5.07115751e+04, 5.08115394e+04, ],
+    'CountWeightedLHEWeightScale_LHEHT200to400'                                      : [ 5.38418188e+04, 5.22833055e+04, 5.06500595e+04, 5.22601832e+04, 5.07556834e+04, 4.91777108e+04, 5.09217593e+04, 4.94638397e+04, 4.79318923e+04, ],
+    'CountWeightedLHEEnvelope_LHEHT200to400'                                         : [ 5.39396185e+04, 4.78393707e+04, ],
+    'CountWeightedPSWeight_LHEHT200to400'                                            : [ 2.09476234e+04, 1.95868587e+04, 2.58382603e+04, 1.71957641e+04, 1.87070768e+04, 1.30252525e+04, ],
+    'CountWeightedPSWeightOriginalXWGTUP_LHEHT200to400'                              : [ 5.53916600e+04, 5.17826952e+04, 6.83090438e+04, 4.54636018e+04, 4.94626581e+04, 3.44426509e+04, ],
+    'CountWeightedFull_LHEHT200to400'                                                : [ 5.07318422e+04, 5.06864744e+04, 5.07863669e+04, ],
+    'CountWeightedFullLHEWeightScale_LHEHT200to400'                                  : [ 5.38150622e+04, 5.22573805e+04, 5.06249918e+04, 5.22342562e+04, 5.07305578e+04, 4.91534123e+04, 5.08965337e+04, 4.94393903e+04, 4.79082452e+04, ],
+    'CountWeightedFullLHEEnvelope_LHEHT200to400'                                     : [ 5.39128283e+04, 4.78157555e+04, ],
+    'CountWeightedFullPSWeight_LHEHT200to400'                                        : [ 2.09372354e+04, 1.95771494e+04, 2.58253245e+04, 1.71872669e+04, 1.86977385e+04, 1.30188589e+04, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_LHEHT200to400'                          : [ 5.53642308e+04, 5.17570590e+04, 6.82748828e+04, 4.54411647e+04, 4.94379953e+04, 3.44257684e+04, ],
+    'Count_LHEHT400to600'                                                            : [ 1329, ],
+    'CountWeighted_LHEHT400to600'                                                    : [ 1.32621346e+03, 1.33193633e+03, 1.31841702e+03, ],
+    'CountWeightedLHEWeightScale_LHEHT400to600'                                      : [ 1.46753048e+03, 1.36691525e+03, 1.27680629e+03, 1.42370668e+03, 1.32618031e+03, 1.23885137e+03, 1.38617667e+03, 1.29131806e+03, 1.20634672e+03, ],
+    'CountWeightedLHEEnvelope_LHEHT400to600'                                         : [ 1.46758500e+03, 1.20630355e+03, ],
+    'CountWeightedPSWeight_LHEHT400to600'                                            : [ 5.53014597e+02, 5.17812443e+02, 6.88651648e+02, 4.43577904e+02, 4.87995797e+02, 3.35170439e+02, ],
+    'CountWeightedPSWeightOriginalXWGTUP_LHEHT400to600'                              : [ 1.46487370e+03, 1.37085664e+03, 1.81939289e+03, 1.17497519e+03, 1.28920537e+03, 8.88373076e+02, ],
+    'CountWeightedFull_LHEHT400to600'                                                : [ 1.32529025e+03, 1.33101613e+03, 1.31749142e+03, ],
+    'CountWeightedFullLHEWeightScale_LHEHT400to600'                                  : [ 1.46650940e+03, 1.36596302e+03, 1.27591587e+03, 1.42271692e+03, 1.32525713e+03, 1.23798794e+03, 1.38521375e+03, 1.29041974e+03, 1.20550641e+03, ],
+    'CountWeightedFullLHEEnvelope_LHEHT400to600'                                     : [ 1.46656374e+03, 1.20546337e+03, ],
+    'CountWeightedFullPSWeight_LHEHT400to600'                                        : [ 5.52627507e+02, 5.17468289e+02, 6.88159880e+02, 4.43271738e+02, 4.87621101e+02, 3.34934930e+02, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_LHEHT400to600'                          : [ 1.46385188e+03, 1.36994838e+03, 1.81809405e+03, 1.17416704e+03, 1.28821544e+03, 8.87751489e+02, ],
     'Count_LHEHT600to800'                                                            : [ 125, ],
-    'CountWeighted_LHEHT600to800'                                                    : [ 1.23569669e+02, 1.22664408e+02, 1.25003997e+02, ],
-    'CountWeightedLHEWeightScale_LHEHT600to800'                                      : [ 1.40423697e+02, 1.28025975e+02, 1.17348353e+02, 1.35529330e+02, 1.23566522e+02, 1.13266747e+02, 1.31311209e+02, 1.19725701e+02, 1.09749341e+02, ],
+    'CountWeighted_LHEHT600to800'                                                    : [ 1.23569668e+02, 1.22664408e+02, 1.25003997e+02, ],
+    'CountWeightedLHEWeightScale_LHEHT600to800'                                      : [ 1.40423697e+02, 1.28025976e+02, 1.17348352e+02, 1.35529330e+02, 1.23566523e+02, 1.13266747e+02, 1.31311210e+02, 1.19725701e+02, 1.09749341e+02, ],
     'CountWeightedLHEEnvelope_LHEHT600to800'                                         : [ 1.40423697e+02, 1.09749341e+02, ],
-    'CountWeightedFull_LHEHT600to800'                                                : [ 1.23459586e+02, 1.22552870e+02, 1.24894535e+02, ],
-    'CountWeightedFullLHEWeightScale_LHEHT600to800'                                  : [ 1.40298152e+02, 1.27910733e+02, 1.17242104e+02, 1.35409428e+02, 1.23456442e+02, 1.13165244e+02, 1.31196166e+02, 1.19620066e+02, 1.09651925e+02, ],
+    'CountWeightedPSWeight_LHEHT600to800'                                            : [ 5.20992962e+01, 4.92770108e+01, 6.08321547e+01, 4.06036355e+01, 4.12016814e+01, 3.11257469e+01, ],
+    'CountWeightedPSWeightOriginalXWGTUP_LHEHT600to800'                              : [ 1.37554832e+02, 1.30090874e+02, 1.60620002e+02, 1.07203641e+02, 1.08808076e+02, 8.21839016e+01, ],
+    'CountWeightedFull_LHEHT600to800'                                                : [ 1.23459586e+02, 1.22552869e+02, 1.24894535e+02, ],
+    'CountWeightedFullLHEWeightScale_LHEHT600to800'                                  : [ 1.40298152e+02, 1.27910733e+02, 1.17242104e+02, 1.35409427e+02, 1.23456443e+02, 1.13165244e+02, 1.31196166e+02, 1.19620067e+02, 1.09651925e+02, ],
     'CountWeightedFullLHEEnvelope_LHEHT600to800'                                     : [ 1.40298152e+02, 1.09651925e+02, ],
+    'CountWeightedFullPSWeight_LHEHT600to800'                                        : [ 5.20519421e+01, 4.92365193e+01, 6.07779631e+01, 4.05682822e+01, 4.11614231e+01, 3.10978354e+01, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_LHEHT600to800'                          : [ 1.37429595e+02, 1.29983792e+02, 1.60476670e+02, 1.07110121e+02, 1.08701563e+02, 8.21100646e+01, ],
     'Count_LHEHT800to1200'                                                           : [ 17, ],
-    'CountWeighted_LHEHT800to1200'                                                   : [ 1.53928057e+01, 1.52006705e+01, 1.55880619e+01, ],
-    'CountWeightedLHEWeightScale_LHEHT800to1200'                                     : [ 1.76557167e+01, 1.57341393e+01, 1.41245209e+01, 1.72722540e+01, 1.53923959e+01, 1.38179612e+01, 1.69399188e+01, 1.50964447e+01, 1.35521759e+01, ],
-    'CountWeightedLHEEnvelope_LHEHT800to1200'                                        : [ 1.76557167e+01, 1.35521759e+01, ],
-    'CountWeightedFull_LHEHT800to1200'                                               : [ 1.53928057e+01, 1.52006705e+01, 1.55880619e+01, ],
-    'CountWeightedFullLHEWeightScale_LHEHT800to1200'                                 : [ 1.76557167e+01, 1.57341393e+01, 1.41245209e+01, 1.72722540e+01, 1.53923959e+01, 1.38179612e+01, 1.69399188e+01, 1.50964447e+01, 1.35521759e+01, ],
-    'CountWeightedFullLHEEnvelope_LHEHT800to1200'                                    : [ 1.76557167e+01, 1.35521759e+01, ],
+    'CountWeighted_LHEHT800to1200'                                                   : [ 1.53928057e+01, 1.52006704e+01, 1.55880618e+01, ],
+    'CountWeightedLHEWeightScale_LHEHT800to1200'                                     : [ 1.76557168e+01, 1.57341394e+01, 1.41245209e+01, 1.72722541e+01, 1.53923960e+01, 1.38179612e+01, 1.69399189e+01, 1.50964448e+01, 1.35521759e+01, ],
+    'CountWeightedLHEEnvelope_LHEHT800to1200'                                        : [ 1.76557168e+01, 1.35521759e+01, ],
+    'CountWeightedPSWeight_LHEHT800to1200'                                           : [ 6.68750902e+00, 6.31163287e+00, 7.91030628e+00, 4.87540409e+00, 5.22100202e+00, 3.74988911e+00, ],
+    'CountWeightedPSWeightOriginalXWGTUP_LHEHT800to1200'                             : [ 1.98359667e+01, 1.88251877e+01, 2.30625002e+01, 1.46838932e+01, 1.54764732e+01, 1.16045109e+01, ],
+    'CountWeightedFull_LHEHT800to1200'                                               : [ 1.53928057e+01, 1.52006704e+01, 1.55880618e+01, ],
+    'CountWeightedFullLHEWeightScale_LHEHT800to1200'                                 : [ 1.76557168e+01, 1.57341394e+01, 1.41245209e+01, 1.72722541e+01, 1.53923960e+01, 1.38179612e+01, 1.69399189e+01, 1.50964448e+01, 1.35521759e+01, ],
+    'CountWeightedFullLHEEnvelope_LHEHT800to1200'                                    : [ 1.76557168e+01, 1.35521759e+01, ],
+    'CountWeightedFullPSWeight_LHEHT800to1200'                                       : [ 6.68750902e+00, 6.31163287e+00, 7.91030628e+00, 4.87540409e+00, 5.22100202e+00, 3.74988911e+00, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_LHEHT800to1200'                         : [ 1.98359667e+01, 1.88251877e+01, 2.30625002e+01, 1.46838932e+01, 1.54764732e+01, 1.16045109e+01, ],
   }),
-  ("nof_tree_events",                 50984636),
+  ("nof_tree_events",                 51082776),
   ("nof_db_events",                   51082776),
-  ("fsize_local",                     113902270572), # 113.90GB, avg file size 1.10GB
+  ("fsize_local",                     150658182232), # 150.66GB, avg file size 720.85MB
   ("fsize_db",                        2020854019765), # 2.02TB, avg file size 2.72GB
   ("use_it",                          False),
   ("xsection",                        9442.49),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
-  ("nof_PSweights",                   1),
+  ("nof_PSweights",                   4),
   ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
   ("nof_reweighting",                 0),
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/W1JetsToLNu"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/W1JetsToLNu"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -25028,7 +25308,7 @@ samples_2018["/W2JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAO
   }),
   ("nof_tree_events",                 23290710),
   ("nof_db_events",                   23290710),
-  ("fsize_local",                     66518661647), # 66.52GB, avg file size 1.36GB
+  ("fsize_local",                     84771278083), # 84.77GB, avg file size 1.73GB
   ("fsize_db",                        984065647389), # 984.07GB, avg file size 2.94GB
   ("use_it",                          False),
   ("xsection",                        3252.49),
@@ -25041,7 +25321,7 @@ samples_2018["/W2JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAO
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/W2JetsToLNu"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/W2JetsToLNu"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -25145,7 +25425,7 @@ samples_2018["/W3JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAO
   }),
   ("nof_tree_events",                 14508481),
   ("nof_db_events",                   14508481),
-  ("fsize_local",                     51226483944), # 51.23GB, avg file size 1.71GB
+  ("fsize_local",                     63780950033), # 63.78GB, avg file size 2.13GB
   ("fsize_db",                        644377549776), # 644.38GB, avg file size 2.15GB
   ("use_it",                          False),
   ("xsection",                        1153.42),
@@ -25158,7 +25438,7 @@ samples_2018["/W3JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAO
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/W3JetsToLNu"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/W3JetsToLNu"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -25262,7 +25542,7 @@ samples_2018["/W4JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAO
   }),
   ("nof_tree_events",                 10082747),
   ("nof_db_events",                   10082747),
-  ("fsize_local",                     47171482635), # 47.17GB, avg file size 2.25GB
+  ("fsize_local",                     57525693475), # 57.53GB, avg file size 2.74GB
   ("fsize_db",                        488503593741), # 488.50GB, avg file size 2.38GB
   ("use_it",                          False),
   ("xsection",                        634.05),
@@ -25275,7 +25555,7 @@ samples_2018["/W4JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAO
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/W4JetsToLNu"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/W4JetsToLNu"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -25344,7 +25624,7 @@ samples_2018["/WJetsToLNu_HT-70To100_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutu
   }),
   ("nof_tree_events",                 28084244),
   ("nof_db_events",                   28084244),
-  ("fsize_local",                     82232386597), # 82.23GB, avg file size 1.44GB
+  ("fsize_local",                     103940373435), # 103.94GB, avg file size 1.82GB
   ("fsize_db",                        1190218725712), # 1.19TB, avg file size 2.32GB
   ("use_it",                          False),
   ("xsection",                        1504.92),
@@ -25357,7 +25637,7 @@ samples_2018["/WJetsToLNu_HT-70To100_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutu
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/WJetsToLNu_HT70To100"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/WJetsToLNu_HT70To100"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -25426,7 +25706,7 @@ samples_2018["/WJetsToLNu_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAut
   }),
   ("nof_tree_events",                 29521158),
   ("nof_db_events",                   29611903),
-  ("fsize_local",                     107619899809), # 107.62GB, avg file size 1.79GB
+  ("fsize_local",                     131488710510), # 131.49GB, avg file size 2.19GB
   ("fsize_db",                        1320629640223), # 1.32TB, avg file size 2.35GB
   ("use_it",                          False),
   ("xsection",                        1625.08),
@@ -25439,7 +25719,7 @@ samples_2018["/WJetsToLNu_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAut
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/WJetsToLNu_HT100To200"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/WJetsToLNu_HT100To200"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -25508,7 +25788,7 @@ samples_2018["/WJetsToLNu_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAut
   }),
   ("nof_tree_events",                 25369183),
   ("nof_db_events",                   25468933),
-  ("fsize_local",                     128645095905), # 128.65GB, avg file size 2.52GB
+  ("fsize_local",                     151518716536), # 151.52GB, avg file size 2.97GB
   ("fsize_db",                        1257184919296), # 1.26TB, avg file size 2.41GB
   ("use_it",                          False),
   ("xsection",                        477.96),
@@ -25521,7 +25801,7 @@ samples_2018["/WJetsToLNu_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAut
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/WJetsToLNu_HT200To400"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/WJetsToLNu_HT200To400"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -25590,7 +25870,7 @@ samples_2018["/WJetsToLNu_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAut
   }),
   ("nof_tree_events",                 5932701),
   ("nof_db_events",                   5932701),
-  ("fsize_local",                     38332419318), # 38.33GB, avg file size 3.19GB
+  ("fsize_local",                     43972908641), # 43.97GB, avg file size 3.66GB
   ("fsize_db",                        321067288953), # 321.07GB, avg file size 1.34GB
   ("use_it",                          False),
   ("xsection",                        67.441),
@@ -25603,7 +25883,7 @@ samples_2018["/WJetsToLNu_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAut
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/WJetsToLNu_HT400To600"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/WJetsToLNu_HT400To600"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -25631,61 +25911,81 @@ samples_2018["/WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAut
   ("type",                            "mc"),
   ("sample_category",                 "EWK"),
   ("process_name_specific",           "WJetsToLNu_HT600To800"),
-  ("nof_files",                       40),
+  ("nof_files",                       80),
   ("nof_db_files",                    595),
   ("nof_events",                      {
     'Count'                                                                          : [ 19771294, ],
-    'CountWeighted'                                                                  : [ 1.97004337e+07, 1.96964097e+07, 1.96968678e+07, ],
-    'CountWeightedLHEWeightScale'                                                    : [ 2.42896329e+07, 2.20113956e+07, 2.00782802e+07, 2.17452266e+07, 1.97003653e+07, 1.79652450e+07, 1.97219163e+07, 1.78620085e+07, 1.62851624e+07, ],
-    'CountWeightedLHEEnvelope'                                                       : [ 2.43151692e+07, 1.62714132e+07, ],
-    'CountWeightedFull'                                                              : [ 1.96915364e+07, 1.96875184e+07, 1.96880957e+07, ],
-    'CountWeightedFullLHEWeightScale'                                                : [ 2.42786567e+07, 2.20014049e+07, 2.00691038e+07, 2.17353422e+07, 1.96914623e+07, 1.79569888e+07, 1.97129052e+07, 1.78538138e+07, 1.62776429e+07, ],
-    'CountWeightedFullLHEEnvelope'                                                   : [ 2.43041601e+07, 1.62639189e+07, ],
+    'CountWeighted'                                                                  : [ 1.96993661e+07, 1.97003977e+07, 1.96998185e+07, ],
+    'CountWeightedLHEWeightScale'                                                    : [ 2.42896387e+07, 2.20112132e+07, 2.00782979e+07, 2.17452330e+07, 1.96992281e+07, 1.79652580e+07, 1.97219193e+07, 1.78617231e+07, 1.62851742e+07, ],
+    'CountWeightedLHEEnvelope'                                                       : [ 2.43151692e+07, 1.62714199e+07, ],
+    'CountWeightedPSWeight'                                                          : [ 1.97005150e+08, 1.96848206e+08, 1.97001634e+08, 1.97005118e+08, 1.93712952e+08, 1.93562973e+08, ],
+    'CountWeightedPSWeightOriginalXWGTUP'                                            : [ 2.05896528e+07, 2.04005192e+07, 2.90902064e+07, 1.87777175e+07, 1.89442330e+07, 1.11713147e+07, ],
+    'CountWeightedFull'                                                              : [ 1.96903200e+07, 1.96913205e+07, 1.96909070e+07, ],
+    'CountWeightedFullLHEWeightScale'                                                : [ 2.42786588e+07, 2.20012042e+07, 2.00691217e+07, 2.17353484e+07, 1.96901776e+07, 1.79570029e+07, 1.97129064e+07, 1.78535113e+07, 1.62776554e+07, ],
+    'CountWeightedFullLHEEnvelope'                                                   : [ 2.43041570e+07, 1.62639265e+07, ],
+    'CountWeightedFullPSWeight'                                                      : [ 1.96911603e+08, 1.96758232e+08, 1.96911588e+08, 1.96911596e+08, 1.93624414e+08, 1.93471074e+08, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP'                                        : [ 2.05799158e+07, 2.03904076e+07, 2.90757258e+07, 1.87687638e+07, 1.89347220e+07, 1.11659992e+07, ],
     'Count_LHENjet1'                                                                 : [ 11687, ],
-    'CountWeighted_LHENjet1'                                                         : [ 1.16391224e+04, 1.16584508e+04, 1.16180775e+04, ],
-    'CountWeightedLHEWeightScale_LHENjet1'                                           : [ 1.37921918e+04, 1.25571759e+04, 1.14905311e+04, 1.27839644e+04, 1.16389694e+04, 1.06503804e+04, 1.19151604e+04, 1.08480469e+04, 9.92644341e+03, ],
-    'CountWeightedLHEEnvelope_LHENjet1'                                              : [ 1.37921918e+04, 9.92644341e+03, ],
-    'CountWeightedFull_LHENjet1'                                                     : [ 1.16302531e+04, 1.16495390e+04, 1.16092276e+04, ],
-    'CountWeightedFullLHEWeightScale_LHENjet1'                                       : [ 1.37816729e+04, 1.25476070e+04, 1.14817816e+04, 1.27742147e+04, 1.16301003e+04, 1.06422707e+04, 1.19060732e+04, 1.08397808e+04, 9.91888506e+03, ],
-    'CountWeightedFullLHEEnvelope_LHENjet1'                                          : [ 1.37816729e+04, 9.91888506e+03, ],
+    'CountWeighted_LHENjet1'                                                         : [ 1.16391222e+04, 1.16584511e+04, 1.16180771e+04, ],
+    'CountWeightedLHEWeightScale_LHENjet1'                                           : [ 1.37921919e+04, 1.25571759e+04, 1.14905312e+04, 1.27839646e+04, 1.16389695e+04, 1.06503804e+04, 1.19151603e+04, 1.08480470e+04, 9.92644357e+03, ],
+    'CountWeightedLHEEnvelope_LHENjet1'                                              : [ 1.37921919e+04, 9.92644357e+03, ],
+    'CountWeightedPSWeight_LHENjet1'                                                 : [ 1.16391224e+05, 1.16383503e+05, 1.16391224e+05, 1.16391224e+05, 1.16181823e+05, 1.16174102e+05, ],
+    'CountWeightedPSWeightOriginalXWGTUP_LHENjet1'                                   : [ 1.30983256e+04, 1.19075970e+04, 1.59388457e+04, 1.00610202e+04, 1.13697165e+04, 7.74707203e+03, ],
+    'CountWeightedFull_LHENjet1'                                                     : [ 1.16302529e+04, 1.16495391e+04, 1.16092273e+04, ],
+    'CountWeightedFullLHEWeightScale_LHENjet1'                                       : [ 1.37816730e+04, 1.25476071e+04, 1.14817815e+04, 1.27742148e+04, 1.16301005e+04, 1.06422706e+04, 1.19060733e+04, 1.08397809e+04, 9.91888522e+03, ],
+    'CountWeightedFullLHEEnvelope_LHENjet1'                                          : [ 1.37816730e+04, 9.91888522e+03, ],
+    'CountWeightedFullPSWeight_LHENjet1'                                             : [ 1.16302532e+05, 1.16294823e+05, 1.16302532e+05, 1.16302532e+05, 1.16093276e+05, 1.16085567e+05, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_LHENjet1'                               : [ 1.30882702e+04, 1.18985284e+04, 1.59265280e+04, 1.00533978e+04, 1.13609088e+04, 7.74116648e+03, ],
     'Count_LHENjet2'                                                                 : [ 1020015, ],
-    'CountWeighted_LHENjet2'                                                         : [ 1.01691291e+06, 1.01705581e+06, 1.01679023e+06, ],
-    'CountWeightedLHEWeightScale_LHENjet2'                                           : [ 1.20084557e+06, 1.12094733e+06, 1.04988779e+06, 1.08991575e+06, 1.01690030e+06, 9.52059763e+05, 9.99994621e+05, 9.32592845e+05, 8.72781646e+05, ],
-    'CountWeightedLHEEnvelope_LHENjet2'                                              : [ 1.20175678e+06, 8.72416169e+05, ],
-    'CountWeightedFull_LHENjet2'                                                     : [ 1.01640738e+06, 1.01654902e+06, 1.01628496e+06, ],
-    'CountWeightedFullLHEWeightScale_LHENjet2'                                       : [ 1.20025207e+06, 1.12039355e+06, 1.04936935e+06, 1.08937339e+06, 1.01639456e+06, 9.51586596e+05, 9.99493924e+05, 9.32126265e+05, 8.72345293e+05, ],
-    'CountWeightedFullLHEEnvelope_LHENjet2'                                          : [ 1.20116285e+06, 8.71980017e+05, ],
+    'CountWeighted_LHENjet2'                                                         : [ 1.01691044e+06, 1.01705173e+06, 1.01678941e+06, ],
+    'CountWeightedLHEWeightScale_LHENjet2'                                           : [ 1.20084558e+06, 1.12094672e+06, 1.04988773e+06, 1.08991586e+06, 1.01689793e+06, 9.52059826e+05, 9.99994641e+05, 9.32592583e+05, 8.72781728e+05, ],
+    'CountWeightedLHEEnvelope_LHENjet2'                                              : [ 1.20175677e+06, 8.72416266e+05, ],
+    'CountWeightedPSWeight_LHENjet2'                                                 : [ 1.01692112e+07, 1.01679039e+07, 1.01691490e+07, 1.01692067e+07, 1.01140791e+07, 1.01128918e+07, ],
+    'CountWeightedPSWeightOriginalXWGTUP_LHENjet2'                                   : [ 1.10706680e+06, 1.07444855e+06, 1.41590906e+06, 9.16534497e+05, 9.51006315e+05, 6.43592868e+05, ],
+    'CountWeightedFull_LHENjet2'                                                     : [ 1.01640506e+06, 1.01654549e+06, 1.01628435e+06, ],
+    'CountWeightedFullLHEWeightScale_LHENjet2'                                       : [ 1.20025199e+06, 1.12039300e+06, 1.04936928e+06, 1.08937353e+06, 1.01639235e+06, 9.51586626e+05, 9.99493938e+05, 9.32126042e+05, 8.72345359e+05, ],
+    'CountWeightedFullLHEEnvelope_LHENjet2'                                          : [ 1.20116275e+06, 8.71980056e+05, ],
+    'CountWeightedFullPSWeight_LHENjet2'                                             : [ 1.01640907e+07, 1.01628463e+07, 1.01640906e+07, 1.01640887e+07, 1.01090484e+07, 1.01078021e+07, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_LHENjet2'                               : [ 1.10651245e+06, 1.07389884e+06, 1.41518671e+06, 9.16072602e+05, 9.50521061e+05, 6.43268790e+05, ],
     'Count_LHENjet3'                                                                 : [ 2801860, ],
-    'CountWeighted_LHENjet3'                                                         : [ 2.79340575e+06, 2.79353264e+06, 2.79332742e+06, ],
-    'CountWeightedLHEWeightScale_LHENjet3'                                           : [ 3.36732170e+06, 3.10259027e+06, 2.87124898e+06, 3.03313737e+06, 2.79335254e+06, 2.58412845e+06, 2.76484698e+06, 2.54522952e+06, 2.35369631e+06, ],
-    'CountWeightedLHEEnvelope_LHENjet3'                                              : [ 3.37249769e+06, 2.35080791e+06, ],
-    'CountWeightedFull_LHENjet3'                                                     : [ 2.79211402e+06, 2.79224426e+06, 2.79204317e+06, ],
-    'CountWeightedFullLHEWeightScale_LHENjet3'                                       : [ 3.36577874e+06, 3.10116800e+06, 2.86993139e+06, 3.03173737e+06, 2.79206220e+06, 2.58293450e+06, 2.76356271e+06, 2.54404682e+06, 2.35260191e+06, ],
-    'CountWeightedFullLHEEnvelope_LHENjet3'                                          : [ 3.37095244e+06, 2.34971484e+06, ],
+    'CountWeighted_LHENjet3'                                                         : [ 2.79340992e+06, 2.79351529e+06, 2.79337868e+06, ],
+    'CountWeightedLHEWeightScale_LHENjet3'                                           : [ 3.36732081e+06, 3.10259413e+06, 2.87124859e+06, 3.03313642e+06, 2.79338285e+06, 2.58412832e+06, 2.76484688e+06, 2.54523211e+06, 2.35369624e+06, ],
+    'CountWeightedLHEEnvelope_LHENjet3'                                              : [ 3.37249667e+06, 2.35080778e+06, ],
+    'CountWeightedPSWeight_LHENjet3'                                                 : [ 2.79340757e+07, 2.79279669e+07, 2.79339775e+07, 2.79340751e+07, 2.76692523e+07, 2.76633428e+07, ],
+    'CountWeightedPSWeightOriginalXWGTUP_LHENjet3'                                   : [ 3.03128395e+06, 2.98418570e+06, 3.98083557e+06, 2.52915865e+06, 2.57402092e+06, 1.68323402e+06, ],
+    'CountWeightedFull_LHENjet3'                                                     : [ 2.79211989e+06, 2.79222483e+06, 2.79208761e+06, ],
+    'CountWeightedFullLHEWeightScale_LHENjet3'                                       : [ 3.36577791e+06, 3.10117159e+06, 2.86993117e+06, 3.03173669e+06, 2.79209224e+06, 2.58293442e+06, 2.76356260e+06, 2.54404929e+06, 2.35260184e+06, ],
+    'CountWeightedFullLHEEnvelope_LHENjet3'                                          : [ 3.37095148e+06, 2.34971482e+06, ],
+    'CountWeightedFullPSWeight_LHENjet3'                                             : [ 2.79210901e+07, 2.79150822e+07, 2.79210897e+07, 2.79210894e+07, 2.76564845e+07, 2.76504800e+07, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_LHENjet3'                               : [ 3.02988169e+06, 2.98277802e+06, 3.97894956e+06, 2.52797757e+06, 2.57278965e+06, 1.68244842e+06, ],
     'Count_LHENjet4'                                                                 : [ 15937732, ],
-    'CountWeighted_LHENjet4'                                                         : [ 1.58777964e+07, 1.58762802e+07, 1.58766489e+07, ],
-    'CountWeightedLHEWeightScale_LHENjet4'                                           : [ 1.97076732e+07, 1.77752146e+07, 1.61456589e+07, 1.76093895e+07, 1.58777278e+07, 1.44184117e+07, 1.59451660e+07, 1.43731346e+07, 1.30487677e+07, ],
-    'CountWeightedLHEEnvelope_LHENjet4'                                              : [ 1.97271205e+07, 1.30382689e+07, ],
-    'CountWeightedFull_LHENjet4'                                                     : [ 1.58706153e+07, 1.58691016e+07, 1.58696090e+07, ],
-    'CountWeightedFullLHEWeightScale_LHENjet4'                                       : [ 1.96988434e+07, 1.77672002e+07, 1.61383283e+07, 1.76014557e+07, 1.58705407e+07, 1.44118310e+07, 1.59379474e+07, 1.43665790e+07, 1.30427877e+07, ],
-    'CountWeightedFullLHEEnvelope_LHENjet4'                                          : [ 1.97182610e+07, 1.30323130e+07, ],
+    'CountWeighted_LHENjet4'                                                         : [ 1.58777689e+07, 1.58781940e+07, 1.58782610e+07, ],
+    'CountWeightedLHEWeightScale_LHENjet4'                                           : [ 1.97076744e+07, 1.77751748e+07, 1.61456675e+07, 1.76093909e+07, 1.58776322e+07, 1.44184199e+07, 1.59451619e+07, 1.43730616e+07, 1.30487680e+07, ],
+    'CountWeightedLHEEnvelope_LHENjet4'                                              : [ 1.97271201e+07, 1.30382671e+07, ],
+    'CountWeightedPSWeight_LHENjet4'                                                 : [ 1.58782864e+08, 1.58633353e+08, 1.58779509e+08, 1.58782839e+08, 1.55810956e+08, 1.55668090e+08, ],
+    'CountWeightedPSWeightOriginalXWGTUP_LHENjet4'                                   : [ 1.64382006e+07, 1.63299755e+07, 2.36775195e+07, 1.53219623e+07, 1.54078356e+07, 8.83674202e+06, ],
+    'CountWeightedFull_LHENjet4'                                                     : [ 1.58705566e+07, 1.58709330e+07, 1.58710901e+07, ],
+    'CountWeightedFullLHEWeightScale_LHENjet4'                                       : [ 1.96988428e+07, 1.77671547e+07, 1.61383359e+07, 1.76014586e+07, 1.58704201e+07, 1.44118400e+07, 1.59379439e+07, 1.43665143e+07, 1.30427870e+07, ],
+    'CountWeightedFullLHEEnvelope_LHENjet4'                                          : [ 1.97182585e+07, 1.30323102e+07, ],
+    'CountWeightedFullPSWeight_LHENjet4'                                             : [ 1.58707729e+08, 1.58561625e+08, 1.58707712e+08, 1.58707724e+08, 1.55740507e+08, 1.55594435e+08, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_LHENjet4'                               : [ 1.64304299e+07, 1.63218301e+07, 2.36656587e+07, 1.53146592e+07, 1.54000502e+07, 8.83254170e+06, ],
   }),
   ("nof_tree_events",                 19771294),
   ("nof_db_events",                   19771294),
-  ("fsize_local",                     139552099433), # 139.55GB, avg file size 3.49GB
+  ("fsize_local",                     159365689718), # 159.37GB, avg file size 1.99GB
   ("fsize_db",                        1134386104465), # 1.13TB, avg file size 1.91GB
   ("use_it",                          False),
   ("xsection",                        15.096),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
-  ("nof_PSweights",                   1),
+  ("nof_PSweights",                   4),
   ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
   ("nof_reweighting",                 0),
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/WJetsToLNu_HT600To800"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/WJetsToLNu_HT600To800"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -25713,61 +26013,81 @@ samples_2018["/WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAu
   ("type",                            "mc"),
   ("sample_category",                 "EWK"),
   ("process_name_specific",           "WJetsToLNu_HT800To1200"),
-  ("nof_files",                       17),
+  ("nof_files",                       34),
   ("nof_db_files",                    327),
   ("nof_events",                      {
-    'Count'                                                                          : [ 8303078, ],
-    'CountWeighted'                                                                  : [ 8.26246984e+06, 8.26309328e+06, 8.26222244e+06, ],
-    'CountWeightedLHEWeightScale'                                                    : [ 1.03866926e+07, 9.25344000e+06, 8.32061088e+06, 9.27690728e+06, 8.26240897e+06, 7.42869619e+06, 8.38932988e+06, 7.47089359e+06, 6.71542781e+06, ],
-    'CountWeightedLHEEnvelope'                                                       : [ 1.03923006e+07, 6.71252606e+06, ],
-    'CountWeightedFull'                                                              : [ 8.25829488e+06, 8.25889288e+06, 8.25802838e+06, ],
-    'CountWeightedFullLHEWeightScale'                                                : [ 1.03814289e+07, 9.24871350e+06, 8.31630897e+06, 9.27218350e+06, 8.25822450e+06, 7.42483688e+06, 8.38503375e+06, 7.46704694e+06, 6.71192712e+06, ],
-    'CountWeightedFullLHEEnvelope'                                                   : [ 1.03870233e+07, 6.70903578e+06, ],
-    'Count_LHENjet1'                                                                 : [ 1843, ],
-    'CountWeighted_LHENjet1'                                                         : [ 1.83695092e+03, 1.83702663e+03, 1.83859428e+03, ],
-    'CountWeightedLHEWeightScale_LHENjet1'                                           : [ 2.20958440e+03, 1.97693666e+03, 1.78069835e+03, 2.05314426e+03, 1.83692491e+03, 1.65459216e+03, 1.91769433e+03, 1.71574945e+03, 1.54541123e+03, ],
-    'CountWeightedLHEEnvelope_LHENjet1'                                              : [ 2.20958440e+03, 1.54541123e+03, ],
-    'CountWeightedFull_LHENjet1'                                                     : [ 1.83489754e+03, 1.83500106e+03, 1.83651028e+03, ],
-    'CountWeightedFullLHEWeightScale_LHENjet1'                                       : [ 2.20712124e+03, 1.97472692e+03, 1.77870304e+03, 2.05085545e+03, 1.83487162e+03, 1.65273813e+03, 1.91555654e+03, 1.71383162e+03, 1.54367957e+03, ],
-    'CountWeightedFullLHEEnvelope_LHENjet1'                                          : [ 2.20712124e+03, 1.54367957e+03, ],
-    'Count_LHENjet2'                                                                 : [ 265308, ],
-    'CountWeighted_LHENjet2'                                                         : [ 2.64499481e+05, 2.64554587e+05, 2.64422677e+05, ],
-    'CountWeightedLHEWeightScale_LHENjet2'                                           : [ 3.15425479e+05, 2.90801360e+05, 2.69468805e+05, 2.86990409e+05, 2.64496231e+05, 2.45031691e+05, 2.63616241e+05, 2.42882821e+05, 2.24946577e+05, ],
-    'CountWeightedLHEEnvelope_LHENjet2'                                              : [ 3.15475944e+05, 2.24937744e+05, ],
-    'CountWeightedFull_LHENjet2'                                                     : [ 2.64351703e+05, 2.64406695e+05, 2.64274637e+05, ],
-    'CountWeightedFullLHEWeightScale_LHENjet2'                                       : [ 3.15249369e+05, 2.90639206e+05, 2.69318598e+05, 2.86829673e+05, 2.64348411e+05, 2.44894706e+05, 2.63468152e+05, 2.42746577e+05, 2.24820465e+05, ],
-    'CountWeightedFullLHEEnvelope_LHENjet2'                                          : [ 3.15299799e+05, 2.24811639e+05, ],
-    'Count_LHENjet3'                                                                 : [ 876457, ],
-    'CountWeighted_LHENjet3'                                                         : [ 8.72327271e+05, 8.72491779e+05, 8.72113242e+05, ],
-    'CountWeightedLHEWeightScale_LHENjet3'                                           : [ 1.06760639e+06, 9.67859570e+05, 8.83677152e+05, 9.62548289e+05, 8.72304936e+05, 7.96190867e+05, 8.77377180e+05, 7.94833826e+05, 7.25278705e+05, ],
-    'CountWeightedLHEEnvelope_LHENjet3'                                              : [ 1.06832464e+06, 7.24899188e+05, ],
-    'CountWeightedFull_LHENjet3'                                                     : [ 8.71877367e+05, 8.72043855e+05, 8.71665693e+05, ],
-    'CountWeightedFullLHEWeightScale_LHENjet3'                                       : [ 1.06706068e+06, 9.67364695e+05, 8.83225191e+05, 9.62053914e+05, 8.71855703e+05, 7.95781914e+05, 8.76924430e+05, 7.94423732e+05, 7.24904520e+05, ],
-    'CountWeightedFullLHEEnvelope_LHENjet3'                                          : [ 1.06777850e+06, 7.24525217e+05, ],
-    'Count_LHENjet4'                                                                 : [ 7159470, ],
-    'CountWeighted_LHENjet4'                                                         : [ 7.12424075e+06, 7.12422566e+06, 7.12461788e+06, ],
-    'CountWeightedLHEWeightScale_LHENjet4'                                           : [ 9.00144812e+06, 7.99286659e+06, 7.16568884e+06, 8.02531497e+06, 7.12417978e+06, 6.38581536e+06, 7.24641716e+06, 6.43151512e+06, 5.76365517e+06, ],
-    'CountWeightedLHEEnvelope_LHENjet4'                                              : [ 9.00628684e+06, 5.76114169e+06, ],
-    'CountWeightedFull_LHENjet4'                                                     : [ 7.12061441e+06, 7.12060578e+06, 7.12099662e+06, ],
-    'CountWeightedFullLHEWeightScale_LHENjet4'                                       : [ 8.99690941e+06, 7.98879350e+06, 7.16199153e+06, 8.02124859e+06, 7.12054856e+06, 6.38250412e+06, 7.24272609e+06, 6.42820594e+06, 5.76065564e+06, ],
-    'CountWeightedFullLHEEnvelope_LHENjet4'                                          : [ 9.00173519e+06, 5.75815245e+06, ],
+    'Count'                                                                          : [ 8252389, ],
+    'CountWeighted'                                                                  : [ 8.21265369e+06, 8.21235456e+06, 8.21349705e+06, ],
+    'CountWeightedLHEWeightScale'                                                    : [ 1.03230299e+07, 9.19688260e+06, 8.26958741e+06, 9.22006906e+06, 8.21255286e+06, 7.38313629e+06, 8.33793057e+06, 7.42518931e+06, 6.67424869e+06, ],
+    'CountWeightedLHEEnvelope'                                                       : [ 1.03285992e+07, 6.67136909e+06, ],
+    'CountWeightedPSWeight'                                                          : [ 8.20345102e+07, 7.47251311e+07, 8.21260222e+07, 8.15607584e+07, 6.30654288e+07, 5.55992999e+07, ],
+    'CountWeightedPSWeightOriginalXWGTUP'                                            : [ 8.56418802e+06, 8.50579506e+06, 1.22650589e+07, 7.87203777e+06, 7.91342137e+06, 4.55523634e+06, ],
+    'CountWeightedFull'                                                              : [ 8.20838268e+06, 8.20814393e+06, 8.20925367e+06, ],
+    'CountWeightedFullLHEWeightScale'                                                : [ 1.03177930e+07, 9.19216385e+06, 8.26530917e+06, 9.21536859e+06, 8.20828574e+06, 7.37929786e+06, 8.33365982e+06, 7.42134688e+06, 6.67076735e+06, ],
+    'CountWeightedFullLHEEnvelope'                                                   : [ 1.03233493e+07, 6.66789796e+06, ],
+    'CountWeightedFullPSWeight'                                                      : [ 8.19894995e+07, 7.46863880e+07, 8.20831054e+07, 8.15160440e+07, 6.30326412e+07, 5.55691481e+07, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP'                                        : [ 8.55957115e+06, 8.50093905e+06, 1.22580446e+07, 7.86775679e+06, 7.90887455e+06, 4.55276584e+06, ],
+    'Count_LHENjet1'                                                                 : [ 1837, ],
+    'CountWeighted_LHENjet1'                                                         : [ 1.83777298e+03, 1.83478852e+03, 1.84186265e+03, ],
+    'CountWeightedLHEWeightScale_LHENjet1'                                           : [ 2.21032889e+03, 1.97782822e+03, 1.78168738e+03, 2.05382909e+03, 1.83774717e+03, 1.65550591e+03, 1.91832825e+03, 1.71651235e+03, 1.54626029e+03, ],
+    'CountWeightedLHEEnvelope_LHENjet1'                                              : [ 2.21032889e+03, 1.54626029e+03, ],
+    'CountWeightedPSWeight_LHENjet1'                                                 : [ 1.83770391e+04, 1.75685239e+04, 1.83777292e+04, 1.78429218e+04, 1.56876653e+04, 1.46649506e+04, ],
+    'CountWeightedPSWeightOriginalXWGTUP_LHENjet1'                                   : [ 2.07990138e+03, 1.90532577e+03, 2.53867154e+03, 1.57516211e+03, 1.77033028e+03, 1.20514253e+03, ],
+    'CountWeightedFull_LHENjet1'                                                     : [ 1.83572764e+03, 1.83277295e+03, 1.83978550e+03, ],
+    'CountWeightedFullLHEWeightScale_LHENjet1'                                       : [ 2.20787560e+03, 1.97562708e+03, 1.77969969e+03, 2.05154944e+03, 1.83570189e+03, 1.65365897e+03, 1.91619893e+03, 1.71460196e+03, 1.54453520e+03, ],
+    'CountWeightedFullLHEEnvelope_LHENjet1'                                          : [ 2.20787560e+03, 1.54453520e+03, ],
+    'CountWeightedFullPSWeight_LHENjet1'                                             : [ 1.83565862e+04, 1.75490917e+04, 1.83572762e+04, 1.78230307e+04, 1.56706835e+04, 1.46491596e+04, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_LHENjet1'                               : [ 2.07759876e+03, 1.90317703e+03, 2.53579840e+03, 1.57341132e+03, 1.76839474e+03, 1.20385120e+03, ],
+    'Count_LHENjet2'                                                                 : [ 263751, ],
+    'CountWeighted_LHENjet2'                                                         : [ 2.62960864e+05, 2.63001548e+05, 2.62897052e+05, ],
+    'CountWeightedLHEWeightScale_LHENjet2'                                           : [ 3.13584034e+05, 2.89108555e+05, 2.67903991e+05, 2.85315072e+05, 2.62957568e+05, 2.43608578e+05, 2.62077224e+05, 2.41468597e+05, 2.23639835e+05, ],
+    'CountWeightedLHEEnvelope_LHENjet2'                                              : [ 3.13634247e+05, 2.23631207e+05, ],
+    'CountWeightedPSWeight_LHENjet2'                                                 : [ 2.62897195e+06, 2.49607640e+06, 2.62961568e+06, 2.60091064e+06, 2.14608959e+06, 2.00509752e+06, ],
+    'CountWeightedPSWeightOriginalXWGTUP_LHENjet2'                                   : [ 2.86242495e+05, 2.80148416e+05, 3.67463100e+05, 2.37170920e+05, 2.43760219e+05, 1.65099073e+05, ],
+    'CountWeightedFull_LHENjet2'                                                     : [ 2.62813970e+05, 2.62854712e+05, 2.62749937e+05, ],
+    'CountWeightedFullLHEWeightScale_LHENjet2'                                       : [ 3.13409142e+05, 2.88947493e+05, 2.67754830e+05, 2.85155448e+05, 2.62810666e+05, 2.43472546e+05, 2.61930165e+05, 2.41333290e+05, 2.23514610e+05, ],
+    'CountWeightedFullLHEEnvelope_LHENjet2'                                          : [ 3.13459335e+05, 2.23505986e+05, ],
+    'CountWeightedFullPSWeight_LHENjet2'                                             : [ 2.62748525e+06, 2.49468311e+06, 2.62814633e+06, 2.59943779e+06, 2.14488752e+06, 2.00396090e+06, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_LHENjet2'                               : [ 2.86081431e+05, 2.79988454e+05, 3.67253267e+05, 2.37036513e+05, 2.43620452e+05, 1.65005645e+05, ],
+    'Count_LHENjet3'                                                                 : [ 871075, ],
+    'CountWeighted_LHENjet3'                                                         : [ 8.66889639e+05, 8.67106822e+05, 8.66678563e+05, ],
+    'CountWeightedLHEWeightScale_LHENjet3'                                           : [ 1.06098284e+06, 9.61857352e+05, 8.78201442e+05, 9.56574430e+05, 8.66875008e+05, 7.91255262e+05, 8.71930143e+05, 7.89900991e+05, 7.20780593e+05, ],
+    'CountWeightedLHEEnvelope_LHENjet3'                                              : [ 1.06169363e+06, 7.20406767e+05, ],
+    'CountWeightedPSWeight_LHENjet3'                                                 : [ 8.66651289e+06, 8.16379471e+06, 8.66890384e+06, 8.56562180e+06, 6.83440624e+06, 6.30696763e+06, ],
+    'CountWeightedPSWeightOriginalXWGTUP_LHENjet3'                                   : [ 9.43548612e+05, 9.35542978e+05, 1.24086043e+06, 7.83991318e+05, 7.90799918e+05, 5.18336331e+05, ],
+    'CountWeightedFull_LHENjet3'                                                     : [ 8.66444596e+05, 8.66661617e+05, 8.66234204e+05, ],
+    'CountWeightedFullLHEWeightScale_LHENjet3'                                       : [ 1.06044082e+06, 9.61365983e+05, 8.77752588e+05, 9.56083390e+05, 8.66430094e+05, 7.90848997e+05, 8.71480568e+05, 7.89493846e+05, 7.20409057e+05, ],
+    'CountWeightedFullLHEEnvelope_LHENjet3'                                          : [ 1.06115114e+06, 7.20035449e+05, ],
+    'CountWeightedFullPSWeight_LHENjet3'                                             : [ 8.66205436e+06, 8.15960497e+06, 8.66445336e+06, 8.56121140e+06, 6.83088645e+06, 6.30371357e+06, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_LHENjet3'                               : [ 9.43066870e+05, 9.35062398e+05, 1.24022318e+06, 7.83586796e+05, 7.90391993e+05, 5.18069385e+05, ],
+    'Count_LHENjet4'                                                                 : [ 7115726, ],
+    'CountWeighted_LHENjet4'                                                         : [ 7.08073930e+06, 7.08028618e+06, 7.08169327e+06, ],
+    'CountWeightedLHEWeightScale_LHENjet4'                                           : [ 8.94625411e+06, 7.94393005e+06, 7.12169973e+06, 7.97612292e+06, 7.08064799e+06, 6.34661684e+06, 7.20200508e+06, 6.39209755e+06, 5.72828397e+06, ],
+    'CountWeightedLHEEnvelope_LHENjet4'                                              : [ 8.95106202e+06, 5.72578708e+06, ],
+    'CountWeightedPSWeight_LHENjet4'                                                 : [ 7.07196711e+07, 6.40470385e+07, 7.08081272e+07, 7.03755136e+07, 5.40688071e+07, 4.72725086e+07, ],
+    'CountWeightedPSWeightOriginalXWGTUP_LHENjet4'                                   : [ 7.33231935e+06, 7.28819857e+06, 1.06541973e+07, 6.84929810e+06, 6.87709010e+06, 3.87059480e+06, ],
+    'CountWeightedFull_LHENjet4'                                                     : [ 7.07708371e+06, 7.07666724e+06, 7.07804597e+06, ],
+    'CountWeightedFullLHEWeightScale_LHENjet4'                                       : [ 8.94173707e+06, 7.93986667e+06, 7.11802077e+06, 7.97207502e+06, 7.07699573e+06, 6.34332309e+06, 7.19833241e+06, 6.38880049e+06, 5.72529996e+06, ],
+    'CountWeightedFullLHEEnvelope_LHENjet4'                                          : [ 8.94653276e+06, 5.72281326e+06, ],
+    'CountWeightedFullPSWeight_LHENjet4'                                             : [ 7.06808481e+07, 6.40140468e+07, 7.07713770e+07, 7.03368986e+07, 5.40408610e+07, 4.72467753e+07, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_LHENjet4'                               : [ 7.32834771e+06, 7.28398546e+06, 1.06480333e+07, 6.84555907e+06, 6.87309275e+06, 3.86848614e+06, ],
   }),
-  ("nof_tree_events",                 8303078),
+  ("nof_tree_events",                 8252389),
   ("nof_db_events",                   8402687),
-  ("fsize_local",                     61744475876), # 61.74GB, avg file size 3.63GB
+  ("fsize_local",                     69846731146), # 69.85GB, avg file size 2.05GB
   ("fsize_db",                        504255756512), # 504.26GB, avg file size 1.54GB
   ("use_it",                          False),
   ("xsection",                        6.3626),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
-  ("nof_PSweights",                   1),
+  ("nof_PSweights",                   4),
   ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
   ("nof_reweighting",                 0),
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/WJetsToLNu_HT800To1200"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/WJetsToLNu_HT800To1200"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -25795,61 +26115,81 @@ samples_2018["/WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIA
   ("type",                            "mc"),
   ("sample_category",                 "EWK"),
   ("process_name_specific",           "WJetsToLNu_HT1200To2500"),
-  ("nof_files",                       16),
+  ("nof_files",                       31),
   ("nof_db_files",                    299),
   ("nof_events",                      {
     'Count'                                                                          : [ 7633949, ],
-    'CountWeighted'                                                                  : [ 7.57438858e+06, 7.57106781e+06, 7.57012456e+06, ],
-    'CountWeightedLHEWeightScale'                                                    : [ 9.69771728e+06, 8.44887384e+06, 7.45245212e+06, 8.69194609e+06, 7.57438858e+06, 6.67765466e+06, 7.87717919e+06, 6.86096233e+06, 6.05013344e+06, ],
-    'CountWeightedLHEEnvelope'                                                       : [ 9.69937447e+06, 6.04935533e+06, ],
-    'CountWeightedFull'                                                              : [ 7.56964897e+06, 7.56657641e+06, 7.56565894e+06, ],
-    'CountWeightedFullLHEWeightScale'                                                : [ 9.69203691e+06, 8.44386881e+06, 7.44798575e+06, 8.68684211e+06, 7.56964897e+06, 6.67363900e+06, 7.87253881e+06, 6.85686462e+06, 6.04648671e+06, ],
-    'CountWeightedFullLHEEnvelope'                                                   : [ 9.69368197e+06, 6.04571905e+06, ],
+    'CountWeighted'                                                                  : [ 7.57175516e+06, 7.57124172e+06, 7.57148152e+06, ],
+    'CountWeightedLHEWeightScale'                                                    : [ 9.69771423e+06, 8.44904123e+06, 7.45244691e+06, 8.69195409e+06, 7.57175516e+06, 6.67765297e+06, 7.87717906e+06, 6.86078995e+06, 6.05013089e+06, ],
+    'CountWeightedLHEEnvelope'                                                       : [ 9.69937284e+06, 6.04935280e+06, ],
+    'CountWeightedPSWeight'                                                          : [ 7.57141899e+07, 7.57106116e+07, 7.57106306e+07, 7.57141930e+07, 7.57029090e+07, 7.57064760e+07, ],
+    'CountWeightedPSWeightOriginalXWGTUP'                                            : [ 7.89047783e+06, 7.85832466e+06, 1.14768035e+07, 7.31973592e+06, 7.32986905e+06, 4.10169741e+06, ],
+    'CountWeightedFull'                                                              : [ 7.56726905e+06, 7.56675281e+06, 7.56698739e+06, ],
+    'CountWeightedFullLHEWeightScale'                                                : [ 9.69203388e+06, 8.44402734e+06, 7.44797859e+06, 8.68684597e+06, 7.56726905e+06, 6.67363683e+06, 7.87253656e+06, 6.85669656e+06, 6.04648471e+06, ],
+    'CountWeightedFullLHEEnvelope'                                                   : [ 9.69368031e+06, 6.04571716e+06, ],
+    'CountWeightedFullPSWeight'                                                      : [ 7.56660965e+07, 7.56660659e+07, 7.56660849e+07, 7.56660960e+07, 7.56583698e+07, 7.56583628e+07, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP'                                        : [ 7.88540331e+06, 7.85278652e+06, 1.14686955e+07, 7.31498405e+06, 7.32465686e+06, 4.09904502e+06, ],
     'Count_LHENjet1'                                                                 : [ 34, ],
-    'CountWeighted_LHENjet1'                                                         : [ 3.08461142e+01, 3.13309837e+01, 3.02533857e+01, ],
-    'CountWeightedLHEWeightScale_LHENjet1'                                           : [ 3.80029419e+01, 3.30935268e+01, 2.90756251e+01, 3.54226070e+01, 3.08461142e+01, 2.71008497e+01, 3.31749415e+01, 2.88885795e+01, 2.53806934e+01, ],
-    'CountWeightedLHEEnvelope_LHENjet1'                                              : [ 3.80029419e+01, 2.53806934e+01, ],
-    'CountWeightedFull_LHENjet1'                                                     : [ 3.08280213e+01, 3.13114022e+01, 3.02367499e+01, ],
-    'CountWeightedFullLHEWeightScale_LHENjet1'                                       : [ 3.79806115e+01, 3.30741329e+01, 2.90586293e+01, 3.54017754e+01, 3.08280213e+01, 2.70849943e+01, 3.31554175e+01, 2.88716226e+01, 2.53658334e+01, ],
-    'CountWeightedFullLHEEnvelope_LHENjet1'                                          : [ 3.79806115e+01, 2.53658334e+01, ],
+    'CountWeighted_LHENjet1'                                                         : [ 3.08461141e+01, 3.13309834e+01, 3.02533852e+01, ],
+    'CountWeightedLHEWeightScale_LHENjet1'                                           : [ 3.80029416e+01, 3.30935263e+01, 2.90756248e+01, 3.54226069e+01, 3.08461141e+01, 2.71008495e+01, 3.31749415e+01, 2.88885797e+01, 2.53806935e+01, ],
+    'CountWeightedLHEEnvelope_LHENjet1'                                              : [ 3.80029416e+01, 2.53806935e+01, ],
+    'CountWeightedPSWeight_LHENjet1'                                                 : [ 3.08461140e+02, 3.08461140e+02, 3.08461140e+02, 3.08461140e+02, 3.08461140e+02, 3.08461140e+02, ],
+    'CountWeightedPSWeightOriginalXWGTUP_LHENjet1'                                   : [ 3.71783613e+01, 3.29261062e+01, 4.44784087e+01, 2.81414108e+01, 3.21868506e+01, 2.17489571e+01, ],
+    'CountWeightedFull_LHENjet1'                                                     : [ 3.08280213e+01, 3.13114019e+01, 3.02367492e+01, ],
+    'CountWeightedFullLHEWeightScale_LHENjet1'                                       : [ 3.79806113e+01, 3.30741324e+01, 2.90586289e+01, 3.54017753e+01, 3.08280213e+01, 2.70849941e+01, 3.31554177e+01, 2.88716226e+01, 2.53658335e+01, ],
+    'CountWeightedFullLHEEnvelope_LHENjet1'                                          : [ 3.79806113e+01, 2.53658335e+01, ],
+    'CountWeightedFullPSWeight_LHENjet1'                                             : [ 3.08280211e+02, 3.08280211e+02, 3.08280211e+02, 3.08280211e+02, 3.08280211e+02, 3.08280211e+02, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_LHENjet1'                               : [ 3.71585336e+01, 3.29087043e+01, 4.44585810e+01, 2.81255312e+01, 3.21727659e+01, 2.17352520e+01, ],
     'Count_LHENjet2'                                                                 : [ 151120, ],
-    'CountWeighted_LHENjet2'                                                         : [ 1.50119246e+05, 1.50175307e+05, 1.50054729e+05, ],
-    'CountWeightedLHEWeightScale_LHENjet2'                                           : [ 1.82180217e+05, 1.65282918e+05, 1.50990182e+05, 1.65477840e+05, 1.50119246e+05, 1.37131002e+05, 1.51656544e+05, 1.37571162e+05, 1.25661572e+05, ],
-    'CountWeightedLHEEnvelope_LHENjet2'                                              : [ 1.82189270e+05, 1.25659904e+05, ],
-    'CountWeightedFull_LHENjet2'                                                     : [ 1.50026981e+05, 1.50083115e+05, 1.49962440e+05, ],
-    'CountWeightedFullLHEWeightScale_LHENjet2'                                       : [ 1.82068354e+05, 1.65181474e+05, 1.50897561e+05, 1.65376056e+05, 1.50026981e+05, 1.37046752e+05, 1.51563122e+05, 1.37486487e+05, 1.25584266e+05, ],
-    'CountWeightedFullLHEEnvelope_LHENjet2'                                          : [ 1.82077401e+05, 1.25582602e+05, ],
+    'CountWeighted_LHENjet2'                                                         : [ 1.50119385e+05, 1.50175720e+05, 1.50054976e+05, ],
+    'CountWeightedLHEWeightScale_LHENjet2'                                           : [ 1.82180220e+05, 1.65282929e+05, 1.50990182e+05, 1.65477844e+05, 1.50119385e+05, 1.37131002e+05, 1.51656562e+05, 1.37571172e+05, 1.25661555e+05, ],
+    'CountWeightedLHEEnvelope_LHENjet2'                                              : [ 1.82189276e+05, 1.25659889e+05, ],
+    'CountWeightedPSWeight_LHENjet2'                                                 : [ 1.50119416e+06, 1.50119416e+06, 1.50119416e+06, 1.50119416e+06, 1.50118921e+06, 1.50118921e+06, ],
+    'CountWeightedPSWeightOriginalXWGTUP_LHENjet2'                                   : [ 1.63433497e+05, 1.61980142e+05, 2.10358152e+05, 1.36207371e+05, 1.37528424e+05, 9.39712443e+04, ],
+    'CountWeightedFull_LHENjet2'                                                     : [ 1.50027102e+05, 1.50083489e+05, 1.49962706e+05, ],
+    'CountWeightedFullLHEWeightScale_LHENjet2'                                       : [ 1.82068350e+05, 1.65181494e+05, 1.50897559e+05, 1.65376058e+05, 1.50027102e+05, 1.37046757e+05, 1.51563135e+05, 1.37486489e+05, 1.25584252e+05, ],
+    'CountWeightedFullLHEEnvelope_LHENjet2'                                          : [ 1.82077397e+05, 1.25582588e+05, ],
+    'CountWeightedFullPSWeight_LHENjet2'                                             : [ 1.50027155e+06, 1.50027155e+06, 1.50027155e+06, 1.50027155e+06, 1.50026660e+06, 1.50026660e+06, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_LHENjet2'                               : [ 1.63333489e+05, 1.61881099e+05, 2.10228722e+05, 1.36123429e+05, 1.37443178e+05, 9.39134740e+04, ],
     'Count_LHENjet3'                                                                 : [ 583398, ],
-    'CountWeighted_LHENjet3'                                                         : [ 5.80165375e+05, 5.80137590e+05, 5.80143979e+05, ],
-    'CountWeightedLHEWeightScale_LHENjet3'                                           : [ 7.20644271e+05, 6.41810500e+05, 5.77184131e+05, 6.51554884e+05, 5.80165375e+05, 5.21679148e+05, 5.94793996e+05, 5.29537381e+05, 4.76085026e+05, ],
-    'CountWeightedLHEEnvelope_LHENjet3'                                              : [ 7.20834193e+05, 4.75983269e+05, ],
-    'CountWeightedFull_LHENjet3'                                                     : [ 5.79823330e+05, 5.79795128e+05, 5.79801328e+05, ],
-    'CountWeightedFullLHEWeightScale_LHENjet3'                                       : [ 7.20220717e+05, 6.41432822e+05, 5.76843910e+05, 6.51170899e+05, 5.79823330e+05, 5.21370845e+05, 5.94442600e+05, 5.29224126e+05, 4.75803018e+05, ],
-    'CountWeightedFullLHEEnvelope_LHENjet3'                                          : [ 7.20410442e+05, 4.75701386e+05, ],
+    'CountWeighted_LHENjet3'                                                         : [ 5.80168738e+05, 5.80131110e+05, 5.80145656e+05, ],
+    'CountWeightedLHEWeightScale_LHENjet3'                                           : [ 7.20644147e+05, 6.41810574e+05, 5.77184227e+05, 6.51554876e+05, 5.80168738e+05, 5.21679081e+05, 5.94793894e+05, 5.29537312e+05, 4.76085049e+05, ],
+    'CountWeightedLHEEnvelope_LHENjet3'                                              : [ 7.20834083e+05, 4.75983296e+05, ],
+    'CountWeightedPSWeight_LHENjet3'                                                 : [ 5.80176797e+06, 5.80172330e+06, 5.80172330e+06, 5.80176831e+06, 5.80167691e+06, 5.80172192e+06, ],
+    'CountWeightedPSWeightOriginalXWGTUP_LHENjet3'                                   : [ 6.31734977e+05, 6.33256000e+05, 8.33325945e+05, 5.26527059e+05, 5.23943585e+05, 3.45314879e+05, ],
+    'CountWeightedFull_LHENjet3'                                                     : [ 5.79826711e+05, 5.79788514e+05, 5.79802791e+05, ],
+    'CountWeightedFullLHEWeightScale_LHENjet3'                                       : [ 7.20220616e+05, 6.41432870e+05, 5.76843988e+05, 6.51170908e+05, 5.79826711e+05, 5.21370775e+05, 5.94442480e+05, 5.29224064e+05, 4.75803051e+05, ],
+    'CountWeightedFullLHEEnvelope_LHENjet3'                                          : [ 7.20410342e+05, 4.75701415e+05, ],
+    'CountWeightedFullPSWeight_LHENjet3'                                             : [ 5.79829866e+06, 5.79829858e+06, 5.79829858e+06, 5.79829866e+06, 5.79825219e+06, 5.79825231e+06, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_LHENjet3'                               : [ 6.31358972e+05, 6.32871210e+05, 8.32821466e+05, 5.26211046e+05, 5.23625625e+05, 3.45107906e+05, ],
     'Count_LHENjet4'                                                                 : [ 6899397, ],
-    'CountWeighted_LHENjet4'                                                         : [ 6.84330484e+06, 6.84079165e+06, 6.84033061e+06, ],
-    'CountWeightedLHEWeightScale_LHENjet4'                                           : [ 8.79485075e+06, 7.64178027e+06, 6.72424552e+06, 7.87488222e+06, 6.84330484e+06, 6.01881527e+06, 7.13069729e+06, 6.19375759e+06, 5.44835969e+06, ],
-    'CountWeightedLHEEnvelope_LHENjet4'                                              : [ 8.79630919e+06, 5.44768498e+06, ],
-    'CountWeightedFull_LHENjet4'                                                     : [ 6.83906916e+06, 6.83673627e+06, 6.83628565e+06, ],
-    'CountWeightedFullLHEWeightScale_LHENjet4'                                       : [ 8.78970478e+06, 7.63725088e+06, 6.72021217e+06, 7.87026269e+06, 6.83906916e+06, 6.01519159e+06, 7.12650171e+06, 6.19006014e+06, 5.44507256e+06, ],
-    'CountWeightedFullLHEEnvelope_LHENjet4'                                          : [ 8.79115159e+06, 5.44440841e+06, ],
+    'CountWeighted_LHENjet4'                                                         : [ 6.84140173e+06, 6.84096445e+06, 6.84118898e+06, ],
+    'CountWeightedLHEWeightScale_LHENjet4'                                           : [ 8.79485308e+06, 7.64190523e+06, 6.72424172e+06, 7.87488738e+06, 6.84140173e+06, 6.01881551e+06, 7.13069712e+06, 6.19365352e+06, 5.44835900e+06, ],
+    'CountWeightedLHEEnvelope_LHENjet4'                                              : [ 8.79631259e+06, 5.44768442e+06, ],
+    'CountWeightedPSWeight_LHENjet4'                                                 : [ 6.84120664e+07, 6.84085320e+07, 6.84085510e+07, 6.84120695e+07, 6.84008806e+07, 6.84044026e+07, ],
+    'CountWeightedPSWeightOriginalXWGTUP_LHENjet4'                                   : [ 7.09527392e+06, 7.06305472e+06, 1.04330803e+07, 6.65697331e+06, 6.66836377e+06, 3.66238962e+06, ],
+    'CountWeightedFull_LHENjet4'                                                     : [ 6.83734380e+06, 6.83690305e+06, 6.83713787e+06, ],
+    'CountWeightedFullLHEWeightScale_LHENjet4'                                       : [ 8.78970816e+06, 7.63737100e+06, 6.72020634e+06, 7.87026491e+06, 6.83734380e+06, 6.01519154e+06, 7.12649920e+06, 6.18995825e+06, 5.44507176e+06, ],
+    'CountWeightedFullLHEEnvelope_LHENjet4'                                          : [ 8.79115569e+06, 5.44440770e+06, ],
+    'CountWeightedFullPSWeight_LHENjet4'                                             : [ 6.83682670e+07, 6.83682386e+07, 6.83682574e+07, 6.83682675e+07, 6.83605934e+07, 6.83605858e+07, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP_LHENjet4'                               : [ 7.09067505e+06, 7.05800034e+06, 1.04256058e+07, 6.65262084e+06, 6.66355500e+06, 3.66000220e+06, ],
   }),
   ("nof_tree_events",                 7633949),
   ("nof_db_events",                   7633949),
-  ("fsize_local",                     59268756850), # 59.27GB, avg file size 3.70GB
+  ("fsize_local",                     67232780115), # 67.23GB, avg file size 2.17GB
   ("fsize_db",                        483917567475), # 483.92GB, avg file size 1.62GB
   ("use_it",                          False),
   ("xsection",                        1.2658),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
-  ("nof_PSweights",                   1),
+  ("nof_PSweights",                   4),
   ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
   ("nof_reweighting",                 0),
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/WJetsToLNu_HT1200To2500"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/WJetsToLNu_HT1200To2500"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -25911,7 +26251,7 @@ samples_2018["/WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAu
   }),
   ("nof_tree_events",                 3224108),
   ("nof_db_events",                   3273980),
-  ("fsize_local",                     26127761323), # 26.13GB, avg file size 2.01GB
+  ("fsize_local",                     29517110505), # 29.52GB, avg file size 2.27GB
   ("fsize_db",                        225211195235), # 225.21GB, avg file size 1.71GB
   ("use_it",                          False),
   ("xsection",                        0.009405),
@@ -25924,7 +26264,7 @@ samples_2018["/WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAu
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/WJetsToLNu_HT2500ToInf"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/WJetsToLNu_HT2500ToInf"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -25965,7 +26305,7 @@ samples_2018["/WWTo2L2Nu_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniA
   }),
   ("nof_tree_events",                 7758900),
   ("nof_db_events",                   7758900),
-  ("fsize_local",                     24177127291), # 24.18GB, avg file size 1.51GB
+  ("fsize_local",                     29902094285), # 29.90GB, avg file size 1.87GB
   ("fsize_db",                        329888556817), # 329.89GB, avg file size 1.87GB
   ("use_it",                          True),
   ("xsection",                        12.2),
@@ -25978,7 +26318,7 @@ samples_2018["/WWTo2L2Nu_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniA
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/WWTo2L2Nu"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/WWTo2L2Nu"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -26019,7 +26359,7 @@ samples_2018["/WWToLNuQQ_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniA
   }),
   ("nof_tree_events",                 18499100),
   ("nof_db_events",                   19199100),
-  ("fsize_local",                     64503585551), # 64.50GB, avg file size 1.74GB
+  ("fsize_local",                     79574640365), # 79.57GB, avg file size 2.15GB
   ("fsize_db",                        833728084007), # 833.73GB, avg file size 2.27GB
   ("use_it",                          False),
   ("xsection",                        50.45),
@@ -26032,7 +26372,7 @@ samples_2018["/WWToLNuQQ_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniA
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/WWToLNuQQ"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/WWToLNuQQ"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -26073,7 +26413,7 @@ samples_2018["/WWTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIIAutumn18MiniA
   }),
   ("nof_tree_events",                 4683136),
   ("nof_db_events",                   4683136),
-  ("fsize_local",                     17546082701), # 17.55GB, avg file size 1.75GB
+  ("fsize_local",                     21354129024), # 21.35GB, avg file size 2.14GB
   ("fsize_db",                        202725181402), # 202.73GB, avg file size 2.09GB
   ("use_it",                          False),
   ("xsection",                        50.45),
@@ -26086,7 +26426,7 @@ samples_2018["/WWTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIIAutumn18MiniA
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/WWTo1L1Nu2Q"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/WWTo1L1Nu2Q"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -26127,7 +26467,7 @@ samples_2018["/WWTo4Q_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-
   }),
   ("nof_tree_events",                 3808800),
   ("nof_db_events",                   3808800),
-  ("fsize_local",                     14027067469), # 14.03GB, avg file size 1.75GB
+  ("fsize_local",                     17455512566), # 17.46GB, avg file size 2.18GB
   ("fsize_db",                        167149037630), # 167.15GB, avg file size 1.52GB
   ("use_it",                          False),
   ("xsection",                        52.15),
@@ -26140,7 +26480,7 @@ samples_2018["/WWTo4Q_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/WWTo4Q"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/WWTo4Q"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -26181,7 +26521,7 @@ samples_2018["/WZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18MiniAOD-
   }),
   ("nof_tree_events",                 10749269),
   ("nof_db_events",                   10749269),
-  ("fsize_local",                     34371748206), # 34.37GB, avg file size 1.56GB
+  ("fsize_local",                     42792545138), # 42.79GB, avg file size 1.95GB
   ("fsize_db",                        465840197517), # 465.84GB, avg file size 1.66GB
   ("use_it",                          True),
   ("xsection",                        4.9173),
@@ -26194,7 +26534,7 @@ samples_2018["/WZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18MiniAOD-
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/WZTo3LNu"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/WZTo3LNu"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -26235,7 +26575,7 @@ samples_2018["/WZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18MiniAOD-
   }),
   ("nof_tree_events",                 11248318),
   ("nof_db_events",                   11248318),
-  ("fsize_local",                     35979429683), # 35.98GB, avg file size 1.56GB
+  ("fsize_local",                     44787782426), # 44.79GB, avg file size 1.95GB
   ("fsize_db",                        486637376419), # 486.64GB, avg file size 2.36GB
   ("use_it",                          True),
   ("xsection",                        4.9173),
@@ -26248,7 +26588,7 @@ samples_2018["/WZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18MiniAOD-
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/WZTo3LNu_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/WZTo3LNu_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -26289,7 +26629,7 @@ samples_2018["/WZTo3LNu_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_u
   }),
   ("nof_tree_events",                 1976600),
   ("nof_db_events",                   1976600),
-  ("fsize_local",                     5624519293), # 5.62GB, avg file size 1.41GB
+  ("fsize_local",                     7111806709), # 7.11GB, avg file size 1.78GB
   ("fsize_db",                        83819106118), # 83.82GB, avg file size 1.33GB
   ("use_it",                          False),
   ("xsection",                        4.9173),
@@ -26302,7 +26642,7 @@ samples_2018["/WZTo3LNu_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_u
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/WZTo3LNu_powheg_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/WZTo3LNu_powheg_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -26347,7 +26687,7 @@ samples_2018["/WZTo3LNu_mllmin01_NNPDF31_TuneCP5_13TeV_powheg_pythia8/RunIIAutum
   }),
   ("nof_tree_events",                 10959093),
   ("nof_db_events",                   89702600),
-  ("fsize_local",                     31936198102), # 31.94GB, avg file size 122.36MB
+  ("fsize_local",                     40110753643), # 40.11GB, avg file size 153.68MB
   ("fsize_db",                        3524962010660), # 3.52TB, avg file size 2.70GB
   ("use_it",                          False),
   ("xsection",                        4.9173),
@@ -26360,7 +26700,7 @@ samples_2018["/WZTo3LNu_mllmin01_NNPDF31_TuneCP5_13TeV_powheg_pythia8/RunIIAutum
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/WZTo3LNu_mllmin01"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/WZTo3LNu_mllmin01"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -26399,7 +26739,7 @@ samples_2018["/WZTo3LNu_0Jets_MLL-4to50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIA
   }),
   ("nof_tree_events",                 549864),
   ("nof_db_events",                   549864),
-  ("fsize_local",                     1073273599), # 1.07GB, avg file size 536.64MB
+  ("fsize_local",                     1448012657), # 1.45GB, avg file size 724.01MB
   ("fsize_db",                        23763774844), # 23.76GB, avg file size 1.13GB
   ("use_it",                          False),
   ("xsection",                        2.8309),
@@ -26412,7 +26752,7 @@ samples_2018["/WZTo3LNu_0Jets_MLL-4to50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIA
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/WZTo3LNu_0Jets_MLL-4to50"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/WZTo3LNu_0Jets_MLL-4to50"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -26451,7 +26791,7 @@ samples_2018["/WZTo3LNu_0Jets_MLL-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutu
   }),
   ("nof_tree_events",                 496707),
   ("nof_db_events",                   496707),
-  ("fsize_local",                     1602652202), # 1.60GB, avg file size 1.60GB
+  ("fsize_local",                     1975924542), # 1.98GB, avg file size 1.98GB
   ("fsize_db",                        24329724502), # 24.33GB, avg file size 737.26MB
   ("use_it",                          False),
   ("xsection",                        0.716),
@@ -26464,7 +26804,7 @@ samples_2018["/WZTo3LNu_0Jets_MLL-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutu
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/WZTo3LNu_0Jets_MLL-50"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/WZTo3LNu_0Jets_MLL-50"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -26503,7 +26843,7 @@ samples_2018["/WZTo3LNu_1Jets_MLL-4to50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIA
   }),
   ("nof_tree_events",                 565620),
   ("nof_db_events",                   565620),
-  ("fsize_local",                     1647872833), # 1.65GB, avg file size 823.94MB
+  ("fsize_local",                     2091575920), # 2.09GB, avg file size 1.05GB
   ("fsize_db",                        26462658315), # 26.46GB, avg file size 645.43MB
   ("use_it",                          False),
   ("xsection",                        0.5442),
@@ -26516,7 +26856,7 @@ samples_2018["/WZTo3LNu_1Jets_MLL-4to50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIA
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/WZTo3LNu_1Jets_MLL-4to50"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/WZTo3LNu_1Jets_MLL-4to50"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -26555,7 +26895,7 @@ samples_2018["/WZTo3LNu_1Jets_MLL-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutu
   }),
   ("nof_tree_events",                 497831),
   ("nof_db_events",                   497831),
-  ("fsize_local",                     2159417537), # 2.16GB, avg file size 719.81MB
+  ("fsize_local",                     2580222819), # 2.58GB, avg file size 860.07MB
   ("fsize_db",                        26295965016), # 26.30GB, avg file size 939.14MB
   ("use_it",                          False),
   ("xsection",                        0.3807),
@@ -26568,7 +26908,7 @@ samples_2018["/WZTo3LNu_1Jets_MLL-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutu
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/WZTo3LNu_1Jets_MLL-50"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/WZTo3LNu_1Jets_MLL-50"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -26607,7 +26947,7 @@ samples_2018["/WZTo3LNu_2Jets_MLL-4to50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIA
   }),
   ("nof_tree_events",                 1409762),
   ("nof_db_events",                   1409762),
-  ("fsize_local",                     5527800122), # 5.53GB, avg file size 1.84GB
+  ("fsize_local",                     6737978231), # 6.74GB, avg file size 2.25GB
   ("fsize_db",                        71473530181), # 71.47GB, avg file size 1.15GB
   ("use_it",                          False),
   ("xsection",                        0.1842),
@@ -26620,7 +26960,7 @@ samples_2018["/WZTo3LNu_2Jets_MLL-4to50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIA
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/WZTo3LNu_2Jets_MLL-4to50"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/WZTo3LNu_2Jets_MLL-4to50"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -26659,7 +26999,7 @@ samples_2018["/WZTo3LNu_2Jets_MLL-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutu
   }),
   ("nof_tree_events",                 1656602),
   ("nof_db_events",                   1855668),
-  ("fsize_local",                     9306860426), # 9.31GB, avg file size 2.33GB
+  ("fsize_local",                     10854791608), # 10.85GB, avg file size 2.71GB
   ("fsize_db",                        108440817033), # 108.44GB, avg file size 1.13GB
   ("use_it",                          False),
   ("xsection",                        0.07452),
@@ -26672,7 +27012,7 @@ samples_2018["/WZTo3LNu_2Jets_MLL-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutu
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/WZTo3LNu_2Jets_MLL-50"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/WZTo3LNu_2Jets_MLL-50"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -26711,7 +27051,7 @@ samples_2018["/WZTo3LNu_3Jets_MLL-4to50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIA
   }),
   ("nof_tree_events",                 2160519),
   ("nof_db_events",                   2160519),
-  ("fsize_local",                     11624370776), # 11.62GB, avg file size 2.32GB
+  ("fsize_local",                     13812061145), # 13.81GB, avg file size 2.76GB
   ("fsize_db",                        121018445179), # 121.02GB, avg file size 1.30GB
   ("use_it",                          False),
   ("xsection",                        0.0799),
@@ -26724,7 +27064,7 @@ samples_2018["/WZTo3LNu_3Jets_MLL-4to50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIA
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/WZTo3LNu_3Jets_MLL-4to50"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/WZTo3LNu_3Jets_MLL-4to50"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -26763,7 +27103,7 @@ samples_2018["/WZTo3LNu_3Jets_MLL-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutu
   }),
   ("nof_tree_events",                 1788755),
   ("nof_db_events",                   1788755),
-  ("fsize_local",                     12367782934), # 12.37GB, avg file size 3.09GB
+  ("fsize_local",                     14367492946), # 14.37GB, avg file size 3.59GB
   ("fsize_db",                        111719583774), # 111.72GB, avg file size 1.45GB
   ("use_it",                          False),
   ("xsection",                        0.1068),
@@ -26776,7 +27116,7 @@ samples_2018["/WZTo3LNu_3Jets_MLL-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutu
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/WZTo3LNu_3Jets_MLL-50"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/WZTo3LNu_3Jets_MLL-50"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -26804,33 +27144,37 @@ samples_2018["/WZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIIAutumn18MiniAOD-
   ("type",                            "mc"),
   ("sample_category",                 "WZ"),
   ("process_name_specific",           "WZTo2L2Q"),
-  ("nof_files",                       57),
+  ("nof_files",                       114),
   ("nof_db_files",                    501),
   ("nof_events",                      {
     'Count'                                                                          : [ 28193648, ],
-    'CountWeighted'                                                                  : [ 1.70505854e+07, 1.70491319e+07, 1.70508673e+07, ],
-    'CountWeightedLHEWeightScale'                                                    : [ 1.75547719e+07, 1.78732552e+07, 1.81204058e+07, 1.66752301e+07, 1.70505314e+07, 1.73291598e+07, 1.59352736e+07, 1.63495148e+07, 1.66542230e+07, ],
-    'CountWeightedLHEEnvelope'                                                       : [ 1.97184482e+07, 1.46322987e+07, ],
-    'CountWeightedFull'                                                              : [ 2.75256896e+08, 2.75232972e+08, 2.75264533e+08, ],
-    'CountWeightedFullLHEWeightScale'                                                : [ 2.83382825e+08, 2.88525210e+08, 2.92515320e+08, 2.69184513e+08, 2.75256037e+08, 2.79742702e+08, 2.57239408e+08, 2.63928418e+08, 2.68847735e+08, ],
-    'CountWeightedFullLHEEnvelope'                                                   : [ 3.18312788e+08, 2.36206041e+08, ],
+    'CountWeighted'                                                                  : [ 1.70508259e+07, 1.70493431e+07, 1.70517279e+07, ],
+    'CountWeightedLHEWeightScale'                                                    : [ 1.75547682e+07, 1.78732598e+07, 1.81204115e+07, 1.66752347e+07, 1.70507542e+07, 1.73291638e+07, 1.59352748e+07, 1.63495332e+07, 1.66542224e+07, ],
+    'CountWeightedLHEEnvelope'                                                       : [ 1.97184484e+07, 1.46322976e+07, ],
+    'CountWeightedPSWeight'                                                          : [ 1.72476456e+07, 1.70549322e+07, 2.31649977e+07, 1.68033802e+07, 1.70366866e+07, 1.14685710e+07, ],
+    'CountWeightedPSWeightOriginalXWGTUP'                                            : [ 2.81887070e+08, 2.76831902e+08, 2.81896600e+08, 2.81892285e+08, 2.62333322e+08, 2.57261861e+08, ],
+    'CountWeightedFull'                                                              : [ 2.75259538e+08, 2.75224500e+08, 2.75234194e+08, ],
+    'CountWeightedFullLHEWeightScale'                                                : [ 2.83382877e+08, 2.88525258e+08, 2.92515352e+08, 2.69184653e+08, 2.75258172e+08, 2.79742812e+08, 2.57239536e+08, 2.63928339e+08, 2.68847694e+08, ],
+    'CountWeightedFullLHEEnvelope'                                                   : [ 3.18312638e+08, 2.36205996e+08, ],
+    'CountWeightedFullPSWeight'                                                      : [ 2.78424203e+08, 2.75314861e+08, 3.73947521e+08, 2.71251973e+08, 2.75020976e+08, 1.85135083e+08, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP'                                        : [ 4.55095756e+09, 4.46924120e+09, 4.55105957e+09, 4.55104220e+09, 4.23509457e+09, 4.15322100e+09, ],
   }),
   ("nof_tree_events",                 28193648),
   ("nof_db_events",                   28193648),
-  ("fsize_local",                     113536291489), # 113.54GB, avg file size 1.99GB
+  ("fsize_local",                     139751628753), # 139.75GB, avg file size 1.23GB
   ("fsize_db",                        1304463189799), # 1.30TB, avg file size 2.60GB
   ("use_it",                          False),
   ("xsection",                        5.6),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
-  ("nof_PSweights",                   1),
+  ("nof_PSweights",                   4),
   ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
   ("nof_reweighting",                 0),
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/WZTo2L2Q"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/WZTo2L2Q"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -26858,33 +27202,37 @@ samples_2018["/WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIIAutumn18MiniA
   ("type",                            "mc"),
   ("sample_category",                 "WZ"),
   ("process_name_specific",           "WZTo1L1Nu2Q"),
-  ("nof_files",                       38),
+  ("nof_files",                       77),
   ("nof_db_files",                    393),
   ("nof_events",                      {
     'Count'                                                                          : [ 18901469, ],
-    'CountWeighted'                                                                  : [ 1.12482764e+07, 1.12483340e+07, 1.12492632e+07, ],
-    'CountWeightedLHEWeightScale'                                                    : [ 1.17000277e+07, 1.17677552e+07, 1.18552232e+07, 1.11632422e+07, 1.12483278e+07, 1.13326494e+07, 1.06960164e+07, 1.07946673e+07, 1.08776414e+07, ],
-    'CountWeightedLHEEnvelope'                                                       : [ 1.29179930e+07, 9.77632422e+06, ],
-    'CountWeightedFull'                                                              : [ 3.49109053e+08, 3.49098484e+08, 3.49129643e+08, ],
-    'CountWeightedFullLHEWeightScale'                                                : [ 3.63106756e+08, 3.65209193e+08, 3.67924124e+08, 3.46447703e+08, 3.49109330e+08, 3.51706511e+08, 3.31947778e+08, 3.35010508e+08, 3.37585513e+08, ],
-    'CountWeightedFullLHEEnvelope'                                                   : [ 4.00906948e+08, 3.03405758e+08, ],
+    'CountWeighted'                                                                  : [ 1.12489345e+07, 1.12483276e+07, 1.12504269e+07, ],
+    'CountWeightedLHEWeightScale'                                                    : [ 1.17000332e+07, 1.17677550e+07, 1.18552215e+07, 1.11632399e+07, 1.12489091e+07, 1.13326451e+07, 1.06960143e+07, 1.07946725e+07, 1.08776402e+07, ],
+    'CountWeightedLHEEnvelope'                                                       : [ 1.29180022e+07, 9.77632656e+06, ],
+    'CountWeightedPSWeight'                                                          : [ 1.13980360e+07, 1.12557854e+07, 1.53838196e+07, 1.10631015e+07, 1.12307796e+07, 7.47399040e+06, ],
+    'CountWeightedPSWeightOriginalXWGTUP'                                            : [ 1.89001376e+08, 1.88861364e+08, 1.89003701e+08, 1.89001362e+08, 1.87319733e+08, 1.87175068e+08, ],
+    'CountWeightedFull'                                                              : [ 3.49103886e+08, 3.49084224e+08, 3.49120177e+08, ],
+    'CountWeightedFullLHEWeightScale'                                                : [ 3.63106614e+08, 3.65209019e+08, 3.67924052e+08, 3.46447832e+08, 3.49104002e+08, 3.51706313e+08, 3.31947832e+08, 3.35010372e+08, 3.37585750e+08, ],
+    'CountWeightedFullLHEEnvelope'                                                   : [ 4.00906691e+08, 3.03405810e+08, ],
+    'CountWeightedFullPSWeight'                                                      : [ 3.53733142e+08, 3.49320393e+08, 4.77431796e+08, 3.43337128e+08, 3.48545037e+08, 2.31952881e+08, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP'                                        : [ 5.86564562e+09, 5.86122853e+09, 5.86564613e+09, 5.86564528e+09, 5.81338225e+09, 5.80896370e+09, ],
   }),
   ("nof_tree_events",                 18901469),
   ("nof_db_events",                   18901469),
-  ("fsize_local",                     77125133159), # 77.13GB, avg file size 2.03GB
+  ("fsize_local",                     94161735602), # 94.16GB, avg file size 1.22GB
   ("fsize_db",                        869433913750), # 869.43GB, avg file size 2.21GB
   ("use_it",                          False),
   ("xsection",                        10.71),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
-  ("nof_PSweights",                   1),
+  ("nof_PSweights",                   4),
   ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
   ("nof_reweighting",                 0),
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/WZTo1L1Nu2Q"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/WZTo1L1Nu2Q"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -26925,7 +27273,7 @@ samples_2018["/ZZTo4L_TuneCP5_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102X_upg
   }),
   ("nof_tree_events",                 6689900),
   ("nof_db_events",                   6689900),
-  ("fsize_local",                     17553755243), # 17.55GB, avg file size 1.25GB
+  ("fsize_local",                     22606693544), # 22.61GB, avg file size 1.61GB
   ("fsize_db",                        278854571525), # 278.85GB, avg file size 2.02GB
   ("use_it",                          True),
   ("xsection",                        1.3816),
@@ -26938,7 +27286,7 @@ samples_2018["/ZZTo4L_TuneCP5_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102X_upg
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/ZZTo4L_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/ZZTo4L_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -26966,33 +27314,37 @@ samples_2018["/ZZTo4L_TuneCP5_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102X_upg
   ("type",                            "mc"),
   ("sample_category",                 "ZZ"),
   ("process_name_specific",           "ZZTo4L_ext2"),
-  ("nof_files",                       199),
+  ("nof_files",                       397),
   ("nof_db_files",                    1473),
   ("nof_events",                      {
     'Count'                                                                          : [ 99009000, ],
-    'CountWeighted'                                                                  : [ 9.80236942e+07, 9.80081806e+07, 9.79909708e+07, ],
-    'CountWeightedLHEWeightScale'                                                    : [ 9.40177212e+07, 1.00076988e+08, 1.03425169e+08, 9.13760417e+07, 9.80236942e+07, 1.02221215e+08, 8.92768870e+07, 9.63587562e+07, 1.01262071e+08, ],
-    'CountWeightedLHEEnvelope'                                                       : [ 1.04353204e+08, 8.96364465e+07, ],
-    'CountWeightedFull'                                                              : [ 1.31172462e+08, 1.31166384e+08, 1.31149249e+08, ],
-    'CountWeightedFullLHEWeightScale'                                                : [ 1.25827068e+08, 1.33935221e+08, 1.38417434e+08, 1.22291790e+08, 1.31172462e+08, 1.36806135e+08, 1.19482173e+08, 1.28960168e+08, 1.35522620e+08, ],
-    'CountWeightedFullLHEEnvelope'                                                   : [ 1.39659117e+08, 1.19963570e+08, ],
+    'CountWeighted'                                                                  : [ 9.79978277e+07, 9.80096328e+07, 9.80092501e+07, ],
+    'CountWeightedLHEWeightScale'                                                    : [ 9.40177384e+07, 1.00076639e+08, 1.03425077e+08, 9.13760877e+07, 9.79978277e+07, 1.02221127e+08, 8.92768137e+07, 9.63586913e+07, 1.01262118e+08, ],
+    'CountWeightedLHEEnvelope'                                                       : [ 1.04352965e+08, 8.96364895e+07, ],
+    'CountWeightedPSWeight'                                                          : [ 9.80022316e+07, 9.80052977e+07, 1.23717223e+08, 9.80032213e+07, 9.79873110e+07, 7.38607687e+07, ],
+    'CountWeightedPSWeightOriginalXWGTUP'                                            : [ 1.32509909e+08, 1.32513856e+08, 1.67236568e+08, 1.32511769e+08, 1.32449322e+08, 9.98735185e+07, ],
+    'CountWeightedFull'                                                              : [ 1.31153512e+08, 1.31160735e+08, 1.31159671e+08, ],
+    'CountWeightedFullLHEWeightScale'                                                : [ 1.25827127e+08, 1.33936032e+08, 1.38417431e+08, 1.22291719e+08, 1.31153512e+08, 1.36806163e+08, 1.19482117e+08, 1.28960349e+08, 1.35522775e+08, ],
+    'CountWeightedFullLHEEnvelope'                                                   : [ 1.39659255e+08, 1.19963542e+08, ],
+    'CountWeightedFullPSWeight'                                                      : [ 1.31159788e+08, 1.31163950e+08, 1.65575038e+08, 1.31161087e+08, 1.31139794e+08, 9.88507208e+07, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP'                                        : [ 1.77346870e+08, 1.77348176e+08, 2.23818283e+08, 1.77349201e+08, 1.77261757e+08, 1.33664806e+08, ],
   }),
   ("nof_tree_events",                 99009000),
   ("nof_db_events",                   99009000),
-  ("fsize_local",                     259712369667), # 259.71GB, avg file size 1.31GB
+  ("fsize_local",                     338480004232), # 338.48GB, avg file size 852.59MB
   ("fsize_db",                        4120965640479), # 4.12TB, avg file size 2.80GB
   ("use_it",                          True),
   ("xsection",                        1.3816),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
-  ("nof_PSweights",                   1),
+  ("nof_PSweights",                   4),
   ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
   ("nof_reweighting",                 0),
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/ZZTo4L_ext2"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/ZZTo4L_ext2"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -27033,7 +27385,7 @@ samples_2018["/ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102X_
   }),
   ("nof_tree_events",                 8382600),
   ("nof_db_events",                   8382600),
-  ("fsize_local",                     26266243671), # 26.27GB, avg file size 1.55GB
+  ("fsize_local",                     32337928905), # 32.34GB, avg file size 1.90GB
   ("fsize_db",                        362146384399), # 362.15GB, avg file size 2.12GB
   ("use_it",                          False),
   ("xsection",                        0.6204),
@@ -27046,7 +27398,7 @@ samples_2018["/ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102X_
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/ZZTo2L2Nu_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/ZZTo2L2Nu_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -27074,33 +27426,37 @@ samples_2018["/ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102X_
   ("type",                            "mc"),
   ("sample_category",                 "ZZ"),
   ("process_name_specific",           "ZZTo2L2Nu_ext2"),
-  ("nof_files",                       97),
+  ("nof_files",                       193),
   ("nof_db_files",                    842),
   ("nof_events",                      {
     'Count'                                                                          : [ 48046000, ],
-    'CountWeighted'                                                                  : [ 4.79911071e+07, 4.79930631e+07, 4.79779626e+07, ],
-    'CountWeightedLHEWeightScale'                                                    : [ 4.82621828e+07, 4.88674073e+07, 4.93982748e+07, 4.73041458e+07, 4.79911071e+07, 4.85706442e+07, 4.65043676e+07, 4.72467592e+07, 4.78792404e+07, ],
-    'CountWeightedLHEEnvelope'                                                       : [ 4.93921542e+07, 4.66504487e+07, ],
-    'CountWeightedFull'                                                              : [ 2.88741964e+07, 2.88617315e+07, 2.88665930e+07, ],
-    'CountWeightedFullLHEWeightScale'                                                : [ 2.90339274e+07, 2.93980787e+07, 2.97173209e+07, 2.84575743e+07, 2.88741964e+07, 2.92195432e+07, 2.79763827e+07, 2.84229934e+07, 2.88035854e+07, ],
-    'CountWeightedFullLHEEnvelope'                                                   : [ 2.97137518e+07, 2.80641659e+07, ],
+    'CountWeighted'                                                                  : [ 4.79808300e+07, 4.79860483e+07, 4.79882131e+07, ],
+    'CountWeightedLHEWeightScale'                                                    : [ 4.82622441e+07, 4.88668990e+07, 4.93982402e+07, 4.73042222e+07, 4.79808300e+07, 4.85707258e+07, 4.65043656e+07, 4.72465548e+07, 4.78793568e+07, ],
+    'CountWeightedLHEEnvelope'                                                       : [ 4.93919318e+07, 4.66504202e+07, ],
+    'CountWeightedPSWeight'                                                          : [ 4.79843826e+07, 4.79849654e+07, 6.20129565e+07, 4.79823385e+07, 4.79706768e+07, 3.49617507e+07, ],
+    'CountWeightedPSWeightOriginalXWGTUP'                                            : [ 2.89065760e+07, 2.89062846e+07, 3.73638521e+07, 2.89053076e+07, 2.89035984e+07, 2.10604734e+07, ],
+    'CountWeightedFull'                                                              : [ 2.88686945e+07, 2.88653928e+07, 2.88658116e+07, ],
+    'CountWeightedFullLHEWeightScale'                                                : [ 2.90338897e+07, 2.93974927e+07, 2.97173157e+07, 2.84575608e+07, 2.88686945e+07, 2.92194660e+07, 2.79763956e+07, 2.84228941e+07, 2.88035704e+07, ],
+    'CountWeightedFullLHEEnvelope'                                                   : [ 2.97134980e+07, 2.80642826e+07, ],
+    'CountWeightedFullPSWeight'                                                      : [ 2.88674335e+07, 2.88671117e+07, 3.73061468e+07, 2.88661377e+07, 2.88584975e+07, 2.10325984e+07, ],
+    'CountWeightedFullPSWeightOriginalXWGTUP'                                        : [ 1.73895856e+07, 1.73896287e+07, 2.24774641e+07, 1.73887899e+07, 1.73879957e+07, 1.26697459e+07, ],
   }),
   ("nof_tree_events",                 48046000),
   ("nof_db_events",                   48046000),
-  ("fsize_local",                     150589715736), # 150.59GB, avg file size 1.55GB
+  ("fsize_local",                     187238247083), # 187.24GB, avg file size 970.15MB
   ("fsize_db",                        2074512868169), # 2.07TB, avg file size 2.46GB
   ("use_it",                          False),
   ("xsection",                        0.6204),
   ("genWeight",                       True),
   ("triggers",                        ['1e', '1mu', '2e', '2mu', '1e1mu', '3e', '3mu', '2e1mu', '1e2mu', '1e1tau', '1mu1tau', '2tau']),
   ("has_LHE",                         True),
-  ("nof_PSweights",                   1),
+  ("nof_PSweights",                   4),
   ("LHE_set",                         "LHA IDs 91400 - 91432 -> PDF4LHC15_nnlo_30_pdfas PDF set, expecting 33 weights (counted 33 weights)"),
   ("nof_reweighting",                 0),
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/ZZTo2L2Nu_ext2"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/ZZTo2L2Nu_ext2"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -27141,7 +27497,7 @@ samples_2018["/ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIIAutumn18MiniAOD-
   }),
   ("nof_tree_events",                 27900469),
   ("nof_db_events",                   27900469),
-  ("fsize_local",                     110607368788), # 110.61GB, avg file size 1.94GB
+  ("fsize_local",                     135086405130), # 135.09GB, avg file size 2.37GB
   ("fsize_db",                        1289685740970), # 1.29TB, avg file size 2.82GB
   ("use_it",                          False),
   ("xsection",                        6.072),
@@ -27154,7 +27510,7 @@ samples_2018["/ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIIAutumn18MiniAOD-
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/ZZTo2L2Q"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/ZZTo2L2Q"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -27197,7 +27553,7 @@ samples_2018["/GluGluToContinToZZTo4tau_13TeV_MCFM701_pythia8/RunIIAutumn18MiniA
   }),
   ("nof_tree_events",                 482400),
   ("nof_db_events",                   482400),
-  ("fsize_local",                     1926421218), # 1.93GB, avg file size 1.93GB
+  ("fsize_local",                     2381080406), # 2.38GB, avg file size 2.38GB
   ("fsize_db",                        21683296777), # 21.68GB, avg file size 333.59MB
   ("use_it",                          True),
   ("xsection",                        0.002703),
@@ -27210,7 +27566,7 @@ samples_2018["/GluGluToContinToZZTo4tau_13TeV_MCFM701_pythia8/RunIIAutumn18MiniA
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/ggZZTo4tau"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/ggZZTo4tau"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -27253,7 +27609,7 @@ samples_2018["/GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8/RunIIAutumn18MiniAO
   }),
   ("nof_tree_events",                 911500),
   ("nof_db_events",                   911500),
-  ("fsize_local",                     4407463800), # 4.41GB, avg file size 2.20GB
+  ("fsize_local",                     5257579703), # 5.26GB, avg file size 2.63GB
   ("fsize_db",                        45292352281), # 45.29GB, avg file size 905.85MB
   ("use_it",                          True),
   ("xsection",                        0.002703),
@@ -27266,7 +27622,7 @@ samples_2018["/GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8/RunIIAutumn18MiniAO
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/ggZZTo4mu"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/ggZZTo4mu"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -27309,7 +27665,7 @@ samples_2018["/GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8/RunIIAutumn18MiniAO
   }),
   ("nof_tree_events",                 982548),
   ("nof_db_events",                   982548),
-  ("fsize_local",                     4244620229), # 4.24GB, avg file size 2.12GB
+  ("fsize_local",                     5150033916), # 5.15GB, avg file size 2.58GB
   ("fsize_db",                        47038473062), # 47.04GB, avg file size 904.59MB
   ("use_it",                          True),
   ("xsection",                        0.002703),
@@ -27322,7 +27678,7 @@ samples_2018["/GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8/RunIIAutumn18MiniAO
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/ggZZTo4mu_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/ggZZTo4mu_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -27365,7 +27721,7 @@ samples_2018["/GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8/RunIIAutumn18MiniAOD
   }),
   ("nof_tree_events",                 913200),
   ("nof_db_events",                   913200),
-  ("fsize_local",                     4572110827), # 4.57GB, avg file size 2.29GB
+  ("fsize_local",                     5436713359), # 5.44GB, avg file size 2.72GB
   ("fsize_db",                        48500006880), # 48.50GB, avg file size 769.84MB
   ("use_it",                          True),
   ("xsection",                        0.002703),
@@ -27378,7 +27734,7 @@ samples_2018["/GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8/RunIIAutumn18MiniAOD
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/ggZZTo4e"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/ggZZTo4e"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -27421,7 +27777,7 @@ samples_2018["/GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8/RunIIAutumn18MiniAOD
   }),
   ("nof_tree_events",                 610000),
   ("nof_db_events",                   610000),
-  ("fsize_local",                     2744692526), # 2.74GB, avg file size 1.37GB
+  ("fsize_local",                     3312557953), # 3.31GB, avg file size 1.66GB
   ("fsize_db",                        31351488856), # 31.35GB, avg file size 1.36GB
   ("use_it",                          True),
   ("xsection",                        0.002703),
@@ -27434,7 +27790,7 @@ samples_2018["/GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8/RunIIAutumn18MiniAOD
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/ggZZTo4e_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/ggZZTo4e_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -27477,7 +27833,7 @@ samples_2018["/GluGluToContinToZZTo2e2tau_13TeV_MCFM701_pythia8/RunIIAutumn18Min
   }),
   ("nof_tree_events",                 492000),
   ("nof_db_events",                   492000),
-  ("fsize_local",                     2017704341), # 2.02GB, avg file size 1.01GB
+  ("fsize_local",                     2468722118), # 2.47GB, avg file size 1.23GB
   ("fsize_db",                        23139138901), # 23.14GB, avg file size 3.31GB
   ("use_it",                          True),
   ("xsection",                        0.005406),
@@ -27490,7 +27846,7 @@ samples_2018["/GluGluToContinToZZTo2e2tau_13TeV_MCFM701_pythia8/RunIIAutumn18Min
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/ggZZTo2e2tau"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/ggZZTo2e2tau"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -27533,7 +27889,7 @@ samples_2018["/GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8/RunIIAutumn18Mini
   }),
   ("nof_tree_events",                 494000),
   ("nof_db_events",                   494000),
-  ("fsize_local",                     2271553291), # 2.27GB, avg file size 757.18MB
+  ("fsize_local",                     2733904004), # 2.73GB, avg file size 911.30MB
   ("fsize_db",                        24817178115), # 24.82GB, avg file size 3.55GB
   ("use_it",                          True),
   ("xsection",                        0.005406),
@@ -27546,7 +27902,7 @@ samples_2018["/GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8/RunIIAutumn18Mini
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/ggZZTo2e2mu"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/ggZZTo2e2mu"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -27589,7 +27945,7 @@ samples_2018["/GluGluToContinToZZTo2mu2tau_13TeV_MCFM701_pythia8/RunIIAutumn18Mi
   }),
   ("nof_tree_events",                 500000),
   ("nof_db_events",                   500000),
-  ("fsize_local",                     2012206760), # 2.01GB, avg file size 2.01GB
+  ("fsize_local",                     2471323016), # 2.47GB, avg file size 2.47GB
   ("fsize_db",                        22889816959), # 22.89GB, avg file size 953.74MB
   ("use_it",                          True),
   ("xsection",                        0.005406),
@@ -27602,7 +27958,7 @@ samples_2018["/GluGluToContinToZZTo2mu2tau_13TeV_MCFM701_pythia8/RunIIAutumn18Mi
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/ggZZTo2mu2tau"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/ggZZTo2mu2tau"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -27639,7 +27995,7 @@ samples_2018["/QCD_Pt_15to20_bcToE_TuneCP5_13TeV_pythia8/RunIIAutumn18MiniAOD-10
   }),
   ("nof_tree_events",                 3917094),
   ("nof_db_events",                   4316068),
-  ("fsize_local",                     5527690661), # 5.53GB, avg file size 690.96MB
+  ("fsize_local",                     8528084898), # 8.53GB, avg file size 1.07GB
   ("fsize_db",                        157293673616), # 157.29GB, avg file size 1.48GB
   ("use_it",                          False),
   ("xsection",                        186900.0),
@@ -27652,7 +28008,7 @@ samples_2018["/QCD_Pt_15to20_bcToE_TuneCP5_13TeV_pythia8/RunIIAutumn18MiniAOD-10
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt15to20_bcToE"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt15to20_bcToE"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -27689,7 +28045,7 @@ samples_2018["/QCD_Pt_20to30_bcToE_TuneCP5_13TeV_pythia8/RunIIAutumn18MiniAOD-10
   }),
   ("nof_tree_events",                 10561226),
   ("nof_db_events",                   10561226),
-  ("fsize_local",                     17577476013), # 17.58GB, avg file size 798.98MB
+  ("fsize_local",                     25824525574), # 25.82GB, avg file size 1.17GB
   ("fsize_db",                        391943642529), # 391.94GB, avg file size 2.02GB
   ("use_it",                          False),
   ("xsection",                        305400.0),
@@ -27702,7 +28058,7 @@ samples_2018["/QCD_Pt_20to30_bcToE_TuneCP5_13TeV_pythia8/RunIIAutumn18MiniAOD-10
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt20to30_bcToE"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt20to30_bcToE"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -27739,7 +28095,7 @@ samples_2018["/QCD_Pt_30to80_bcToE_TuneCP5_13TeV_pythia8/RunIIAutumn18MiniAOD-10
   }),
   ("nof_tree_events",                 15177630),
   ("nof_db_events",                   15177630),
-  ("fsize_local",                     34503552455), # 34.50GB, avg file size 1.11GB
+  ("fsize_local",                     45908142266), # 45.91GB, avg file size 1.48GB
   ("fsize_db",                        596545940437), # 596.55GB, avg file size 1.78GB
   ("use_it",                          False),
   ("xsection",                        361100.0),
@@ -27752,7 +28108,7 @@ samples_2018["/QCD_Pt_30to80_bcToE_TuneCP5_13TeV_pythia8/RunIIAutumn18MiniAOD-10
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt30to80_bcToE"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt30to80_bcToE"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -27789,7 +28145,7 @@ samples_2018["/QCD_Pt_80to170_bcToE_TuneCP5_13TeV_pythia8/RunIIAutumn18MiniAOD-1
   }),
   ("nof_tree_events",                 14934946),
   ("nof_db_events",                   14934946),
-  ("fsize_local",                     60068438683), # 60.07GB, avg file size 2.00GB
+  ("fsize_local",                     71716684631), # 71.72GB, avg file size 2.39GB
   ("fsize_db",                        670541229440), # 670.54GB, avg file size 1.73GB
   ("use_it",                          False),
   ("xsection",                        33820.0),
@@ -27802,7 +28158,7 @@ samples_2018["/QCD_Pt_80to170_bcToE_TuneCP5_13TeV_pythia8/RunIIAutumn18MiniAOD-1
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt80to170_bcToE"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt80to170_bcToE"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -27839,7 +28195,7 @@ samples_2018["/QCD_Pt_170to250_bcToE_TuneCP5_13TeV_pythia8/RunIIAutumn18MiniAOD-
   }),
   ("nof_tree_events",                 9654492),
   ("nof_db_events",                   9654492),
-  ("fsize_local",                     53071167372), # 53.07GB, avg file size 2.65GB
+  ("fsize_local",                     61421586280), # 61.42GB, avg file size 3.07GB
   ("fsize_db",                        475035154847), # 475.04GB, avg file size 1.79GB
   ("use_it",                          False),
   ("xsection",                        2130.0),
@@ -27852,7 +28208,7 @@ samples_2018["/QCD_Pt_170to250_bcToE_TuneCP5_13TeV_pythia8/RunIIAutumn18MiniAOD-
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt170to250_bcToE"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt170to250_bcToE"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -27889,7 +28245,7 @@ samples_2018["/QCD_Pt_250toInf_bcToE_TuneCP5_13TeV_pythia8/RunIIAutumn18MiniAOD-
   }),
   ("nof_tree_events",                 10191317),
   ("nof_db_events",                   10191317),
-  ("fsize_local",                     63441145665), # 63.44GB, avg file size 3.02GB
+  ("fsize_local",                     72413524378), # 72.41GB, avg file size 3.45GB
   ("fsize_db",                        533458635862), # 533.46GB, avg file size 1.49GB
   ("use_it",                          False),
   ("xsection",                        563.0),
@@ -27902,7 +28258,7 @@ samples_2018["/QCD_Pt_250toInf_bcToE_TuneCP5_13TeV_pythia8/RunIIAutumn18MiniAOD-
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt250toInf_bcToE"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt250toInf_bcToE"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -27939,7 +28295,7 @@ samples_2018["/QCD_Pt-15to20_EMEnriched_TuneCP5_13TeV_pythia8/RunIIAutumn18MiniA
   }),
   ("nof_tree_events",                 14578212),
   ("nof_db_events",                   14578212),
-  ("fsize_local",                     22196398743), # 22.20GB, avg file size 739.88MB
+  ("fsize_local",                     32471614908), # 32.47GB, avg file size 1.08GB
   ("fsize_db",                        515168303338), # 515.17GB, avg file size 2.17GB
   ("use_it",                          False),
   ("xsection",                        1324000.0),
@@ -27952,7 +28308,7 @@ samples_2018["/QCD_Pt-15to20_EMEnriched_TuneCP5_13TeV_pythia8/RunIIAutumn18MiniA
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt15to20_EMEnriched_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt15to20_EMEnriched_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -27989,7 +28345,7 @@ samples_2018["/QCD_Pt-20to30_EMEnriched_TuneCP5_13TeV_pythia8/RunIIAutumn18MiniA
   }),
   ("nof_tree_events",                 14255377),
   ("nof_db_events",                   14255377),
-  ("fsize_local",                     24182350808), # 24.18GB, avg file size 833.87MB
+  ("fsize_local",                     34638952133), # 34.64GB, avg file size 1.19GB
   ("fsize_db",                        514672737083), # 514.67GB, avg file size 2.81GB
   ("use_it",                          False),
   ("xsection",                        4912000.0),
@@ -28002,7 +28358,7 @@ samples_2018["/QCD_Pt-20to30_EMEnriched_TuneCP5_13TeV_pythia8/RunIIAutumn18MiniA
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt20to30_EMEnriched"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt20to30_EMEnriched"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -28039,7 +28395,7 @@ samples_2018["/QCD_Pt-30to50_EMEnriched_TuneCP5_13TeV_pythia8/RunIIAutumn18MiniA
   }),
   ("nof_tree_events",                 14591226),
   ("nof_db_events",                   15086084),
-  ("fsize_local",                     29316643101), # 29.32GB, avg file size 977.22MB
+  ("fsize_local",                     40057486309), # 40.06GB, avg file size 1.34GB
   ("fsize_db",                        562100061688), # 562.10GB, avg file size 2.72GB
   ("use_it",                          False),
   ("xsection",                        6420000.0),
@@ -28052,7 +28408,7 @@ samples_2018["/QCD_Pt-30to50_EMEnriched_TuneCP5_13TeV_pythia8/RunIIAutumn18MiniA
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt30to50_EMEnriched_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt30to50_EMEnriched_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -28080,16 +28436,16 @@ samples_2018["/QCD_Pt-50to80_EMEnriched_TuneCP5_13TeV_pythia8/RunIIAutumn18MiniA
   ("type",                            "mc"),
   ("sample_category",                 "QCD"),
   ("process_name_specific",           "QCD_Pt50to80_EMEnriched"),
-  ("nof_files",                       23),
+  ("nof_files",                       47),
   ("nof_db_files",                    160),
   ("nof_events",                      {
     'Count'                                                                          : [ 10798233, ],
-    'CountWeighted'                                                                  : [ 1.07995929e+07, 1.07967631e+07, 1.07968006e+07, ],
-    'CountWeightedFull'                                                              : [ 1.07995929e+07, 1.07967631e+07, 1.07968006e+07, ],
+    'CountWeighted'                                                                  : [ 1.07988978e+07, 1.07975450e+07, 1.07986335e+07, ],
+    'CountWeightedFull'                                                              : [ 1.07988978e+07, 1.07975450e+07, 1.07986335e+07, ],
   }),
   ("nof_tree_events",                 10798233),
   ("nof_db_events",                   10798233),
-  ("fsize_local",                     28758934652), # 28.76GB, avg file size 1.25GB
+  ("fsize_local",                     37034303939), # 37.03GB, avg file size 787.96MB
   ("fsize_db",                        427325958129), # 427.33GB, avg file size 2.67GB
   ("use_it",                          False),
   ("xsection",                        1988000.0),
@@ -28102,7 +28458,7 @@ samples_2018["/QCD_Pt-50to80_EMEnriched_TuneCP5_13TeV_pythia8/RunIIAutumn18MiniA
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt50to80_EMEnriched"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt50to80_EMEnriched"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -28130,16 +28486,16 @@ samples_2018["/QCD_Pt-80to120_EMEnriched_TuneCP5_13TeV_pythia8/RunIIAutumn18Mini
   ("type",                            "mc"),
   ("sample_category",                 "QCD"),
   ("process_name_specific",           "QCD_Pt80to120_EMEnriched"),
-  ("nof_files",                       20),
+  ("nof_files",                       41),
   ("nof_db_files",                    172),
   ("nof_events",                      {
     'Count'                                                                          : [ 9648791, ],
-    'CountWeighted'                                                                  : [ 9.65062559e+06, 9.64892609e+06, 9.64755484e+06, ],
-    'CountWeightedFull'                                                              : [ 9.65222862e+06, 9.65053466e+06, 9.64916734e+06, ],
+    'CountWeighted'                                                                  : [ 9.64800778e+06, 9.64917542e+06, 9.64817009e+06, ],
+    'CountWeightedFull'                                                              : [ 9.64961884e+06, 9.65078400e+06, 9.64978000e+06, ],
   }),
   ("nof_tree_events",                 9648791),
   ("nof_db_events",                   9648791),
-  ("fsize_local",                     36908104035), # 36.91GB, avg file size 1.85GB
+  ("fsize_local",                     44722994351), # 44.72GB, avg file size 1.09GB
   ("fsize_db",                        407590592957), # 407.59GB, avg file size 2.37GB
   ("use_it",                          False),
   ("xsection",                        366500.0),
@@ -28152,7 +28508,7 @@ samples_2018["/QCD_Pt-80to120_EMEnriched_TuneCP5_13TeV_pythia8/RunIIAutumn18Mini
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt80to120_EMEnriched"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt80to120_EMEnriched"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -28189,7 +28545,7 @@ samples_2018["/QCD_Pt-120to170_EMEnriched_TuneCP5_13TeV_pythia8/RunIIAutumn18Min
   }),
   ("nof_tree_events",                 9864301),
   ("nof_db_events",                   9964143),
-  ("fsize_local",                     46225649579), # 46.23GB, avg file size 2.20GB
+  ("fsize_local",                     54637314546), # 54.64GB, avg file size 2.60GB
   ("fsize_db",                        442430942022), # 442.43GB, avg file size 3.21GB
   ("use_it",                          False),
   ("xsection",                        66510.0),
@@ -28202,7 +28558,7 @@ samples_2018["/QCD_Pt-120to170_EMEnriched_TuneCP5_13TeV_pythia8/RunIIAutumn18Min
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt120to170_EMEnriched"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt120to170_EMEnriched"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -28239,7 +28595,7 @@ samples_2018["/QCD_Pt-170to300_EMEnriched_TuneCP5_13TeV_pythia8/RunIIAutumn18Min
   }),
   ("nof_tree_events",                 3712174),
   ("nof_db_events",                   3712174),
-  ("fsize_local",                     20332181459), # 20.33GB, avg file size 2.54GB
+  ("fsize_local",                     23615429240), # 23.62GB, avg file size 2.95GB
   ("fsize_db",                        175645304054), # 175.65GB, avg file size 2.37GB
   ("use_it",                          False),
   ("xsection",                        16560.0),
@@ -28252,7 +28608,7 @@ samples_2018["/QCD_Pt-170to300_EMEnriched_TuneCP5_13TeV_pythia8/RunIIAutumn18Min
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt170to300_EMEnriched"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt170to300_EMEnriched"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -28289,7 +28645,7 @@ samples_2018["/QCD_Pt-300toInf_EMEnriched_TuneCP5_13TeV_pythia8/RunIIAutumn18Min
   }),
   ("nof_tree_events",                 2901355),
   ("nof_db_events",                   2901355),
-  ("fsize_local",                     18079909244), # 18.08GB, avg file size 3.01GB
+  ("fsize_local",                     20721072869), # 20.72GB, avg file size 3.45GB
   ("fsize_db",                        148206889913), # 148.21GB, avg file size 2.91GB
   ("use_it",                          False),
   ("xsection",                        1100.0),
@@ -28302,7 +28658,7 @@ samples_2018["/QCD_Pt-300toInf_EMEnriched_TuneCP5_13TeV_pythia8/RunIIAutumn18Min
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt300toInf_EMEnriched"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt300toInf_EMEnriched"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -28339,7 +28695,7 @@ samples_2018["/QCD_Pt-15to20_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn18Mi
   }),
   ("nof_tree_events",                 4576052),
   ("nof_db_events",                   4576065),
-  ("fsize_local",                     6277338377), # 6.28GB, avg file size 627.73MB
+  ("fsize_local",                     9588642579), # 9.59GB, avg file size 958.86MB
   ("fsize_db",                        169695109341), # 169.70GB, avg file size 1.32GB
   ("use_it",                          False),
   ("xsection",                        2811000.0),
@@ -28352,7 +28708,7 @@ samples_2018["/QCD_Pt-15to20_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn18Mi
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt15to20_Mu5"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt15to20_Mu5"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -28389,7 +28745,7 @@ samples_2018["/QCD_Pt-20to30_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn18Mi
   }),
   ("nof_tree_events",                 30012433),
   ("nof_db_events",                   30612338),
-  ("fsize_local",                     48884621780), # 48.88GB, avg file size 801.39MB
+  ("fsize_local",                     72186683037), # 72.19GB, avg file size 1.18GB
   ("fsize_db",                        1152472355100), # 1.15TB, avg file size 2.54GB
   ("use_it",                          False),
   ("xsection",                        2531000.0),
@@ -28402,7 +28758,7 @@ samples_2018["/QCD_Pt-20to30_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn18Mi
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt20to30_Mu5"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt20to30_Mu5"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -28439,7 +28795,7 @@ samples_2018["/QCD_Pt-30to50_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn18Mi
   }),
   ("nof_tree_events",                 29884616),
   ("nof_db_events",                   29884616),
-  ("fsize_local",                     62137752290), # 62.14GB, avg file size 1.04GB
+  ("fsize_local",                     85410417192), # 85.41GB, avg file size 1.42GB
   ("fsize_db",                        1170514564416), # 1.17TB, avg file size 2.30GB
   ("use_it",                          False),
   ("xsection",                        1367000.0),
@@ -28452,7 +28808,7 @@ samples_2018["/QCD_Pt-30to50_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn18Mi
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt30to50_Mu5"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt30to50_Mu5"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -28480,16 +28836,16 @@ samples_2018["/QCD_Pt-50to80_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn18Mi
   ("type",                            "mc"),
   ("sample_category",                 "QCD"),
   ("process_name_specific",           "QCD_Pt50to80_Mu5"),
-  ("nof_files",                       40),
+  ("nof_files",                       82),
   ("nof_db_files",                    338),
   ("nof_events",                      {
-    'Count'                                                                          : [ 19869252, ],
-    'CountWeighted'                                                                  : [ 1.98732733e+07, 1.98700352e+07, 1.98642146e+07, ],
-    'CountWeightedFull'                                                              : [ 1.98732733e+07, 1.98700352e+07, 1.98642146e+07, ],
+    'Count'                                                                          : [ 20268872, ],
+    'CountWeighted'                                                                  : [ 2.02691606e+07, 2.02690949e+07, 2.02700618e+07, ],
+    'CountWeightedFull'                                                              : [ 2.02691606e+07, 2.02690949e+07, 2.02700618e+07, ],
   }),
-  ("nof_tree_events",                 19869252),
+  ("nof_tree_events",                 20268872),
   ("nof_db_events",                   20268872),
-  ("fsize_local",                     55678430790), # 55.68GB, avg file size 1.39GB
+  ("fsize_local",                     72821601980), # 72.82GB, avg file size 888.07MB
   ("fsize_db",                        846172738073), # 846.17GB, avg file size 2.50GB
   ("use_it",                          False),
   ("xsection",                        377900.0),
@@ -28502,7 +28858,7 @@ samples_2018["/QCD_Pt-50to80_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn18Mi
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt50to80_Mu5"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt50to80_Mu5"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -28539,7 +28895,7 @@ samples_2018["/QCD_Pt-80to120_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn18M
   }),
   ("nof_tree_events",                 612919),
   ("nof_db_events",                   612919),
-  ("fsize_local",                     2435711907), # 2.44GB, avg file size 1.22GB
+  ("fsize_local",                     2929516636), # 2.93GB, avg file size 1.46GB
   ("fsize_db",                        27505251400), # 27.51GB, avg file size 2.29GB
   ("use_it",                          False),
   ("xsection",                        88620.0),
@@ -28552,7 +28908,7 @@ samples_2018["/QCD_Pt-80to120_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn18M
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt80to120_Mu5"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt80to120_Mu5"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -28589,7 +28945,7 @@ samples_2018["/QCD_Pt-80to120_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn18M
   }),
   ("nof_tree_events",                 24989464),
   ("nof_db_events",                   25039361),
-  ("fsize_local",                     99382168469), # 99.38GB, avg file size 983.98MB
+  ("fsize_local",                     119455006142), # 119.46GB, avg file size 1.18GB
   ("fsize_db",                        1122940596867), # 1.12TB, avg file size 2.38GB
   ("use_it",                          False),
   ("xsection",                        88620.0),
@@ -28602,7 +28958,7 @@ samples_2018["/QCD_Pt-80to120_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn18M
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt80to120_Mu5_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt80to120_Mu5_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -28639,7 +28995,7 @@ samples_2018["/QCD_Pt-120to170_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn18
   }),
   ("nof_tree_events",                 633668),
   ("nof_db_events",                   633668),
-  ("fsize_local",                     3103672563), # 3.10GB, avg file size 1.03GB
+  ("fsize_local",                     3638565318), # 3.64GB, avg file size 1.21GB
   ("fsize_db",                        30289310736), # 30.29GB, avg file size 1.68GB
   ("use_it",                          False),
   ("xsection",                        21190.0),
@@ -28652,7 +29008,7 @@ samples_2018["/QCD_Pt-120to170_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn18
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt120to170_Mu5"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt120to170_Mu5"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -28689,7 +29045,7 @@ samples_2018["/QCD_Pt-120to170_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn18
   }),
   ("nof_tree_events",                 20682254),
   ("nof_db_events",                   20682254),
-  ("fsize_local",                     101187731958), # 101.19GB, avg file size 2.41GB
+  ("fsize_local",                     118657090924), # 118.66GB, avg file size 2.83GB
   ("fsize_db",                        986868206088), # 986.87GB, avg file size 2.55GB
   ("use_it",                          False),
   ("xsection",                        21190.0),
@@ -28702,7 +29058,7 @@ samples_2018["/QCD_Pt-120to170_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn18
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt120to170_Mu5_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt120to170_Mu5_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -28730,16 +29086,16 @@ samples_2018["/QCD_Pt-170to300_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn18
   ("type",                            "mc"),
   ("sample_category",                 "QCD"),
   ("process_name_specific",           "QCD_Pt170to300_Mu5"),
-  ("nof_files",                       72),
+  ("nof_files",                       146),
   ("nof_db_files",                    647),
   ("nof_events",                      {
-    'Count'                                                                          : [ 35780318, ],
-    'CountWeighted'                                                                  : [ 3.57795057e+07, 3.57798887e+07, 3.57760781e+07, ],
-    'CountWeightedFull'                                                              : [ 3.57795057e+07, 3.57798887e+07, 3.57760781e+07, ],
+    'Count'                                                                          : [ 35978539, ],
+    'CountWeighted'                                                                  : [ 3.59759294e+07, 3.59782042e+07, 3.59826647e+07, ],
+    'CountWeightedFull'                                                              : [ 3.59759294e+07, 3.59782042e+07, 3.59826647e+07, ],
   }),
-  ("nof_tree_events",                 35780318),
+  ("nof_tree_events",                 35978539),
   ("nof_db_events",                   35978539),
-  ("fsize_local",                     205215133841), # 205.22GB, avg file size 2.85GB
+  ("fsize_local",                     238403981155), # 238.40GB, avg file size 1.63GB
   ("fsize_db",                        1839028645751), # 1.84TB, avg file size 2.84GB
   ("use_it",                          False),
   ("xsection",                        7020.0),
@@ -28752,7 +29108,7 @@ samples_2018["/QCD_Pt-170to300_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn18
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt170to300_Mu5"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt170to300_Mu5"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -28789,7 +29145,7 @@ samples_2018["/QCD_Pt-300to470_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn18
   }),
   ("nof_tree_events",                 492418),
   ("nof_db_events",                   492418),
-  ("fsize_local",                     3198188167), # 3.20GB, avg file size 3.20GB
+  ("fsize_local",                     3663973667), # 3.66GB, avg file size 3.66GB
   ("fsize_db",                        27486086727), # 27.49GB, avg file size 1.02GB
   ("use_it",                          False),
   ("xsection",                        620.2),
@@ -28802,7 +29158,7 @@ samples_2018["/QCD_Pt-300to470_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn18
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt300to470_Mu5"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt300to470_Mu5"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -28830,16 +29186,16 @@ samples_2018["/QCD_Pt-300to470_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn18
   ("type",                            "mc"),
   ("sample_category",                 "QCD"),
   ("process_name_specific",           "QCD_Pt300to470_Mu5_ext3"),
-  ("nof_files",                       58),
+  ("nof_files",                       117),
   ("nof_db_files",                    734),
   ("nof_events",                      {
-    'Count'                                                                          : [ 28796717, ],
-    'CountWeighted'                                                                  : [ 2.88026194e+07, 2.87992620e+07, 2.87889662e+07, ],
-    'CountWeightedFull'                                                              : [ 2.88026245e+07, 2.87992667e+07, 2.87889716e+07, ],
+    'Count'                                                                          : [ 28996145, ],
+    'CountWeighted'                                                                  : [ 2.89933454e+07, 2.89935329e+07, 2.89955472e+07, ],
+    'CountWeightedFull'                                                              : [ 2.89933508e+07, 2.89935382e+07, 2.89955522e+07, ],
   }),
-  ("nof_tree_events",                 28796717),
+  ("nof_tree_events",                 28996145),
   ("nof_db_events",                   28996145),
-  ("fsize_local",                     187129498875), # 187.13GB, avg file size 3.23GB
+  ("fsize_local",                     215814867345), # 215.81GB, avg file size 1.84GB
   ("fsize_db",                        1604985239434), # 1.60TB, avg file size 2.19GB
   ("use_it",                          False),
   ("xsection",                        620.2),
@@ -28852,7 +29208,7 @@ samples_2018["/QCD_Pt-300to470_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn18
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt300to470_Mu5_ext3"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt300to470_Mu5_ext3"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -28889,7 +29245,7 @@ samples_2018["/QCD_Pt-470to600_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn18
   }),
   ("nof_tree_events",                 492716),
   ("nof_db_events",                   492716),
-  ("fsize_local",                     3379502035), # 3.38GB, avg file size 3.38GB
+  ("fsize_local",                     3858275448), # 3.86GB, avg file size 3.86GB
   ("fsize_db",                        28705682413), # 28.71GB, avg file size 1.51GB
   ("use_it",                          False),
   ("xsection",                        59.06),
@@ -28902,7 +29258,7 @@ samples_2018["/QCD_Pt-470to600_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn18
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt470to600_Mu5"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt470to600_Mu5"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -28930,16 +29286,16 @@ samples_2018["/QCD_Pt-470to600_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn18
   ("type",                            "mc"),
   ("sample_category",                 "QCD"),
   ("process_name_specific",           "QCD_Pt470to600_Mu5_ext1"),
-  ("nof_files",                       40),
+  ("nof_files",                       82),
   ("nof_db_files",                    544),
   ("nof_events",                      {
-    'Count'                                                                          : [ 19609768, ],
-    'CountWeighted'                                                                  : [ 1.96125973e+07, 1.96110881e+07, 1.96059078e+07, ],
-    'CountWeightedFull'                                                              : [ 1.96126664e+07, 1.96111580e+07, 1.96059785e+07, ],
+    'Count'                                                                          : [ 19954005, ],
+    'CountWeighted'                                                                  : [ 1.99510074e+07, 1.99546435e+07, 1.99515954e+07, ],
+    'CountWeightedFull'                                                              : [ 1.99510792e+07, 1.99547146e+07, 1.99516671e+07, ],
   }),
-  ("nof_tree_events",                 19609768),
+  ("nof_tree_events",                 19954005),
   ("nof_db_events",                   20003034),
-  ("fsize_local",                     134495458971), # 134.50GB, avg file size 3.36GB
+  ("fsize_local",                     156175441209), # 156.18GB, avg file size 1.90GB
   ("fsize_db",                        1163063442101), # 1.16TB, avg file size 2.14GB
   ("use_it",                          False),
   ("xsection",                        59.06),
@@ -28952,7 +29308,7 @@ samples_2018["/QCD_Pt-470to600_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn18
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt470to600_Mu5_ext1"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt470to600_Mu5_ext1"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -28989,7 +29345,7 @@ samples_2018["/QCD_Pt-600to800_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn18
   }),
   ("nof_tree_events",                 16123258),
   ("nof_db_events",                   16618977),
-  ("fsize_local",                     113442479012), # 113.44GB, avg file size 3.44GB
+  ("fsize_local",                     129097132674), # 129.10GB, avg file size 3.91GB
   ("fsize_db",                        993851362870), # 993.85GB, avg file size 2.37GB
   ("use_it",                          False),
   ("xsection",                        18.2),
@@ -29002,7 +29358,7 @@ samples_2018["/QCD_Pt-600to800_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn18
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt600to800_Mu5"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt600to800_Mu5"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -29039,7 +29395,7 @@ samples_2018["/QCD_Pt-800to1000_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn1
   }),
   ("nof_tree_events",                 15255082),
   ("nof_db_events",                   16749914),
-  ("fsize_local",                     109579012835), # 109.58GB, avg file size 3.53GB
+  ("fsize_local",                     124401751638), # 124.40GB, avg file size 4.01GB
   ("fsize_db",                        1035961577415), # 1.04TB, avg file size 2.22GB
   ("use_it",                          False),
   ("xsection",                        3.276),
@@ -29052,7 +29408,7 @@ samples_2018["/QCD_Pt-800to1000_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn1
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt800to1000_Mu5_ext3"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt800to1000_Mu5_ext3"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -29089,7 +29445,7 @@ samples_2018["/QCD_Pt-1000toInf_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn1
   }),
   ("nof_tree_events",                 10719790),
   ("nof_db_events",                   10719790),
-  ("fsize_local",                     77999333409), # 78.00GB, avg file size 3.55GB
+  ("fsize_local",                     88451372935), # 88.45GB, avg file size 4.02GB
   ("fsize_db",                        683812448772), # 683.81GB, avg file size 2.45GB
   ("use_it",                          False),
   ("xsection",                        1.079),
@@ -29102,7 +29458,7 @@ samples_2018["/QCD_Pt-1000toInf_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn1
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt1000toInf_Mu5"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/QCD_Pt1000toInf_Mu5"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -29145,7 +29501,7 @@ samples_2018["/TTWJetsToLNu_EWK_5f_NLO/RunIIAutumn18MiniAOD/USER"] = OD([
   }),
   ("nof_tree_events",                 48000),
   ("nof_db_events",                   49000),
-  ("fsize_local",                     390420023), # 390.42MB, avg file size 390.42MB
+  ("fsize_local",                     450874595), # 450.87MB, avg file size 450.87MB
   ("fsize_db",                        4386666225), # 4.39GB, avg file size 81.23MB
   ("use_it",                          False),
   ("xsection",                        0.0162562),
@@ -29158,7 +29514,7 @@ samples_2018["/TTWJetsToLNu_EWK_5f_NLO/RunIIAutumn18MiniAOD/USER"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/TTWJetsToLNu_EWK_5f_NLO"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/TTWJetsToLNu_EWK_5f_NLO"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -29199,7 +29555,7 @@ samples_2018["/ZHToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8/RunIIAutumn18Mi
   }),
   ("nof_tree_events",                 394097),
   ("nof_db_events",                   1102578),
-  ("fsize_local",                     1772326929), # 1.77GB, avg file size 354.47MB
+  ("fsize_local",                     2158654848), # 2.16GB, avg file size 431.73MB
   ("fsize_db",                        51922787567), # 51.92GB, avg file size 1.73GB
   ("use_it",                          True),
   ("xsection",                        0.3691239),
@@ -29212,7 +29568,7 @@ samples_2018["/ZHToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8/RunIIAutumn18Mi
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/ZHToNonbb_M125"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/ZHToNonbb_M125"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -29253,7 +29609,7 @@ samples_2018["/WHToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8/RunIIAutumn18Mi
   }),
   ("nof_tree_events",                 708481),
   ("nof_db_events",                   1102578),
-  ("fsize_local",                     3187371881), # 3.19GB, avg file size 637.47MB
+  ("fsize_local",                     3883156505), # 3.88GB, avg file size 776.63MB
   ("fsize_db",                        51922787567), # 51.92GB, avg file size 1.73GB
   ("use_it",                          True),
   ("xsection",                        0.5733761),
@@ -29266,7 +29622,7 @@ samples_2018["/WHToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8/RunIIAutumn18Mi
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2020Dec27_woPresel_nom_all_hh_multilepton/ntuples/WHToNonbb_M125"),
+        ("path",      "/hdfs/local/karl/ttHNtupleProduction/2018/2021Feb20_woPresel_nom_all_hh_multilepton/ntuples/WHToNonbb_M125"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
