@@ -81,7 +81,7 @@ EventInfoReader::setBranchAddresses(TTree * tree)
     const std::vector<std::string> lhe_branches = bai_LHEReweight.getBoundBranchNames();
     bound_branches.insert(bound_branches.end(), lhe_branches.begin(), lhe_branches.end());
   }
-  if(info_ -> isMC_HH_)
+  if(info_ -> isMC_HH_  && info_ -> isHH_rwgt_allowed_)
   {
     bai.setBranchAddress(info_ -> gen_mHH, branchName_gen_mHH);
     bai.setBranchAddress(info_ -> gen_cosThetaStar, branchName_gen_cosThetaStar);
