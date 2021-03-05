@@ -813,20 +813,21 @@ class analyzeConfig(object):
           
           jobOptions['hhWeight_cfg.apply_rwgt'] = 'hh' in self.channel
 
+        update_conv_bkg = False
         if 'genPhotonFilter' in sample_info.keys():
           if sample_info['genPhotonFilter']:
             jobOptions['apply_genPhotonFilter'] = "enabled"
           else:
             jobOptions['apply_genPhotonFilter'] = "inverted"
-          if not sample_info['sample_category'] in self.convs_backgrounds:
-            self.convs_backgrounds.append(sample_info['sample_category'])
+          update_conv_bkg = True
         else:
           jobOptions['apply_genPhotonFilter'] = "disabled"
 
         # if we estimate the conversions from TT, W or DY samples, skip XGamma
-        assert(len(self.convs_backgrounds) == len(set(self.convs_backgrounds)))
-        if len(self.convs_backgrounds) > 1 and "XGamma" in self.convs_backgrounds:
-          self.convs_backgrounds.remove("XGamma")
+        if update_conv_bkg and 'XGamma' in self.convs_backgrounds:
+          self.convs_backgrounds = [
+            bkg for bkg in self.nonfake_backgrounds if bkg not in [ 'data_fakes', 'data_flips', 'fakes_mc', 'flips_mc', 'Convs' ]
+          ]
 
         sample_category_ttbar = sample_info["sample_category"].replace("TT_", "")
         is_ttbar_sys = sample_category_ttbar in systematics.ttbar
