@@ -277,6 +277,14 @@ class tthAnalyzeParser(argparse.ArgumentParser):
       help = 'R|Lepton mva cut e for lepton3 (choices: 0.3)'
     )
 
+  def add_ele_ConvsCR(self, default_option = ''):
+    option_choices = ['disable_nLostHits_convsVeto', 'invert_nLostHits', 'invert_convsVeto', 'invert_eitherOf_convsVeto_nLostHits', 'invert_both_convsVeto_nLostHits']    
+    self.add_argument('-ele_ConvsCR', '--ele-ConvsCR-CutOption',
+      type = str, dest = 'ele_ConvsCR', metavar = 'Conversion cuts for electrons in conversion_CR', choices = option_choices,
+      required = not bool(default_option), default = default_option,
+      help = 'R|Conversion cuts for electrons in conversion_CR (choices: %s)' % tthAnalyzeParser.cat(option_choices),
+    )
+        
   def add_jet_cleaning(self, default_jet_cleaning = 'by_index'):
     choices = [ 'by_index', 'by_dr' ]
     self.add_argument('-q', '--jet-cleaning',

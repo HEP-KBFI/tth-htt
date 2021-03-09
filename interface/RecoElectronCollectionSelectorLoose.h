@@ -35,6 +35,8 @@ public:
    */
   bool operator()(const RecoElectron & electron) const;
 
+  void print_selection_conditions();
+  
 protected:
   bool set_selection_flags_;
   bool debug_;                        ///< enable printout for debugging purposes
@@ -67,6 +69,8 @@ public:
   ~RecoElectronCollectionSelectorLoose() {}
 
   void invert_max_nLostHits(Int_t min_nLostHits_fornLostHitsInversion); // for conversion bkg CR
+
+  void print_selection_conditions();
 };
 
 #endif // tthAnalysis_HiggsToTauTau_RecoElectronCollectionSelectorLoose_h

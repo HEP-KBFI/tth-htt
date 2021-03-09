@@ -61,6 +61,25 @@ RecoElectronSelectorLoose::get_max_absEta() const
   return max_absEta_;
 }
 
+void
+RecoElectronSelectorLoose::print_selection_conditions()
+{
+  std::cout << "RecoElectronSelectorLoose::print_selection_conditions():: " << "\n";
+  std::cout << " \t set_selection_flags_:" << set_selection_flags_ << "\n";
+  std::cout << " \t min_pt_:" << min_pt_ << "\n";
+  std::cout << " \t max_absEta_:" << max_absEta_ << "\n";
+  std::cout << " \t max_dxy_:" << max_dxy_ << "\n";
+  std::cout << " \t max_dz_:" << max_dz_ << "\n";  
+  std::cout << " \t max_relIso_:" << max_relIso_ << "\n";
+  std::cout << " \t max_sip3d_:" << max_sip3d_ << "\n";
+  std::cout << " \t apply_tightCharge_:" << apply_tightCharge_ << "\n";
+  std::cout << " \t apply_conversionVeto_:" << apply_conversionVeto_ << "\n";
+  std::cout << " \t max_nLostHits_:" << max_nLostHits_ << "\n";
+  std::cout << " \t invert_nLostHits_:" << invert_nLostHits_ << "\n";
+  std::cout << " \t min_nLostHits_fornLostHitsInversion_:" << min_nLostHits_fornLostHitsInversion_ << "\n";
+}
+
+
 bool
 RecoElectronSelectorLoose::operator()(const RecoElectron & electron) const
 {
@@ -188,4 +207,10 @@ void
 RecoElectronCollectionSelectorLoose::invert_max_nLostHits(Int_t min_nLostHits_fornLostHitsInversion)
 {
   selector_.invert_max_nLostHits(min_nLostHits_fornLostHitsInversion);
+}
+
+void
+RecoElectronCollectionSelectorLoose::print_selection_conditions()
+{
+  selector_.print_selection_conditions();
 }

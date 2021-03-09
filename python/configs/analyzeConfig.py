@@ -104,6 +104,7 @@ class analyzeConfig(object):
           histograms_to_fit,
           triggers,
           lep_mva_wp                      = "default",
+          ele_ConvsCR                     = "default",
           disableFRwgts                   = "default",
           lep_useTightChargeCut           = "default",
           enable_LeptonFakeRate_bbwSL     = "default",  
@@ -238,6 +239,7 @@ class analyzeConfig(object):
           raise RuntimeError("Cannot use both split and unsplit VH samples")
 
         self.lep_mva_wp = lep_mva_wp
+        self.ele_ConvsCR = ele_ConvsCR
         self.disableFRwgts = disableFRwgts
         self.lep_useTightChargeCut = lep_useTightChargeCut
         self.lep_useSFCor = lep_useSFCor
@@ -1058,6 +1060,8 @@ class analyzeConfig(object):
         #if 'lep_mva_wp' not in jobOptions and self.lep_mva_wp != 'default':
         if 'lep_mva_wp' not in jobOptions:
             jobOptions['lep_mva_wp'] = self.lep_mva_wp
+        if 'ele_ConvsCR' not in jobOptions and self.ele_ConvsCR != 'default':
+            jobOptions['ele_ConvsCR'] = self.ele_ConvsCR
         if 'disableFRwgts' not in jobOptions and self.disableFRwgts != 'default':
             jobOptions['disableFRwgts'] = bool(self.disableFRwgts)
         if 'lep_useTightChargeCut' not in jobOptions and self.lep_useTightChargeCut != 'default':
@@ -1126,6 +1130,7 @@ class analyzeConfig(object):
             'lep_mva_cut_mu',
             'lep_mva_cut_e',
             'lep_mva_wp',
+            'ele_ConvsCR',
             'disableFRwgts',
             'lep_useTightChargeCut',
             'lep_useSFCor',
