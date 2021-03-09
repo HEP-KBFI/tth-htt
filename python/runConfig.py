@@ -175,10 +175,9 @@ class tthAnalyzeParser(argparse.ArgumentParser):
 
   def add_preselect(self, use_preselected = True):
     type_lambda = lambda s: s.lower() in [ 'true', 't', 'yes', '1' ]
-    type_lambda = lambda s: False #TODO delete once we have skimmed the Ntuples
     self.add_argument('-p', '--use-preselected',
       type = type_lambda, dest = 'use_preselected', metavar = 'option',
-      default = False, required = False, #TODO set default to use_preselected
+      default = use_preselected, required = False,
       help = 'R|Use Ntuples which contains preselected events',
     )
 
