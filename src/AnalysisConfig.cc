@@ -31,12 +31,12 @@ AnalysisConfig::AnalysisConfig(const std::string & analysis, const edm::Paramete
 
   decayModes_H_ = { "hww", "hzz", "htt", "hzg", "hmm", "hbb" };
 
-  TPRegexp parser_HH_resonant_spin0("signal_(ggf|vbf)_spin0_[0-9]+_*");
+  TPRegexp parser_HH_resonant_spin0("signal_(ggf|vbf)_spin0_[0-9]+_[0-9a-zA-Z]*");
   isMC_HH_resonant_spin0_ = parser_HH_resonant_spin0.Match(process_string_.data());
-  TPRegexp parser_HH_resonant_spin2("signal_(ggf|vbf)_spin2_[0-9]+_*");
+  TPRegexp parser_HH_resonant_spin2("signal_(ggf|vbf)_spin2_[0-9]+_[0-9a-zA-Z]*");
   isMC_HH_resonant_spin2_ = parser_HH_resonant_spin2.Match(process_string_.data());
   assert(!(isMC_HH_resonant_spin0_ && isMC_HH_resonant_spin2_));
-  isMC_HH_resonant_       = isMC_HH_resonant_spin0_ || isMC_HH_resonant_spin2_;
+  isMC_HH_resonant_ = isMC_HH_resonant_spin0_ || isMC_HH_resonant_spin2_;
   if ( isMC_HH_resonant_ )
   {
     TPRegexp parser_mass_HH_resonant("signal_(ggf|vbf)_spin(0|2)_([0-9]+)_*");
@@ -46,8 +46,8 @@ AnalysisConfig::AnalysisConfig(const std::string & analysis, const edm::Paramete
       mass_HH_resonant_ = (static_cast<TObjString *>(subStrings->At(3)))->GetString().Atof();
     }
   }
-  TPRegexp parser_HH_nonresonant("signal_(ggf|vbf)_nonresonant_*");
-  isMC_HH_nonresonant_    = parser_HH_nonresonant.Match(process_string_.data());
+  TPRegexp parser_HH_nonresonant("signal_(ggf|vbf)_nonresonant_[0-9a-zA-Z]*");
+  isMC_HH_nonresonant_ = parser_HH_nonresonant.Match(process_string_.data());
   assert(!(isMC_HH_resonant_ && isMC_HH_nonresonant_));
   isMC_HH_  = isMC_HH_resonant_ || isMC_HH_nonresonant_ || process_string_ == "HH";
   isHH_rwgt_allowed_ = boost::starts_with(process_string_, "signal_ggf_nonresonant_") && process_string_.find("cHHH") == std::string::npos;

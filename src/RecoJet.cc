@@ -99,7 +99,10 @@ RecoJet::bRegCorr() const
 Particle::LorentzVector
 RecoJet::p4_bRegCorr() const
 {
-  return math::PtEtaPhiMLorentzVector(this->pt()*bRegCorr_, this->eta(), this->phi(), this->mass());
+  // scale both pT and mass, so that the pT and energy are scaled by the same amount
+  // cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/HiggsWG/BJetRegression
+  //     ("To get corrected jet one has to scale the pT and energy with this correction")
+  return math::PtEtaPhiMLorentzVector(this->pt()*bRegCorr_, this->eta(), this->phi(), this->mass()*bRegCorr_);
 }
 
 Double_t

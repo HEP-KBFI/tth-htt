@@ -27,6 +27,9 @@ RecoElectronSelectorFakeable::RecoElectronSelectorFakeable(Era era,
   , max_jetBtagCSV_(get_BtagWP(era_, Btag::kDeepJet, BtagWP::kMedium)) // F
   , apply_conversionVeto_(true) // F
   , max_nLostHits_(0) // F
+  , invert_nLostHits_(false)
+  , min_nLostHits_fornLostHitsInversion_(1)
+  , invert_conversionVeto_(false)
   , useAssocJetBtag_(false)
 {
   // L -- inherited from the preselection (loose cut)
@@ -43,6 +46,34 @@ void
 RecoElectronSelectorFakeable::disable_offline_e_trigger_cuts()
 {
   apply_offline_e_trigger_cuts_ = false;
+}
+
+// enable/disable photon conversion veto
+void
+RecoElectronSelectorFakeable::enable_conversionVeto()
+{
+  apply_conversionVeto_ = true;
+}
+
+void
+RecoElectronSelectorFakeable::disable_conversionVeto()
+{
+  apply_conversionVeto_ = false;
+}
+
+void
+RecoElectronSelectorFakeable::invert_max_nLostHits(Int_t min_nLostHits_fornLostHitsInversion)
+{
+  invert_nLostHits_ = true;
+  min_nLostHits_fornLostHitsInversion_ = min_nLostHits_fornLostHitsInversion;
+  std::cout << "RecoElectronSelectorFakeable_hh_multilepton::invert_max_nLostHits():: invert_nLostHits_ with min_nLostHits " << min_nLostHits_fornLostHitsInversion_ << ".\n";
+}
+
+void
+RecoElectronSelectorFakeable::invert_conversionVeto()
+{
+  apply_conversionVeto_  = false;
+  invert_conversionVeto_ = true;
 }
 
 void
@@ -163,13 +194,27 @@ RecoElectronSelectorFakeable::operator()(const RecoElectron & electron) const
     return false;
   }
 
-  if(electron.nLostHits() > max_nLostHits_)
+  if ( ! invert_nLostHits_ )
   {
-    if(debug_)
+    if(electron.nLostHits() > max_nLostHits_)
     {
-      std::cout << "FAILS nLostHits = " << electron.nLostHits() << " <= " << max_nLostHits_ << " fakeable cut\n";
+      if(debug_)
+      {
+	std::cout << "FAILS nLostHits = " << electron.nLostHits() << " <= " << max_nLostHits_ << " loose cut\n";
+      }
+      return false;
     }
-    return false;
+  }
+  else
+  {  // for conversion bkg CR
+    if(electron.nLostHits() < min_nLostHits_fornLostHitsInversion_)
+    {
+      if(debug_)
+      {
+	std::cout << "FAILS nLostHits = " << electron.nLostHits() << " >= " << min_nLostHits_fornLostHitsInversion_ << " (invert_nLostHits) loose cut\n";
+      }
+      return false;
+    }
   }
 
   if(! electron.passesConversionVeto() && apply_conversionVeto_)
@@ -177,6 +222,14 @@ RecoElectronSelectorFakeable::operator()(const RecoElectron & electron) const
     if(debug_)
     {
       std::cout << "FAILS conversion veto fakeable cut\n";
+    }
+    return false;
+  }
+  if(invert_conversionVeto_ && electron.passesConversionVeto()) // for conversion bkg CR
+  {
+    if(debug_)
+    {
+      std::cout << "PASSES conversion veto tight cut while running on invert_conversionVeto mode\n";
     }
     return false;
   }
@@ -277,4 +330,29 @@ void
 RecoElectronCollectionSelectorFakeable::disable_offline_e_trigger_cuts()
 {
   selector_.disable_offline_e_trigger_cuts();
+}
+
+// enable/disable photon conversion veto
+void
+RecoElectronCollectionSelectorFakeable::enable_conversionVeto()
+{
+  selector_.enable_conversionVeto();
+}
+
+void
+RecoElectronCollectionSelectorFakeable::disable_conversionVeto()
+{
+  selector_.disable_conversionVeto();
+}
+
+void
+RecoElectronCollectionSelectorFakeable::invert_max_nLostHits(Int_t min_nLostHits_fornLostHitsInversion)
+{
+  selector_.invert_max_nLostHits(min_nLostHits_fornLostHitsInversion);
+}
+
+void
+RecoElectronCollectionSelectorFakeable::invert_conversionVeto()
+{
+  selector_.invert_conversionVeto();
 }

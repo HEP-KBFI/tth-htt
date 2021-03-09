@@ -367,7 +367,7 @@ int main(int argc, char* argv[])
       TDirectory* subsubdir_output = createSubdirectory_recursively(fs, Form("%s/rebinned", category->output_.c_str()));
       subsubdir_output->cd();
       // rebin histograms as the user requested
-      TArrayD histogramBinning = getTArraDfromVector(explicitBinning);
+      TArrayD histogramBinning = getTArrayDfromVector(explicitBinning);
       for ( std::vector<histogramEntryType_private*>::iterator histogram = histogramsToRebin.begin();
 	    histogram != histogramsToRebin.end(); ++histogram ) {
 	histogramEntryType_private* histogramEntry = new histogramEntryType_private(

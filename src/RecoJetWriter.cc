@@ -133,10 +133,10 @@ RecoJetWriter::setBranchNames()
     {
       continue;
     }
-    for(int idxShift = kBtag_central; idxShift <= kBtag_cErr2Down; ++idxShift)
+    for(int idxShift = kBtag_central; idxShift <= kBtag_jesRelativeSample_EraDown; ++idxShift)
     {
       branchNames_BtagWeight_systematics_[kv.first][idxShift] = getBranchName_bTagWeight(
-        kv.first, branchName_obj_, idxShift
+        kv.first, era_, branchName_obj_, idxShift
       );
     }
   }
@@ -220,7 +220,7 @@ RecoJetWriter::setBranches(TTree * tree)
     for(const auto & kv: branchNames_BtagWeight_systematics_)
     {
       jet_BtagWeights_systematics_[kv.first] = {};
-      for(int idxShift = kBtag_central; idxShift <= kBtag_cErr2Down; ++idxShift)
+      for(int idxShift = kBtag_central; idxShift <= kBtag_jesRelativeSample_EraDown; ++idxShift)
       {
         bai.setBranch(jet_BtagWeights_systematics_[kv.first][idxShift], branchNames_BtagWeight_systematics_[kv.first][idxShift]);
       }
@@ -312,7 +312,7 @@ RecoJetWriter::write(const std::vector<const RecoJet *> & jets)
       jet_genMatchIdx_[idxJet] = jet->genMatchIdx();
       for(const auto & kv: branchNames_BtagWeight_systematics_)
       {
-        for(int idxShift = kBtag_central; idxShift <= kBtag_cErr2Down; ++idxShift)
+        for(int idxShift = kBtag_central; idxShift <= kBtag_jesRelativeSample_EraDown; ++idxShift)
         {
           if(jet->BtagWeight_systematics_.at(kv.first).count(idxShift))
           {

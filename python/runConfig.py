@@ -174,8 +174,9 @@ class tthAnalyzeParser(argparse.ArgumentParser):
     )
 
   def add_preselect(self, use_preselected = True):
+    type_lambda = lambda s: s.lower() in [ 'true', 't', 'yes', '1' ]
     self.add_argument('-p', '--use-preselected',
-      type = lambda s: s.lower() in ['true', 't', 'yes', '1'], dest = 'use_preselected', metavar = 'option',
+      type = type_lambda, dest = 'use_preselected', metavar = 'option',
       default = use_preselected, required = False,
       help = 'R|Use Ntuples which contains preselected events',
     )

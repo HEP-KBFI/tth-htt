@@ -23,6 +23,19 @@ enum
 
   kBtag_cErr1Up, kBtag_cErr1Down,
   kBtag_cErr2Up, kBtag_cErr2Down,
+
+  kBtag_jesTotalUp,              kBtag_jesTotalDown,
+  kBtag_jesAbsoluteUp,           kBtag_jesAbsoluteDown,
+  kBtag_jesAbsolute_EraUp,       kBtag_jesAbsolute_EraDown,
+  kBtag_jesBBEC1Up,              kBtag_jesBBEC1Down,
+  kBtag_jesBBEC1_EraUp,          kBtag_jesBBEC1_EraDown,
+  kBtag_jesEC2Up,                kBtag_jesEC2Down,
+  kBtag_jesEC2_EraUp,            kBtag_jesEC2_EraDown,
+  kBtag_jesFlavorQCDUp,          kBtag_jesFlavorQCDDown,
+  kBtag_jesHFUp,                 kBtag_jesHFDown,
+  kBtag_jesHF_EraUp,             kBtag_jesHF_EraDown,
+  kBtag_jesRelativeBalUp,        kBtag_jesRelativeBalDown,
+  kBtag_jesRelativeSample_EraUp, kBtag_jesRelativeSample_EraDown,
 };
 
 //--- declare systematic uncertainties on data/MC corrections for
@@ -369,6 +382,7 @@ checkOptionValidity(const std::string & central_or_shift,
 
 std::string
 getBranchName_bTagWeight(Btag btag,
+                         Era era,
                          const std::string & default_collectionName,
                          int central_or_shift);
 

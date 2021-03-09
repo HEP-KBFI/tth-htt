@@ -135,7 +135,7 @@ getRebinnedHistogram2d(const TH1 * histoOriginal,
 TArrayD getRebinnedBinning(TH1*, double);
 
 TArrayD
-getTArraDfromVector(const std::vector<double> & histogramBinning);
+getTArrayDfromVector(const std::vector<double> & histogramBinning);
 
 TH1 *
 compRatioHistogram(const std::string & ratioHistogramName,

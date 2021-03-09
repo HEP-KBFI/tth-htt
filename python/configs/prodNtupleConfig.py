@@ -206,6 +206,7 @@ class prodNtupleConfig:
             "process.produceNtuple.maxNumBJets_loose          = cms.int32(%i)"    % self.preselection_cuts['maxNumBJets_loose'],
             "process.produceNtuple.maxNumBJets_medium         = cms.int32(%i)"    % self.preselection_cuts['maxNumBJets_medium'],
             "process.produceNtuple.applyJetEtaCut             = cms.bool(%s)"     % self.preselection_cuts['applyJetEtaCut'],
+            "process.produceNtuple.minJetPtCut                = cms.double(%s)"   % self.preselection_cuts['minJetPtCut'],
             "process.produceNtuple.branchNames_triggersFilter = cms.vstring(%s)"  % jobOptions['HLTcuts'],
             "process.produceNtuple.isMC                       = cms.bool(%s)"     % jobOptions['is_mc'],
             "process.produceNtuple.redoGenMatching            = cms.bool(%s)"     % (not self.skip_tools_step),
@@ -372,7 +373,7 @@ class prodNtupleConfig:
                 splitByNlheJet = isSplitByNlheJet(process_name)
                 splitByNlheHT = isSplitByNlheHT(process_name)
                 splitByNlheJetHT = isSplitByNlheJetHT(process_name, sample_name)
-                mllForWZTo3LNu = process_name.startswith('WZTo3LNu') and 'amcatnlo' not in sample_name and 'mllmin01' not in sample_name
+                mllForWZTo3LNu = False #process_name.startswith('WZTo3LNu') and 'amcatnlo' not in sample_name and 'mllmin01' not in sample_name
                 mllForWZTo3LNu_mllmin01 = process_name.startswith('WZTo3LNu_mllmin01')
                 sample_category = sample_info["sample_category"]
                 recomp_run_ls = sample_name.endswith('/USER') and self.era == '2017' and sample_category in [
@@ -394,7 +395,7 @@ class prodNtupleConfig:
                     'HLTcuts'                 : hlt_cuts,
                     'compTopRwgt'             : sample_name.startswith('/TTTo'),
                     'compHTXS'                : sample_info['sample_category'].startswith('ttH'),
-                    'isTuneCP5'               : (self.era == "2016"),# and 'TuneCP5' in sample_name), #TODO change it back
+                    'isTuneCP5'               : (self.era == "2016" and 'TuneCP5' in sample_name),
                     'splitByNlheJet'          : splitByNlheJet,
                     'splitByNlheHT'           : splitByNlheHT,
                     'splitByNlheJetHT'        : splitByNlheJetHT,
