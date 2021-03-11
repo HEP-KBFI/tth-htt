@@ -1,17 +1,4 @@
 #!/usr/bin/env python
-
-##---------IMPORTANT MESSAGE BEFORE RUNNING LEPTON FAKE RATE CODE ----------##
-## PLEASE CHANGE THE TRIGGER LOGIC INSIDE THE TOP OF FILE:
-## $CMSSW_BASE/src/tthAnalysis/NanoAOD/python/triggers.py
-## DEPENDING ON THE TYPE OF LEPTON FAKE RATE YOU WANT BY FOLLOWING ONE OF THESE 
-## 2 CASES BELOW:
-## CASE-1: IF YOU WANT TO COMPUTE FAKE RATES FOR ttH/HH MULTI-LEPTON ANALYSES,
-##         PLEASE UN-COMMENT (COMMENT) LINE-1 (LINE-2) OF THE ABOVE FILE 
-## CASE-2: IF YOU WANT TO COMPUTE FAKE RATES FOR bbWW SINGLE LEPTON ANALYSIS,
-##         PLEASE UN-COMMENT (COMMENT) LINE-2 (LINE-1) OF THE ABOVE FILE 
-## (N.B: BY DEFAULT CASE-1 TRIGGER LOGIC IS IMPLEMENTED IN THE CODE)
-##--------------------------------------------------------------------------##      
-
 from tthAnalysis.HiggsToTauTau.configs.analyzeConfig_LeptonFakeRate import analyzeConfig_LeptonFakeRate
 from tthAnalysis.HiggsToTauTau.jobTools import query_yes_no
 from tthAnalysis.HiggsToTauTau.analysisSettings import systematics, get_lumi

@@ -9,6 +9,7 @@ class cutFlowTableType;
 class ElectronHistManager;
 class MuonHistManager;
 class EvtHistManager_LeptonFakeRate;
+class EvtHistManager_LeptonEfficiency;
 enum class METSyst;
 
 double
@@ -41,8 +42,17 @@ struct numerator_and_denominatorHistManagers
   std::string
   getLabel() const;
 
+  //void
+  //bookHistograms(TFileDirectory & dir);
+
   void
-  bookHistograms(TFileDirectory & dir);
+  bookHistograms(TFileDirectory & dir, bool forLepEff = false);
+
+  void
+  fillHistograms(const RecoLepton & lepton,
+                 double m_ll,
+                 double evtWeight,
+                 cutFlowTableType * cutFlowTable = nullptr);
 
   void
   fillHistograms(const RecoLepton & lepton,
@@ -88,6 +98,13 @@ private:
   EvtHistManager_LeptonFakeRate * evtHistManager_LeptonFakeRate_genHadTauOrLepton_;
   EvtHistManager_LeptonFakeRate * evtHistManager_LeptonFakeRate_genJet_;
   EvtHistManager_LeptonFakeRate * evtHistManager_LeptonFakeRate_genPhoton_;
+
+  EvtHistManager_LeptonEfficiency * evtHistManager_LeptonEfficiency_;
+  EvtHistManager_LeptonEfficiency * evtHistManager_LeptonEfficiency_genHadTau_;
+  EvtHistManager_LeptonEfficiency * evtHistManager_LeptonEfficiency_genLepton_;
+  EvtHistManager_LeptonEfficiency * evtHistManager_LeptonEfficiency_genHadTauOrLepton_;
+  EvtHistManager_LeptonEfficiency * evtHistManager_LeptonEfficiency_genJet_;
+  EvtHistManager_LeptonEfficiency * evtHistManager_LeptonEfficiency_genPhoton_;
 };
 
 void
@@ -97,6 +114,13 @@ fillHistograms(std::vector<numerator_and_denominatorHistManagers *> & histograms
                double mT,
                double mT_fix,
                double evtWeight_LepJetPair,
+               cutFlowTableType * cutFlowTable = nullptr);
+
+void
+fillHistograms(std::vector<numerator_and_denominatorHistManagers *> & histograms,
+               const RecoLepton & lepton,
+               double m_ll,
+               double evtWeight,
                cutFlowTableType * cutFlowTable = nullptr);
 
 void
