@@ -25,5 +25,6 @@ process.addBackgroundLeptonFlips = cms.PSet(
     processData = cms.string("data_obs"),
     processLeptonFlips = cms.string("data_flips"),
     processesToSubtract = cms.vstring(),
-    sysShifts = cms.vstring()
+    sysShifts = cms.vstring(),
+    makeBinContentsPositive_forTailFit = cms.bool(False) ## DISABLE makeBinContentsPositive BY DEFAULT
 )
