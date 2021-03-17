@@ -443,12 +443,34 @@ compMEt_LD(const math::PtEtaPhiMLorentzVector & met_p4,
 /**
  * @brief Compute scalar HT observable
  */
-
 template <typename T>
+double
+  compHT(const std::vector<const RecoLepton *> & leptons,
+         const std::vector<const RecoHadTau *> & hadTaus,
+         const std::vector<const T *> & jets)
+{
+  double ht = 0.;
+  for(const RecoLepton * lepton: leptons)
+    {
+      ht += lepton->pt();
+    }
+  for(const RecoHadTau * hadTau: hadTaus)
+    {
+      ht += hadTau->pt();
+    }
+  for(const T * jet: jets)
+    {
+      ht += jet->pt();
+    }
+  return ht;
+}
+
+template <typename T, typename J>
 double
 compHT(const std::vector<const RecoLepton *> & leptons,
        const std::vector<const RecoHadTau *> & hadTaus,
-       const std::vector<const T *> & jets)
+       const std::vector<const T *> & jets_type1,
+       const std::vector<const J *> & jets_type2)
 {
   double ht = 0.;
   for(const RecoLepton * lepton: leptons)
@@ -459,10 +481,14 @@ compHT(const std::vector<const RecoLepton *> & leptons,
   {
     ht += hadTau->pt();
   }
-  for(const T * jet: jets)
+  for(const T * jet: jets_type1)
   {
     ht += jet->pt();
   }
+  for(const J * jet: jets_type2)
+    {
+      ht += jet->pt();
+    }
   return ht;
 }
 
