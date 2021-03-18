@@ -533,7 +533,7 @@ int main(int argc, char* argv[])
     if ( yMin < 0. ) yMin *= 1.1;
     else yMin = 0.;
     std::string outputFileName_graphs = std::string(outputFileName, 0, outputFileName.find_last_of('.'));
-    outputFileName_graphs.append(Form("_%s_%s.png", outputFileNamePrefix.data(), (*addSystConfig)->name_.data()));
+    outputFileName_graphs.append(Form("%s_%s.png", outputFileNamePrefix.data(), (*addSystConfig)->name_.data()));
     makeControlPlot_graphs(
       graph_fakes_mc, "fakes_mc",
       graph_mcClosure, "mcClosure",
@@ -610,7 +610,7 @@ int main(int argc, char* argv[])
 	  }    
 
 	  std::string outputFileName_fit = std::string(outputFileName, 0, outputFileName.find_last_of('.'));
-          outputFileName_fit.append(Form("_%s_%s_fit.png", outputFileNamePrefix.data(), (*addSystConfig)->name_.data()));
+          outputFileName_fit.append(Form("%s_%s_fit.png", outputFileNamePrefix.data(), (*addSystConfig)->name_.data()));
 	  makeControlPlot_fit(
 	    graph_ratio_scaled, 
 	    fitFunction, fitFunctions_sysShifts, 
@@ -690,7 +690,7 @@ int main(int argc, char* argv[])
     if ( yMin < 0. ) yMin *= 1.1;
     else yMin = 0.;
     std::string outputFileName_syst = std::string(outputFileName, 0, outputFileName.find_last_of('.'));
-    outputFileName_syst.append(Form("_%s_%s_syst.png", outputFileNamePrefix.data(), (*addSystConfig)->name_.data()));
+    outputFileName_syst.append(Form("%s_%s_syst.png", outputFileNamePrefix.data(), (*addSystConfig)->name_.data()));
     showHistograms(
       800, 900, 
       histogram_data_fakes, process, compIntegral(histogram_data_fakes, false, false),
