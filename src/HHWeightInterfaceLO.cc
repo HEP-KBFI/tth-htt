@@ -1,4 +1,4 @@
-#include "tthAnalysis/HiggsToTauTau/interface/HHWeightInterface2.h"
+#include "tthAnalysis/HiggsToTauTau/interface/HHWeightInterfaceLO.h"
 
 #include "tthAnalysis/HiggsToTauTau/interface/LocalFileInPath.h" // LocalFileInPath
 #include "tthAnalysis/HiggsToTauTau/interface/TFileOpenWrapper.h" // TFileOpenWrapper
@@ -35,15 +35,15 @@ std::string to_string_with_precision(const T a_value, const int n = 2)
 // CV: Define 12 benchmark (BM) scenarios for coupling scan.
 //     The BM scenarios are defined in this paper: https://arxiv.org/pdf/1507.02245.pdf
 //    (SM case is stored at index 0)
-const std::size_t HHWeightInterface2::nof_JHEP_ = 13;
-const std::vector<double> HHWeightInterface2::klJHEP_   = { 1.0,     7.5,     1.0,     1.0,    -3.5,     1.0,     2.4,     5.0,    15.0,     1.0,    10.0,     2.4,    15.0     };
-const std::vector<double> HHWeightInterface2::ktJHEP_   = { 1.0,     1.0,     1.0,     1.0,     1.5,     1.0,     1.0,     1.0,     1.0,     1.0,     1.5,     1.0,     1.0     };
-const std::vector<double> HHWeightInterface2::c2JHEP_   = { 0.0,    -1.0,     0.5,    -1.5,    -3.0,     0.0,     0.0,     0.0,     0.0,     1.0,    -1.0,     0.0,     1.0     };
-const std::vector<double> HHWeightInterface2::cgJHEP_   = { 0.0,     0.0,    -0.8,     0.0,     0.0,     0.8,     0.2,     0.2,    -1.0,    -0.6,     0.0,     1.0,     0.0     };
-const std::vector<double> HHWeightInterface2::c2gJHEP_  = { 0.0,     0.0,     0.6,    -0.8,     0.0,    -1.0,    -0.2,    -0.2,     1.0,     0.6,     0.0,    -1.0,     0.0     };
-const std::vector<double> HHWeightInterface2::normJHEP_ = { 0.99997, 0.94266, 0.71436, 0.95608, 0.97897, 0.87823, 0.95781, 1.00669, 0.92494, 0.86083, 1.00658, 0.95096, 1.00063 };
+const std::size_t HHWeightInterfaceLO::nof_JHEP_ = 13;
+const std::vector<double> HHWeightInterfaceLO::klJHEP_   = { 1.0,     7.5,     1.0,     1.0,    -3.5,     1.0,     2.4,     5.0,    15.0,     1.0,    10.0,     2.4,    15.0     };
+const std::vector<double> HHWeightInterfaceLO::ktJHEP_   = { 1.0,     1.0,     1.0,     1.0,     1.5,     1.0,     1.0,     1.0,     1.0,     1.0,     1.5,     1.0,     1.0     };
+const std::vector<double> HHWeightInterfaceLO::c2JHEP_   = { 0.0,    -1.0,     0.5,    -1.5,    -3.0,     0.0,     0.0,     0.0,     0.0,     1.0,    -1.0,     0.0,     1.0     };
+const std::vector<double> HHWeightInterfaceLO::cgJHEP_   = { 0.0,     0.0,    -0.8,     0.0,     0.0,     0.8,     0.2,     0.2,    -1.0,    -0.6,     0.0,     1.0,     0.0     };
+const std::vector<double> HHWeightInterfaceLO::c2gJHEP_  = { 0.0,     0.0,     0.6,    -0.8,     0.0,    -1.0,    -0.2,    -0.2,     1.0,     0.6,     0.0,    -1.0,     0.0     };
+const std::vector<double> HHWeightInterfaceLO::normJHEP_ = { 0.99997, 0.94266, 0.71436, 0.95608, 0.97897, 0.87823, 0.95781, 1.00669, 0.92494, 0.86083, 1.00658, 0.95096, 1.00063 };
 
-HHWeightInterface2::HHWeightInterface2(const edm::ParameterSet & cfg)
+HHWeightInterfaceLO::HHWeightInterfaceLO(const edm::ParameterSet & cfg)
   : modeldata_(nullptr)
   , moduleMainString_(nullptr)
   , moduleMain_(nullptr)
@@ -177,11 +177,11 @@ HHWeightInterface2::HHWeightInterface2(const edm::ParameterSet & cfg)
   Py_XDECREF(args_load);
   Py_XDECREF(func_load);
 
-  std::cout << "<HHWeightInterface2>: Scanning " << bmNames_.size() << " benchmark scenarios: " << format_vstring(bmNames_) << std::endl;
+  std::cout << "<HHWeightInterfaceLO>: Scanning " << bmNames_.size() << " benchmark scenarios: " << format_vstring(bmNames_) << std::endl;
 }
 
 void 
-HHWeightInterface2::loadScanFile(const std::string & filePath, const std::string & prefix, int idx, bool isDEBUG)
+HHWeightInterfaceLO::loadScanFile(const std::string & filePath, const std::string & prefix, int idx, bool isDEBUG)
 {
   // CV: read coupling scans from text files
   std::ifstream inFile_scan(filePath);
@@ -251,7 +251,7 @@ HHWeightInterface2::loadScanFile(const std::string & filePath, const std::string
   }
 }
 
-HHWeightInterface2::~HHWeightInterface2()
+HHWeightInterfaceLO::~HHWeightInterfaceLO()
 {
   Py_XDECREF(modeldata_);
   Py_XDECREF(moduleMainString_);
@@ -261,7 +261,7 @@ HHWeightInterface2::~HHWeightInterface2()
 }
 
 double
-HHWeightInterface2::getDenom(double mHH, double cosThetaStar) const
+HHWeightInterfaceLO::getDenom(double mHH, double cosThetaStar) const
 {
   const double denominator = sumEvt_->GetBinContent(
         sumEvt_->GetXaxis()->FindBin(mHH),
@@ -271,7 +271,7 @@ HHWeightInterface2::getDenom(double mHH, double cosThetaStar) const
 }
 
 double
-HHWeightInterface2::getWeight(const std::string & bmName, double mHH, double cosThetaStar, bool isDEBUG) const
+HHWeightInterfaceLO::getWeight(const std::string & bmName, double mHH, double cosThetaStar, bool isDEBUG) const
 {
   std::map<std::string, size_t>::const_iterator bmIdx = bmName_to_idx_.find(bmName);
   if ( bmIdx == bmName_to_idx_.end() )
@@ -322,7 +322,7 @@ HHWeightInterface2::getWeight(const std::string & bmName, double mHH, double cos
 }
 
 double
-HHWeightInterface2::getReWeight(const std::string & bmName, double mHH, double cosThetaStar, bool isDEBUG) const
+HHWeightInterfaceLO::getReWeight(const std::string & bmName, double mHH, double cosThetaStar, bool isDEBUG) const
 {
   double reWeight = 1.;
   if ( bmName == "SM" )
@@ -339,49 +339,49 @@ HHWeightInterface2::getReWeight(const std::string & bmName, double mHH, double c
 }
 
 std::vector<std::string>
-HHWeightInterface2::get_weight_names() const
+HHWeightInterfaceLO::get_weight_names() const
 {
   return bmWeightNames_;
 }
 
 std::vector<std::string>
-HHWeightInterface2::get_bm_names() const
+HHWeightInterfaceLO::get_bm_names() const
 {
   return bmNames_;
 }
 
 const std::vector<double> &
-HHWeightInterface2::klJHEP()
+HHWeightInterfaceLO::klJHEP()
 { 
   return klJHEP_;
 }
 
 const std::vector<double> &
-HHWeightInterface2::ktJHEP()
+HHWeightInterfaceLO::ktJHEP()
 { 
   return ktJHEP_;
 }
 
 const std::vector<double> &
-HHWeightInterface2::c2JHEP()
+HHWeightInterfaceLO::c2JHEP()
 {
   return c2JHEP_;
 }
 
 const std::vector<double> &
-HHWeightInterface2::cgJHEP()
+HHWeightInterfaceLO::cgJHEP()
 {
   return cgJHEP_;
 }
 
 const std::vector<double> &
-HHWeightInterface2::c2gJHEP()
+HHWeightInterfaceLO::c2gJHEP()
 { 
   return c2gJHEP_;
 }
 
 const std::vector<double> &
-HHWeightInterface2::normJHEP()
+HHWeightInterfaceLO::normJHEP()
 {
   return normJHEP_;
 }

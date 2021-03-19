@@ -1,4 +1,4 @@
-#include "tthAnalysis/HiggsToTauTau/interface/HHWeightInterfaceLOtoNLO.h"
+#include "tthAnalysis/HiggsToTauTau/interface/HHWeightInterfaceNLO.h"
 
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h"          // cmsException()
 #include "tthAnalysis/HiggsToTauTau/interface/HHWeightInterface2.h"    // HHWeightInterface2
@@ -59,10 +59,8 @@ namespace
     std::ifstream inputFile(fileName.fullPath());
     std::string error_set_tmp = "\"" + error_set + "\"";
     std::string line;
-//int idxLine = 0;
     while ( std::getline(inputFile, line) ) 
     {
-//std::cout << "line #" << idxLine << ": line = " << line << std::endl;
       std::istringstream line_stringstream(line);
       std::string value;
 
@@ -86,7 +84,6 @@ namespace
         }
       }
       retVal.push_back(row);
-//++idxLine;
     }
     return retVal;
   }
@@ -157,7 +154,7 @@ namespace
   }
 
   const TH1*
-  compXsec(const std::string & histogramName, const std::vector<double> & eft_parameters, const std::vector<std::vector<double>> & A, int mode, bool isDEBUG)
+  compXsec_V1(const std::string & histogramName, const std::vector<double> & eft_parameters, const std::vector<std::vector<double>> & A, int mode, bool isDEBUG)
   {
     std::vector<double> couplings = getCouplings(eft_parameters, mode);
 
@@ -206,18 +203,14 @@ namespace
   const TH2*
   compXsec_V2(const std::string & histogramName, const std::vector<double> & eft_parameters, const std::vector<std::vector<double>> & A, int mode, bool isDEBUG)
   {
-    //std::cout << "<HHWeightInterfaceLOtoNLO::compXsec_V2>:" << std::endl;
-
     std::vector<double> couplings = getCouplings(eft_parameters, mode);
 
     std::set<double> binEdges_mHH;
     std::set<double> binEdges_cosTheta;
-//int idxRow = 0;
     for ( std::vector<std::vector<double>>::const_iterator row = A.begin(); 
           row != A.end(); ++row ) {
       double min_mHH = row->at(0);
       double max_mHH = row->at(1);
-//std::cout << "row #" << idxRow << ": adding min_mHH = " << min_mHH << ", max_mHH = " << max_mHH << std::endl;
       binEdges_mHH.insert(min_mHH);
       binEdges_mHH.insert(max_mHH);
 
@@ -225,20 +218,15 @@ namespace
       double max_cosTheta = row->at(3);
       binEdges_cosTheta.insert(min_cosTheta);
       binEdges_cosTheta.insert(max_cosTheta);
-//++idxRow;
     }
 
     std::vector<double> binEdges_mHH_sorted = getBinEdges_sorted(binEdges_mHH);
-    //std::cout << "binEdges_mHH = " << format_vdouble(binEdges_mHH_sorted) << std::endl;
     int numBinsX = binEdges_mHH_sorted.size() - 1;
-//std::cout << "numBinsX = " << numBinsX << std::endl;
     assert(numBinsX >= 1);
     TArrayD binEdgesX = getTArrayDfromVector(binEdges_mHH_sorted);
 
     std::vector<double> binEdges_cosTheta_sorted = getBinEdges_sorted(binEdges_cosTheta);
-    //std::cout << "binEdges_cosTheta = " << format_vdouble(binEdges_cosTheta_sorted) << std::endl;
     int numBinsY = binEdges_cosTheta_sorted.size() - 1;
-//std::cout << "numBinsY = " << numBinsY << std::endl;
     assert(numBinsY >= 1);
     TArrayD binEdgesY = getTArrayDfromVector(binEdges_cosTheta_sorted);
 
@@ -252,7 +240,6 @@ namespace
       double max_mHH = row->at(1);
       double mHH = 0.5*(min_mHH + max_mHH);
       int idxBinX = xAxis->FindBin(mHH);
-//std::cout << "gen_mHH = " << mHH << ": idxBinX = " << idxBinX << std::endl;
       assert(idxBinX >= 1 && idxBinX <= numBinsX);
 
       double min_cosTheta = row->at(2);
@@ -260,7 +247,6 @@ namespace
       double cosTheta = 0.5*(min_cosTheta + max_cosTheta);
       int idxBinY = yAxis->FindBin(cosTheta);
       assert(idxBinY >= 1 && idxBinY <= numBinsY);
-//std::cout << "cosTheta* = " << cosTheta << ": idxBinY = " << idxBinY << std::endl;
 
       assert(row->size() >= (couplings.size() + 4));
 
@@ -269,7 +255,6 @@ namespace
       {
         dXsec += couplings[i]*row->at(i + 4);
       }
-//std::cout << "dXsec = " << dXsec << std::endl;
       if ( dXsec < 0. ) dXsec = 0.;
       histogram->SetBinContent(idxBinX, idxBinY, dXsec);
       histogram->SetBinError(idxBinX, idxBinY, 0.);
@@ -282,42 +267,42 @@ namespace
   }
   
   double 
-  compReWeight(double loWeight, double nloWeight, double max_reWeight)
+  compReWeight(double loWeight, double nloWeight, double max_weight)
   {
-    double reWeight = 1.;
-    if      (  loWeight > 0. ) reWeight = std::min(max_reWeight, nloWeight/loWeight);
-    else if ( nloWeight > 0. ) reWeight = max_reWeight;
-    else                       reWeight = 1.;
-    return reWeight;
+    double weight = 1.;
+    if      (  loWeight > 0. ) weight = std::min(max_weight, nloWeight/loWeight);
+    else if ( nloWeight > 0. ) weight = max_weight;
+    else                       weight = 1.;
+    return weight;
   }
 
   TH1*
-  makeHistogram_reWeights(const std::string & histogramName_reWeights, const TH1 * histogram_lo, const TH1 * histogram_nlo, double max_reWeight)
+  makeHistogram_V1_weights(const std::string & histogramName_weights, const TH1 * histogram_lo, const TH1 * histogram_nlo, double max_weight)
   {
-    TH1* histogram_reWeights = (TH1*)histogram_lo->Clone(histogramName_reWeights.data());    
-    histogram_reWeights->SetName(histogramName_reWeights.data());
-    histogram_reWeights->SetTitle(histogramName_reWeights.data());
-    histogram_reWeights->Reset();
+    TH1* histogram_weights = (TH1*)histogram_lo->Clone(histogramName_weights.data());    
+    histogram_weights->SetName(histogramName_weights.data());
+    histogram_weights->SetTitle(histogramName_weights.data());
+    histogram_weights->Reset();
     assert(histogram_lo->GetNbinsX() == histogram_nlo->GetNbinsX());
     int numBins = histogram_lo->GetNbinsX();
     for ( int idxBin = 1; idxBin <= numBins; ++idxBin )
     {
       double loWeight = histogram_lo->GetBinContent(idxBin);
       double nloWeight = histogram_nlo->GetBinContent(idxBin);
-      double reWeight = compReWeight(loWeight, nloWeight, max_reWeight);
-      histogram_reWeights->SetBinContent(idxBin, reWeight);
-      histogram_reWeights->SetBinError(idxBin, 0.);
+      double weight = compReWeight(loWeight, nloWeight, max_weight);
+      histogram_weights->SetBinContent(idxBin, weight);
+      histogram_weights->SetBinError(idxBin, 0.);
     }
-    return histogram_reWeights;
+    return histogram_weights;
   }
 
   TH2*
-  makeHistogram_V2_reWeights(const std::string & histogramName_reWeights, const TH2 * histogram_lo, const TH2 * histogram_nlo, double max_reWeight)
+  makeHistogram_V2_weights(const std::string & histogramName_weights, const TH2 * histogram_lo, const TH2 * histogram_nlo, double max_weight)
   {
-    TH2* histogram_reWeights = (TH2*)histogram_lo->Clone(histogramName_reWeights.data());    
-    histogram_reWeights->SetName(histogramName_reWeights.data());
-    histogram_reWeights->SetTitle(histogramName_reWeights.data());
-    histogram_reWeights->Reset();
+    TH2* histogram_weights = (TH2*)histogram_lo->Clone(histogramName_weights.data());    
+    histogram_weights->SetName(histogramName_weights.data());
+    histogram_weights->SetTitle(histogramName_weights.data());
+    histogram_weights->Reset();
     assert(histogram_lo->GetNbinsX() == histogram_nlo->GetNbinsX() && histogram_lo->GetNbinsY() == histogram_nlo->GetNbinsY());
     int numBinsX = histogram_lo->GetNbinsX();
     int numBinsY = histogram_lo->GetNbinsY();
@@ -327,25 +312,23 @@ namespace
       {
         double loWeight = histogram_lo->GetBinContent(idxBinX, idxBinY);
         double nloWeight = histogram_nlo->GetBinContent(idxBinX, idxBinY);
-        double reWeight = compReWeight(loWeight, nloWeight, max_reWeight);
-//std::cout << "gen_mHH = " << histogram_lo->GetXaxis()->GetBinCenter(idxBinX) << ", cosTheta* = " << histogram_lo->GetYaxis()->GetBinCenter(idxBinY) << ":"
-//          << " loWeight = " << loWeight << ", nloWeight = " << nloWeight << " --> reWeight = " << reWeight << std::endl;
-        histogram_reWeights->SetBinContent(idxBinX, idxBinY, reWeight);
-        histogram_reWeights->SetBinError(idxBinX, idxBinY, 0.);
+        double weight = compReWeight(loWeight, nloWeight, max_weight);
+        histogram_weights->SetBinContent(idxBinX, idxBinY, weight);
+        histogram_weights->SetBinError(idxBinX, idxBinY, 0.);
       }
     }
-    return histogram_reWeights;
+    return histogram_weights;
   }
 }
 
-HHWeightInterfaceLOtoNLO::HHWeightInterfaceLOtoNLO(Era era, bool apply_coupling_fix_CMS, double max_reWeight, bool isDEBUG)
-  : xsecFileName_lo_("tthAnalysis/HiggsToTauTau/data/HHWeightInterfaceLOtoNLO/LO-Ais-13TeV.csv")
-  , xsecFileName_nlo_("tthAnalysis/HiggsToTauTau/data/HHWeightInterfaceLOtoNLO/NLO-Ais-13TeV.csv")
-  , xsecFileName_V2_lo_("tthAnalysis/HiggsToTauTau/data/HHWeightInterfaceLOtoNLO/pm_mg_LO-Ais-13TeV_V2.txt")
-  , xsecFileName_V2_nlo_("tthAnalysis/HiggsToTauTau/data/HHWeightInterfaceLOtoNLO/pm_pw_NLO-Ais-13TeV_V2.txt")
+HHWeightInterfaceNLO::HHWeightInterfaceNLO(Era era, bool apply_coupling_fix_CMS, double max_weight, bool isDEBUG)
+  : xsecFileName_V1_lo_("tthAnalysis/HiggsToTauTau/data/HHWeightInterfaceNLO/LO-Ais-13TeV.csv")
+  , xsecFileName_V1_nlo_("tthAnalysis/HiggsToTauTau/data/HHWeightInterfaceNLO/NLO-Ais-13TeV.csv")
+  , xsecFileName_V2_lo_("tthAnalysis/HiggsToTauTau/data/HHWeightInterfaceNLO/pm_mg_LO-Ais-13TeV_V2.txt")
+  , xsecFileName_V2_nlo_("tthAnalysis/HiggsToTauTau/data/HHWeightInterfaceNLO/pm_pw_NLO-Ais-13TeV_V2.txt")
   , era_(era)
   , apply_coupling_fix_CMS_(apply_coupling_fix_CMS)
-  , max_reWeight_(max_reWeight)
+  , max_weight_(max_weight)
   , isDEBUG_(isDEBUG)
 {
   std::vector<std::string> bmNames = { "SM", "BM1", "BM2", "BM3", "BM4", "BM5", "BM6", "BM7", "BM8", "BM9", "BM10", "BM11", "BM12" };
@@ -364,13 +347,11 @@ HHWeightInterfaceLOtoNLO::HHWeightInterfaceLOtoNLO(Era era, bool apply_coupling_
     throw cmsException(this, __func__, __LINE__) << "Invalid coupling parameters !!\n";
   }
 
-  std::vector<std::vector<double>> A_lo = loadCoeffFile(xsecFileName_lo_, isDEBUG);
-  std::vector<std::vector<double>> A_nlo = loadCoeffFile(xsecFileName_nlo_, isDEBUG);
+  std::vector<std::vector<double>> A_V1_lo = loadCoeffFile(xsecFileName_V1_lo_, isDEBUG);
+  std::vector<std::vector<double>> A_V1_nlo = loadCoeffFile(xsecFileName_V1_nlo_, isDEBUG);
 
   std::vector<std::vector<double>> A_V2_lo = loadCoeffFile_V2(xsecFileName_V2_lo_, "", isDEBUG);
-//std::cout << "A_V2_lo.size() = " << A_V2_lo.size() << std::endl;
   std::vector<std::vector<double>> A_V2_nlo = loadCoeffFile_V2(xsecFileName_V2_nlo_, "", isDEBUG);
-//std::cout << "A_V2_nlo.size() = " << A_V2_nlo.size() << std::endl;
 
   for ( std::size_t bmIdx = 0; bmIdx < nof_JHEP; ++bmIdx )
   {
@@ -389,29 +370,29 @@ HHWeightInterfaceLOtoNLO::HHWeightInterfaceLOtoNLO(Era era, bool apply_coupling_
     }
     std::vector<double> eft_parametersEWChL_lo = convertCouplingsToEWChL(eft_parameters_lo);
     
-    std::string histogramName_lo = Form("%s_lo", bmName.data());
-    const TH1 * histogram_lo = compXsec(histogramName_lo, eft_parametersEWChL_lo, A_lo, kLO, isDEBUG_);    
+    std::string histogramName_V1_lo = Form("%s_lo", bmName.data());
+    const TH1 * histogram_V1_lo = compXsec(histogramName_V1_lo, eft_parametersEWChL_lo, A_V1_lo, kLO, isDEBUG_);    
     if ( isDEBUG_ )
     {
-      dumpHistogram(histogram_lo);
+      dumpHistogram(histogram_V1_lo);
     }
-    dXsec_lo_[bmName] = histogram_lo;
+    dXsec_V1_lo_[bmName] = histogram_V1_lo;
 
-    std::string histogramName_nlo = Form("%s_nlo", bmName.data());
-    const TH1 * histogram_nlo = compXsec(histogramName_nlo, eft_parametersEWChL_nlo, A_nlo, kNLO, isDEBUG_);
+    std::string histogramName_V1_nlo = Form("%s_V1_nlo", bmName.data());
+    const TH1 * histogram_V1_nlo = compXsec(histogramName_V1_nlo, eft_parametersEWChL_nlo, A_V1_nlo, kNLO, isDEBUG_);
     if ( isDEBUG_ )
     {
-      dumpHistogram(histogram_nlo);
+      dumpHistogram(histogram_V1_nlo);
     }
-    dXsec_nlo_[bmName] = histogram_nlo;
+    dXsec_V1_nlo_[bmName] = histogram_V1_nlo;
 
-    std::string histogramName_reWeights = Form("%s_reWeights", bmName.data());
-    TH1* histogram_reWeights = makeHistogram_reWeights(histogramName_reWeights, histogram_lo, histogram_nlo, max_reWeight_);
+    std::string histogramName_weights = Form("%s_weights", bmName.data());
+    TH1* histogram_weights = makeHistogram_weights(histogramName_weights, histogram_lo, histogram_nlo, max_weight_);
     if ( isDEBUG_ )
     {
-      dumpHistogram(histogram_reWeights);
+      dumpHistogram(histogram_weights);
     }
-    reWeights_[bmName] = histogram_reWeights;
+    weights_[bmName] = histogram_weights;
   }
 
   for ( std::size_t bmIdx = 0; bmIdx < nof_JHEP; ++bmIdx )
@@ -445,17 +426,17 @@ HHWeightInterfaceLOtoNLO::HHWeightInterfaceLOtoNLO(Era era, bool apply_coupling_
     }
     dXsec_V2_nlo_[bmName] = histogram_V2_nlo;
 
-    std::string histogramName_V2_reWeights = Form("%s_V2_reWeights", bmName.data());
-    TH2* histogram_V2_reWeights = makeHistogram_V2_reWeights(histogramName_V2_reWeights, histogram_V2_lo, histogram_V2_nlo, max_reWeight_);
+    std::string histogramName_V2_weights = Form("%s_V2_weights", bmName.data());
+    TH2* histogram_V2_weights = makeHistogram_V2_weights(histogramName_V2_weights, histogram_V2_lo, histogram_V2_nlo, max_weight_);
     if ( isDEBUG_ )
     {
-      dumpHistogram(histogram_V2_reWeights);
+      dumpHistogram(histogram_V2_weights);
     }
-    reWeights_V2_[bmName] = histogram_V2_reWeights;
+    weights_V2_[bmName] = histogram_V2_weights;
   }
 }
 
-HHWeightInterfaceLOtoNLO::~HHWeightInterfaceLOtoNLO()
+HHWeightInterfaceNLO::~HHWeightInterfaceNLO()
 {}
 
 namespace
@@ -476,64 +457,104 @@ namespace
   }
 
   double
-  getReWeight_private(const TH1 * histogram_reWeight, double mHH)
+  getReWeight_V1_private(const TH1 * histogram_weight, double mHH)
   {
-    const TAxis * xAxis = histogram_reWeight->GetXaxis();
+    const TAxis * xAxis = histogram_weight->GetXaxis();
     int idxBin = getIdxBin(xAxis, mHH);
-    double reWeight = histogram_reWeight->GetBinContent(idxBin);
-    return reWeight;
+    double weight = histogram_weight->GetBinContent(idxBin);
+    return weight;
   }
 
   double
-  getReWeight_V2_private(const TH1 * histogram_reWeight, double mHH, double cosThetaStar)
+  getReWeight_V2_private(const TH1 * histogram_weight, double mHH, double cosThetaStar)
   {
-    const TAxis * xAxis = histogram_reWeight->GetXaxis();
+    const TAxis * xAxis = histogram_weight->GetXaxis();
     int idxBinX = getIdxBin(xAxis, mHH);
-    const TAxis * yAxis = histogram_reWeight->GetYaxis();
+    const TAxis * yAxis = histogram_weight->GetYaxis();
     int idxBinY = getIdxBin(yAxis, cosThetaStar);
-    double reWeight = histogram_reWeight->GetBinContent(idxBinX, idxBinY);
-    return reWeight;
+    double weight = histogram_weight->GetBinContent(idxBinX, idxBinY);
+    return weight;
   }
 }
 
 double
-HHWeightInterfaceLOtoNLO::getReWeight(const std::string & bmName,
-                                      double mHH,
-                                      double cosThetaStar,
-                                      bool isDEBUG) const
+HHWeightInterfaceNLO::getWeight_V1(const std::string & bmName,
+                                   double mHH,
+                                   double cosThetaStar,
+                                   bool isDEBUG) const
 {
-  std::map<std::string, const TH1 *>::const_iterator reWeight_iter = reWeights_.find(bmName);
-  if ( reWeight_iter == reWeights_.end() )
+  std::map<std::string, const TH1 *>::const_iterator weight_iter = weights_V1_.find(bmName);
+  if ( weight_iter == weights_V1_.end() )
   {
     throw cmsException(this, __func__, __LINE__) << "Invalid parameter 'bmName' = " << bmName << " !!\n";
   }
-  double reWeight = getReWeight_private(reWeight_iter->second, mHH);
+  double weight = getWeight_V1_private(weight_iter->second, mHH);
   if ( isDEBUG )
   {
-    std::cout << "<HHWeightInterfaceLOtoNLO::getReWeight>: bmName = '" << bmName << "'," 
+    std::cout << "<HHWeightInterfaceNLO::getWeight_V1>: bmName = '" << bmName << "'," 
               << " mHH = " << mHH 
-              << " --> reWeight = " << reWeight << std::endl;
+              << " --> weight = " << weight << std::endl;
+  }
+  return weight;
+}
+
+double
+HHWeightInterfaceNLO::getWeight_V2(const std::string & bmName,
+                                   double mHH,
+                                   double cosThetaStar,
+                                   bool isDEBUG) const
+{
+  std::map<std::string, const TH2 *>::const_iterator weight_iter = weights_V2_.find(bmName);
+  if ( weight_iter == weights_V2_.end() )
+  {
+    throw cmsException(this, __func__, __LINE__) << "Invalid parameter 'bmName' = " << bmName << " !!\n";
+  }
+  double weight = getWeight_V2_private(weight_iter->second, mHH, cosThetaStar);
+  if ( isDEBUG )
+  {
+    std::cout << "<HHWeightInterfaceNLO::getWeight_V2>: bmName = '" << bmName << "'," 
+              << " mHH = " << mHH << ", cosTheta* = " << cosThetaStar 
+              << " --> weight = " << weight << std::endl;
+  }
+  return weight;
+}
+
+double
+HHWeightInterfaceNLO::getReWeight_V1(const std::string & bmName,
+                                     double mHH,
+                                     double cosThetaStar,
+                                     bool isDEBUG = false) const
+{
+  double reWeight = 1.;
+  if ( bmName == "SM" )
+  {
+    reWeight = 1.;
+  }
+  else
+  {
+    double smWeight = getWeight_V1("SM", mHH, cosThetaStar, isDEBUG);
+    double bmWeight = getWeight_V1(bmName, mHH, cosThetaStar, isDEBUG);
+    reWeight = ( smWeight > 0. ) ? bmWeight/smWeight : 1.;
   }
   return reWeight;
 }
 
 double
-HHWeightInterfaceLOtoNLO::getReWeight_V2(const std::string & bmName,
-                                         double mHH,
-                                         double cosThetaStar,
-                                         bool isDEBUG) const
+HHWeightInterfaceNLO::getReWeight_V2(const std::string & bmName,
+                                     double mHH,
+                                     double cosThetaStar,
+                                     bool isDEBUG = false) const
 {
-  std::map<std::string, const TH2 *>::const_iterator reWeight_iter = reWeights_V2_.find(bmName);
-  if ( reWeight_iter == reWeights_V2_.end() )
+  double reWeight = 1.;
+  if ( bmName == "SM" )
   {
-    throw cmsException(this, __func__, __LINE__) << "Invalid parameter 'bmName' = " << bmName << " !!\n";
+    reWeight = 1.;
   }
-  double reWeight = getReWeight_V2_private(reWeight_iter->second, mHH, cosThetaStar);
-  if ( isDEBUG )
+  else
   {
-    std::cout << "<HHWeightInterfaceLOtoNLO::getReWeight_V2>: bmName = '" << bmName << "'," 
-              << " mHH = " << mHH << ", cosTheta* = " << cosThetaStar 
-              << " --> reWeight = " << reWeight << std::endl;
+    double smWeight = getWeight_V2("SM", mHH, cosThetaStar, isDEBUG);
+    double bmWeight = getWeight_V2(bmName, mHH, cosThetaStar, isDEBUG);
+    reWeight = ( smWeight > 0. ) ? bmWeight/smWeight : 1.;
   }
   return reWeight;
 }
