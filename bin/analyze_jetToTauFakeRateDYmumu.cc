@@ -1032,7 +1032,6 @@ int main(int argc, char* argv[])
 //    and for e->tau and mu->tau misidentification rates
         double evtWeight_denominator = evtWeight;
         dataToMCcorrectionInterface->setHadTauSelection((*denominator)->fakeableHadTauSelector_->get());
-        int preselHadTau_genPdgId = getHadTau_genPdgId(*preselHadTau);
         dataToMCcorrectionInterface->setHadTaus({ *preselHadTau });
         evtWeight_denominator *= dataToMCcorrectionInterface->getSF_hadTauID_and_Iso(tauIDSF_option);
 
@@ -1047,7 +1046,6 @@ int main(int argc, char* argv[])
 //    and for e->tau and mu->tau misidentification rates
         double evtWeight_numerator = evtWeight;
         dataToMCcorrectionInterface->setHadTauSelection((*numerator)->hadTauSelection_numerator_);
-        int preselHadTau_genPdgId = getHadTau_genPdgId(*preselHadTau);
         dataToMCcorrectionInterface->setHadTaus({ *preselHadTau });
         evtWeight_numerator *= dataToMCcorrectionInterface->getSF_hadTauID_and_Iso(tauIDSF_option);
 

@@ -1131,7 +1131,7 @@ class analyzeConfig(object):
             'lep_mva_cut_mu',
             'lep_mva_cut_e',
             'lep_mva_wp',
-            'ele_ConvsCR',
+            'dyBgr_option',
             'disableFRwgts',
             'lep_useTightChargeCut',
             'lep_useSFCor',

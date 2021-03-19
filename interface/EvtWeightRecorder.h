@@ -108,6 +108,9 @@ public:
   get_chargeMisIdProb() const;
 
   double
+  get_dyBgrWeight() const; // CV: weight for data-driven Drell-Yan background estimation used in HH->bbWW dilepton channel
+
+  double
   get_data_to_MC_correction(const std::string & central_or_shift) const;
 
   double
@@ -183,6 +186,10 @@ public:
 
   void
   record_chargeMisIdProb(double weight);
+
+  // CV: weight for data-driven Drell-Yan background estimation used in HH->bbWW dilepton channel
+  void
+  record_dyBgrWeight(double weight); 
 
   void
   record_prescale(double weight);
@@ -354,6 +361,7 @@ protected:
   std::map<std::string, double> btagSFRatio_;
   double leptonSF_;
   double chargeMisIdProb_;
+  double dyBgrWeight_;
   double prescale_;
   double bm_weight_;
   double rescaling_;
