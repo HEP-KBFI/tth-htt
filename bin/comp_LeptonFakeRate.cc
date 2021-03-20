@@ -1,10 +1,10 @@
-/** \executable comp_LeptonFakeRate                                                                                                                                                                                                     
- *                                                                                                                                                                                                                                      
- * Determine probability for fakeable leptons of the ttH legacy analysis to get misidentified as prompt lepton candididates,                                                                                                            
- * measured in a region of phase space comprising exactly one fakeable lepton and atleast one jet separated by dr > 0.7                                                                                                                 
- *                                                                                                                                                                                                                                      
- * \authors Ram Krishna Dewanjee, Christian Veelken; Tallinn                                                                                                                                                                            
- *                                                                                                                                                                                                                                      
+/** \executable comp_LeptonFakeRate                                                                                                                                                     
+ *                                                                                                                                                                                 
+ * Determine probability for fakeable leptons of the ttH legacy analysis to get misidentified as prompt lepton candididates,                                                              
+ * measured in a region of phase space comprising exactly one fakeable lepton and atleast one jet separated by dr > 0.7                                                                
+ *                                                                                                                                                                                       
+ * \authors Ram Krishna Dewanjee, Christian Veelken; Tallinn                                                                                                                            
+ *                                                                                                                                                                                            
  */
 
 

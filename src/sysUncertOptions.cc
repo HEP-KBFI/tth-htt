@@ -383,7 +383,7 @@ getElectronPt_option(const std::string & central_or_shift,
                      bool isMC)
 {
   //std::cout << "sysUncertOptions::getElectronPt_option():: isMC " << isMC << std::endl;
-  //assert(isMC);
+  assert(isMC);
   ElectronPtSys central_or_shift_int = ElectronPtSys::central;
   if     (central_or_shift == "CMS_ttHl_electronESBarrelUp"  ) central_or_shift_int = ElectronPtSys::scaleUp_barrel;
   else if(central_or_shift == "CMS_ttHl_electronESBarrelDown") central_or_shift_int = ElectronPtSys::scaleDown_barrel;

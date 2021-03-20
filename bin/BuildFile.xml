@@ -251,6 +251,20 @@
   <use   name="roottmva"/>
   <Flags CXXFLAGS="-g -Wshadow -Werror"/>
 </bin>
+<bin file="addBackground_LeptonEfficiency.cc" name="addBackground_LeptonEfficiency">
+  <use   name="FWCore/FWLite"/>
+  <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/ParameterSetReader"/>
+  <use   name="FWCore/PythonParameterSet"/>
+  <use   name="FWCore/Utilities"/>
+  <use   name="DataFormats/Candidate"/>
+  <use   name="DataFormats/Math"/>
+  <use   name="PhysicsTools/FWLite"/>
+  <use   name="tthAnalysis/HiggsToTauTau"/>
+  <use   name="root"/>
+  <use   name="roottmva"/>
+  <Flags CXXFLAGS="-g -Wshadow -Werror"/>
+</bin>
 <bin file="addBackgroundLeptonFakes.cc" name="addBackgroundLeptonFakes">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
@@ -443,6 +457,21 @@
   <Flags CXXFLAGS="-g -Wshadow -Werror"/>
 </bin>
 <bin file="comp_LeptonFakeRate.cc" name="comp_LeptonFakeRate">
+  <use   name="libpng"/>
+  <use   name="FWCore/FWLite"/>
+  <use   name="FWCore/ParameterSet"/>
+  <use   name="FWCore/ParameterSetReader"/>
+  <use   name="FWCore/PythonParameterSet"/>
+  <use   name="FWCore/Utilities"/>
+  <use   name="DataFormats/Candidate"/>
+  <use   name="DataFormats/Math"/>
+  <use   name="PhysicsTools/FWLite"/>
+  <use   name="tthAnalysis/HiggsToTauTau"/>
+  <use   name="root"/>
+  <use   name="roottmva"/>
+  <Flags CXXFLAGS="-g -Wshadow -Werror"/>
+</bin>
+<bin file="comp_LeptonEfficiency.cc" name="comp_LeptonEfficiency">
   <use   name="libpng"/>
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>
