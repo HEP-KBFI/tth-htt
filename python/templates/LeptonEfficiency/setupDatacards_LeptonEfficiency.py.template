@@ -1,0 +1,197 @@
+#!/usr/bin/env python
+import CombineHarvester.CombineTools.ch as ch
+import argparse
+import os
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--output',     '-o', dest = 'output',     required = True, help = 'Output directory')
+parser.add_argument('--input',      '-i', dest = 'input',      required = True, help = 'Input shapes file')
+parser.add_argument('--shapes-dir', '-s', dest = 'shapes_dir', required = True, help = 'Input shapes directory')
+
+args       = parser.parse_args()
+shapes_dir = args.shapes_dir
+cb         = ch.CombineHarvester()
+
+##########################################################################
+# Set the processes and categories
+##########################################################################
+SUFFIX_GEN_MATCH = "" ## NO NEED FOR l SINCE ALREADY DONE IN STAGE1 STEP
+
+sig_procs     = ['{{ signal_process }}']
+
+
+#bkg_procs_arr = ["DY_fake", "Singletop", "Diboson", "TTbar", "WJets"]
+bkg_procs_arr = ["DY_fake", "Singletop", "Diboson", "TTbar"] ## Dropped "WJets" since was negligible in charge flip measurement as well
+
+Era = '{{ era }}' ## NEWLY ADDED (For Lumi Unc.)
+
+
+# use MC templates that contain only gen-matched leptons
+bkg_procs_arr = list(map(lambda proc: '%s%s' % (proc, SUFFIX_GEN_MATCH), bkg_procs_arr))
+all_procs     = bkg_procs_arr + sig_procs
+
+bkg_procs = { {% for lepton in leptons %}
+  '{{ lepton[0] }}' : bkg_procs_arr,{% endfor %}
+}
+
+### BELOW FIRST ENTRY NUMBER (0) IS $BINID AND SECOND 'STRING LABEL' IS $BIN
+bins = { {% for lepton in leptons %}
+  '{{ lepton[0] }}' : [(0, '{{ lepton[2] }}_shapes')],{% endfor %}
+}
+
+channels = [{% for lepton in leptons %}
+  '{{ lepton[0] }}',{% endfor %}
+]
+
+##########################################################################
+# Set input shape files
+##########################################################################
+files = { {% for lepton in leptons %}
+  '{{ lepton[0] }}' : args.input,{% endfor %}
+}
+
+inputs = { {% for lepton in leptons %}
+  '{{ lepton[0] }}' : {% if lepton[0].startswith('e_') %}'electron'{% elif lepton[0].startswith('mu_') %}'muon'{% else %}None{% endif %},{% endfor %}
+}
+assert(all(map(lambda x: x is not None, inputs.values())))
+
+##########################################################################
+# Create CH entries and load shapes
+##########################################################################
+for chn in channels:
+    #ana = ['ttH']
+    #era = ['13TeV']
+    ana = ['LeptonID']
+    era = [Era]
+    cb.AddObservations(['*'], ana, era, [chn], bins[chn])                        ### DEF LINES
+    cb.AddProcesses(['*'],    ana, era, [chn], bkg_procs[chn], bins[chn], False) ### DEF LINES
+    cb.AddProcesses(['*'],    ana, era, [chn], sig_procs,      bins[chn], True)  ### DEF LINES
+
+##########################################################################
+# Define systematic uncertainties
+##########################################################################
+
+#signal = cb.cp().signals().process_set()
+
+#################### Yield systematics ############################
+lumi_unc = 1.00
+lumi_label = ""
+if (Era == '2016'):
+    lumi_unc = 1.025
+    lumi_label = 'lumi_2016' 
+elif(Era == '2017'):
+    lumi_unc = 1.023
+    lumi_label = 'lumi_2017' 
+elif(Era == '2018'):
+    lumi_unc = 1.025
+    lumi_label = 'lumi_2018' 
+else:
+    raise ValueError('Invalid value for Era: %s' % Era)
+
+
+## Lumi Unc. (for all pure MC processes)
+cb.cp().AddSyst( ## Correl. across $CHANNEL and $BIN and all MC derived sig. and bkg. processes
+    cb, lumi_label, "lnN", ch.SystMap('channel', 'process')
+    (channels, ['DY_signal'], lumi_unc) ## DY_signal is already derived from gen_matching no need for SUFFIX_GEN_MATCH
+)
+
+cb.cp().AddSyst( ## Correl. across $CHANNEL and $BIN and all MC derived sig. and bkg. processes
+    cb, lumi_label, "lnN", ch.SystMap('channel', 'process')
+    (channels, ['DY_fake'], lumi_unc) ## DY_fake is already derived from gen_matching no need for SUFFIX_GEN_MATCH
+)
+
+cb.cp().AddSyst( ## Correl. across $CHANNEL and $BIN and all MC derived sig. and bkg. processes
+    cb, lumi_label, "lnN", ch.SystMap('channel', 'process')
+    (channels, ['Singletop%s' % SUFFIX_GEN_MATCH], lumi_unc)
+)
+
+cb.cp().AddSyst( ## Correl. across $CHANNEL and $BIN and all MC derived sig. and bkg. processes
+    cb, lumi_label, "lnN", ch.SystMap('channel', 'process')
+    (channels, ['Diboson%s' % SUFFIX_GEN_MATCH], lumi_unc)
+)
+
+cb.cp().AddSyst( ## Correl. across $CHANNEL and $BIN and all MC derived sig. and bkg. processes
+    cb, lumi_label, "lnN", ch.SystMap('channel', 'process')
+    (channels, ['TTbar%s' % SUFFIX_GEN_MATCH], lumi_unc)
+)
+
+## WJets DROPPED !!
+#cb.cp().AddSyst( ## Correl. across $CHANNEL and $BIN and all MC derived sig. and bkg. processes
+#    cb, lumi_label, "lnN", ch.SystMap('channel', 'process')
+#    (channels, ['WJets%s' % SUFFIX_GEN_MATCH], lumi_unc)
+#)
+
+
+## Other background only yield uncert.s
+cb.cp().AddSyst( ## Correl. across $CHANNEL and $BIN
+    cb, 'DY_norm', 'lnN', ch.SystMap('channel', 'process')
+        (channels, ['DY_signal'], 1.5) ## 50% (DY_signal is already derived from gen_matching no need for SUFFIX_GEN_MATCH)
+)
+ 
+cb.cp().AddSyst( ## Correl. across $CHANNEL and $BIN
+    cb, 'fake_norm', 'lnN', ch.SystMap('channel', 'process')
+        (channels, ['DY_fake'], 1.5) ## 50% (DY_fake is already derived from gen_matching no need for SUFFIX_GEN_MATCH)
+)
+
+cb.cp().AddSyst( ## Correl. across $CHANNEL and $BIN
+    cb, 'singletop_norm', 'lnN', ch.SystMap('channel', 'process')
+        (channels, ['Singletop%s' % SUFFIX_GEN_MATCH], 1.5) ## 50%
+)
+
+cb.cp().AddSyst( ## Correl. across $CHANNEL and $BIN
+    cb, 'diboson_norm', 'lnN', ch.SystMap('channel', 'process')
+        (channels, ['Diboson%s' % SUFFIX_GEN_MATCH], 1.5) ## 50%
+)
+
+cb.cp().AddSyst( ## Correl. across $CHANNEL and $BIN
+    cb, 'ttbar_norm', 'lnN', ch.SystMap('channel', 'process')
+        (channels, ['TTbar%s' % SUFFIX_GEN_MATCH], 1.5) ## 50%
+)
+
+## WJets DROPPED !!
+#cb.cp().AddSyst( ## Correl. across $CHANNEL and $BIN
+#    cb, 'wjets_norm', 'lnN', ch.SystMap('channel', 'process')
+#        (channels, ['WJets%s' % SUFFIX_GEN_MATCH], 1.5) ## 50%
+#)
+
+################### Shape systematics #############################
+
+{% for central_or_shift in central_or_shifts %} ## CORREL ACROSS $CHANNEL, CORREL ACROSS $BIN
+# cb.cp().AddSyst(cb, '{{ central_or_shift }}', 'shape', ch.SystMap('channel', 'process')(channels, all_procs, 1.00)) ## FOR ALL PROC.S
+cb.cp().AddSyst(cb, '{{ central_or_shift }}', 'shape', ch.SystMap('channel', 'process')(channels, bkg_procs_arr, 1.00))   ## FOR BKG PROC.S
+{% endfor %}
+
+##########################################################################
+# Load the shapes
+##########################################################################
+for chn in channels:
+    cb.cp().channel([chn]).ExtractShapes(
+        '%s/%s/%s' % (shapes_dir, inputs[chn], files[chn]),
+#        '$BIN/rebinned/$PROCESS', '$BIN/rebinned/$PROCESS_$SYSTEMATIC' ## OLD !
+        '$BIN/$PROCESS', '$BIN/$PROCESS_$SYSTEMATIC'
+    )
+
+##########################################################################
+# Create bin-by-bin
+##########################################################################
+bbb = ch.BinByBinFactory()
+bbb.SetPattern('CMS_$ANALYSIS_$BIN_$ERA_$PROCESS_bin_$#')   #### DEFAULT LINE
+bbb.SetAddThreshold(0.1)
+bbb.SetMergeThreshold(0.5)  # For now we merge, but to be checked
+bbb.SetFixNorm(True)
+bbb.MergeAndAdd(cb.cp().backgrounds(), cb)
+
+cb.PrintAll()
+
+##########################################################################
+# Write the cards
+##########################################################################
+writer = ch.CardWriter('$TAG/datacard.txt', '$TAG/shapes.root')
+writer.SetWildcardMasses([])  # We don't use the $MASS property here
+writer.SetVerbosity(1)
+x = writer.WriteCards('%s/cmb' % args.output, cb)  # All cards combined
+print(x)
+x['%s/cmb/datacard.txt' % args.output].PrintAll()
+for chn in channels:  # plus a subdir per channel
+    writer.WriteCards('%s/%s' % (args.output, chn), cb.cp().channel([chn]))
+

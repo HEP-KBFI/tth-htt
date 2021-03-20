@@ -1,0 +1,97 @@
+.DEFAULT_GOAL := all
+SHELL := /bin/bash
+
+all: {{ fit_values }}
+
+cp_files:
+	mkdir -p {{ output_dir }}/shapes/electron/
+	cp -f {{ numerator_datacard }} {{ output_dir }}/shapes/electron/.
+	mkdir -p {{ output_dir }}/shapes/muon/
+	cp -f {{ numerator_datacard }} {{ output_dir }}/shapes/muon/.
+	mkdir -p {{ output_dir }}/shapes/electron/
+	cp -f {{ denominator_datacard }} {{ output_dir }}/shapes/electron/.
+	mkdir -p {{ output_dir }}/shapes/muon/
+	cp -f {{ denominator_datacard }} {{ output_dir }}/shapes/muon/.
+
+{{ output_dir }}/shapes/electron/{{ numerator_datacard | os.path.basename }} {{ output_dir }}/shapes/muon/{{ numerator_datacard | os.path.basename }}: cp_files
+	:
+
+{{ output_dir }}/shapes/electron/{{ denominator_datacard | os.path.basename }} {{ output_dir }}/shapes/muon/{{ denominator_datacard | os.path.basename }}: cp_files
+	:
+
+create_num_datacards: {{ output_dir }}/shapes/electron/{{ numerator_datacard | os.path.basename }} {{ output_dir }}/shapes/muon/{{ numerator_datacard | os.path.basename }}
+	printf -- '#!$(SHELL)\n' > {{ numerator_output_dir }}.sh
+	printf -- 'cd {{ new_cmssw_base }}\n' > {{ numerator_output_dir }}.sh
+	printf -- 'eval $$(scramv1 runtime -sh)\n' >> {{ numerator_output_dir }}.sh
+	printf -- 'mkdir -p {{ numerator_output_dir }}\n' >> {{ numerator_output_dir }}.sh
+	printf -- 'echo "Switched to workspace $$CMSSW_BASE"\n' >> {{ numerator_output_dir }}.sh
+	printf -- 'python {{ setup_dcards_script }} ' >> {{ numerator_output_dir }}.sh
+	printf -- '-i {{ numerator_datacard | os.path.basename }} ' >> {{ numerator_output_dir }}.sh
+	printf -- '-o {{ numerator_output_dir }} ' >> {{ numerator_output_dir }}.sh
+	printf -- '-s {{ output_dir }}/shapes\n' >> {{ numerator_output_dir }}.sh
+	chmod +x {{ numerator_output_dir }}.sh
+	{{ numerator_output_dir }}.sh &> {{ numerator_output_dir }}.log
+
+create_den_datacards: {{ output_dir }}/shapes/electron/{{ denominator_datacard | os.path.basename }} {{ output_dir }}/shapes/muon/{{ denominator_datacard | os.path.basename }}
+	printf -- '#!$(SHELL)\n' > {{ denominator_output_dir }}.sh
+	printf -- 'cd {{ new_cmssw_base }}\n' >> {{ denominator_output_dir }}.sh
+	printf -- 'eval $$(scramv1 runtime -sh)\n' >> {{ denominator_output_dir }}.sh
+	printf -- 'mkdir -p {{ denominator_output_dir }}\n' >> {{ denominator_output_dir }}.sh
+	printf -- 'echo "Switched to workspace $$CMSSW_BASE"\n' >> {{ denominator_output_dir }}.sh
+	printf -- 'python {{ setup_dcards_script }} ' >> {{ denominator_output_dir }}.sh
+	printf -- '-i {{ denominator_datacard | os.path.basename }} ' >> {{ denominator_output_dir }}.sh
+	printf -- '-o {{ denominator_output_dir }} ' >> {{ denominator_output_dir }}.sh
+	printf -- '-s {{ output_dir }}/shapes\n' >> {{ denominator_output_dir }}.sh
+	chmod +x {{ denominator_output_dir }}.sh
+	{{ denominator_output_dir }}.sh &> {{ denominator_output_dir }}.log
+
+{% for lepton in [ 'electron', 'muon' ] %}
+{% for params in lepton_bins[lepton]['tight'] %}
+{{ numerator_output_dir }}/{{ params[0] }}/datacard.txt{{" "}} : create_num_datacards
+	:
+{% endfor %}
+{% endfor %}
+
+{% for lepton in [ 'electron', 'muon' ] %}
+{% for params in lepton_bins[lepton]['fakeable'] %}
+{{ denominator_output_dir }}/{{ params[0] }}/datacard.txt{{" "}} : create_den_datacards
+	:
+{% endfor %}
+{% endfor %}
+
+{% for lepton in [ 'electron', 'muon' ] %}
+  {%- for params in lepton_bins[lepton]['tight'] %}
+{{ numerator_output_dir }}/{{ params[0] }}/fit_results.txt: {{ numerator_output_dir }}/{{ params[0] }}/datacard.txt
+	{{ scripts_dir }}/mlfit_{{ numerator_histogram }}_{{ params[0] }}.sh &> {{ numerator_output_dir }}/{{ params[0] }}/postFit.log
+  {% endfor -%}
+{% endfor -%}
+
+{% for lepton in [ 'electron', 'muon' ] %}
+  {%- for params in lepton_bins[lepton]['fakeable'] %}
+{{ denominator_output_dir }}/{{ params[0] }}/fit_results.txt: {{ denominator_output_dir }}/{{ params[0] }}/datacard.txt
+	{{ scripts_dir }}/mlfit_{{ denominator_histogram }}_{{ params[0] }}.sh &> {{ denominator_output_dir }}/{{ params[0] }}/postFit.log
+  {% endfor -%}
+{% endfor -%}
+
+{{ fit_values }}:
+  {%- for selection in [ 'tight', 'fakeable' ] -%}
+    {%- for lepton in [ 'electron', 'muon' ] -%}
+      {%- for params in lepton_bins[lepton][selection] -%}
+        {{" "}}{% if selection == 'tight' %}{{ numerator_output_dir }}{% else %}{{ denominator_output_dir }}{% endif %}/{{ params[0] }}/fit_results.txt
+      {%- endfor -%}
+    {%- endfor -%}
+  {%- endfor %}
+	rm -f {{ fit_values }}
+	{%- for selection in [ 'tight', 'fakeable' ] %}
+	  {%- for lepton in [ 'electron', 'muon' ] %}
+	    {%- for params in lepton_bins[lepton][selection] %}
+	cat {% if selection == 'tight' %}{{ numerator_output_dir }}{% else %}{{ denominator_output_dir }}{% endif %}/{{ params[0] }}/fit_results.txt \
+	>> {{ fit_values }}
+	    {%- endfor -%}
+	  {%- endfor -%}
+	{%- endfor %}
+
+clean:
+	rm -rf {{ output_dir }}
+
+.PHONY: clean cp_files create_num_datacards create_den_datacards
