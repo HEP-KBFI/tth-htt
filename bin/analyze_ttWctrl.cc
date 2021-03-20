@@ -148,8 +148,8 @@ int main(int argc, char* argv[])
   std::string process_string = cfg_analyze.getParameter<std::string>("process");
   const bool isMC_tH = analysisConfig.isMC_tH();
   const bool isMC_VH = analysisConfig.isMC_VH();
-  const bool isMC_H  = analysisConfig.isMC_H();
-  const bool isMC_HH = analysisConfig.isMC_HH();
+  //const bool isMC_H  = analysisConfig.isMC_H();
+  //const bool isMC_HH = analysisConfig.isMC_HH();
   const bool isMC_EWK = analysisConfig.isMC_EWK();
   const bool isMC_signal = analysisConfig.isMC_ttH();
   const bool isSignal = isMC_signal || isMC_tH || isMC_VH;

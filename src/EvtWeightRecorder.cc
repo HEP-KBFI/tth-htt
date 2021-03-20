@@ -34,6 +34,7 @@ EvtWeightRecorder::EvtWeightRecorder(const std::vector<std::string> & central_or
   , genWeight_(1.)
   , leptonSF_(1.)
   , chargeMisIdProb_(1.)
+  , dyBgrWeight_(1.)
   , prescale_(1.)
   , bm_weight_(1.)
   , rescaling_(1.)
@@ -52,7 +53,7 @@ EvtWeightRecorder::get(const std::string & central_or_shift,
                        const std::string & bin) const
 {
   double retVal = (isMC_ ? get_inclusive(central_or_shift, bin) * get_data_to_MC_correction(central_or_shift) * get_prescaleWeight() : 1.) *
-         get_FR(central_or_shift) * get_chargeMisIdProb()
+         get_FR(central_or_shift) * get_chargeMisIdProb() * get_dyBgrWeight()
   ;
   return retVal;
 }
@@ -323,6 +324,12 @@ double
 EvtWeightRecorder::get_chargeMisIdProb() const
 {
   return chargeMisIdProb_;
+}
+
+double
+EvtWeightRecorder::get_dyBgrWeight() const
+{
+  return dyBgrWeight_;
 }
 
 double
@@ -621,6 +628,12 @@ void
 EvtWeightRecorder::record_chargeMisIdProb(double weight)
 {
   chargeMisIdProb_ = weight;
+}
+
+void
+EvtWeightRecorder::record_dyBgrWeight(double weight)
+{
+  dyBgrWeight_ = weight;
 }
 
 void
@@ -1428,6 +1441,7 @@ operator<<(std::ostream & os,
           "  FR weight             = " << evtWeightRecorder.get_FR(central_or_shift)                      << "\n"
           "  rescaling             = " << evtWeightRecorder.get_rescaling()                               << "\n"
           "  charge mis-ID prob    = " << evtWeightRecorder.get_chargeMisIdProb()                         << "\n"
+          "  DY bgr weight         = " << evtWeightRecorder.get_dyBgrWeight()                             << "\n"
           "  final weight          = " << evtWeightRecorder.get(central_or_shift)                         << '\n'
    ;
   }
