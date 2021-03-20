@@ -36,7 +36,8 @@ EvtWeightRecorder::EvtWeightRecorder(const std::vector<std::string> & central_or
   , chargeMisIdProb_(1.)
   , dyBgrWeight_(1.)
   , prescale_(1.)
-  , bm_weight_(1.)
+  , hhWeight_lo_(1.)
+  , hhWeight_nlo_(1.)
   , rescaling_(1.)
   , central_or_shift_(central_or_shift)
   , central_or_shifts_(central_or_shifts)
@@ -62,7 +63,7 @@ double
 EvtWeightRecorder::get_inclusive(const std::string & central_or_shift,
                                  const std::string & bin) const
 {
-  double retVal = isMC_ ? get_genWeight() * get_bmWeight() * get_auxWeight(central_or_shift) * get_lumiScale(central_or_shift, bin) *
+  double retVal = isMC_ ? get_genWeight() * get_hhWeight_lo() * get_hhWeight_nlo() * get_auxWeight(central_or_shift) * get_lumiScale(central_or_shift, bin) *
                  get_nom_tH_weight(central_or_shift) * get_puWeight(central_or_shift) *
                  get_l1PreFiringWeight(central_or_shift) * get_lheScaleWeight(central_or_shift) *
                  get_dy_rwgt(central_or_shift) * get_rescaling() * get_psWeight(central_or_shift)
@@ -78,9 +79,15 @@ EvtWeightRecorder::get_genWeight() const
 }
 
 double
-EvtWeightRecorder::get_bmWeight() const
+EvtWeightRecorder::get_hhWeight_lo() const
 {
-  return bm_weight_;
+  return hhWeight_lo_;
+}
+
+double
+EvtWeightRecorder::get_hhWeight_nlo() const
+{
+  return hhWeight_nlo_;
 }
 
 double
@@ -644,10 +651,17 @@ EvtWeightRecorder::record_prescale(double weight)
 }
 
 void
-EvtWeightRecorder::record_bm(double weight)
+EvtWeightRecorder::record_hhWeight_lo(double weight)
 {
   assert(isMC_);
-  bm_weight_ = weight;
+  hhWeight_lo_ = weight;
+}
+
+void
+EvtWeightRecorder::record_hhWeight_nlo(double weight)
+{
+  assert(isMC_);
+  hhWeight_nlo_ = weight;
 }
 
 void
@@ -1413,7 +1427,8 @@ operator<<(std::ostream & os,
   {
     os << "central_or_shift = " << central_or_shift                                                       << "\n"
           "  genWeight             = " << evtWeightRecorder.get_genWeight()                               << "\n"
-          "  BM weight             = " << evtWeightRecorder.get_bmWeight()                                << "\n"
+          "  HH weight (LO)        = " << evtWeightRecorder.get_hhWeight_lo()                             << "\n"
+          "  HH weight (LO to NLO) = " << evtWeightRecorder.get_hhWeight_nlo()                            << "\n"
           "  stitching weight      = " << evtWeightRecorder.get_auxWeight(central_or_shift)               << "\n"
           "  lumiScale             = " << evtWeightRecorder.get_lumiScale(central_or_shift)               << "\n"
           "  prescale weight       = " << evtWeightRecorder.get_prescaleWeight()                          << "\n"
