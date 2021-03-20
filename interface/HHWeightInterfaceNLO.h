@@ -72,10 +72,18 @@ class HHWeightInterfaceNLO
   getReWeight_V2(const std::string & bmName,
                  double mHH,
                  double cosThetaStar,
-                 bool isDEBUG = false) const;//std::cout << "line #" << idxLine << ": line = " << line << std::endl;
-
+                 bool isDEBUG = false) const;
 
  private:
+  enum mode_type { kMode_V1, kMode_V2 };
+
+  double
+  getReWeight(const std::string & bmName,
+              double mHH,
+              double cosThetaStar,
+              mode_type mode,
+              bool isDEBUG = false) const;
+
   LocalFileInPath xsecFileName_V1_lo_;
   LocalFileInPath xsecFileName_V1_nlo_;
 
@@ -93,7 +101,7 @@ class HHWeightInterfaceNLO
   Era era_;
   bool apply_coupling_fix_CMS_;
 
-  double max_reWeight_;
+  double max_weight_;
   
   bool isDEBUG_;
 };

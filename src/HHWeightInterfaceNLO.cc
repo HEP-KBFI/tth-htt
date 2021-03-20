@@ -1,7 +1,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/HHWeightInterfaceNLO.h"
 
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h"          // cmsException()
-#include "tthAnalysis/HiggsToTauTau/interface/HHWeightInterface2.h"    // HHWeightInterface2
+#include "tthAnalysis/HiggsToTauTau/interface/HHWeightInterfaceLO.h"   // HHWeightInterfaceLO
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // dumpHistogram(), getTArrayDfromVector()
 #include "tthAnalysis/HiggsToTauTau/interface/generalAuxFunctions.h"   // format_vdouble
 
@@ -16,6 +16,7 @@
 #include <fstream>   // std::ifstream
 #include <sstream>   // std::istringstream
 #include <iostream>  // std::cout, std::endl
+#include <assert.h>  // assert
 
 enum { kLO, kNLO };
 
@@ -333,11 +334,11 @@ HHWeightInterfaceNLO::HHWeightInterfaceNLO(Era era, bool apply_coupling_fix_CMS,
 {
   std::vector<std::string> bmNames = { "SM", "BM1", "BM2", "BM3", "BM4", "BM5", "BM6", "BM7", "BM8", "BM9", "BM10", "BM11", "BM12" };
   size_t nof_JHEP = bmNames.size();
-  const std::vector<double> & klJHEP  = HHWeightInterface2::klJHEP();
-  const std::vector<double> & ktJHEP  = HHWeightInterface2::ktJHEP();
-  const std::vector<double> & c2JHEP  = HHWeightInterface2::c2JHEP();
-  const std::vector<double> & cgJHEP  = HHWeightInterface2::cgJHEP();
-  const std::vector<double> & c2gJHEP = HHWeightInterface2::c2gJHEP();
+  const std::vector<double> & klJHEP  = HHWeightInterfaceLO::klJHEP();
+  const std::vector<double> & ktJHEP  = HHWeightInterfaceLO::ktJHEP();
+  const std::vector<double> & c2JHEP  = HHWeightInterfaceLO::c2JHEP();
+  const std::vector<double> & cgJHEP  = HHWeightInterfaceLO::cgJHEP();
+  const std::vector<double> & c2gJHEP = HHWeightInterfaceLO::c2gJHEP();
   if ( klJHEP.size()  != nof_JHEP || 
        ktJHEP.size()  != nof_JHEP || 
        c2JHEP.size()  != nof_JHEP || 
@@ -370,8 +371,8 @@ HHWeightInterfaceNLO::HHWeightInterfaceNLO(Era era, bool apply_coupling_fix_CMS,
     }
     std::vector<double> eft_parametersEWChL_lo = convertCouplingsToEWChL(eft_parameters_lo);
     
-    std::string histogramName_V1_lo = Form("%s_lo", bmName.data());
-    const TH1 * histogram_V1_lo = compXsec(histogramName_V1_lo, eft_parametersEWChL_lo, A_V1_lo, kLO, isDEBUG_);    
+    std::string histogramName_V1_lo = Form("%s_V1_lo", bmName.data());
+    const TH1 * histogram_V1_lo = compXsec_V1(histogramName_V1_lo, eft_parametersEWChL_lo, A_V1_lo, kLO, isDEBUG_);    
     if ( isDEBUG_ )
     {
       dumpHistogram(histogram_V1_lo);
@@ -379,20 +380,20 @@ HHWeightInterfaceNLO::HHWeightInterfaceNLO(Era era, bool apply_coupling_fix_CMS,
     dXsec_V1_lo_[bmName] = histogram_V1_lo;
 
     std::string histogramName_V1_nlo = Form("%s_V1_nlo", bmName.data());
-    const TH1 * histogram_V1_nlo = compXsec(histogramName_V1_nlo, eft_parametersEWChL_nlo, A_V1_nlo, kNLO, isDEBUG_);
+    const TH1 * histogram_V1_nlo = compXsec_V1(histogramName_V1_nlo, eft_parametersEWChL_nlo, A_V1_nlo, kNLO, isDEBUG_);
     if ( isDEBUG_ )
     {
       dumpHistogram(histogram_V1_nlo);
     }
     dXsec_V1_nlo_[bmName] = histogram_V1_nlo;
 
-    std::string histogramName_weights = Form("%s_weights", bmName.data());
-    TH1* histogram_weights = makeHistogram_weights(histogramName_weights, histogram_lo, histogram_nlo, max_weight_);
+    std::string histogramName_V1_weights = Form("%s_V1_weights", bmName.data());
+    TH1* histogram_V1_weights = makeHistogram_V1_weights(histogramName_V1_weights, histogram_V1_lo, histogram_V1_nlo, max_weight_);
     if ( isDEBUG_ )
     {
-      dumpHistogram(histogram_weights);
+      dumpHistogram(histogram_V1_weights);
     }
-    weights_[bmName] = histogram_weights;
+    weights_V1_[bmName] = histogram_V1_weights;
   }
 
   for ( std::size_t bmIdx = 0; bmIdx < nof_JHEP; ++bmIdx )
@@ -457,7 +458,7 @@ namespace
   }
 
   double
-  getReWeight_V1_private(const TH1 * histogram_weight, double mHH)
+  getWeight_V1_private(const TH1 * histogram_weight, double mHH)
   {
     const TAxis * xAxis = histogram_weight->GetXaxis();
     int idxBin = getIdxBin(xAxis, mHH);
@@ -466,7 +467,7 @@ namespace
   }
 
   double
-  getReWeight_V2_private(const TH1 * histogram_weight, double mHH, double cosThetaStar)
+  getWeight_V2_private(const TH1 * histogram_weight, double mHH, double cosThetaStar)
   {
     const TAxis * xAxis = histogram_weight->GetXaxis();
     int idxBinX = getIdxBin(xAxis, mHH);
@@ -523,27 +524,26 @@ double
 HHWeightInterfaceNLO::getReWeight_V1(const std::string & bmName,
                                      double mHH,
                                      double cosThetaStar,
-                                     bool isDEBUG = false) const
+                                     bool isDEBUG) const
 {
-  double reWeight = 1.;
-  if ( bmName == "SM" )
-  {
-    reWeight = 1.;
-  }
-  else
-  {
-    double smWeight = getWeight_V1("SM", mHH, cosThetaStar, isDEBUG);
-    double bmWeight = getWeight_V1(bmName, mHH, cosThetaStar, isDEBUG);
-    reWeight = ( smWeight > 0. ) ? bmWeight/smWeight : 1.;
-  }
-  return reWeight;
+  return getReWeight(bmName, mHH, cosThetaStar, kMode_V1, isDEBUG);
 }
 
 double
 HHWeightInterfaceNLO::getReWeight_V2(const std::string & bmName,
                                      double mHH,
                                      double cosThetaStar,
-                                     bool isDEBUG = false) const
+                                     bool isDEBUG) const
+{
+  return getReWeight(bmName, mHH, cosThetaStar, kMode_V2, isDEBUG);
+}
+
+double
+HHWeightInterfaceNLO::getReWeight(const std::string & bmName,
+                                  double mHH,
+                                  double cosThetaStar,
+                                  mode_type mode,
+                                  bool isDEBUG) const
 {
   double reWeight = 1.;
   if ( bmName == "SM" )
@@ -552,8 +552,18 @@ HHWeightInterfaceNLO::getReWeight_V2(const std::string & bmName,
   }
   else
   {
-    double smWeight = getWeight_V2("SM", mHH, cosThetaStar, isDEBUG);
-    double bmWeight = getWeight_V2(bmName, mHH, cosThetaStar, isDEBUG);
+    double smWeight = 1.;
+    double bmWeight = 1.;
+    if ( mode == kMode_V1 )
+    {
+      smWeight = getWeight_V1("SM", mHH, cosThetaStar, isDEBUG);
+      bmWeight = getWeight_V1(bmName, mHH, cosThetaStar, isDEBUG);
+    }
+    else if ( mode == kMode_V2 )
+    {
+      smWeight = getWeight_V2("SM", mHH, cosThetaStar, isDEBUG);
+      bmWeight = getWeight_V2(bmName, mHH, cosThetaStar, isDEBUG);
+    } else assert(0);
     reWeight = ( smWeight > 0. ) ? bmWeight/smWeight : 1.;
   }
   return reWeight;
