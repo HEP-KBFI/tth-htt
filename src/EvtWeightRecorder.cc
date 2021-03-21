@@ -68,8 +68,7 @@ EvtWeightRecorder::get_inclusive(const std::string & central_or_shift,
   double retVal = isMC_ ? get_genWeight() * get_auxWeight(central_or_shift) * get_lumiScale(central_or_shift, bin) *
                  get_nom_tH_weight(central_or_shift) * get_puWeight(central_or_shift) *
                  get_l1PreFiringWeight(central_or_shift) * get_lheScaleWeight(central_or_shift) *
-                 get_dy_rwgt(central_or_shift) * get_rescaling() * get_psWeight(central_or_shift) *
-                 get_hhWeight_lo() * get_hhWeight_nlo()
+                 get_dy_rwgt(central_or_shift) * get_rescaling() * get_psWeight(central_or_shift) * get_hhWeight()
                : 1.
   ;
   return retVal;
@@ -79,6 +78,12 @@ double
 EvtWeightRecorder::get_genWeight() const
 {
   return genWeight_;
+}
+
+double
+EvtWeightRecorder::get_hhWeight() const
+{
+  return get_hhWeight_lo() * get_hhWeight_nlo();
 }
 
 double

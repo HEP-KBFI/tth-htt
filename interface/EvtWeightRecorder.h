@@ -58,6 +58,9 @@ public:
   get_genWeight() const;
 
   double
+  get_hhWeight() const;
+
+  double
   get_hhWeight_lo() const;
 
   double
