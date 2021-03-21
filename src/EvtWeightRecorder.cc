@@ -17,6 +17,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h"
 #include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h"
 #include "tthAnalysis/HiggsToTauTau/interface/fakeBackgroundAuxFunctions.h"
+#include "tthAnalysis/HiggsToTauTau/interface/HHWeightInterfaceLO.h"
+#include "tthAnalysis/HiggsToTauTau/interface/HHWeightInterfaceNLO.h"
 
 #include <boost/math/special_functions/sign.hpp> // boost::math::sign()
 
@@ -63,10 +65,11 @@ double
 EvtWeightRecorder::get_inclusive(const std::string & central_or_shift,
                                  const std::string & bin) const
 {
-  double retVal = isMC_ ? get_genWeight() * get_hhWeight_lo() * get_hhWeight_nlo() * get_auxWeight(central_or_shift) * get_lumiScale(central_or_shift, bin) *
+  double retVal = isMC_ ? get_genWeight() * get_auxWeight(central_or_shift) * get_lumiScale(central_or_shift, bin) *
                  get_nom_tH_weight(central_or_shift) * get_puWeight(central_or_shift) *
                  get_l1PreFiringWeight(central_or_shift) * get_lheScaleWeight(central_or_shift) *
-                 get_dy_rwgt(central_or_shift) * get_rescaling() * get_psWeight(central_or_shift)
+                 get_dy_rwgt(central_or_shift) * get_rescaling() * get_psWeight(central_or_shift) *
+                 get_hhWeight_lo() * get_hhWeight_nlo()
                : 1.
   ;
   return retVal;
@@ -658,10 +661,28 @@ EvtWeightRecorder::record_hhWeight_lo(double weight)
 }
 
 void
+EvtWeightRecorder::record_hhWeight_lo(const HHWeightInterfaceLO * const HHWeightLO_calc,
+                                      const EventInfo & eventInfo,
+                                      bool isDEBUG)
+{
+  assert(HHWeightLO_calc);
+  return record_hhWeight_lo(HHWeightLO_calc->getWeight("SM", eventInfo.gen_mHH, eventInfo.gen_cosThetaStar, isDEBUG));
+}
+
+void
 EvtWeightRecorder::record_hhWeight_nlo(double weight)
 {
   assert(isMC_);
   hhWeight_nlo_ = weight;
+}
+
+void
+EvtWeightRecorder::record_hhWeight_nlo(const HHWeightInterfaceNLO * const HHWeightNLO_calc,
+                                       const EventInfo & eventInfo,
+                                       bool isDEBUG)
+{
+  assert(HHWeightNLO_calc);
+  return record_hhWeight_nlo(HHWeightNLO_calc->getWeight_V2("SM", eventInfo.gen_mHH, eventInfo.gen_cosThetaStar, isDEBUG));
 }
 
 void

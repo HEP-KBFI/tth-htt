@@ -23,6 +23,8 @@ class Data_to_MC_CorrectionInterface_0l_2tau_trigger;
 class Data_to_MC_CorrectionInterface_1l_1tau_trigger;
 class Data_to_MC_CorrectionInterface_1l_2tau_trigger;
 class BtagSFRatioFacility;
+class HHWeightInterfaceLO;
+class HHWeightInterfaceNLO;
 
 enum class L1PreFiringWeightSys;
 enum class PUsys;
@@ -201,9 +203,19 @@ public:
   void
   record_hhWeight_lo(double weight);
 
+  void
+  record_hhWeight_lo(const HHWeightInterfaceLO * const HHWeightLO_calc,
+                     const EventInfo & eventInfo,
+                     bool isDEBUG = false);
+
   // CV: weight specific to LO HH MC samples, computed by HHWeightInterfaceNLO->getWeight("SM",...) method
   void
   record_hhWeight_nlo(double weight);
+
+  void
+  record_hhWeight_nlo(const HHWeightInterfaceNLO * const HHWeightNLO_calc,
+                      const EventInfo & eventInfo,
+                      bool isDEBUG = false);
 
   void
   record_l1PrefireWeight(const L1PreFiringWeightReader * const l1PreFiringWeightReader);
