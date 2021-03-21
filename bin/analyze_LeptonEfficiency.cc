@@ -93,7 +93,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/BtagSFRatioFacility.h" // BtagSFRatioFacility
 #include "tthAnalysis/HiggsToTauTau/interface/AnalysisConfig.h" // AnalysisConfig
 #include "tthAnalysis/HiggsToTauTau/interface/RecoVertex.h" // RecoVertex
-#include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" // kJetMET_central_nonNominal, kHadTauPt_uncorrected
+#include "tthAnalysis/HiggsToTauTau/interface/sysUncertOptions.h" //  checkValidityOptions, kJetMET_central_nonNominal, kHadTauPt_uncorrected
 #include "hhAnalysis/multilepton/interface/RecoElectronCollectionSelectorFakeable_hh_multilepton.h" // RecoElectronCollectionSelectorFakeable_hh_multilepton
 #include "hhAnalysis/multilepton/interface/RecoMuonCollectionSelectorFakeable_hh_multilepton.h" // RecoMuonCollectionSelectorFakeable_hh_multilepton
 

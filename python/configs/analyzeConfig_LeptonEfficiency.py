@@ -643,6 +643,8 @@ class analyzeConfig_LeptonEfficiency(analyzeConfig):
         process_name_extended = [ process_name, "hadd" ]
         for process_name_or_dummy in process_name_extended:
           if central_or_shift_or_dummy in [ "hadd"] and process_name_or_dummy in [ "hadd" ]:
+            continue  
+          if central_or_shift_or_dummy != "central" and central_or_shift_or_dummy not in central_or_shift_extensions:
             if not is_mc:
               continue
             if not self.accept_central_or_shift(central_or_shift_or_dummy, sample_info):
@@ -716,9 +718,7 @@ class analyzeConfig_LeptonEfficiency(analyzeConfig):
         if central_or_shift != "central" and not is_mc:
           continue
 
-        if not self.accept_central_or_shift(central_or_shift, sample_info):
-          continue
-
+        # build config files for executing analysis code  
         key_analyze_dir = getKey(process_name, central_or_shift)
 
         for jobId in inputFileList.keys():
