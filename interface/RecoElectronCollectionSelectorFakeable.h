@@ -49,6 +49,8 @@ public:
    */
   bool operator()(const RecoElectron & electron) const;
 
+  void print_selection_conditions();
+  
 protected:
   const Era era_;
   bool debug_;
@@ -104,6 +106,8 @@ public:
 
   void invert_max_nLostHits(Int_t min_nLostHits_fornLostHitsInversion); // for conversion bkg CR
   void invert_conversionVeto();
+
+  void print_selection_conditions();
 };
 
 #endif // tthAnalysis_HiggsToTauTau_RecoElectronCollectionSelectorFakeable_h

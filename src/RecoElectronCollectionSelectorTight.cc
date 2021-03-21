@@ -125,6 +125,33 @@ RecoElectronSelectorTight::set_assocJetBtag(bool flag)
   useAssocJetBtag_ = flag;
 }
 
+void
+RecoElectronSelectorTight::print_selection_conditions()
+{
+  std::cout << "RecoElectronSelectorTight::print_selection_conditions():: " << "\n";
+  std::cout << " \t set_selection_flags:" << set_selection_flags_ << "\n";
+  std::cout << " \t apply_offline_e_trigger_cuts_:" << apply_offline_e_trigger_cuts_ << "\n";
+  std::cout << " \t min_lepton_pt_:" << min_lepton_pt_ << "\n";
+  std::cout << " \t min_cone_pt_:" << min_cone_pt_ << "\n";
+  std::cout << " \t max_absEta_:" << max_absEta_ << "\n";
+  std::cout << " \t max_dxy_:" << max_dxy_ << "\n";
+  std::cout << " \t max_dz_:" << max_dz_ << "\n";  
+  std::cout << " \t max_relIso_:" << max_relIso_ << "\n";
+  std::cout << " \t max_sip3d_:" << max_sip3d_ << "\n";
+  std::cout << " \t binning_absEta_:" << binning_absEta_ << "\n";
+  std::cout << " \t min_sigmaEtaEta_trig_:" << min_sigmaEtaEta_trig_ << "\n";
+  std::cout << " \t max_sigmaEtaEta_trig_:" << max_sigmaEtaEta_trig_ << "\n";
+  std::cout << " \t max_HoE_trig_:" << max_HoE_trig_ << "\n";
+  std::cout << " \t min_OoEminusOoP_trig_:" << min_OoEminusOoP_trig_ << "\n";
+  std::cout << " \t max_jetBtagCSV_:" << max_jetBtagCSV_ << "\n";
+  std::cout << " \t apply_conversionVeto_:" << apply_conversionVeto_ << "\n";
+  std::cout << " \t max_nLostHits_:" << max_nLostHits_ << "\n";
+  std::cout << " \t invert_conversionVeto_:" << invert_conversionVeto_ << "\n";
+  std::cout << " \t invert_nLostHits_:" << invert_nLostHits_ << "\n";
+  std::cout << " \t min_nLostHits_fornLostHitsInversion_:" << min_nLostHits_fornLostHitsInversion_ << "\n";
+  std::cout << " \t useAssocJetBtag_:" << useAssocJetBtag_ << "\n";
+}
+
 bool
 RecoElectronSelectorTight::operator()(const RecoElectron & electron) const
 {
@@ -336,4 +363,10 @@ void
 RecoElectronCollectionSelectorTight::invert_conversionVeto()
 {
   selector_.invert_conversionVeto();
+}
+
+void
+RecoElectronCollectionSelectorTight::print_selection_conditions()
+{
+  selector_.print_selection_conditions();
 }
