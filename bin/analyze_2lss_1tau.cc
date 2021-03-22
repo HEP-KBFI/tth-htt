@@ -177,8 +177,8 @@ int main(int argc, char* argv[])
   const bool isMC_H      = analysisConfig.isMC_H();
   const bool isMC_HH     = analysisConfig.isMC_HH();
   const bool isMC_EWK    = analysisConfig.isMC_EWK();
-  const bool isMC_ttH    = analysisConfig.isMC_ttH();
-  const bool isMC_signal = isMC_ttH || isMC_tH || isMC_VH || isMC_HH || isMC_H;
+  const bool isMC_signal = analysisConfig.isMC_ttH();
+  const bool isSignal    = isMC_signal || isMC_tH || isMC_VH || isMC_HH || isMC_H;
 
   std::string histogramDir = cfg_analyze.getParameter<std::string>("histogramDir");
   bool isMCClosure_e = histogramDir.find("mcClosure_e") != std::string::npos;
@@ -267,7 +267,7 @@ int main(int argc, char* argv[])
   bool useObjectMultiplicity = cfg_analyze.getParameter<bool>("useObjectMultiplicity");
   std::string central_or_shift_main = cfg_analyze.getParameter<std::string>("central_or_shift");
   std::vector<std::string> central_or_shifts_local = cfg_analyze.getParameter<std::vector<std::string>>("central_or_shifts_local");
-  const bool do_tree = (isMC_signal || isMC_WZ || process_string == "TTW" || process_string == "TTZ" || process_string == "TT") && !(central_or_shifts_local.size() > 1);
+  const bool do_tree = false; //(isSignal || isMC_WZ || process_string == "TTW" || process_string == "TTZ" || process_string == "TT") && !(central_or_shifts_local.size() > 1);
 
   edm::VParameterSet lumiScale = cfg_analyze.getParameter<edm::VParameterSet>("lumiScale");
   bool apply_genWeight = cfg_analyze.getParameter<bool>("apply_genWeight");
@@ -814,7 +814,7 @@ int main(int argc, char* argv[])
         }
       }
 
-      if(isMC_signal)
+      if(isSignal)
       {
         const vstring decayModes_evt = get_key_list_hist(eventInfo, isMC_HH, isMC_VH);
         for(const std::string & decayMode_evt: decayModes_evt)
@@ -2268,7 +2268,7 @@ int main(int argc, char* argv[])
             }
           }
 
-          if ( isMC_signal ) {
+          if ( isSignal ) {
             std::string decayModeStr = get_key_hist(eventInfo, genWBosons, isMC_HH, isMC_VH);
             if ( ( isMC_tH || isMC_H ) && ( decayModeStr == "hzg" || decayModeStr == "hmm" ) ) continue;
             if(! decayModeStr.empty())

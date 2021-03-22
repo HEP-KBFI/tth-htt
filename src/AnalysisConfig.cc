@@ -12,7 +12,7 @@ AnalysisConfig::AnalysisConfig(const std::string & analysis, const edm::Paramete
   , process_string_hh_(cfg.exists("process_hh") ? cfg.getParameter<std::string>("process_hh") : process_string_)
   , mass_HH_resonant_(-1.)
 {
-  assert(boost::starts_with(process_string_hh_, process_string_));
+  assert(boost::starts_with(process_string_hh_, process_string_) || process_string_ == "HH");
   isMC_     = cfg.getParameter<bool>("isMC");
   isData_   = !isMC_;
   isMC_WZ_  = process_string_ == "WZ";
