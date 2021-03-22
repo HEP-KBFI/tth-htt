@@ -50,7 +50,9 @@ AnalysisConfig::AnalysisConfig(const std::string & analysis, const edm::Paramete
   isMC_HH_nonresonant_ = parser_HH_nonresonant.Match(process_string_.data());
   assert(!(isMC_HH_resonant_ && isMC_HH_nonresonant_));
   isMC_HH_  = isMC_HH_resonant_ || isMC_HH_nonresonant_ || process_string_ == "HH";
-  isHH_rwgt_allowed_ = boost::starts_with(process_string_, "signal_ggf_nonresonant_") && process_string_.find("cHHH") == std::string::npos;
+  isHH_rwgt_allowed_ = (
+    boost::starts_with(process_string_, "signal_ggf_nonresonant_") && process_string_.find("cHHH") == std::string::npos
+  ) || process_string_ == "HH";
 
   std::string apply_topPtReweighting_string = cfg.getParameter<std::string>("apply_topPtReweighting");
   apply_topPtReweighting_ = !apply_topPtReweighting_string.empty();
