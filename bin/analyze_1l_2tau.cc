@@ -784,7 +784,7 @@ int main(int argc, char* argv[])
         }
         const std::string process_string_new = evt_cat_str == default_cat_str ?
           process_string  :
-          process_string + evt_cat_str
+          process_string + "_" + evt_cat_str
         ;
 
         const std::string process_and_genMatchName = boost::replace_all_copy(

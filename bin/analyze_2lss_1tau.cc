@@ -173,7 +173,7 @@ int main(int argc, char* argv[])
   std::string process_string = cfg_analyze.getParameter<std::string>("process");
   const bool isMC_tH     = analysisConfig.isMC_tH();
   const bool isMC_VH     = analysisConfig.isMC_VH();
-  const bool isMC_WZ     = analysisConfig.isMC_WZ();
+  //const bool isMC_WZ     = analysisConfig.isMC_WZ();
   const bool isMC_H      = analysisConfig.isMC_H();
   const bool isMC_HH     = analysisConfig.isMC_HH();
   const bool isMC_EWK    = analysisConfig.isMC_EWK();
@@ -789,7 +789,7 @@ int main(int argc, char* argv[])
         }
         const std::string process_string_new = evt_cat_str == default_cat_str ?
           process_string :
-          process_string + evt_cat_str
+          process_string + "_" + evt_cat_str
         ;
         const std::string process_and_genMatchName = boost::replace_all_copy(
           process_and_genMatch, process_string, process_string_new
