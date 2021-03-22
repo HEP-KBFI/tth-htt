@@ -521,29 +521,29 @@ HHWeightInterfaceNLO::getWeight_V2(const std::string & bmName,
 }
 
 double
-HHWeightInterfaceNLO::getReWeight_V1(const std::string & bmName,
-                                     double mHH,
-                                     double cosThetaStar,
-                                     bool isDEBUG) const
+HHWeightInterfaceNLO::getRelativeWeight_V1(const std::string & bmName,
+                                           double mHH,
+                                           double cosThetaStar,
+                                           bool isDEBUG) const
 {
-  return getReWeight(bmName, mHH, cosThetaStar, kMode_V1, isDEBUG);
+  return getRelativeWeight(bmName, mHH, cosThetaStar, kMode_V1, isDEBUG);
 }
 
 double
-HHWeightInterfaceNLO::getReWeight_V2(const std::string & bmName,
-                                     double mHH,
-                                     double cosThetaStar,
-                                     bool isDEBUG) const
+HHWeightInterfaceNLO::getRelativeWeight_V2(const std::string & bmName,
+                                           double mHH,
+                                           double cosThetaStar,
+                                           bool isDEBUG) const
 {
-  return getReWeight(bmName, mHH, cosThetaStar, kMode_V2, isDEBUG);
+  return getRelativeWeight(bmName, mHH, cosThetaStar, kMode_V2, isDEBUG);
 }
 
 double
-HHWeightInterfaceNLO::getReWeight(const std::string & bmName,
-                                  double mHH,
-                                  double cosThetaStar,
-                                  mode_type mode,
-                                  bool isDEBUG) const
+HHWeightInterfaceNLO::getRelativeWeight(const std::string & bmName,
+                                        double mHH,
+                                        double cosThetaStar,
+                                        mode_type mode,
+                                        bool isDEBUG) const
 {
   double reWeight = 1.;
   if ( bmName == "SM" )

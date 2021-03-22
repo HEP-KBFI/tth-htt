@@ -322,7 +322,7 @@ HHWeightInterfaceLO::getWeight(const std::string & bmName, double mHH, double co
 }
 
 double
-HHWeightInterfaceLO::getReWeight(const std::string & bmName, double mHH, double cosThetaStar, bool isDEBUG) const
+HHWeightInterfaceLO::getRelativeWeight(const std::string & bmName, double mHH, double cosThetaStar, bool isDEBUG) const
 {
   double reWeight = 1.;
   if ( bmName == "SM" )

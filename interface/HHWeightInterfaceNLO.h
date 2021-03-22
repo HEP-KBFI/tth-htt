@@ -57,32 +57,32 @@ class HHWeightInterfaceNLO
    * The purpose of this function is to switch the NLO corrections from the case of SM kinematics 
    * to the kinematics corresponding to one of the 12 BM scenarios documented in the arXiv paper https://arxiv.org/abs/1507.02245
    *
-   * Note: The weights returned by the functions getReWeight_V1(...) and getReWeight_V2(...) are meant to be used in combination 
+   * Note: The weights returned by the functions getRelativeWeight_V1(...) and getRelativeWeight_V2(...) are meant to be used in combination
    *       with the weights obtained by the functions
-   *         HHWeightInterfaceLO::getWeight(...) * HHWeightInterfaceLO::getReWeight(...) * HHWeightInterfaceNLO::getWeight(...).
+   *         HHWeightInterfaceLO::getWeight(...) * HHWeightInterfaceLO::getRelativeWeight(...) * HHWeightInterfaceNLO::getWeight(...).
    *
    */
   double
-  getReWeight_V1(const std::string & bmName,
-                 double mHH,
-                 double cosThetaStar,
-                 bool isDEBUG = false) const;
+  getRelativeWeight_V1(const std::string & bmName,
+                       double mHH,
+                       double cosThetaStar,
+                       bool isDEBUG = false) const;
 
   double
-  getReWeight_V2(const std::string & bmName,
-                 double mHH,
-                 double cosThetaStar,
-                 bool isDEBUG = false) const;
+  getRelativeWeight_V2(const std::string & bmName,
+                       double mHH,
+                       double cosThetaStar,
+                       bool isDEBUG = false) const;
 
  private:
   enum mode_type { kMode_V1, kMode_V2 };
 
   double
-  getReWeight(const std::string & bmName,
-              double mHH,
-              double cosThetaStar,
-              mode_type mode,
-              bool isDEBUG = false) const;
+  getRelativeWeight(const std::string & bmName,
+                    double mHH,
+                    double cosThetaStar,
+                    mode_type mode,
+                    bool isDEBUG = false) const;
 
   LocalFileInPath xsecFileName_V1_lo_;
   LocalFileInPath xsecFileName_V1_nlo_;

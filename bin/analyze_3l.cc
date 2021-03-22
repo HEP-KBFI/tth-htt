@@ -1764,11 +1764,11 @@ HadTopTagger* hadTopTagger = new HadTopTagger();
 
       for(const std::string & HHWeightName: evt_cat_strs)
       {
-        Weight_ktScan[HHWeightName] = HHWeightLO_calc->getReWeight(HHWeightName, eventInfo.gen_mHH, eventInfo.gen_cosThetaStar, isDEBUG);
+        Weight_ktScan[HHWeightName] = HHWeightLO_calc->getRelativeWeight(HHWeightName, eventInfo.gen_mHH, eventInfo.gen_cosThetaStar, isDEBUG);
         if ( apply_HH_rwgt_nlo )
         {
           assert(HHWeightNLO_calc);
-          Weight_ktScan[HHWeightName] *= HHWeightNLO_calc->getReWeight_V2(HHWeightName, eventInfo.gen_mHH, eventInfo.gen_cosThetaStar, isDEBUG);
+          Weight_ktScan[HHWeightName] *= HHWeightNLO_calc->getRelativeWeight_V2(HHWeightName, eventInfo.gen_mHH, eventInfo.gen_cosThetaStar, isDEBUG);
         }
       }
     }
