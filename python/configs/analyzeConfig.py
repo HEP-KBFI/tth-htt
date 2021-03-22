@@ -812,8 +812,8 @@ class analyzeConfig(object):
           jobOptions['hhWeight_cfg.klScan_file'] = self.kl_scan_file
           jobOptions['hhWeight_cfg.c2Scan_file'] = self.c2_scan_file
           jobOptions['hhWeight_cfg.scanMode'] = 'default'
-          
-          jobOptions['hhWeight_cfg.apply_rwgt'] = 'hh' in self.channel
+          if not 'hhWeight_cfg.apply_rwgt_lo' in jobOptions.keys():
+            jobOptions['hhWeight_cfg.apply_rwgt_lo'] = 'hh' in self.channel
 
         update_conv_bkg = False
         if 'genPhotonFilter' in sample_info.keys():
@@ -1208,7 +1208,7 @@ class analyzeConfig(object):
             'hhWeight_cfg.cgScan_file',
             'hhWeight_cfg.c2gScan_file',
             'hhWeight_cfg.scanMode',
-            'hhWeight_cfg.apply_rwgt',
+            'hhWeight_cfg.apply_rwgt_lo',
             'minNumJets',
             'skipEvery',
             'apply_topPtReweighting',
