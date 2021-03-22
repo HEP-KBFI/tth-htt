@@ -382,8 +382,6 @@ ElectronPtSys
 getElectronPt_option(const std::string & central_or_shift,
                      bool isMC)
 {
-  //std::cout << "sysUncertOptions::getElectronPt_option():: isMC " << isMC << std::endl;
-  assert(isMC);
   ElectronPtSys central_or_shift_int = ElectronPtSys::central;
   if     (central_or_shift == "CMS_ttHl_electronESBarrelUp"  ) central_or_shift_int = ElectronPtSys::scaleUp_barrel;
   else if(central_or_shift == "CMS_ttHl_electronESBarrelDown") central_or_shift_int = ElectronPtSys::scaleDown_barrel;
@@ -391,6 +389,7 @@ getElectronPt_option(const std::string & central_or_shift,
   else if(central_or_shift == "CMS_ttHl_electronESEndcapDown") central_or_shift_int = ElectronPtSys::scaleDown_endcap;
   else if(central_or_shift == "CMS_ttHl_electronERUp"        ) central_or_shift_int = ElectronPtSys::resUp;
   else if(central_or_shift == "CMS_ttHl_electronERDown"      ) central_or_shift_int = ElectronPtSys::resDown;
+  assert((central_or_shift_int == ElectronPtSys::central && ! isMC) || isMC);
   return central_or_shift_int;
 }
 
@@ -398,7 +397,6 @@ MuonPtSys
 getMuon_option(const std::string & central_or_shift,
                bool isMC)
 {
-  assert(isMC);
   MuonPtSys central_or_shift_int = MuonPtSys::central;
   if     (central_or_shift == "CMS_ttHl_muonERUp"         ) central_or_shift_int = MuonPtSys::ERUp;
   else if(central_or_shift == "CMS_ttHl_muonERDown"       ) central_or_shift_int = MuonPtSys::ERDown;
@@ -410,6 +408,7 @@ getMuon_option(const std::string & central_or_shift,
   else if(central_or_shift == "CMS_ttHl_muonESEndcap1Down") central_or_shift_int = MuonPtSys::ESEndcap1Down;
   else if(central_or_shift == "CMS_ttHl_muonESEndcap2Up"  ) central_or_shift_int = MuonPtSys::ESEndcap2Up;
   else if(central_or_shift == "CMS_ttHl_muonESEndcap2Down") central_or_shift_int = MuonPtSys::ESEndcap2Down;
+  assert((central_or_shift_int == MuonPtSys::central && ! isMC) || isMC);
   return central_or_shift_int;
 }
 
