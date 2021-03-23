@@ -555,25 +555,25 @@ HHWeightInterfaceNLO::getWeight_LOtoNLO_V2(const std::string & bmName,
 }
 
 double
-HHWeightInterfaceNLO::getReWeight_LOtoNLO_V1(const std::string & bmName,
+HHWeightInterfaceNLO::getRelativeWeight_LOtoNLO_V1(const std::string & bmName,
                                      double mHH,
                                      double cosThetaStar,
                                      bool isDEBUG) const
 {
-  return getReWeight_LOtoNLO(bmName, mHH, cosThetaStar, kMode_V1, isDEBUG);
+  return getRelativeWeight_LOtoNLO(bmName, mHH, cosThetaStar, kMode_V1, isDEBUG);
 }
 
 double
-HHWeightInterfaceNLO::getReWeight_LOtoNLO_V2(const std::string & bmName,
+HHWeightInterfaceNLO::getRelativeWeight_LOtoNLO_V2(const std::string & bmName,
                                      double mHH,
                                      double cosThetaStar,
                                      bool isDEBUG) const
 {
-  return getReWeight_LOtoNLO(bmName, mHH, cosThetaStar, kMode_V2, isDEBUG);
+  return getRelativeWeight_LOtoNLO(bmName, mHH, cosThetaStar, kMode_V2, isDEBUG);
 }
 
 double
-HHWeightInterfaceNLO::getReWeight_LOtoNLO(const std::string & bmName,
+HHWeightInterfaceNLO::getRelativeWeight_LOtoNLO(const std::string & bmName,
                                   double mHH,
                                   double cosThetaStar,
                                   mode_type mode,
@@ -604,7 +604,7 @@ HHWeightInterfaceNLO::getReWeight_LOtoNLO(const std::string & bmName,
 }
 
 double
-HHWeightInterfaceNLO::getWeight_NLOtoNLO_V1(const std::string & bmName,
+HHWeightInterfaceNLO::getRelativeWeight_NLOtoNLO_V1(const std::string & bmName,
                                    double mHH,
                                    double cosThetaStar,
                                    bool isDEBUG) const
@@ -621,7 +621,7 @@ HHWeightInterfaceNLO::getWeight_NLOtoNLO_V1(const std::string & bmName,
   }
   if ( isDEBUG )
   {
-    std::cout << "<HHWeightInterfaceNLO::getWeight_NLOtoNLO_V1>: bmName = '" << bmName << "'," 
+    std::cout << "<HHWeightInterfaceNLO::getRelativeWeight_NLOtoNLO_V1>: bmName = '" << bmName << "'," 
               << " mHH = " << mHH 
               << " --> weight = " << weight << std::endl;
   }
@@ -629,7 +629,7 @@ HHWeightInterfaceNLO::getWeight_NLOtoNLO_V1(const std::string & bmName,
 }
 
 double
-HHWeightInterfaceNLO::getWeight_NLOtoNLO_V2(const std::string & bmName,
+HHWeightInterfaceNLO::getRelativeWeight_NLOtoNLO_V2(const std::string & bmName,
                                    double mHH,
                                    double cosThetaStar,
                                    bool isDEBUG) const
@@ -646,7 +646,7 @@ HHWeightInterfaceNLO::getWeight_NLOtoNLO_V2(const std::string & bmName,
   }
   if ( isDEBUG )
   {
-    std::cout << "<HHWeightInterfaceNLO::getWeight_NLOtoNLO_V2>: bmName = '" << bmName << "'," 
+    std::cout << "<HHWeightInterfaceNLO::getRelativeWeight_NLOtoNLO_V2>: bmName = '" << bmName << "'," 
               << " mHH = " << mHH << ", cosTheta* = " << cosThetaStar 
               << " --> weight = " << weight << std::endl;
   }

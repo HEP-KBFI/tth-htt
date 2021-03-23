@@ -57,45 +57,45 @@ class HHWeightInterfaceNLO
    * The purpose of this function is to switch the NLO corrections from the case of SM kinematics 
    * to the kinematics corresponding to one of the 12 BM scenarios documented in the arXiv paper https://arxiv.org/abs/1507.02245
    *
-   * Note: The weights returned by the functions getReWeight_LOtoNLO_V1(...) and getReWeight_LOtoNLO_V2(...) are meant to be used in combination 
+   * Note: The weights returned by the functions getRelativeWeight_LOtoNLO_V1(...) and getRelativeWeight_LOtoNLO_V2(...) are meant to be used in combination 
    *       with the weights obtained by the functions
-   *         HHWeightInterfaceLO::getWeight(...) * HHWeightInterfaceLO::getReWeight(...) * HHWeightInterfaceNLO::getWeight_LOtoNLO(...).
+   *         HHWeightInterfaceLO::getWeight(...) * HHWeightInterfaceLO::getRelativeWeight(...) * HHWeightInterfaceNLO::getWeight_LOtoNLO(...).
    *
    */
   double
-  getReWeight_LOtoNLO_V1(const std::string & bmName,
+  getRelativeWeight_LOtoNLO_V1(const std::string & bmName,
                  double mHH,
                  double cosThetaStar,
                  bool isDEBUG = false) const;
 
   double
-  getReWeight_LOtoNLO_V2(const std::string & bmName,
+  getRelativeWeight_LOtoNLO_V2(const std::string & bmName,
                  double mHH,
                  double cosThetaStar,
                  bool isDEBUG = false) const;
 
  /**
-   * @brief Get single Weight
+   * @brief Get single reWeight
    *
    * The purpose of this function is to reweight the events in the NLO HH MC samples
    * from SM kinematics to one of the 12 benchmark (BM) scenarios discussed on the paper https://arxiv.org/abs/1507.02245
    *
-   * The function getWeight_V1(...) returns the weights documented in the arXiv paper https://arxiv.org/pdf/1806.05162.pdf,
+   * The function getRelativeWeight_V1(...) returns the weights documented in the arXiv paper https://arxiv.org/pdf/1806.05162.pdf,
    * which are parametrized as function of the observable gen_mHH only, i.e. the distribution in cos(theta*) is not reweighted to NLO accuracy.
-   * The function getWeight_V2(...) extends the reweighting to both observables gen_mHH and cos(theta*),
-   * and extendds the reweighting in gen_mHH to higher mass (up to 5 TeV, compared to 1040 GeV in the getWeight_V1(...) function)
+   * The function getRelativeWeight_V2(...) extends the reweighting to both observables gen_mHH and cos(theta*),
+   * and extendds the reweighting in gen_mHH to higher mass (up to 5 TeV, compared to 1040 GeV in the getRelativeWeight_NLOtoNLO_V1(...) function)
    *
-   * Note: The weights returned by the functions getWeight_NLOtoNLO_V1(...) and getWeight_NLOtoNLO_V2(...) are meant to be used
+   * Note: The weights returned by the functions getRelativeWeight_NLOtoNLO_V1(...) and getRelativeWeight_NLOtoNLO_V2(...) are meant to be used
    *       for studies of the HH reweighting only, NOT in regular analysis code !!
    */
   double
-  getWeight_NLOtoNLO_V1(const std::string & bmName,
+  getRelativeWeight_NLOtoNLO_V1(const std::string & bmName,
                double mHH,
                double cosThetaStar,
                bool isDEBUG = false) const;
 
   double
-  getWeight_NLOtoNLO_V2(const std::string & bmName,
+  getRelativeWeight_NLOtoNLO_V2(const std::string & bmName,
                double mHH,
                double cosThetaStar,
                bool isDEBUG = false) const;
@@ -104,7 +104,7 @@ class HHWeightInterfaceNLO
   enum mode_type { kMode_V1, kMode_V2 };
 
   double
-  getReWeight_LOtoNLO(const std::string & bmName,
+  getRelativeWeight_LOtoNLO(const std::string & bmName,
               double mHH,
               double cosThetaStar,
               mode_type mode,

@@ -126,21 +126,19 @@ HHWeightInterfaceLO::HHWeightInterfaceLO(const edm::ParameterSet & cfg)
   bmNames_ = {};
   bmWeightNames_ = {};
   //insert JHEP weight BM points 
-  if (scanMode == "default" || scanMode == "full")
+  const std::size_t nof_bm = (scanMode == "default" || scanMode == "full") ? nof_JHEP_ : 1;
+  for (std::size_t bmIdx = 0; bmIdx < nof_bm; ++bmIdx)
   {
-    for (std::size_t bmIdx = 0; bmIdx < nof_JHEP_; ++bmIdx)
-    {
-      kl_.push_back(klJHEP_[bmIdx]);
-      kt_.push_back(ktJHEP_[bmIdx]);
-      c2_.push_back(c2JHEP_[bmIdx]);
-      cg_.push_back(cgJHEP_[bmIdx]);
-      c2g_.push_back(c2gJHEP_[bmIdx]);
-      norm_.push_back(normJHEP_[bmIdx]);
-      std::string bmname = (bmIdx == 0 ) ? "SM" : "BM" + std::to_string(bmIdx);
-      bmNames_.push_back(bmname);
-      bmWeightNames_.push_back("Weight_" + bmname);
-      bmName_to_idx_[bmname] = bmIdx;
-    }
+    kl_.push_back(klJHEP_[bmIdx]);
+    kt_.push_back(ktJHEP_[bmIdx]);
+    c2_.push_back(c2JHEP_[bmIdx]);
+    cg_.push_back(cgJHEP_[bmIdx]);
+    c2g_.push_back(c2gJHEP_[bmIdx]);
+    norm_.push_back(normJHEP_[bmIdx]);
+    std::string bmname = (bmIdx == 0 ) ? "SM" : "BM" + std::to_string(bmIdx);
+    bmNames_.push_back(bmname);
+    bmWeightNames_.push_back("Weight_" + bmname);
+    bmName_to_idx_[bmname] = bmIdx;
   }
   // Load a file with an specific scan, that we can decide at later stage on the analysis
   // save the closest shape BM to use this value on the evaluation of a BDT
@@ -189,6 +187,7 @@ HHWeightInterfaceLO::loadScanFile(const std::string & filePath, const std::strin
   {
     throw cmsException(this, __func__, __LINE__) << "Error on opening file " << filePath;
   }
+  std::size_t bmIdx = bmName_to_idx_.size();
   for (std::string line; std::getline(inFile_scan, line); ) 
   {
     std::vector<std::string> line_split;
@@ -248,6 +247,8 @@ HHWeightInterfaceLO::loadScanFile(const std::string & filePath, const std::strin
     }
     bmNames_.push_back(bmName);
     bmWeightNames_.push_back(bmWeightName);
+    bmName_to_idx_[bmName] = bmIdx;
+    ++bmIdx;
   }
 }
 
@@ -322,7 +323,7 @@ HHWeightInterfaceLO::getWeight(const std::string & bmName, double mHH, double co
 }
 
 double
-HHWeightInterfaceLO::getReWeight(const std::string & bmName, double mHH, double cosThetaStar, bool isDEBUG) const
+HHWeightInterfaceLO::getRelativeWeight(const std::string & bmName, double mHH, double cosThetaStar, bool isDEBUG) const
 {
   double reWeight = 1.;
   if ( bmName == "SM" )

@@ -59,16 +59,16 @@ class HHWeightInterfaceLO
    *
    * The purpose of this function is to reweight events in the SM + all 12 BMs LO HH MC samples 
    * from the case of SM kinematics to one of the 12 BM scenarios.
-   * Note that in this case, the product of weights obtained by getWeight("SM", ...) times  getReWeight("BM1", ...)
+   * Note that in this case, the product of weights obtained by getWeight("SM", ...) times  getRelativeWeight("BM1", ...)
    * needs to be applied to all events in the SM + all 12 BMs LO HH MC samples,
-   * i.e. the function getReWeight(...) always needs to be used together with the function getWeight(...).
+   * i.e. the function getRelativeWeight(...) always needs to be used together with the function getWeight(...).
    *
    */
   double
-  getReWeight(const std::string & bmName,
-              double mHH,
-              double cosThetaStar,
-              bool isDEBUG = false) const;
+  getRelativeWeight(const std::string & bmName,
+                    double mHH,
+                    double cosThetaStar,
+                    bool isDEBUG = false) const;
 
   static const std::vector<double> & klJHEP();
   static const std::vector<double> & ktJHEP();

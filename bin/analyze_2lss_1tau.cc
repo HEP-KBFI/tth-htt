@@ -173,12 +173,12 @@ int main(int argc, char* argv[])
   std::string process_string = cfg_analyze.getParameter<std::string>("process");
   const bool isMC_tH     = analysisConfig.isMC_tH();
   const bool isMC_VH     = analysisConfig.isMC_VH();
-  const bool isMC_WZ     = analysisConfig.isMC_WZ();
+  //const bool isMC_WZ     = analysisConfig.isMC_WZ();
   const bool isMC_H      = analysisConfig.isMC_H();
   const bool isMC_HH     = analysisConfig.isMC_HH();
   const bool isMC_EWK    = analysisConfig.isMC_EWK();
-  const bool isMC_ttH    = analysisConfig.isMC_ttH();
-  const bool isMC_signal = isMC_ttH || isMC_tH || isMC_VH || isMC_HH || isMC_H;
+  const bool isMC_signal = analysisConfig.isMC_ttH();
+  const bool isSignal    = isMC_signal || isMC_tH || isMC_VH || isMC_HH || isMC_H;
 
   std::string histogramDir = cfg_analyze.getParameter<std::string>("histogramDir");
   bool isMCClosure_e = histogramDir.find("mcClosure_e") != std::string::npos;
@@ -267,7 +267,7 @@ int main(int argc, char* argv[])
   bool useObjectMultiplicity = cfg_analyze.getParameter<bool>("useObjectMultiplicity");
   std::string central_or_shift_main = cfg_analyze.getParameter<std::string>("central_or_shift");
   std::vector<std::string> central_or_shifts_local = cfg_analyze.getParameter<std::vector<std::string>>("central_or_shifts_local");
-  const bool do_tree = (isMC_signal || isMC_WZ || process_string == "TTW" || process_string == "TTZ" || process_string == "TT") && !(central_or_shifts_local.size() > 1);
+  const bool do_tree = false; //(isSignal || isMC_WZ || process_string == "TTW" || process_string == "TTZ" || process_string == "TT") && !(central_or_shifts_local.size() > 1);
 
   edm::VParameterSet lumiScale = cfg_analyze.getParameter<edm::VParameterSet>("lumiScale");
   bool apply_genWeight = cfg_analyze.getParameter<bool>("apply_genWeight");
@@ -789,7 +789,7 @@ int main(int argc, char* argv[])
         }
         const std::string process_string_new = evt_cat_str == default_cat_str ?
           process_string :
-          process_string + evt_cat_str
+          process_string + "_" + evt_cat_str
         ;
         const std::string process_and_genMatchName = boost::replace_all_copy(
           process_and_genMatch, process_string, process_string_new
@@ -814,7 +814,7 @@ int main(int argc, char* argv[])
         }
       }
 
-      if(isMC_signal)
+      if(isSignal)
       {
         const vstring decayModes_evt = get_key_list_hist(eventInfo, isMC_HH, isMC_VH);
         for(const std::string & decayMode_evt: decayModes_evt)
@@ -1821,11 +1821,11 @@ int main(int argc, char* argv[])
 
       for(const std::string & HHWeightName: evt_cat_strs)
       {
-        Weight_ktScan[HHWeightName] = HHWeightLO_calc->getReWeight(HHWeightName, eventInfo.gen_mHH, eventInfo.gen_cosThetaStar, isDEBUG);
+        Weight_ktScan[HHWeightName] = HHWeightLO_calc->getRelativeWeight(HHWeightName, eventInfo.gen_mHH, eventInfo.gen_cosThetaStar, isDEBUG);
         if ( apply_HH_rwgt_nlo )
         {
           assert(HHWeightNLO_calc);
-          Weight_ktScan[HHWeightName] *= HHWeightNLO_calc->getReWeight_LOtoNLO_V2(HHWeightName, eventInfo.gen_mHH, eventInfo.gen_cosThetaStar, isDEBUG);
+          Weight_ktScan[HHWeightName] *= HHWeightNLO_calc->getRelativeWeight_LOtoNLO_V2(HHWeightName, eventInfo.gen_mHH, eventInfo.gen_cosThetaStar, isDEBUG);
         }
       }
     }
@@ -2268,7 +2268,7 @@ int main(int argc, char* argv[])
             }
           }
 
-          if ( isMC_signal ) {
+          if ( isSignal ) {
             std::string decayModeStr = get_key_hist(eventInfo, genWBosons, isMC_HH, isMC_VH);
             if ( ( isMC_tH || isMC_H ) && ( decayModeStr == "hzg" || decayModeStr == "hmm" ) ) continue;
             if(! decayModeStr.empty())

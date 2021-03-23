@@ -250,7 +250,7 @@ int main(int argc, char* argv[])
   bool useObjectMultiplicity = cfg_analyze.getParameter<bool>("useObjectMultiplicity");
   std::string central_or_shift_main = cfg_analyze.getParameter<std::string>("central_or_shift");
   std::vector<std::string> central_or_shifts_local = cfg_analyze.getParameter<std::vector<std::string>>("central_or_shifts_local");
-  const bool do_tree = (isSignal || process_string == "TTZ" ) && !(central_or_shifts_local.size() > 1);
+  const bool do_tree = false; //(isSignal || process_string == "TTZ" ) && !(central_or_shifts_local.size() > 1);
   edm::VParameterSet lumiScale = cfg_analyze.getParameter<edm::VParameterSet>("lumiScale");
   bool apply_genWeight = cfg_analyze.getParameter<bool>("apply_genWeight");
   std::string apply_topPtReweighting_str = cfg_analyze.getParameter<std::string>("apply_topPtReweighting");
@@ -669,7 +669,7 @@ int main(int argc, char* argv[])
         }
         const std::string process_string_new = evt_cat_str == default_cat_str ?
           process_string :
-          process_string + evt_cat_str
+          process_string + "_" + evt_cat_str
         ;
         const std::string process_and_genMatchName = boost::replace_all_copy(
           process_and_genMatch, process_string, process_string_new
@@ -1517,11 +1517,11 @@ int main(int argc, char* argv[])
 
       for(const std::string & HHWeightName: evt_cat_strs)
       {
-        Weight_ktScan[HHWeightName] = HHWeightLO_calc->getReWeight(HHWeightName, eventInfo.gen_mHH, eventInfo.gen_cosThetaStar, isDEBUG);
+        Weight_ktScan[HHWeightName] = HHWeightLO_calc->getRelativeWeight(HHWeightName, eventInfo.gen_mHH, eventInfo.gen_cosThetaStar, isDEBUG);
         if ( apply_HH_rwgt_nlo )
         {
           assert(HHWeightNLO_calc);
-          Weight_ktScan[HHWeightName] *= HHWeightNLO_calc->getReWeight_LOtoNLO_V2(HHWeightName, eventInfo.gen_mHH, eventInfo.gen_cosThetaStar, isDEBUG);
+          Weight_ktScan[HHWeightName] *= HHWeightNLO_calc->getRelativeWeight_LOtoNLO_V2(HHWeightName, eventInfo.gen_mHH, eventInfo.gen_cosThetaStar, isDEBUG);
         }
       }
     }

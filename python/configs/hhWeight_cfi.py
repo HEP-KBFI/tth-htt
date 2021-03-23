@@ -10,9 +10,7 @@ hhWeight = cms.PSet(
     coefFile = cms.string('HHStatAnalysis/AnalyticalModels/data/coefficientsByBin_extended_3M_costHHSim_19-4.txt'),
     histtitle = cms.string(''),
     isDEBUG = cms.bool(False),
-    do_scan = cms.bool(True),
-    do_ktscan = cms.bool(False),
-    apply_rwgt_lo = cms.bool(False),
+    apply_rwgt_lo = cms.bool(True),
     scanMode = cms.string('default'),
     apply_rwgt_nlo = cms.bool(True)
 )
