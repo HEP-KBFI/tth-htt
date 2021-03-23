@@ -687,7 +687,7 @@ EvtWeightRecorder::record_hhWeight_nlo(const HHWeightInterfaceNLO * const HHWeig
                                        bool isDEBUG)
 {
   assert(HHWeightNLO_calc);
-  return record_hhWeight_nlo(HHWeightNLO_calc->getWeight_V2("SM", eventInfo.gen_mHH, eventInfo.gen_cosThetaStar, isDEBUG));
+  return record_hhWeight_nlo(HHWeightNLO_calc->getWeight_LOtoNLO_V2("SM", eventInfo.gen_mHH, eventInfo.gen_cosThetaStar, isDEBUG));
 }
 
 void

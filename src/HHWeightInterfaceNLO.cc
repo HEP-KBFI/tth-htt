@@ -387,13 +387,30 @@ HHWeightInterfaceNLO::HHWeightInterfaceNLO(Era era, bool apply_coupling_fix_CMS,
     }
     dXsec_V1_nlo_[bmName] = histogram_V1_nlo;
 
-    std::string histogramName_V1_weights = Form("%s_V1_weights", bmName.data());
-    TH1* histogram_V1_weights = makeHistogram_V1_weights(histogramName_V1_weights, histogram_V1_lo, histogram_V1_nlo, max_weight_);
+    std::string histogramName_LOtoNLO_V1_weights = Form("%s_LOtoNLO_V1_weights", bmName.data());
+    TH1* histogram_LOtoNLO_V1_weights = makeHistogram_V1_weights(histogramName_LOtoNLO_V1_weights, histogram_V1_lo, histogram_V1_nlo, max_weight_);
     if ( isDEBUG_ )
     {
-      dumpHistogram(histogram_V1_weights);
+      dumpHistogram(histogram_LOtoNLO_V1_weights);
     }
-    weights_V1_[bmName] = histogram_V1_weights;
+    weights_LOtoNLO_V1_[bmName] = histogram_LOtoNLO_V1_weights;
+  }
+
+  for ( std::size_t bmIdx = 0; bmIdx < nof_JHEP; ++bmIdx )
+  {
+    const std::string & bmName = bmNames[bmIdx];
+    if ( bmName != "SM" )
+    { 
+      const TH1 * histogram_SM_V1_nlo = dXsec_V1_nlo_["SM"];
+      const TH1 * histogram_BM_V1_nlo = dXsec_V1_nlo_[bmName];
+      std::string histogramName_NLOtoNLO_V1_weights = Form("%s_NLOtoNLO_V1_weights", bmName.data());
+      TH1* histogram_NLOtoNLO_V1_weights = makeHistogram_V1_weights(histogramName_NLOtoNLO_V1_weights, histogram_SM_V1_nlo, histogram_BM_V1_nlo, max_weight_);
+      if ( isDEBUG_ )
+      {
+        dumpHistogram(histogram_NLOtoNLO_V1_weights);
+      }
+      weights_NLOtoNLO_V1_[bmName] = histogram_NLOtoNLO_V1_weights;
+    }
   }
 
   for ( std::size_t bmIdx = 0; bmIdx < nof_JHEP; ++bmIdx )
@@ -427,13 +444,30 @@ HHWeightInterfaceNLO::HHWeightInterfaceNLO(Era era, bool apply_coupling_fix_CMS,
     }
     dXsec_V2_nlo_[bmName] = histogram_V2_nlo;
 
-    std::string histogramName_V2_weights = Form("%s_V2_weights", bmName.data());
-    TH2* histogram_V2_weights = makeHistogram_V2_weights(histogramName_V2_weights, histogram_V2_lo, histogram_V2_nlo, max_weight_);
+    std::string histogramName_LOtoNLO_V2_weights = Form("%s_LOtoNLO_V2_weights", bmName.data());
+    TH2* histogram_LOtoNLO_V2_weights = makeHistogram_V2_weights(histogramName_LOtoNLO_V2_weights, histogram_V2_lo, histogram_V2_nlo, max_weight_);
     if ( isDEBUG_ )
     {
-      dumpHistogram(histogram_V2_weights);
+      dumpHistogram(histogram_LOtoNLO_V2_weights);
     }
-    weights_V2_[bmName] = histogram_V2_weights;
+    weights_LOtoNLO_V2_[bmName] = histogram_LOtoNLO_V2_weights;
+  }
+
+  for ( std::size_t bmIdx = 0; bmIdx < nof_JHEP; ++bmIdx )
+  {
+    const std::string & bmName = bmNames[bmIdx];
+    if ( bmName != "SM" )
+    { 
+      const TH2 * histogram_SM_V2_nlo = dXsec_V2_nlo_["SM"];
+      const TH2 * histogram_BM_V2_nlo = dXsec_V2_nlo_[bmName];
+      std::string histogramName_NLOtoNLO_V2_weights = Form("%s_NLOtoNLO_V2_weights", bmName.data());
+      TH2* histogram_NLOtoNLO_V2_weights = makeHistogram_V2_weights(histogramName_NLOtoNLO_V2_weights, histogram_SM_V2_nlo, histogram_BM_V2_nlo, max_weight_);
+      if ( isDEBUG_ )
+      {
+        dumpHistogram(histogram_NLOtoNLO_V2_weights);
+      }
+      weights_NLOtoNLO_V2_[bmName] = histogram_NLOtoNLO_V2_weights;
+    }
   }
 }
 
@@ -479,20 +513,20 @@ namespace
 }
 
 double
-HHWeightInterfaceNLO::getWeight_V1(const std::string & bmName,
+HHWeightInterfaceNLO::getWeight_LOtoNLO_V1(const std::string & bmName,
                                    double mHH,
                                    double cosThetaStar,
                                    bool isDEBUG) const
 {
-  std::map<std::string, const TH1 *>::const_iterator weight_iter = weights_V1_.find(bmName);
-  if ( weight_iter == weights_V1_.end() )
+  std::map<std::string, const TH1 *>::const_iterator weight_iter = weights_LOtoNLO_V1_.find(bmName);
+  if ( weight_iter == weights_LOtoNLO_V1_.end() )
   {
     throw cmsException(this, __func__, __LINE__) << "Invalid parameter 'bmName' = " << bmName << " !!\n";
   }
   double weight = getWeight_V1_private(weight_iter->second, mHH);
   if ( isDEBUG )
   {
-    std::cout << "<HHWeightInterfaceNLO::getWeight_V1>: bmName = '" << bmName << "'," 
+    std::cout << "<HHWeightInterfaceNLO::getWeight_LOtoNLO_V1>: bmName = '" << bmName << "'," 
               << " mHH = " << mHH 
               << " --> weight = " << weight << std::endl;
   }
@@ -500,20 +534,20 @@ HHWeightInterfaceNLO::getWeight_V1(const std::string & bmName,
 }
 
 double
-HHWeightInterfaceNLO::getWeight_V2(const std::string & bmName,
+HHWeightInterfaceNLO::getWeight_LOtoNLO_V2(const std::string & bmName,
                                    double mHH,
                                    double cosThetaStar,
                                    bool isDEBUG) const
 {
-  std::map<std::string, const TH2 *>::const_iterator weight_iter = weights_V2_.find(bmName);
-  if ( weight_iter == weights_V2_.end() )
+  std::map<std::string, const TH2 *>::const_iterator weight_iter = weights_LOtoNLO_V2_.find(bmName);
+  if ( weight_iter == weights_LOtoNLO_V2_.end() )
   {
     throw cmsException(this, __func__, __LINE__) << "Invalid parameter 'bmName' = " << bmName << " !!\n";
   }
   double weight = getWeight_V2_private(weight_iter->second, mHH, cosThetaStar);
   if ( isDEBUG )
   {
-    std::cout << "<HHWeightInterfaceNLO::getWeight_V2>: bmName = '" << bmName << "'," 
+    std::cout << "<HHWeightInterfaceNLO::getWeight_LOtoNLO_V2>: bmName = '" << bmName << "'," 
               << " mHH = " << mHH << ", cosTheta* = " << cosThetaStar 
               << " --> weight = " << weight << std::endl;
   }
@@ -521,25 +555,25 @@ HHWeightInterfaceNLO::getWeight_V2(const std::string & bmName,
 }
 
 double
-HHWeightInterfaceNLO::getReWeight_V1(const std::string & bmName,
+HHWeightInterfaceNLO::getReWeight_LOtoNLO_V1(const std::string & bmName,
                                      double mHH,
                                      double cosThetaStar,
                                      bool isDEBUG) const
 {
-  return getReWeight(bmName, mHH, cosThetaStar, kMode_V1, isDEBUG);
+  return getReWeight_LOtoNLO(bmName, mHH, cosThetaStar, kMode_V1, isDEBUG);
 }
 
 double
-HHWeightInterfaceNLO::getReWeight_V2(const std::string & bmName,
+HHWeightInterfaceNLO::getReWeight_LOtoNLO_V2(const std::string & bmName,
                                      double mHH,
                                      double cosThetaStar,
                                      bool isDEBUG) const
 {
-  return getReWeight(bmName, mHH, cosThetaStar, kMode_V2, isDEBUG);
+  return getReWeight_LOtoNLO(bmName, mHH, cosThetaStar, kMode_V2, isDEBUG);
 }
 
 double
-HHWeightInterfaceNLO::getReWeight(const std::string & bmName,
+HHWeightInterfaceNLO::getReWeight_LOtoNLO(const std::string & bmName,
                                   double mHH,
                                   double cosThetaStar,
                                   mode_type mode,
@@ -556,15 +590,65 @@ HHWeightInterfaceNLO::getReWeight(const std::string & bmName,
     double bmWeight = 1.;
     if ( mode == kMode_V1 )
     {
-      smWeight = getWeight_V1("SM", mHH, cosThetaStar, isDEBUG);
-      bmWeight = getWeight_V1(bmName, mHH, cosThetaStar, isDEBUG);
+      smWeight = getWeight_LOtoNLO_V1("SM", mHH, cosThetaStar, isDEBUG);
+      bmWeight = getWeight_LOtoNLO_V1(bmName, mHH, cosThetaStar, isDEBUG);
     }
     else if ( mode == kMode_V2 )
     {
-      smWeight = getWeight_V2("SM", mHH, cosThetaStar, isDEBUG);
-      bmWeight = getWeight_V2(bmName, mHH, cosThetaStar, isDEBUG);
+      smWeight = getWeight_LOtoNLO_V2("SM", mHH, cosThetaStar, isDEBUG);
+      bmWeight = getWeight_LOtoNLO_V2(bmName, mHH, cosThetaStar, isDEBUG);
     } else assert(0);
     reWeight = ( smWeight > 0. ) ? bmWeight/smWeight : 1.;
   }
   return reWeight;
+}
+
+double
+HHWeightInterfaceNLO::getWeight_NLOtoNLO_V1(const std::string & bmName,
+                                   double mHH,
+                                   double cosThetaStar,
+                                   bool isDEBUG) const
+{
+  double weight = 1.;
+  if ( bmName != "SM" )
+  {
+    std::map<std::string, const TH1 *>::const_iterator weight_iter = weights_NLOtoNLO_V1_.find(bmName);
+    if ( weight_iter == weights_NLOtoNLO_V1_.end() )
+    {
+      throw cmsException(this, __func__, __LINE__) << "Invalid parameter 'bmName' = " << bmName << " !!\n";
+    }
+    weight = getWeight_V1_private(weight_iter->second, mHH);
+  }
+  if ( isDEBUG )
+  {
+    std::cout << "<HHWeightInterfaceNLO::getWeight_NLOtoNLO_V1>: bmName = '" << bmName << "'," 
+              << " mHH = " << mHH 
+              << " --> weight = " << weight << std::endl;
+  }
+  return weight;
+}
+
+double
+HHWeightInterfaceNLO::getWeight_NLOtoNLO_V2(const std::string & bmName,
+                                   double mHH,
+                                   double cosThetaStar,
+                                   bool isDEBUG) const
+{
+  double weight = 1.;
+  if ( bmName != "SM" )
+  {
+    std::map<std::string, const TH2 *>::const_iterator weight_iter = weights_NLOtoNLO_V2_.find(bmName);
+    if ( weight_iter == weights_NLOtoNLO_V2_.end() )
+    {
+      throw cmsException(this, __func__, __LINE__) << "Invalid parameter 'bmName' = " << bmName << " !!\n";
+    }
+    weight = getWeight_V2_private(weight_iter->second, mHH, cosThetaStar);
+  }
+  if ( isDEBUG )
+  {
+    std::cout << "<HHWeightInterfaceNLO::getWeight_NLOtoNLO_V2>: bmName = '" << bmName << "'," 
+              << " mHH = " << mHH << ", cosTheta* = " << cosThetaStar 
+              << " --> weight = " << weight << std::endl;
+  }
+  return weight;
 }
