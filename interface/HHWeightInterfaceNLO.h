@@ -85,8 +85,8 @@ class HHWeightInterfaceNLO
    * The function getRelativeWeight_V2(...) extends the reweighting to both observables gen_mHH and cos(theta*),
    * and extendds the reweighting in gen_mHH to higher mass (up to 5 TeV, compared to 1040 GeV in the getRelativeWeight_NLOtoNLO_V1(...) function)
    *
-   * Note: The weights returned by the functions getRelativeWeight_NLOtoNLO_V1(...) and getRelativeWeight_NLOtoNLO_V2(...) are meant to be used
-   *       for studies of the HH reweighting only, NOT in regular analysis code !!
+   * Note: The weights returned by the functions getRelativeWeight_NLOtoNLO_V1(...) and getRelativeWeight_NLOtoNLO_V2(...) 
+   *       are meant to be used for studies of the HH reweighting only, NOT in regular analysis code !!
    */
   double
   getRelativeWeight_NLOtoNLO_V1(const std::string & bmName,
@@ -99,6 +99,24 @@ class HHWeightInterfaceNLO
                double mHH,
                double cosThetaStar,
                bool isDEBUG = false) const;
+
+  /**
+   * @brief Get histograms used to compute the weights
+   *
+   * Note: The histograms returned by the functions get_dXsec_V1_lo(), get_dXsec_V1_nlo(), get_dXsec_V2_lo(), and get_dXsec_V2_nlo()
+   *       are meant to be used for studies of the HH reweighting only, NOT in regular analysis code !!
+   */
+  const TH1*
+  get_dXsec_V1_lo(const std::string & bmName) const;
+
+  const TH1*
+  get_dXsec_V1_nlo(const std::string & bmName) const;
+
+  const TH2*
+  get_dXsec_V2_lo(const std::string & bmName) const;
+
+  const TH2*
+  get_dXsec_V2_nlo(const std::string & bmName) const;
 
  private:
   enum mode_type { kMode_V1, kMode_V2 };

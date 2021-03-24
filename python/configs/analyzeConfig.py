@@ -1217,6 +1217,7 @@ class analyzeConfig(object):
             'applyBtagSFRatio',
             'gen_mHH',
             'apply_genPhotonFilter', 
+            'save_dXsec_HHWeightInterfaceNLO', 
         ]
         jobOptions_typeMapping = {
             'central_or_shifts_local' : 'cms.vstring(%s)',

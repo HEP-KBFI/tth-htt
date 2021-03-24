@@ -652,3 +652,47 @@ HHWeightInterfaceNLO::getRelativeWeight_NLOtoNLO_V2(const std::string & bmName,
   }
   return weight;
 }
+
+const TH1*
+HHWeightInterfaceNLO::get_dXsec_V1_lo(const std::string & bmName) const
+{
+  std::map<std::string, const TH1 *>::const_iterator dXsec_V1_lo_iter = dXsec_V1_lo_.find(bmName);
+  if ( dXsec_V1_lo_iter == dXsec_V1_lo_.end() )
+  {
+    throw cmsException(this, __func__, __LINE__) << "Invalid parameter 'bmName' = " << bmName << " !!\n";
+  }
+  return dXsec_V1_lo_iter->second;
+}
+
+const TH1*
+HHWeightInterfaceNLO::get_dXsec_V1_nlo(const std::string & bmName) const
+{
+  std::map<std::string, const TH1 *>::const_iterator dXsec_V1_nlo_iter = dXsec_V1_nlo_.find(bmName);
+  if ( dXsec_V1_nlo_iter == dXsec_V1_nlo_.end() )
+  {
+    throw cmsException(this, __func__, __LINE__) << "Invalid parameter 'bmName' = " << bmName << " !!\n";
+  }
+  return dXsec_V1_nlo_iter->second;
+}
+
+const TH2*
+HHWeightInterfaceNLO::get_dXsec_V2_lo(const std::string & bmName) const
+{
+  std::map<std::string, const TH2 *>::const_iterator dXsec_V2_lo_iter = dXsec_V2_lo_.find(bmName);
+  if ( dXsec_V2_lo_iter == dXsec_V2_lo_.end() )
+  {
+    throw cmsException(this, __func__, __LINE__) << "Invalid parameter 'bmName' = " << bmName << " !!\n";
+  }
+  return dXsec_V2_lo_iter->second;
+}
+
+const TH2*
+HHWeightInterfaceNLO::get_dXsec_V2_nlo(const std::string & bmName) const
+{
+  std::map<std::string, const TH2 *>::const_iterator dXsec_V2_nlo_iter = dXsec_V2_nlo_.find(bmName);
+  if ( dXsec_V2_nlo_iter == dXsec_V2_nlo_.end() )
+  {
+    throw cmsException(this, __func__, __LINE__) << "Invalid parameter 'bmName' = " << bmName << " !!\n";
+  }
+  return dXsec_V2_nlo_iter->second;
+}
