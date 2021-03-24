@@ -115,7 +115,9 @@
 #include "tthAnalysis/HiggsToTauTau/interface/weightAuxFunctions.h" // get_tH_weight_str()
 #include "tthAnalysis/HiggsToTauTau/interface/EvtWeightRecorder.h" // EvtWeightRecorder
 #include "tthAnalysis/HiggsToTauTau/interface/BtagSFRatioFacility.h" // BtagSFRatioFacility
-#include "tthAnalysis/HiggsToTauTau/interface/HHWeightInterface.h" // HHWeightInterface
+#include "tthAnalysis/HiggsToTauTau/interface/HHWeightInterfaceLO.h" // HHWeightInterfaceLO
+#include "tthAnalysis/HiggsToTauTau/interface/HHWeightInterfaceNLO.h" // HHWeightInterfaceNLO
+#include "tthAnalysis/HiggsToTauTau/interface/HHWeightInterfaceCouplings.h" // HHWeightInterfaceCouplings
 #include "tthAnalysis/HiggsToTauTau/interface/AnalysisConfig.h" // AnalysisConfig
 #include "tthAnalysis/HiggsToTauTau/interface/RecoVertex.h" // RecoVertex
 #include "tthAnalysis/HiggsToTauTau/interface/RecoVertexReader.h" // RecoVertexReader
@@ -481,16 +483,26 @@ int main(int argc, char* argv[])
 
   //--- HH scan
   const edm::ParameterSet hhWeight_cfg = cfg_analyze.getParameterSet("hhWeight_cfg");
-  const bool apply_HH_rwgt = isMC_HH && hhWeight_cfg.getParameter<bool>("apply_rwgt");
-  const HHWeightInterface * HHWeight_calc = nullptr;
-  if(apply_HH_rwgt)
+  const bool apply_HH_rwgt_lo = analysisConfig.isHH_rwgt_allowed() && hhWeight_cfg.getParameter<bool>("apply_rwgt_lo");
+  const bool apply_HH_rwgt_nlo = analysisConfig.isHH_rwgt_allowed() && hhWeight_cfg.getParameter<bool>("apply_rwgt_nlo");
+  const HHWeightInterfaceCouplings * hhWeight_couplings = nullptr;
+  const HHWeightInterfaceLO * HHWeightLO_calc = nullptr;
+  const HHWeightInterfaceNLO * HHWeightNLO_calc = nullptr;
+  if(apply_HH_rwgt_lo || apply_HH_rwgt_nlo)
   {
-    HHWeight_calc = new HHWeightInterface(hhWeight_cfg);
-    evt_cat_strs = HHWeight_calc->get_scan_strs();
-  }
-  const size_t Nscan = evt_cat_strs.size();
-  std::cout << "Number of points being scanned = " << Nscan << '\n';
+    hhWeight_couplings = new HHWeightInterfaceCouplings(hhWeight_cfg);
 
+    if(apply_HH_rwgt_lo)
+    {
+      HHWeightLO_calc = new HHWeightInterfaceLO(hhWeight_couplings, hhWeight_cfg);
+      evt_cat_strs = hhWeight_couplings->get_bm_names();
+    }
+
+    if(apply_HH_rwgt_nlo)
+    {
+      HHWeightNLO_calc = new HHWeightInterfaceNLO(hhWeight_couplings, era);
+    }
+  }
 
   const std::vector<edm::ParameterSet> tHweights = cfg_analyze.getParameterSetVector("tHweights");
   if((isMC_tH || isMC_signal) && ! tHweights.empty())
@@ -797,7 +809,7 @@ int main(int argc, char* argv[])
         }
         const std::string process_string_new = evt_cat_str == default_cat_str ?
           process_string :
-          process_string + evt_cat_str
+          process_string + "_" + evt_cat_str
         ;
         const std::string process_and_genMatchName = boost::replace_all_copy(
           process_and_genMatch, process_string, process_string_new
@@ -1752,30 +1764,29 @@ int main(int argc, char* argv[])
     cutFlowTable.update("signal region veto", evtWeightRecorder.get(central_or_shift_main));
     cutFlowHistManager->fillHistograms("signal region veto", evtWeightRecorder.get(central_or_shift_main));
 
-    std::vector<double> WeightBM; // weights to do histograms for BMs
-    std::map<std::string, double> Weight_ktScan; // weights to do histograms
-    double HHWeight = 1.0; // X: for the SM point -- the point explicited on this code
-
-    if(apply_HH_rwgt)
+    std::map<std::string, double> Weight_ktScan; // weights to do histograms for BMs
+    if(apply_HH_rwgt_lo)
     {
-      assert(HHWeight_calc);
-      WeightBM = HHWeight_calc->getJHEPWeight(eventInfo.gen_mHH, eventInfo.gen_cosThetaStar, isDEBUG);
-      Weight_ktScan = HHWeight_calc->getScanWeight(eventInfo.gen_mHH, eventInfo.gen_cosThetaStar, isDEBUG);
-      HHWeight = WeightBM[0];
-      evtWeightRecorder.record_bm(HHWeight); // SM by default
+      assert(HHWeightLO_calc);
+      evtWeightRecorder.record_hhWeight_lo(HHWeightLO_calc, eventInfo, isDEBUG);
 
-      if(isDEBUG)
+      // CV: applying the NLO weight without applying the LO weight as well
+      //     does not make sense for the Run-2 LO HH MC samples,
+      //     as the LO weight needs to be applied in order to fix the coupling bug
+      //     present in the LO HH MC samples for 2016, 2017, and 2018
+      if ( apply_HH_rwgt_nlo )
       {
-        std::cout << "mhh = " << eventInfo.gen_mHH          << " : "
-          "cost "             << eventInfo.gen_cosThetaStar << " : "
-          "weight = "         << HHWeight                   << '\n'
-          ;
-        std::cout << "Calculated " << Weight_ktScan.size() << " scan weights\n";
-        for(std::size_t bm_list = 0; bm_list < Weight_ktScan.size(); ++bm_list)
+        evtWeightRecorder.record_hhWeight_nlo(HHWeightNLO_calc, eventInfo, isDEBUG);
+      }
+
+      for(const std::string & HHWeightName: evt_cat_strs)
+      {
+        Weight_ktScan[HHWeightName] = HHWeightLO_calc->getRelativeWeight(HHWeightName, eventInfo.gen_mHH, eventInfo.gen_cosThetaStar, isDEBUG);
+        if ( apply_HH_rwgt_nlo )
         {
-          std::cout << "line = " << bm_list << " " << evt_cat_strs[bm_list] << "; Weight = " <<  Weight_ktScan[evt_cat_strs[bm_list]] << '\n';
+          assert(HHWeightNLO_calc);
+          Weight_ktScan[HHWeightName] *= HHWeightNLO_calc->getRelativeWeight_LOtoNLO_V2(HHWeightName, eventInfo.gen_mHH, eventInfo.gen_cosThetaStar, isDEBUG);
         }
-        std::cout << '\n';
       }
     }
 
@@ -2051,9 +2062,9 @@ int main(int argc, char* argv[])
             const std::string evt_cat_str_query = evt_cat_str == default_cat_str ? get_tH_SM_str() : evt_cat_str;
             tH_weight_map[evt_cat_str] = evtWeight / evtWeight_tH_nom * eventInfo.genWeight_tH(central_or_shift_tH, evt_cat_str_query);
           }
-          else if(apply_HH_rwgt)
+          else if(apply_HH_rwgt_lo)
           {
-            tH_weight_map[evt_cat_str] = evtWeight * Weight_ktScan[evt_cat_str] / HHWeight;
+            tH_weight_map[evt_cat_str] = evtWeight * Weight_ktScan[evt_cat_str];
           }
           else
           {

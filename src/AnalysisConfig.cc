@@ -12,7 +12,7 @@ AnalysisConfig::AnalysisConfig(const std::string & analysis, const edm::Paramete
   , process_string_hh_(cfg.exists("process_hh") ? cfg.getParameter<std::string>("process_hh") : process_string_)
   , mass_HH_resonant_(-1.)
 {
-  assert(boost::starts_with(process_string_hh_, process_string_));
+  assert(boost::starts_with(process_string_hh_, process_string_) || process_string_ == "HH");
   isMC_     = cfg.getParameter<bool>("isMC");
   isData_   = !isMC_;
   isMC_WZ_  = process_string_ == "WZ";
@@ -50,7 +50,9 @@ AnalysisConfig::AnalysisConfig(const std::string & analysis, const edm::Paramete
   isMC_HH_nonresonant_ = parser_HH_nonresonant.Match(process_string_.data());
   assert(!(isMC_HH_resonant_ && isMC_HH_nonresonant_));
   isMC_HH_  = isMC_HH_resonant_ || isMC_HH_nonresonant_ || process_string_ == "HH";
-  isHH_rwgt_allowed_ = boost::starts_with(process_string_, "signal_ggf_nonresonant_") && process_string_.find("cHHH") == std::string::npos;
+  isHH_rwgt_allowed_ = (
+    boost::starts_with(process_string_, "signal_ggf_nonresonant_") && process_string_.find("cHHH") == std::string::npos
+  ) || process_string_ == "HH";
 
   std::string apply_topPtReweighting_string = cfg.getParameter<std::string>("apply_topPtReweighting");
   apply_topPtReweighting_ = !apply_topPtReweighting_string.empty();
