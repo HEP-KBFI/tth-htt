@@ -166,11 +166,11 @@ int main(int argc, char* argv[])
 
   std::string era_string = cfg_analyze.getParameter<std::string>("era");
   const Era era = get_era(era_string);
-  bool isMC = cfg_analyze.getParameter<bool>("isMC");
-  bool hasLHE = cfg_analyze.getParameter<bool>("hasLHE");
-  bool useObjectMultiplicity = cfg_analyze.getParameter<bool>("useObjectMultiplicity");
+  const bool isMC = cfg_analyze.getParameter<bool>("isMC");
+  const bool hasLHE = cfg_analyze.getParameter<bool>("hasLHE");
+  const bool useObjectMultiplicity = cfg_analyze.getParameter<bool>("useObjectMultiplicity");
 
-  std::string lepton_type_string = cfg_analyze.getParameter<std::string>("lepton_type"); 
+  const std::string lepton_type_string = cfg_analyze.getParameter<std::string>("lepton_type"); 
   assert(lepton_type_string == "e" || lepton_type_string == "mu"); 
   vstring triggerNames_1e = cfg_analyze.getParameter<vstring>("triggers_1e");
   std::vector<hltPath*> triggers_1e = create_hltPaths(triggerNames_1e);
@@ -219,8 +219,8 @@ int main(int argc, char* argv[])
 
   const bool genMatchingByIndex = cfg_analyze.getParameter<bool>("genMatchingByIndex");
   const bool isDEBUG = cfg_analyze.getParameter<bool>("isDEBUG");
-  bool isZll = (std::strncmp(process_string.data(), "DY", 2) == 0); // NEWLY ADDED
-
+  bool isZll_tmp = (std::strncmp(process_string.data(), "DY", 2) == 0); 
+  const bool isZll = (isMC && isZll_tmp) ? true : false; // NEWLY ADDED
 
   TString hadTauSelection_string = cfg_analyze.getParameter<std::string>("hadTauSelection").data();
   TObjArray* hadTauSelection_parts = hadTauSelection_string.Tokenize("|");
@@ -480,6 +480,8 @@ int main(int argc, char* argv[])
   RecoJetCollectionCleaner jetCleaner(0.4, isDEBUG);
   RecoJetCollectionCleanerByIndex jetCleanerByIndex(isDEBUG);
   RecoJetCollectionSelector jetSelector(era, -1, isDEBUG);
+  jetSelector.getSelector().set_min_pt(30.);
+  jetSelector.getSelector().set_max_absEta(2.4);
   RecoJetCollectionSelectorBtagLoose jetSelectorBtagLoose(era, -1, isDEBUG);
   RecoJetCollectionSelectorBtagMedium jetSelectorBtagMedium(era, -1, isDEBUG);
 
@@ -495,7 +497,9 @@ int main(int argc, char* argv[])
   inputTree->registerReader(metFilterReader);
 
   // --- Setting up the Met Filter Hist Manager ----
-  const edm::ParameterSet metFilterHistManagerCfg = makeHistManager_cfg(process_string, "LeptonEfficiency/met_filters", era_string, central_or_shift);
+  const edm::ParameterSet metFilterHistManagerCfg = makeHistManager_cfg(process_string, 
+									"LeptonEfficiency/met_filters", 
+									era_string, central_or_shift);
   MEtFilterHistManager * metFilterHistManager = new MEtFilterHistManager(metFilterHistManagerCfg);
   metFilterHistManager->bookHistograms(fs);
 
@@ -572,25 +576,31 @@ int main(int argc, char* argv[])
 
 
   //--- book histograms for electron numerator and denominator
+  // ***** For All Processes
   // ----inclusive electron histograms
-  auto histograms_e_numerator_incl_LeptonEfficiency   = get_num_den_hist_managers("numerator/incl/electrons_tight", kElectron, -1., -1., -1., -1., "pass");
-  auto histograms_e_denominator_incl_LeptonEfficiency = get_num_den_hist_managers("denominator/incl/electrons_presel_not_tight", kElectron, -1., -1., -1., -1., "fail");
+  auto histograms_e_numerator_incl_LeptonEfficiency   = get_num_den_hist_managers("numerator/incl/electrons_tight", 
+										  kElectron, -1., -1., -1., -1., "pass");
+  auto histograms_e_denominator_incl_LeptonEfficiency = get_num_den_hist_managers("denominator/incl/electrons_presel_not_tight", 
+										  kElectron, -1., -1., -1., -1., "fail");
 
   // ----Electron pT, eta binned histograms
   std::vector<numerator_and_denominatorHistManagers *> histograms_e_numerator_binned_LeptonEfficiency;  
   std::vector<numerator_and_denominatorHistManagers *> histograms_e_denominator_binned_LeptonEfficiency;  
 
-  // ----- DY process specific histograms
+  // *****  DY process specific histograms
+  // ----inclusive electron histograms
   numerator_and_denominatorHistManagers * histograms_e_numerator_incl_LeptonEfficiency_DY = 0;
   numerator_and_denominatorHistManagers * histograms_e_numerator_incl_LeptonEfficiency_DY_fakes = 0;
   numerator_and_denominatorHistManagers * histograms_e_denominator_incl_LeptonEfficiency_DY = 0;
   numerator_and_denominatorHistManagers * histograms_e_denominator_incl_LeptonEfficiency_DY_fakes = 0;
 
+  // ----Electron pT, eta binned histograms
   std::vector<numerator_and_denominatorHistManagers *> histograms_e_numerator_binned_LeptonEfficiency_DY;
   std::vector<numerator_and_denominatorHistManagers *> histograms_e_numerator_binned_LeptonEfficiency_DY_fakes;
   std::vector<numerator_and_denominatorHistManagers *> histograms_e_denominator_binned_LeptonEfficiency_DY;  
   std::vector<numerator_and_denominatorHistManagers *> histograms_e_denominator_binned_LeptonEfficiency_DY_fakes;
 
+  
   if(isZll && lepton_type_string == "e")
   { // For Electrons in  DYJets MC only
     histograms_e_numerator_incl_LeptonEfficiency_DY = new numerator_and_denominatorHistManagers(
@@ -616,12 +626,15 @@ int main(int argc, char* argv[])
 							         kElectron, -1., -1., -1., -1., "fail"
 						              );
   }  
-
+  
 
   if(lepton_type_string == "e")
-  {
+  { // Electron cond. for booking histograms begins 
+
+    // ----- Inclusive histogram booking
     histograms_e_numerator_incl_LeptonEfficiency->bookHistograms(fs, true); 
     histograms_e_denominator_incl_LeptonEfficiency->bookHistograms(fs, true);
+
     if(isZll)
     { // For Electrons in  DYJets MC only 
       histograms_e_numerator_incl_LeptonEfficiency_DY->bookHistograms(fs, true); 
@@ -629,8 +642,9 @@ int main(int argc, char* argv[])
       histograms_e_denominator_incl_LeptonEfficiency_DY->bookHistograms(fs, true); 
       histograms_e_denominator_incl_LeptonEfficiency_DY_fakes->bookHistograms(fs, true); 
     }
-  }
 
+
+  // ----- pT, Eta Binned histograms booking  
   for(int idxEtaBin_e = 0; idxEtaBin_e < numEtaBins_e; ++idxEtaBin_e)
     {
       const double minAbsEta_e = std::abs(etaBins_e[idxEtaBin_e]);
@@ -649,22 +663,20 @@ int main(int argc, char* argv[])
 	       "denominator/electrons_presel_not_tight", kElectron, minAbsEta_e, maxAbsEta_e, minPt_e, maxPt_e
 	  ); 
 
-	  if(lepton_type_string == "e")
-	  {
-	    histograms_e_numerator_LeptonEfficiency->bookHistograms(fs, true); 
-	    histograms_e_denominator_LeptonEfficiency->bookHistograms(fs, true); 
 
-	    histograms_e_numerator_binned_LeptonEfficiency.push_back(histograms_e_numerator_LeptonEfficiency);
-	    histograms_e_denominator_binned_LeptonEfficiency.push_back(histograms_e_denominator_LeptonEfficiency);
-	  }
+	  histograms_e_numerator_LeptonEfficiency->bookHistograms(fs, true); 
+	  histograms_e_denominator_LeptonEfficiency->bookHistograms(fs, true); 
+
+	  histograms_e_numerator_binned_LeptonEfficiency.push_back(histograms_e_numerator_LeptonEfficiency);
+	  histograms_e_denominator_binned_LeptonEfficiency.push_back(histograms_e_denominator_LeptonEfficiency);
+
 	  
 	  numerator_and_denominatorHistManagers * histogram_e_numerator_binned_LeptonEfficiency_DY = 0;
 	  numerator_and_denominatorHistManagers * histogram_e_denominator_binned_LeptonEfficiency_DY = 0;
 	  numerator_and_denominatorHistManagers * histogram_e_numerator_binned_LeptonEfficiency_DY_fakes = 0;
 	  numerator_and_denominatorHistManagers * histogram_e_denominator_binned_LeptonEfficiency_DY_fakes = 0;
 
-
-	  if(isZll && lepton_type_string == "e")
+	  if(isZll)
 	  { // For Electrons in  DYJets MC only
 	    histogram_e_numerator_binned_LeptonEfficiency_DY = new numerator_and_denominatorHistManagers(
 						                   "DY_signal", isMC, era_string, central_or_shift, 
@@ -704,28 +716,37 @@ int main(int argc, char* argv[])
 	  }
 	} 
     }
-  
+  }
+
+ 
+
   //--- book histograms for muon numerator and denominator
+  // ***** For All Processes
   // ----inclusive muon histograms
-  auto histograms_mu_numerator_incl_LeptonEfficiency   = get_num_den_hist_managers("numerator/incl/muons_tight", kMuon, -1., -1., -1., -1., "pass"); 
-  auto histograms_mu_denominator_incl_LeptonEfficiency = get_num_den_hist_managers("denominator/incl/muons_presel_not_tight", kMuon, -1., -1., -1., -1., "fail"); 
+  auto histograms_mu_numerator_incl_LeptonEfficiency   = get_num_den_hist_managers("numerator/incl/muons_tight", 
+										   kMuon, -1., -1., -1., -1., "pass"); 
+  auto histograms_mu_denominator_incl_LeptonEfficiency = get_num_den_hist_managers("denominator/incl/muons_presel_not_tight", 
+										   kMuon, -1., -1., -1., -1., "fail"); 
 
   // ----Muon pT, eta binned histograms
   std::vector<numerator_and_denominatorHistManagers *> histograms_mu_numerator_binned_LeptonEfficiency;  
   std::vector<numerator_and_denominatorHistManagers *> histograms_mu_denominator_binned_LeptonEfficiency;  
   
 
-  // ----- DY process specific histograms
+  // ***** DY process specific histograms
+  // ----inclusive muon histograms
   numerator_and_denominatorHistManagers * histograms_mu_numerator_incl_LeptonEfficiency_DY = 0;
   numerator_and_denominatorHistManagers * histograms_mu_numerator_incl_LeptonEfficiency_DY_fakes = 0;
   numerator_and_denominatorHistManagers * histograms_mu_denominator_incl_LeptonEfficiency_DY = 0;
   numerator_and_denominatorHistManagers * histograms_mu_denominator_incl_LeptonEfficiency_DY_fakes = 0;
 
+  // ----Muon pT, eta binned histograms
   std::vector<numerator_and_denominatorHistManagers *> histograms_mu_numerator_binned_LeptonEfficiency_DY;
   std::vector<numerator_and_denominatorHistManagers *> histograms_mu_numerator_binned_LeptonEfficiency_DY_fakes;
   std::vector<numerator_and_denominatorHistManagers *> histograms_mu_denominator_binned_LeptonEfficiency_DY;  
   std::vector<numerator_and_denominatorHistManagers *> histograms_mu_denominator_binned_LeptonEfficiency_DY_fakes;
 
+  
   if(isZll && lepton_type_string == "mu")
   { // For Muons in  DYJets MC only
     histograms_mu_numerator_incl_LeptonEfficiency_DY = new numerator_and_denominatorHistManagers(
@@ -751,12 +772,15 @@ int main(int argc, char* argv[])
 							         kMuon, -1., -1., -1., -1., "fail"
 							       );
   }  
-
+  
 
   if(lepton_type_string == "mu")
-  {
+  { // Muon cond. begins for booking muon histograms 
+
+    // ----- Inclusive histogram booking
     histograms_mu_numerator_incl_LeptonEfficiency->bookHistograms(fs, true); 
     histograms_mu_denominator_incl_LeptonEfficiency->bookHistograms(fs, true);
+
     if(isZll)
     { // For Muons in  DYJets MC only
 	histograms_mu_numerator_incl_LeptonEfficiency_DY->bookHistograms(fs, true); 
@@ -764,8 +788,9 @@ int main(int argc, char* argv[])
 	histograms_mu_denominator_incl_LeptonEfficiency_DY->bookHistograms(fs, true); 
 	histograms_mu_denominator_incl_LeptonEfficiency_DY_fakes->bookHistograms(fs, true);
     }
-  }
-  
+    
+
+  // ----- pT, Eta Binned histograms booking  
   for(int idxEtaBin_mu = 0; idxEtaBin_mu < numEtaBins_mu; ++idxEtaBin_mu)
     {
       const double minAbsEta_mu = std::abs(etaBins_mu[idxEtaBin_mu]);
@@ -784,21 +809,20 @@ int main(int argc, char* argv[])
 	       "denominator/muons_presel_not_tight", kMuon, minAbsEta_mu, maxAbsEta_mu, minPt_mu, maxPt_mu
 	  );
 	  
-	  if(lepton_type_string == "mu")
-	  {
-	    histograms_mu_numerator_LeptonEfficiency->bookHistograms(fs, true);
-	    histograms_mu_denominator_LeptonEfficiency->bookHistograms(fs, true);
 
-	    histograms_mu_numerator_binned_LeptonEfficiency.push_back(histograms_mu_numerator_LeptonEfficiency);
-	    histograms_mu_denominator_binned_LeptonEfficiency.push_back(histograms_mu_denominator_LeptonEfficiency);
-	  }
+	  histograms_mu_numerator_LeptonEfficiency->bookHistograms(fs, true);
+	  histograms_mu_denominator_LeptonEfficiency->bookHistograms(fs, true);
+
+	  histograms_mu_numerator_binned_LeptonEfficiency.push_back(histograms_mu_numerator_LeptonEfficiency);
+	  histograms_mu_denominator_binned_LeptonEfficiency.push_back(histograms_mu_denominator_LeptonEfficiency);
+
 
 	  numerator_and_denominatorHistManagers * histogram_mu_numerator_binned_LeptonEfficiency_DY = 0;
 	  numerator_and_denominatorHistManagers * histogram_mu_denominator_binned_LeptonEfficiency_DY = 0;
 	  numerator_and_denominatorHistManagers * histogram_mu_numerator_binned_LeptonEfficiency_DY_fakes = 0;
 	  numerator_and_denominatorHistManagers * histogram_mu_denominator_binned_LeptonEfficiency_DY_fakes = 0;
 
-	  if(isZll && lepton_type_string == "mu")
+	  if(isZll)
 	  { // For Muons in  DYJets MC only
 	    histogram_mu_numerator_binned_LeptonEfficiency_DY = new numerator_and_denominatorHistManagers(
 						                   "DY_signal", isMC, era_string, central_or_shift, 
@@ -838,6 +862,8 @@ int main(int argc, char* argv[])
 	  }
 	} 
     } 
+  }
+
 
 //--- open output file containing run:lumi:event numbers of events passing final event selection criteria
   std::ostream* selEventsFile = new std::ofstream(selEventsFileName_output.data(), std::ios::out);
@@ -1057,12 +1083,21 @@ int main(int argc, char* argv[])
     const bool selTrigger_1mu = use_triggers_1mu && isTriggered_1mu;
 
 
-    if ( !(selTrigger_1e || selTrigger_1mu) ) 
+    if ( !( (selTrigger_1e && lepton_type_string == "e") || 
+	    (selTrigger_1mu && lepton_type_string == "mu")) ) 
     { 
       if ( run_lumi_eventSelector ) {
 	std::cout << "event FAILS trigger selection." << std::endl; 
-	std::cout << " (selTrigger_1e = " << selTrigger_1e 
-		  << ", selTrigger_1mu = " << selTrigger_1mu << ")" << std::endl;
+	if(lepton_type_string == "e")
+	{
+	  std::cout << " (selTrigger_1e = " 
+		    << selTrigger_1e << ")" << std::endl;
+	}
+ 	if(lepton_type_string == "mu")
+	{  std::cout << " (selTrigger_1mu = " 
+		     << selTrigger_1mu << ")" << std::endl;
+
+	}
       }
       continue;
     }
@@ -1221,7 +1256,7 @@ int main(int argc, char* argv[])
     const std::vector<const RecoJet*> selBJets_loose = jetSelectorBtagLoose(cleanedJets, isHigherPt);
     const std::vector<const RecoJet*> selBJets_medium = jetSelectorBtagMedium(cleanedJets, isHigherPt);
 
-    // ------ Compute MET ---
+    // ------ Compute MET ------------
     const RecoMEt met = metReader->read();
     GenMEt genmet_tmp = GenMEt(0.,0.); // There is no MET Covariance stored in Ntuples
     if(isMC && (genmetReader != nullptr)){
@@ -1241,9 +1276,6 @@ int main(int argc, char* argv[])
       }
 
     //std::cout<< "#preselElectrons: " << preselElectrons.size() << " #preselMuons: " << preselMuons.size() << " #selHadTaus: " << selHadTaus.size() << std::endl;
-
-
-
 
 
 //---- Randomly choosing Tag and Probe indices
@@ -1267,7 +1299,7 @@ int main(int argc, char* argv[])
     bool isCharge_OS_tmp = false;
 
     // require exactly two preselected leptons
-    if(lepton_type_string == "e"){ // For Di-Electron events only
+    if( lepton_type_string == "e" ){ // For Di-Electron events only
       if ( !(preselElectrons.size() == 2) ) 
       {
 	if ( run_lumi_eventSelector ) 
@@ -1352,16 +1384,18 @@ int main(int argc, char* argv[])
       // -------Checking Gen Matching for Tag and Probe electron--------
       const GenLepton * genElectron_tag = nullptr;
       const GenLepton * genElectron_probe = nullptr;
-      if(preselElectrons[tag_lepton_index]->genLepton() && abs(preselElectrons[tag_lepton_index]->genLepton()->pdgId()) == 11)
-      {
-        genElectron_tag = preselElectrons[tag_lepton_index]->genLepton();
-      }
+      if(isZll)
+      { // Checking gen matching for DYJets MC only
+	if(preselElectrons[tag_lepton_index]->genLepton() && abs(preselElectrons[tag_lepton_index]->genLepton()->pdgId()) == 11)
+        {
+	  genElectron_tag = preselElectrons[tag_lepton_index]->genLepton();
+	}
       
-      if(preselElectrons[probe_lepton_index]->genLepton() && abs(preselElectrons[probe_lepton_index]->genLepton()->pdgId()) == 11)
-      {
-        genElectron_probe = preselElectrons[probe_lepton_index]->genLepton();
+	if(preselElectrons[probe_lepton_index]->genLepton() && abs(preselElectrons[probe_lepton_index]->genLepton()->pdgId()) == 11)
+        {
+	  genElectron_probe = preselElectrons[probe_lepton_index]->genLepton();
+	}
       }
- 
 
 // ------ Data/MC Correction factors to be applied to MC (Electron case)---
     if(isMC)
@@ -1418,7 +1452,7 @@ int main(int argc, char* argv[])
       evtWeightRecorder.compute_FR_2l(passesTight_electron_lead, passesTight_electron_sublead);
     }
 
-
+ 
       //------ Histogram filling for electron
       // numerator histograms
       numerator_and_denominatorHistManagers * histograms_e_incl_pass = nullptr;
@@ -1438,8 +1472,7 @@ int main(int argc, char* argv[])
       std::vector<numerator_and_denominatorHistManagers *> * histograms_e_binned_fail_DY = nullptr;
       numerator_and_denominatorHistManagers * histograms_e_incl_fail_DY_fakes = nullptr;
       std::vector<numerator_and_denominatorHistManagers *> * histograms_e_binned_fail_DY_fakes = nullptr;
-
-
+ 
       const bool TightChargeCut_e = lep_useTightChargeCut ? preselElectrons[probe_lepton_index]->tightCharge() < 2 : true;
       if(!(preselElectrons[probe_lepton_index]->isTight() && TightChargeCut_e) )
       { // Fail region
@@ -1454,7 +1487,6 @@ int main(int argc, char* argv[])
 	      std::cout << "Probe electron FAILS Tight lepton ID cuts " << std::endl;
 	    }
 	}
-
 
 	if(isZll)
 	{
@@ -1477,7 +1509,6 @@ int main(int argc, char* argv[])
 	  }
 	  else
 	  {// DY_fakes
-
 	    histograms_e_incl_fail_DY_fakes = histograms_e_denominator_incl_LeptonEfficiency_DY_fakes;
 	    histograms_e_binned_fail_DY_fakes = &histograms_e_denominator_binned_LeptonEfficiency_DY_fakes;
 	    if(histograms_e_incl_fail_DY_fakes != nullptr && histograms_e_binned_fail_DY_fakes != nullptr)
@@ -1547,8 +1578,8 @@ int main(int argc, char* argv[])
 		}
 	      }
 	  } 
-	}      	
-    }else if(lepton_type_string == "mu"){ // For Di-Muon events only
+	} // Pass cond. ends
+    }else if( lepton_type_string == "mu" ){ // For Di-Muon events only
 	if ( !(preselMuons.size() == 2) ) 
 	{ 
 	  if ( run_lumi_eventSelector ) 
@@ -1634,18 +1665,18 @@ int main(int argc, char* argv[])
 	// -------Checking Gen Matching for Tag and Probe Muon--------
 	const GenLepton * genMuon_tag = nullptr;
 	const GenLepton * genMuon_probe = nullptr;
-	if(preselMuons[tag_lepton_index]->genLepton() && abs(preselMuons[tag_lepton_index]->genLepton()->pdgId()) == 13)
-        {
-	  genMuon_tag = preselMuons[tag_lepton_index]->genLepton();
-	}
+	if(isZll)
+	{ // Checking gen matching for DYJets MC only
+	  if(preselMuons[tag_lepton_index]->genLepton() && abs(preselMuons[tag_lepton_index]->genLepton()->pdgId()) == 13)
+	  {
+	   genMuon_tag = preselMuons[tag_lepton_index]->genLepton();
+	  }
       
-	if(preselMuons[probe_lepton_index]->genLepton() && abs(preselMuons[probe_lepton_index]->genLepton()->pdgId()) == 13)
-	{
-	  genMuon_probe = preselMuons[probe_lepton_index]->genLepton();
+	  if(preselMuons[probe_lepton_index]->genLepton() && abs(preselMuons[probe_lepton_index]->genLepton()->pdgId()) == 13)
+	  {
+	    genMuon_probe = preselMuons[probe_lepton_index]->genLepton();
+	  }
 	}
-	// --------------------------------------------
-
-
 
 	// ------ Data/MC Correction factors to be applied to MC (Muon case)---
 	if(isMC)
@@ -1700,6 +1731,7 @@ int main(int argc, char* argv[])
 	  evtWeightRecorder.compute_FR_2l(passesTight_muon_lead, passesTight_muon_sublead);
 	}
 
+	
 	//------ Histogram filling for muon
 	// numerator histograms
 	numerator_and_denominatorHistManagers * histograms_mu_incl_pass = nullptr;
@@ -1719,7 +1751,7 @@ int main(int argc, char* argv[])
 	std::vector<numerator_and_denominatorHistManagers *> * histograms_mu_binned_fail_DY = nullptr;
 	numerator_and_denominatorHistManagers * histograms_mu_incl_fail_DY_fakes = nullptr;
 	std::vector<numerator_and_denominatorHistManagers *> * histograms_mu_binned_fail_DY_fakes = nullptr;
-
+	
 
 	const bool TightChargeCut_mu = lep_useTightChargeCut ? preselMuons[probe_lepton_index]->tightCharge() < 2 : true;
 	if( !(preselMuons[probe_lepton_index]->isTight() && TightChargeCut_mu) )
@@ -1753,7 +1785,6 @@ int main(int argc, char* argv[])
 		  if(genMuon_probe){std::cout << "Probe Muon is gen matched "<< std::endl;}
 		}
 	      }
-
 	    }
 	    else
 	      {// DY_fakes
@@ -1771,12 +1802,10 @@ int main(int argc, char* argv[])
 		  }
 		}
 	      }
-	  }
-
+	  } // isZll cond. ends
       }
       else
 	{ // Pass region 
-
 	  histograms_mu_incl_pass = histograms_mu_numerator_incl_LeptonEfficiency;
 	  histograms_mu_binned_pass = &histograms_mu_numerator_binned_LeptonEfficiency;
 	  if(histograms_mu_incl_pass != nullptr && histograms_mu_binned_pass != nullptr)
@@ -1828,7 +1857,7 @@ int main(int argc, char* argv[])
 		}
 	      }
 	  }
-	}	
+	} // Pass Cond. ends
     }else{
       throw cms::Exception("analyze_LeptonEfficiency")
 	<< "InValid Option for lepton_type = " << lepton_type_string << " !!\n";
@@ -1875,20 +1904,24 @@ int main(int argc, char* argv[])
   HistManagerBase::writeHistograms();
 
 //--- memory clean-up
+  delete cutFlowHistManager;
   delete dataToMCcorrectionInterface;
-
   delete run_lumi_eventSelector;
-
   delete selEventsFile;
 
   delete muonReader;
   delete electronReader;
+  delete hadTauReader;
   delete jetReader;
+  delete metReader;
+
   delete genLeptonReader;
   delete genHadTauReader;
   delete genPhotonReader;
   delete genJetReader;
+  delete genmetReader;
   delete lheInfoReader;
+  delete metFilterReader;
 
   delete genEvtHistManager_beforeCuts;
   delete genEvtHistManager_afterCuts;
@@ -1896,7 +1929,14 @@ int main(int argc, char* argv[])
   delete l1PreFiringWeightReader;
   delete eventWeightManager;
 
+  //delete genElectron_tag;
+  //delete genElectron_probe;
+  //delete genMuon_tag;
+  //delete genMuon_probe;
+  //delete lepton1;
+  //delete lepton2;
 
+  
   delete histograms_e_numerator_incl_LeptonEfficiency; 
   delete histograms_e_numerator_incl_LeptonEfficiency_DY;
   delete histograms_e_numerator_incl_LeptonEfficiency_DY_fakes;  
@@ -1909,6 +1949,7 @@ int main(int argc, char* argv[])
   delete histograms_mu_denominator_incl_LeptonEfficiency;
   delete histograms_mu_denominator_incl_LeptonEfficiency_DY;
   delete histograms_mu_denominator_incl_LeptonEfficiency_DY_fakes;
+  
 
   for(const std::vector<numerator_and_denominatorHistManagers *> & histVector:
     {
@@ -1931,6 +1972,9 @@ int main(int argc, char* argv[])
 	  delete hist;
 	}
     }
+
+  delete inputTree;
+
   hltPaths_delete(triggers_1e);
   hltPaths_delete(triggers_1mu);
 
