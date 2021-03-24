@@ -1929,14 +1929,6 @@ int main(int argc, char* argv[])
   delete l1PreFiringWeightReader;
   delete eventWeightManager;
 
-  //delete genElectron_tag;
-  //delete genElectron_probe;
-  //delete genMuon_tag;
-  //delete genMuon_probe;
-  //delete lepton1;
-  //delete lepton2;
-
-  
   delete histograms_e_numerator_incl_LeptonEfficiency; 
   delete histograms_e_numerator_incl_LeptonEfficiency_DY;
   delete histograms_e_numerator_incl_LeptonEfficiency_DY_fakes;  
