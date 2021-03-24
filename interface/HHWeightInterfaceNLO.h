@@ -10,19 +10,21 @@
  */
 
 #include "tthAnalysis/HiggsToTauTau/interface/LocalFileInPath.h"      // LocalFileInPath
-#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Era::k2016, Era::k2017, Era::k2018
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Era::*
 
-#include <TH1.h> // TH1
-#include <TH2.h> // TH2
-
-#include <vector> // std::vector
-#include <string> // std::string
-#include <map>    // std::map
+// forward declarations
+class TH1;
+class TH2;
+class HHWeightInterfaceCouplings;
 
 class HHWeightInterfaceNLO
 {
  public:
-  HHWeightInterfaceNLO(Era era, bool apply_coupling_fix_CMS = false, double max_reWeight = 10., bool isDEBUG = false);
+  HHWeightInterfaceNLO(const HHWeightInterfaceCouplings * const couplings,
+                       Era era,
+                       bool apply_coupling_fix_CMS = false,
+                       double max_reWeight = 10.,
+                       bool isDEBUG = false);
   ~HHWeightInterfaceNLO();
 
   /**
@@ -41,15 +43,15 @@ class HHWeightInterfaceNLO
    */
   double
   getWeight_LOtoNLO_V1(const std::string & bmName,
-               double mHH,
-               double cosThetaStar,
-               bool isDEBUG = false) const;
+                       double mHH,
+                       double cosThetaStar,
+                       bool isDEBUG = false) const;
 
   double
   getWeight_LOtoNLO_V2(const std::string & bmName,
-               double mHH,
-               double cosThetaStar,
-               bool isDEBUG = false) const;
+                       double mHH,
+                       double cosThetaStar,
+                       bool isDEBUG = false) const;
 
   /**
    * @brief Get single reWeight
@@ -64,15 +66,15 @@ class HHWeightInterfaceNLO
    */
   double
   getRelativeWeight_LOtoNLO_V1(const std::string & bmName,
-                 double mHH,
-                 double cosThetaStar,
-                 bool isDEBUG = false) const;
+                               double mHH,
+                               double cosThetaStar,
+                               bool isDEBUG = false) const;
 
   double
   getRelativeWeight_LOtoNLO_V2(const std::string & bmName,
-                 double mHH,
-                 double cosThetaStar,
-                 bool isDEBUG = false) const;
+                               double mHH,
+                               double cosThetaStar,
+                               bool isDEBUG = false) const;
 
  /**
    * @brief Get single reWeight
@@ -90,15 +92,15 @@ class HHWeightInterfaceNLO
    */
   double
   getRelativeWeight_NLOtoNLO_V1(const std::string & bmName,
-               double mHH,
-               double cosThetaStar,
-               bool isDEBUG = false) const;
+                                double mHH,
+                                double cosThetaStar,
+                                bool isDEBUG = false) const;
 
   double
   getRelativeWeight_NLOtoNLO_V2(const std::string & bmName,
-               double mHH,
-               double cosThetaStar,
-               bool isDEBUG = false) const;
+                                double mHH,
+                                double cosThetaStar,
+                                bool isDEBUG = false) const;
 
   /**
    * @brief Get histograms used to compute the weights
@@ -123,10 +125,12 @@ class HHWeightInterfaceNLO
 
   double
   getRelativeWeight_LOtoNLO(const std::string & bmName,
-              double mHH,
-              double cosThetaStar,
-              mode_type mode,
-              bool isDEBUG = false) const;
+                            double mHH,
+                            double cosThetaStar,
+                            mode_type mode,
+                            bool isDEBUG = false) const;
+
+  const HHWeightInterfaceCouplings * const couplings_;
 
   LocalFileInPath xsecFileName_V1_lo_;
   LocalFileInPath xsecFileName_V1_nlo_;
