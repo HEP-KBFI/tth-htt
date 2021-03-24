@@ -953,6 +953,8 @@ int main(int argc, char* argv[])
   cutFlowHistManager->bookHistograms(fs);
 
 
+
+
   while ( inputTree->hasNextEvent() && (!run_lumi_eventSelector || (run_lumi_eventSelector && !run_lumi_eventSelector->areWeDone())) ) 
   {
     if ( inputTree->canReport(reportEvery) ) {
@@ -963,12 +965,13 @@ int main(int argc, char* argv[])
                 << ") file (" << selectedEntries << " Entries selected)\n";
     }
     ++analyzedEntries;
-
     if ( isCentral ) 
     {
       histogram_analyzedEntries->Fill(0.);
     }
+
     EvtWeightRecorder evtWeightRecorder({central_or_shift}, central_or_shift, isMC);
+
     if ( isDEBUG ) 
     {
       std::cout << "event #" << inputTree -> getCurrentMaxEventIdx() << ' ' << eventInfo << '\n';
@@ -1045,6 +1048,7 @@ int main(int argc, char* argv[])
       if(genMatchToElectronReader) electronGenMatch = genMatchToElectronReader->read();
     }
 
+    //--- fill generator level histograms (before cuts)
     std::vector<GenParticle> genTauLeptons;
     if(isMC && (apply_DYMCReweighting || apply_DYMCNormScaleFactors))
     {
@@ -1075,13 +1079,12 @@ int main(int argc, char* argv[])
       }
     }
 
+    // -------- Trigger cuts -----
     const bool isTriggered_1e = hltPaths_isTriggered(triggers_1e, triggerWhiteList, eventInfo, isMC);
     const bool isTriggered_1mu = hltPaths_isTriggered(triggers_1mu, triggerWhiteList, eventInfo, isMC);
    
-    
     const bool selTrigger_1e = use_triggers_1e && isTriggered_1e;
     const bool selTrigger_1mu = use_triggers_1mu && isTriggered_1mu;
-
 
     if ( !( (selTrigger_1e && lepton_type_string == "e") || 
 	    (selTrigger_1mu && lepton_type_string == "mu")) ) 
@@ -1115,7 +1118,9 @@ int main(int argc, char* argv[])
       cutFlowTable.update("trigger 1mu", evtWeightRecorder.get(central_or_shift));
       cutFlowHistManager->fillHistograms("trigger 1mu", evtWeightRecorder.get(central_or_shift));
     }
-   
+
+
+    // -----Apply offline trigger level cuts to electrons only
     if(lepton_type_string == "e")
     { 
       if (selTrigger_1e && !apply_offline_e_trigger_cuts_1e)
@@ -1158,8 +1163,9 @@ int main(int argc, char* argv[])
     }
 
 
-//--- build collections of electrons, muons and hadronic taus;
-//    resolve overlaps in order of priority: muon, electron,
+//--- build reco level collections of electrons, muons and hadronic taus;
+//--- resolve overlaps in order of priority: muon, electron,
+    // ***** Reco Muon Collections
     const std::vector<RecoMuon> muons = muonReader->read();
     const std::vector<const RecoMuon*> muon_ptrs = convert_to_ptrs(muons);
     const std::vector<const RecoMuon*> cleanedMuons = muon_ptrs; // CV: no cleaning needed for muons, as they have the highest priority in the overlap removal
@@ -1191,6 +1197,7 @@ int main(int argc, char* argv[])
       }
     }
 
+    // ***** Reco Electron Collections
     const std::vector<RecoElectron> electrons = electronReader->read();
     const std::vector<const RecoElectron*> electron_ptrs = convert_to_ptrs(electrons);
     const std::vector<const RecoElectron*> cleanedElectrons = electronCleaner(electron_ptrs, preselMuons);
@@ -1236,16 +1243,16 @@ int main(int argc, char* argv[])
     );
 
 
-// ------- Build tau collections --------------
+    // ***** Reco Tau Collections ****
     const std::vector<RecoHadTau> hadTaus = hadTauReader->read();
     const std::vector<const RecoHadTau*> hadTau_ptrs = convert_to_ptrs(hadTaus);
     const std::vector<const RecoHadTau*> cleanedHadTaus = hadTauCleaner(hadTau_ptrs, preselMuons, preselElectrons);
     const std::vector<const RecoHadTau*> fakeableHadTaus = fakeableHadTauSelector(cleanedHadTaus, isHigherPt);
     const std::vector<const RecoHadTau*> selHadTaus = tightHadTauSelector(cleanedHadTaus, isHigherPt);
-// --------------------------------------------------------
 
 
-//--- build collections of jets and select subset of jets passing b-tagging criteria
+
+    //--- build collections of Reco jets and select subset of jets passing b-tagging criteria
     const std::vector<RecoJet> jets = jetReader->read();
     const std::vector<const RecoJet*> jet_ptrs = convert_to_ptrs(jets);
     const std::vector<const RecoJet*> cleanedJets = jetCleaningByIndex ?
@@ -1293,6 +1300,7 @@ int main(int argc, char* argv[])
       tag_lepton_index = 1;
       probe_lepton_index = 0;
     }	 
+    delete r3; // Deleting the TRandom3 pointer
     //std::cout<< "Tag index: " << tag_lepton_index << " Probe index: " << probe_lepton_index << std::endl;
 
 //--- apply preselection
