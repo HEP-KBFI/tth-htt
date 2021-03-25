@@ -578,10 +578,10 @@ int main(int argc, char* argv[])
   //--- book histograms for electron numerator and denominator
   // ***** For All Processes
   // ----inclusive electron histograms
-  auto histograms_e_numerator_incl_LeptonEfficiency   = get_num_den_hist_managers("numerator/incl/electrons_tight", 
-										  kElectron, -1., -1., -1., -1., "pass");
-  auto histograms_e_denominator_incl_LeptonEfficiency = get_num_den_hist_managers("denominator/incl/electrons_presel_not_tight", 
-										  kElectron, -1., -1., -1., -1., "fail");
+  auto histograms_e_numerator_incl_LeptonEfficiency   = get_num_den_hist_managers("numerator/electrons_tight", 
+										  kElectron, -1., -1., -1., -1.);
+  auto histograms_e_denominator_incl_LeptonEfficiency = get_num_den_hist_managers("denominator/electrons_presel_not_tight", 
+										  kElectron, -1., -1., -1., -1.);
 
   // ----Electron pT, eta binned histograms
   std::vector<numerator_and_denominatorHistManagers *> histograms_e_numerator_binned_LeptonEfficiency;  
@@ -605,25 +605,25 @@ int main(int argc, char* argv[])
   { // For Electrons in  DYJets MC only
     histograms_e_numerator_incl_LeptonEfficiency_DY = new numerator_and_denominatorHistManagers(
 						         "DY_signal", isMC, era_string, central_or_shift, 
-							 "LeptonEfficiency/numerator/incl/electrons_tight",
-							 kElectron, -1., -1., -1., -1., "pass"
+							 "LeptonEfficiency/numerator/electrons_tight",
+							 kElectron, -1., -1., -1., -1.
 						      );
     histograms_e_numerator_incl_LeptonEfficiency_DY_fakes = new numerator_and_denominatorHistManagers(
 							       "DY_fakes", isMC, era_string, central_or_shift, 
-							        "LeptonEfficiency/numerator/incl/electrons_tight",
-							         kElectron, -1., -1., -1., -1., "pass"
+							       "LeptonEfficiency/numerator/electrons_tight",
+							       kElectron, -1., -1., -1., -1.
 						            );
 
     histograms_e_denominator_incl_LeptonEfficiency_DY = new numerator_and_denominatorHistManagers(
 						           "DY_signal", isMC, era_string, central_or_shift, 
-							   "LeptonEfficiency/denominator/incl/electrons_presel_not_tight",
-							   kElectron, -1., -1., -1., -1., "fail"
+							   "LeptonEfficiency/denominator/electrons_presel_not_tight",
+							   kElectron, -1., -1., -1., -1.
 						        );
 
     histograms_e_denominator_incl_LeptonEfficiency_DY_fakes = new numerator_and_denominatorHistManagers(
 						                 "DY_fakes", isMC, era_string, central_or_shift, 
-							         "LeptonEfficiency/denominator/incl/electrons_presel_not_tight",
-							         kElectron, -1., -1., -1., -1., "fail"
+								 "LeptonEfficiency/denominator/electrons_presel_not_tight",
+							         kElectron, -1., -1., -1., -1.
 						              );
   }  
   
@@ -723,10 +723,10 @@ int main(int argc, char* argv[])
   //--- book histograms for muon numerator and denominator
   // ***** For All Processes
   // ----inclusive muon histograms
-  auto histograms_mu_numerator_incl_LeptonEfficiency   = get_num_den_hist_managers("numerator/incl/muons_tight", 
-										   kMuon, -1., -1., -1., -1., "pass"); 
-  auto histograms_mu_denominator_incl_LeptonEfficiency = get_num_den_hist_managers("denominator/incl/muons_presel_not_tight", 
-										   kMuon, -1., -1., -1., -1., "fail"); 
+  auto histograms_mu_numerator_incl_LeptonEfficiency   = get_num_den_hist_managers("numerator/muons_tight", 
+										   kMuon, -1., -1., -1., -1.); 
+  auto histograms_mu_denominator_incl_LeptonEfficiency = get_num_den_hist_managers("denominator/muons_presel_not_tight", 
+										   kMuon, -1., -1., -1., -1.); 
 
   // ----Muon pT, eta binned histograms
   std::vector<numerator_and_denominatorHistManagers *> histograms_mu_numerator_binned_LeptonEfficiency;  
@@ -751,25 +751,25 @@ int main(int argc, char* argv[])
   { // For Muons in  DYJets MC only
     histograms_mu_numerator_incl_LeptonEfficiency_DY = new numerator_and_denominatorHistManagers(
 						         "DY_signal", isMC, era_string, central_or_shift, 
-							 "LeptonEfficiency/numerator/incl/muons_tight",
-							 kMuon, -1., -1., -1., -1., "pass"
+							 "LeptonEfficiency/numerator/muons_tight",
+							 kMuon, -1., -1., -1., -1.
 						       );
     histograms_mu_numerator_incl_LeptonEfficiency_DY_fakes = new numerator_and_denominatorHistManagers(
 							       "DY_fakes", isMC, era_string, central_or_shift, 
-							        "LeptonEfficiency/numerator/incl/muons_tight",
-							         kMuon, -1., -1., -1., -1., "pass"
+							       "LeptonEfficiency/numerator/muons_tight",
+							       kMuon, -1., -1., -1., -1.
 						             );
 
     histograms_mu_denominator_incl_LeptonEfficiency_DY = new numerator_and_denominatorHistManagers(
 						           "DY_signal", isMC, era_string, central_or_shift, 
-							   "LeptonEfficiency/denominator/incl/muons_presel_not_tight",
-							   kMuon, -1., -1., -1., -1., "fail"
+							   "LeptonEfficiency/denominator/muons_presel_not_tight",
+							   kMuon, -1., -1., -1., -1.
 						         );
 
     histograms_mu_denominator_incl_LeptonEfficiency_DY_fakes = new numerator_and_denominatorHistManagers(
 						                 "DY_fakes", isMC, era_string, central_or_shift, 
-							         "LeptonEfficiency/denominator/incl/muons_presel_not_tight",
-							         kMuon, -1., -1., -1., -1., "fail"
+								 "LeptonEfficiency/denominator/muons_presel_not_tight",
+							         kMuon, -1., -1., -1., -1.
 							       );
   }  
   
