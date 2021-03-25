@@ -807,13 +807,14 @@ class analyzeConfig(object):
             raise ValueError("Uncrecongizable sample category: %s" % sample_info[sample_category_to_check])
           jobOptions['hhWeight_cfg.denominator_file'] = 'hhAnalysis/{}/data/denom_{}.root'.format(hhWeight_base, self.era)
           jobOptions['hhWeight_cfg.histtitle'] = sample_info[sample_category_to_check]
-          jobOptions['hhWeight_cfg.do_ktscan'] = not ('hh' in self.channel or 'ctrl' in self.channel)
-          jobOptions['hhWeight_cfg.ktScan_file'] = self.kt_scan_file
-          jobOptions['hhWeight_cfg.klScan_file'] = self.kl_scan_file
-          jobOptions['hhWeight_cfg.c2Scan_file'] = self.c2_scan_file
-          jobOptions['hhWeight_cfg.scanMode'] = 'default'
-          
-          jobOptions['hhWeight_cfg.apply_rwgt'] = 'hh' in self.channel
+          #jobOptions['hhWeight_cfg.c2Scan_file'] = self.c2_scan_file # ignore c2 scan
+          if not ('hh' in self.channel or 'ctrl' in self.channel or 'study' in self.channel.lower()):
+            # enable kt-scan in ttH analysis
+            jobOptions['hhWeight_cfg.scanMode'] = 'additional'
+            jobOptions['hhWeight_cfg.ktScan_file'] = self.kt_scan_file
+          elif 'hh' in self.channel and 'ctrl' not in self.channel and 'study' not in self.channel.lower():
+            #jobOptions['hhWeight_cfg.scanMode'] = 'full' # uncomment for kl scan in HH analysis
+            jobOptions['hhWeight_cfg.klScan_file'] = self.kl_scan_file
 
         update_conv_bkg = False
         if 'genPhotonFilter' in sample_info.keys():
@@ -1201,14 +1202,13 @@ class analyzeConfig(object):
             'useObjectMultiplicity',
             'hhWeight_cfg.denominator_file',
             'hhWeight_cfg.histtitle',
-            'hhWeight_cfg.do_ktscan',
             'hhWeight_cfg.klScan_file',
             'hhWeight_cfg.ktScan_file',
             'hhWeight_cfg.c2Scan_file',
             'hhWeight_cfg.cgScan_file',
             'hhWeight_cfg.c2gScan_file',
             'hhWeight_cfg.scanMode',
-            'hhWeight_cfg.apply_rwgt',
+            'hhWeight_cfg.apply_rwgt_lo',
             'minNumJets',
             'skipEvery',
             'apply_topPtReweighting',
@@ -1217,6 +1217,7 @@ class analyzeConfig(object):
             'applyBtagSFRatio',
             'gen_mHH',
             'apply_genPhotonFilter', 
+            'save_dXsec_HHWeightInterfaceNLO', 
         ]
         jobOptions_typeMapping = {
             'central_or_shifts_local' : 'cms.vstring(%s)',

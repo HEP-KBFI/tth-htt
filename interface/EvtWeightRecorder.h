@@ -23,6 +23,8 @@ class Data_to_MC_CorrectionInterface_0l_2tau_trigger;
 class Data_to_MC_CorrectionInterface_1l_1tau_trigger;
 class Data_to_MC_CorrectionInterface_1l_2tau_trigger;
 class BtagSFRatioFacility;
+class HHWeightInterfaceLO;
+class HHWeightInterfaceNLO;
 
 enum class L1PreFiringWeightSys;
 enum class PUsys;
@@ -56,7 +58,13 @@ public:
   get_genWeight() const;
 
   double
-  get_bmWeight() const;
+  get_hhWeight() const;
+
+  double
+  get_hhWeight_lo() const;
+
+  double
+  get_hhWeight_nlo() const;
 
   double
   get_rescaling() const;
@@ -194,8 +202,23 @@ public:
   void
   record_prescale(double weight);
 
+  // CV: weight specific to LO HH MC samples, computed by HHWeightInterfaceLO->getWeight("SM",...) method
   void
-  record_bm(double weight);
+  record_hhWeight_lo(double weight);
+
+  void
+  record_hhWeight_lo(const HHWeightInterfaceLO * const HHWeightLO_calc,
+                     const EventInfo & eventInfo,
+                     bool isDEBUG = false);
+
+  // CV: weight specific to LO HH MC samples, computed by HHWeightInterfaceNLO->getWeight("SM",...) method
+  void
+  record_hhWeight_nlo(double weight);
+
+  void
+  record_hhWeight_nlo(const HHWeightInterfaceNLO * const HHWeightNLO_calc,
+                      const EventInfo & eventInfo,
+                      bool isDEBUG = false);
 
   void
   record_l1PrefireWeight(const L1PreFiringWeightReader * const l1PreFiringWeightReader);
@@ -363,7 +386,8 @@ protected:
   double chargeMisIdProb_;
   double dyBgrWeight_;
   double prescale_;
-  double bm_weight_;
+  double hhWeight_lo_;
+  double hhWeight_nlo_;
   double rescaling_;
   std::string central_or_shift_;
   std::vector<std::string> central_or_shifts_;
