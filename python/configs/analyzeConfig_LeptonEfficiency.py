@@ -766,13 +766,25 @@ class analyzeConfig_LeptonEfficiency(analyzeConfig):
           self.outputFile_hadd_stage1[key_hadd_stage1_job] = os.path.join(self.dirs[key_hadd_stage1_dir][DKEY_HIST],
                                                                           "hadd_stage1_%s.root" % process_name)
 
+
+    # initialize input and output file names for hadd_stage1_5
+    key_hadd_stage1_5_dir = getKey("hadd")
+    key_hadd_stage1_5_job = getKey('')
+    if not key_hadd_stage1_5_job in self.inputFiles_hadd_stage1_5:
+      self.inputFiles_hadd_stage1_5[key_hadd_stage1_5_job] = []
+    for key_hadd_stage1_job in self.outputFile_hadd_stage1.keys():
+      self.inputFiles_hadd_stage1_5[key_hadd_stage1_5_job].append(self.outputFile_hadd_stage1[key_hadd_stage1_job])
+    self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job] = os.path.join(self.dirs[key_hadd_stage1_5_dir][DKEY_HIST], "hadd_stage1_5.root" )      
+
+
     # initialize input and output file names for hadd_stage2
-    key_hadd_stage1_job = getKey(process_name)
+    #key_hadd_stage1_job = getKey(process_name)
     key_hadd_stage2_dir = getKey("hadd")
     key_hadd_stage2_job = getKey('')
     if not key_hadd_stage2_job in self.inputFiles_hadd_stage2:
       self.inputFiles_hadd_stage2[key_hadd_stage2_job] = []
-    self.inputFiles_hadd_stage2[key_hadd_stage2_job].append(self.outputFile_hadd_stage1[key_hadd_stage1_job])
+    #self.inputFiles_hadd_stage2[key_hadd_stage2_job].append(self.outputFile_hadd_stage1[key_hadd_stage1_job])
+    self.inputFiles_hadd_stage2[key_hadd_stage2_job].append(self.outputFile_hadd_stage1_5[key_hadd_stage1_5_job])
     self.outputFile_hadd_stage2[key_hadd_stage2_job] = os.path.join(self.dirs[key_hadd_stage2_dir][DKEY_HIST], "hadd_stage2.root")
 
     # We need to generate the eta and pt bins for electrons and muons
@@ -1008,7 +1020,11 @@ class analyzeConfig_LeptonEfficiency(analyzeConfig):
     lines_makefile = []
     self.addToMakefile_analyze(lines_makefile)
     self.addToMakefile_hadd_stage1(lines_makefile)
-    self.addToMakefile_hadd_stage2(lines_makefile, make_dependency = "phony_hadd_stage1")
+
+    self.addToMakefile_backgrounds(lines_makefile)
+
+    #self.addToMakefile_hadd_stage2(lines_makefile, make_dependency = "phony_hadd_stage1")
+    self.addToMakefile_hadd_stage2(lines_makefile, make_dependency = "phony_hadd_stage1_5")
     self.addToMakefile_prep_dcard(lines_makefile)
     self.addToMakefile_combine(lines_makefile)
     self.addToMakefile_comp_LeptonEfficiency(lines_makefile)

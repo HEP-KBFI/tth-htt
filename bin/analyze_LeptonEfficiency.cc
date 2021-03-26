@@ -952,7 +952,7 @@ int main(int argc, char* argv[])
   CutFlowTableHistManager * cutFlowHistManager = new CutFlowTableHistManager(cutFlowTableCfg, cuts);
   cutFlowHistManager->bookHistograms(fs);
 
-
+  TRandom3 *r3 = new TRandom3(0); // Initializing the random number seed
 
 
   while ( inputTree->hasNextEvent() && (!run_lumi_eventSelector || (run_lumi_eventSelector && !run_lumi_eventSelector->areWeDone())) ) 
@@ -1289,9 +1289,7 @@ int main(int argc, char* argv[])
     int tag_lepton_index = -1;
     int probe_lepton_index = -1;
 
-    TRandom3 *r3 = new TRandom3(0);
     Double_t r = r3->Uniform(0, 1);
-
     if(r < 0.5)
     { 
       tag_lepton_index = 0;
@@ -1300,7 +1298,6 @@ int main(int argc, char* argv[])
       tag_lepton_index = 1;
       probe_lepton_index = 0;
     }	 
-    delete r3; // Deleting the TRandom3 pointer
     //std::cout<< "Tag index: " << tag_lepton_index << " Probe index: " << probe_lepton_index << std::endl;
 
 //--- apply preselection
@@ -1974,6 +1971,8 @@ int main(int argc, char* argv[])
     }
 
   delete inputTree;
+
+  delete r3; // Deleting the TRandom3 pointer
 
   hltPaths_delete(triggers_1e);
   hltPaths_delete(triggers_1mu);
