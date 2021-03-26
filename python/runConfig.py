@@ -152,9 +152,14 @@ class tthAnalyzeParser(argparse.ArgumentParser):
       help = 'R|Number of input files per job',
     )
 
-  def add_modes(self, modes):
+  def add_modes(self, modes, default = None):
+    if type(default) == str:
+      assert(default in modes)
+      required = False
+    else:
+      required = True
     self.add_argument('-m', '--mode',
-      type = str, dest = 'mode', metavar = 'mode', default = None, required = True, choices = modes,
+      type = str, dest = 'mode', metavar = 'mode', default = default, required = required, choices = modes,
       help = 'R|Analysis type (choices: %s)' % tthAnalyzeParser.cat(modes),
     )
 
