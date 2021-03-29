@@ -307,13 +307,13 @@ void ComputeHistBinIntegral(TH1* histogram, std::map<std::string, fitResultType*
 }
 
 
-void FixHistBinIntegral(std::string& histogramName, TFile* inputFile, const std::string& ProcessName, const std::string& variable_den, double& integral, double& integralErr2)
+void FixHistBinIntegral(std::string& histogramName, TFile* inputFile, const std::string& ProcessName, const std::string& variable, double& integral, double& integralErr2)
 {
     //double integral_temp = 0.;
     //double integralErr2_temp = 0.;
     histogramName.append(ProcessName);
     histogramName.append("/");
-    histogramName.append(variable_den);
+    histogramName.append(variable);
     std::cout << "loading histogram = '" << histogramName << "'" << std::endl;
     TH1* histogram = dynamic_cast<TH1*>(inputFile->Get(histogramName.data()));
     if ( !histogram ) throw cms::Exception("fillHistogram")
@@ -330,7 +330,7 @@ void FixHistBinIntegral(std::string& histogramName, TFile* inputFile, const std:
 }
 
 
-void readPrefit(TFile* inputFile_stage2, TFile* inputFile_stage1_5, std::map<std::string, fitResultType*>& fitResults, const std::string& variable_den, bool enable_MC_Closure_sidebands = false)
+void readPrefit(TFile* inputFile_stage2, TFile* inputFile_stage1_5, std::map<std::string, fitResultType*>& fitResults, const std::string& variable, bool enable_MC_Closure_sidebands = false)
 {
  
   for ( std::map<std::string, fitResultType*>::iterator fitResult = fitResults.begin();
@@ -418,8 +418,8 @@ void readPrefit(TFile* inputFile_stage2, TFile* inputFile_stage1_5, std::map<std
     histogramName_TTg.append("TTg"); 
     histogramName_TT_fakes_copy.append("/");
     histogramName_TTg.append("/");   
-    histogramName_TT_fakes_copy.append(variable_den);
-    histogramName_TTg.append(variable_den); 
+    histogramName_TT_fakes_copy.append(variable);
+    histogramName_TTg.append(variable); 
     std::cout << "loading histogram_TT_fakes_copy = '" << histogramName_TT_fakes_copy << "'" << std::endl;
     TH1* histogram_TT_fakes_copy = dynamic_cast<TH1*>(inputFile_stage1_5->Get(histogramName_TT_fakes_copy.data())->Clone());
     if ( !histogram_TT_fakes_copy ) throw cms::Exception("fillHistogram")
@@ -441,7 +441,7 @@ void readPrefit(TFile* inputFile_stage2, TFile* inputFile_stage1_5, std::map<std
     
     double integral_data_fakes_prefit = 0.;
     double integralErr2_data_fakes_prefit = 0.; 
-    FixHistBinIntegral(histogramName, inputFile_stage2, "data_fakes", variable_den, integral_data_fakes_prefit, integralErr2_data_fakes_prefit);
+    FixHistBinIntegral(histogramName, inputFile_stage2, "data_fakes", variable, integral_data_fakes_prefit, integralErr2_data_fakes_prefit);
     std::cout << " integral_data_fakes_prefit " << integral_data_fakes_prefit << " integralErr2_data_fakes_prefit " << integralErr2_data_fakes_prefit << std::endl;
     double integralErr_data_fakes_prefit = TMath::Sqrt(integralErr2_data_fakes_prefit);
     fitResult->second->norm_data_fakes_prefit_ = integral_data_fakes_prefit;
@@ -451,7 +451,7 @@ void readPrefit(TFile* inputFile_stage2, TFile* inputFile_stage1_5, std::map<std
 
     double integral_TT_fakes = 0.;
     double integralErr2_TT_fakes = 0.; 
-    FixHistBinIntegral(histogramName_TT_fakes, inputFile_stage1_5, "TTj", variable_den, integral_TT_fakes, integralErr2_TT_fakes);
+    FixHistBinIntegral(histogramName_TT_fakes, inputFile_stage1_5, "TTj", variable, integral_TT_fakes, integralErr2_TT_fakes);
     double integralErr_TT_fakes = TMath::Sqrt(integralErr2_TT_fakes);
     fitResult->second->norm_TT_fakes_ = integral_TT_fakes;
     fitResult->second->normErr_TT_fakes_ = integralErr_TT_fakes;
@@ -460,7 +460,7 @@ void readPrefit(TFile* inputFile_stage2, TFile* inputFile_stage1_5, std::map<std
     double integral_TT_fakes2 = 0.;
     double integralErr2_TT_fakes2 = 0.;
     if(enable_MC_Closure_sidebands){
-      FixHistBinIntegral(histogramName_TT_fakes2, inputFile_stage1_5, "TTj", variable_den, integral_TT_fakes2, integralErr2_TT_fakes2);
+      FixHistBinIntegral(histogramName_TT_fakes2, inputFile_stage1_5, "TTj", variable, integral_TT_fakes2, integralErr2_TT_fakes2);
       double integralErr_TT_fakes2 = TMath::Sqrt(integralErr2_TT_fakes2);
       fitResult->second->norm_TT_fakes2_ = integral_TT_fakes2;
       fitResult->second->normErr_TT_fakes2_ = integralErr_TT_fakes2;
@@ -472,7 +472,7 @@ void readPrefit(TFile* inputFile_stage2, TFile* inputFile_stage1_5, std::map<std
     double integral_QCD_fakes = 0.;
     double integralErr2_QCD_fakes = 0.;
     if(enable_MC_Closure_sidebands){ 
-      FixHistBinIntegral(histogramName_QCD_fakes, inputFile_stage1_5, "QCDj", variable_den, integral_QCD_fakes, integralErr2_QCD_fakes);
+      FixHistBinIntegral(histogramName_QCD_fakes, inputFile_stage1_5, "QCDj", variable, integral_QCD_fakes, integralErr2_QCD_fakes);
       double integralErr_QCD_fakes = TMath::Sqrt(integralErr2_QCD_fakes);
       fitResult->second->norm_QCD_fakes_ = integral_QCD_fakes;
       fitResult->second->normErr_QCD_fakes_ = integralErr_QCD_fakes;
@@ -484,8 +484,8 @@ void readPrefit(TFile* inputFile_stage2, TFile* inputFile_stage1_5, std::map<std
     double integral_QCD_fakes_Conv_Corrected = 0.;
     double integralErr2_QCD_fakes_Conv_Corrected = 0.;
     if(enable_MC_Closure_sidebands){  
-      //FixHistBinIntegral(histogramName_QCD_fakes_Conv_Corrected, inputFile_stage2, "QCD", variable_den, integral_QCD_fakes_Conv_Corrected, integralErr2_QCD_fakes_Conv_Corrected); // for QCD fakes (w Trigger prescale weights and Trigger cuts)   
-      FixHistBinIntegral(histogramName_QCD_fakes_Conv_Corrected, inputFile_stage1_5, "QCD", variable_den, integral_QCD_fakes_Conv_Corrected, integralErr2_QCD_fakes_Conv_Corrected); // for QCD fakes (w/o Trigger prescale weights and Trigger cuts)   
+      //FixHistBinIntegral(histogramName_QCD_fakes_Conv_Corrected, inputFile_stage2, "QCD", variable, integral_QCD_fakes_Conv_Corrected, integralErr2_QCD_fakes_Conv_Corrected); // for QCD fakes (w Trigger prescale weights and Trigger cuts)   
+      FixHistBinIntegral(histogramName_QCD_fakes_Conv_Corrected, inputFile_stage1_5, "QCD", variable, integral_QCD_fakes_Conv_Corrected, integralErr2_QCD_fakes_Conv_Corrected); // for QCD fakes (w/o Trigger prescale weights and Trigger cuts)   
       double integralErr_QCD_fakes_Conv_Corrected = TMath::Sqrt(integralErr2_QCD_fakes_Conv_Corrected);
       fitResult->second->norm_QCD_fakes_Conv_Corrected_ = integral_QCD_fakes_Conv_Corrected;
       fitResult->second->normErr_QCD_fakes_Conv_Corrected_ = integralErr_QCD_fakes_Conv_Corrected;
@@ -875,7 +875,7 @@ int main(int argc, char* argv[])
 
 
   std::string process = cfg_comp.getParameter<std::string>("processName"); // ADDED FOR CONV. CORR.S                                                                                                        
-  std::string variable = cfg_comp.getParameter<std::string>("HistogramName_num");   // ADDED FOR CONV. CORR.S                                                                                               
+  std::string variable_num = cfg_comp.getParameter<std::string>("HistogramName_num");   // ADDED FOR CONV. CORR.S                                                                                               
   std::string variable_den = cfg_comp.getParameter<std::string>("HistogramName_den");
   //double conv_unc = cfg_comp.getParameter<double>("Conversion_uncert");    // ADDED FOR CONV. CORR.S [Not needed anymore]
 
@@ -946,13 +946,13 @@ int main(int argc, char* argv[])
   if ( !inputFile_mc_stage1_5 ) throw cms::Exception("comp_LeptonFakeRate")
 			 << "Failed to open stage 1_5 input file = '" << inputFileName_mc_stage1_5 << "' !!\n";
 
-  readPrefit(inputFile_mc_stage2, inputFile_mc_stage1_5, fitResults_e_pass, variable_den, enable_MC_Closure_sidebands);
+  readPrefit(inputFile_mc_stage2, inputFile_mc_stage1_5, fitResults_e_pass, variable_num, enable_MC_Closure_sidebands);
   readPrefit(inputFile_mc_stage2, inputFile_mc_stage1_5, fitResults_e_fail, variable_den, enable_MC_Closure_sidebands);
-  readPrefit(inputFile_mc_stage2, inputFile_mc_stage1_5, fitResults_mu_pass, variable_den, enable_MC_Closure_sidebands);
+  readPrefit(inputFile_mc_stage2, inputFile_mc_stage1_5, fitResults_mu_pass, variable_num, enable_MC_Closure_sidebands);
   readPrefit(inputFile_mc_stage2, inputFile_mc_stage1_5, fitResults_mu_fail, variable_den, enable_MC_Closure_sidebands);
 
   if(enable_MC_Closure_sidebands){
-    readConversionCorr(inputFile_mc_stage2, fitResults_e_pass, process, variable); // ADDED FOR ELECTRON CONV. CORRECTIONS
+    readConversionCorr(inputFile_mc_stage2, fitResults_e_pass, process, variable_num); // ADDED FOR ELECTRON CONV. CORRECTIONS
     std::cout << "closing inputFile_mc_stage2 = '" << inputFileName_mc_stage2 << "'" << std::endl;
     delete inputFile_mc_stage2;
     std::cout << "closing inputFile_mc_stage1_5 = '" << inputFileName_mc_stage1_5 << "'" << std::endl;

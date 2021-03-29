@@ -127,11 +127,11 @@ struct fitResultType
   double normErr_signal_postfit_;
 };
 
-void FixHistBinIntegral(std::string& histogramName, TFile* inputFile, const std::string& ProcessName, const std::string& variable_den, double& integral, double& integralErr2)
+void FixHistBinIntegral(std::string& histogramName, TFile* inputFile, const std::string& ProcessName, const std::string& variable, double& integral, double& integralErr2)
 {
     histogramName.append(ProcessName);
     histogramName.append("/");
-    histogramName.append(variable_den);
+    histogramName.append(variable);
     std::cout << "loading histogram = '" << histogramName << "'" << std::endl;
     TH1* histogram = dynamic_cast<TH1*>(inputFile->Get(histogramName.data()));
     if ( !histogram ) throw cms::Exception("fillHistogram")
@@ -150,7 +150,7 @@ void FixHistBinIntegral(std::string& histogramName, TFile* inputFile, const std:
 
 void readPrefit(TFile* inputFile_stage2, 
 		std::map<std::string, fitResultType*>& fitResults, 
-		const std::string& variable_den,
+		const std::string& variable,
 		const std::string& signal_proc)
 {
  
@@ -196,7 +196,7 @@ void readPrefit(TFile* inputFile_stage2,
 
     double integral_signal_prefit = 0.;
     double integralErr2_signal_prefit = 0.; 
-    FixHistBinIntegral(histogramName, inputFile_stage2, signal_proc, variable_den, integral_signal_prefit, integralErr2_signal_prefit);
+    FixHistBinIntegral(histogramName, inputFile_stage2, signal_proc, variable, integral_signal_prefit, integralErr2_signal_prefit);
     std::cout << " integral_signal_prefit " << integral_signal_prefit << " integralErr2_signal_prefit " << integralErr2_signal_prefit << std::endl;
     double integralErr_signal_prefit = TMath::Sqrt(integralErr2_signal_prefit);
     fitResult->second->norm_signal_prefit_ = integral_signal_prefit;
@@ -481,7 +481,7 @@ int main(int argc, char* argv[])
   std::string outputFileName = cfg_comp.getParameter<std::string>("outputFileName");
 
   std::string signal_proc = cfg_comp.getParameter<std::string>("processName");
-  std::string variable = cfg_comp.getParameter<std::string>("HistogramName_num");
+  std::string variable_num = cfg_comp.getParameter<std::string>("HistogramName_num");
   std::string variable_den = cfg_comp.getParameter<std::string>("HistogramName_den");
  
 
@@ -542,10 +542,10 @@ int main(int argc, char* argv[])
 
   if(lepton_type_string == "e")
   {
-    readPrefit(inputFile_mc_stage2, fitResults_e_pass, variable_den, signal_proc);
+    readPrefit(inputFile_mc_stage2, fitResults_e_pass, variable_num, signal_proc);
     readPrefit(inputFile_mc_stage2, fitResults_e_fail, variable_den, signal_proc);
   }else if(lepton_type_string == "mu"){  
-    readPrefit(inputFile_mc_stage2, fitResults_mu_pass, variable_den, signal_proc);
+    readPrefit(inputFile_mc_stage2, fitResults_mu_pass, variable_num, signal_proc);
     readPrefit(inputFile_mc_stage2, fitResults_mu_fail, variable_den, signal_proc);
   }
 

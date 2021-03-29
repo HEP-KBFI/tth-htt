@@ -20,8 +20,8 @@ SUFFIX_GEN_MATCH = "" ## NO NEED FOR l SINCE ALREADY DONE IN STAGE1 STEP
 sig_procs     = ['{{ signal_process }}']
 
 
-#bkg_procs_arr = ["DY_fake", "Singletop", "Diboson", "TTbar", "WJets"]
-bkg_procs_arr = ["DY_fake", "Singletop", "Diboson", "TTbar"] ## Dropped "WJets" since was negligible in charge flip measurement as well
+#bkg_procs_arr = ["DY_fakes", "Singletop", "Diboson", "TTbar", "WJets"]
+bkg_procs_arr = ["DY_fakes", "Singletop", "Diboson", "TTbar"] ## Dropped "WJets" since was negligible in charge flip measurement as well
 
 Era = '{{ era }}' ## NEWLY ADDED (For Lumi Unc.)
 
@@ -97,7 +97,7 @@ cb.cp().AddSyst( ## Correl. across $CHANNEL and $BIN and all MC derived sig. and
 
 cb.cp().AddSyst( ## Correl. across $CHANNEL and $BIN and all MC derived sig. and bkg. processes
     cb, lumi_label, "lnN", ch.SystMap('channel', 'process')
-    (channels, ['DY_fake'], lumi_unc) ## DY_fake is already derived from gen_matching no need for SUFFIX_GEN_MATCH
+    (channels, ['DY_fakes'], lumi_unc) ## DY_fakes is already derived from gen_matching no need for SUFFIX_GEN_MATCH
 )
 
 cb.cp().AddSyst( ## Correl. across $CHANNEL and $BIN and all MC derived sig. and bkg. processes
@@ -130,7 +130,7 @@ cb.cp().AddSyst( ## Correl. across $CHANNEL and $BIN
  
 cb.cp().AddSyst( ## Correl. across $CHANNEL and $BIN
     cb, 'fake_norm', 'lnN', ch.SystMap('channel', 'process')
-        (channels, ['DY_fake'], 1.5) ## 50% (DY_fake is already derived from gen_matching no need for SUFFIX_GEN_MATCH)
+        (channels, ['DY_fakes'], 1.5) ## 50% (DY_fakes is already derived from gen_matching no need for SUFFIX_GEN_MATCH)
 )
 
 cb.cp().AddSyst( ## Correl. across $CHANNEL and $BIN

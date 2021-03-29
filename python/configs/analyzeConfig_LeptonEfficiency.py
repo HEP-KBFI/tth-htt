@@ -505,7 +505,7 @@ class analyzeConfig_LeptonEfficiency(analyzeConfig):
     self.cfgFile_comp_LeptonEfficiency = os.path.join(self.template_dir, "comp_LeptonEfficiency_cfg.py")
     self.jobOptions_comp_LeptonEfficiency = {}
 
-    self.prep_dcard_processesToCopy = [ "data_obs", "DY", "DY_signal", "DY_fake", "WJets", "TTbar", "Singletop", "Diboson" ]
+    self.prep_dcard_processesToCopy = [ "data_obs", "DY", "DY_signal", "DY_fakes", "WJets", "TTbar", "Singletop", "Diboson" ]
     self.sig_proc = "DY_signal"
     self.histogramDir_prep_dcard = "LeptonEfficiency"
     self.prep_dcard = prep_dcard
@@ -514,6 +514,9 @@ class analyzeConfig_LeptonEfficiency(analyzeConfig):
     self.denominator_histogram = denominator_histogram[0]
     self.numerator_plotLabel = numerator_histogram[1]
     self.denominator_plotLabel = denominator_histogram[1] 
+    self.numerator_FileLabel = numerator_histogram[0] + "_num"
+    self.denominator_FileLabel = denominator_histogram[0] + "_den" 
+
 
     self.select_rle_output = select_rle_output
 
@@ -583,7 +586,7 @@ class analyzeConfig_LeptonEfficiency(analyzeConfig):
     lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
     lines.append("process.fwliteOutput.fileName = cms.string('%s')" % jobOptions['datacardFile'])
     lines.append("process.prepareDatacards.histogramToFit = cms.string('%s')" % jobOptions['histogramToFit'])
-    lines.append("process.prepareDatacards.processesToCopy = cms.vstring('data_obs', 'DY', 'DY_signal', 'DY_fake', 'TTbar', 'Diboson', 'WJets', 'Singletop')")
+    lines.append("process.prepareDatacards.processesToCopy = cms.vstring('data_obs', 'DY', 'DY_signal', 'DY_fakes', 'TTbar', 'Diboson', 'WJets', 'Singletop')")
     if jobOptions['histogramToFit'] in ["m_ll"]:
       lines.append("process.prepareDatacards.histogramToFit_xMin = cms.double(0.)")
       lines.append("process.prepareDatacards.histogramToFit_xMax = cms.double(150.)")
@@ -868,7 +871,7 @@ class analyzeConfig_LeptonEfficiency(analyzeConfig):
     if self.prep_dcard:
       logging.info("Creating configuration files to run 'prepareDatacards_LeptonEfficiency'")
       datacards = []
-      for histogramToFit in self.histograms_to_fit:
+      for histogramToFit in ["m_ll_num", "m_ll_den"]:
         key_prep_dcard_dir = getKey("prepareDatacards")
         key_prep_dcard_job = getKey(histogramToFit)
         datacard = os.path.join(self.dirs[key_prep_dcard_dir][DKEY_DCRD], "prepareDatacards_%s.root" % (histogramToFit))
@@ -877,7 +880,7 @@ class analyzeConfig_LeptonEfficiency(analyzeConfig):
           'cfgFile_modified' : os.path.join(self.dirs[key_prep_dcard_dir][DKEY_CFGS], "prepareDatacards_LeptonEfficiency_%s_cfg.py" % histogramToFit),
           'datacardFile' : datacard,
           'histogramDir' : (self.histogramDir_prep_dcard),
-          'histogramToFit' : histogramToFit,
+          'histogramToFit' : 'm_ll',
           'label' : None,
           'categories' : categories,
         }
@@ -943,8 +946,8 @@ class analyzeConfig_LeptonEfficiency(analyzeConfig):
               l_pt_high              = l_pt_high,
               l_is_inclusive         = l_is_inclusive,
               is_num                 = is_num,
-              numerator_output_dir   = os.path.join(combine_output_dir, 'mlfit_LeptonEfficiency_%s' % self.numerator_histogram),
-              denominator_output_dir = os.path.join(combine_output_dir, 'mlfit_LeptonEfficiency_%s' % self.denominator_histogram),
+              numerator_output_dir   = os.path.join(combine_output_dir, 'mlfit_LeptonEfficiency_%s' % self.numerator_FileLabel),
+              denominator_output_dir = os.path.join(combine_output_dir, 'mlfit_LeptonEfficiency_%s' % self.denominator_FileLabel),
               selection              = selection,
               lepton_letter          = 'e' if lepton == 'electron' else 'mu',
               grep_value             = self.sig_proc,
@@ -970,11 +973,11 @@ class analyzeConfig_LeptonEfficiency(analyzeConfig):
         numerator_histogram = self.numerator_histogram,
         denominator_histogram = self.denominator_histogram,
         scripts_dir = self.dirs[DKEY_SCRIPTS],
-        numerator_datacard = os.path.join(self.dirs[key_prep_dcard_dir][DKEY_DCRD], "prepareDatacards_%s.root" % self.numerator_histogram),
-        denominator_datacard = os.path.join(self.dirs[key_prep_dcard_dir][DKEY_DCRD], "prepareDatacards_%s.root" % self.denominator_histogram),
+        numerator_datacard = os.path.join(self.dirs[key_prep_dcard_dir][DKEY_DCRD], "prepareDatacards_%s.root" % self.numerator_FileLabel),
+        denominator_datacard = os.path.join(self.dirs[key_prep_dcard_dir][DKEY_DCRD], "prepareDatacards_%s.root" % self.denominator_FileLabel),
         output_dir = combine_output_dir,
-        numerator_output_dir = os.path.join(combine_output_dir, 'mlfit_LeptonEfficiency_%s' % self.numerator_histogram),
-        denominator_output_dir = os.path.join(combine_output_dir, 'mlfit_LeptonEfficiency_%s' % self.denominator_histogram),
+        numerator_output_dir = os.path.join(combine_output_dir, 'mlfit_LeptonEfficiency_%s' % self.numerator_FileLabel),
+        denominator_output_dir = os.path.join(combine_output_dir, 'mlfit_LeptonEfficiency_%s' % self.denominator_FileLabel),
         lepton_bins = lepton_bins,
         fit_values = fit_value_file,
       )

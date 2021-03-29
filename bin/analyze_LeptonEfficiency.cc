@@ -357,7 +357,17 @@ int main(int argc, char* argv[])
     cfgRunLumiEventSelector.addParameter<std::string>("separator", ":");
     run_lumi_eventSelector = new RunLumiEventSelector(cfgRunLumiEventSelector);
   }
-  std::string selEventsFileName_output = cfg_analyze.getParameter<std::string>("selEventsFileName_output");
+
+  const std::string selEventsFileName_output = cfg_analyze.getParameter<std::string>("selEventsFileName_output");
+
+  //--- open output file containing run:lumi:event numbers of events passing final event selection criteria
+  const bool writeTo_selEventsFileOut = ! selEventsFileName_output.empty();
+  std::map<std::string, std::map<std::string, std::ofstream *>> outputFiles;
+  for(const std::string & numden_str: { "num", "den" })
+  {
+      outputFiles[lepton_type_string][numden_str] = writeTo_selEventsFileOut ?
+        new std::ofstream(Form(selEventsFileName_output.data(), lepton_type_string.data(), numden_str.data())) : nullptr ;
+  }
 
   fwlite::InputSource inputFiles(cfg);
   int maxEvents = inputFiles.maxEvents();
@@ -865,8 +875,7 @@ int main(int argc, char* argv[])
   }
 
 
-//--- open output file containing run:lumi:event numbers of events passing final event selection criteria
-  std::ostream* selEventsFile = new std::ofstream(selEventsFileName_output.data(), std::ios::out);
+
 
   std::string charge_and_leptonSelection_Pass = Form("%s_%s", "Pass", leptonSelection_string.data()); // Here Pass = preselected Probe lepton passes Tight selections
   std::string charge_and_leptonSelection_Fail = Form("%s_%s", "Fail", leptonSelection_string.data()); // Here Fail = preselected Probe lepton fails Tight selections
@@ -1493,6 +1502,11 @@ int main(int argc, char* argv[])
 	    }
 	}
 
+	if(writeTo_selEventsFileOut)
+	{
+	    *(outputFiles[lepton_type_string]["den"]) << eventInfo.str() << '\n' ;
+	}
+
 	if(isZll)
 	{
 	  if(genElectron_tag && genElectron_probe)
@@ -1546,7 +1560,11 @@ int main(int argc, char* argv[])
 	    cutFlowTable.update("Probe electron identification", evtWeightRecorder.get(central_or_shift));
 	    cutFlowHistManager->fillHistograms("Probe electron identification", evtWeightRecorder.get(central_or_shift));
 	  }
-
+	  
+	  if(writeTo_selEventsFileOut)
+	  {
+	    *(outputFiles[lepton_type_string]["num"]) << eventInfo.str() << '\n' ;
+	  }
 
 	  if(isZll)
 	  {
@@ -1773,6 +1791,11 @@ int main(int argc, char* argv[])
 	    }
 	  }
 
+	  if(writeTo_selEventsFileOut)
+	  {
+	    *(outputFiles[lepton_type_string]["den"]) << eventInfo.str() << '\n' ;
+	  }
+
 	  if(isZll)
 	  {
 	    if(genMuon_tag && genMuon_probe)
@@ -1825,6 +1848,10 @@ int main(int argc, char* argv[])
 	      cutFlowHistManager->fillHistograms("Probe muon identification", evtWeightRecorder.get(central_or_shift));
 	  }
 
+	  if(writeTo_selEventsFileOut)
+	  {
+	    *(outputFiles[lepton_type_string]["num"]) << eventInfo.str() << '\n' ;
+	  }
 
 	  if(isZll)
 	  {
@@ -1880,8 +1907,6 @@ int main(int argc, char* argv[])
       }
     }
 
-    (*selEventsFile) << eventInfo.str() << '\n';
-    
     ++selectedEntries;
     selectedEntries_weighted += evtWeight;
     if ( isCentral ) {
@@ -1912,7 +1937,6 @@ int main(int argc, char* argv[])
   delete cutFlowHistManager;
   delete dataToMCcorrectionInterface;
   delete run_lumi_eventSelector;
-  delete selEventsFile;
 
   delete muonReader;
   delete electronReader;
@@ -1971,6 +1995,18 @@ int main(int argc, char* argv[])
     }
 
   delete inputTree;
+
+  for(auto & kv: outputFiles)
+    {
+      for(auto & kv2: kv.second)
+	{
+	  if(kv2.second)
+	    {
+	      *kv2.second << std::flush;
+	      delete kv2.second;
+	    }
+	}
+    }
 
   delete r3; // Deleting the TRandom3 pointer
 
