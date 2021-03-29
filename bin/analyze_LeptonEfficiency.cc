@@ -1379,8 +1379,8 @@ int main(int argc, char* argv[])
       cutFlowTable.update("60 < m(ee) < 120 GeV", evtWeightRecorder.get(central_or_shift));
       cutFlowHistManager->fillHistograms("60 < m(ee) < 120 GeV", evtWeightRecorder.get(central_or_shift));
       if( !( preselElectrons[tag_lepton_index]->isTight() && 
-	    ((preselElectrons[tag_lepton_index]->filterBits() == 2) || 
-	     (preselElectrons[tag_lepton_index]->filterBits() == 4)) ) )
+	    ((preselElectrons[tag_lepton_index]->filterBits() & 2) || 
+	     (preselElectrons[tag_lepton_index]->filterBits() & 4)) ) )
       { // Tag presel Electron either fails Tight lepton ID or is not matched to the 1e Trigger
  	if ( run_lumi_eventSelector ) 
 	{
@@ -1669,7 +1669,7 @@ int main(int argc, char* argv[])
 	cutFlowTable.update("60 < m(mumu) < 120 GeV", evtWeightRecorder.get(central_or_shift));
 	cutFlowHistManager->fillHistograms("60 < m(mumu) < 120 GeV", evtWeightRecorder.get(central_or_shift));
 	if( !(preselMuons[tag_lepton_index]->isTight() && 
-	      (preselMuons[tag_lepton_index]->filterBits() == 8)) )
+	      (preselMuons[tag_lepton_index]->filterBits() & 8)) )
 	{ // Tag presel Muon either fails Tight lepton ID or is not matched to the 1mu Trigger
  
 	  if ( run_lumi_eventSelector ) 
