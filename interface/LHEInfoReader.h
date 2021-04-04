@@ -29,6 +29,7 @@ public:
   void
   read() const;
 
+  double getWeight_scale_nominal() const;
   double getWeight_scale_xUp() const;
   double getWeight_scale_xDown() const;
   double getWeight_scale_yUp() const;
@@ -50,6 +51,10 @@ protected:
   void
   setBranchNames();
 
+  double
+  getWeight(double weight,
+            bool correct = true) const;
+
   const unsigned int max_scale_nWeights_;
   std::string branchName_scale_nWeights_;
   std::string branchName_scale_weights_;
@@ -64,6 +69,7 @@ protected:
   UInt_t pdf_nWeights_;
   Float_t * pdf_weights_;
 
+  mutable double weight_scale_nominal_;
   mutable double weight_scale_xUp_;
   mutable double weight_scale_xDown_;
   mutable double weight_scale_yUp_;
