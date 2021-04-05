@@ -210,6 +210,9 @@ class analyzeConfig(object):
         self.samples = copy.deepcopy(samples)
         for sample_key, sample_info in self.samples.items():
           if sample_key == 'sum_events': continue
+          # do not read LHE weights from single anti-/top samples, see https://github.com/HEP-KBFI/tth-htt/issues/174
+          if sample_key.startswith('/ST_t-channel'):
+            sample_info["has_LHE"] = False
           use_vh_split |= (sample_info["use_it"] and sample_key.startswith(("/ZHToNonbb", "/WHToNonbb")))
           use_vh_unsplit |= (sample_info["use_it"] and sample_key.startswith("/VHToNonbb"))
           sample_info["dbs_name"] = sample_key
