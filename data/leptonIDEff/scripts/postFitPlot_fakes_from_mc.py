@@ -5,6 +5,7 @@ import ROOT
 import argparse
 from copy import deepcopy
 
+
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 ROOT.gROOT.SetBatch(ROOT.kTRUE)
 plot.ModTDRStyle()
@@ -28,28 +29,22 @@ LAYOUTS = {
 
 LAYOUTS1 = { ## FOR tt
     "e": [
-        ('DY_signal', {
-            'entries': ['DY_signal'],
-            'legend': 'DY_signal',
-            'color': ROOT.TColor.GetColor(150, 102, 155)
-        }
-        ),
         ('DY_fakes', {
             'entries': ['DY_fakes'],
             'legend': 'DY_fakes',
             'color': ROOT.TColor.GetColor(250, 202, 255)
         }
         ),
-        ('WJets', {
-            'entries': ['WJets'], ## No gen matching flag w Name
-            'legend': 'WJets',
-            'color': ROOT.TColor.GetColor(0,255,0)
-        }
-        ),
+        #('WJets', {
+        #    'entries': ['WJets'], ## No gen matching flag w Name
+        #    'legend': 'WJets',
+        #    'color': ROOT.TColor.GetColor(0,255,0)
+        #}
+        #),
         ('TTbar', {
             'entries': ['TTbar'],
             'legend': 't#bar{t}',
-            'color': ROOT.TColor.GetColor(155, 152, 204)
+            'color': ROOT.TColor.GetColor(100, 255, 104)
         }
         ),
         ('Diboson', {
@@ -61,34 +56,34 @@ LAYOUTS1 = { ## FOR tt
         ('Singletop', {
             'entries': ['Singletop'],
             'legend': 'Single t',
-            'color': ROOT.TColor.GetColor(200, 100, 116)
+            'color': ROOT.TColor.GetColor(100, 100, 255)
+        }
+        ),
+        ('DY_signal', {
+            'entries': ['DY_signal'],
+            'legend': 'DY_signal',
+            'color': ROOT.TColor.GetColor(150, 102, 155)
         }
         ),
     ],
 
     "mu": [
-        ('DY_signal', {
-            'entries': ['DY_signal'],
-            'legend': 'DY_signal',
-            'color': ROOT.TColor.GetColor(150, 102, 155)
-        }
-        ),
         ('DY_fakes', {
             'entries': ['DY_fakes'],
             'legend': 'DY_fakes',
             'color': ROOT.TColor.GetColor(250, 202, 255)
         }
         ),
-        ('WJets', {
-            'entries': ['WJets'], ## No gen matching flag w Name
-            'legend': 'WJets',
-            'color': ROOT.TColor.GetColor(0,255,0)
-        }
-        ),
+        #('WJets', {
+        #    'entries': ['WJets'], ## No gen matching flag w Name
+        #    'legend': 'WJets',
+        #    'color': ROOT.TColor.GetColor(0,255,0)
+        #}
+        #),
         ('TTbar', {
             'entries': ['TTbar'],
             'legend': 't#bar{t}',
-            'color': ROOT.TColor.GetColor(155, 152, 204)
+            'color': ROOT.TColor.GetColor(100, 255, 104)
         }
         ),
         ('Diboson', {
@@ -100,7 +95,13 @@ LAYOUTS1 = { ## FOR tt
         ('Singletop', {
             'entries': ['Singletop'],
             'legend': 'Single t',
-            'color': ROOT.TColor.GetColor(200, 100, 116)
+            'color': ROOT.TColor.GetColor(100, 100, 255)
+        }
+        ),
+        ('DY_signal', {
+            'entries': ['DY_signal'],
+            'legend': 'DY_signal',
+            'color': ROOT.TColor.GetColor(150, 102, 155)
         }
         ),
     ],
@@ -136,7 +137,6 @@ if args.output is None:
 canv = ROOT.TCanvas(args.output, args.output)
 pads = plot.TwoPadSplit(0.27, 0.01, 0.01)
 
-## MY LINE
 print canv.ClassName()
 print canv.GetName()
 
@@ -150,11 +150,37 @@ h_axes = [h_data.Clone() for x in pads]
 for h in h_axes:
     h.Reset()
 
+##---- FETCH OTHER MC HISTOGRAMS FRO SUMMING THEM TO FORM h_tot ---##
+#h_DY_signal = file.Get('%s/DY_signal' % folder)
+#h_DY_fakes = file.Get('%s/DY_fakes' % folder)
+##h_WJets = file.Get('%s/WJets' % folder)
+#h_TTbar = file.Get('%s/TTbar' % folder)
+#h_Diboson = file.Get('%s/Diboson' % folder)
+#h_Singletop = file.Get('%s/Singletop' % folder)
+
+#print("h_DY_signal.Integral()", h_DY_signal.Integral())
+#print("h_DY_fakes.Integral()", h_DY_fakes.Integral())
+##print("h_WJets.Integral()", h_WJets.Integral())
+#print("h_TTbar.Integral()", h_TTbar.Integral())
+#print("h_Diboson.Integral()", h_Diboson.Integral())
+#print("h_Singletop.Integral()", h_Singletop.Integral())
+
+#h_tot = h_DY_fakes.Clone()
+#h_tot.Add(h_DY_signal, 1.0)
+##h_tot.Add(h_WJets, 1.0)
+#h_tot.Add(h_TTbar, 1.0)
+#h_tot.Add(h_Diboson, 1.0)
+#h_tot.Add(h_Singletop, 1.0)
+
+#print("h_tot.Integral()", h_tot.Integral())
+## -----------------------------
+
+
 h_tot = file.Get('%s/TotalProcs' % folder)
 h_tot.SetFillColor(plot.CreateTransparentColor(12, 0.3))
 h_tot.SetMarkerSize(0)
 
-plot.StandardAxes(h_axes[0].GetXaxis(), h_axes[0].GetYaxis(), args.x_title, 'GeV', fmt='.0f') ## DEF LINE
+plot.StandardAxes(h_axes[0].GetXaxis(), h_axes[0].GetYaxis(), args.x_title, 'GeV', fmt='.0f')
 # plot.StandardAxes(h_axes[0].GetXaxis(), h_axes[0].GetYaxis(), args.x_title, 'GeV')
 
 
@@ -163,7 +189,7 @@ h_axes[0].Draw()
 # A dict to keep track of the hists
 h_store = {}
 
-layout = LAYOUTS[args.channel]
+layout = LAYOUTS1[args.channel]
 
 stack = ROOT.THStack()
 legend = ROOT.TLegend(0.67, 0.86 - 0.04*len(layout), 0.90, 0.91, '', 'NBNDC')

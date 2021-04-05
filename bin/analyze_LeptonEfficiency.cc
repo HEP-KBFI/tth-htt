@@ -264,8 +264,8 @@ int main(int argc, char* argv[])
   }
 
   checkOptionValidity(central_or_shift, isMC);
-  const MuonPtSys muon_option           = getMuon_option(central_or_shift, isMC);
-  const ElectronPtSys electronPt_option = getElectronPt_option(central_or_shift, isMC); 
+  const MuonPtSys muonPt_option           = getMuon_option(central_or_shift, isMC);
+  const ElectronPtSys electronPt_option   = getElectronPt_option(central_or_shift, isMC); 
   const int jetPt_option    = useNonNominal_jetmet ? kJetMET_central_nonNominal : getJet_option(central_or_shift, isMC);
   const int met_option      = useNonNominal_jetmet ? kJetMET_central_nonNominal : getMET_option(central_or_shift, isMC);
   const int hadTauPt_option = useNonNominal_jetmet ? kHadTauPt_uncorrected : getHadTauPt_option(central_or_shift);
@@ -276,7 +276,7 @@ int main(int argc, char* argv[])
        " -> met_option        = " << met_option                    << "\n"
        " -> hadTauPt_option   = " << hadTauPt_option               << "\n"
        " -> electronPt_option = " << as_integer(electronPt_option) << "\n"
-       " -> muon_option       = " << as_integer(muon_option)       << "\n";
+       " -> muonPt_option       = " << as_integer(muonPt_option)       << "\n";
   
 
   DYMCReweighting * dyReweighting = nullptr;
@@ -1176,7 +1176,8 @@ int main(int argc, char* argv[])
 //--- resolve overlaps in order of priority: muon, electron,
     // ***** Reco Muon Collections
     const std::vector<RecoMuon> muons = muonReader->read();
-    const std::vector<const RecoMuon*> muon_ptrs = convert_to_ptrs(muons);
+    const std::vector<RecoMuon> muons_shifted = recompute_p4(muons, muonPt_option);
+    const std::vector<const RecoMuon*> muon_ptrs = convert_to_ptrs(muons_shifted);  
     const std::vector<const RecoMuon*> cleanedMuons = muon_ptrs; // CV: no cleaning needed for muons, as they have the highest priority in the overlap removal
     const std::vector<const RecoMuon*> preselMuons = preselMuonSelector(cleanedMuons);
     const std::vector<const RecoMuon*> preselMuons_pt_sorted = preselMuonSelector(cleanedMuons, isHigherPt);

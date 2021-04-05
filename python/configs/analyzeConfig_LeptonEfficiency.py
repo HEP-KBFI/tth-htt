@@ -912,7 +912,7 @@ class analyzeConfig_LeptonEfficiency(analyzeConfig):
         os.fsync(setup_dcards_script_file.fileno())
       add_chmodX(setup_dcards_script_path)
 
-      postfit_plot_script_path = os.path.join(os.environ['CMSSW_BASE'], 'src/tthAnalysis/HiggsToTauTau/data/leptonIDEff/scripts/postFitPlot_fakes_from_mc.py')
+      postfit_plot_script_path = os.path.join(os.environ['CMSSW_BASE'], 'src/tthAnalysis/HiggsToTauTau/data/leptonIDEff/scripts/postFitPlot_fakes_from_mc.py') 
       yieldtable_script_path   = os.path.join(os.environ['CMSSW_BASE'], 'src/tthAnalysis/HiggsToTauTau/data/leptonIDEff/scripts/yieldTable_fakes_from_mc.py')
 
       # Create run_postFit.sh script from the template
