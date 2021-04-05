@@ -751,6 +751,7 @@ class analyzeConfig(object):
       is_ttbar_sys = sample_info["sample_category"].replace("TT_", "") in systematics.ttbar
       ttHProcs = self.ttHProcs + [ "TTH" ]
       is_EWK = sample_category not in [ "WZ", "ZZ", "ggZZ", "qqZZ" ]
+      valid_st = not sample_name.startswith('/ST_t-channel')
 
       if central_or_shift in systematics.LHE().full           and not has_LHE:                                 return False
       if central_or_shift in systematics.LHE().ttH            and sample_category not in ttHProcs:             return False
@@ -758,7 +759,7 @@ class analyzeConfig(object):
       if central_or_shift in systematics.LHE().tHW            and sample_category not in [ "tHW", "TH" ]:      return False
       if central_or_shift in systematics.LHE().ttW            and sample_category not in [ "TTW", "TTWW" ]:    return False
       if central_or_shift in systematics.LHE().ttZ            and sample_category != "TTZ":                    return False
-      if central_or_shift in systematics.LHE().ttbar          and sample_category != "TT":                     return False
+      if central_or_shift in systematics.LHE().ttbar          and (sample_category != "TT" or not valid_st):   return False
       if central_or_shift in systematics.LHE().dy             and sample_category != "DY":                     return False
       if central_or_shift in systematics.LHE().wz             and sample_category != "WZ":                     return False
       if central_or_shift in systematics.LHE().zz             and sample_category != "ZZ":                     return False
