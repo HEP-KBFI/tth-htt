@@ -40,6 +40,7 @@ to_string_with_precision(const T a_value,
 }
 
 HHWeightInterfaceCouplings::HHWeightInterfaceCouplings(const edm::ParameterSet & cfg)
+  : nlo_mode_(HHWeightInterfaceNLOMode::none)
 {
   const std::string applicationLoadFile_klScan = cfg.getParameter<std::string>("klScan_file");
   const std::string applicationLoadFile_ktScan = cfg.getParameter<std::string>("ktScan_file");
@@ -49,6 +50,10 @@ HHWeightInterfaceCouplings::HHWeightInterfaceCouplings(const edm::ParameterSet &
 
   const std::string scanMode = cfg.getParameter<std::string>("scanMode");
   const bool isDEBUG = cfg.getParameter<bool>("isDEBUG");
+
+  const std::string rwgt_nlo_mode = cfg.getParameter<std::string>("rwgt_nlo_mode");
+  if     (rwgt_nlo_mode == "v1") { nlo_mode_ = HHWeightInterfaceNLOMode::v1; }
+  else if(rwgt_nlo_mode == "v2") { nlo_mode_ = HHWeightInterfaceNLOMode::v2; }
 
   kl_ = {};
   kt_ = {};
@@ -238,4 +243,10 @@ std::vector<double>
 HHWeightInterfaceCouplings::norm() const
 {
   return norm_;
+}
+
+HHWeightInterfaceNLOMode
+HHWeightInterfaceCouplings::nlo_mode() const
+{
+  return nlo_mode_;
 }

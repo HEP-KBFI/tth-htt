@@ -3,6 +3,8 @@
 
 #include <FWCore/ParameterSet/interface/ParameterSet.h> // edm::ParameterSet
 
+enum class HHWeightInterfaceNLOMode { none, v1, v2 };
+
 class HHWeightInterfaceCouplings
 {
 public:
@@ -47,6 +49,9 @@ public:
   std::vector<double>
   norm() const;
 
+  HHWeightInterfaceNLOMode
+  nlo_mode() const;
+
 private:
   void
   loadScanFile(const std::string & filePath,
@@ -66,6 +71,7 @@ private:
   std::vector<std::string> bmNames_;
   std::vector<std::string> bmWeightNames_;
 
+  HHWeightInterfaceNLOMode nlo_mode_;
 };
 
 #endif // tthAnalysis_HiggsToTauTau_HHWeightInterfaceCouplings_h

@@ -811,6 +811,7 @@ class analyzeConfig(object):
             raise ValueError("Uncrecongizable sample category: %s" % sample_info[sample_category_to_check])
           jobOptions['hhWeight_cfg.denominator_file'] = 'hhAnalysis/{}/data/denom_{}.root'.format(hhWeight_base, self.era)
           jobOptions['hhWeight_cfg.histtitle'] = sample_info[sample_category_to_check]
+          jobOptions['hhWeight_cfg.rwgt_nlo_mode'] = 'v2'
           #jobOptions['hhWeight_cfg.c2Scan_file'] = self.c2_scan_file # ignore c2 scan
           if not ('hh' in self.channel or 'ctrl' in self.channel or 'study' in self.channel.lower()):
             # enable kt-scan in ttH analysis
@@ -1213,6 +1214,7 @@ class analyzeConfig(object):
             'hhWeight_cfg.c2gScan_file',
             'hhWeight_cfg.scanMode',
             'hhWeight_cfg.apply_rwgt_lo',
+            'hhWeight_cfg.rwgt_nlo_mode',
             'minNumJets',
             'skipEvery',
             'apply_topPtReweighting',
