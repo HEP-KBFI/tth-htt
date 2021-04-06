@@ -394,135 +394,126 @@ HHWeightInterfaceNLO::HHWeightInterfaceNLO(const HHWeightInterfaceCouplings * co
     throw cmsException(this, __func__, __LINE__) << "Invalid coupling parameters";
   }
 
-  if(mode_ == HHWeightInterfaceNLOMode::v1)
+  const std::vector<std::vector<double>> A_V1_lo = loadCoeffFile(xsecFileName_V1_lo_);
+  const std::vector<std::vector<double>> A_V1_nlo = loadCoeffFile(xsecFileName_V1_nlo_);
+
+  for ( std::size_t bmIdx = 0; bmIdx < nof_couplings; ++bmIdx )
   {
-    const std::vector<std::vector<double>> A_V1_lo = loadCoeffFile(xsecFileName_V1_lo_);
-    const std::vector<std::vector<double>> A_V1_nlo = loadCoeffFile(xsecFileName_V1_nlo_);
+    const std::string & bmName = bmNames[bmIdx];
 
-    for ( std::size_t bmIdx = 0; bmIdx < nof_couplings; ++bmIdx )
+    std::vector<double> eft_parameters_nlo = { kl[bmIdx], kt[bmIdx], c2[bmIdx], cg[bmIdx], c2g[bmIdx] };
+    std::vector<double> eft_parametersEWChL_nlo = convertCouplingsToEWChL(eft_parameters_nlo);
+    std::vector<double> eft_parameters_lo;
+    if ( apply_coupling_fix_CMS_ )
     {
-      const std::string & bmName = bmNames[bmIdx];
-
-      std::vector<double> eft_parameters_nlo = { kl[bmIdx], kt[bmIdx], c2[bmIdx], cg[bmIdx], c2g[bmIdx] };
-      std::vector<double> eft_parametersEWChL_nlo = convertCouplingsToEWChL(eft_parameters_nlo);
-      std::vector<double> eft_parameters_lo;
-      if ( apply_coupling_fix_CMS_ )
-      {
-        eft_parameters_lo = fix_couplings_CMS(eft_parameters_nlo, era_);
-      }
-      else
-      {
-        eft_parameters_lo = eft_parameters_nlo;
-      }
-      std::vector<double> eft_parametersEWChL_lo = convertCouplingsToEWChL(eft_parameters_lo);
-
-      std::string histogramName_V1_lo = Form("%s_V1_lo", bmName.data());
-      const TH1 * histogram_V1_lo = compXsec_V1(histogramName_V1_lo, eft_parametersEWChL_lo, A_V1_lo, kLO);
-      if ( isDEBUG_ )
-      {
-        dumpHistogram(histogram_V1_lo);
-      }
-      dXsec_V1_lo_[bmName] = histogram_V1_lo;
-
-      std::string histogramName_V1_nlo = Form("%s_V1_nlo", bmName.data());
-      const TH1 * histogram_V1_nlo = compXsec_V1(histogramName_V1_nlo, eft_parametersEWChL_nlo, A_V1_nlo, kNLO);
-      if ( isDEBUG_ )
-      {
-        dumpHistogram(histogram_V1_nlo);
-      }
-      dXsec_V1_nlo_[bmName] = histogram_V1_nlo;
-
-      std::string histogramName_LOtoNLO_V1_weights = Form("%s_LOtoNLO_V1_weights", bmName.data());
-      TH1* histogram_LOtoNLO_V1_weights = makeHistogram_V1_weights(histogramName_LOtoNLO_V1_weights, histogram_V1_lo, histogram_V1_nlo, max_weight_);
-      if ( isDEBUG_ )
-      {
-        dumpHistogram(histogram_LOtoNLO_V1_weights);
-      }
-      weights_LOtoNLO_V1_[bmName] = histogram_LOtoNLO_V1_weights;
+      eft_parameters_lo = fix_couplings_CMS(eft_parameters_nlo, era_);
     }
-
-    for ( std::size_t bmIdx = 0; bmIdx < nof_couplings; ++bmIdx )
+    else
     {
-      const std::string & bmName = bmNames[bmIdx];
-      if ( bmName != "SM" )
+      eft_parameters_lo = eft_parameters_nlo;
+    }
+    std::vector<double> eft_parametersEWChL_lo = convertCouplingsToEWChL(eft_parameters_lo);
+
+    std::string histogramName_V1_lo = Form("%s_V1_lo", bmName.data());
+    const TH1 * histogram_V1_lo = compXsec_V1(histogramName_V1_lo, eft_parametersEWChL_lo, A_V1_lo, kLO);
+    if ( isDEBUG_ )
+    {
+      dumpHistogram(histogram_V1_lo);
+    }
+    dXsec_V1_lo_[bmName] = histogram_V1_lo;
+
+    std::string histogramName_V1_nlo = Form("%s_V1_nlo", bmName.data());
+    const TH1 * histogram_V1_nlo = compXsec_V1(histogramName_V1_nlo, eft_parametersEWChL_nlo, A_V1_nlo, kNLO);
+    if ( isDEBUG_ )
+    {
+      dumpHistogram(histogram_V1_nlo);
+    }
+    dXsec_V1_nlo_[bmName] = histogram_V1_nlo;
+
+    std::string histogramName_LOtoNLO_V1_weights = Form("%s_LOtoNLO_V1_weights", bmName.data());
+    TH1* histogram_LOtoNLO_V1_weights = makeHistogram_V1_weights(histogramName_LOtoNLO_V1_weights, histogram_V1_lo, histogram_V1_nlo, max_weight_);
+    if ( isDEBUG_ )
+    {
+      dumpHistogram(histogram_LOtoNLO_V1_weights);
+    }
+    weights_LOtoNLO_V1_[bmName] = histogram_LOtoNLO_V1_weights;
+  }
+
+  for ( std::size_t bmIdx = 0; bmIdx < nof_couplings; ++bmIdx )
+  {
+    const std::string & bmName = bmNames[bmIdx];
+    if ( bmName != "SM" )
+    {
+      const TH1 * histogram_SM_V1_nlo = dXsec_V1_nlo_["SM"];
+      const TH1 * histogram_BM_V1_nlo = dXsec_V1_nlo_[bmName];
+      std::string histogramName_NLOtoNLO_V1_weights = Form("%s_NLOtoNLO_V1_weights", bmName.data());
+      TH1* histogram_NLOtoNLO_V1_weights = makeHistogram_V1_weights(histogramName_NLOtoNLO_V1_weights, histogram_SM_V1_nlo, histogram_BM_V1_nlo, max_weight_);
+      if ( isDEBUG_ )
       {
-        const TH1 * histogram_SM_V1_nlo = dXsec_V1_nlo_["SM"];
-        const TH1 * histogram_BM_V1_nlo = dXsec_V1_nlo_[bmName];
-        std::string histogramName_NLOtoNLO_V1_weights = Form("%s_NLOtoNLO_V1_weights", bmName.data());
-        TH1* histogram_NLOtoNLO_V1_weights = makeHistogram_V1_weights(histogramName_NLOtoNLO_V1_weights, histogram_SM_V1_nlo, histogram_BM_V1_nlo, max_weight_);
-        if ( isDEBUG_ )
-        {
-          dumpHistogram(histogram_NLOtoNLO_V1_weights);
-        }
-        weights_NLOtoNLO_V1_[bmName] = histogram_NLOtoNLO_V1_weights;
+        dumpHistogram(histogram_NLOtoNLO_V1_weights);
       }
+      weights_NLOtoNLO_V1_[bmName] = histogram_NLOtoNLO_V1_weights;
     }
   }
-  else if(mode_ == HHWeightInterfaceNLOMode::v2)
+
+  const std::vector<std::vector<double>> A_V2_lo = loadCoeffFile_V2(xsecFileName_V2_lo_, "");
+  const std::vector<std::vector<double>> A_V2_nlo = loadCoeffFile_V2(xsecFileName_V2_nlo_, "");
+
+  for ( std::size_t bmIdx = 0; bmIdx < nof_couplings; ++bmIdx )
   {
-    const std::vector<std::vector<double>> A_V2_lo = loadCoeffFile_V2(xsecFileName_V2_lo_, "");
-    const std::vector<std::vector<double>> A_V2_nlo = loadCoeffFile_V2(xsecFileName_V2_nlo_, "");
+    const std::string & bmName = bmNames[bmIdx];
 
-    for ( std::size_t bmIdx = 0; bmIdx < nof_couplings; ++bmIdx )
+    std::vector<double> eft_parameters_nlo = { kl[bmIdx], kt[bmIdx], c2[bmIdx], cg[bmIdx], c2g[bmIdx] };
+    std::vector<double> eft_parameters_lo;
+    if ( apply_coupling_fix_CMS_ )
     {
-      const std::string & bmName = bmNames[bmIdx];
-
-      std::vector<double> eft_parameters_nlo = { kl[bmIdx], kt[bmIdx], c2[bmIdx], cg[bmIdx], c2g[bmIdx] };
-      std::vector<double> eft_parameters_lo;
-      if ( apply_coupling_fix_CMS_ )
-      {
-        eft_parameters_lo = fix_couplings_CMS(eft_parameters_nlo, era_);
-      }
-      else
-      {
-        eft_parameters_lo = eft_parameters_nlo;
-      }
-
-      std::string histogramName_V2_lo = Form("%s_V2_lo", bmName.data());
-      const TH2 * histogram_V2_lo = compXsec_V2(histogramName_V2_lo, eft_parameters_lo, A_V2_lo, kLO);
-      if ( isDEBUG_ )
-      {
-        dumpHistogram(histogram_V2_lo);
-      }
-      dXsec_V2_lo_[bmName] = histogram_V2_lo;
-
-      std::string histogramName_V2_nlo = Form("%s_V2_nlo", bmName.data());
-      const TH2 * histogram_V2_nlo = compXsec_V2(histogramName_V2_nlo, eft_parameters_nlo, A_V2_nlo, kNLO);
-      if ( isDEBUG_ )
-      {
-        dumpHistogram(histogram_V2_nlo);
-      }
-      dXsec_V2_nlo_[bmName] = histogram_V2_nlo;
-
-      std::string histogramName_LOtoNLO_V2_weights = Form("%s_LOtoNLO_V2_weights", bmName.data());
-      TH2* histogram_LOtoNLO_V2_weights = makeHistogram_V2_weights(histogramName_LOtoNLO_V2_weights, histogram_V2_lo, histogram_V2_nlo, max_weight_);
-      if ( isDEBUG_ )
-      {
-        dumpHistogram(histogram_LOtoNLO_V2_weights);
-      }
-      weights_LOtoNLO_V2_[bmName] = histogram_LOtoNLO_V2_weights;
+      eft_parameters_lo = fix_couplings_CMS(eft_parameters_nlo, era_);
+    }
+    else
+    {
+      eft_parameters_lo = eft_parameters_nlo;
     }
 
-    for ( std::size_t bmIdx = 0; bmIdx < nof_couplings; ++bmIdx )
+    std::string histogramName_V2_lo = Form("%s_V2_lo", bmName.data());
+    const TH2 * histogram_V2_lo = compXsec_V2(histogramName_V2_lo, eft_parameters_lo, A_V2_lo, kLO);
+    if ( isDEBUG_ )
     {
-      const std::string & bmName = bmNames[bmIdx];
-      if ( bmName != "SM" )
-      {
-        const TH2 * histogram_SM_V2_nlo = dXsec_V2_nlo_["SM"];
-        const TH2 * histogram_BM_V2_nlo = dXsec_V2_nlo_[bmName];
-        std::string histogramName_NLOtoNLO_V2_weights = Form("%s_NLOtoNLO_V2_weights", bmName.data());
-        TH2* histogram_NLOtoNLO_V2_weights = makeHistogram_V2_weights(histogramName_NLOtoNLO_V2_weights, histogram_SM_V2_nlo, histogram_BM_V2_nlo, max_weight_);
-        if ( isDEBUG_ )
-        {
-          dumpHistogram(histogram_NLOtoNLO_V2_weights);
-        }
-        weights_NLOtoNLO_V2_[bmName] = histogram_NLOtoNLO_V2_weights;
-      }
+      dumpHistogram(histogram_V2_lo);
     }
+    dXsec_V2_lo_[bmName] = histogram_V2_lo;
+
+    std::string histogramName_V2_nlo = Form("%s_V2_nlo", bmName.data());
+    const TH2 * histogram_V2_nlo = compXsec_V2(histogramName_V2_nlo, eft_parameters_nlo, A_V2_nlo, kNLO);
+    if ( isDEBUG_ )
+    {
+      dumpHistogram(histogram_V2_nlo);
+    }
+    dXsec_V2_nlo_[bmName] = histogram_V2_nlo;
+
+    std::string histogramName_LOtoNLO_V2_weights = Form("%s_LOtoNLO_V2_weights", bmName.data());
+    TH2* histogram_LOtoNLO_V2_weights = makeHistogram_V2_weights(histogramName_LOtoNLO_V2_weights, histogram_V2_lo, histogram_V2_nlo, max_weight_);
+    if ( isDEBUG_ )
+    {
+      dumpHistogram(histogram_LOtoNLO_V2_weights);
+    }
+    weights_LOtoNLO_V2_[bmName] = histogram_LOtoNLO_V2_weights;
   }
-  else
+
+  for ( std::size_t bmIdx = 0; bmIdx < nof_couplings; ++bmIdx )
   {
-    throw cmsException(this, __func__, __LINE__) << "Mode unspecified";
+    const std::string & bmName = bmNames[bmIdx];
+    if ( bmName != "SM" )
+    {
+      const TH2 * histogram_SM_V2_nlo = dXsec_V2_nlo_["SM"];
+      const TH2 * histogram_BM_V2_nlo = dXsec_V2_nlo_[bmName];
+      std::string histogramName_NLOtoNLO_V2_weights = Form("%s_NLOtoNLO_V2_weights", bmName.data());
+      TH2* histogram_NLOtoNLO_V2_weights = makeHistogram_V2_weights(histogramName_NLOtoNLO_V2_weights, histogram_SM_V2_nlo, histogram_BM_V2_nlo, max_weight_);
+      if ( isDEBUG_ )
+      {
+        dumpHistogram(histogram_NLOtoNLO_V2_weights);
+      }
+      weights_NLOtoNLO_V2_[bmName] = histogram_NLOtoNLO_V2_weights;
+    }
   }
 }
 
