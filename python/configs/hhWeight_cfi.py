@@ -1,7 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 
 hhWeight = cms.PSet(
-    denominator_file = cms.string(''),
+    denominator_file_lo = cms.string(''),
+    denominator_file_nlo = cms.string(''),
     klScan_file = cms.string(''),
     ktScan_file = cms.string(''),
     c2Scan_file = cms.string(''),

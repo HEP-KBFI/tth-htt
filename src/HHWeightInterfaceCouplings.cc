@@ -3,6 +3,10 @@
 #include "tthAnalysis/HiggsToTauTau/interface/LocalFileInPath.h" // LocalFileInPath
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 #include "tthAnalysis/HiggsToTauTau/interface/generalAuxFunctions.h" // format_vstring()
+#include "tthAnalysis/HiggsToTauTau/interface/TFileOpenWrapper.h" // TFileOpenWrapper
+
+#include <TFile.h> // TFile
+#include <TH2.h> // TH2
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wswitch-enum"
@@ -28,6 +32,43 @@ const std::vector<double> HHWeightInterfaceCouplings::cgJHEP   = { 0.0,     0.0,
 const std::vector<double> HHWeightInterfaceCouplings::c2gJHEP  = { 0.0,     0.0,     0.6,    -0.8,     0.0,    -1.0,    -0.2,    -0.2,     1.0,     0.6,     0.0,    -1.0,     0.0     };
 const std::vector<double> HHWeightInterfaceCouplings::normJHEP = { 0.99997, 0.94266, 0.71436, 0.95608, 0.97897, 0.87823, 0.95781, 1.00669, 0.92494, 0.86083, 1.00658, 0.95096, 1.00063 };
 
+TH2 *
+HHWeightInterfaceCouplings::loadDenominatorHist(const std::string & fileName,
+                                                const std::string & histTitle)
+{
+  const std::string fileNameFullPath = LocalFileInPath(fileName).fullPath();
+  TFile * denomFile = TFileOpenWrapper::Open(fileNameFullPath.c_str(), "READ");
+  if(! denomFile)
+  {
+    throw cmsException(__func__, __LINE__)
+      << "Could not open file " << fileNameFullPath << " !!\n";
+  }
+  if(denomFile -> IsZombie())
+  {
+    throw cmsException(__func__, __LINE__) << "The file '" << fileNameFullPath << "' appears to be a zombie";
+  }
+  TH2 * denomHist = static_cast<TH2 *>(denomFile -> Get(histTitle.c_str()));
+  if(! denomHist)
+  {
+    throw cmsException(__func__, __LINE__) << "The file '" << fileNameFullPath << "' does not have a TH2 named " << histTitle;
+  }
+  denomHist->SetDirectory(0);
+  denomFile->Close();
+  return denomHist;
+}
+
+double
+HHWeightInterfaceCouplings::getBinContent(const TH2 * const hist,
+                                          double mHH,
+                                          double cosThetaStar)
+{
+  const double value = hist->GetBinContent(
+    hist->GetXaxis()->FindBin(mHH),
+    hist->GetYaxis()->FindBin(std::fabs(cosThetaStar))
+  );
+  return value;
+}
+
 template <typename T>
 std::string
 to_string_with_precision(const T a_value,
@@ -41,6 +82,9 @@ to_string_with_precision(const T a_value,
 
 HHWeightInterfaceCouplings::HHWeightInterfaceCouplings(const edm::ParameterSet & cfg)
   : nlo_mode_(HHWeightInterfaceNLOMode::none)
+  , denominator_file_lo_(cfg.getParameter<std::string>("denominator_file_lo"))
+  , denominator_file_nlo_(cfg.getParameter<std::string>("denominator_file_nlo"))
+  , histtitle_(cfg.getParameter<std::string>("histtitle"))
 {
   const std::string applicationLoadFile_klScan = cfg.getParameter<std::string>("klScan_file");
   const std::string applicationLoadFile_ktScan = cfg.getParameter<std::string>("ktScan_file");
@@ -54,6 +98,7 @@ HHWeightInterfaceCouplings::HHWeightInterfaceCouplings(const edm::ParameterSet &
   const std::string rwgt_nlo_mode = cfg.getParameter<std::string>("rwgt_nlo_mode");
   if     (rwgt_nlo_mode == "v1") { nlo_mode_ = HHWeightInterfaceNLOMode::v1; }
   else if(rwgt_nlo_mode == "v2") { nlo_mode_ = HHWeightInterfaceNLOMode::v2; }
+  else if(rwgt_nlo_mode == "v3") { nlo_mode_ = HHWeightInterfaceNLOMode::v3; }
 
   kl_ = {};
   kt_ = {};
@@ -249,4 +294,22 @@ HHWeightInterfaceNLOMode
 HHWeightInterfaceCouplings::nlo_mode() const
 {
   return nlo_mode_;
+}
+
+std::string
+HHWeightInterfaceCouplings::denominator_file_lo() const
+{
+  return denominator_file_lo_;
+}
+
+std::string
+HHWeightInterfaceCouplings::denominator_file_nlo() const
+{
+  return denominator_file_nlo_;
+}
+
+std::string
+HHWeightInterfaceCouplings::histtitle() const
+{
+  return histtitle_;
 }

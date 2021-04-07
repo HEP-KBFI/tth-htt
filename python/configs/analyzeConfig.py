@@ -809,7 +809,8 @@ class analyzeConfig(object):
             hhWeight_base = 'multilepton'
           else:
             raise ValueError("Uncrecongizable sample category: %s" % sample_info[sample_category_to_check])
-          jobOptions['hhWeight_cfg.denominator_file'] = 'hhAnalysis/{}/data/denom_{}.root'.format(hhWeight_base, self.era)
+          jobOptions['hhWeight_cfg.denominator_file_lo'] = 'hhAnalysis/{}/data/denom_{}.root'.format(hhWeight_base, self.era)
+          jobOptions['hhWeight_cfg.denominator_file_nlo'] = 'hhAnalysis/{}/data/denom_{}_nlo.root'.format(hhWeight_base, self.era)
           jobOptions['hhWeight_cfg.histtitle'] = sample_info[sample_category_to_check]
           jobOptions['hhWeight_cfg.rwgt_nlo_mode'] = 'v2'
           #jobOptions['hhWeight_cfg.c2Scan_file'] = self.c2_scan_file # ignore c2 scan
@@ -820,6 +821,8 @@ class analyzeConfig(object):
           elif 'hh' in self.channel and 'ctrl' not in self.channel and 'study' not in self.channel.lower():
             #jobOptions['hhWeight_cfg.scanMode'] = 'full' # uncomment for kl scan in HH analysis
             jobOptions['hhWeight_cfg.klScan_file'] = self.kl_scan_file
+            jobOptions['hhWeight_cfg.rwgt_nlo_mode'] = 'v3'
+            jobOptions['hhWeight_cfg.apply_rwgt_lo'] = False
 
         update_conv_bkg = False
         if 'genPhotonFilter' in sample_info.keys():
@@ -1205,7 +1208,8 @@ class analyzeConfig(object):
             'branchName_subJetsLS',
             'tHweights',
             'useObjectMultiplicity',
-            'hhWeight_cfg.denominator_file',
+            'hhWeight_cfg.denominator_file_lo',
+            'hhWeight_cfg.denominator_file_nlo',
             'hhWeight_cfg.histtitle',
             'hhWeight_cfg.klScan_file',
             'hhWeight_cfg.ktScan_file',

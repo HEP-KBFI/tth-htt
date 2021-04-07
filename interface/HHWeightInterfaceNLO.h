@@ -60,6 +60,12 @@ public:
                        double cosThetaStar,
                        bool isDEBUG = false) const;
 
+  double
+  getWeight_LOtoNLO_V3(const std::string & bmName,
+                       double mHH,
+                       double cosThetaStar,
+                       bool isDEBUG = false) const;
+
   /**
    * @brief Get single reWeight
    *
@@ -85,6 +91,12 @@ public:
 
   double
   getRelativeWeight_LOtoNLO_V2(const std::string & bmName,
+                               double mHH,
+                               double cosThetaStar,
+                               bool isDEBUG = false) const;
+
+  double
+  getRelativeWeight_LOtoNLO_V3(const std::string & bmName,
                                double mHH,
                                double cosThetaStar,
                                bool isDEBUG = false) const;
@@ -140,6 +152,9 @@ public:
   get_dXsec_V2_nlo(const std::string & bmName) const;
 
 private:
+  double
+  getDenom(double mHH,
+           double cosThetaStar) const;
 
   const HHWeightInterfaceCouplings * const couplings_;
   const HHWeightInterfaceNLOMode mode_;
@@ -160,9 +175,11 @@ private:
   std::map<std::string, const TH2 *> weights_LOtoNLO_V2_;  // key = bmName
   std::map<std::string, const TH2 *> weights_NLOtoNLO_V2_; // key = bmName
 
+  TH2 * sumEvt_;
+  int nof_sumEvt_entries_;
+
   Era era_;
   bool apply_coupling_fix_CMS_;
-
   double max_weight_;
   
   bool isDEBUG_;

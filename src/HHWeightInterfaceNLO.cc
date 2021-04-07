@@ -373,6 +373,8 @@ HHWeightInterfaceNLO::HHWeightInterfaceNLO(const HHWeightInterfaceCouplings * co
   , xsecFileName_V1_nlo_("tthAnalysis/HiggsToTauTau/data/HHWeightInterfaceNLO/NLO-Ais-13TeV.csv")
   , xsecFileName_V2_lo_("tthAnalysis/HiggsToTauTau/data/HHWeightInterfaceNLO/pm_mg_LO-Ais-13TeV_V2.txt")
   , xsecFileName_V2_nlo_("tthAnalysis/HiggsToTauTau/data/HHWeightInterfaceNLO/pm_pw_NLO-Ais-13TeV_V2.txt")
+  , sumEvt_(nullptr)
+  , nof_sumEvt_entries_(0)
   , era_(era)
   , apply_coupling_fix_CMS_(apply_coupling_fix_CMS)
   , max_weight_(max_weight)
@@ -393,6 +395,12 @@ HHWeightInterfaceNLO::HHWeightInterfaceNLO(const HHWeightInterfaceCouplings * co
   {
     throw cmsException(this, __func__, __LINE__) << "Invalid coupling parameters";
   }
+
+  sumEvt_ = HHWeightInterfaceCouplings::loadDenominatorHist(
+    couplings_->denominator_file_nlo(), couplings_->histtitle()
+  );
+  nof_sumEvt_entries_ = static_cast<int>(sumEvt_->GetEntries());
+  assert(nof_sumEvt_entries_ > 0);
 
   const std::vector<std::vector<double>> A_V1_lo = loadCoeffFile(xsecFileName_V1_lo_);
   const std::vector<std::vector<double>> A_V1_nlo = loadCoeffFile(xsecFileName_V1_nlo_);
@@ -518,7 +526,9 @@ HHWeightInterfaceNLO::HHWeightInterfaceNLO(const HHWeightInterfaceCouplings * co
 }
 
 HHWeightInterfaceNLO::~HHWeightInterfaceNLO()
-{}
+{
+  delete sumEvt_;
+}
 
 namespace
 {
@@ -566,6 +576,7 @@ HHWeightInterfaceNLO::getWeight_LOtoNLO(const std::string & bmName,
   {
     case HHWeightInterfaceNLOMode::v1:   return getWeight_LOtoNLO_V1(bmName, mHH, cosThetaStar, isDEBUG);
     case HHWeightInterfaceNLOMode::v2:   return getWeight_LOtoNLO_V2(bmName, mHH, cosThetaStar, isDEBUG);
+    case HHWeightInterfaceNLOMode::v3:   return getWeight_LOtoNLO_V3(bmName, mHH, cosThetaStar, isDEBUG);
     case HHWeightInterfaceNLOMode::none:
     default:                             throw cmsException(this, __func__, __LINE__) << "Mode unspecfied";
   }
@@ -582,7 +593,7 @@ HHWeightInterfaceNLO::getWeight_LOtoNLO_V1(const std::string & bmName,
   {
     throw cmsException(this, __func__, __LINE__) << "Invalid parameter 'bmName' = " << bmName;
   }
-  double weight = getWeight_V1_private(weight_iter->second, mHH);
+  const double weight = getWeight_V1_private(weight_iter->second, mHH);
   if ( isDEBUG )
   {
     std::cout
@@ -605,13 +616,34 @@ HHWeightInterfaceNLO::getWeight_LOtoNLO_V2(const std::string & bmName,
   {
     throw cmsException(this, __func__, __LINE__) << "Invalid parameter 'bmName' = " << bmName;
   }
-  double weight = getWeight_V2_private(weight_iter->second, mHH, cosThetaStar);
+  const double weight = getWeight_V2_private(weight_iter->second, mHH, cosThetaStar);
   if ( isDEBUG )
   {
     std::cout
       << get_human_line(this, __func__, __LINE__)
       << "bmName = '" << bmName << "', mHH = " << mHH << ", cosTheta* = " << cosThetaStar
       << " --> weight = " << weight << '\n'
+    ;
+  }
+  return weight;
+}
+
+double
+HHWeightInterfaceNLO::getWeight_LOtoNLO_V3(const std::string & bmName,
+                                           double mHH,
+                                           double cosThetaStar,
+                                           bool isDEBUG) const
+{
+  const double denominator = getDenom(mHH, cosThetaStar);
+  const double dXsec_lo = denominator / nof_sumEvt_entries_;
+  const double dXsec_nlo = HHWeightInterfaceCouplings::getBinContent(get_dXsec_V2_nlo(bmName), mHH, cosThetaStar);
+  const double weight = (dXsec_lo > 0. ? 1. / dXsec_lo : 0.) * dXsec_nlo;
+  if ( isDEBUG )
+  {
+    std::cout
+      << get_human_line(this, __func__, __LINE__)
+      << "bmName = '" << bmName << "', mHH = " << mHH << ", cosTheta* = " << cosThetaStar
+      << " --> weight = " << weight << " (dXsec LO = " << dXsec_lo << ", dXsec NLO = " << dXsec_nlo << ")\n"
     ;
   }
   return weight;
@@ -627,6 +659,7 @@ HHWeightInterfaceNLO::getRelativeWeight_LOtoNLO(const std::string & bmName,
   {
     case HHWeightInterfaceNLOMode::v1:   return getRelativeWeight_LOtoNLO_V1(bmName, mHH, cosThetaStar, isDEBUG);
     case HHWeightInterfaceNLOMode::v2:   return getRelativeWeight_LOtoNLO_V2(bmName, mHH, cosThetaStar, isDEBUG);
+    case HHWeightInterfaceNLOMode::v3:   return getRelativeWeight_LOtoNLO_V3(bmName, mHH, cosThetaStar, isDEBUG);
     case HHWeightInterfaceNLOMode::none:
     default:                             throw cmsException(this, __func__, __LINE__) << "Mode unspecfied";
   }
@@ -655,6 +688,17 @@ HHWeightInterfaceNLO::getRelativeWeight_LOtoNLO_V2(const std::string & bmName,
 }
 
 double
+HHWeightInterfaceNLO::getRelativeWeight_LOtoNLO_V3(const std::string & bmName,
+                                                   double mHH,
+                                                   double cosThetaStar,
+                                                   bool isDEBUG) const
+{
+  const double smWeight = getWeight_LOtoNLO_V3("SM", mHH, cosThetaStar, isDEBUG);
+  const double bmWeight = getWeight_LOtoNLO_V3(bmName, mHH, cosThetaStar, isDEBUG);
+  return compRelativeWeight_LOtoNLO(bmName, smWeight, bmWeight);
+}
+
+double
 HHWeightInterfaceNLO::getRelativeWeight_NLOtoNLO(const std::string & bmName,
                                                  double mHH,
                                                  double cosThetaStar,
@@ -663,7 +707,8 @@ HHWeightInterfaceNLO::getRelativeWeight_NLOtoNLO(const std::string & bmName,
   switch(mode_)
   {
     case HHWeightInterfaceNLOMode::v1:   return getRelativeWeight_NLOtoNLO_V1(bmName, mHH, cosThetaStar, isDEBUG);
-    case HHWeightInterfaceNLOMode::v2:   return getRelativeWeight_NLOtoNLO_V2(bmName, mHH, cosThetaStar, isDEBUG);
+    case HHWeightInterfaceNLOMode::v2:   __attribute__((fallthrough));
+    case HHWeightInterfaceNLOMode::v3:   return getRelativeWeight_NLOtoNLO_V2(bmName, mHH, cosThetaStar, isDEBUG);
     case HHWeightInterfaceNLOMode::none:
     default:                             throw cmsException(this, __func__, __LINE__) << "Mode unspecfied";
   }
@@ -745,4 +790,11 @@ const TH2*
 HHWeightInterfaceNLO::get_dXsec_V2_nlo(const std::string & bmName) const
 {
   return comp_dXsec_lo(bmName, dXsec_V2_nlo_);
+}
+
+double
+HHWeightInterfaceNLO::getDenom(double mHH,
+                               double cosThetaStar) const
+{
+  return HHWeightInterfaceCouplings::getBinContent(sumEvt_, mHH, cosThetaStar);
 }
