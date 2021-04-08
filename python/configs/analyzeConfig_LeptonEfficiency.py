@@ -60,7 +60,7 @@ fit_param_range_map = {
         'absEta1_2to2_1_Pt25_0to30_0'     : '0.01,10.0',
         'absEta1_2to2_1_Pt30_0to35_0'     : '0.01,10.0',
         'absEta1_2to2_1_Pt35_0to40_0'     : '0.01,10.0',
-        'absEta1_2to2_1_Pt40_0to45_0'     : '0.01,10.0',
+        'absEta1_2to2_1_Pt40_0to45_0'     : '-0.01,1.0', ## Required for Fit convergence
         'absEta1_2to2_1_Pt45_0to60_0'     : '0.01,10.0',
         'absEta1_2to2_1_Pt60_0to80_0'     : '0.01,10.0',
         'absEta1_2to2_1_Pt80_0to120_0'    : '0.01,10.0',
@@ -69,7 +69,7 @@ fit_param_range_map = {
         'absEta2_1to2_5_Pt20_0to25_0'     : '0.01,10.0',
         'absEta2_1to2_5_Pt25_0to30_0'     : '0.01,10.0',
         'absEta2_1to2_5_Pt30_0to35_0'     : '0.01,10.0',
-        'absEta2_1to2_5_Pt35_0to40_0'     : '0.01,10.0',
+        'absEta2_1to2_5_Pt35_0to40_0'     : '0.01,1.0',  ## Required for Fit convergence
         'absEta2_1to2_5_Pt40_0to45_0'     : '0.01,10.0',
         'absEta2_1to2_5_Pt45_0to60_0'     : '0.01,10.0',
         'absEta2_1to2_5_Pt60_0to80_0'     : '0.01,10.0',
@@ -148,7 +148,7 @@ fit_param_range_map = {
         'absEta1_2to2_1_Pt25_0to30_0'     : '0.01,10.0',
         'absEta1_2to2_1_Pt30_0to35_0'     : '0.01,10.0',
         'absEta1_2to2_1_Pt35_0to40_0'     : '0.01,10.0',
-        'absEta1_2to2_1_Pt40_0to45_0'     : '0.01,10.0',
+        'absEta1_2to2_1_Pt40_0to45_0'     : '-0.01,1.0',  ## Required for Fit convergence
         'absEta1_2to2_1_Pt45_0to60_0'     : '0.01,10.0',
         'absEta1_2to2_1_Pt60_0to80_0'     : '0.01,10.0',
         'absEta1_2to2_1_Pt80_0to120_0'    : '0.01,10.0',
@@ -157,7 +157,7 @@ fit_param_range_map = {
         'absEta2_1to2_5_Pt20_0to25_0'     : '0.01,10.0',
         'absEta2_1to2_5_Pt25_0to30_0'     : '0.01,10.0',
         'absEta2_1to2_5_Pt30_0to35_0'     : '0.01,10.0',
-        'absEta2_1to2_5_Pt35_0to40_0'     : '0.01,10.0',
+        'absEta2_1to2_5_Pt35_0to40_0'     : '0.01,1.0',  ## Required for Fit convergence
         'absEta2_1to2_5_Pt40_0to45_0'     : '0.01,10.0',
         'absEta2_1to2_5_Pt45_0to60_0'     : '0.01,10.0',
         'absEta2_1to2_5_Pt60_0to80_0'     : '0.01,10.0',
@@ -211,7 +211,7 @@ fit_param_range_map = {
   'muon' : {
     'bbWW_SL':{
       'tight' : {
-        'incl'                            : '0.01,10.0',
+        'incl'                            : '0.01,1.0',  ## Required for Fit convergence
         'absEtaLt0_9_Pt10_0to15_0'        : '0.01,10.0',
         'absEtaLt0_9_Pt15_0to20_0'        : '0.01,10.0',
         'absEtaLt0_9_Pt20_0to25_0'        : '0.01,10.0',
@@ -292,14 +292,14 @@ fit_param_range_map = {
         'absEta2_1to2_5_Pt30_0to35_0'     : '0.01,10.0',
         'absEta2_1to2_5_Pt35_0to40_0'     : '0.01,10.0',
         'absEta2_1to2_5_Pt40_0to45_0'     : '0.01,10.0',
-        'absEta2_1to2_5_Pt45_0to60_0'     : '0.01,10.0',
+        'absEta2_1to2_5_Pt45_0to60_0'     : '0,100.0',  ## Required for Fit convergence
         'absEta2_1to2_5_Pt60_0to80_0'     : '0.01,10.0',
         'absEta2_1to2_5_Pt80_0to120_0'    : '0.01,10.0',
       }
     },
     'HHorTTH':{
       'tight' : {
-        'incl'                            : '0.01,10.0',
+        'incl'                            : '0.01,1.0',  ## Required for Fit convergence
         'absEtaLt0_9_Pt10_0to15_0'        : '0.01,10.0',
         'absEtaLt0_9_Pt15_0to20_0'        : '0.01,10.0',
         'absEtaLt0_9_Pt20_0to25_0'        : '0.01,10.0',
@@ -380,7 +380,7 @@ fit_param_range_map = {
         'absEta2_1to2_5_Pt30_0to35_0'     : '0.01,10.0',
         'absEta2_1to2_5_Pt35_0to40_0'     : '0.01,10.0',
         'absEta2_1to2_5_Pt40_0to45_0'     : '0.01,10.0',
-        'absEta2_1to2_5_Pt45_0to60_0'     : '0.01,10.0',
+        'absEta2_1to2_5_Pt45_0to60_0'     : '0.,100.0',  ## Required for Fit convergence
         'absEta2_1to2_5_Pt60_0to80_0'     : '0.01,10.0',
         'absEta2_1to2_5_Pt80_0to120_0'    : '0.01,10.0',
       }

@@ -215,6 +215,25 @@ TH2* bookHistogram(fwlite::TFileService& fs, const std::string& histogramName, c
   return histogram;
 }
 
+void Compute_lepMVAEffSF_Histogram(fwlite::TFileService& fs, 
+				   const std::string& histogramName, 
+				   const TArrayD& ptBins, 
+				   const TArrayD& absEtaBins,
+				   TH2* histogram_signal_postfit, 
+				   TH2* histogram_signal_prefit)
+{
+
+  TH2* histogram = bookHistogram(fs, "dummy", ptBins, absEtaBins);
+  TH2* histogram_signal_postfit_copy = (TH2*) histogram_signal_postfit->Clone();
+  //TH2* histogram_signal_prefit_copy = (TH2*) histogram_signal_prefit->Clone();
+  //histogram_signal_postfit_copy->Divide(histogram_signal_prefit_copy); // DATA/MC 
+  histogram_signal_postfit_copy->Divide(histogram_signal_prefit); // DATA/MC 
+  histogram = histogram_signal_postfit_copy;
+  histogram->SetName(histogramName.c_str());
+  histogram->SetTitle(histogramName.c_str());
+  //return histogram;
+}
+
 
 void fillHistogram(TH2* histogram, 
 		   const std::map<std::string, fitResultType*>& fitResults_pass, 
@@ -246,14 +265,14 @@ void fillHistogram(TH2* histogram,
 	double nFail = 0.;
 	double nFailErr = 0.;
 	if ( prefit_or_postfit == kPrefit ) {
-	    std::cout<< "Pre-fit data fakes" << std::endl;
+	    std::cout<< "Pre-fit signal" << std::endl;
 	    nPass = fitResult_pass->second->norm_signal_prefit_;
 	    nPassErr = fitResult_pass->second->normErr_signal_prefit_;
 	    nFail = fitResult_fail->second->norm_signal_prefit_;
 	    nFailErr = fitResult_fail->second->normErr_signal_prefit_;
 	    std::cout << " Prefit nPass " << nPass << " +/- " << nPassErr << " Prefit nFail " <<  nFail  << " +/- " << nFailErr << std::endl;
 	  } else if ( prefit_or_postfit == kPostfit ) {
-	    std::cout<< "Post-fit data fakes" << std::endl;
+	    std::cout<< "Post-fit signal" << std::endl;
 	    nPass = fitResult_pass->second->norm_signal_postfit_;
 	    nPassErr = fitResult_pass->second->normErr_signal_postfit_;
 	    nFail = fitResult_fail->second->norm_signal_postfit_;
@@ -552,16 +571,32 @@ int main(int argc, char* argv[])
   fwlite::OutputFiles outputFile(cfg);
   fwlite::TFileService fs = fwlite::TFileService(outputFile.file().data());
 
+  TFile* graphFile = new TFile("graphFile.root", "RECREATE"); // file for storing the graphs
+  graphFile->cd();
+
+
   // ------- FOR ELECTRONS --------
   TH2* histogram_e_signal_postfit = 0;
   TH2* histogram_e_signal_prefit = 0;
+  //TH2* histogram_lepMVAEffSF_e = 0;
   if(lepton_type_string == "e"){
+    // Overwriting histogramName_e here to match with Oveido 2D Histo names (which are same for e and mu in the lepMVAEffSF_e/mu_2lss/3l.root files )
+    histogramName_e = "EGamma_EffData2D"; 
     histogram_e_signal_postfit = bookHistogram(fs, histogramName_e, ptBins_e_array, absEtaBins_e_array);
     fillHistogram(histogram_e_signal_postfit, fitResults_e_pass, fitResults_e_fail, kPostfit);
 
-    histogram_e_signal_prefit = bookHistogram(fs, Form("%s_prefit", histogramName_e.data()), ptBins_e_array, absEtaBins_e_array);
+    std::string temp = "Data";
+    histogramName_e.replace(histogramName_e.find(temp), temp.length(), "MC");
+
+    //histogram_e_signal_prefit = bookHistogram(fs, Form("%s_prefit", histogramName_e.data()), ptBins_e_array, absEtaBins_e_array); // DEF LINE
+    histogram_e_signal_prefit = bookHistogram(fs, histogramName_e, ptBins_e_array, absEtaBins_e_array);
     fillHistogram(histogram_e_signal_prefit, fitResults_e_pass, fitResults_e_fail, kPrefit);
   
+    //histogram_lepMVAEffSF_e = bookHistogram(fs, "EGamma_SF2D", ptBins_e_array, absEtaBins_e_array);
+    //Compute_lepMVAEffSF_Histogram(histogram_lepMVAEffSF_e, histogram_e_signal_postfit, histogram_e_signal_prefit, "EGamma_SF2D");
+    Compute_lepMVAEffSF_Histogram(fs, "EGamma_SF2D", ptBins_e_array, absEtaBins_e_array, histogram_e_signal_postfit, histogram_e_signal_prefit);
+
+
     TAxis* yAxis_e = histogram_e_signal_postfit->GetYaxis();
     for ( int idxBinY = 1; idxBinY <= yAxis_e->GetNbins(); ++idxBinY ) {
       double minAbsEta = yAxis_e->GetBinLowEdge(idxBinY);
@@ -576,7 +611,11 @@ int main(int argc, char* argv[])
 
       makeControlPlot(graph_data, ptBins_e_array, minAbsEta, maxAbsEta, true, outputFileName_plot);
       makeControlPlot(graph_data, ptBins_e_array, minAbsEta, maxAbsEta, false, outputFileName_plot);
+
+      graph_data->SetName(graphName_data.c_str());
+      graphFile->GetList()->Add(graph_data);
     }
+    graphFile->Write();
   }
 
 
@@ -584,12 +623,23 @@ int main(int argc, char* argv[])
   // ------- FOR MUONS --------
   TH2* histogram_mu_signal_postfit = 0;
   TH2* histogram_mu_signal_prefit = 0;
+  //TH2* histogram_lepMVAEffSF_mu = 0;
   if(lepton_type_string == "mu"){
+    // Overwriting histogramName_mu here to match with Oveido 2D Histo names (which are same for e and mu in the lepMVAEffSF_e/mu_2lss/3l.root files )
+    histogramName_mu = "EGamma_EffData2D"; 
     histogram_mu_signal_postfit = bookHistogram(fs, histogramName_mu, ptBins_mu_array, absEtaBins_mu_array);
     fillHistogram(histogram_mu_signal_postfit, fitResults_mu_pass, fitResults_mu_fail, kPostfit);
 
-    histogram_mu_signal_prefit = bookHistogram(fs, Form("%s_prefit", histogramName_mu.data()), ptBins_mu_array, absEtaBins_mu_array);
+    std::string temp = "Data";
+    histogramName_mu.replace(histogramName_mu.find(temp), temp.length(), "MC");
+
+    //histogram_mu_signal_prefit = bookHistogram(fs, Form("%s_prefit", histogramName_mu.data()), ptBins_mu_array, absEtaBins_mu_array); // DEF LINE
+    histogram_mu_signal_prefit = bookHistogram(fs, histogramName_mu, ptBins_mu_array, absEtaBins_mu_array);
     fillHistogram(histogram_mu_signal_prefit, fitResults_mu_pass, fitResults_mu_fail, kPrefit);
+
+    //histogram_lepMVAEffSF_mu = bookHistogram(fs, "EGamma_SF2D", ptBins_mu_array, absEtaBins_mu_array);
+    //Compute_lepMVAEffSF_Histogram(histogram_lepMVAEffSF_mu, histogram_mu_signal_postfit, histogram_mu_signal_prefit, "EGamma_SF2D");
+    Compute_lepMVAEffSF_Histogram(fs, "EGamma_SF2D", ptBins_mu_array, absEtaBins_mu_array, histogram_mu_signal_postfit, histogram_mu_signal_prefit);
 
     TAxis* yAxis_mu = histogram_mu_signal_postfit->GetYaxis();
     for ( int idxBinY = 1; idxBinY <= yAxis_mu->GetNbins(); ++idxBinY ) {
@@ -605,10 +655,13 @@ int main(int argc, char* argv[])
 
       makeControlPlot(graph_data, ptBins_mu_array, minAbsEta, maxAbsEta, true, outputFileName_plot);
       makeControlPlot(graph_data, ptBins_mu_array, minAbsEta, maxAbsEta, false, outputFileName_plot);
-    }
 
+      graph_data->SetName(graphName_data.c_str());
+      graphFile->GetList()->Add(graph_data);
+    }
+    graphFile->Write();
   } // mu cond. ends
 
-
+  graphFile->Close();
 
 }

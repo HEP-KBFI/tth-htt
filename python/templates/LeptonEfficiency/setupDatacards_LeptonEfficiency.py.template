@@ -155,11 +155,18 @@ cb.cp().AddSyst( ## Correl. across $CHANNEL and $BIN
 #)
 
 ################### Shape systematics #############################
-
-{% for central_or_shift in central_or_shifts %} ## CORREL ACROSS $CHANNEL, CORREL ACROSS $BIN
-# cb.cp().AddSyst(cb, '{{ central_or_shift }}', 'shape', ch.SystMap('channel', 'process')(channels, all_procs, 1.00)) ## FOR ALL PROC.S
-cb.cp().AddSyst(cb, '{{ central_or_shift }}', 'shape', ch.SystMap('channel', 'process')(channels, bkg_procs_arr, 1.00))   ## FOR BKG PROC.S
+## CORREL ACROSS $CHANNEL, CORREL ACROSS $BIN
+{% for central_or_shift in central_or_shifts if not (central_or_shift.endswith('ER')) %}
+cb.cp().AddSyst(cb, '{{ central_or_shift }}', 'shape', ch.SystMap('channel', 'process')(channels, all_procs, 1.00)) ## FOR ALL PROC.S
 {% endfor %}
+
+{% for central_or_shift in central_or_shifts if (central_or_shift.endswith('ER')) %}
+cb.cp().AddSyst(cb, '{{ central_or_shift }}', 'shape', ch.SystMap('channel', 'process')(channels, sig_procs, 1.00)) ## FOR SIG. PROCESS
+{% endfor %}
+
+
+
+
 
 ##########################################################################
 # Load the shapes
