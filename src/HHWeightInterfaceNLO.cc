@@ -186,12 +186,14 @@ namespace
       {
         dXsec += couplings[i]*A_at_mHH[i + 1];
       }
-      if ( dXsec < 0. ) dXsec = 0.;
+      dXsec = std::max(dXsec, 0.);
+      // no reason to multiply with the bin width here since it's constant and will factor out later
       histogram->SetBinContent(idxBin, dXsec);
       histogram->SetBinError(idxBin, 0.);
     }
     if ( histogram->Integral() > 0. )
     {
+      // normalize to 1 so that the reweighting has only the shape effect
       histogram->Scale(1./histogram->Integral());
     }
     return histogram;
@@ -250,12 +252,14 @@ namespace
           row != A.end(); ++row ) {
       double min_mHH = row->at(0);
       double max_mHH = row->at(1);
+      assert(min_mHH < max_mHH);
       double mHH = 0.5*(min_mHH + max_mHH);
       int idxBinX = xAxis->FindBin(mHH);
       assert(idxBinX >= 1 && idxBinX <= numBinsX);
 
       double min_cosTheta = row->at(2);
       double max_cosTheta = row->at(3);
+      assert(min_cosTheta < max_cosTheta);
       double cosTheta = 0.5*(min_cosTheta + max_cosTheta);
       int idxBinY = yAxis->FindBin(cosTheta);
       assert(idxBinY >= 1 && idxBinY <= numBinsY);
@@ -267,12 +271,14 @@ namespace
       {
         dXsec += couplings[i]*row->at(i + 4);
       }
-      if ( dXsec < 0. ) dXsec = 0.;
+      dXsec = std::max(dXsec, 0.);
+      dXsec *= (max_cosTheta - min_cosTheta) * (max_mHH - min_mHH);
       histogram->SetBinContent(idxBinX, idxBinY, dXsec);
       histogram->SetBinError(idxBinX, idxBinY, 0.);
     }
     if ( histogram->Integral() > 0. )
     {
+      // normalize to 1 so that the reweighting has only the shape effect
       histogram->Scale(1./histogram->Integral());
     }
     return histogram;
