@@ -1,7 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 
 hhWeight = cms.PSet(
-    denominator_file = cms.string(''),
+    denominator_file_lo = cms.string(''),
+    denominator_file_nlo = cms.string(''),
     klScan_file = cms.string(''),
     ktScan_file = cms.string(''),
     c2Scan_file = cms.string(''),
@@ -12,5 +13,6 @@ hhWeight = cms.PSet(
     isDEBUG = cms.bool(False),
     apply_rwgt_lo = cms.bool(True),
     scanMode = cms.string('default'),
-    apply_rwgt_nlo = cms.bool(True)
+    apply_rwgt_nlo = cms.bool(True),
+    rwgt_nlo_mode = cms.string(''),
 )
