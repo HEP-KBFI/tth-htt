@@ -24,6 +24,7 @@ LHEInfoReader::LHEInfoReader(bool has_LHE_weights)
   , scale_weights_(nullptr)
   , pdf_nWeights_(0)
   , pdf_weights_(nullptr)
+  , weight_scale_nominal_(1.)
   , weight_scale_xUp_(1.)
   , weight_scale_xDown_(1.)
   , weight_scale_yUp_(1.)
@@ -127,32 +128,35 @@ LHEInfoReader::read() const
   //    [8] is muR=2.0 muF=2.0
   if(gInstance->scale_nWeights_ == 9)
   {
-    weight_scale_xyDown_ = gInstance->scale_weights_[0]; // muR=0.5 muF=0.5
-    weight_scale_yDown_  = gInstance->scale_weights_[1]; // muR=0.5 muF=1.0
-    weight_scale_xDown_  = gInstance->scale_weights_[3]; // muR=1.0 muF=0.5
-    weight_scale_xUp_    = gInstance->scale_weights_[5]; // muR=1.0 muF=2.0
-    weight_scale_yUp_    = gInstance->scale_weights_[7]; // muR=2.0 muF=1.0
-    weight_scale_xyUp_   = gInstance->scale_weights_[8]; // muR=2.0 muF=2.0
+    weight_scale_xyDown_  = gInstance->scale_weights_[0]; // muR=0.5 muF=0.5
+    weight_scale_yDown_   = gInstance->scale_weights_[1]; // muR=0.5 muF=1.0
+    weight_scale_xDown_   = gInstance->scale_weights_[3]; // muR=1.0 muF=0.5
+    weight_scale_nominal_ = gInstance->scale_weights_[4]; // muR=1.0 muF=1.0
+    weight_scale_xUp_     = gInstance->scale_weights_[5]; // muR=1.0 muF=2.0
+    weight_scale_yUp_     = gInstance->scale_weights_[7]; // muR=2.0 muF=1.0
+    weight_scale_xyUp_    = gInstance->scale_weights_[8]; // muR=2.0 muF=2.0
   }
   else if(gInstance->scale_nWeights_ == 8)
   {
-    weight_scale_xyDown_ = gInstance->scale_weights_[0]; // muR=0.5 muF=0.5
-    weight_scale_yDown_  = gInstance->scale_weights_[1]; // muR=0.5 muF=1.0
-    weight_scale_xDown_  = gInstance->scale_weights_[3]; // muR=1.0 muF=0.5
-    weight_scale_xUp_    = gInstance->scale_weights_[4]; // muR=1.0 muF=2.0
-    weight_scale_yUp_    = gInstance->scale_weights_[6]; // muR=2.0 muF=1.0
-    weight_scale_xyUp_   = gInstance->scale_weights_[7]; // muR=2.0 muF=2.0
+    weight_scale_xyDown_  = gInstance->scale_weights_[0]; // muR=0.5 muF=0.5
+    weight_scale_yDown_   = gInstance->scale_weights_[1]; // muR=0.5 muF=1.0
+    weight_scale_xDown_   = gInstance->scale_weights_[3]; // muR=1.0 muF=0.5
+    weight_scale_nominal_ = 1.;                           // muR=1.0 muF=1.0
+    weight_scale_xUp_     = gInstance->scale_weights_[4]; // muR=1.0 muF=2.0
+    weight_scale_yUp_     = gInstance->scale_weights_[6]; // muR=2.0 muF=1.0
+    weight_scale_xyUp_    = gInstance->scale_weights_[7]; // muR=2.0 muF=2.0
   }
   else
   {
-    weight_scale_xyDown_ = 1.; // muR=0.5 muF=0.5
-    weight_scale_yDown_  = 1.; // muR=0.5 muF=1.0
-    weight_scale_xDown_  = 1.; // muR=1.0 muF=0.5
-    weight_scale_xUp_    = 1.; // muR=1.0 muF=2.0
-    weight_scale_yUp_    = 1.; // muR=2.0 muF=1.0
-    weight_scale_xyUp_   = 1.; // muR=2.0 muF=2.0
-    weight_scale_Up_     = 1.; // envelope
-    weight_scale_Down_   = 1.; // envelope
+    weight_scale_xyDown_  = 1.; // muR=0.5 muF=0.5
+    weight_scale_yDown_   = 1.; // muR=0.5 muF=1.0
+    weight_scale_xDown_   = 1.; // muR=1.0 muF=0.5
+    weight_scale_nominal_ = 1.; // muR=1.0 muF=1.0
+    weight_scale_xUp_     = 1.; // muR=1.0 muF=2.0
+    weight_scale_yUp_     = 1.; // muR=2.0 muF=1.0
+    weight_scale_xyUp_    = 1.; // muR=2.0 muF=2.0
+    weight_scale_Up_      = 1.; // envelope
+    weight_scale_Down_    = 1.; // envelope
     std::cerr << "Unexpected number of LHE scale weights: " << gInstance->scale_nWeights_ << '\n';
     return;
   }
@@ -166,53 +170,68 @@ LHEInfoReader::read() const
 }
 
 double
+LHEInfoReader::getWeight(double weight,
+                         bool correct) const
+{
+  const double correctiveFactor = correct ? correctiveFactor_ : 1.;
+  return clip(correctiveFactor * weight / getWeight_scale_nominal());
+}
+
+double
+LHEInfoReader::getWeight_scale_nominal() const
+{
+  assert(std::fpclassify(weight_scale_nominal_) != FP_ZERO);
+  return weight_scale_nominal_;
+}
+
+double
 LHEInfoReader::getWeight_scale_xUp() const
 { 
-  return clip(correctiveFactor_ * weight_scale_xUp_);
+  return getWeight(weight_scale_xUp_);
 }
 
 double
 LHEInfoReader::getWeight_scale_xDown() const
 { 
-  return clip(correctiveFactor_ * weight_scale_xDown_);
+  return getWeight(weight_scale_xDown_);
 }
 
 double
 LHEInfoReader::getWeight_scale_yUp() const
 {
-  return clip(correctiveFactor_ * weight_scale_yUp_);
+  return getWeight(weight_scale_yUp_);
 }
 
 double
 LHEInfoReader::getWeight_scale_yDown() const
 { 
-  return clip(correctiveFactor_ * weight_scale_yDown_);
+  return getWeight(weight_scale_yDown_);
 }
 
 double
 LHEInfoReader::getWeight_scale_xyUp() const
 {
-  return clip(correctiveFactor_ * weight_scale_xyUp_);
+  return getWeight(weight_scale_xyUp_);
 }
 
 double
 LHEInfoReader::getWeight_scale_xyDown() const
 {
-  return clip(correctiveFactor_ * weight_scale_xyDown_);
+  return getWeight(weight_scale_xyDown_);
 }
 
 double
 LHEInfoReader::getWeight_scale_Up() const
 {
   // the envelope values already take the corrective factor into account
-  return clip(weight_scale_Up_);
+  return getWeight(weight_scale_Up_, false);
 }
 
 double
 LHEInfoReader::getWeight_scale_Down() const
 {
   // the envelope values already take the corrective factor into account
-  return clip(weight_scale_Down_);
+  return getWeight(weight_scale_Down_, false);
 }
 
 double
@@ -220,7 +239,7 @@ LHEInfoReader::getWeight_scale(int central_or_shift) const
 {
   switch(central_or_shift)
   {
-    case kLHE_scale_central: return 1.;
+    case kLHE_scale_central: return 1.; // [*]
     case kLHE_scale_xDown:   return getWeight_scale_xDown();
     case kLHE_scale_xUp:     return getWeight_scale_xUp();
     case kLHE_scale_yDown:   return getWeight_scale_yDown();
@@ -232,6 +251,9 @@ LHEInfoReader::getWeight_scale(int central_or_shift) const
     default: throw cmsException(this, __func__, __LINE__)
                << "Invalid LHE scale systematics option: " << central_or_shift;
   }
+  // [*] do not return getWeight_scale_nominal() since we return shifts wrt this value, see
+  //     https://github.com/HEP-KBFI/tth-htt/issues/174
+  //     for more
 }
 
 int

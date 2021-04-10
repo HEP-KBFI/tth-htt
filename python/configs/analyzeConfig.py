@@ -210,6 +210,9 @@ class analyzeConfig(object):
         self.samples = copy.deepcopy(samples)
         for sample_key, sample_info in self.samples.items():
           if sample_key == 'sum_events': continue
+          # do not read LHE weights from single anti-/top samples, see https://github.com/HEP-KBFI/tth-htt/issues/174
+          if sample_key.startswith('/ST_t-channel'):
+            sample_info["has_LHE"] = False
           use_vh_split |= (sample_info["use_it"] and sample_key.startswith(("/ZHToNonbb", "/WHToNonbb")))
           use_vh_unsplit |= (sample_info["use_it"] and sample_key.startswith("/VHToNonbb"))
           sample_info["dbs_name"] = sample_key
@@ -751,6 +754,7 @@ class analyzeConfig(object):
       is_ttbar_sys = sample_info["sample_category"].replace("TT_", "") in systematics.ttbar
       ttHProcs = self.ttHProcs + [ "TTH" ]
       is_EWK = sample_category not in [ "WZ", "ZZ", "ggZZ", "qqZZ" ]
+      valid_st = not sample_name.startswith('/ST_t-channel')
 
       if central_or_shift in systematics.LHE().full           and not has_LHE:                                 return False
       if central_or_shift in systematics.LHE().ttH            and sample_category not in ttHProcs:             return False
@@ -758,7 +762,7 @@ class analyzeConfig(object):
       if central_or_shift in systematics.LHE().tHW            and sample_category not in [ "tHW", "TH" ]:      return False
       if central_or_shift in systematics.LHE().ttW            and sample_category not in [ "TTW", "TTWW" ]:    return False
       if central_or_shift in systematics.LHE().ttZ            and sample_category != "TTZ":                    return False
-      if central_or_shift in systematics.LHE().ttbar          and sample_category != "TT":                     return False
+      if central_or_shift in systematics.LHE().ttbar          and (sample_category != "TT" or not valid_st):   return False
       if central_or_shift in systematics.LHE().dy             and sample_category != "DY":                     return False
       if central_or_shift in systematics.LHE().wz             and sample_category != "WZ":                     return False
       if central_or_shift in systematics.LHE().zz             and sample_category != "ZZ":                     return False
@@ -805,8 +809,10 @@ class analyzeConfig(object):
             hhWeight_base = 'multilepton'
           else:
             raise ValueError("Uncrecongizable sample category: %s" % sample_info[sample_category_to_check])
-          jobOptions['hhWeight_cfg.denominator_file'] = 'hhAnalysis/{}/data/denom_{}.root'.format(hhWeight_base, self.era)
+          jobOptions['hhWeight_cfg.denominator_file_lo'] = 'hhAnalysis/{}/data/denom_{}.root'.format(hhWeight_base, self.era)
+          jobOptions['hhWeight_cfg.denominator_file_nlo'] = 'hhAnalysis/{}/data/denom_{}_nlo.root'.format(hhWeight_base, self.era)
           jobOptions['hhWeight_cfg.histtitle'] = sample_info[sample_category_to_check]
+          jobOptions['hhWeight_cfg.rwgt_nlo_mode'] = 'v2'
           #jobOptions['hhWeight_cfg.c2Scan_file'] = self.c2_scan_file # ignore c2 scan
           if not ('hh' in self.channel or 'ctrl' in self.channel or 'study' in self.channel.lower()):
             # enable kt-scan in ttH analysis
@@ -815,6 +821,8 @@ class analyzeConfig(object):
           elif 'hh' in self.channel and 'ctrl' not in self.channel and 'study' not in self.channel.lower():
             #jobOptions['hhWeight_cfg.scanMode'] = 'full' # uncomment for kl scan in HH analysis
             jobOptions['hhWeight_cfg.klScan_file'] = self.kl_scan_file
+            jobOptions['hhWeight_cfg.rwgt_nlo_mode'] = 'v3'
+            jobOptions['hhWeight_cfg.apply_rwgt_lo'] = False
 
         update_conv_bkg = False
         if 'genPhotonFilter' in sample_info.keys():
@@ -1200,7 +1208,8 @@ class analyzeConfig(object):
             'branchName_subJetsLS',
             'tHweights',
             'useObjectMultiplicity',
-            'hhWeight_cfg.denominator_file',
+            'hhWeight_cfg.denominator_file_lo',
+            'hhWeight_cfg.denominator_file_nlo',
             'hhWeight_cfg.histtitle',
             'hhWeight_cfg.klScan_file',
             'hhWeight_cfg.ktScan_file',
@@ -1209,6 +1218,7 @@ class analyzeConfig(object):
             'hhWeight_cfg.c2gScan_file',
             'hhWeight_cfg.scanMode',
             'hhWeight_cfg.apply_rwgt_lo',
+            'hhWeight_cfg.rwgt_nlo_mode',
             'minNumJets',
             'skipEvery',
             'apply_topPtReweighting',

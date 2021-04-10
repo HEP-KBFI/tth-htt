@@ -73,7 +73,6 @@ class HHWeightInterfaceLO
   PyObject * func_Weight_;
 
   int nof_sumEvt_entries_;
-  TFile * fileHH_;
   TH2 * sumEvt_;
 };
 

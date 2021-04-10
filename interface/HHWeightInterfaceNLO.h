@@ -16,10 +16,11 @@
 class TH1;
 class TH2;
 class HHWeightInterfaceCouplings;
+enum class HHWeightInterfaceNLOMode;
 
 class HHWeightInterfaceNLO
 {
- public:
+public:
   HHWeightInterfaceNLO(const HHWeightInterfaceCouplings * const couplings,
                        Era era,
                        bool apply_coupling_fix_CMS = false,
@@ -42,6 +43,12 @@ class HHWeightInterfaceNLO
    *       with the weights obtained by the function HHWeightInterfaceLO::getWeight(...).
    */
   double
+  getWeight_LOtoNLO(const std::string & bmName,
+                    double mHH,
+                    double cosThetaStar,
+                    bool isDEBUG = false) const;
+
+  double
   getWeight_LOtoNLO_V1(const std::string & bmName,
                        double mHH,
                        double cosThetaStar,
@@ -49,6 +56,12 @@ class HHWeightInterfaceNLO
 
   double
   getWeight_LOtoNLO_V2(const std::string & bmName,
+                       double mHH,
+                       double cosThetaStar,
+                       bool isDEBUG = false) const;
+
+  double
+  getWeight_LOtoNLO_V3(const std::string & bmName,
                        double mHH,
                        double cosThetaStar,
                        bool isDEBUG = false) const;
@@ -65,6 +78,12 @@ class HHWeightInterfaceNLO
    *
    */
   double
+  getRelativeWeight_LOtoNLO(const std::string & bmName,
+                            double mHH,
+                            double cosThetaStar,
+                            bool isDEBUG = false) const;
+
+  double
   getRelativeWeight_LOtoNLO_V1(const std::string & bmName,
                                double mHH,
                                double cosThetaStar,
@@ -72,6 +91,12 @@ class HHWeightInterfaceNLO
 
   double
   getRelativeWeight_LOtoNLO_V2(const std::string & bmName,
+                               double mHH,
+                               double cosThetaStar,
+                               bool isDEBUG = false) const;
+
+  double
+  getRelativeWeight_LOtoNLO_V3(const std::string & bmName,
                                double mHH,
                                double cosThetaStar,
                                bool isDEBUG = false) const;
@@ -90,6 +115,12 @@ class HHWeightInterfaceNLO
    * Note: The weights returned by the functions getRelativeWeight_NLOtoNLO_V1(...) and getRelativeWeight_NLOtoNLO_V2(...) 
    *       are meant to be used for studies of the HH reweighting only, NOT in regular analysis code !!
    */
+  double
+  getRelativeWeight_NLOtoNLO(const std::string & bmName,
+                             double mHH,
+                             double cosThetaStar,
+                             bool isDEBUG = false) const;
+
   double
   getRelativeWeight_NLOtoNLO_V1(const std::string & bmName,
                                 double mHH,
@@ -120,17 +151,13 @@ class HHWeightInterfaceNLO
   const TH2*
   get_dXsec_V2_nlo(const std::string & bmName) const;
 
- private:
-  enum mode_type { kMode_V1, kMode_V2 };
-
+private:
   double
-  getRelativeWeight_LOtoNLO(const std::string & bmName,
-                            double mHH,
-                            double cosThetaStar,
-                            mode_type mode,
-                            bool isDEBUG = false) const;
+  getDenom(double mHH,
+           double cosThetaStar) const;
 
   const HHWeightInterfaceCouplings * const couplings_;
+  const HHWeightInterfaceNLOMode mode_;
 
   LocalFileInPath xsecFileName_V1_lo_;
   LocalFileInPath xsecFileName_V1_nlo_;
@@ -148,9 +175,11 @@ class HHWeightInterfaceNLO
   std::map<std::string, const TH2 *> weights_LOtoNLO_V2_;  // key = bmName
   std::map<std::string, const TH2 *> weights_NLOtoNLO_V2_; // key = bmName
 
+  TH2 * sumEvt_;
+  int nof_sumEvt_entries_;
+
   Era era_;
   bool apply_coupling_fix_CMS_;
-
   double max_weight_;
   
   bool isDEBUG_;

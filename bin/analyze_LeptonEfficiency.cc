@@ -264,8 +264,8 @@ int main(int argc, char* argv[])
   }
 
   checkOptionValidity(central_or_shift, isMC);
-  const MuonPtSys muon_option           = getMuon_option(central_or_shift, isMC);
-  const ElectronPtSys electronPt_option = getElectronPt_option(central_or_shift, isMC); 
+  const MuonPtSys muonPt_option           = getMuon_option(central_or_shift, isMC);
+  const ElectronPtSys electronPt_option   = getElectronPt_option(central_or_shift, isMC); 
   const int jetPt_option    = useNonNominal_jetmet ? kJetMET_central_nonNominal : getJet_option(central_or_shift, isMC);
   const int met_option      = useNonNominal_jetmet ? kJetMET_central_nonNominal : getMET_option(central_or_shift, isMC);
   const int hadTauPt_option = useNonNominal_jetmet ? kHadTauPt_uncorrected : getHadTauPt_option(central_or_shift);
@@ -276,7 +276,7 @@ int main(int argc, char* argv[])
        " -> met_option        = " << met_option                    << "\n"
        " -> hadTauPt_option   = " << hadTauPt_option               << "\n"
        " -> electronPt_option = " << as_integer(electronPt_option) << "\n"
-       " -> muon_option       = " << as_integer(muon_option)       << "\n";
+       " -> muonPt_option       = " << as_integer(muonPt_option)       << "\n";
   
 
   DYMCReweighting * dyReweighting = nullptr;
@@ -357,7 +357,17 @@ int main(int argc, char* argv[])
     cfgRunLumiEventSelector.addParameter<std::string>("separator", ":");
     run_lumi_eventSelector = new RunLumiEventSelector(cfgRunLumiEventSelector);
   }
-  std::string selEventsFileName_output = cfg_analyze.getParameter<std::string>("selEventsFileName_output");
+
+  const std::string selEventsFileName_output = cfg_analyze.getParameter<std::string>("selEventsFileName_output");
+
+  //--- open output file containing run:lumi:event numbers of events passing final event selection criteria
+  const bool writeTo_selEventsFileOut = ! selEventsFileName_output.empty();
+  std::map<std::string, std::map<std::string, std::ofstream *>> outputFiles;
+  for(const std::string & numden_str: { "num", "den" })
+  {
+      outputFiles[lepton_type_string][numden_str] = writeTo_selEventsFileOut ?
+        new std::ofstream(Form(selEventsFileName_output.data(), lepton_type_string.data(), numden_str.data())) : nullptr ;
+  }
 
   fwlite::InputSource inputFiles(cfg);
   int maxEvents = inputFiles.maxEvents();
@@ -865,8 +875,7 @@ int main(int argc, char* argv[])
   }
 
 
-//--- open output file containing run:lumi:event numbers of events passing final event selection criteria
-  std::ostream* selEventsFile = new std::ofstream(selEventsFileName_output.data(), std::ios::out);
+
 
   std::string charge_and_leptonSelection_Pass = Form("%s_%s", "Pass", leptonSelection_string.data()); // Here Pass = preselected Probe lepton passes Tight selections
   std::string charge_and_leptonSelection_Fail = Form("%s_%s", "Fail", leptonSelection_string.data()); // Here Fail = preselected Probe lepton fails Tight selections
@@ -952,7 +961,7 @@ int main(int argc, char* argv[])
   CutFlowTableHistManager * cutFlowHistManager = new CutFlowTableHistManager(cutFlowTableCfg, cuts);
   cutFlowHistManager->bookHistograms(fs);
 
-
+  TRandom3 *r3 = new TRandom3(0); // Initializing the random number seed
 
 
   while ( inputTree->hasNextEvent() && (!run_lumi_eventSelector || (run_lumi_eventSelector && !run_lumi_eventSelector->areWeDone())) ) 
@@ -1167,7 +1176,8 @@ int main(int argc, char* argv[])
 //--- resolve overlaps in order of priority: muon, electron,
     // ***** Reco Muon Collections
     const std::vector<RecoMuon> muons = muonReader->read();
-    const std::vector<const RecoMuon*> muon_ptrs = convert_to_ptrs(muons);
+    const std::vector<RecoMuon> muons_shifted = recompute_p4(muons, muonPt_option);
+    const std::vector<const RecoMuon*> muon_ptrs = convert_to_ptrs(muons_shifted);  
     const std::vector<const RecoMuon*> cleanedMuons = muon_ptrs; // CV: no cleaning needed for muons, as they have the highest priority in the overlap removal
     const std::vector<const RecoMuon*> preselMuons = preselMuonSelector(cleanedMuons);
     const std::vector<const RecoMuon*> preselMuons_pt_sorted = preselMuonSelector(cleanedMuons, isHigherPt);
@@ -1289,9 +1299,7 @@ int main(int argc, char* argv[])
     int tag_lepton_index = -1;
     int probe_lepton_index = -1;
 
-    TRandom3 *r3 = new TRandom3(0);
     Double_t r = r3->Uniform(0, 1);
-
     if(r < 0.5)
     { 
       tag_lepton_index = 0;
@@ -1300,7 +1308,6 @@ int main(int argc, char* argv[])
       tag_lepton_index = 1;
       probe_lepton_index = 0;
     }	 
-    delete r3; // Deleting the TRandom3 pointer
     //std::cout<< "Tag index: " << tag_lepton_index << " Probe index: " << probe_lepton_index << std::endl;
 
 //--- apply preselection
@@ -1373,8 +1380,8 @@ int main(int argc, char* argv[])
       cutFlowTable.update("60 < m(ee) < 120 GeV", evtWeightRecorder.get(central_or_shift));
       cutFlowHistManager->fillHistograms("60 < m(ee) < 120 GeV", evtWeightRecorder.get(central_or_shift));
       if( !( preselElectrons[tag_lepton_index]->isTight() && 
-	    ((preselElectrons[tag_lepton_index]->filterBits() == 2) || 
-	     (preselElectrons[tag_lepton_index]->filterBits() == 4)) ) )
+	    ((preselElectrons[tag_lepton_index]->filterBits() & 2) || 
+	     (preselElectrons[tag_lepton_index]->filterBits() & 4)) ) )
       { // Tag presel Electron either fails Tight lepton ID or is not matched to the 1e Trigger
  	if ( run_lumi_eventSelector ) 
 	{
@@ -1496,6 +1503,11 @@ int main(int argc, char* argv[])
 	    }
 	}
 
+	if(writeTo_selEventsFileOut)
+	{
+	    *(outputFiles[lepton_type_string]["den"]) << eventInfo.str() << '\n' ;
+	}
+
 	if(isZll)
 	{
 	  if(genElectron_tag && genElectron_probe)
@@ -1549,7 +1561,11 @@ int main(int argc, char* argv[])
 	    cutFlowTable.update("Probe electron identification", evtWeightRecorder.get(central_or_shift));
 	    cutFlowHistManager->fillHistograms("Probe electron identification", evtWeightRecorder.get(central_or_shift));
 	  }
-
+	  
+	  if(writeTo_selEventsFileOut)
+	  {
+	    *(outputFiles[lepton_type_string]["num"]) << eventInfo.str() << '\n' ;
+	  }
 
 	  if(isZll)
 	  {
@@ -1654,7 +1670,7 @@ int main(int argc, char* argv[])
 	cutFlowTable.update("60 < m(mumu) < 120 GeV", evtWeightRecorder.get(central_or_shift));
 	cutFlowHistManager->fillHistograms("60 < m(mumu) < 120 GeV", evtWeightRecorder.get(central_or_shift));
 	if( !(preselMuons[tag_lepton_index]->isTight() && 
-	      (preselMuons[tag_lepton_index]->filterBits() == 8)) )
+	      (preselMuons[tag_lepton_index]->filterBits() & 8)) )
 	{ // Tag presel Muon either fails Tight lepton ID or is not matched to the 1mu Trigger
  
 	  if ( run_lumi_eventSelector ) 
@@ -1776,6 +1792,11 @@ int main(int argc, char* argv[])
 	    }
 	  }
 
+	  if(writeTo_selEventsFileOut)
+	  {
+	    *(outputFiles[lepton_type_string]["den"]) << eventInfo.str() << '\n' ;
+	  }
+
 	  if(isZll)
 	  {
 	    if(genMuon_tag && genMuon_probe)
@@ -1828,6 +1849,10 @@ int main(int argc, char* argv[])
 	      cutFlowHistManager->fillHistograms("Probe muon identification", evtWeightRecorder.get(central_or_shift));
 	  }
 
+	  if(writeTo_selEventsFileOut)
+	  {
+	    *(outputFiles[lepton_type_string]["num"]) << eventInfo.str() << '\n' ;
+	  }
 
 	  if(isZll)
 	  {
@@ -1883,8 +1908,6 @@ int main(int argc, char* argv[])
       }
     }
 
-    (*selEventsFile) << eventInfo.str() << '\n';
-    
     ++selectedEntries;
     selectedEntries_weighted += evtWeight;
     if ( isCentral ) {
@@ -1915,7 +1938,6 @@ int main(int argc, char* argv[])
   delete cutFlowHistManager;
   delete dataToMCcorrectionInterface;
   delete run_lumi_eventSelector;
-  delete selEventsFile;
 
   delete muonReader;
   delete electronReader;
@@ -1974,6 +1996,20 @@ int main(int argc, char* argv[])
     }
 
   delete inputTree;
+
+  for(auto & kv: outputFiles)
+    {
+      for(auto & kv2: kv.second)
+	{
+	  if(kv2.second)
+	    {
+	      *kv2.second << std::flush;
+	      delete kv2.second;
+	    }
+	}
+    }
+
+  delete r3; // Deleting the TRandom3 pointer
 
   hltPaths_delete(triggers_1e);
   hltPaths_delete(triggers_1mu);
