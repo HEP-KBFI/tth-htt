@@ -1460,24 +1460,18 @@ int main(int argc, char* argv[])
     {
       assert(HHWeightLO_calc);
       evtWeightRecorder.record_hhWeight_lo(HHWeightLO_calc, eventInfo, isDEBUG);
-
-      // CV: applying the NLO weight without applying the LO weight as well
-      //     does not make sense for the Run-2 LO HH MC samples,
-      //     as the LO weight needs to be applied in order to fix the coupling bug
-      //     present in the LO HH MC samples for 2016, 2017, and 2018
-      if ( apply_HH_rwgt_nlo )
-      {
-        evtWeightRecorder.record_hhWeight_nlo(HHWeightNLO_calc, eventInfo, isDEBUG);
-      }
-
       for(const std::string & HHWeightName: evt_cat_strs)
       {
         Weight_ktScan[HHWeightName] = HHWeightLO_calc->getRelativeWeight(HHWeightName, eventInfo.gen_mHH, eventInfo.gen_cosThetaStar, isDEBUG);
-        if ( apply_HH_rwgt_nlo )
-        {
-          assert(HHWeightNLO_calc);
-          Weight_ktScan[HHWeightName] *= HHWeightNLO_calc->getRelativeWeight_LOtoNLO_V2(HHWeightName, eventInfo.gen_mHH, eventInfo.gen_cosThetaStar, isDEBUG);
-        }
+      }
+    }
+    if(apply_HH_rwgt_nlo)
+    {
+      assert(HHWeightNLO_calc);
+      evtWeightRecorder.record_hhWeight_nlo(HHWeightNLO_calc, eventInfo, isDEBUG);
+      for(const std::string & HHWeightName: evt_cat_strs)
+      {
+        Weight_ktScan[HHWeightName] *= HHWeightNLO_calc->getRelativeWeight_LOtoNLO(HHWeightName, eventInfo.gen_mHH, eventInfo.gen_cosThetaStar, isDEBUG);
       }
     }
 

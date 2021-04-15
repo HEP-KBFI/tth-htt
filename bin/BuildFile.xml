@@ -651,6 +651,11 @@
   <use   name="root"/>
   <Flags CXXFLAGS="-g -Wshadow -Werror"/>
 </bin>
+<bin file="testHHWeightInterfaceNLO.cc" name="testHHWeightInterfaceNLO">
+  <use   name="tthAnalysis/HiggsToTauTau"/>
+  <use   name="root"/>
+  <Flags CXXFLAGS="-g -Wshadow -Werror"/>
+</bin>
 <bin file="copyHistograms_recursively.cc" name="copyHistograms_recursively">
   <use   name="FWCore/FWLite"/>
   <use   name="FWCore/ParameterSet"/>

@@ -24,7 +24,6 @@ HHWeightInterfaceLO::HHWeightInterfaceLO(const HHWeightInterfaceCouplings * cons
   , moduleMain_(nullptr)
   , func_Weight_(nullptr)
   , nof_sumEvt_entries_(0)
-  , fileHH_(nullptr)
   , sumEvt_(nullptr)
 {
   assert(couplings_);
@@ -32,9 +31,7 @@ HHWeightInterfaceLO::HHWeightInterfaceLO(const HHWeightInterfaceCouplings * cons
   // AC: limit number of threads running in python to one
   setenv("OMP_NUM_THREADS", "1", 0);
 
-  const std::string denominator_hist = cfg.getParameter<std::string>("denominator_file");
   const std::string coefFile = cfg.getParameter<std::string>("coefFile");
-  const std::string histtitle = cfg.getParameter<std::string>("histtitle");
 
   // read the python file that we're about to execute
   const std::string applicationLoadPath = LocalFileInPath("hhAnalysis/multilepton/python/do_weight.py").fullPath();
@@ -65,25 +62,9 @@ HHWeightInterfaceLO::HHWeightInterfaceLO(const HHWeightInterfaceCouplings * cons
   // function to calculate and return parts of the weights
   func_Weight_ = PyObject_GetAttrString(moduleMain_, "evaluate_weight");
 
-  // This histogram is adapted to our input events -- it is going to be used event-by-event
-  const std::string FileDenominator = LocalFileInPath(denominator_hist).fullPath();
-  fileHH_ = TFileOpenWrapper::Open(FileDenominator.c_str(), "READ");
-  if(! fileHH_)
-  {
-    throw cmsException(this, __func__, __LINE__) 
-      << "Could not open file " << FileDenominator << " !!\n";
-  }
-  if(fileHH_ -> IsZombie())
-  {
-    throw cmsException(this, __func__, __LINE__) 
-      << "The file '" << FileDenominator << "' appears to be a zombie" << " !!\n";
-  }
-  sumEvt_ = static_cast<TH2 *>(fileHH_ -> Get(histtitle.c_str()));
-  if(! sumEvt_)
-  {
-    throw cmsException(this, __func__, __LINE__)
-      << "The file '" << FileDenominator << "' does not have a TH2 named " << histtitle << " !!\n";
-  }
+  sumEvt_ = HHWeightInterfaceCouplings::loadDenominatorHist(
+    couplings_->denominator_file_lo(), couplings_->histtitle()
+  );
   nof_sumEvt_entries_ = static_cast<int>(sumEvt_->GetEntries());
   assert(nof_sumEvt_entries_ > 0);
 
@@ -100,17 +81,13 @@ HHWeightInterfaceLO::~HHWeightInterfaceLO()
   Py_XDECREF(moduleMainString_);
   Py_XDECREF(moduleMain_);
   Py_XDECREF(func_Weight_);
-  fileHH_->Close();
+  delete sumEvt_;
 }
 
 double
 HHWeightInterfaceLO::getDenom(double mHH, double cosThetaStar) const
 {
-  const double denominator = sumEvt_->GetBinContent(
-        sumEvt_->GetXaxis()->FindBin(mHH),
-        sumEvt_->GetYaxis()->FindBin(std::fabs(cosThetaStar))
-  );
-  return denominator;
+  return HHWeightInterfaceCouplings::getBinContent(sumEvt_, mHH, cosThetaStar);
 }
 
 double

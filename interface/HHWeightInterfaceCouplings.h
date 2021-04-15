@@ -3,6 +3,11 @@
 
 #include <FWCore/ParameterSet/interface/ParameterSet.h> // edm::ParameterSet
 
+enum class HHWeightInterfaceNLOMode { none, v1, v2, v3 };
+
+// forward declarations
+class TH2;
+
 class HHWeightInterfaceCouplings
 {
 public:
@@ -47,6 +52,27 @@ public:
   std::vector<double>
   norm() const;
 
+  HHWeightInterfaceNLOMode
+  nlo_mode() const;
+
+  std::string
+  denominator_file_lo() const;
+
+  std::string
+  denominator_file_nlo() const;
+
+  std::string
+  histtitle() const;
+
+  static TH2 *
+  loadDenominatorHist(const std::string & fileName,
+                      const std::string & histTitle);
+
+  static double
+  getBinContent(const TH2 * const hist,
+                double mHH,
+                double cosThetaStar);
+
 private:
   void
   loadScanFile(const std::string & filePath,
@@ -66,6 +92,10 @@ private:
   std::vector<std::string> bmNames_;
   std::vector<std::string> bmWeightNames_;
 
+  HHWeightInterfaceNLOMode nlo_mode_;
+  const std::string denominator_file_lo_;
+  const std::string denominator_file_nlo_;
+  const std::string histtitle_;
 };
 
 #endif // tthAnalysis_HiggsToTauTau_HHWeightInterfaceCouplings_h
