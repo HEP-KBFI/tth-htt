@@ -571,7 +571,11 @@ int main(int argc, char* argv[])
   fwlite::OutputFiles outputFile(cfg);
   fwlite::TFileService fs = fwlite::TFileService(outputFile.file().data());
 
-  TFile* graphFile = new TFile("graphFile.root", "RECREATE"); // file for storing the graphs
+  std::string GraphFileName = outputFile.file(); // Defining pathName for the graphs
+  std::string temp = "LeptonIDEfficiency";
+  GraphFileName.replace(GraphFileName.find(temp), temp.length(), "graphFile");
+  std::cout<< "GraphFileName: " << GraphFileName << std::endl;
+  TFile* graphFile = new TFile(GraphFileName.data(), "RECREATE"); // file for storing the graphs
   graphFile->cd();
 
 
@@ -585,8 +589,8 @@ int main(int argc, char* argv[])
     histogram_e_signal_postfit = bookHistogram(fs, histogramName_e, ptBins_e_array, absEtaBins_e_array);
     fillHistogram(histogram_e_signal_postfit, fitResults_e_pass, fitResults_e_fail, kPostfit);
 
-    std::string temp = "Data";
-    histogramName_e.replace(histogramName_e.find(temp), temp.length(), "MC");
+    std::string temp_e = "Data";
+    histogramName_e.replace(histogramName_e.find(temp_e), temp_e.length(), "MC");
 
     //histogram_e_signal_prefit = bookHistogram(fs, Form("%s_prefit", histogramName_e.data()), ptBins_e_array, absEtaBins_e_array); // DEF LINE
     histogram_e_signal_prefit = bookHistogram(fs, histogramName_e, ptBins_e_array, absEtaBins_e_array);
@@ -630,8 +634,8 @@ int main(int argc, char* argv[])
     histogram_mu_signal_postfit = bookHistogram(fs, histogramName_mu, ptBins_mu_array, absEtaBins_mu_array);
     fillHistogram(histogram_mu_signal_postfit, fitResults_mu_pass, fitResults_mu_fail, kPostfit);
 
-    std::string temp = "Data";
-    histogramName_mu.replace(histogramName_mu.find(temp), temp.length(), "MC");
+    std::string temp_mu = "Data";
+    histogramName_mu.replace(histogramName_mu.find(temp_mu), temp_mu.length(), "MC");
 
     //histogram_mu_signal_prefit = bookHistogram(fs, Form("%s_prefit", histogramName_mu.data()), ptBins_mu_array, absEtaBins_mu_array); // DEF LINE
     histogram_mu_signal_prefit = bookHistogram(fs, histogramName_mu, ptBins_mu_array, absEtaBins_mu_array);
