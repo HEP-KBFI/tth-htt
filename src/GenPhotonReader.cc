@@ -2,6 +2,7 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 #include "tthAnalysis/HiggsToTauTau/interface/BranchAddressInitializer.h" // BranchAddressInitializer, TTree, Form()
+#include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // filterByStatus()
 
 std::map<std::string, int> GenPhotonReader::numInstances_;
 std::map<std::string, GenPhotonReader *> GenPhotonReader::instances_;
@@ -104,7 +105,7 @@ GenPhotonReader::setBranchAddresses(TTree * tree)
 }
 
 std::vector<GenPhoton>
-GenPhotonReader::read() const
+GenPhotonReader::read(int option) const
 {
   const GenPhotonReader * const gInstance = instances_[branchName_obj_];
   assert(gInstance);
@@ -136,5 +137,5 @@ GenPhotonReader::read() const
       });
     }
   }
-  return photons;
+  return option == GenPhotonReader::kAll ? photons : filterByStatus(photons, 1);
 }

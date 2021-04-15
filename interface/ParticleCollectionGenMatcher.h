@@ -42,9 +42,10 @@ public:
                     const std::vector<GenLepton> & genLeptons,
                     double dRmax = 0.3,
                     double minDPtRel = -0.5,
-                    double maxDPtRel = +0.5) const
+                    double maxDPtRel = +0.5,
+                    int status = 1) const
   {
-    return addGenMatch<GenLepton, GenLeptonLinker>(recParticles, genLeptons, dRmax, minDPtRel, maxDPtRel, genLeptonLinker_);
+    return addGenMatch<GenLepton, GenLeptonLinker>(recParticles, genLeptons, dRmax, minDPtRel, maxDPtRel, genLeptonLinker_, status);
   }
 
   void
@@ -73,16 +74,17 @@ public:
     {
       genPartFlavs = { 5 };
     }
-    return addGenMatch<GenHadTau, GenHadTauLinker>(recParticles, genHadTaus, dRmax, maxDPtRel, genHadTauLinker_, genPartFlavs);
+    return addGenMatch<GenHadTau, GenHadTauLinker>(recParticles, genHadTaus, dRmax, maxDPtRel, genHadTauLinker_, -1, genPartFlavs);
   }
 
   void
   addGenPhotonMatch(const std::vector<const Trec *> & recParticles,
                     const std::vector<GenPhoton> & genPhotons,
                     double dRmax = 0.3,
-                    double maxDPtRel = 0.5) const
+                    double maxDPtRel = 0.5,
+                    int status = 1) const
   {
-    return addGenMatch<GenPhoton, GenPhotonLinker>(recParticles, genPhotons, dRmax, maxDPtRel, genPhotonLinker_);
+    return addGenMatch<GenPhoton, GenPhotonLinker>(recParticles, genPhotons, dRmax, maxDPtRel, genPhotonLinker_, status);
   }
 
   void
@@ -123,10 +125,11 @@ protected:
               double dRmax,
               double maxDPtRel,
               const Tlinker & linker,
+              int status = -1,
               const std::vector<unsigned char> & genPartFlavs = {}) const
   {
     return addGenMatch<Tgen, Tlinker>(
-      recParticles, genParticles, dRmax, -maxDPtRel, maxDPtRel, linker, genPartFlavs
+      recParticles, genParticles, dRmax, -maxDPtRel, maxDPtRel, linker, status, genPartFlavs
     );
   }
 
@@ -139,6 +142,7 @@ protected:
               double minDPtRel,
               double maxDPtRel,
               const Tlinker & linker,
+              int status = -1,
               const std::vector<unsigned char> & genPartFlavs = {}) const
   {
     assert(minDPtRel < 0. && maxDPtRel > 0.);
@@ -165,6 +169,10 @@ protected:
           passesConstraints &=
             std::find(genPartFlavs.begin(), genPartFlavs.end(), recParticle->genPartFlav()) != genPartFlavs.end()
           ;
+        }
+        if(status > 0)
+        {
+          passesConstraints &= genParticle.status() == status;
         }
         if(dR < dRmax && dR < dR_bestMatch && passesConstraints && ! genParticle.isMatchedToReco())
         {

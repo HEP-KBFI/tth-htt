@@ -1016,4 +1016,25 @@ double
 CapLeptonFakeRate(double LeptonFakeRate, 
 		  double cap_threshold,
 		  bool isDEBUG);
+
+template <typename T>
+std::vector<T>
+filterByStatus(const std::vector<T> & genParticles,
+               int status)
+{
+  if(status > 0)
+  {
+    std::vector<T> filteredGenParticles;
+    std::copy_if(
+      genParticles.cbegin(), genParticles.cend(), std::back_inserter(filteredGenParticles),
+        [status](const GenParticle & genParticle) -> bool
+        {
+          return genParticle.status() == status;
+        }
+    );
+    return filteredGenParticles;
+  }
+  return genParticles;
+}
+
 #endif
