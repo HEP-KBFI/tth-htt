@@ -13,7 +13,6 @@ class GenPhotonReader
   : public ReaderBase
 {
 public:
-  enum { kAll, kFinalState };
 
   GenPhotonReader(unsigned int max_nPhotons = 36);
   GenPhotonReader(const std::string & branchName_obj,
@@ -31,7 +30,7 @@ public:
    * @return Collection of GenPhoton objects
    */
   std::vector<GenPhoton>
-  read(int option = kFinalState) const;
+  read(bool readAll = false) const;
 
   /**
    * @brief enable/disable read genPartFlav branch

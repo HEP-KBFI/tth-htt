@@ -105,7 +105,7 @@ GenPhotonReader::setBranchAddresses(TTree * tree)
 }
 
 std::vector<GenPhoton>
-GenPhotonReader::read(int option) const
+GenPhotonReader::read(bool readAll) const
 {
   const GenPhotonReader * const gInstance = instances_[branchName_obj_];
   assert(gInstance);
@@ -137,5 +137,5 @@ GenPhotonReader::read(int option) const
       });
     }
   }
-  return option == GenPhotonReader::kAll ? photons : filterByStatus(photons, 1);
+  return readAll ? photons : filterByStatus(photons, 1);
 }
