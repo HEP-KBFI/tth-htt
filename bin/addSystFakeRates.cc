@@ -22,7 +22,6 @@
 #endif
 
 #include "FWCore/Utilities/interface/Exception.h"
-#include "tthAnalysis/HiggsToTauTau/interface/LocalFileInPath.h"
 
 #include "PhysicsTools/FWLite/interface/TFileService.h"
 #include "DataFormats/FWLite/interface/InputSource.h"

@@ -1,6 +1,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/TauESTool.h"
 
-#include "tthAnalysis/HiggsToTauTau/interface/LocalFileInPath.h"      // LocalFileInPath
+#include "tthAnalysis/HiggsToTauTau/interface/generalAuxFunctions.h"      // get_fullpath()
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // Era::k*
 
 #include <TString.h> // Form()
@@ -131,7 +131,7 @@ TauESTool::load_sf(const std::string & input_name,
                    std::map<int, double> & sf,
                    std::map<int, double> & sfErr)
 {
-  const std::string input_name_full = LocalFileInPath(input_name).fullPath();
+  const std::string input_name_full = get_fullpath(input_name);
   TFile * input = TFile::Open(input_name_full.data(), "read");
   if(! input || input -> IsZombie())
   {

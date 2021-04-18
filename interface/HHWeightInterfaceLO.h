@@ -60,17 +60,28 @@ class HHWeightInterfaceLO
                     double cosThetaStar,
                     bool isDEBUG = false) const;
 
+  /**
+   * @brief Get normalization coefficients
+   */
+  std::vector<double>
+  getNorm() const;
+
  private:
+
+  double
+  getNorm(const std::array<double, 5> & couplings) const;
 
   double
   getDenom(double mHH, double cosThetaStar) const;
 
   const HHWeightInterfaceCouplings * const couplings_;
+  std::vector<double> norm_;
 
   PyObject * modeldata_;
   PyObject * moduleMainString_;
   PyObject * moduleMain_;
   PyObject * func_Weight_;
+  PyObject * func_norm_;
 
   int nof_sumEvt_entries_;
   TH2 * sumEvt_;

@@ -1,9 +1,9 @@
 #include "tthAnalysis/HiggsToTauTau/interface/HHWeightInterfaceCouplings.h"
 
-#include "tthAnalysis/HiggsToTauTau/interface/LocalFileInPath.h" // LocalFileInPath
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
-#include "tthAnalysis/HiggsToTauTau/interface/generalAuxFunctions.h" // format_vstring()
+#include "tthAnalysis/HiggsToTauTau/interface/generalAuxFunctions.h" // format_vstring(), get_fullpath(), to_string_with_precision<>()
 #include "tthAnalysis/HiggsToTauTau/interface/TFileOpenWrapper.h" // TFileOpenWrapper
+#include "tthAnalysis/HiggsToTauTau/interface/HHWeightInterfaceLO.h" // HHWeightInterfaceLO
 
 #include <TFile.h> // TFile
 #include <TH2.h> // TH2
@@ -30,13 +30,12 @@ const std::vector<double> HHWeightInterfaceCouplings::ktJHEP   = { 1.0,     1.0,
 const std::vector<double> HHWeightInterfaceCouplings::c2JHEP   = { 0.0,    -1.0,     0.5,    -1.5,    -3.0,     0.0,     0.0,     0.0,     0.0,     1.0,    -1.0,     0.0,     1.0     };
 const std::vector<double> HHWeightInterfaceCouplings::cgJHEP   = { 0.0,     0.0,    -0.8,     0.0,     0.0,     0.8,     0.2,     0.2,    -1.0,    -0.6,     0.0,     1.0,     0.0     };
 const std::vector<double> HHWeightInterfaceCouplings::c2gJHEP  = { 0.0,     0.0,     0.6,    -0.8,     0.0,    -1.0,    -0.2,    -0.2,     1.0,     0.6,     0.0,    -1.0,     0.0     };
-const std::vector<double> HHWeightInterfaceCouplings::normJHEP = { 0.99997, 0.94266, 0.71436, 0.95608, 0.97897, 0.87823, 0.95781, 1.00669, 0.92494, 0.86083, 1.00658, 0.95096, 1.00063 };
 
 TH2 *
 HHWeightInterfaceCouplings::loadDenominatorHist(const std::string & fileName,
                                                 const std::string & histTitle)
 {
-  const std::string fileNameFullPath = LocalFileInPath(fileName).fullPath();
+  const std::string fileNameFullPath = get_fullpath(fileName);
   TFile * denomFile = TFileOpenWrapper::Open(fileNameFullPath.c_str(), "READ");
   if(! denomFile)
   {
@@ -69,17 +68,6 @@ HHWeightInterfaceCouplings::getBinContent(const TH2 * const hist,
   return value;
 }
 
-template <typename T>
-std::string
-to_string_with_precision(const T a_value,
-                         const int n = 2)
-{
-  std::ostringstream out;
-  out.precision(n);
-  out << std::fixed << a_value;
-  return out.str();
-}
-
 HHWeightInterfaceCouplings::HHWeightInterfaceCouplings(const edm::ParameterSet & cfg)
   : nlo_mode_(HHWeightInterfaceNLOMode::none)
   , denominator_file_lo_(cfg.getParameter<std::string>("denominator_file_lo"))
@@ -105,7 +93,6 @@ HHWeightInterfaceCouplings::HHWeightInterfaceCouplings(const edm::ParameterSet &
   c2_ = {};
   cg_ = {};
   c2g_ = {};
-  norm_ = {};
   bmNames_ = {};
   bmWeightNames_ = {};
 
@@ -120,7 +107,6 @@ HHWeightInterfaceCouplings::HHWeightInterfaceCouplings(const edm::ParameterSet &
     c2_.push_back(c2JHEP[bmIdx]);
     cg_.push_back(cgJHEP[bmIdx]);
     c2g_.push_back(c2gJHEP[bmIdx]);
-    norm_.push_back(normJHEP[bmIdx]);
     const std::string bmName = (bmIdx == 0 ) ? "SM" : "BM" + std::to_string(bmIdx);
 
     assert(std::find(bmNames_.cbegin(), bmNames_.cend(), bmName) == bmNames_.cend());
@@ -132,27 +118,27 @@ HHWeightInterfaceCouplings::HHWeightInterfaceCouplings(const edm::ParameterSet &
   if(scanMode == "full" || scanMode == "additional")
   {
     if(! applicationLoadFile_klScan.empty()){
-      const std::string applicationLoadPath_klScan = LocalFileInPath(applicationLoadFile_klScan).fullPath();
+      const std::string applicationLoadPath_klScan = get_fullpath(applicationLoadFile_klScan);
       loadScanFile(applicationLoadPath_klScan, "kl_", 0, isDEBUG);
     }
     if(! applicationLoadFile_ktScan.empty())
     {
-      const std::string applicationLoadPath_ktScan = LocalFileInPath(applicationLoadFile_ktScan).fullPath();
+      const std::string applicationLoadPath_ktScan = get_fullpath(applicationLoadFile_ktScan);
       loadScanFile(applicationLoadPath_ktScan, "kt_", 1, isDEBUG);
     }
     if(! applicationLoadFile_c2Scan.empty())
     {
-      const std::string applicationLoadPath_c2Scan = LocalFileInPath(applicationLoadFile_c2Scan).fullPath();
+      const std::string applicationLoadPath_c2Scan = get_fullpath(applicationLoadFile_c2Scan);
       loadScanFile(applicationLoadPath_c2Scan, "c2_", 2, isDEBUG);
     }
     if(! applicationLoadFile_cgScan.empty())
     {
-      const std::string applicationLoadPath_cgScan = LocalFileInPath(applicationLoadFile_cgScan).fullPath();
+      const std::string applicationLoadPath_cgScan = get_fullpath(applicationLoadFile_cgScan);
       loadScanFile(applicationLoadPath_cgScan, "cg_", 2, isDEBUG);
     }
     if(! applicationLoadFile_c2gScan.empty())
     {
-      const std::string applicationLoadPath_c2gScan = LocalFileInPath(applicationLoadFile_c2gScan).fullPath();
+      const std::string applicationLoadPath_c2gScan = get_fullpath(applicationLoadFile_c2gScan);
       loadScanFile(applicationLoadPath_c2gScan, "c2g_", 2, isDEBUG);
     }
   }
@@ -180,7 +166,7 @@ HHWeightInterfaceCouplings::loadScanFile(const std::string & filePath,
   {
     std::vector<std::string> line_split;
     boost::split(line_split, line, boost::is_any_of(" "));
-    assert(line_split.size() == 7);
+    assert(line_split.size() == 5);
     std::vector<double> values;
     std::transform(
       line_split.begin(), line_split.end(), std::back_inserter(values),
@@ -212,11 +198,6 @@ HHWeightInterfaceCouplings::loadScanFile(const std::string & filePath,
           c2g_.push_back(value);
           if (idx == 4) to_store = value;
           break;
-        case 5:
-          break;
-        case 6:
-          norm_.push_back(value);
-          break;
         default:
           assert(0);
       }
@@ -240,6 +221,23 @@ std::string
 HHWeightInterfaceCouplings::getWeightName(const std::string & suffix)
 {
   return "Weight_" + suffix;
+}
+
+void
+HHWeightInterfaceCouplings::add(const std::array<double, 5> & couplings,
+                                const std::string & name)
+{
+  if(std::find(bmNames_.cbegin(), bmNames_.cend(), name) != bmNames_.cend())
+  {
+    throw cmsException(this, __func__, __LINE__) << "The coupling name has already been booked: " << name;
+  }
+  kl_.push_back(couplings.at(0));
+  kt_.push_back(couplings.at(1));
+  c2_.push_back(couplings.at(2));
+  cg_.push_back(couplings.at(3));
+  c2g_.push_back(couplings.at(4));
+  bmNames_.push_back(name);
+  bmWeightNames_.push_back(getWeightName(name));
 }
 
 std::vector<std::string>
@@ -282,12 +280,6 @@ std::vector<double>
 HHWeightInterfaceCouplings::c2g() const
 {
   return c2g_;
-}
-
-std::vector<double>
-HHWeightInterfaceCouplings::norm() const
-{
-  return norm_;
 }
 
 HHWeightInterfaceNLOMode
