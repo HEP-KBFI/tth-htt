@@ -1,33 +1,59 @@
 #include "tthAnalysis/HiggsToTauTau/interface/GenPhotonFilter.h" // GenPhotonFilter
 
-#include "FWCore/Utilities/interface/Exception.h" // cms::Exception
+#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 
-GenPhotonFilter::GenPhotonFilter(const std::string & mode, double minPt, double maxAbsEta)
+GenPhotonFilter::GenPhotonFilter(const std::string & mode,
+                                 double minPt,
+                                 double maxAbsEta,
+                                 double minDeltaR)
   : minPt_(minPt)
   , maxAbsEta_(maxAbsEta)
+  , minDeltaR_(minDeltaR)
 {
   if      ( mode == "disabled" ) mode_ = Mode::kDisabled;
   else if ( mode == "enabled"  ) mode_ = Mode::kEnabled;
   else if ( mode == "inverted" ) mode_ = Mode::kInverted;
-  else throw cms::Exception("GenPhotonFilter")
-    << "Invalid Configuration parameter 'mode' = " << mode << " !!\n";
+  else throw cmsException(this, __func__, __LINE__) << "Invalid Configuration parameter 'mode' = " << mode;
 }
 
 GenPhotonFilter::~GenPhotonFilter()
 {}
 
+int
+GenPhotonFilter::getNumPassingPhotons(const std::vector<GenPhoton> & genPhotons,
+                                      const std::vector<GenParticle> & genFromHardProcess) const
+{
+  int numSelPhotons = 0;
+  for(const GenPhoton & genPhoton: genPhotons)
+  {
+    double deltaR = +1e6;
+    for(const GenParticle & genParticle: genFromHardProcess)
+    {
+      deltaR = std::min(deltaR, genPhoton.deltaR(genParticle));
+    }
+    // see https://github.com/HEP-KBFI/hh-multilepton/issues/36
+    if(genPhoton.checkStatusFlag(StatusFlag::isPrompt) && genPhoton.pt() > minPt_ && genPhoton.absEta() < maxAbsEta_ && deltaR > minDeltaR_)
+    {
+      ++numSelPhotons;
+    }
+  }
+  return numSelPhotons;
+}
+
 bool
-GenPhotonFilter::operator()(const std::vector<GenPhoton> & genPhotons) const
+GenPhotonFilter::operator()(const std::vector<GenPhoton> & genPhotons,
+                            const std::vector<GenPhoton> & genProxyPhotons,
+                            const std::vector<GenParticle> & genFromHardProcess) const
 {
   if ( mode_ == Mode::kDisabled ) return true;
 
-  int numSelPhotons = 0;  
-  for ( std::vector<GenPhoton>::const_iterator genPhoton = genPhotons.begin();
-        genPhoton != genPhotons.end(); ++genPhoton ) {
-    const bool isPromptPhoton = genPhoton->pdgId() == 22 && genPhoton->checkStatusFlag(StatusFlag::isPrompt);
-    if ( isPromptPhoton && genPhoton->pt() > minPt_ && genPhoton->absEta() < maxAbsEta_ ) ++numSelPhotons;
-  }
+  const int numSelPhotons =
+    getNumPassingPhotons(genPhotons, genFromHardProcess) +
+    getNumPassingPhotons(genProxyPhotons, genFromHardProcess)
+  ;
 
-  if ( (mode_ == Mode::kEnabled && numSelPhotons >= 1) || (mode_ == Mode::kInverted && numSelPhotons == 0) ) return true;
-  else return false;
+  return
+    (mode_ == Mode::kEnabled  && numSelPhotons  > 0) ||
+    (mode_ == Mode::kInverted && numSelPhotons == 0)
+  ;
 }
