@@ -225,7 +225,7 @@ class analyzeConfig(object):
                 sample_info["sample_category"] = "DY"
               else:
                 raise RuntimeError("Cannot be an XGamma sample: %s" % sample_name)
-            elif sample_info["sample_category"] in [ "DY", "TT", "W" ]:
+            elif sample_info["sample_category"] in [ "DY", "TT", "W" ] or sample_info["sample_category"].startswith("TT_"):
               sample_info["genPhotonFilter"] = False # require events to have no prompt gen photons with pT > 20 GeV
 
         for sample_key, sample_info in self.samples.items():
