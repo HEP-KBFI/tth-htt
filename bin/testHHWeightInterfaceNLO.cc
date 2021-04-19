@@ -1,5 +1,5 @@
 #include "tthAnalysis/HiggsToTauTau/interface/HHWeightInterfaceCouplings.h"
-#include "tthAnalysis/HiggsToTauTau/interface/HHWeightInterfaceLO.h"
+//#include "tthAnalysis/HiggsToTauTau/interface/HHWeightInterfaceLO.h"
 #include "tthAnalysis/HiggsToTauTau/interface/HHWeightInterfaceNLO.h"
 #include "tthAnalysis/HiggsToTauTau/interface/generalAuxFunctions.h" // format_vdouble(), to_string_with_precision<>()
 
@@ -29,13 +29,13 @@ main(int argc,
 
   HHWeightInterfaceCouplings couplings(hhWeight);
 
-  // test LO normalization factors in separate scope
-  {
-    const HHWeightInterfaceLO HHWeightLO_calc(&couplings, hhWeight);
-    const std::vector<double> norm = HHWeightLO_calc.getNorm();
-    std::cout << "LO normalization coefficients: " << std::fixed << std::setprecision(5) << format_vdouble(norm) << '\n';
-  }
-  std::cout << line << '\n';
+//  // test LO normalization factors in separate scope
+//  {
+//    const HHWeightInterfaceLO HHWeightLO_calc(&couplings, hhWeight);
+//    const std::vector<double> norm = HHWeightLO_calc.getNorm();
+//    std::cout << "LO normalization coefficients: " << std::fixed << std::setprecision(5) << format_vdouble(norm) << '\n';
+//  }
+//  std::cout << line << '\n';
 
   // add c2 scan points
   std::vector<double> c2;
@@ -98,9 +98,10 @@ main(int argc,
     {
       std::cout << "\n\t";
     }
+    const TH2 * const dXsec = HHWeightNLO_calc.get_dXsec_V2_nlo(c2_names.at(i));
     std::cout << "[c2 = " << std::setw(5) << std::setprecision(2) << c2.at(i) << " => "
               << std::fixed << std::setprecision(6) << std::setw(8)
-              << HHWeightNLO_calc.getRelativeWeight_LOtoNLO(c2_names.at(i), mHH_mid, cosTheta_mid)
+              << HHWeightInterfaceCouplings::getBinContent(dXsec, mHH_mid, cosTheta_mid)
               << "] "
     ;
   }
