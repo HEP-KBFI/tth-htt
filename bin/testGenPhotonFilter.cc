@@ -7,6 +7,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/RunLumiEventSelector.h" // RunLumiEventSelector
 #include "tthAnalysis/HiggsToTauTau/interface/GenPhotonFilter.h" // GenPhotonFilter
 #include "tthAnalysis/HiggsToTauTau/interface/EvtWeightRecorder.h" // EvtWeightRecorder
+#include "tthAnalysis/HiggsToTauTau/interface/EvtWeightManager.h" // EvtWeightManager
 #include "tthAnalysis/HiggsToTauTau/interface/HistManagerBase.h" // HistManagerBase
 #include "tthAnalysis/HiggsToTauTau/interface/histogramAuxFunctions.h" // fillWithOverFlow()
 
@@ -193,6 +194,16 @@ main(int argc,
   EventInfoReader eventInfoReader(&eventInfo);
   inputTree -> registerReader(&eventInfoReader);
 
+  const edm::ParameterSet additionalEvtWeight = cfg_analyze.getParameter<edm::ParameterSet>("evtWeight");
+  const bool applyAdditionalEvtWeight = additionalEvtWeight.getParameter<bool>("apply");
+  EvtWeightManager * eventWeightManager = nullptr;
+  if(applyAdditionalEvtWeight)
+  {
+    eventWeightManager = new EvtWeightManager(additionalEvtWeight);
+    eventWeightManager->set_central_or_shift(central_or_shift_main);
+    inputTree->registerReader(eventWeightManager);
+  }
+
   GenLeptonReader * const genLeptonReader = new GenLeptonReader(branchName_genLeptons);
   inputTree -> registerReader(genLeptonReader);
 
@@ -255,6 +266,10 @@ main(int argc,
     {
       evtWeightRecorder.record_genWeight(eventInfo);
     }
+    if(eventWeightManager)
+    {
+      evtWeightRecorder.record_auxWeight(eventWeightManager);
+    }
     evtWeightRecorder.record_lumiScale(lumiScale);
 
     const std::vector<GenLepton> genLeptons = genLeptonReader->read();
@@ -292,6 +307,8 @@ main(int argc,
   delete run_lumi_eventSelector;
   delete genPhotonReader;
   delete genProxyPhotonReader;
+  delete genFromHardProcessReader;
+  delete eventWeightManager;
 
   clock.Show(argv[0]);
 

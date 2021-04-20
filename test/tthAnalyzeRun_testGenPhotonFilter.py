@@ -15,7 +15,7 @@ import getpass
 parser = tthAnalyzeParser()
 parser.add_files_per_job(files_per_job = 100)
 parser.add_use_home()
-parser.add_stitched([ 'dy_nlo', 'wjets' ])
+parser.add_stitched([ 'dy_nlo_incl', 'wjets_incl' ])
 args = parser.parse_args()
 
 # Common arguments
@@ -38,6 +38,9 @@ use_stitched  = args.use_stitched
 # Load samples
 samples = load_samples(era)
 samples = load_samples_stitched(samples, era, use_stitched)
+
+if sample_filter:
+  samples = filter_samples(samples, sample_filter)
 
 for sample_name, sample_info in samples.items():
   if sample_name == 'sum_events':
@@ -73,8 +76,6 @@ for sample_name, sample_info in samples.items():
 
 
 if __name__ == '__main__':
-  if sample_filter:
-    samples = filter_samples(samples, sample_filter)
 
   configDir = os.path.join("/home",       getpass.getuser(), "testGenPhotonFilter", era, version)
   outputDir = os.path.join("/hdfs/local", getpass.getuser(), "testGenPhotonFilter", era, version)

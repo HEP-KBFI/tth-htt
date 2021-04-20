@@ -61,16 +61,16 @@ class testGenPhotonFilterConfig(analyzeConfig):
       process_name = sample_info["process_name_specific"]
 
       key_dir = getKey(process_name)
-      for dir_type in [ DKEY_CFGS, DKEY_LOGS, DKEY_RLES, DKEY_HIST ]:
+      for dir_type in [ DKEY_CFGS, DKEY_LOGS, DKEY_RLES, DKEY_HIST, DKEY_HADD_RT ]:
         initDict(self.dirs, [ key_dir, dir_type ])
-        if dir_type in [ DKEY_CFGS, DKEY_LOGS ]:
+        if dir_type in [ DKEY_CFGS, DKEY_LOGS, DKEY_HADD_RT ]:
           self.dirs[key_dir][dir_type] = os.path.join(self.configDir, dir_type, self.channel, process_name)
         else:
           self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel, process_name)
 
-    for dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS, DKEY_HIST ]:
+    for dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS, DKEY_HIST, DKEY_HADD_RT ]:
       initDict(self.dirs, [ dir_type ])
-      if dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS ]:
+      if dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS, DKEY_HADD_RT ]:
         self.dirs[dir_type] = os.path.join(self.configDir, dir_type, self.channel)
       else:
         self.dirs[dir_type] = os.path.join(self.outputDir, dir_type, self.channel)
@@ -104,6 +104,7 @@ class testGenPhotonFilterConfig(analyzeConfig):
       logging.info("Checking input files for sample %s" % sample_info["process_name_specific"])
       inputFileLists[sample_name] = generateInputFileList(sample_info, self.max_files_per_job)
 
+    outputFiles = { 'hadd' : [] }
     for sample_name, sample_info in self.samples.items():
       if not sample_info["use_it"]:
         continue
@@ -133,15 +134,16 @@ class testGenPhotonFilterConfig(analyzeConfig):
           'logFile'          : logFile_path,
         }
         self.createCfg_analyze(self.jobOptions_analyze[key_analyze_job], sample_info)
+        outputFiles['hadd'].append(histogramFile_path)
 
     logging.info("Creating script for submitting '%s' jobs to batch system" % self.executable_analyze)
     self.sbatchFile_analyze = os.path.join(self.dirs[DKEY_SCRIPTS], "sbatch_analyze_%s.py" % self.channel)
-    # self.createScript_sbatch(
-    #   self.executable_analyze, self.sbatchFile_analyze, self.jobOptions_analyze, min_file_size = -1,
-    # )
+    self.createScript_sbatch_analyze(self.executable_analyze, self.sbatchFile_analyze, self.jobOptions_analyze)
+    outputFile = { 'hadd' : os.path.join(self.dirs[DKEY_HIST], "result.root") }
     logging.info("Creating Makefile")
     lines_makefile = []
     self.addToMakefile_analyze(lines_makefile)
+    self.addToMakefile_hadd(lines_makefile, 'phony_hadd', 'phony_analyze', outputFiles, outputFile)
     self.targets.extend(self.phoniesToAdd)
     self.createMakefile(lines_makefile)
     logging.info("Done.")

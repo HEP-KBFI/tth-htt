@@ -34,6 +34,15 @@ process.analyze_testGenPhotonFilter = cms.PSet(
 
     selEventsFileName_input = cms.string(''),
     isDEBUG = cms.bool(False),
+    evtWeight = cms.PSet(
+        apply = cms.bool(False),
+        histogramFile = cms.string(''),
+        histogramName = cms.string(''),
+        branchNameXaxis = cms.string(''),
+        branchNameYaxis = cms.string(''),
+        branchTypeXaxis = cms.string(''),
+        branchTypeYaxis = cms.string(''),
+    ),
 
     leptonFakeRateWeight = cms.PSet(), # needed for automatic template filling
 )
