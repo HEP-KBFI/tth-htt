@@ -15,7 +15,7 @@ import getpass
 parser = tthAnalyzeParser()
 parser.add_files_per_job(files_per_job = 100)
 parser.add_use_home()
-parser.add_stitched([ 'dy_nlo_incl', 'wjets_incl' ])
+parser.add_stitched([ 'dy_nlo_incl', 'wjets' ])
 args = parser.parse_args()
 
 # Common arguments
@@ -66,9 +66,25 @@ for sample_name, sample_info in samples.items():
       if sample_name.startswith(('/WJetsToLNu', '/W1', '/W2', '/W3', '/W4')):
         sample_info["sample_category"] = "WJets"
       elif sample_name.startswith(('/TTTo', '/TTJets')):
-        sample_info["sample_category"] = "TTJets"
+        if sample_name.startswith(('/TTTo2L2Nu', '/TTJets_DiLept')):
+          sample_info["sample_category"] = "TTJets_DiLept"
+        elif sample_name.startswith(('/TTToSemiLeptonic', '/TTJets_SingleLeptFromT')):
+          sample_info["sample_category"] = "TTJets_SemiLept"
+        elif sample_name.startswith('/TTToHadronic'):
+          sample_info["sample_category"] = "TTJets_Hadronic"
+        else:
+          sample_info["sample_category"] = "TTJets"
       elif sample_name.startswith('/ST'):
-        sample_info["sample_category"] = "TJets"
+        if sample_name.startswith('/ST_s-channel'):
+          sample_info["sample_category"] = "TJets_sChannel"
+        elif sample_name.startswith('/ST_t-channel'):
+          sample_info["sample_category"] = "TJets_tChannel"
+        elif sample_name.startswith('/ST_tWll'):
+          sample_info["sample_category"] = "TJets_tWllChannel"
+        elif sample_name.startswith('/ST_tW'):
+          sample_info["sample_category"] = "TJets_tWChannel"
+        else:
+          assert(False)
       elif sample_name.startswith('/DY'):
         sample_info["sample_category"] = "ZJets"
       else:

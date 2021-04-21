@@ -1,9 +1,10 @@
 #include "tthAnalysis/HiggsToTauTau/interface/TTreeWrapper.h" // TTreeWrapper
-#include "tthAnalysis/HiggsToTauTau/interface/GenPhotonReader.h" // GenPhotonReader
+#include "tthAnalysis/HiggsToTauTau/interface/GenPhotonReader.h" // GenPhotonReader, GenPhoton, GenParticle
 #include "tthAnalysis/HiggsToTauTau/interface/GenParticleReader.h" // GenParticleReader
-#include "tthAnalysis/HiggsToTauTau/interface/GenLeptonReader.h" // GenLeptonReader
+#include "tthAnalysis/HiggsToTauTau/interface/GenLeptonReader.h" // GenLeptonReader, GenLepton
 #include "tthAnalysis/HiggsToTauTau/interface/EventInfo.h" // EventInfo
 #include "tthAnalysis/HiggsToTauTau/interface/EventInfoReader.h" // EventInfoReader
+#include "tthAnalysis/HiggsToTauTau/interface/LHEParticleReader.h" // LHEParticleReader, LHEParticle
 #include "tthAnalysis/HiggsToTauTau/interface/RunLumiEventSelector.h" // RunLumiEventSelector
 #include "tthAnalysis/HiggsToTauTau/interface/GenPhotonFilter.h" // GenPhotonFilter
 #include "tthAnalysis/HiggsToTauTau/interface/EvtWeightRecorder.h" // EvtWeightRecorder
@@ -31,17 +32,25 @@ public:
   GenPhotonFilterHistManager(const edm::ParameterSet & cfg)
     : HistManagerBase(cfg)
     , histogram_analyzed_(nullptr)
-    , histogram_selected_(nullptr)
+    , histogram_selected_subleading_(nullptr)
     , histogram_subleading_lepton_pt_(nullptr)
     , histogram_subleading_electron_pt_(nullptr)
     , histogram_subleading_muon_pt_(nullptr)
+    , histogram_selected_third_(nullptr)
+    , histogram_third_lepton_pt_(nullptr)
+    , histogram_third_electron_pt_(nullptr)
+    , histogram_third_muon_pt_(nullptr)
   {
     const std::vector<std::string> sysOpts = {
       "analyzed",
-      "selected",
+      "selected_subleading",
       "subleading_lepton_pt",
       "subleading_electron_pt",
       "subleading_muon_pt",
+      "selected_third",
+      "third_lepton_pt",
+      "third_electron_pt",
+      "third_muon_pt",
     };
     for(const std::string & sysOpt: sysOpts)
     {
@@ -50,15 +59,20 @@ public:
   }
   ~GenPhotonFilterHistManager() {}
 
-  /// book and fill histograms
   void
   bookHistograms(TFileDirectory & dir) override
   {
-    histogram_analyzed_               = book1D(dir, "analyzed",               "analyzed",                 1,  -0.5,   +0.5);
-    histogram_selected_               = book1D(dir, "selected",               "selected",                 1,  -0.5,   +0.5);
+    histogram_analyzed_ = book1D(dir, "analyzed", "analyzed", 1, -0.5, +0.5);
+
+    histogram_selected_subleading_    = book1D(dir, "selected_subleading",    "selected_subleading",      1,  -0.5,   +0.5);
     histogram_subleading_lepton_pt_   = book1D(dir, "subleading_lepton_pt",   "subleading_lepton_pt",   100,   0.,   100.);
     histogram_subleading_electron_pt_ = book1D(dir, "subleading_electron_pt", "subleading_electron_pt", 100,   0.,   100.);
     histogram_subleading_muon_pt_     = book1D(dir, "subleading_muon_pt",     "subleading_muon_pt",     100,   0.,   100.);
+
+    histogram_selected_third_    = book1D(dir, "selected_third",    "selected_third",      1,  -0.5,   +0.5);
+    histogram_third_lepton_pt_   = book1D(dir, "third_lepton_pt",   "third_lepton_pt",   100,   0.,   100.);
+    histogram_third_electron_pt_ = book1D(dir, "third_electron_pt", "third_electron_pt", 100,   0.,   100.);
+    histogram_third_muon_pt_     = book1D(dir, "third_muon_pt",     "third_muon_pt",     100,   0.,   100.);
   }
 
   void
@@ -84,7 +98,7 @@ public:
       }
     ));
 
-    fillWithOverFlow(histogram_selected_, 0., evtWeight, evtWeightErr);
+    fillWithOverFlow(histogram_selected_subleading_, 0., evtWeight, evtWeightErr);
 
     const GenLepton subleading_lepton = genLeptons.at(1);
     const int subleading_lepton_absPdgId = std::abs(subleading_lepton.pdgId());
@@ -106,15 +120,77 @@ public:
         << "Invalid PDG ID = " << subleading_lepton_absPdgId << " of generator-level lepton: " << subleading_lepton
       ;
     }
+
+    if(genLeptons.size() < 3)
+    {
+      return;
+    }
+
+    fillWithOverFlow(histogram_selected_third_, 0., evtWeight, evtWeightErr);
+
+    const GenLepton third_lepton = genLeptons.at(2);
+    const int third_lepton_absPdgId = std::abs(third_lepton.pdgId());
+    const double third_lepton_pt = third_lepton.pt();
+
+    fillWithOverFlow(histogram_third_lepton_pt_, third_lepton_pt, evtWeight, evtWeightErr);
+
+    if(third_lepton_absPdgId == 11)
+    {
+      fillWithOverFlow(histogram_third_electron_pt_, third_lepton_pt, evtWeight, evtWeightErr);
+    }
+    else if(third_lepton_absPdgId == 13)
+    {
+      fillWithOverFlow(histogram_third_muon_pt_, third_lepton_pt, evtWeight, evtWeightErr);
+    }
+    else
+    {
+      throw cmsException(this, __func__, __LINE__)
+        << "Invalid PDG ID = " << third_lepton_absPdgId << " of generator-level lepton: " << third_lepton
+      ;
+    }
   }
 
 private:
   TH1 * histogram_analyzed_;
-  TH1 * histogram_selected_;
+
+  TH1 * histogram_selected_subleading_;
   TH1 * histogram_subleading_lepton_pt_;
   TH1 * histogram_subleading_electron_pt_;
   TH1 * histogram_subleading_muon_pt_;
+
+  TH1 * histogram_selected_third_;
+  TH1 * histogram_third_lepton_pt_;
+  TH1 * histogram_third_electron_pt_;
+  TH1 * histogram_third_muon_pt_;
 };
+
+std::string
+getCategory(const LHEParticleReader * const lheParticleReader)
+{
+  assert(lheParticleReader);
+  const std::vector<LHEParticle> lheParticles = lheParticleReader->read();
+  const std::size_t nofLeptons = std::count_if(
+    lheParticles.cbegin(), lheParticles.cend(),
+    [](const LHEParticle & lheParticle) -> bool
+    {
+      const int lheParticleAbsPdgId = std::abs(lheParticle.pdgId());
+      return lheParticleAbsPdgId == 11 || lheParticleAbsPdgId == 13 || lheParticleAbsPdgId == 15;
+    }
+  );
+  if(nofLeptons == 0)
+  {
+    return "Hadronic";
+  }
+  else if(nofLeptons == 1)
+  {
+    return "SemiLept";
+  }
+  else if(nofLeptons == 2)
+  {
+    return "DiLept";
+  }
+  throw cmsException(__func__, __LINE__) << "Unexpected number of leptons found in the event: " << nofLeptons;
+}
 
 int
 main(int argc,
@@ -216,16 +292,34 @@ main(int argc,
   GenParticleReader * const genFromHardProcessReader = new GenParticleReader(branchName_genFromHardProcess);
   inputTree -> registerReader(genFromHardProcessReader);
 
-  GenPhotonFilterHistManager * const genPhotonFilterHistManager_selected = new GenPhotonFilterHistManager(makeHistManager_cfg(
-    process_string, "genPhotonFilter/selected", era_string, central_or_shift_main
-  ));
-  genPhotonFilterHistManager_selected->bookHistograms(fs);
+  LHEParticleReader * lheParticleReader = nullptr;
+  std::vector<std::string> process_strings = { process_string };
+  if(process_string == "TTGamma")
+  {
+    // split TTGamma into 3 subcategories
+    for(const std::string & suffix: { "DiLept", "SemiLept", "Hadronic" })
+    {
+      process_strings.push_back(Form("%s_%s", process_string.data(), suffix.data()));
+    }
+    // initialize LHEParticleReader so that we can find out if the top-antitop pair decays DL, SL or hadronically
+    lheParticleReader = new LHEParticleReader();
+    inputTree -> registerReader(lheParticleReader);
+  }
 
-  GenPhotonFilterHistManager * const genPhotonFilterHistManager_rejected = new GenPhotonFilterHistManager(makeHistManager_cfg(
-    process_string, "genPhotonFilter/rejected", era_string, central_or_shift_main
-  ));
-  genPhotonFilterHistManager_rejected->bookHistograms(fs);
+  std::map<std::string, GenPhotonFilterHistManager *> genPhotonFilterHistManager_selected;
+  std::map<std::string, GenPhotonFilterHistManager *> genPhotonFilterHistManager_rejected;
+  for(const std::string & cat: process_strings)
+  {
+    genPhotonFilterHistManager_selected[cat] = new GenPhotonFilterHistManager(makeHistManager_cfg(
+      cat, "genPhotonFilter/selected", era_string, central_or_shift_main
+    ));
+    genPhotonFilterHistManager_selected[cat]->bookHistograms(fs);
 
+    genPhotonFilterHistManager_rejected[cat] = new GenPhotonFilterHistManager(makeHistManager_cfg(
+      cat, "genPhotonFilter/rejected", era_string, central_or_shift_main
+    ));
+    genPhotonFilterHistManager_rejected[cat]->bookHistograms(fs);
+  }
   int analyzedEntries = 0;
   int selectedEntries = 0;
   double selectedEntries_weighted = 0.;
@@ -277,13 +371,22 @@ main(int argc,
     const std::vector<GenPhoton> genProxyPhotons = genProxyPhotonReader->read(true);
     const std::vector<GenParticle> genFromHardProcess = genFromHardProcessReader->read();
 
-    if(genPhotonFilter(genPhotons, genProxyPhotons, genFromHardProcess))
+    std::vector<std::string> catToFill = { process_string };
+    if(lheParticleReader)
     {
-      genPhotonFilterHistManager_selected->fillHistograms(genLeptons, evtWeightRecorder.get(central_or_shift_main));
+      const std::string cat = Form("%s_%s", process_string.data(), getCategory(lheParticleReader).data());
+      catToFill.push_back(cat);
     }
-    else
+    for(const std::string & cat: catToFill)
     {
-      genPhotonFilterHistManager_rejected->fillHistograms(genLeptons, evtWeightRecorder.get(central_or_shift_main));
+      if(genPhotonFilter(genPhotons, genProxyPhotons, genFromHardProcess))
+      {
+        genPhotonFilterHistManager_selected[cat]->fillHistograms(genLeptons, evtWeightRecorder.get(central_or_shift_main));
+      }
+      else
+      {
+        genPhotonFilterHistManager_rejected[cat]->fillHistograms(genLeptons, evtWeightRecorder.get(central_or_shift_main));
+      }
     }
 
     ++selectedEntries;
@@ -308,6 +411,7 @@ main(int argc,
   delete genPhotonReader;
   delete genProxyPhotonReader;
   delete genFromHardProcessReader;
+  delete lheParticleReader;
   delete eventWeightManager;
 
   clock.Show(argv[0]);

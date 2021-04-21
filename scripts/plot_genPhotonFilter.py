@@ -15,12 +15,12 @@ plt.rc('font', size = 14)
 PROCESSES = [
   { 'WGamma'  : { 'option' : 'selected', 'label' : r'W+$\gamma$'        },
     'WJets'   : { 'option' : 'rejected', 'label' : 'W+jets'             } },
-  { 'ZGamma'  : { 'option' : 'selected', 'label' : r'Z+$\gamma$'        },
-    'ZJets'   : { 'option' : 'rejected', 'label' : 'Z+jets'             } },
-  { 'TGamma'  : { 'option' : 'selected', 'label' : r't+$\gamma$'        },
-    'TJets'   : { 'option' : 'rejected', 'label' : 't+jets'             } },
-  { 'TTGamma' : { 'option' : 'selected', 'label' : r'$t\bar{t}+\gamma$' },
-    'TTJets'  : { 'option' : 'rejected', 'label' : r'$t\bar{t}$+jets'   } },
+  # { 'ZGamma'  : { 'option' : 'selected', 'label' : r'Z+$\gamma$'        },
+  #   'ZJets'   : { 'option' : 'rejected', 'label' : 'Z+jets'             } },
+  # { 'TGamma'  : { 'option' : 'selected', 'label' : r't+$\gamma$'        },
+  #   'TJets'   : { 'option' : 'rejected', 'label' : 't+jets'             } },
+  # { 'TTGamma' : { 'option' : 'selected', 'label' : r'$t\bar{t}+\gamma$' },
+  #   'TTJets'  : { 'option' : 'rejected', 'label' : r'$t\bar{t}$+jets'   } },
 ]
 SELECTIONS = [ 'selected', 'rejected' ]
 LEPTONS = [ 'lepton', 'electron', 'muon' ]
