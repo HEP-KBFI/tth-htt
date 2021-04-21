@@ -58,6 +58,8 @@ class testGenPhotonFilterConfig(analyzeConfig):
   def addToMakefile_plot(self, lines_makefile, inputFileName):
     plotFileName = os.path.join(self.dirs[DKEY_PLOT], 'testGenPhotonFilter.pdf')
     lines_makefile.extend([
+      "{}: phony_hadd".format(inputFileName),
+      ""
       "{}: {}".format(plotFileName, inputFileName),
       "\t{} {} {}".format(self.plot_executable, inputFileName, plotFileName),
       "",
