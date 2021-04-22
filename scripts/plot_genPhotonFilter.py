@@ -6,31 +6,33 @@ matplotlib.use('Agg')
 import ROOT
 import sys
 import os.path
-import collections
 import matplotlib.pyplot as plt
 import matplotlib.backends.backend_pdf as pdf
 
 plt.rc('font', size = 14)
 
 PROCESSES = [
-  { 'WGamma'  : { 'option' : 'selected', 'label' : r'W+$\gamma$'        },
-    'WJets'   : { 'option' : 'rejected', 'label' : 'W+jets'             } },
-  # { 'ZGamma'  : { 'option' : 'selected', 'label' : r'Z+$\gamma$'        },
-  #   'ZJets'   : { 'option' : 'rejected', 'label' : 'Z+jets'             } },
-  # { 'TGamma'  : { 'option' : 'selected', 'label' : r't+$\gamma$'        },
-  #   'TJets'   : { 'option' : 'rejected', 'label' : 't+jets'             } },
-  # { 'TTGamma' : { 'option' : 'selected', 'label' : r'$t\bar{t}+\gamma$' },
-  #   'TTJets'  : { 'option' : 'rejected', 'label' : r'$t\bar{t}$+jets'   } },
+  { 'WGamma'            : { 'option' : 'selected', 'label' : r'W+$\gamma$',             'rank' : 'subleading' },
+    'WJets'             : { 'option' : 'rejected', 'label' : 'W+jets',                  'rank' : 'subleading' } },
+   { 'ZGamma'           : { 'option' : 'selected', 'label' : r'Z+$\gamma$',             'rank' : 'third'      },
+     'ZJets'            : { 'option' : 'rejected', 'label' : 'Z+jets',                  'rank' : 'third'      } },
+   { 'TGamma'           : { 'option' : 'selected', 'label' : r't+$\gamma$',             'rank' : 'subleading' },
+     'TJets_tChannel'   : { 'option' : 'rejected', 'label' : 't+jets (t-channel)',      'rank' : 'subleading'  } },
+   { 'TTGamma_SemiLept' : { 'option' : 'selected', 'label' : r'$t\bar{t}+\gamma$ (SL)', 'rank' : 'subleading' },
+     'TTJets_SemiLept'  : { 'option' : 'rejected', 'label' : r'$t\bar{t}$+jets (SL)',   'rank' : 'subleading' } },
+   { 'TTGamma_DiLept'   : { 'option' : 'selected', 'label' : r'$t\bar{t}+\gamma$ (DL)', 'rank' : 'third'      },
+     'TTJets_DiLept'    : { 'option' : 'rejected', 'label' : r'$t\bar{t}$+jets (DL)',   'rank' : 'third'      } },
 ]
 SELECTIONS = [ 'selected', 'rejected' ]
 LEPTONS = [ 'lepton', 'electron', 'muon' ]
+RANKS = [ 'subleading', 'third' ]
 SUM_KEY = 'sum'
 PLOT_XMIN = 10.
 
-def read_hist(fptr, process, selection, lepton_type):
+def read_hist(fptr, process, selection, lepton_type, rank):
   assert(selection in SELECTIONS)
   assert(lepton_type in LEPTONS)
-  path = os.path.join('genPhotonFilter', selection, process, 'subleading_{}_pt'.format(lepton_type))
+  path = os.path.join('genPhotonFilter', selection, process, '{}_{}_pt'.format(rank, lepton_type))
   hist = fptr.Get(path)
   assert(hist)
   nof_bins = hist.GetXaxis().GetNbins()
@@ -45,15 +47,22 @@ def read_process(fptr, process):
   for lepton_type in LEPTONS:
     result[lepton_type] = {}
     for selection in SELECTIONS:
-      result[lepton_type][selection] = read_hist(fptr, process, selection, lepton_type)
-    binning = result[lepton_type][SELECTIONS[0]]['xval']
-    assert(all(result[lepton_type][selection]['xval'] == binning for selection in SELECTIONS))
+      result[lepton_type][selection] = {}
+      for rank in RANKS:
+        result[lepton_type][selection][rank] = read_hist(fptr, process, selection, lepton_type, rank)
+    binning = result[lepton_type][SELECTIONS[0]][RANKS[0]]['xval']
+    assert(all(result[lepton_type][selection][rank]['xval'] == binning for selection in SELECTIONS for rank in RANKS))
     nof_bins = len(binning)
     assert(SUM_KEY not in result[lepton_type])
-    result[lepton_type][SUM_KEY] = {
-      'xval' : binning,
-      'yval' : [ sum(result[lepton_type][selection]['yval'][bin_idx] for selection in SELECTIONS) for bin_idx in range(nof_bins) ],
-    }
+    result[lepton_type][SUM_KEY] = {}
+    for rank in RANKS:
+      result[lepton_type][SUM_KEY][rank] = {
+        'xval' : binning,
+        'yval' : [
+          sum(result[lepton_type][selection][rank]['yval'][bin_idx] for selection in SELECTIONS) \
+          for bin_idx in range(nof_bins)
+        ],
+      }
   return result
 
 assert(len(sys.argv) == 3)
@@ -78,21 +87,23 @@ with pdf.PdfPages(outfn) as output:
       for process in process_pair:
         plt.figure(figsize = (10, 8), dpi = 150)
 
-        plot_xmin = min(histograms[pair_idx][process][lepton_type][SUM_KEY]['xval'])
-        plot_xmax = max(histograms[pair_idx][process][lepton_type][SUM_KEY]['xval'])
         option = PROCESSES[pair_idx][process]['option']
         label = PROCESSES[pair_idx][process]['label']
+        rank = PROCESSES[pair_idx][process]['rank']
+
+        plot_xmin = min(histograms[pair_idx][process][lepton_type][SUM_KEY][rank]['xval'])
+        plot_xmax = max(histograms[pair_idx][process][lepton_type][SUM_KEY][rank]['xval'])
         plt.step(
-          histograms[pair_idx][process][lepton_type][option]['xval'],
-          histograms[pair_idx][process][lepton_type][option]['yval'],
+          histograms[pair_idx][process][lepton_type][option][rank]['xval'],
+          histograms[pair_idx][process][lepton_type][option][rank]['yval'],
           lw = 2, linestyle = '-', label = '{}, after {} by veto'.format(label, option.replace('selected', 'accepted')),
         )
         plt.step(
-          histograms[pair_idx][process][lepton_type][SUM_KEY]['xval'],
-          histograms[pair_idx][process][lepton_type][SUM_KEY]['yval'],
+          histograms[pair_idx][process][lepton_type][SUM_KEY][rank]['xval'],
+          histograms[pair_idx][process][lepton_type][SUM_KEY][rank]['yval'],
           lw = 2, linestyle = '--', label = r'{}, inclusive'.format(label),
         )
-        plt.xlabel(r'Subleading {} $p_T$ [GeV]'.format(lepton_type))
+        plt.xlabel(r'{} {} $p_T$ [GeV]'.format(rank.capitalize(), lepton_type))
         plt.ylabel('Weighted number of events')
         plt.grid(True)
         plt.xlim(plot_xmin, plot_xmax)
@@ -103,11 +114,13 @@ with pdf.PdfPages(outfn) as output:
       assert(len(process_pair) > 0)
       plt.figure(figsize = (10, 8), dpi = 150)
 
-      binning = histograms[pair_idx][process_pair.keys()[0]][lepton_type][SUM_KEY]['xval']
-      assert(all(binning == histograms[pair_idx][process][lepton_type][SUM_KEY]['xval'] for process in process_pair))
+      rank = PROCESSES[pair_idx][list(process_pair.keys())[0]]['rank']
+      assert(all(PROCESSES[pair_idx][process]['rank'] == rank for process in process_pair))
+      binning = histograms[pair_idx][list(process_pair.keys())[0]][lepton_type][SUM_KEY][rank]['xval']
+      assert(all(binning == histograms[pair_idx][process][lepton_type][SUM_KEY][rank]['xval'] for process in process_pair))
       yvals_sum = [
         sum(
-          histograms[pair_idx][process][lepton_type][PROCESSES[pair_idx][process]['option']]['yval'][bin_idx] \
+          histograms[pair_idx][process][lepton_type][PROCESSES[pair_idx][process]['option']][rank]['yval'][bin_idx] \
           for process in process_pair
         ) for bin_idx in range(len(binning))
       ]
@@ -122,12 +135,12 @@ with pdf.PdfPages(outfn) as output:
         label = PROCESSES[pair_idx][process]['label']
         plt.step(
           binning,
-          histograms[pair_idx][process][lepton_type][option]['yval'],
+          histograms[pair_idx][process][lepton_type][option][rank]['yval'],
           lw = 2, linestyle = '-', label = '{}, after {} by veto'.format(label, option.replace('selected', 'accepted')),
         )
       plt.step(binning, yvals_sum, lw = 2, linestyle = '-', label = 'Sum of the above')
 
-      plt.xlabel(r'Subleading {} $p_T$ [GeV]'.format(lepton_type))
+      plt.xlabel(r'{} {} $p_T$ [GeV]'.format(rank.capitalize(), lepton_type))
       plt.ylabel('Weighted number of events')
       plt.grid(True)
       plt.xlim(plot_xmin, plot_xmax)
