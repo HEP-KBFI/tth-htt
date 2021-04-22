@@ -105,7 +105,27 @@ main(int argc,
               << "] "
     ;
   }
-  std::cout << '\n';
+  std::cout << '\n' << line << '\n';
+
+  // total cross section demo
+  std::cout << "Total LO / NLO cross section [ab] for:\n";
+  for(std::size_t i = 0; i < 13; ++i)
+  {
+    const std::string bmName = i > 0 ? Form("BM%lu", i) : "SM";
+    std::cout << "  " << bmName << " -> "
+        << std::fixed << std::setprecision(1) << std::setw(17 - bmName.size()) << HHWeightNLO_calc.get_totalXsec_lo(bmName) << " / "
+        << std::fixed << std::setprecision(1) << std::setw(15)                 << HHWeightNLO_calc.get_totalXsec_nlo(bmName) << '\n'
+    ;
+  }
+  // NLO-to-NNLO k-factor is 1.115
+  const double sm_nnlo_expected = (70.3874 - 50.4111 + 11.0595); // in fb
+  const double sm_nnlo = HHWeightNLO_calc.get_totalXsec_nlo("SM") * 1.115 / 1.e3; // need to divide by 1000 to get in fb
+  const double sm_nnlo_reldiff = (sm_nnlo - sm_nnlo_expected) / sm_nnlo_expected * 100.;
+  std::cout << "\n"
+       "Expected NNLO SM XS =           " << std::setprecision(4) << std::setw(8) << sm_nnlo_expected << " fb\n"
+       "NNLO SM XS returned by our FW = " << std::setprecision(4) << std::setw(8) << sm_nnlo          << " fb\n"
+       " -> relative difference = " << std::setprecision(3) << sm_nnlo_reldiff << "%\n"
+  ;
 
   return EXIT_SUCCESS;
 }

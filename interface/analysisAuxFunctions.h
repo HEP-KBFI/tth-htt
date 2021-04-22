@@ -828,8 +828,8 @@ recompute_p4(const std::vector<RecoMuon> & muons,
 
 std::map<std::string, double>
 InitializeInputVarMap(const std::map<std::string, double> & AllVars_Map,
-		      const std::vector<std::string> & BDTInputVariables,
-		      bool isNonRes);
+                      const std::vector<std::string> & BDTInputVariables,
+                      bool isNonRes);
 
 std::map<std::string, double>
 InitializeInputVarMap(const std::map<std::string, double> & AllVars_Map,
@@ -913,21 +913,21 @@ CreateMVAOutputMap(const std::vector<double> & MVA_params,
       if ( MVA_params[i] == 0 )
       {
         // SM
-	if (MVAInputs.find("SM")!=MVAInputs.end()){
-	  MVAInputs["SM"] = 1;  
-	  key = "SM";
-	}
-	else{
-	  key= "Base";
-	}
+        if (MVAInputs.find("SM")!=MVAInputs.end()){
+          MVAInputs["SM"] = 1;
+          key = "SM";
+        }
+        else{
+          key= "Base";
+        }
       }
       else
       {
         // non-SM coupling scenario
-	MVAInputs["SM"] = 0;
-	key = Form("BM%i", TMath::Nint(MVA_params[i]));
-	MVAInputs[key] = 1;   
-	if ( i >= 2 )
+        MVAInputs["SM"] = 0;
+        key = Form("BM%i", TMath::Nint(MVA_params[i]));
+        MVAInputs[key] = 1;
+        if ( i >= 2 )
         {
           std::string key_prev = Form("BM%i", TMath::Nint(MVA_params[i - 1]));
           MVAInputs[key_prev] = 0; // Resetting the prev. hot encoder to zero   
@@ -971,22 +971,22 @@ CreateBDTOutputMap(const std::vector<double> & BDT_params,
 template <typename T>
 std::map<std::string, double> // key = gen_mHH/bmName
 CreateBDTOutputMap(const std::vector<double> & BDT_params,
-		   T * BDT,
-		   std::map<std::string, double> & BDTInputs,
-		   int event_number,
-		   bool isNonRes,
-		   const std::string & spin_label)
+                   T * BDT,
+                   std::map<std::string, double> & BDTInputs,
+                   int event_number,
+                   bool isNonRes,
+                   const std::string & spin_label)
 { 
   return CreateMVAOutputMap<T, double>(BDT_params, BDT, BDTInputs, event_number, isNonRes, spin_label);
 }
 
 std::map<std::string, std::map<std::string, double>> // keys = gen_mHH/bmName, event category
 CreateDNNOutputMap(const std::vector<double> & DNN_params,
-		   TensorFlowInterface * DNN,
-		   std::map<std::string, double> & DNNInputs,
-		   int event_number,
-		   bool isNonRes,
-		   const std::string & spin_label);
+                   TensorFlowInterface * DNN,
+                   std::map<std::string, double> & DNNInputs,
+                   int event_number,
+                   bool isNonRes,
+                   const std::string & spin_label);
 
 /**
  * @brief Compute LBN output for parametrized training
@@ -1005,17 +1005,17 @@ CreateLBNOutputMap(const std::vector<double> & LBN_params,
 
 std::map<std::string, std::map<std::string, double>> // keys = gen_mHH/bmName, event category
 CreateLBNOutputMap(const std::vector<double> & LBN_params,
-		   TensorFlowInterfaceLBN * LBN,
+                   TensorFlowInterfaceLBN * LBN,
                    const std::map<std::string, const Particle*> & ll_particles,
-		   std::map<std::string, double> & hl_mvaInputs,
-		   int event_number,
-		   bool isNonRes,
-		   const std::string & spin_label);
+                   std::map<std::string, double> & hl_mvaInputs,
+                   int event_number,
+                   bool isNonRes,
+                   const std::string & spin_label);
 
 double 
 CapLeptonFakeRate(double LeptonFakeRate, 
-		  double cap_threshold,
-		  bool isDEBUG);
+                  double cap_threshold,
+                  bool isDEBUG);
 
 template <typename T>
 std::vector<T>

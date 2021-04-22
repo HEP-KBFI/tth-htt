@@ -151,10 +151,32 @@ public:
   const TH2*
   get_dXsec_V2_nlo(const std::string & bmName) const;
 
+  double
+  get_totalXsec_V1_lo(const std::string & bmName) const;
+
+  double
+  get_totalXsec_V1_nlo(const std::string & bmName) const;
+
+  double
+  get_totalXsec_V2_lo(const std::string & bmName) const;
+
+  double
+  get_totalXsec_V2_nlo(const std::string & bmName) const;
+
+  double
+  get_totalXsec_lo(const std::string & bmName) const;
+
+  double
+  get_totalXsec_nlo(const std::string & bmName) const;
+
 private:
   double
   getDenom(double mHH,
            double cosThetaStar) const;
+
+  static double
+  get_totalXsec(const std::string & bmName,
+                const std::map<std::string, double> & totalXsec);
 
   const HHWeightInterfaceCouplings * const couplings_;
   const HHWeightInterfaceNLOMode mode_;
@@ -162,6 +184,8 @@ private:
   LocalFileInPath xsecFileName_V1_lo_;
   LocalFileInPath xsecFileName_V1_nlo_;
 
+  std::map<std::string, double>      totalXsec_V1_lo_;     // key = bmName
+  std::map<std::string, double>      totalXsec_V1_nlo_;    // key = bmName
   std::map<std::string, const TH1 *> dXsec_V1_lo_;         // key = bmName
   std::map<std::string, const TH1 *> dXsec_V1_nlo_;        // key = bmName
   std::map<std::string, const TH1 *> weights_LOtoNLO_V1_;  // key = bmName
@@ -170,6 +194,8 @@ private:
   LocalFileInPath xsecFileName_V2_lo_;
   LocalFileInPath xsecFileName_V2_nlo_;
 
+  std::map<std::string, double>      totalXsec_V2_lo_;     // key = bmName
+  std::map<std::string, double>      totalXsec_V2_nlo_;    // key = bmName
   std::map<std::string, const TH2 *> dXsec_V2_lo_;         // key = bmName
   std::map<std::string, const TH2 *> dXsec_V2_nlo_;        // key = bmName
   std::map<std::string, const TH2 *> weights_LOtoNLO_V2_;  // key = bmName
