@@ -103,10 +103,26 @@ with pdf.PdfPages(outfn) as output:
           histograms[pair_idx][process][lepton_type][SUM_KEY][rank]['yval'],
           lw = 2, linestyle = '--', label = r'{}, inclusive'.format(label),
         )
+        nof_bins = len(histograms[pair_idx][process][lepton_type][SUM_KEY][rank]['xval'])
+        plot_ymin = min(
+          min(
+            histograms[pair_idx][process][lepton_type][option][rank]['yval'][bin_idx],
+            histograms[pair_idx][process][lepton_type][SUM_KEY][rank]['yval'][bin_idx]
+          ) for bin_idx in range(nof_bins)
+        )
+        plot_ymin *= 1.05 if plot_ymin < 0. else 0
+        plot_ymax = max(
+          max(
+            histograms[pair_idx][process][lepton_type][option][rank]['yval'][bin_idx],
+            histograms[pair_idx][process][lepton_type][SUM_KEY][rank]['yval'][bin_idx]
+          ) for bin_idx in range(nof_bins)
+        )
+        plot_ymax *= 1.05
         plt.xlabel(r'{} {} $p_T$ [GeV]'.format(rank.capitalize(), lepton_type))
         plt.ylabel('Weighted number of events')
         plt.grid(True)
         plt.xlim(plot_xmin, plot_xmax)
+        plt.ylim(plot_ymin, plot_ymax)
         plt.legend(loc = 'upper right')
         output.savefig(bbox_inches = 'tight')
         plt.close()
