@@ -24,7 +24,7 @@ public:
   HHWeightInterfaceNLO(const HHWeightInterfaceCouplings * const couplings,
                        Era era,
                        bool apply_coupling_fix_CMS = false,
-                       double max_reWeight = 10.,
+                       double max_weight = 10.,
                        bool isDEBUG = false);
   ~HHWeightInterfaceNLO();
 
