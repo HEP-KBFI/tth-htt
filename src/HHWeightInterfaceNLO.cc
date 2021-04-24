@@ -159,7 +159,7 @@ namespace
     return couplings;
   }
 
-  const TH1*
+  std::pair<const TH1*, double>
   compXsec_V1(const std::string & histogramName,
               const std::vector<double> & eft_parameters,
               const std::vector<std::vector<double>> & A,
@@ -175,6 +175,7 @@ namespace
 
     int numBins = TMath::Nint((xMax - xMin)/binWidth);
     TH1* histogram = new TH1D(histogramName.data(), histogramName.data(), numBins, xMin, xMax);
+    double integral = -1.;
 
     for ( int idxBin = 1; idxBin <= numBins; ++idxBin )
     {
@@ -194,9 +195,10 @@ namespace
     if ( histogram->Integral() > 0. )
     {
       // normalize to 1 so that the reweighting has only the shape effect
-      histogram->Scale(1./histogram->Integral());
+      integral = histogram->Integral();
+      histogram->Scale(1./integral);
     }
-    return histogram;
+    return std::make_pair(histogram, integral);
   }
   
   std::vector<double>
@@ -211,7 +213,7 @@ namespace
     return binEdges_sorted;
   }
 
-  const TH2*
+  std::pair<const TH2*, double>
   compXsec_V2(const std::string & histogramName,
               const std::vector<double> & eft_parameters,
               const std::vector<std::vector<double>> & A,
@@ -247,6 +249,7 @@ namespace
     TH2* histogram = new TH2D(histogramName.data(), histogramName.data(), numBinsX, binEdgesX.GetArray(), numBinsY, binEdgesY.GetArray());
     TAxis* xAxis = histogram->GetXaxis();
     TAxis* yAxis = histogram->GetYaxis();
+    double integral = -1.;
 
     for ( std::vector<std::vector<double>>::const_iterator row = A.begin(); 
           row != A.end(); ++row ) {
@@ -279,9 +282,10 @@ namespace
     if ( histogram->Integral() > 0. )
     {
       // normalize to 1 so that the reweighting has only the shape effect
-      histogram->Scale(1./histogram->Integral());
+      integral = histogram->Integral();
+      histogram->Scale(1./integral);
     }
-    return histogram;
+    return std::make_pair(histogram, integral);
   }
   
   double 
@@ -429,23 +433,27 @@ HHWeightInterfaceNLO::HHWeightInterfaceNLO(const HHWeightInterfaceCouplings * co
     std::vector<double> eft_parametersEWChL_lo = convertCouplingsToEWChL(eft_parameters_lo);
 
     std::string histogramName_V1_lo = Form("%s_V1_lo", bmName.data());
-    const TH1 * histogram_V1_lo = compXsec_V1(histogramName_V1_lo, eft_parametersEWChL_lo, A_V1_lo, kLO);
+    const auto histogram_V1_lo = compXsec_V1(histogramName_V1_lo, eft_parametersEWChL_lo, A_V1_lo, kLO);
     if ( isDEBUG_ )
     {
-      dumpHistogram(histogram_V1_lo);
+      dumpHistogram(histogram_V1_lo.first);
     }
-    dXsec_V1_lo_[bmName] = histogram_V1_lo;
+    dXsec_V1_lo_[bmName] = histogram_V1_lo.first;
+    totalXsec_V1_lo_[bmName] = histogram_V1_lo.second;
 
     std::string histogramName_V1_nlo = Form("%s_V1_nlo", bmName.data());
-    const TH1 * histogram_V1_nlo = compXsec_V1(histogramName_V1_nlo, eft_parametersEWChL_nlo, A_V1_nlo, kNLO);
+    const auto histogram_V1_nlo = compXsec_V1(histogramName_V1_nlo, eft_parametersEWChL_nlo, A_V1_nlo, kNLO);
     if ( isDEBUG_ )
     {
-      dumpHistogram(histogram_V1_nlo);
+      dumpHistogram(histogram_V1_nlo.first);
     }
-    dXsec_V1_nlo_[bmName] = histogram_V1_nlo;
+    dXsec_V1_nlo_[bmName] = histogram_V1_nlo.first;
+    totalXsec_V1_nlo_[bmName] = histogram_V1_nlo.second;
 
     std::string histogramName_LOtoNLO_V1_weights = Form("%s_LOtoNLO_V1_weights", bmName.data());
-    TH1* histogram_LOtoNLO_V1_weights = makeHistogram_V1_weights(histogramName_LOtoNLO_V1_weights, histogram_V1_lo, histogram_V1_nlo, max_weight_);
+    TH1* histogram_LOtoNLO_V1_weights = makeHistogram_V1_weights(
+      histogramName_LOtoNLO_V1_weights, histogram_V1_lo.first, histogram_V1_nlo.first, max_weight_
+    );
     if ( isDEBUG_ )
     {
       dumpHistogram(histogram_LOtoNLO_V1_weights);
@@ -461,7 +469,9 @@ HHWeightInterfaceNLO::HHWeightInterfaceNLO(const HHWeightInterfaceCouplings * co
       const TH1 * histogram_SM_V1_nlo = dXsec_V1_nlo_["SM"];
       const TH1 * histogram_BM_V1_nlo = dXsec_V1_nlo_[bmName];
       std::string histogramName_NLOtoNLO_V1_weights = Form("%s_NLOtoNLO_V1_weights", bmName.data());
-      TH1* histogram_NLOtoNLO_V1_weights = makeHistogram_V1_weights(histogramName_NLOtoNLO_V1_weights, histogram_SM_V1_nlo, histogram_BM_V1_nlo, max_weight_);
+      TH1* histogram_NLOtoNLO_V1_weights = makeHistogram_V1_weights(
+        histogramName_NLOtoNLO_V1_weights, histogram_SM_V1_nlo, histogram_BM_V1_nlo, max_weight_
+      );
       if ( isDEBUG_ )
       {
         dumpHistogram(histogram_NLOtoNLO_V1_weights);
@@ -489,23 +499,27 @@ HHWeightInterfaceNLO::HHWeightInterfaceNLO(const HHWeightInterfaceCouplings * co
     }
 
     std::string histogramName_V2_lo = Form("%s_V2_lo", bmName.data());
-    const TH2 * histogram_V2_lo = compXsec_V2(histogramName_V2_lo, eft_parameters_lo, A_V2_lo, kLO);
+    const auto histogram_V2_lo = compXsec_V2(histogramName_V2_lo, eft_parameters_lo, A_V2_lo, kLO);
     if ( isDEBUG_ )
     {
-      dumpHistogram(histogram_V2_lo);
+      dumpHistogram(histogram_V2_lo.first);
     }
-    dXsec_V2_lo_[bmName] = histogram_V2_lo;
+    dXsec_V2_lo_[bmName] = histogram_V2_lo.first;
+    totalXsec_V2_lo_[bmName] = histogram_V2_lo.second;
 
     std::string histogramName_V2_nlo = Form("%s_V2_nlo", bmName.data());
-    const TH2 * histogram_V2_nlo = compXsec_V2(histogramName_V2_nlo, eft_parameters_nlo, A_V2_nlo, kNLO);
+    const auto histogram_V2_nlo = compXsec_V2(histogramName_V2_nlo, eft_parameters_nlo, A_V2_nlo, kNLO);
     if ( isDEBUG_ )
     {
-      dumpHistogram(histogram_V2_nlo);
+      dumpHistogram(histogram_V2_nlo.first);
     }
-    dXsec_V2_nlo_[bmName] = histogram_V2_nlo;
+    dXsec_V2_nlo_[bmName] = histogram_V2_nlo.first;
+    totalXsec_V2_nlo_[bmName] = histogram_V2_nlo.second;
 
     std::string histogramName_LOtoNLO_V2_weights = Form("%s_LOtoNLO_V2_weights", bmName.data());
-    TH2* histogram_LOtoNLO_V2_weights = makeHistogram_V2_weights(histogramName_LOtoNLO_V2_weights, histogram_V2_lo, histogram_V2_nlo, max_weight_);
+    TH2* histogram_LOtoNLO_V2_weights = makeHistogram_V2_weights(
+      histogramName_LOtoNLO_V2_weights, histogram_V2_lo.first, histogram_V2_nlo.first, max_weight_
+    );
     if ( isDEBUG_ )
     {
       dumpHistogram(histogram_LOtoNLO_V2_weights);
@@ -521,7 +535,9 @@ HHWeightInterfaceNLO::HHWeightInterfaceNLO(const HHWeightInterfaceCouplings * co
       const TH2 * histogram_SM_V2_nlo = dXsec_V2_nlo_["SM"];
       const TH2 * histogram_BM_V2_nlo = dXsec_V2_nlo_[bmName];
       std::string histogramName_NLOtoNLO_V2_weights = Form("%s_NLOtoNLO_V2_weights", bmName.data());
-      TH2* histogram_NLOtoNLO_V2_weights = makeHistogram_V2_weights(histogramName_NLOtoNLO_V2_weights, histogram_SM_V2_nlo, histogram_BM_V2_nlo, max_weight_);
+      TH2* histogram_NLOtoNLO_V2_weights = makeHistogram_V2_weights(
+        histogramName_NLOtoNLO_V2_weights, histogram_SM_V2_nlo, histogram_BM_V2_nlo, max_weight_
+      );
       if ( isDEBUG_ )
       {
         dumpHistogram(histogram_NLOtoNLO_V2_weights);
@@ -803,4 +819,66 @@ HHWeightInterfaceNLO::getDenom(double mHH,
                                double cosThetaStar) const
 {
   return HHWeightInterfaceCouplings::getBinContent(sumEvt_, mHH, cosThetaStar);
+}
+
+double
+HHWeightInterfaceNLO::get_totalXsec(const std::string & bmName,
+                                    const std::map<std::string, double> & totalXsec)
+{
+  std::map<std::string, double>::const_iterator iter = totalXsec.find(bmName);
+  if(iter == totalXsec.end())
+  {
+    throw cmsException(__func__, __LINE__) << "Invalid parameter 'bmName' = " << bmName;
+  }
+  return totalXsec.at(bmName);
+}
+
+double
+HHWeightInterfaceNLO::get_totalXsec_V1_lo(const std::string & bmName) const
+{
+  return get_totalXsec(bmName, totalXsec_V1_lo_);
+}
+
+double
+HHWeightInterfaceNLO::get_totalXsec_V1_nlo(const std::string & bmName) const
+{
+  return get_totalXsec(bmName, totalXsec_V1_nlo_);
+}
+
+double
+HHWeightInterfaceNLO::get_totalXsec_V2_lo(const std::string & bmName) const
+{
+  return get_totalXsec(bmName, totalXsec_V2_lo_);
+}
+
+double
+HHWeightInterfaceNLO::get_totalXsec_V2_nlo(const std::string & bmName) const
+{
+  return get_totalXsec(bmName, totalXsec_V2_nlo_);
+}
+
+double
+HHWeightInterfaceNLO::get_totalXsec_lo(const std::string & bmName) const
+{
+  switch(mode_)
+  {
+    case HHWeightInterfaceNLOMode::v1:   return get_totalXsec_V1_lo(bmName);
+    case HHWeightInterfaceNLOMode::v2:   __attribute__((fallthrough));
+    case HHWeightInterfaceNLOMode::v3:   return get_totalXsec_V2_lo(bmName);
+    case HHWeightInterfaceNLOMode::none:
+    default:                             throw cmsException(this, __func__, __LINE__) << "Mode unspecfied";
+  }
+}
+
+double
+HHWeightInterfaceNLO::get_totalXsec_nlo(const std::string & bmName) const
+{
+  switch(mode_)
+  {
+    case HHWeightInterfaceNLOMode::v1:   return get_totalXsec_V1_nlo(bmName);
+    case HHWeightInterfaceNLOMode::v2:   __attribute__((fallthrough));
+    case HHWeightInterfaceNLOMode::v3:   return get_totalXsec_V2_nlo(bmName);
+    case HHWeightInterfaceNLOMode::none:
+    default:                             throw cmsException(this, __func__, __LINE__) << "Mode unspecfied";
+  }
 }

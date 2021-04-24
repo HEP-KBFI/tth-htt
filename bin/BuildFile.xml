@@ -654,6 +654,7 @@
 <bin file="testHHWeightInterfaceNLO.cc" name="testHHWeightInterfaceNLO">
   <use   name="tthAnalysis/HiggsToTauTau"/>
   <use   name="root"/>
+  <use   name="boost"/>
   <Flags CXXFLAGS="-g -Wshadow -Werror"/>
 </bin>
 <bin file="copyHistograms_recursively.cc" name="copyHistograms_recursively">

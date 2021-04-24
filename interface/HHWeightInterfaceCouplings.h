@@ -7,12 +7,22 @@ enum class HHWeightInterfaceNLOMode { none, v1, v2, v3 };
 
 // forward declarations
 class TH2;
+class HHWeightInterfaceLO;
 
 class HHWeightInterfaceCouplings
 {
 public:
   HHWeightInterfaceCouplings(const edm::ParameterSet & cfg);
   ~HHWeightInterfaceCouplings() {}
+
+  /**
+   * @brief Add a scan point
+   * @param couplings (kl, kt, c2, cg, c2g)
+   * @param name Unique label for the coupling array
+   */
+  void
+  add(const std::array<double, 5> & couplings,
+      const std::string & name);
 
   /**
    * @brief Get HH weight names
@@ -32,7 +42,6 @@ public:
   static const std::vector<double> c2JHEP;
   static const std::vector<double> cgJHEP;
   static const std::vector<double> c2gJHEP;
-  static const std::vector<double> normJHEP;
 
   std::vector<double>
   kl() const;
@@ -48,9 +57,6 @@ public:
 
   std::vector<double>
   c2g() const;
-
-  std::vector<double>
-  norm() const;
 
   HHWeightInterfaceNLOMode
   nlo_mode() const;
@@ -88,7 +94,6 @@ private:
   std::vector<double> c2_;
   std::vector<double> cg_;
   std::vector<double> c2g_;
-  std::vector<double> norm_;
   std::vector<std::string> bmNames_;
   std::vector<std::string> bmWeightNames_;
 
