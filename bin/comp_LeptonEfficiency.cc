@@ -282,7 +282,8 @@ void fillHistogram(TH2* histogram,
 	double avFakeRate, avFakeRateErrUp, avFakeRateErrDown;
         bool errorFlag;
 	std::cout << " nPass2 " << nPass << " +/- " << nPassErr << " nFail2 " <<  nFail  << " +/- " << nFailErr << std::endl;
-        compFakeRate(nPass, nPassErr, nFail, nFailErr, avFakeRate, avFakeRateErrUp, avFakeRateErrDown, errorFlag);
+	// Using uncapped uncert.s for Lepton ID Efficiency case
+        compFakeRate(nPass, nPassErr, nFail, nFailErr, avFakeRate, avFakeRateErrUp, avFakeRateErrDown, errorFlag, false);
 
 	if ( !errorFlag ) {
           double avFakeRateErr = TMath::Sqrt(0.5*(avFakeRateErrUp*avFakeRateErrUp + avFakeRateErrDown*avFakeRateErrDown));
@@ -364,7 +365,7 @@ void makeControlPlot(TGraphAsymmErrors* graph_data,
     yMax = 1.e+1;
   } else {
     yMin = 0.;
-    yMax = 0.50;
+    yMax = 1.50;
   }
   dummyHistogram->SetMinimum(yMin);
   dummyHistogram->SetMaximum(yMax);
