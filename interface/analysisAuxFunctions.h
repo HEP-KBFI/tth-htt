@@ -843,13 +843,13 @@ DoubleToUInt_Convertor(double BDT_param,
 namespace
 {
   template <typename T_algo, typename T_retVal>
-    std::map<std::string, T_retVal>
-CreateMVAOutputMap(const std::vector<double> & MVA_params,
-                   std::vector<T_algo *>& MVA,
-                   std::map<std::string, double> & MVAInputs,
-                   int event_number,
-                   bool isNonRes,
-                   const std::string & spin_label)
+  std::map<std::string, T_retVal>
+  CreateMVAOutputMap(const std::vector<double> & MVA_params,
+                     std::vector<T_algo *>& MVA,
+                     std::map<std::string, double> & MVAInputs,
+                     int event_number,
+                     bool isNonRes,
+                     const std::string & spin_label)
   {
     std::map<std::string, T_retVal> MVAOutput_Map;
     for ( size_t i = 0; i < MVA_params.size(); ++i ) // Loop over MVA_params: signal mass (Reso.)/BM index (Non Reso.)
@@ -889,65 +889,64 @@ CreateMVAOutputMap(const std::vector<double> & MVA_params,
   }
 
   template <typename T_algo, typename T_retVal>
-    std::map<std::string, T_retVal>
-CreateMVAOutputMap(const std::vector<double> & MVA_params,
-                   T_algo * MVA,
-                   std::map<std::string, double> & MVAInputs,
-                   int event_number,
-                   bool isNonRes,
-                   const std::string & spin_label)
-{
-  std::map<std::string, T_retVal> MVAOutput_Map;
-  for ( size_t i = 0; i < MVA_params.size(); ++i ) // Loop over MVA_params: signal mass (Reso.)/BM index (Non Reso.)
-  { 
-    std::string key = "";
-    if ( !isNonRes )
+  std::map<std::string, T_retVal>
+  CreateMVAOutputMap(const std::vector<double> & MVA_params,
+                     T_algo * MVA,
+                     std::map<std::string, double> & MVAInputs,
+                     int event_number,
+                     bool isNonRes,
+                     const std::string & spin_label)
+  {
+    std::map<std::string, T_retVal> MVAOutput_Map;
+    for ( size_t i = 0; i < MVA_params.size(); ++i ) // Loop over MVA_params: signal mass (Reso.)/BM index (Non Reso.)
     {
-      // resonant case
-      MVAInputs["gen_mHH"] = MVA_params[i];
-      key = DoubleToUInt_Convertor(MVA_params[i], isNonRes, spin_label);
-    }
-    else 
-    { 
-      // non-resonant case
-      if ( MVA_params[i] == 0 )
+      std::string key = "";
+      if ( !isNonRes )
       {
-        // SM
-        if (MVAInputs.find("SM")!=MVAInputs.end()){
-          MVAInputs["SM"] = 1;
-          key = "SM";
-        }
-        else{
-          key= "Base";
-        }
+        // resonant case
+        MVAInputs["gen_mHH"] = MVA_params[i];
+        key = DoubleToUInt_Convertor(MVA_params[i], isNonRes, spin_label);
       }
       else
       {
-        // non-SM coupling scenario
-        MVAInputs["SM"] = 0;
-        key = Form("BM%i", TMath::Nint(MVA_params[i]));
-        MVAInputs[key] = 1;
-        if ( i >= 2 )
+        // non-resonant case
+        if ( MVA_params[i] == 0 )
         {
-          std::string key_prev = Form("BM%i", TMath::Nint(MVA_params[i - 1]));
-          MVAInputs[key_prev] = 0; // Resetting the prev. hot encoder to zero   
+          // SM
+          if (MVAInputs.find("SM")!=MVAInputs.end()){
+            MVAInputs["SM"] = 1;
+            key = "SM";
+          }
+          else{
+            key= "Base";
+          }
+        }
+        else
+        {
+          // non-SM coupling scenario
+          MVAInputs["SM"] = 0;
+          key = Form("BM%i", TMath::Nint(MVA_params[i]));
+          MVAInputs[key] = 1;
+          if ( i >= 2 )
+          {
+            std::string key_prev = Form("BM%i", TMath::Nint(MVA_params[i - 1]));
+            MVAInputs[key_prev] = 0; // Resetting the prev. hot encoder to zero
+          }
         }
       }
+      if ( event_number != -1 )
+      {
+        // use odd-even method
+        MVAOutput_Map.insert(std::make_pair(key, (*MVA)(MVAInputs, event_number)));
+      }
+      else
+      {
+        // use same BDT/DNN for all events
+        MVAOutput_Map.insert(std::make_pair(key, (*MVA)(MVAInputs)));
+      }
     }
-    if ( event_number != -1 )
-    { 
-      // use odd-even method
-      MVAOutput_Map.insert(std::make_pair(key, (*MVA)(MVAInputs, event_number)));
-    }
-    else
-    { 
-      // use same BDT/DNN for all events
-      MVAOutput_Map.insert(std::make_pair(key, (*MVA)(MVAInputs)));
-    }
+    return MVAOutput_Map;
   }
-  return MVAOutput_Map;
-}
-
 }
 
 /**
