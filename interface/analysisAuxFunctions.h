@@ -895,7 +895,8 @@ namespace
                      std::map<std::string, double> & MVAInputs,
                      int event_number,
                      bool isNonRes,
-                     const std::string & spin_label)
+                     const std::string & spin_label,
+                     bool isDEBUG = false)
   {
     std::map<std::string, T_retVal> MVAOutput_Map;
     for ( size_t i = 0; i < MVA_params.size(); ++i ) // Loop over MVA_params: signal mass (Reso.)/BM index (Non Reso.)
@@ -944,6 +945,15 @@ namespace
         // use same BDT/DNN for all events
         MVAOutput_Map.insert(std::make_pair(key, (*MVA)(MVAInputs)));
       }
+
+      if(isDEBUG)
+      {
+        std::cout << get_human_line(__func__, __LINE__) << "KEY = " << key << '\n';
+        for(const auto & kv: MVAInputs)
+        {
+          std::cout << "  '" << kv.first << "' = " << kv.second << '\n';
+        }
+      }
     }
     return MVAOutput_Map;
   }
@@ -958,13 +968,14 @@ namespace
 template <typename T>
 std::map<std::string, double> // key = gen_mHH/bmName
 CreateBDTOutputMap(const std::vector<double> & BDT_params,
-  std::vector<T *> & BDT,
-  std::map<std::string, double> & BDTInputs,
-  int event_number,
-  bool isNonRes,
-  const std::string & spin_label)
+                   std::vector<T *> & BDT,
+                   std::map<std::string, double> & BDTInputs,
+                   int event_number,
+                   bool isNonRes,
+                   const std::string & spin_label,
+                   bool isDEBUG = false)
 {
-  return CreateMVAOutputMap<T, double>(BDT_params, BDT, BDTInputs, event_number, isNonRes, spin_label);
+  return CreateMVAOutputMap<T, double>(BDT_params, BDT, BDTInputs, event_number, isNonRes, spin_label, isDEBUG);
 }
 
 template <typename T>
@@ -974,9 +985,10 @@ CreateBDTOutputMap(const std::vector<double> & BDT_params,
                    std::map<std::string, double> & BDTInputs,
                    int event_number,
                    bool isNonRes,
-                   const std::string & spin_label)
+                   const std::string & spin_label,
+                   bool isDEBUG = false)
 { 
-  return CreateMVAOutputMap<T, double>(BDT_params, BDT, BDTInputs, event_number, isNonRes, spin_label);
+  return CreateMVAOutputMap<T, double>(BDT_params, BDT, BDTInputs, event_number, isNonRes, spin_label, isDEBUG);
 }
 
 std::map<std::string, std::map<std::string, double>> // keys = gen_mHH/bmName, event category
@@ -985,7 +997,8 @@ CreateDNNOutputMap(const std::vector<double> & DNN_params,
                    std::map<std::string, double> & DNNInputs,
                    int event_number,
                    bool isNonRes,
-                   const std::string & spin_label);
+                   const std::string & spin_label,
+                   bool isDEBUG = false);
 
 /**
  * @brief Compute LBN output for parametrized training
@@ -995,12 +1008,12 @@ CreateDNNOutputMap(const std::vector<double> & DNN_params,
  */
 std::map<std::string, std::map<std::string, double>> // keys = gen_mHH/bmName, event category
 CreateLBNOutputMap(const std::vector<double> & LBN_params,
-  std::vector<TensorFlowInterfaceLBN *> & LBN,
-  const std::map<std::string, const Particle*> & ll_particles,
-  std::map<std::string, double> & hl_mvaInputs,
-  int event_number,
-  bool isNonRes,
-  const std::string & spin_label);
+                   std::vector<TensorFlowInterfaceLBN *> & LBN,
+                   const std::map<std::string, const Particle*> & ll_particles,
+                   std::map<std::string, double> & hl_mvaInputs,
+                   int event_number,
+                   bool isNonRes,
+                   const std::string & spin_label);
 
 std::map<std::string, std::map<std::string, double>> // keys = gen_mHH/bmName, event category
 CreateLBNOutputMap(const std::vector<double> & LBN_params,

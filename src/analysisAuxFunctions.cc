@@ -896,53 +896,48 @@ InitializeInputVarMap(const std::map<std::string, double> & AllVars_Map,
                       bool isNonRes)
 {
   std::map<std::string, double> BDTInputs;
-  if(isNonRes){// Initialize all Non-Reso. "one-hot encoders" to zero
-    for(unsigned int i = 0; i < BDTInputVariables.size(); i++){
+  if(isNonRes)
+  {
+    std::vector<std::string> resBDTInputVars = { "SM" };
+    for(int i = 1; i < 13; ++i)
+    {
+      resBDTInputVars.push_back(Form("BM%d", i));
+    }
+    // Initialize all Non-Reso. "one-hot encoders" to zero
+    for(unsigned int i = 0; i < BDTInputVariables.size(); ++i)
+    {
       const std::string & BDTInputVariable = BDTInputVariables[i];
-      if(BDTInputVariable == "SM"){ 
-        BDTInputs["SM"] = 0;
-      }else if(BDTInputVariable == "BM1"){ 
-        BDTInputs["BM1"] = 0;
-      }else if(BDTInputVariable == "BM2"){ 
-        BDTInputs["BM2"] = 0;
-      }else if(BDTInputVariable == "BM3"){ 
-        BDTInputs["BM3"] = 0;
-      }else if(BDTInputVariable == "BM4"){ 
-        BDTInputs["BM4"] = 0;
-      }else if(BDTInputVariable == "BM5"){ 
-        BDTInputs["BM5"] = 0;
-      }else if(BDTInputVariable == "BM6"){ 
-        BDTInputs["BM6"] = 0;
-      }else if(BDTInputVariable == "BM7"){ 
-        BDTInputs["BM7"] = 0;
-      }else if(BDTInputVariable == "BM8"){ 
-        BDTInputs["BM8"] = 0;
-      }else if(BDTInputVariable == "BM9"){ 
-        BDTInputs["BM9"] = 0;
-      }else if(BDTInputVariable == "BM10"){ 
-        BDTInputs["BM10"] = 0;
-      }else if(BDTInputVariable == "BM11"){ 
-        BDTInputs["BM11"] = 0;
-      }else if(BDTInputVariable == "BM12"){ 
-        BDTInputs["BM12"] = 0;
-      }else{
+      if(std::find(resBDTInputVars.begin(), resBDTInputVars.end(), BDTInputVariable) != resBDTInputVars.end())
+      {
+        BDTInputs[BDTInputVariable] = 0;
+      }
+      else
+      {
         std::map<std::string, double>::const_iterator BDTInput = AllVars_Map.find(BDTInputVariable);
         if ( BDTInput == AllVars_Map.end() )
+        {
           throw cmsException(__func__, __LINE__) << "Input variable = " << BDTInputVariable << " not in map given as function argument !!\n";
-        //std::cout<<"Filling Map for Input Var.: " << BDTInputVariable << " with value " << BDTInput->second; << std::endl;
+        }
         BDTInputs[BDTInputVariable] = BDTInput->second;
       }
     }
-  }else{
-    for(unsigned int i = 0; i < BDTInputVariables.size(); i++){
+  }
+  else
+  {
+    for(unsigned int i = 0; i < BDTInputVariables.size(); ++i)
+    {
       const std::string & BDTInputVariable = BDTInputVariables[i];
-      if(BDTInputVariable == "gen_mHH"){ 
+      if(BDTInputVariable == "gen_mHH")
+      {
         BDTInputs["gen_mHH"] = 0;
-      }else{
+      }
+      else
+      {
         std::map<std::string, double>::const_iterator BDTInput = AllVars_Map.find(BDTInputVariable);
         if ( BDTInput == AllVars_Map.end() )
+        {
           throw cmsException(__func__, __LINE__) << "Input variable = " << BDTInputVariable << " not in map given as function argument !!\n";
-        //std::cout<<"Filling Map for Input Var.: " << BDTInputVariable << " with value " << BDTInput->second; << std::endl;
+        }
         BDTInputs[BDTInputVariable] = BDTInput->second;
       }
     }
@@ -981,10 +976,12 @@ CreateDNNOutputMap(const std::vector<double> & DNN_params,
                    std::map<std::string, double> & DNNInputs,
                    int event_number,
                    bool isNonRes,
-                   const std::string & spin_label)
+                   const std::string & spin_label,
+                   bool isDEBUG)
 { 
   std::map<std::string, std::map<std::string, double>> retVal = CreateMVAOutputMap<TensorFlowInterface, std::map<std::string, double>>(
-    DNN_params, DNN, DNNInputs, event_number, isNonRes, spin_label);
+    DNN_params, DNN, DNNInputs, event_number, isNonRes, spin_label, isDEBUG
+  );
   return retVal;
 }
 
