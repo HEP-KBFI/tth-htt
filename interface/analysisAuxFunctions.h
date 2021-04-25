@@ -972,10 +972,9 @@ CreateBDTOutputMap(const std::vector<double> & BDT_params,
                    std::map<std::string, double> & BDTInputs,
                    int event_number,
                    bool isNonRes,
-                   const std::string & spin_label,
-                   bool isDEBUG = false)
+                   const std::string & spin_label)
 {
-  return CreateMVAOutputMap<T, double>(BDT_params, BDT, BDTInputs, event_number, isNonRes, spin_label, isDEBUG);
+  return CreateMVAOutputMap<T, double>(BDT_params, BDT, BDTInputs, event_number, isNonRes, spin_label);
 }
 
 template <typename T>
