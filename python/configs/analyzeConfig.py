@@ -7,6 +7,7 @@ from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch_had
 from tthAnalysis.HiggsToTauTau.analysisSettings import Triggers, systematics, HTXS_BINS
 from tthAnalysis.HiggsToTauTau.common import logging, DEPENDENCIES
 from tthAnalysis.HiggsToTauTau.samples.stitch import get_branch_type
+from tthAnalysis.HiggsToTauTau.hhSettings import NONRESONANT_POINTS, NONRESONANT_KEYS, SCANFILES, read_couplings
 
 from tthAnalysis.NanoAODTools.tHweights_cfi import tHweights, thIdxsNoCP, find_tHweight
 
@@ -419,6 +420,11 @@ class analyzeConfig(object):
         if self.run_mcClosure:
           self.central_or_shifts.remove(systematics.mcClosure_str)
 
+        self.nonResBMs = []
+        for nonresPoint in NONRESONANT_POINTS:
+          if any(nonresPoint in histogram_to_fit for histogram_to_fit in self.histograms_to_fit):
+            self.nonResBMs.append(nonresPoint)
+
         samples_to_stitch = []
         if self.era == '2016':
           from tthAnalysis.HiggsToTauTau.samples.stitch import samples_to_stitch_2016 as samples_to_stitch
@@ -582,37 +588,8 @@ class analyzeConfig(object):
             [ copy.deepcopy(find_tHweight(tHweights, thIdx)) for thIdx in self.thIdxs ]
           )
         ))
-        self.kt_weights = []
-        self.kt_scan_file = "hhAnalysis/multilepton/data/kt_scan.dat"
-        with open(os.path.join(os.environ["CMSSW_BASE"], "src", self.kt_scan_file), "r") as kt_file:
-          for line in kt_file:
-            kt_value = float(line.split()[1])
-            if kt_value == 1.0:
-              # SM
-              continue
-            self.kt_weights += [
-              "kt_" + str("{:3.2f}".format(kt_value)).replace(".", "p").replace("-", "m")
-            ]
-        self.kl_weights = []
-        self.kl_scan_file = "hhAnalysis/multilepton/data/kl_scan.dat"
-        with open(os.path.join(os.environ["CMSSW_BASE"], "src", self.kl_scan_file), "r") as kl_file:
-          for line in kl_file:
-            kl_value = float(line.split()[0])
-            self.kl_weights += [
-              "kl_" + str("{:3.2f}".format(kl_value)).replace(".", "p").replace("-", "m")
-            ]
+        self.kt_weights = read_couplings('kt', coupling_as_prefix = True)
         self.BM_weights = [ 'SM' ] + [ 'BM{}'.format(idx) for idx in range(1, 13) ]
-        self.c2_weights = []
-        self.c2_scan_file = "hhAnalysis/multilepton/data/c2_scan.dat"
-        with open(os.path.join(os.environ["CMSSW_BASE"], "src", self.c2_scan_file), "r") as c2_file:
-          for line in c2_file:
-            c2_value = float(line.split()[2])
-            if c2_value == 1.0:
-              # SM
-              continue
-            self.c2_weights += [
-              "c2_" + str("{:3.2f}".format(c2_value)).replace(".", "p").replace("-", "m")
-            ]
 
         self.jobOptions_analyze = {}
         self.inputFiles_hadd_stage1 = {}
@@ -833,16 +810,16 @@ class analyzeConfig(object):
           jobOptions['hhWeight_cfg.denominator_file_nlo'] = 'hhAnalysis/{}/data/denom_{}_nlo.root'.format(hhWeight_base, self.era)
           jobOptions['hhWeight_cfg.histtitle'] = sample_info[sample_category_to_check]
           jobOptions['hhWeight_cfg.rwgt_nlo_mode'] = 'v2'
-          #jobOptions['hhWeight_cfg.c2Scan_file'] = self.c2_scan_file # ignore c2 scan
           if not ('hh' in self.channel or 'ctrl' in self.channel or 'study' in self.channel.lower()):
             # enable kt-scan in ttH analysis
-            jobOptions['hhWeight_cfg.scanMode'] = 'additional'
-            jobOptions['hhWeight_cfg.ktScan_file'] = self.kt_scan_file
+            jobOptions['hhWeight_cfg.scanMode'] = self.nonResBMs
           elif 'hh' in self.channel and 'ctrl' not in self.channel and 'study' not in self.channel.lower():
-            jobOptions['hhWeight_cfg.scanMode'] = 'full'
-            jobOptions['hhWeight_cfg.c2Scan_file'] = self.c2_scan_file
+            jobOptions['hhWeight_cfg.scanMode'] = self.nonResBMs
             jobOptions['hhWeight_cfg.rwgt_nlo_mode'] = 'v3'
             jobOptions['hhWeight_cfg.apply_rwgt_lo'] = False
+          for coupling_scan in SCANFILES:
+            if coupling_scan in self.nonResBMs:
+              jobOptions['hhWeight_cfg.{}Scan_file'.format(coupling_scan)] = SCANFILES[coupling_scan]
 
         update_conv_bkg = False
         if 'genPhotonFilter' in sample_info.keys():
@@ -1441,7 +1418,7 @@ class analyzeConfig(object):
             if sample_category in ["tHq", "tHW"]:
                 couplings += self.thcouplings
             if sample_category in ["HH"] :
-                couplings += self.kt_weights
+                couplings += self.kt_weights + [ "SM" ]
 
             for decayMode in decays:
                 for coupling in couplings:
