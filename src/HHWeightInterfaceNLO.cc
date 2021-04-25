@@ -390,21 +390,7 @@ HHWeightInterfaceNLO::HHWeightInterfaceNLO(const HHWeightInterfaceCouplings * co
   , max_weight_(max_weight)
   , isDEBUG_(isDEBUG)
 {
-  const std::vector<std::string> bmNames = couplings_->get_bm_names();
-  const std::size_t nof_couplings = bmNames.size();
-  const std::vector<double> kl  = couplings_->kl();
-  const std::vector<double> kt  = couplings_->kt();
-  const std::vector<double> c2  = couplings_->c2();
-  const std::vector<double> cg  = couplings_->cg();
-  const std::vector<double> c2g = couplings_->c2g();
-  if ( kl.size()  != nof_couplings ||
-       kt.size()  != nof_couplings ||
-       c2.size()  != nof_couplings ||
-       cg.size()  != nof_couplings ||
-       c2g.size() != nof_couplings )
-  {
-    throw cmsException(this, __func__, __LINE__) << "Invalid coupling parameters";
-  }
+  const std::map<std::string, HHCoupling> couplingArray = couplings_->getCouplings();
 
   sumEvt_ = HHWeightInterfaceCouplings::loadDenominatorHist(
     couplings_->denominator_file_nlo(), couplings_->histtitle()
@@ -415,11 +401,12 @@ HHWeightInterfaceNLO::HHWeightInterfaceNLO(const HHWeightInterfaceCouplings * co
   const std::vector<std::vector<double>> A_V1_lo = loadCoeffFile(xsecFileName_V1_lo_);
   const std::vector<std::vector<double>> A_V1_nlo = loadCoeffFile(xsecFileName_V1_nlo_);
 
-  for ( std::size_t bmIdx = 0; bmIdx < nof_couplings; ++bmIdx )
+  for(const auto & kv: couplingArray)
   {
-    const std::string & bmName = bmNames[bmIdx];
+    const std::string & bmName = kv.first;
+    const HHCoupling & coupling = kv.second;
 
-    std::vector<double> eft_parameters_nlo = { kl[bmIdx], kt[bmIdx], c2[bmIdx], cg[bmIdx], c2g[bmIdx] };
+    std::vector<double> eft_parameters_nlo = { coupling.kl(), coupling.kt(), coupling.c2(), coupling.cg(), coupling.c2g() };
     std::vector<double> eft_parametersEWChL_nlo = convertCouplingsToEWChL(eft_parameters_nlo);
     std::vector<double> eft_parameters_lo;
     if ( apply_coupling_fix_CMS_ )
@@ -461,9 +448,10 @@ HHWeightInterfaceNLO::HHWeightInterfaceNLO(const HHWeightInterfaceCouplings * co
     weights_LOtoNLO_V1_[bmName] = histogram_LOtoNLO_V1_weights;
   }
 
-  for ( std::size_t bmIdx = 0; bmIdx < nof_couplings; ++bmIdx )
+  for(const auto & kv: couplingArray)
   {
-    const std::string & bmName = bmNames[bmIdx];
+    const std::string & bmName = kv.first;
+
     if ( bmName != "SM" )
     {
       const TH1 * histogram_SM_V1_nlo = dXsec_V1_nlo_["SM"];
@@ -483,11 +471,12 @@ HHWeightInterfaceNLO::HHWeightInterfaceNLO(const HHWeightInterfaceCouplings * co
   const std::vector<std::vector<double>> A_V2_lo = loadCoeffFile_V2(xsecFileName_V2_lo_, "");
   const std::vector<std::vector<double>> A_V2_nlo = loadCoeffFile_V2(xsecFileName_V2_nlo_, "");
 
-  for ( std::size_t bmIdx = 0; bmIdx < nof_couplings; ++bmIdx )
+  for(const auto & kv: couplingArray)
   {
-    const std::string & bmName = bmNames[bmIdx];
+    const std::string & bmName = kv.first;
+    const HHCoupling & coupling = kv.second;
 
-    std::vector<double> eft_parameters_nlo = { kl[bmIdx], kt[bmIdx], c2[bmIdx], cg[bmIdx], c2g[bmIdx] };
+    std::vector<double> eft_parameters_nlo = { coupling.kl(), coupling.kt(), coupling.c2(), coupling.cg(), coupling.c2g() };
     std::vector<double> eft_parameters_lo;
     if ( apply_coupling_fix_CMS_ )
     {
@@ -527,9 +516,10 @@ HHWeightInterfaceNLO::HHWeightInterfaceNLO(const HHWeightInterfaceCouplings * co
     weights_LOtoNLO_V2_[bmName] = histogram_LOtoNLO_V2_weights;
   }
 
-  for ( std::size_t bmIdx = 0; bmIdx < nof_couplings; ++bmIdx )
+  for(const auto & kv: couplingArray)
   {
-    const std::string & bmName = bmNames[bmIdx];
+    const std::string & bmName = kv.first;
+
     if ( bmName != "SM" )
     {
       const TH2 * histogram_SM_V2_nlo = dXsec_V2_nlo_["SM"];

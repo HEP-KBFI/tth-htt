@@ -74,34 +74,14 @@ HHWeightInterfaceLO::HHWeightInterfaceLO(const HHWeightInterfaceCouplings * cons
   Py_XDECREF(args_load);
   Py_XDECREF(func_load);
 
-  const std::vector<double> kl = couplings_->kl();
-  const std::vector<double> kt = couplings_->kt();
-  const std::vector<double> c2 = couplings_->c2();
-  const std::vector<double> cg = couplings_->cg();
-  const std::vector<double> c2g = couplings_->c2g();
-  const std::size_t nof_couplings = couplings_->get_bm_names().size();
-  if ( kl.size()  != nof_couplings ||
-       kt.size()  != nof_couplings ||
-       c2.size()  != nof_couplings ||
-       cg.size()  != nof_couplings ||
-       c2g.size() != nof_couplings)
-  {
-    throw cmsException(this, __func__, __LINE__) << "Invalid coupling parameters !!\n";
-  }
+  const std::map<std::string, HHCoupling> couplingArray = couplings_->getCouplings();
   norm_.clear();
-  for(std::size_t coupling_idx = 0; coupling_idx < nof_couplings; ++coupling_idx)
+  for(const auto & kv: couplingArray)
   {
-    norm_.push_back(getNorm({{
-      kl.at(coupling_idx),
-      kt.at(coupling_idx),
-      c2.at(coupling_idx),
-      cg.at(coupling_idx),
-      c2g.at(coupling_idx),
-    }}));
+    assert(kv.first == kv.second.name());
+    norm_[kv.first] = getNorm(&kv.second);
   }
 }
-
-
 
 HHWeightInterfaceLO::~HHWeightInterfaceLO()
 {
@@ -125,40 +105,17 @@ HHWeightInterfaceLO::getWeight(const std::string & bmName,
                                double cosThetaStar,
                                bool isDEBUG) const
 {
-  const std::vector<std::string> bmNames = couplings_->get_bm_names();
-  const std::vector<std::string>::const_iterator bmIdxIt = std::find(bmNames.cbegin(), bmNames.cend(), bmName);
-  if(bmIdxIt == bmNames.end())
-  {
-    throw cmsException(this, __func__, __LINE__) << "Invalid parameter 'bmName' = " << bmName << " !!\n";
-  }
-  const std::size_t bmIdx = std::distance(bmNames.cbegin(), bmIdxIt);
+  const HHCoupling coupling = couplings_->getCoupling(bmName);
   const double denominator = getDenom(mHH, cosThetaStar);
 
-  const std::vector<double> kl = couplings_->kl();
-  const std::vector<double> kt = couplings_->kt();
-  const std::vector<double> c2 = couplings_->c2();
-  const std::vector<double> cg = couplings_->cg();
-  const std::vector<double> c2g = couplings_->c2g();
-
-  const std::size_t nof_couplings = bmNames.size();
-  if ( kl.size()    != nof_couplings ||
-       kt.size()    != nof_couplings ||
-       c2.size()    != nof_couplings ||
-       cg.size()    != nof_couplings ||
-       c2g.size()   != nof_couplings ||
-       norm_.size() != nof_couplings  )
-  {
-    throw cmsException(this, __func__, __LINE__) << "Invalid coupling parameters !!\n";
-  }
-
-  PyObject* kl_py = PyFloat_FromDouble(static_cast<double>(kl[bmIdx]));
-  PyObject* kt_py = PyFloat_FromDouble(static_cast<double>(kt[bmIdx]));
-  PyObject* c2_py = PyFloat_FromDouble(static_cast<double>(c2[bmIdx]));
-  PyObject* cg_py = PyFloat_FromDouble(static_cast<double>(cg[bmIdx]));
-  PyObject* c2g_py = PyFloat_FromDouble(static_cast<double>(c2g[bmIdx]));
+  PyObject* kl_py = PyFloat_FromDouble(static_cast<double>(coupling.kl()));
+  PyObject* kt_py = PyFloat_FromDouble(static_cast<double>(coupling.kt()));
+  PyObject* c2_py = PyFloat_FromDouble(static_cast<double>(coupling.c2()));
+  PyObject* cg_py = PyFloat_FromDouble(static_cast<double>(coupling.cg()));
+  PyObject* c2g_py = PyFloat_FromDouble(static_cast<double>(coupling.c2g()));
   PyObject* mHH_py = PyFloat_FromDouble(static_cast<double>(mHH));
   PyObject* cosThetaStar_py = PyFloat_FromDouble(static_cast<double>(cosThetaStar));
-  PyObject* norm_py = PyFloat_FromDouble(static_cast<double>(norm_[bmIdx]));
+  PyObject* norm_py = PyFloat_FromDouble(static_cast<double>(norm_.at(bmName)));
   PyObject* denominator_py = PyFloat_FromDouble(static_cast<double>(denominator));
   PyObject* args_BM_list = PyTuple_Pack(10,
     kl_py,
@@ -189,10 +146,7 @@ HHWeightInterfaceLO::getWeight(const std::string & bmName,
 
   if(isDEBUG)
   {
-    std::cout
-      << "denominator = " << denominator << "\n"
-         "weight #" << bmIdx << " (bmName = " << bmName << ") = " << weight << '\n'
-    ;
+    std::cout << "denominator = " << denominator << "\nbmName = " << bmName << ") = " << weight << '\n';
   }
   return weight;
 }
@@ -217,20 +171,20 @@ HHWeightInterfaceLO::getRelativeWeight(const std::string & bmName,
   return reWeight;
 }
 
-std::vector<double>
+std::map<std::string, double>
 HHWeightInterfaceLO::getNorm() const
 {
   return norm_;
 }
 
 double
-HHWeightInterfaceLO::getNorm(const std::array<double, 5> & couplings) const
+HHWeightInterfaceLO::getNorm(const HHCoupling * const coupling) const
 {
-  PyObject* kl_py = PyFloat_FromDouble(static_cast<double>(couplings.at(0)));
-  PyObject* kt_py = PyFloat_FromDouble(static_cast<double>(couplings.at(1)));
-  PyObject* c2_py = PyFloat_FromDouble(static_cast<double>(couplings.at(2)));
-  PyObject* cg_py = PyFloat_FromDouble(static_cast<double>(couplings.at(3)));
-  PyObject* c2g_py = PyFloat_FromDouble(static_cast<double>(couplings.at(4)));
+  PyObject* kl_py = PyFloat_FromDouble(static_cast<double>(coupling->kl()));
+  PyObject* kt_py = PyFloat_FromDouble(static_cast<double>(coupling->kt()));
+  PyObject* c2_py = PyFloat_FromDouble(static_cast<double>(coupling->c2()));
+  PyObject* cg_py = PyFloat_FromDouble(static_cast<double>(coupling->cg()));
+  PyObject* c2g_py = PyFloat_FromDouble(static_cast<double>(coupling->c2g()));
   PyObject* denom_py = PyString_FromString(get_fullpath(couplings_->denominator_file_lo()).data());
   PyObject* hist_py = PyString_FromString(couplings_->histtitle().data());
 

@@ -1,6 +1,8 @@
 #ifndef tthAnalysis_HiggsToTauTau_HHWeightInterfaceCouplings_h
 #define tthAnalysis_HiggsToTauTau_HHWeightInterfaceCouplings_h
 
+#include "tthAnalysis/HiggsToTauTau/interface/HHCoupling.h" // HHCoupling
+
 #include <FWCore/ParameterSet/interface/ParameterSet.h> // edm::ParameterSet
 
 enum class HHWeightInterfaceNLOMode { none, v1, v2, v3 };
@@ -17,46 +19,23 @@ public:
 
   /**
    * @brief Add a scan point
-   * @param couplings (kl, kt, c2, cg, c2g)
+   * @param couplings (kl, kt, c2, cg, c2g, name)
    * @param name Unique label for the coupling array
    */
   void
-  add(const std::array<double, 5> & couplings,
-      const std::string & name);
+  add(const HHCoupling & coupling);
 
-  /**
-   * @brief Get HH weight names
-   */
-  std::vector<std::string>
-  get_weight_names() const;
+  std::map<std::string, HHCoupling>
+  getCouplings() const;
 
-  /**
-   * @brief Get HH BM names
-   */
+  HHCoupling
+  getCoupling(const std::string & name) const;
+
   std::vector<std::string>
   get_bm_names() const;
 
-  static const std::size_t nof_JHEP;
-  static const std::vector<double> klJHEP;
-  static const std::vector<double> ktJHEP;
-  static const std::vector<double> c2JHEP;
-  static const std::vector<double> cgJHEP;
-  static const std::vector<double> c2gJHEP;
-
-  std::vector<double>
-  kl() const;
-
-  std::vector<double>
-  kt() const;
-
-  std::vector<double>
-  c2() const;
-
-  std::vector<double>
-  cg() const;
-
-  std::vector<double>
-  c2g() const;
+  std::vector<std::string>
+  get_weight_names() const;
 
   HHWeightInterfaceNLOMode
   nlo_mode() const;
@@ -86,16 +65,11 @@ private:
                int indx,
                bool isDEBUG);
 
-  static std::string
-  getWeightName(const std::string & suffix);
+  std::map<std::string, HHCoupling> couplings_;
 
-  std::vector<double> kl_;
-  std::vector<double> kt_;
-  std::vector<double> c2_;
-  std::vector<double> cg_;
-  std::vector<double> c2g_;
-  std::vector<std::string> bmNames_;
-  std::vector<std::string> bmWeightNames_;
+  static const std::vector<HHCoupling> JHEP04_;
+  static const std::vector<HHCoupling> JHEP03_;
+  static const std::vector<HHCoupling> extra_;
 
   HHWeightInterfaceNLOMode nlo_mode_;
   const std::string denominator_file_lo_;

@@ -1,7 +1,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/HHWeightInterfaceCouplings.h"
 //#include "tthAnalysis/HiggsToTauTau/interface/HHWeightInterfaceLO.h"
 #include "tthAnalysis/HiggsToTauTau/interface/HHWeightInterfaceNLO.h"
-#include "tthAnalysis/HiggsToTauTau/interface/generalAuxFunctions.h" // format_vdouble(), to_string_with_precision<>()
+#include "tthAnalysis/HiggsToTauTau/interface/generalAuxFunctions.h" // to_string_with_precision<>()
 
 #include <boost/algorithm/string/replace.hpp> // boost::replace_all()
 
@@ -23,7 +23,7 @@ main(int argc,
   hhWeight.addParameter<std::string>("histtitle", "signal_ggf_nonresonant_hh_wwww");
   hhWeight.addParameter<bool>("isDEBUG", false);
   hhWeight.addParameter<bool>("apply_rwgt_lo", false);
-  hhWeight.addParameter<std::string>("scanMode", "default");
+  hhWeight.addParameter<std::vector<std::string>>("scanMode", { "JHEP03" });
   hhWeight.addParameter<bool>("apply_rwgt_nlo", true);
   hhWeight.addParameter<std::string>("rwgt_nlo_mode", "v3");
 
@@ -32,8 +32,12 @@ main(int argc,
 //  // test LO normalization factors in separate scope
 //  {
 //    const HHWeightInterfaceLO HHWeightLO_calc(&couplings, hhWeight);
-//    const std::vector<double> norm = HHWeightLO_calc.getNorm();
-//    std::cout << "LO normalization coefficients: " << std::fixed << std::setprecision(5) << format_vdouble(norm) << '\n';
+//    const std::map<std::string, double> norm = HHWeightLO_calc.getNorm();
+//    std::cout << "LO normalization coefficients:\n";
+//    for(const auto & kv: norm)
+//    {
+//      std::cout << "  " << kv.first << " = " << std::fixed << std::setprecision(5) << kv.second << '\n';
+//    }
 //  }
 //  std::cout << line << '\n';
 
@@ -49,7 +53,7 @@ main(int argc,
     std::string name = "c2_" + to_string_with_precision(c2.at(i));
     boost::replace_all(name, "-", "m");
     boost::replace_all(name, ".", "p");
-    couplings.add({{ 1., 1., c2.at(i), 0., 0. }}, name);
+    couplings.add({ 1., 1., c2.at(i), 0., 0., name });
     c2_names.push_back(name);
   }
 
@@ -108,14 +112,22 @@ main(int argc,
   std::cout << '\n' << line << '\n';
 
   // total cross section demo
-  std::cout << "Total LO / NLO cross section [ab] for:\n";
-  for(std::size_t i = 0; i < 13; ++i)
+  std::cout << "Total LO / NLO cross section [ab] / ratio to NLO SM for:\n";
+  for(std::size_t i = 0; i < 8; ++i)
   {
-    const std::string bmName = i > 0 ? Form("BM%lu", i) : "SM";
+    const std::string bmName = i > 0 ? Form("JHEP03BM%lu", i) : "SM";
     std::cout << "  " << bmName << " -> "
-        << std::fixed << std::setprecision(1) << std::setw(17 - bmName.size()) << HHWeightNLO_calc.get_totalXsec_lo(bmName) << " / "
-        << std::fixed << std::setprecision(1) << std::setw(15)                 << HHWeightNLO_calc.get_totalXsec_nlo(bmName) << '\n'
+        << std::fixed << std::setprecision(1) << std::setw(23 - bmName.size()) << HHWeightNLO_calc.get_totalXsec_lo(bmName) << " / "
+        << std::fixed << std::setprecision(1) << std::setw(21)                 << HHWeightNLO_calc.get_totalXsec_nlo(bmName)
     ;
+    if(i > 0)
+    {
+      std::cout << " / "
+        << std::setw(21) << std::fixed << std::setprecision(3)
+        << HHWeightNLO_calc.get_totalXsec_nlo(bmName) / HHWeightNLO_calc.get_totalXsec_nlo("SM")
+      ;
+    }
+    std::cout << '\n';
   }
   // NLO-to-NNLO k-factor is 1.115
   const double sm_nnlo_expected = (70.3874 - 50.4111 + 11.0595); // in fb

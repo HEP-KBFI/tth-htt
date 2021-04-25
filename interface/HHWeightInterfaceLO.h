@@ -9,6 +9,7 @@
 class TFile;
 class TH2;
 class HHWeightInterfaceCouplings;
+class HHCoupling;
 
 class HHWeightInterfaceLO
 {
@@ -63,19 +64,19 @@ class HHWeightInterfaceLO
   /**
    * @brief Get normalization coefficients
    */
-  std::vector<double>
+  std::map<std::string, double>
   getNorm() const;
 
  private:
 
   double
-  getNorm(const std::array<double, 5> & couplings) const;
+  getNorm(const HHCoupling * const coupling) const;
 
   double
   getDenom(double mHH, double cosThetaStar) const;
 
   const HHWeightInterfaceCouplings * const couplings_;
-  std::vector<double> norm_;
+  std::map<std::string, double> norm_;
 
   PyObject * modeldata_;
   PyObject * moduleMainString_;
