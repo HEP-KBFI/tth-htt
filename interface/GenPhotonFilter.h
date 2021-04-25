@@ -18,17 +18,27 @@ class GenPhotonFilter
 public:
   enum Mode { kDisabled, kEnabled, kInverted };
 
-  GenPhotonFilter(const std::string & mode, double minPt = 20., double maxAbsEta = 2.6);
+  GenPhotonFilter(const std::string & mode,
+                  double minPt = 20.,
+                  double maxAbsEta = 2.6,
+                  double minDeltaR = 0.06);
   ~GenPhotonFilter();
 
   bool
-  operator()(const std::vector<GenPhoton> & genPhotons) const;
+  operator()(const std::vector<GenPhoton> & genPhotons,
+             const std::vector<GenPhoton> & genProxyPhotons,
+             const std::vector<GenParticle> & genFromHardProcess) const;
 
 private:
+  int
+  getNumPassingPhotons(const std::vector<GenPhoton> & genPhotons,
+                       const std::vector<GenParticle> & genFromHardProcess) const;
+
   Mode mode_;
 
   double minPt_;
   double maxAbsEta_;
+  double minDeltaR_;
 };
 
 #endif // tthAnalysis_HiggsToTauTau_GenPhotonFilter_h
