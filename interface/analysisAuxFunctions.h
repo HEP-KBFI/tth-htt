@@ -948,7 +948,7 @@ namespace
 
       if(isDEBUG)
       {
-        std::cout << get_human_line(__func__, __LINE__) << "KEY = " << key << '\n';
+        std::cout << __func__ << ':' << __LINE__ << ": KEY = " << key << '\n';
         for(const auto & kv: MVAInputs)
         {
           std::cout << "  '" << kv.first << "' = " << kv.second << '\n';
