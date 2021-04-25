@@ -839,8 +839,8 @@ class analyzeConfig(object):
             jobOptions['hhWeight_cfg.scanMode'] = 'additional'
             jobOptions['hhWeight_cfg.ktScan_file'] = self.kt_scan_file
           elif 'hh' in self.channel and 'ctrl' not in self.channel and 'study' not in self.channel.lower():
-            #jobOptions['hhWeight_cfg.scanMode'] = 'full' # uncomment for kl scan in HH analysis
-            jobOptions['hhWeight_cfg.klScan_file'] = self.kl_scan_file
+            jobOptions['hhWeight_cfg.scanMode'] = 'full'
+            jobOptions['hhWeight_cfg.c2Scan_file'] = self.c2_scan_file
             jobOptions['hhWeight_cfg.rwgt_nlo_mode'] = 'v3'
             jobOptions['hhWeight_cfg.apply_rwgt_lo'] = False
 

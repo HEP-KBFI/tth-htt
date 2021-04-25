@@ -164,8 +164,12 @@ HHWeightInterfaceCouplings::loadScanFile(const std::string & filePath,
   }
   for (std::string line; std::getline(inFile_scan, line); )
   {
+    if(boost::starts_with(line, "#"))
+    {
+      continue; // it's a comment
+    }
     std::vector<std::string> line_split;
-    boost::split(line_split, line, boost::is_any_of(" "));
+    boost::split(line_split, line, boost::is_any_of(" "), boost::token_compress_on);
     assert(line_split.size() == 5);
     std::vector<double> values;
     std::transform(
