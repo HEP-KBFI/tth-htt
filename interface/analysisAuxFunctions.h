@@ -1081,6 +1081,56 @@ CreateNonResonantBDTOutputMap(const std::vector<std::string> & MVA_params,
   return MVAOutput_Map;
 }
 
+template <typename T_algo>
+std::map<std::string, double> // key = gen_mHH/bmName
+CreateNonResonantBDTOutputMap(const std::vector<std::string> & MVA_params,
+                              const std::map<std::string, T_algo *> & MVA,
+                              const std::map<std::string, double> & MVAInputs,
+                              int event_number,
+                              const HHWeightInterfaceCouplings * const hhWeight_couplings = nullptr,
+                              bool isDEBUG = false)
+{
+  std::map<std::string, double> MVAOutput_Map;
+  for(const std::string & key: MVA_params)
+  {
+    std::map<std::string, double> MVAInputs_copy = MVAInputs;
+    const std::string & trainingString = [&hhWeight_couplings,&key]() -> std::string
+    {
+      if(hhWeight_couplings)
+      {
+        const HHCoupling & coupling = hhWeight_couplings->getCoupling(key);
+        return coupling.training();
+      }
+      return "SM"; // assume SM training if no couplings are specified
+    }();
+
+    if(! MVA.count(trainingString))
+    {
+      throw cmsException(__func__, __LINE__) << "Unexpected training string for BM " << key << " = " << trainingString;
+    }
+    if ( event_number != -1 )
+    {
+      // use odd-even method
+      MVAOutput_Map.insert(std::make_pair(key, (*MVA.at(trainingString))(MVAInputs_copy, event_number)));
+    }
+    else
+    {
+      // use same BDT/DNN for all events
+      MVAOutput_Map.insert(std::make_pair(key, (*MVA.at(trainingString))(MVAInputs_copy)));
+    }
+
+    if(isDEBUG)
+    {
+      std::cout << __func__ << ':' << __LINE__ << ": KEY = " << key << '\n';
+      for(const auto & kv: MVAInputs_copy)
+      {
+        std::cout << "  '" << kv.first << "' = " << kv.second << '\n';
+      }
+    }
+  }
+  return MVAOutput_Map;
+}
+
 std::map<std::string, std::map<std::string, double>> // keys = gen_mHH/bmName, event category
 CreateDNNOutputMap(const std::vector<double> & DNN_params,
                    TensorFlowInterface * DNN,
@@ -1098,7 +1148,7 @@ CreateDNNOutputMap(const std::vector<double> & DNN_params,
  */
 std::map<std::string, std::map<std::string, double>> // keys = gen_mHH/bmName, event category
 CreateLBNOutputMap(const std::vector<double> & LBN_params,
-                   std::vector<TensorFlowInterfaceLBN *> & LBN,
+                   const std::vector<TensorFlowInterfaceLBN *> & LBN,
                    const std::map<std::string, const Particle*> & ll_particles,
                    std::map<std::string, double> & hl_mvaInputs,
                    int event_number,
@@ -1107,12 +1157,20 @@ CreateLBNOutputMap(const std::vector<double> & LBN_params,
 
 std::map<std::string, std::map<std::string, double>> // keys = gen_mHH/bmName, event category
 CreateLBNOutputMap(const std::vector<double> & LBN_params,
-                   TensorFlowInterfaceLBN * LBN,
+                   const TensorFlowInterfaceLBN * LBN,
                    const std::map<std::string, const Particle*> & ll_particles,
                    std::map<std::string, double> & hl_mvaInputs,
                    int event_number,
                    bool isNonRes,
                    const std::string & spin_label);
+
+std::map<std::string, std::map<std::string, double>> // keys = gen_mHH/bmName, event category
+CreateNonResonantLBNOutputMap(const std::vector<std::string> & LBN_params,
+                              const std::map<std::string, TensorFlowInterfaceLBN *> & LBN,
+                              const std::map<std::string, const Particle*> & ll_particles,
+                              std::map<std::string, double> & hl_mvaInputs,
+                              int event_number,
+                              const HHWeightInterfaceCouplings * const hhWeight_couplings = nullptr);
 
 double 
 CapLeptonFakeRate(double LeptonFakeRate, 

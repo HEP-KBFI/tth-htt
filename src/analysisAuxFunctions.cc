@@ -987,7 +987,7 @@ CreateDNNOutputMap(const std::vector<double> & DNN_params,
 
 std::map<std::string, std::map<std::string, double>>
 CreateLBNOutputMap(const std::vector<double> & LBN_params,
-                   std::vector<TensorFlowInterfaceLBN *>& LBN,
+                   const std::vector<TensorFlowInterfaceLBN *>& LBN,
                    const std::map<std::string, const Particle*> & ll_particles,
                    std::map<std::string, double> & hl_mvaInputs,
                    int event_number,
@@ -1036,7 +1036,7 @@ CreateLBNOutputMap(const std::vector<double> & LBN_params,
 
 std::map<std::string, std::map<std::string, double>>
 CreateLBNOutputMap(const std::vector<double> & LBN_params,
-                   TensorFlowInterfaceLBN * LBN,
+                   const TensorFlowInterfaceLBN * LBN,
                    const std::map<std::string, const Particle*> & ll_particles,
                    std::map<std::string, double> & hl_mvaInputs,
                    int event_number,
@@ -1084,6 +1084,48 @@ CreateLBNOutputMap(const std::vector<double> & LBN_params,
     { 
       // use same LBN for all events
       LBNOutput_Map.insert(std::make_pair(key, (*LBN)(ll_particles, hl_mvaInputs)));
+    }
+  }
+  return LBNOutput_Map;
+}
+
+std::map<std::string, std::map<std::string, double>> // keys = gen_mHH/bmName, event category
+CreateNonResonantLBNOutputMap(const std::vector<std::string> & LBN_params,
+                              const std::map<std::string, TensorFlowInterfaceLBN *> & LBN,
+                              const std::map<std::string, const Particle*> & ll_particles,
+                              std::map<std::string, double> & hl_mvaInputs,
+                              int event_number,
+                              const HHWeightInterfaceCouplings * const hhWeight_couplings)
+{
+  std::map<std::string, std::map<std::string, double>> LBNOutput_Map;
+  for(const std::string & key: LBN_params) // Loop over LBN_params: signal mass (Reso.)/BM index (Non Reso.)
+  {
+    std::map<std::string, double> hl_mvaInputs_copy = hl_mvaInputs;
+    const std::string & trainingString = [&hhWeight_couplings,&key]() -> std::string
+    {
+      if(hhWeight_couplings)
+      {
+        const HHCoupling & coupling = hhWeight_couplings->getCoupling(key);
+        return coupling.training();
+      }
+      return "SM"; // assume SM training if no couplings are specified
+    }();
+    if(! hl_mvaInputs_copy.count(trainingString))
+    {
+      throw cmsException(__func__, __LINE__) << "Unexpected training string for BM " << key << " = " << trainingString;
+    }
+    hl_mvaInputs_copy[trainingString] = 1;
+
+    assert(LBN.count(trainingString));
+    if ( event_number != -1 )
+    {
+      // use odd-even method
+      LBNOutput_Map.insert(std::make_pair(key, (*LBN.at(trainingString))(ll_particles, hl_mvaInputs, event_number)));
+    }
+    else
+    {
+      // use same LBN for all events
+      LBNOutput_Map.insert(std::make_pair(key, (*LBN.at(trainingString))(ll_particles, hl_mvaInputs)));
     }
   }
   return LBNOutput_Map;
