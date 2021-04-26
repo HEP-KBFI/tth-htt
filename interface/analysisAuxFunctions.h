@@ -4,19 +4,20 @@
 #include <DataFormats/Math/interface/LorentzVector.h> // math::PtEtaPhiMLorentzVector
 #include <DataFormats/Math/interface/deltaR.h>        // deltaR()
 
-#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h"           // cmsException()
-#include "tthAnalysis/HiggsToTauTau/interface/Particle.h"               // Particle::LorentzVector
-#include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h"             // RecoLepton
-#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h"             // RecoHadTau
-#include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h"                // RecoJet
-#include "tthAnalysis/HiggsToTauTau/interface/RecoJetBase.h"            // RecoJetBase
-#include "tthAnalysis/HiggsToTauTau/interface/TrigObj.h"                // TrigObj
-#include "tthAnalysis/HiggsToTauTau/interface/EventInfo.h"              // EventInfo
-#include "tthAnalysis/HiggsToTauTau/interface/RecoMEt.h"                // RecoMEt
-#include "tthAnalysis/HiggsToTauTau/interface/TMVAInterface.h"          // TMVAInterface
-#include "tthAnalysis/HiggsToTauTau/interface/XGBInterface.h"           // XGBInterface
-#include "tthAnalysis/HiggsToTauTau/interface/TensorFlowInterface.h"    // TensorFlowInterface
-#include "tthAnalysis/HiggsToTauTau/interface/TensorFlowInterfaceLBN.h" // TensorFlowInterfaceLBN
+#include "tthAnalysis/HiggsToTauTau/interface/cmsException.h"               // cmsException()
+#include "tthAnalysis/HiggsToTauTau/interface/Particle.h"                   // Particle::LorentzVector
+#include "tthAnalysis/HiggsToTauTau/interface/RecoLepton.h"                 // RecoLepton
+#include "tthAnalysis/HiggsToTauTau/interface/RecoHadTau.h"                 // RecoHadTau
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJet.h"                    // RecoJet
+#include "tthAnalysis/HiggsToTauTau/interface/RecoJetBase.h"                // RecoJetBase
+#include "tthAnalysis/HiggsToTauTau/interface/TrigObj.h"                    // TrigObj
+#include "tthAnalysis/HiggsToTauTau/interface/EventInfo.h"                  // EventInfo
+#include "tthAnalysis/HiggsToTauTau/interface/RecoMEt.h"                    // RecoMEt
+#include "tthAnalysis/HiggsToTauTau/interface/TMVAInterface.h"              // TMVAInterface
+#include "tthAnalysis/HiggsToTauTau/interface/XGBInterface.h"               // XGBInterface
+#include "tthAnalysis/HiggsToTauTau/interface/TensorFlowInterface.h"        // TensorFlowInterface
+#include "tthAnalysis/HiggsToTauTau/interface/TensorFlowInterfaceLBN.h"     // TensorFlowInterfaceLBN
+#include "tthAnalysis/HiggsToTauTau/interface/HHWeightInterfaceCouplings.h" // HHWeightInterfaceCouplings
 
 #include <TMath.h> // TMath::Abs()
 
@@ -988,6 +989,96 @@ CreateBDTOutputMap(const std::vector<double> & BDT_params,
                    bool isDEBUG = false)
 { 
   return CreateMVAOutputMap<T, double>(BDT_params, BDT, BDTInputs, event_number, isNonRes, spin_label, isDEBUG);
+}
+
+template <typename T_algo>
+std::map<std::string, double>
+CreateResonantMVAOutputMap(const std::vector<double> & MVA_params,
+                           T_algo * MVA,
+                           std::map<std::string, double> & MVAInputs,
+                           int event_number,
+                           const std::string & spin_label,
+                           bool isDEBUG = false)
+{
+  std::map<std::string, double> MVAOutput_Map;
+  for ( size_t i = 0; i < MVA_params.size(); ++i ) // Loop over MVA_params: signal mass (Reso.)/BM index (Non Reso.)
+  {
+    // resonant case
+    MVAInputs["gen_mHH"] = MVA_params[i];
+    const std::string key = DoubleToUInt_Convertor(MVA_params[i], false, spin_label);
+
+    if ( event_number != -1 )
+    {
+      // use odd-even method
+      MVAOutput_Map.insert(std::make_pair(key, (*MVA)(MVAInputs, event_number)));
+    }
+    else
+    {
+      // use same BDT/DNN for all events
+      MVAOutput_Map.insert(std::make_pair(key, (*MVA)(MVAInputs)));
+    }
+
+    if(isDEBUG)
+    {
+      std::cout << __func__ << ':' << __LINE__ << ": KEY = " << key << '\n';
+      for(const auto & kv: MVAInputs)
+      {
+        std::cout << "  '" << kv.first << "' = " << kv.second << '\n';
+      }
+    }
+  }
+  return MVAOutput_Map;
+}
+
+template <typename T_algo>
+std::map<std::string, double> // key = gen_mHH/bmName
+CreateNonResonantBDTOutputMap(const std::vector<std::string> & MVA_params,
+                              T_algo * MVA,
+                              const std::map<std::string, double> & MVAInputs,
+                              int event_number,
+                              const HHWeightInterfaceCouplings * const hhWeight_couplings = nullptr,
+                              bool isDEBUG = false)
+{
+  std::map<std::string, double> MVAOutput_Map;
+  for(const std::string & key: MVA_params)
+  {
+    std::map<std::string, double> MVAInputs_copy = MVAInputs;
+    const std::string & trainingString = [&hhWeight_couplings,&key]() -> std::string
+    {
+      if(hhWeight_couplings)
+      {
+        const HHCoupling & coupling = hhWeight_couplings->getCoupling(key);
+        return coupling.training();
+      }
+      return "SM"; // assume SM training if no couplings are specified
+    }();
+    if(! MVAInputs.count(trainingString))
+    {
+      throw cmsException(__func__, __LINE__) << "Unexpected training string for BM " << key << " = " << trainingString;
+    }
+    MVAInputs_copy[trainingString] = 1;
+
+    if ( event_number != -1 )
+    {
+      // use odd-even method
+      MVAOutput_Map.insert(std::make_pair(key, (*MVA)(MVAInputs_copy, event_number)));
+    }
+    else
+    {
+      // use same BDT/DNN for all events
+      MVAOutput_Map.insert(std::make_pair(key, (*MVA)(MVAInputs_copy)));
+    }
+
+    if(isDEBUG)
+    {
+      std::cout << __func__ << ':' << __LINE__ << ": KEY = " << key << '\n';
+      for(const auto & kv: MVAInputs_copy)
+      {
+        std::cout << "  '" << kv.first << "' = " << kv.second << '\n';
+      }
+    }
+  }
+  return MVAOutput_Map;
 }
 
 std::map<std::string, std::map<std::string, double>> // keys = gen_mHH/bmName, event category

@@ -421,9 +421,12 @@ class analyzeConfig(object):
           self.central_or_shifts.remove(systematics.mcClosure_str)
 
         self.nonResBMs = []
+        self.nonResBM_points = [ 'SM' ]
         for nonresPoint in NONRESONANT_POINTS:
           if any(nonresPoint in histogram_to_fit for histogram_to_fit in self.histograms_to_fit):
             self.nonResBMs.append(nonresPoint)
+        for nonResBM in self.nonResBMs:
+          self.nonResBM_points.extend([ '{}{}'.format(nonResBM, nonResPoint) for nonResPoint in NONRESONANT_POINTS[nonResBM] ])
 
         samples_to_stitch = []
         if self.era == '2016':
@@ -795,6 +798,7 @@ class analyzeConfig(object):
            sample_info['nof_reweighting'] > 0
 
         is_hh_channel = 'hh' in self.channel
+        load_scanFiles = False
         if (is_hh_channel and sample_info["sample_category"].startswith('signal_ggf_nonresonant') and "cHHH" not in sample_info["sample_category"]) or \
            (not is_hh_channel and sample_info["sample_category"] == "HH"):
           sample_category_to_check = 'sample_category_hh'
@@ -814,9 +818,15 @@ class analyzeConfig(object):
             # enable kt-scan in ttH analysis
             jobOptions['hhWeight_cfg.scanMode'] = self.nonResBMs
           elif 'hh' in self.channel and 'ctrl' not in self.channel and 'study' not in self.channel.lower():
-            jobOptions['hhWeight_cfg.scanMode'] = self.nonResBMs
             jobOptions['hhWeight_cfg.rwgt_nlo_mode'] = 'v3'
             jobOptions['hhWeight_cfg.apply_rwgt_lo'] = False
+          load_scanFiles = True
+
+        if is_hh_channel and 'ctrl' not in self.channel and 'study' not in self.channel.lower():
+          jobOptions['nonRes_BMs'] = self.nonResBM_points
+          jobOptions['hhWeight_cfg.scanMode'] = self.nonResBMs
+          load_scanFiles = True
+        if load_scanFiles:
           for coupling_scan in SCANFILES:
             if coupling_scan in self.nonResBMs:
               jobOptions['hhWeight_cfg.{}Scan_file'.format(coupling_scan)] = SCANFILES[coupling_scan]
@@ -1223,8 +1233,9 @@ class analyzeConfig(object):
             'mode',
             'applyBtagSFRatio',
             'gen_mHH',
-            'apply_genPhotonFilter', 
-            'save_dXsec_HHWeightInterfaceNLO', 
+            'apply_genPhotonFilter',
+            'save_dXsec_HHWeightInterfaceNLO',
+            'nonRes_BMs',
         ]
         jobOptions_typeMapping = {
             'central_or_shifts_local' : 'cms.vstring(%s)',
