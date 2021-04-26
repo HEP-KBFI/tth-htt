@@ -49,7 +49,8 @@ const std::vector<HHCoupling> HHWeightInterfaceCouplings::JHEP03_ = {
   { -0.10, 0.94,  1.,     1./6.*1.5, -1./6.*(-3.), "JHEP03BM7",  "BM9" }, // [*]
 };
 const std::vector<HHCoupling> HHWeightInterfaceCouplings::extra_ = {
-  { 0., 1., 0., 0., 0., "extrabox", },
+  { 0., 1., 0., 0., 0., "extrabox",           },
+  { 0., 1., 1., 0., 0., "extraForMultiDimC2", },
 };
 // [*] https://github.com/HEP-KBFI/hh-multilepton/issues/38#issuecomment-821278740
 

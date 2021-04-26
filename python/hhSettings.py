@@ -31,7 +31,7 @@ def read_couplings(coupling, coupling_as_prefix = False, infix = '_'):
 NONRESONANT_POINTS = collections.OrderedDict([
     ('JHEP04', [ "BM%d" % idx for idx in range(1, 13) ] + [ 'BM8a' ]),
     ('JHEP03', [ "BM%d" % idx for idx in range(1, 8) ]),
-    ('extra',  [ 'box' ]), # could include more
+    ('extra',  [ 'box', 'ForMultiDimC2' ]),
     ('c2',     read_couplings('c2')),
 ])
 NONRESONANT_KEYS = list(NONRESONANT_POINTS.keys())
