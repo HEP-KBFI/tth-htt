@@ -971,53 +971,20 @@ DoubleToUInt_Convertor(double BDT_param,
 }
 
 std::map<std::string, std::map<std::string, double>>
-CreateDNNOutputMap(const std::vector<double> & DNN_params,
-                   TensorFlowInterface * DNN,
-                   std::map<std::string, double> & DNNInputs,
-                   int event_number,
-                   bool isNonRes,
-                   const std::string & spin_label,
-                   bool isDEBUG)
-{ 
-  std::map<std::string, std::map<std::string, double>> retVal = CreateMVAOutputMap<TensorFlowInterface, std::map<std::string, double>>(
-    DNN_params, DNN, DNNInputs, event_number, isNonRes, spin_label, isDEBUG
-  );
-  return retVal;
-}
-
-std::map<std::string, std::map<std::string, double>>
-CreateLBNOutputMap(const std::vector<double> & LBN_params,
-                   const std::vector<TensorFlowInterfaceLBN *>& LBN,
-                   const std::map<std::string, const Particle*> & ll_particles,
-                   std::map<std::string, double> & hl_mvaInputs,
-                   int event_number,
-                   bool isNonRes,
-                   const std::string & label)
+CreateResonantLBNOutputMap(const std::vector<double> & LBN_params,
+                           const std::vector<TensorFlowInterfaceLBN *>& LBN,
+                           const std::map<std::string, const Particle*> & ll_particles,
+                           std::map<std::string, double> & hl_mvaInputs,
+                           int event_number,
+                           const std::string & label)
 {
   std::map<std::string, std::map<std::string, double>> LBNOutput_Map;
   for ( size_t i = 0; i < LBN_params.size(); ++i ) // Loop over LBN_params: signal mass (Reso.)/BM index (Non Reso.)
   {
-    std::string key;
-    if ( !isNonRes )
-    {
-      // resonant case
-      hl_mvaInputs["gen_mHH"] = LBN_params[i];
-      key = DoubleToUInt_Convertor(LBN_params[i], isNonRes, label);
-    }
-    else
-    {
-      // non-resonant case
-      if ( LBN_params[i] == 0 )
-      {
-        // SM
-        key = "SM";
-      }
-      else
-      {
-        // non-SM coupling scenario
-        key = Form("BM%i", TMath::Nint(LBN_params[i]));
-      }
-    }
+    // resonant case
+    hl_mvaInputs["gen_mHH"] = LBN_params[i];
+    const std::string key = DoubleToUInt_Convertor(LBN_params[i], false, label);
+
     if ( event_number != -1 )
     {
       // use odd-even method
@@ -1027,63 +994,6 @@ CreateLBNOutputMap(const std::vector<double> & LBN_params,
     {
       // use same LBN for all events
       LBNOutput_Map.insert(std::make_pair(key, (*LBN[i])(ll_particles, hl_mvaInputs)));
-    }
-  }
-  return LBNOutput_Map;
-}
-
-
-
-std::map<std::string, std::map<std::string, double>>
-CreateLBNOutputMap(const std::vector<double> & LBN_params,
-                   const TensorFlowInterfaceLBN * LBN,
-                   const std::map<std::string, const Particle*> & ll_particles,
-                   std::map<std::string, double> & hl_mvaInputs,
-                   int event_number,
-                   bool isNonRes,
-                   const std::string & label)
-{
-  std::map<std::string, std::map<std::string, double>> LBNOutput_Map;
-  for ( size_t i = 0; i < LBN_params.size(); ++i ) // Loop over LBN_params: signal mass (Reso.)/BM index (Non Reso.)
-  { 
-    std::string key;
-    if ( !isNonRes )
-    {
-      // resonant case
-      hl_mvaInputs["gen_mHH"] = LBN_params[i];
-      key = DoubleToUInt_Convertor(LBN_params[i], isNonRes, label);
-    }
-    else 
-    { 
-      // non-resonant case
-      if ( LBN_params[i] == 0 )
-      {
-        // SM
-        hl_mvaInputs["SM"] = 1;
-        key = "SM";
-      }
-      else
-      {
-        // non-SM coupling scenario
-        hl_mvaInputs["SM"] = 0;
-        key = Form("BM%i", TMath::Nint(LBN_params[i]));
-        hl_mvaInputs[key] = 1;
-        if ( i >= 2 )
-        {
-          std::string key_prev = Form("BM%i", TMath::Nint(LBN_params[i - 1]));
-          hl_mvaInputs[key_prev] = 0; // Resetting the prev. hot encoder to zero
-        }
-      }
-    }
-    if ( event_number != -1 )
-    { 
-      // use odd-even method
-      LBNOutput_Map.insert(std::make_pair(key, (*LBN)(ll_particles, hl_mvaInputs, event_number)));
-    }
-    else
-    { 
-      // use same LBN for all events
-      LBNOutput_Map.insert(std::make_pair(key, (*LBN)(ll_particles, hl_mvaInputs)));
     }
   }
   return LBNOutput_Map;
