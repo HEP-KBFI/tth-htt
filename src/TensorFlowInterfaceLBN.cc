@@ -1,6 +1,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/TensorFlowInterfaceLBN.h"
 
-#include "tthAnalysis/HiggsToTauTau/interface/LocalFileInPath.h" // LocalFileInPath
+#include "tthAnalysis/HiggsToTauTau/interface/generalAuxFunctions.h" // get_fullpath()
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 #include "tthAnalysis/HiggsToTauTau/interface/Particle.h" // Particle
 
@@ -35,13 +35,13 @@ TensorFlowInterfaceLBN::TensorFlowInterfaceLBN(const std::string & mvaFileName_o
   tensorflow::SessionOptions options;
   tensorflow::setThreading(options, 1, "no_threads");
 
-  graphDef_odd_ = tensorflow::loadGraphDef(LocalFileInPath(mvaFileName_odd_).fullPath());
+  graphDef_odd_ = tensorflow::loadGraphDef(get_fullpath(mvaFileName_odd_));
   session_odd_ = tensorflow::createSession(graphDef_odd_);
 
   if(! mvaFileName_even_.empty())
   {
     std::cout << "Loaded Odd Evt. No. file: " << mvaFileName_odd_ << '\n';
-    graphDef_even_ = tensorflow::loadGraphDef(LocalFileInPath(mvaFileName_even_).fullPath());
+    graphDef_even_ = tensorflow::loadGraphDef(get_fullpath(mvaFileName_even_));
     session_even_ = tensorflow::createSession(graphDef_even_);
     std::cout << "Loaded Even Evt. No. file: " << mvaFileName_even_ << '\n';
   }

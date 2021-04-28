@@ -54,7 +54,7 @@ AnalysisConfig::AnalysisConfig(const std::string & analysis, const edm::Paramete
     boost::starts_with(process_string_, "signal_ggf_nonresonant_") && process_string_.find("cHHH") == std::string::npos
   ) || process_string_ == "HH";
 
-  std::string apply_topPtReweighting_string = cfg.getParameter<std::string>("apply_topPtReweighting");
+  std::string apply_topPtReweighting_string = cfg.exists("apply_topPtReweighting") ? cfg.getParameter<std::string>("apply_topPtReweighting") : "";
   apply_topPtReweighting_ = !apply_topPtReweighting_string.empty();
 }
 

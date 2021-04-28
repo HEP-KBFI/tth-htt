@@ -22,7 +22,6 @@
 #endif
 
 #include "FWCore/Utilities/interface/Exception.h"
-#include "tthAnalysis/HiggsToTauTau/interface/LocalFileInPath.h"
 
 #include "PhysicsTools/FWLite/interface/TFileService.h"
 #include "DataFormats/FWLite/interface/InputSource.h"
@@ -553,7 +552,6 @@ int main(int argc, char* argv[])
     double slope = 0.;
     double slopeErr = 0.;
     bool fitResult_isValid = false; 
-
     if ( integral_fakes_mc > 0. && integral_mcClosure > 0. ) {
       norm = integral_fakes_mc/integral_mcClosure;
       normErr = norm*TMath::Sqrt(square(integralErr_fakes_mc/integral_fakes_mc) + square(integralErr_mcClosure/integral_mcClosure));
@@ -664,6 +662,12 @@ int main(int argc, char* argv[])
       histogram_closureNormUp->SetBinError(idxBin, binError_data_fakes);
       histogram_closureNormDown->SetBinContent(idxBin, binContent_data_fakes*(1. - dy_closureNorm));
       histogram_closureNormDown->SetBinError(idxBin, binError_data_fakes);
+      if ( (integral_fakes_mc > integral_mcClosure) && fabs(dy_closureNorm) ==1) {
+        histogram_closureNormDown->SetBinContent(idxBin, binContent_data_fakes);
+      }
+      else if ( (integral_fakes_mc < integral_mcClosure) && fabs(dy_closureNorm) ==1) {
+        histogram_closureNormUp->SetBinContent(idxBin, binContent_data_fakes);
+      }
       double x = histogram_fakes_mc->GetXaxis()->GetBinCenter(idxBin);
       double x0 = histogram_fakes_mc->GetMean();
       //double dy_closureShape;

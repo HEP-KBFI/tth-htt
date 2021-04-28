@@ -56,37 +56,61 @@ create_den_datacards: {{ output_dir }}/shapes/electron/{{ denominator_datacard |
 {% endfor %}
 {% endfor %}
 
-{% for lepton in ['electron'] %}
-  {%- for params in lepton_bins[lepton]['tight'] %}
-{{ numerator_output_dir }}/{{ params[0] }}/fit_results.txt: {{ numerator_output_dir }}/{{ params[0] }}/datacard.txt
-	{{ scripts_dir }}/mlfit_{{ numerator_histogram }}_{{ params[0] }}.sh &> {{ numerator_output_dir }}/{{ params[0] }}/postFit.log
-  {% endfor -%}
-{% endfor -%}
+
+
 
 {% for lepton in ['electron'] %}
-  {%- for params in lepton_bins[lepton]['presel_not_tight'] %}
-{{ denominator_output_dir }}/{{ params[0] }}/fit_results.txt: {{ denominator_output_dir }}/{{ params[0] }}/datacard.txt
-	{{ scripts_dir }}/mlfit_{{ denominator_histogram }}_{{ params[0] }}.sh &> {{ denominator_output_dir }}/{{ params[0] }}/postFit.log
-  {% endfor -%}
-{% endfor -%}
+{% for params in lepton_bins[lepton]['tight'] %}
+run_{{ params[3] }}: create_num_datacards{{" "}}create_den_datacards
+	{{ scripts_dir }}/mlfit_{{ histogram_to_fit }}_{{ params[3] }}.sh &> {{ output_dir }}/run_{{ params[3] }}.log
+{% endfor %}
+{% endfor %}
 
-{{ fit_values }}:
-  {%- for selection in [ 'tight', 'presel_not_tight' ] -%}
-    {%- for lepton in ['electron'] -%}
-      {%- for params in lepton_bins[lepton][selection] -%}
-        {{" "}}{% if selection == 'tight' %}{{ numerator_output_dir }}{% else %}{{ denominator_output_dir }}{% endif %}/{{ params[0] }}/fit_results.txt
-      {%- endfor -%}
-    {%- endfor -%}
-  {%- endfor %}
-	rm -f {{ fit_values }}
-	{%- for selection in [ 'tight', 'presel_not_tight' ] %}
-	  {%- for lepton in ['electron'] %}
-	    {%- for params in lepton_bins[lepton][selection] %}
-	cat {% if selection == 'tight' %}{{ numerator_output_dir }}{% else %}{{ denominator_output_dir }}{% endif %}/{{ params[0] }}/fit_results.txt \
+{% for lepton in ['electron'] %}
+{% for params in lepton_bins[lepton]['tight'] %}
+{{ output_dir }}/{{ params[3] }}/fit_num_results.txt{{" "}} : run_{{ params[3] }}
+	:
+{% endfor %}
+{% endfor %}
+
+{% for lepton in ['electron'] %}
+{% for params in lepton_bins[lepton]['presel_not_tight'] %}
+{{ output_dir }}/{{ params[3] }}/fit_den_results.txt{{" "}} : run_{{ params[3] }}
+	:
+{% endfor %}
+{% endfor %}
+
+
+
+
+{{ output_dir }}/fit_num_results_all.txt : {% for selection in [ 'tight' ] %}{%- for lepton in ['electron'] -%}{% for params in lepton_bins[lepton][selection] %}{{ output_dir }}/{{ params[3] }}/fit_num_results.txt {% endfor %}{%- endfor -%}{% endfor %}
+	rm -rf {{ output_dir }}/fit_num_results_all.txt
+	{% for selection in [ 'tight' ] %}
+	   {% for lepton in ['electron'] %}
+	     {% for params in lepton_bins[lepton][selection] %}
+	cat {{ output_dir }}/{{ params[3] }}/fit_num_results.txt \
+	>> {{ output_dir }}/fit_num_results_all.txt 
+	      {% endfor %}
+	   {% endfor %}
+	{% endfor %}
+
+{{ output_dir }}/fit_den_results_all.txt : {% for selection in [ 'tight' ] %}{%- for lepton in ['electron'] -%}{% for params in lepton_bins[lepton][selection] %}{{ output_dir }}/{{ params[3] }}/fit_den_results.txt {% endfor %}{%- endfor -%}{% endfor %}
+	rm -rf {{ output_dir }}/fit_den_results_all.txt
+	{% for selection in [ 'tight' ] %}
+	   {% for lepton in ['electron'] %}
+	     {% for params in lepton_bins[lepton][selection] %}
+	cat {{ output_dir }}/{{ params[3] }}/fit_den_results.txt \
+	>> {{ output_dir }}/fit_den_results_all.txt 
+	      {% endfor %}
+	   {% endfor %}
+	{% endfor %}
+
+{{ fit_values }} : {{ output_dir }}/fit_num_results_all.txt {{ output_dir }}/fit_den_results_all.txt
+	rm -rf {{ fit_values }}
+	cat {{ output_dir }}/fit_num_results_all.txt \
 	>> {{ fit_values }}
-	    {%- endfor -%}
-	  {%- endfor -%}
-	{%- endfor %}
+	cat {{ output_dir }}/fit_den_results_all.txt  \
+	>> {{ fit_values }}
 
 clean:
 	rm -rf {{ output_dir }}

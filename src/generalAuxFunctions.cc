@@ -1,6 +1,14 @@
 #include "tthAnalysis/HiggsToTauTau/interface/generalAuxFunctions.h"
 
+#include "tthAnalysis/HiggsToTauTau/interface/LocalFileInPath.h" // LocalFileInPath
+
 #include <sstream> // std::ostringstream
+
+std::string
+get_fullpath(const std::string & path)
+{
+  return LocalFileInPath(path).fullPath();
+}
 
 template <typename T>
 std::string

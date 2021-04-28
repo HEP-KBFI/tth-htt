@@ -37,6 +37,9 @@ public:
 
   const Particle::LorentzVector & p4() const;
 
+  double deltaR(const Particle & particle) const;
+  double deltaR(const Particle * const particle) const;
+
   virtual void
   set_p4(const Particle::LorentzVector & p4);
 

@@ -137,7 +137,13 @@ Topness::operator()(const double * x) const
   {
     return -1.;
   }
-  
+  if ( std::isnan(x[0]) ||
+       std::isnan(x[1]) ||
+       std::isnan(x[2]) ||
+       std::isnan(x[3]) )
+    {
+      return 1.e+6;
+    }
   const double nu1Px = x[0];
   const double nu1Py = x[1];
   const double nu1Pz = x[2];

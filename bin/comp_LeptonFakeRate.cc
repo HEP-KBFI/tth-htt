@@ -194,7 +194,7 @@ void compFakeRateFromHistos(const TH1* histogram_QCD_Pass, const TH1* histogram_
   double nFailErr_QCD = compIntegralErr(histogram_QCD_Fail, true, true);
   bool errorFlag;
 
-  compFakeRate(nPass_QCD, nPassErr_QCD, nFail_QCD, nFailErr_QCD, avFakeRate_QCD, avFakeRateErrUp_QCD, avFakeRateErrDown_QCD, errorFlag);
+  compFakeRate(nPass_QCD, nPassErr_QCD, nFail_QCD, nFailErr_QCD, avFakeRate_QCD, avFakeRateErrUp_QCD, avFakeRateErrDown_QCD, errorFlag, true); // Cap Unc.s by 0.01
 
   if ( !errorFlag) {
     avFakeRateErr_QCD = TMath::Sqrt(0.5*(avFakeRateErrUp_QCD*avFakeRateErrUp_QCD + avFakeRateErrDown_QCD*avFakeRateErrDown_QCD));
@@ -585,7 +585,7 @@ void fillHistogram(TH2* histogram, const std::map<std::string, fitResultType*>& 
 	double avFakeRate, avFakeRateErrUp, avFakeRateErrDown;
         bool errorFlag;
 	std::cout << " nPass2 " << nPass << " +/- " << nPassErr << " nFail2 " <<  nFail  << " +/- " << nFailErr << std::endl;
-        compFakeRate(nPass, nPassErr, nFail, nFailErr, avFakeRate, avFakeRateErrUp, avFakeRateErrDown, errorFlag);
+        compFakeRate(nPass, nPassErr, nFail, nFailErr, avFakeRate, avFakeRateErrUp, avFakeRateErrDown, errorFlag, true); // Cap Unc.s by 0.01
 
 
 	if(apply_ConvCorrsToData && (fitResult_pass->second->lepton_type_ == fitResultType::kElectron) && is_data_fakes){ // Applying Conv corrections to electrons in case of data fakes (numerator) only
