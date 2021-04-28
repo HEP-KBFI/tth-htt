@@ -81,7 +81,9 @@ EventInfoReader::setBranchAddresses(TTree * tree)
     const std::vector<std::string> lhe_branches = bai_LHEReweight.getBoundBranchNames();
     bound_branches.insert(bound_branches.end(), lhe_branches.begin(), lhe_branches.end());
   }
-  if(info_ -> isMC_HH_  && info_ -> isHH_rwgt_allowed_)
+  //if(info_ -> isMC_HH_  && info_ -> isHH_rwgt_allowed_)
+  if(info_ -> isMC_HH_  && (info_ -> isHH_rwgt_allowed_ ||
+			    info_ -> process_string_.find("signal_ggf_nonresonant") != std::string::npos) ) // Siddhesh: Read gen_mHH for HH LO and NLO samples to make LOvsNLO HHreweighting comparison plots without much editing
   {
     bai.setBranchAddress(info_ -> gen_mHH, branchName_gen_mHH);
     bai.setBranchAddress(info_ -> gen_cosThetaStar, branchName_gen_cosThetaStar);
