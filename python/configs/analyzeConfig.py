@@ -421,10 +421,12 @@ class analyzeConfig(object):
           self.central_or_shifts.remove(systematics.mcClosure_str)
 
         self.nonResBMs = []
-        self.nonResBM_points = [ 'SM' ]
+        self.nonResBM_points = []
         for nonresPoint in NONRESONANT_POINTS:
           if any(nonresPoint in histogram_to_fit for histogram_to_fit in self.histograms_to_fit):
             self.nonResBMs.append(nonresPoint)
+        if self.nonResBMs:
+          self.nonResBM_points.append('SM')
         for nonResBM in self.nonResBMs:
           self.nonResBM_points.extend([ '{}{}'.format(nonResBM, nonResPoint) for nonResPoint in NONRESONANT_POINTS[nonResBM] ])
 
@@ -1241,6 +1243,8 @@ class analyzeConfig(object):
             'central_or_shifts_local' : 'cms.vstring(%s)',
             'evtCategories'           : 'cms.vstring(%s)',
             'skipEvery'               : 'cms.uint32(%s)',
+            'nonRes_BMs'              : 'cms.vstring(%s)',
+            'hhWeight_cfg.scanMode'   : 'cms.vstring(%s)',
         }
         jobOptions_keys = jobOptions_local + additionalJobOptions
         max_option_len = max(map(len, [ key for key in jobOptions_keys if key in jobOptions ]))
