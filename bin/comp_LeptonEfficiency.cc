@@ -283,7 +283,7 @@ void fillHistogram(TH2* histogram,
         bool errorFlag;
 	std::cout << " nPass2 " << nPass << " +/- " << nPassErr << " nFail2 " <<  nFail  << " +/- " << nFailErr << std::endl;
 	// Using uncapped uncert.s for Lepton ID Efficiency case
-        compFakeRate(nPass, nPassErr, nFail, nFailErr, avFakeRate, avFakeRateErrUp, avFakeRateErrDown, errorFlag, false);
+        compFakeRate(nPass, nPassErr, nFail, nFailErr, avFakeRate, avFakeRateErrUp, avFakeRateErrDown, errorFlag, -1); // do not cap uncertainties
 
 	if ( !errorFlag ) {
           double avFakeRateErr = TMath::Sqrt(0.5*(avFakeRateErrUp*avFakeRateErrUp + avFakeRateErrDown*avFakeRateErrDown));

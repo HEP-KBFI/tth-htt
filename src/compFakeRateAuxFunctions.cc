@@ -40,7 +40,7 @@ compFakeRate(double nPass,
              double & avFakeRateErrUp,
              double & avFakeRateErrDown,
              bool & errorFlag,
-	     bool cap_uncerts)
+             double uncertCap)
 { 
   const double sumWeights = nPass + nFail;
   const double sumWeights2 = square(nPassErr) + square(nFailErr);
@@ -70,9 +70,9 @@ compFakeRate(double nPass,
     double dummy;
     graph_pass_div_pass_plus_fail_tmp->GetPoint(0, dummy, avFakeRate);
 
-    if(cap_uncerts){ // Cap uncert.s by 0.01
-      avFakeRateErrUp   = std::max(graph_pass_div_pass_plus_fail_tmp->GetErrorYhigh(0), 1.e-2); 
-      avFakeRateErrDown = std::max(graph_pass_div_pass_plus_fail_tmp->GetErrorYlow(0), 1.e-2);  
+    if(uncertCap > 0.){
+      avFakeRateErrUp   = std::max(graph_pass_div_pass_plus_fail_tmp->GetErrorYhigh(0), uncertCap);
+      avFakeRateErrDown = std::max(graph_pass_div_pass_plus_fail_tmp->GetErrorYlow(0), uncertCap);
     }else{ // Use actual uncapped uncert.s
       avFakeRateErrUp   = graph_pass_div_pass_plus_fail_tmp->GetErrorYhigh(0); 
       avFakeRateErrDown = graph_pass_div_pass_plus_fail_tmp->GetErrorYlow(0);  

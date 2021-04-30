@@ -15,6 +15,6 @@ compFakeRate(double nPass,
              double & avFakeRateErrUp,
              double & avFakeRateErrDown,
              bool & errorFlag,
-	     bool cap_uncerts = true);
+             double uncertCap);
 
 #endif // tthAnalysis_HiggsToTauTau_compFakeRateAuxFunctions_h
