@@ -129,6 +129,7 @@ protected:
   bool isHH_rwgt_allowed_;
   bool apply_topPtRwgt_;
   std::string central_or_shift_;
+  std::string process_string_;
 
   UInt_t nLHEReweightingWeight;
   Float_t * LHEReweightingWeight;

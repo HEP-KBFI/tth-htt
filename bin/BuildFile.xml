@@ -654,6 +654,15 @@
 <bin file="testHHWeightInterfaceNLO.cc" name="testHHWeightInterfaceNLO">
   <use   name="tthAnalysis/HiggsToTauTau"/>
   <use   name="root"/>
+  <use   name="boost"/>
+  <Flags CXXFLAGS="-g -Wshadow -Werror"/>
+</bin>
+<bin file="testGenPhotonFilter.cc" name="testGenPhotonFilter">
+  <use   name="PhysicsTools/FWLite"/>
+  <use   name="DataFormats/FWLite"/>
+  <use   name="FWCore/ParameterSetReader"/>
+  <use   name="tthAnalysis/HiggsToTauTau"/>
+  <use   name="root"/>
   <Flags CXXFLAGS="-g -Wshadow -Werror"/>
 </bin>
 <bin file="copyHistograms_recursively.cc" name="copyHistograms_recursively">

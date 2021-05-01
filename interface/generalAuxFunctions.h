@@ -4,6 +4,21 @@
 #include "FWCore/Utilities/interface/InputTag.h"
 
 #include <vector> // std::vector<>
+#include <sstream> // std::stringstream
+
+template <typename T>
+std::string
+to_string_with_precision(const T a_value,
+                         const int n = 2)
+{
+  std::ostringstream out;
+  out.precision(n);
+  out << std::fixed << a_value;
+  return out.str();
+}
+
+std::string
+get_fullpath(const std::string & path);
 
 std::string
 format_vstring(const std::vector<std::string>&);

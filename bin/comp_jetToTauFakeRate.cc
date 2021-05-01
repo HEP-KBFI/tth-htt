@@ -168,7 +168,7 @@ TGraphAsymmErrors* getGraph_jetToTauFakeRate(TH1* histogram_loose, TH1* histogra
     double jetToTauFakeRate, jetToTauFakeRateErrUp, jetToTauFakeRateErrDown;
     bool errorFlag;
     std::cout << "bin #" << idxBin << " (x = " << histogram_loose->GetBinCenter(idxBin) << ")" << ":";	  
-    compFakeRate(nPass, nPassErr, nFail, nFailErr, jetToTauFakeRate, jetToTauFakeRateErrUp, jetToTauFakeRateErrDown, errorFlag);
+    compFakeRate(nPass, nPassErr, nFail, nFailErr, jetToTauFakeRate, jetToTauFakeRateErrUp, jetToTauFakeRateErrDown, errorFlag, 2.e-2); // Capping uncert. to 0.02
     if ( errorFlag ) {
       std::cerr << "Warning: Cannot compute fake rate for nPass = " << nPass << " +/- " << nPassErr << ", nFail = " << nFail << " +/- " << nFailErr 
 		<< " --> setting jetToTauFakeRate = " << jetToTauFakeRate << " + " << jetToTauFakeRateErrUp << " - " << jetToTauFakeRateErrDown << " !!" << std::endl;

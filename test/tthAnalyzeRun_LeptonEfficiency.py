@@ -67,7 +67,6 @@ running_method     = args.running_method
 systematics_label = args.systematics
 lep_mva_wp        = args.lep_mva_wp
 lep_useTightChargeCut   = args.lep_useTightChargeCut
-use_preselected   = args.use_preselected ## WAS NOT THERE IN LFR CODE
 files_per_job     = args.files_per_job
 use_home          = args.use_home
 jet_cleaning      = args.jet_cleaning
@@ -87,13 +86,6 @@ jet_cleaning_by_index = (jet_cleaning == 'by_index')
 gen_matching_by_index = (gen_matching == 'by_index')
 
 preselection_suffix = ""
-if use_preselected:
-  if lep_mva_wp == "default":
-    preselection_suffix = "preselected"
-elif lep_mva_wp == "hh_multilepton":
-    preselection_suffix = "preselected_hh_multilepton"
-else:
-    raise RuntimeError("Invalid prompt lepton MVA WP: %s" % lep_mva_wp)
 samples = load_samples(era, suffix = preselection_suffix)
 samples = load_samples_stitched(samples, era, use_stitched)
 

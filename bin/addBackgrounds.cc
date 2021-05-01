@@ -126,7 +126,8 @@ int main(int argc, char* argv[])
                std::string(subdir_level2->GetName()).find("lheInfo")   != std::string::npos ||
                std::string(subdir_level2->GetName()).find("cutFlow")   != std::string::npos ||
                std::string(subdir_level2->GetName()).find("electrons")   != std::string::npos ||
-               std::string(subdir_level2->GetName()).find("evtntuple") != std::string::npos ) {
+               std::string(subdir_level2->GetName()).find("evtntuple") != std::string::npos ||
+	       std::string(subdir_level2->GetName()).find("genKinematics_HH") != std::string::npos ) {
             continue;
           }
           throw cmsException(__func__, __LINE__)

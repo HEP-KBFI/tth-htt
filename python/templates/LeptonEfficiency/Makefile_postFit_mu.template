@@ -9,13 +9,14 @@ cp_files:
 	mkdir -p {{ output_dir }}/shapes/muon/
 	cp -f {{ denominator_datacard }} {{ output_dir }}/shapes/muon/.
 
-{{ output_dir }}/shapes/muon/{{ numerator_datacard | os.path.basename }}: cp_files
+
+{{ output_dir }}/shapes/muon/{{ numerator_datacard | os.path.basename }} : cp_files
 	:
 
-{{ output_dir }}/shapes/muon/{{ denominator_datacard | os.path.basename }}: cp_files
+{{ output_dir }}/shapes/muon/{{ denominator_datacard | os.path.basename }} : cp_files
 	:
 
-create_num_datacards: {{ output_dir }}/shapes/muon/{{ numerator_datacard | os.path.basename }}
+create_num_datacards: {{ output_dir }}/shapes/muon/{{ numerator_datacard | os.path.basename }} 
 	printf -- '#!$(SHELL)\n' > {{ numerator_output_dir }}.sh
 	printf -- 'cd {{ new_cmssw_base }}\n' > {{ numerator_output_dir }}.sh
 	printf -- 'eval $$(scramv1 runtime -sh)\n' >> {{ numerator_output_dir }}.sh
@@ -28,7 +29,7 @@ create_num_datacards: {{ output_dir }}/shapes/muon/{{ numerator_datacard | os.pa
 	chmod +x {{ numerator_output_dir }}.sh
 	{{ numerator_output_dir }}.sh &> {{ numerator_output_dir }}.log
 
-create_den_datacards: {{ output_dir }}/shapes/muon/{{ denominator_datacard | os.path.basename }}
+create_den_datacards: {{ output_dir }}/shapes/muon/{{ denominator_datacard | os.path.basename }} 
 	printf -- '#!$(SHELL)\n' > {{ denominator_output_dir }}.sh
 	printf -- 'cd {{ new_cmssw_base }}\n' >> {{ denominator_output_dir }}.sh
 	printf -- 'eval $$(scramv1 runtime -sh)\n' >> {{ denominator_output_dir }}.sh
@@ -55,37 +56,61 @@ create_den_datacards: {{ output_dir }}/shapes/muon/{{ denominator_datacard | os.
 {% endfor %}
 {% endfor %}
 
-{% for lepton in ['muon'] %}
-  {%- for params in lepton_bins[lepton]['tight'] %}
-{{ numerator_output_dir }}/{{ params[0] }}/fit_results.txt: {{ numerator_output_dir }}/{{ params[0] }}/datacard.txt
-	{{ scripts_dir }}/mlfit_{{ numerator_histogram }}_{{ params[0] }}.sh &> {{ numerator_output_dir }}/{{ params[0] }}/postFit.log
-  {% endfor -%}
-{% endfor -%}
+
+
 
 {% for lepton in ['muon'] %}
-  {%- for params in lepton_bins[lepton]['presel_not_tight'] %}
-{{ denominator_output_dir }}/{{ params[0] }}/fit_results.txt: {{ denominator_output_dir }}/{{ params[0] }}/datacard.txt
-	{{ scripts_dir }}/mlfit_{{ denominator_histogram }}_{{ params[0] }}.sh &> {{ denominator_output_dir }}/{{ params[0] }}/postFit.log
-  {% endfor -%}
-{% endfor -%}
+{% for params in lepton_bins[lepton]['tight'] %}
+run_{{ params[3] }}: create_num_datacards{{" "}}create_den_datacards
+	{{ scripts_dir }}/mlfit_{{ histogram_to_fit }}_{{ params[3] }}.sh &> {{ output_dir }}/run_{{ params[3] }}.log
+{% endfor %}
+{% endfor %}
 
-{{ fit_values }}:
-  {%- for selection in [ 'tight', 'presel_not_tight' ] -%}
-    {%- for lepton in ['muon'] -%}
-      {%- for params in lepton_bins[lepton][selection] -%}
-        {{" "}}{% if selection == 'tight' %}{{ numerator_output_dir }}{% else %}{{ denominator_output_dir }}{% endif %}/{{ params[0] }}/fit_results.txt
-      {%- endfor -%}
-    {%- endfor -%}
-  {%- endfor %}
-	rm -f {{ fit_values }}
-	{%- for selection in [ 'tight', 'presel_not_tight' ] %}
-	  {%- for lepton in ['muon'] %}
-	    {%- for params in lepton_bins[lepton][selection] %}
-	cat {% if selection == 'tight' %}{{ numerator_output_dir }}{% else %}{{ denominator_output_dir }}{% endif %}/{{ params[0] }}/fit_results.txt \
+{% for lepton in ['muon'] %}
+{% for params in lepton_bins[lepton]['tight'] %}
+{{ output_dir }}/{{ params[3] }}/fit_num_results.txt{{" "}} : run_{{ params[3] }}
+	:
+{% endfor %}
+{% endfor %}
+
+{% for lepton in ['muon'] %}
+{% for params in lepton_bins[lepton]['presel_not_tight'] %}
+{{ output_dir }}/{{ params[3] }}/fit_den_results.txt{{" "}} : run_{{ params[3] }}
+	:
+{% endfor %}
+{% endfor %}
+
+
+
+
+{{ output_dir }}/fit_num_results_all.txt : {% for selection in [ 'tight' ] %}{%- for lepton in ['muon'] -%}{% for params in lepton_bins[lepton][selection] %}{{ output_dir }}/{{ params[3] }}/fit_num_results.txt {% endfor %}{%- endfor -%}{% endfor %}
+	rm -rf {{ output_dir }}/fit_num_results_all.txt
+	{% for selection in [ 'tight' ] %}
+	   {% for lepton in ['muon'] %}
+	     {% for params in lepton_bins[lepton][selection] %}
+	cat {{ output_dir }}/{{ params[3] }}/fit_num_results.txt \
+	>> {{ output_dir }}/fit_num_results_all.txt 
+	      {% endfor %}
+	   {% endfor %}
+	{% endfor %}
+
+{{ output_dir }}/fit_den_results_all.txt : {% for selection in [ 'tight' ] %}{%- for lepton in ['muon'] -%}{% for params in lepton_bins[lepton][selection] %}{{ output_dir }}/{{ params[3] }}/fit_den_results.txt {% endfor %}{%- endfor -%}{% endfor %}
+	rm -rf {{ output_dir }}/fit_den_results_all.txt
+	{% for selection in [ 'tight' ] %}
+	   {% for lepton in ['muon'] %}
+	     {% for params in lepton_bins[lepton][selection] %}
+	cat {{ output_dir }}/{{ params[3] }}/fit_den_results.txt \
+	>> {{ output_dir }}/fit_den_results_all.txt 
+	      {% endfor %}
+	   {% endfor %}
+	{% endfor %}
+
+{{ fit_values }} : {{ output_dir }}/fit_num_results_all.txt {{ output_dir }}/fit_den_results_all.txt
+	rm -rf {{ fit_values }}
+	cat {{ output_dir }}/fit_num_results_all.txt \
 	>> {{ fit_values }}
-	    {%- endfor -%}
-	  {%- endfor -%}
-	{%- endfor %}
+	cat {{ output_dir }}/fit_den_results_all.txt  \
+	>> {{ fit_values }}
 
 clean:
 	rm -rf {{ output_dir }}

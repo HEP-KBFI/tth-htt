@@ -1,5 +1,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/Particle.h" // Particle
 
+#include <DataFormats/Math/interface/deltaR.h> // deltaR()
+
 #include <cmath> // std::fabs()
 
 Particle::Particle()
@@ -63,6 +65,18 @@ const Particle::LorentzVector &
 Particle::p4() const
 {
   return p4_;
+}
+
+double
+Particle::deltaR(const Particle & particle) const
+{
+  return this->deltaR(&particle);
+}
+
+double
+Particle::deltaR(const Particle * const particle) const
+{
+  return ::deltaR(eta_, phi_, particle->eta(), particle->phi());
 }
 
 bool

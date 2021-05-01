@@ -65,7 +65,7 @@ protected:
       assert(matched_genLeptons.size() == nLeptons);
       std::vector<GenHadTau> matched_genHadTaus = genHadTauReader_->read();
       assert(matched_genHadTaus.size() == nLeptons);
-      std::vector<GenPhoton> matched_genPhotons = genPhotonReader_->read();
+      std::vector<GenPhoton> matched_genPhotons = genPhotonReader_->read(true);
       assert(matched_genPhotons.size() == nLeptons);
       std::vector<GenJet> matched_genJets = genJetReader_->read();
       assert(matched_genJets.size() == nLeptons);

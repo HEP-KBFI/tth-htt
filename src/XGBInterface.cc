@@ -1,8 +1,8 @@
 #include "tthAnalysis/HiggsToTauTau/interface/XGBInterface.h"
-#include "tthAnalysis/HiggsToTauTau/interface/LocalFileInPath.h" // LocalFileInPath
 
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 #include "tthAnalysis/HiggsToTauTau/interface/MVAInputVarTransformer.h" // MVAInputVarTransformer
+#include "tthAnalysis/HiggsToTauTau/interface/generalAuxFunctions.h" // get_fullpath()
 
 #include <boost/filesystem.hpp> // boost::filesystem::
 
@@ -13,7 +13,7 @@
 XGBInterface::XGBInterface(const std::string & mvaFileName,
                            const std::vector<std::string> & mvaInputVariables)
   : mode_(Mode::k_old)
-  , mvaFileName_(LocalFileInPath(mvaFileName).fullPath())
+  , mvaFileName_(get_fullpath(mvaFileName))
   , pkldata_(nullptr)
   , moduleMainString_(nullptr)
   , moduleMain_(nullptr)
@@ -74,11 +74,11 @@ XGBInterface::XGBInterface(const std::string & mvaFileName_odd,
   , pkldata_(nullptr)
   , moduleMainString_(nullptr)
   , moduleMain_(nullptr)
-  , mvaFileName_odd_(LocalFileInPath(mvaFileName_odd).fullPath())
+  , mvaFileName_odd_(get_fullpath(mvaFileName_odd))
   , pkldata_odd_(nullptr)
   , moduleMainString_odd_(nullptr)
   , moduleMain_odd_(nullptr)
-  , mvaFileName_even_(LocalFileInPath(mvaFileName_even).fullPath())
+  , mvaFileName_even_(get_fullpath(mvaFileName_even))
   , pkldata_even_(nullptr)
   , moduleMainString_even_(nullptr)
   , moduleMain_even_(nullptr)
@@ -149,7 +149,7 @@ XGBInterface::XGBInterface(const std::string & mvaFileName,
                            const std::vector<std::string> & mvaInputVariables,
                            const std::string & fitFunctionFileName)
   : mode_(Mode::k_old)
-  , mvaFileName_(LocalFileInPath(mvaFileName).fullPath())
+  , mvaFileName_(get_fullpath(mvaFileName))
   , pkldata_(nullptr)
   , moduleMainString_(nullptr)
   , moduleMain_(nullptr)
@@ -162,7 +162,7 @@ XGBInterface::XGBInterface(const std::string & mvaFileName,
   , moduleMainString_even_(nullptr)
   , moduleMain_even_(nullptr)
   , mvaInputVariables_(mvaInputVariables)
-  , fitFunctionFileName_(LocalFileInPath(fitFunctionFileName).fullPath())
+  , fitFunctionFileName_(get_fullpath(fitFunctionFileName))
 {
   if(mode_ != Mode::k_old)
   {
@@ -213,16 +213,16 @@ XGBInterface::XGBInterface(const std::string & mvaFileName_odd,
   , pkldata_(nullptr)
   , moduleMainString_(nullptr)
   , moduleMain_(nullptr)
-  , mvaFileName_odd_(LocalFileInPath(mvaFileName_odd).fullPath())
+  , mvaFileName_odd_(get_fullpath(mvaFileName_odd))
   , pkldata_odd_(nullptr)
   , moduleMainString_odd_(nullptr)
   , moduleMain_odd_(nullptr)
-  , mvaFileName_even_(LocalFileInPath(mvaFileName_even).fullPath())
+  , mvaFileName_even_(get_fullpath(mvaFileName_even))
   , pkldata_even_(nullptr)
   , moduleMainString_even_(nullptr)
   , moduleMain_even_(nullptr)
   , mvaInputVariables_(mvaInputVariables)
-  , fitFunctionFileName_(LocalFileInPath(fitFunctionFileName).fullPath())
+  , fitFunctionFileName_(get_fullpath(fitFunctionFileName))
 {
   if(mode_ != Mode::k_odd_even)
   {

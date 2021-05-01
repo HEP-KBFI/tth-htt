@@ -50,7 +50,10 @@ EventInfo::EventInfo(const AnalysisConfig & analysisConfig)
               analysisConfig.isMC_HH(),
               analysisConfig.isHH_rwgt_allowed(),
               analysisConfig.apply_topPtReweighting())
-{}
+{
+  process_string_ = analysisConfig.process();
+  std::cout << "EventInfo::EventInfo():: process_string_: " << process_string_ << "\n";
+}
 
 EventInfo::EventInfo(bool isMC,
                      bool isMC_H,

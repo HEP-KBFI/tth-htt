@@ -896,53 +896,48 @@ InitializeInputVarMap(const std::map<std::string, double> & AllVars_Map,
                       bool isNonRes)
 {
   std::map<std::string, double> BDTInputs;
-  if(isNonRes){// Initialize all Non-Reso. "one-hot encoders" to zero
-    for(unsigned int i = 0; i < BDTInputVariables.size(); i++){
+  if(isNonRes)
+  {
+    std::vector<std::string> resBDTInputVars = { "SM" };
+    for(int i = 1; i < 13; ++i)
+    {
+      resBDTInputVars.push_back(Form("BM%d", i));
+    }
+    // Initialize all Non-Reso. "one-hot encoders" to zero
+    for(unsigned int i = 0; i < BDTInputVariables.size(); ++i)
+    {
       const std::string & BDTInputVariable = BDTInputVariables[i];
-      if(BDTInputVariable == "SM"){ 
-	BDTInputs["SM"] = 0; 
-      }else if(BDTInputVariable == "BM1"){ 
-	BDTInputs["BM1"] = 0; 
-      }else if(BDTInputVariable == "BM2"){ 
-	BDTInputs["BM2"] = 0; 
-      }else if(BDTInputVariable == "BM3"){ 
-	BDTInputs["BM3"] = 0; 
-      }else if(BDTInputVariable == "BM4"){ 
-	BDTInputs["BM4"] = 0; 
-      }else if(BDTInputVariable == "BM5"){ 
-	BDTInputs["BM5"] = 0; 
-      }else if(BDTInputVariable == "BM6"){ 
-	BDTInputs["BM6"] = 0; 
-      }else if(BDTInputVariable == "BM7"){ 
-	BDTInputs["BM7"] = 0; 
-      }else if(BDTInputVariable == "BM8"){ 
-	BDTInputs["BM8"] = 0; 
-      }else if(BDTInputVariable == "BM9"){ 
-	BDTInputs["BM9"] = 0; 
-      }else if(BDTInputVariable == "BM10"){ 
-	BDTInputs["BM10"] = 0; 
-      }else if(BDTInputVariable == "BM11"){ 
-	BDTInputs["BM11"] = 0; 
-      }else if(BDTInputVariable == "BM12"){ 
-	BDTInputs["BM12"] = 0; 
-      }else{
+      if(std::find(resBDTInputVars.begin(), resBDTInputVars.end(), BDTInputVariable) != resBDTInputVars.end())
+      {
+        BDTInputs[BDTInputVariable] = 0;
+      }
+      else
+      {
         std::map<std::string, double>::const_iterator BDTInput = AllVars_Map.find(BDTInputVariable);
         if ( BDTInput == AllVars_Map.end() )
+        {
           throw cmsException(__func__, __LINE__) << "Input variable = " << BDTInputVariable << " not in map given as function argument !!\n";
-        //std::cout<<"Filling Map for Input Var.: " << BDTInputVariable << " with value " << BDTInput->second; << std::endl;
+        }
         BDTInputs[BDTInputVariable] = BDTInput->second;
       }
     }
-  }else{
-    for(unsigned int i = 0; i < BDTInputVariables.size(); i++){
+  }
+  else
+  {
+    for(unsigned int i = 0; i < BDTInputVariables.size(); ++i)
+    {
       const std::string & BDTInputVariable = BDTInputVariables[i];
-      if(BDTInputVariable == "gen_mHH"){ 
-	BDTInputs["gen_mHH"] = 0; 
-      }else{
+      if(BDTInputVariable == "gen_mHH")
+      {
+        BDTInputs["gen_mHH"] = 0;
+      }
+      else
+      {
         std::map<std::string, double>::const_iterator BDTInput = AllVars_Map.find(BDTInputVariable);
         if ( BDTInput == AllVars_Map.end() )
+        {
           throw cmsException(__func__, __LINE__) << "Input variable = " << BDTInputVariable << " not in map given as function argument !!\n";
-        //std::cout<<"Filling Map for Input Var.: " << BDTInputVariable << " with value " << BDTInput->second; << std::endl;
+        }
         BDTInputs[BDTInputVariable] = BDTInput->second;
       }
     }
@@ -976,51 +971,20 @@ DoubleToUInt_Convertor(double BDT_param,
 }
 
 std::map<std::string, std::map<std::string, double>>
-CreateDNNOutputMap(const std::vector<double> & DNN_params,
-		   TensorFlowInterface * DNN,
-		   std::map<std::string, double> & DNNInputs,
-		   int event_number,
-		   bool isNonRes,
-		   const std::string & spin_label)
-{ 
-  std::map<std::string, std::map<std::string, double>> retVal = CreateMVAOutputMap<TensorFlowInterface, std::map<std::string, double>>(
-    DNN_params, DNN, DNNInputs, event_number, isNonRes, spin_label);
-  return retVal;
-}
-
-std::map<std::string, std::map<std::string, double>>
-CreateLBNOutputMap(const std::vector<double> & LBN_params,
-                   std::vector<TensorFlowInterfaceLBN *>& LBN,
-                   const std::map<std::string, const Particle*> & ll_particles,
-                   std::map<std::string, double> & hl_mvaInputs,
-                   int event_number,
-                   bool isNonRes,
-                   const std::string & label)
+CreateResonantLBNOutputMap(const std::vector<double> & LBN_params,
+                           const std::vector<TensorFlowInterfaceLBN *>& LBN,
+                           const std::map<std::string, const Particle*> & ll_particles,
+                           std::map<std::string, double> & hl_mvaInputs,
+                           int event_number,
+                           const std::string & label)
 {
   std::map<std::string, std::map<std::string, double>> LBNOutput_Map;
   for ( size_t i = 0; i < LBN_params.size(); ++i ) // Loop over LBN_params: signal mass (Reso.)/BM index (Non Reso.)
   {
-    std::string key;
-    if ( !isNonRes )
-    {
-      // resonant case
-      hl_mvaInputs["gen_mHH"] = LBN_params[i];
-      key = DoubleToUInt_Convertor(LBN_params[i], isNonRes, label);
-    }
-    else
-    {
-      // non-resonant case
-      if ( LBN_params[i] == 0 )
-      {
-        // SM
-        key = "SM";
-      }
-      else
-      {
-        // non-SM coupling scenario
-        key = Form("BM%i", TMath::Nint(LBN_params[i]));
-      }
-    }
+    // resonant case
+    hl_mvaInputs["gen_mHH"] = LBN_params[i];
+    const std::string key = DoubleToUInt_Convertor(LBN_params[i], false, label);
+
     if ( event_number != -1 )
     {
       // use odd-even method
@@ -1035,58 +999,43 @@ CreateLBNOutputMap(const std::vector<double> & LBN_params,
   return LBNOutput_Map;
 }
 
-
-
-std::map<std::string, std::map<std::string, double>>
-CreateLBNOutputMap(const std::vector<double> & LBN_params,
-		   TensorFlowInterfaceLBN * LBN,
-           const std::map<std::string, const Particle*> & ll_particles,
-		   std::map<std::string, double> & hl_mvaInputs,
-		   int event_number,
-		   bool isNonRes,
-		   const std::string & label)
+std::map<std::string, std::map<std::string, double>> // keys = gen_mHH/bmName, event category
+CreateNonResonantLBNOutputMap(const std::vector<std::string> & LBN_params,
+                              const std::map<std::string, TensorFlowInterfaceLBN *> & LBN,
+                              const std::map<std::string, const Particle*> & ll_particles,
+                              std::map<std::string, double> & hl_mvaInputs,
+                              int event_number,
+                              const HHWeightInterfaceCouplings * const hhWeight_couplings)
 {
   std::map<std::string, std::map<std::string, double>> LBNOutput_Map;
-  for ( size_t i = 0; i < LBN_params.size(); ++i ) // Loop over LBN_params: signal mass (Reso.)/BM index (Non Reso.)
-  { 
-    std::string key;
-    if ( !isNonRes )
+  for(const std::string & key: LBN_params) // Loop over LBN_params: signal mass (Reso.)/BM index (Non Reso.)
+  {
+    std::map<std::string, double> hl_mvaInputs_copy = hl_mvaInputs;
+    const std::string & trainingString = [&hhWeight_couplings,&key]() -> std::string
     {
-      // resonant case
-      hl_mvaInputs["gen_mHH"] = LBN_params[i];
-      key = DoubleToUInt_Convertor(LBN_params[i], isNonRes, label);
-    }
-    else 
-    { 
-      // non-resonant case
-      if ( LBN_params[i] == 0 )
+      if(hhWeight_couplings)
       {
-        // SM
-	hl_mvaInputs["SM"] = 1;  
-	key = "SM";
+        const HHCoupling & coupling = hhWeight_couplings->getCoupling(key);
+        return coupling.training();
       }
-      else
-      {
-        // non-SM coupling scenario
-	hl_mvaInputs["SM"] = 0;
-        key = Form("BM%i", TMath::Nint(LBN_params[i]));
-	hl_mvaInputs[key] = 1;   
-	if ( i >= 2 )
-        {
-          std::string key_prev = Form("BM%i", TMath::Nint(LBN_params[i - 1]));
-          hl_mvaInputs[key_prev] = 0; // Resetting the prev. hot encoder to zero
-        }
-      }
+      return "SM"; // assume SM training if no couplings are specified
+    }();
+    if(! hl_mvaInputs_copy.count(trainingString))
+    {
+      throw cmsException(__func__, __LINE__) << "Unexpected training string for BM " << key << " = " << trainingString;
     }
+    hl_mvaInputs_copy[trainingString] = 1;
+
+    assert(LBN.count(trainingString));
     if ( event_number != -1 )
-    { 
+    {
       // use odd-even method
-      LBNOutput_Map.insert(std::make_pair(key, (*LBN)(ll_particles, hl_mvaInputs, event_number)));
+      LBNOutput_Map.insert(std::make_pair(key, (*LBN.at(trainingString))(ll_particles, hl_mvaInputs, event_number)));
     }
     else
-    { 
+    {
       // use same LBN for all events
-      LBNOutput_Map.insert(std::make_pair(key, (*LBN)(ll_particles, hl_mvaInputs)));
+      LBNOutput_Map.insert(std::make_pair(key, (*LBN.at(trainingString))(ll_particles, hl_mvaInputs)));
     }
   }
   return LBNOutput_Map;
@@ -1095,7 +1044,7 @@ CreateLBNOutputMap(const std::vector<double> & LBN_params,
 double
 CapLeptonFakeRate(double LeptonFakeRate,
                   double cap_threshold,
-		  bool isDEBUG)
+                  bool isDEBUG)
 {
   double LeptonFakeRate_final = -1.;
 
@@ -1104,11 +1053,11 @@ CapLeptonFakeRate(double LeptonFakeRate,
     LeptonFakeRate_final = cap_threshold;
     if(isDEBUG){
       std::cout << "LeptonFakeRate: " << LeptonFakeRate 
-		<< " has exceeded cap threshold: " 
-		<< cap_threshold 
-		<< " hence fixing it to "
-	        << cap_threshold
-		<< '\n';
+                << " has exceeded cap threshold: "
+                << cap_threshold
+                << " hence fixing it to "
+                << cap_threshold
+                << '\n';
     }
   }else{
     LeptonFakeRate_final = LeptonFakeRate;

@@ -3,9 +3,18 @@
 EXIT_WHEN_FAIL=false
 VERBOSITY_LEVEL=3
 PARALLEL_JOBS=1
-SIGNAL_RESONANCE=125
+SIGNAL_RESONANCE=90
 MINIMIZERALGOS="Minuit2,Migrad"
 LUMI="{{ int_lumi_data }}"
+
+CHANNEL="e"
+if [ `echo {{ l_array }} | grep -c "mu_" ` -gt 0 ]
+then
+ CHANNEL="mu"
+else
+ CHANNEL="e"
+fi
+
 
 # Let's record the paths to the scripts which we're about to run
 POSTFITPLOT="{{ postfit_plot_script }}"
@@ -27,173 +36,244 @@ OUTPUT_DIR="{{ output_dir }}"
 echo "Going to the output directory: $OUTPUT_DIR"
 cd $OUTPUT_DIR
 
-echo "Performing fits for {{ l_array }}"
 
-OUTPUT_DIR_JOB="{% if is_num %}{{ numerator_output_dir }}{% else %}{{ denominator_output_dir }}{% endif %}/{{ l_array }}"
+echo "Creating Tag And Probe directory: {{ l_TagAndProbe }} "
+OUTPUT_DIR_JOB="{{ l_TagAndProbe }}"
+OUTPUT_DIR_LABEL=OUTPUT_DIR_JOB
+
+
 mkdir -p $OUTPUT_DIR_JOB
 
-WSP_PATH="$OUTPUT_DIR_JOB/wsp.root"
-DATACARD_PATH="$OUTPUT_DIR_JOB/datacard.txt"
+echo "Copying pass and fail datacards to the {{ l_TagAndProbe }} directory"
+NUM_DCARD_DIR="{{ numerator_output_dir  }}/{{ l_array }}" 
+DEN_DCARD_DIR="{{ denominator_output_dir }}/{{ l_array }}"
+OLD_SUB_STRING="_tight_"
+NEW_SUB_STRING="_presel_not_tight_"
+DEN_DCARD_DIR=${DEN_DCARD_DIR/$OLD_SUB_STRING/$NEW_SUB_STRING} 
 
-echo "Making Workspace for $DATACARD_PATH"
-combineTool.py              \
-  -M T2W                    \
-  -o $WSP_PATH              \
-  -i $DATACARD_PATH         \
-  -v $VERBOSITY_LEVEL       \
-  --parallel $PARALLEL_JOBS \
-  &> "$OUTPUT_DIR_JOB/combine.log"
+if [ "$CHANNEL" = "e" ]; then
+    cp $NUM_DCARD_DIR/datacard.txt $OUTPUT_DIR_JOB/datacard_e_num.txt
+    cp $NUM_DCARD_DIR/shapes.root $OUTPUT_DIR_JOB/shapes_e_num.root
 
-echo "Running MaxLikelihood Fit/FitDiagnostics on {{ l_array }}"
-combineTool.py                            \
-  -M FitDiagnostics                     \
-  -m $SIGNAL_RESONANCE                    \
-  --robustFit 1                           \
-  --setRobustFitAlgo $MINIMIZERALGOS \
-  -d "$DATACARD_PATH"       \
-  --skipBOnlyFit                          \
-{% if l_range %}  --setParameterRanges r={{ l_range }} {% endif %} \
-  --there                                 \
-  -n {{ l_array }}                        \
-  --parallel $PARALLEL_JOBS               \
-  -v $VERBOSITY_LEVEL                     \
-  &> "$OUTPUT_DIR_JOB/combineTool.log"
+    cp $DEN_DCARD_DIR/datacard.txt $OUTPUT_DIR_JOB/datacard_e_den.txt
+    cp $DEN_DCARD_DIR/shapes.root $OUTPUT_DIR_JOB/shapes_e_den.root
 
-NAME='{{ l_array }}_mlfit_shapes.root'
-echo "Extracting PostFit shapes from the mlfit: $NAME"
-MLFIT_OUTPUT='fitDiagnostics{{ l_array }}.root'
-PostFitShapesFromWorkspace               \
-  -w $WSP_PATH                           \
-  -d $DATACARD_PATH                      \
-  -o $OUTPUT_DIR_JOB/$NAME               \
-  -f $OUTPUT_DIR_JOB/$MLFIT_OUTPUT:fit_s \
-  -m $SIGNAL_RESONANCE                   \
-  --postfit                              \
-  --sampling                             \
-  --print                                \
-  &> "$OUTPUT_DIR_JOB/PostFitShapesFromWorkspace.log"
-
-MLFIT_FILE="$OUTPUT_DIR_JOB/$NAME"
-
-echo "Making PostFit plots"
-PREFIT_VALUES=""
-POSTFIT_VALUES=""
-
-CHANNEL="e"
-if [ `echo {{ l_array }} | grep -c "mu_" ` -gt 0 ]
-then
- CHANNEL="mu"
+    sed -i 's+shapes.root+shapes_e_num.root+g' $OUTPUT_DIR_JOB/datacard_e_num.txt 
+    sed -i 's+shapes.root+shapes_e_den.root+g' $OUTPUT_DIR_JOB/datacard_e_den.txt
 else
- CHANNEL="e"
+    cp $NUM_DCARD_DIR/datacard.txt $OUTPUT_DIR_JOB/datacard_mu_num.txt
+    cp $NUM_DCARD_DIR/shapes.root $OUTPUT_DIR_JOB/shapes_mu_num.root
+
+    cp $DEN_DCARD_DIR/datacard.txt $OUTPUT_DIR_JOB/datacard_mu_den.txt
+    cp $DEN_DCARD_DIR/shapes.root $OUTPUT_DIR_JOB/shapes_mu_den.root
+
+    sed -i 's+shapes.root+shapes_mu_num.root+g' $OUTPUT_DIR_JOB/datacard_mu_num.txt 
+    sed -i 's+shapes.root+shapes_mu_den.root+g' $OUTPUT_DIR_JOB/datacard_mu_den.txt
 fi
+
+
+cd $OUTPUT_DIR_JOB
+
+WSP_PATH="wsp_TnP_cmb.root"
+DATACARD_PATH="datacard_TnP_cmb.txt"
+
+echo "Combining datacards for pass and fail into a new combined datacard: ${DATACARD_PATH}"
+
+if [ "$CHANNEL" = "e" ]; then
+    combineCards.py pass=datacard_e_num.txt fail=datacard_e_den.txt > $DATACARD_PATH
+else
+    combineCards.py pass=datacard_mu_num.txt fail=datacard_mu_den.txt > $DATACARD_PATH
+fi
+
+echo "Making Workspace for ${DATACARD_PATH}"
+MODEL="HiggsAnalysis.CombinedLimit.TagAndProbeModel:tagAndProbe"
+combineTool.py                \
+    -M T2W                    \
+    -P $MODEL                 \
+    -o $WSP_PATH              \
+    -i $DATACARD_PATH         \
+    -v $VERBOSITY_LEVEL       \
+    --parallel $PARALLEL_JOBS \
+    &> "combineTool_T2W.log"
+
+
+
+
+echo "Splitting the Range {{ l_range }} and resetting IFS later"
+{% if l_range %} 
+r_range="{{ l_range }}" 
+{%- else -%}
+r_range="-4.0,4.0"
+{% endif %}
+
+OLDIFS=$IFS
+IFS=','
+read -a strarr <<<"$r_range"
+
+r_min=${strarr[0]}
+r_max=${strarr[1]}
+IFS=$OLDIFS
+
+
+# Declare an array of thresholds for minimizer tolerances
+declare -a Min_Tolerance_Thresholds=("0.1" "1.0" "10.0" "100.0" "1000.0" "2000.0")
+
+## N.B: 0.1 is also the default value for Minimizer Tolerance
+## For Charge Flip measurement, values like 100, 1000, 2000 were also tried
+## Link: https://github.com/HEP-KBFI/tth_charge-flip_estimation/blob/master/scripts/make_fits.py
+# Iterating over minimizer tolerance thresholds while Running MaxLikelihood Fit/FitDiagnostics
+for MINIMIZER_TOLERANCE in ${Min_Tolerance_Thresholds[@]}; do
+    echo "Running MaxLikelihood Fit/FitDiagnostics on ${WSP_PATH} for Minimizer tolerance ${MINIMIZER_TOLERANCE}"
+    combine                   \
+	-M FitDiagnostics     \
+	$WSP_PATH             \
+	--plots               \
+	--saveNormalizations  \
+	--skipBOnlyFit        \
+	--saveShapes          \
+	--saveWithUncertainties  \
+	--maxFailedSteps 20      \
+	--robustFit 1            \
+	--cminDefaultMinimizerStrategy 0  \
+	--cminDefaultMinimizerType Minuit \
+	--cminDefaultMinimizerTolerance $MINIMIZER_TOLERANCE    \
+	--rMin $r_min  \
+	--rMax $r_max  \
+	-v $VERBOSITY_LEVEL  \
+	&> "FitDiagnostics.log"
+    FIT_LOG="FitDiagnostics.log"
+    FIT_STATUS=`grep "Best fit SF:" $FIT_LOG | awk '{print $4" "$5}'`
+    if [ -z "$FIT_STATUS" ]; 
+    then
+	echo "Fit failed with Minimizer Tolerance: ${MINIMIZER_TOLERANCE}"
+	continue
+    else
+	echo "Fit was successfull with Minimizer Tolerance: ${MINIMIZER_TOLERANCE}"
+	echo "Best fit SF for signal in pass region: ${FIT_STATUS}"
+	break
+    fi
+done
+
+
+NAME='mlfit_shapes.root'
+MLFIT_OUTPUT='fitDiagnostics.root'
+echo "Running PostFitShapesFromWorkspace on ${MLFIT_OUTPUT}"
+PostFitShapesFromWorkspace  \
+    -w $WSP_PATH            \
+    -d $DATACARD_PATH       \
+    -o $NAME                \
+    -f $MLFIT_OUTPUT:fit_s  \
+    --postfit               \
+    --sampling              \
+    --print                 \
+    &> "PostFitShapesFromWorkspace.log"
+
+
+MLFIT_FILE="$NAME"
+
+echo "Making PostFit plots and yield .txt files"
+
+
 
 
 if [ -f "$MLFIT_FILE" ]
 then
     echo "$MLFIT_FILE exists."
-    PLOT_LABEL={% if is_num %}{{ numerator_plotLabel }}{% else %}{{ denominator_plotLabel }}{% endif %}
-    if [ {{ is_num }} = True ]; then
-        {% for pre_or_post in [ 'prefit', 'postfit' ] %}
-          {% for log_or_linear in [ 'log', 'linear' ] %}
-        python $POSTFITPLOT -i $MLFIT_FILE:"{{ l_sub_dir }}_shapes_{{ pre_or_post }}" \
+        {% for pass_or_fail in [ 'pass', 'fail'] %}
+	  {% for pre_or_post in [ 'prefit', 'postfit' ] %}
+            {% for log_or_linear in [ 'log', 'linear' ] %}
+	PLOT_LABEL={% if pass_or_fail == 'pass' %}{{ numerator_plotLabel }}{% else %}{{ denominator_plotLabel }}{% endif %}    
+        python $POSTFITPLOT -i $MLFIT_FILE:"{{ pass_or_fail }}_{{ pre_or_post }}" \
           -c $CHANNEL --x-title "$PLOT_LABEL" -l "$LUMI"                                     \
           {% if log_or_linear == 'log' %}--logy {% endif %}                           \
-          -o "{{ l_array }}_num_{{ pre_or_post }}_{{ log_or_linear }}"                \
-          &> "$OUTPUT_DIR_JOB/plot_shapes_{{ pre_or_post }}_{{ log_or_linear }}.log"
-          {% endfor %}
+          -o "{{ pass_or_fail }}_{{ pre_or_post }}_{{ log_or_linear }}"                \
+          &> "plot_shapes_{{ pass_or_fail }}_{{ pre_or_post }}_{{ log_or_linear }}.log"
+      	  {% endfor %}
+         {% endfor %}
         {% endfor %}
-    fi
-    if [ {{ is_num }} = False ]; then  ## MY LINE ENDS
-        {% for pre_or_post in [ 'prefit', 'postfit' ] %}
-          {% for log_or_linear in [ 'log', 'linear' ] %}
-        python $POSTFITPLOT -i $MLFIT_FILE:"{{ l_sub_dir }}_shapes_{{ pre_or_post }}" \
-            -c $CHANNEL --x-title "$PLOT_LABEL" -l "$LUMI"                                     \
-            {% if log_or_linear == 'log' %}--logy {% endif %}                           \
-            -o "{{ l_array }}_den_{{ pre_or_post }}_{{ log_or_linear }}"                \
-            &> "$OUTPUT_DIR_JOB/plot_shapes_{{ pre_or_post }}_{{ log_or_linear }}.log"
-            {% endfor %}
-        {% endfor %}
-    fi  ## MY LINE ENDS
 
-    FIT_RESULTS="$OUTPUT_DIR_JOB/fit_results_{{ l_array }}.txt"
+
+    FIT_RESULTS="fit_results_cmb.txt"
     python $YIELDTABLE $WSP_PATH              \
-      $OUTPUT_DIR_JOB/$MLFIT_OUTPUT "{{ l_sub_dir }}_shapes" \
+      $MLFIT_OUTPUT "shapes" $MLFIT_FILE \
       1> $FIT_RESULTS                                        \
       2> "${FIT_RESULTS%.*}_errors.log"
 
-    PREFIT_VALUES=`grep "Pre-fit {{ grep_value }}" $FIT_RESULTS | awk '{print $4" "$6}'`
-    POSTFIT_VALUES=`grep "Post-fit {{ grep_value }}" $FIT_RESULTS | awk '{print $4" "$6}'`
+    PREFIT_PASS_VALUES=`grep "Pre-fit Pass DY_signal" $FIT_RESULTS | awk '{print $5" "$7}'`
+    POSTFIT_PASS_VALUES=`grep "Post-fit Pass DY_signal" $FIT_RESULTS | awk '{print $5" "$7}'`
+
+    PREFIT_FAIL_VALUES=`grep "Pre-fit Fail DY_signal" $FIT_RESULTS | awk '{print $5" "$7}'`
+    POSTFIT_FAIL_VALUES=`grep "Post-fit Fail DY_signal" $FIT_RESULTS | awk '{print $5" "$7}'`
+
+    PLOT_DIR="mlfit_plots"
+    echo "Moving all plots to $PLOT_DIR."
+    mkdir -p $PLOT_DIR
+    mv fail_*fit_*.* $PLOT_DIR
+    mv pass_*fit_*.* $PLOT_DIR
+    mv *.png $PLOT_DIR
 else
-    echo "$MLFIT_FILE does not exist."
+    echo "${MLFIT_FILE} does not exist."
 fi
 
-if [ -z "$PREFIT_VALUES" ]; then
-    PREFIT_VALUES="-1 -1"
+if [ -z "$PREFIT_PASS_VALUES" ]; then
+    PREFIT_PASS_VALUES="-1 -1"
 fi
-if [ -z "$POSTFIT_VALUES" ]; then
-    POSTFIT_VALUES="-1 -1"
+if [ -z "$POSTFIT_PASS_VALUES" ]; then
+    POSTFIT_PASS_VALUES="-1 -1"
 fi
-echo "{{ lepton_letter }} {% if is_num %}num{% else %}den{% endif %} {{ selection }}"\
+
+if [ -z "$PREFIT_FAIL_VALUES" ]; then
+    PREFIT_FAIL_VALUES="-1 -1"
+fi
+if [ -z "$POSTFIT_FAIL_VALUES" ]; then
+    POSTFIT_FAIL_VALUES="-1 -1"
+fi
+
+echo "Writing the yield files for pass and fail regions"
+
+echo "{{ lepton_letter }} num tight"\
      "{{ l_is_inclusive }} {{ l_eta_low }} {{ l_eta_high }} {{ l_pt_low }} {{ l_pt_high }}"\
-     "$PREFIT_VALUES $POSTFIT_VALUES" > "$OUTPUT_DIR_JOB/fit_results.txt"
+     "$PREFIT_PASS_VALUES $POSTFIT_PASS_VALUES" > "fit_num_results.txt"
+echo "{{ lepton_letter }} den presel_not_tight"\
+     "{{ l_is_inclusive }} {{ l_eta_low }} {{ l_eta_high }} {{ l_pt_low }} {{ l_pt_high }}"\
+     "$PREFIT_FAIL_VALUES $POSTFIT_FAIL_VALUES" > "fit_den_results.txt"
 
-echo "Creating impact plots for {{ l_array }}"
+echo "Creating Impact plots"
 
 # we have to cd there since the ordinary output directory is going to be polluted with root files
 # and AFAICS there is no option to redirect these root files to a desired location other than $PWD
-OUTPUT_DIR_IMPACTS="$OUTPUT_DIR_JOB/impacts"
+OUTPUT_DIR_IMPACTS="impacts"
 mkdir -p $OUTPUT_DIR_IMPACTS
+cp $WSP_PATH $OUTPUT_DIR_IMPACTS
 cd $OUTPUT_DIR_IMPACTS
 
-combineTool.py                            \
-  -M Impacts                              \
-  -d $WSP_PATH                            \
-  -m $SIGNAL_RESONANCE                    \
-  --setRobustFitAlgo $MINIMIZERALGOS      \
-  -n {{ l_array }}                        \
-  --robustFit 1                           \
-  --doInitialFit                          \
-  --parallel $PARALLEL_JOBS               \
-  -v $VERBOSITY_LEVEL                     \
-  &> "$OUTPUT_DIR_JOB/impacts_initialFit.log"
+INITIAL_FIT_COMMAND="combineTool.py -M Impacts -m $SIGNAL_RESONANCE -d $WSP_PATH  --robustFit 1 --setRobustFitAlgo $MINIMIZERALGOS --doInitialFit --parallel $PARALLEL_JOBS -v $VERBOSITY_LEVEL &> impacts_initialFit.log"
+echo $INITIAL_FIT_COMMAND
+$INITIAL_FIT_COMMAND
 
-combineTool.py                            \
-  -M Impacts                              \
-  -d $WSP_PATH                            \
-  -m $SIGNAL_RESONANCE                    \
-  --setRobustFitAlgo $MINIMIZERALGOS      \
-  -n {{ l_array }}                        \
-  --robustFit 1                           \
-  --doFits                                \
-  --parallel $PARALLEL_JOBS               \
-  -v $VERBOSITY_LEVEL                     \
-  &> "$OUTPUT_DIR_JOB/impacts_allFits.log"
 
-JSON_PATH="$OUTPUT_DIR_JOB/impacts_{{ l_array }}.json"
+ALL_FIT_COMMAND="combineTool.py -M Impacts -m $SIGNAL_RESONANCE -d $WSP_PATH  --robustFit 1 --setRobustFitAlgo $MINIMIZERALGOS --doFits --parallel $PARALLEL_JOBS -v $VERBOSITY_LEVEL &> impacts_allFits.log"
+echo $ALL_FIT_COMMAND
+$ALL_FIT_COMMAND
 
-combineTool.py                            \
-  -M Impacts                              \
-  -d $WSP_PATH                            \
-  -m $SIGNAL_RESONANCE                    \
-  --robustFit 1                           \
-  --setRobustFitAlgo $MINIMIZERALGOS      \
-  -n {{ l_array }}                        \
-  --parallel $PARALLEL_JOBS               \
-  -o $JSON_PATH                           \
-  &> "$OUTPUT_DIR_JOB/impacts_json.log"
+JSON_PATH="impacts_final.json"
+IMPACT_COMMAND="combineTool.py -M Impacts -m $SIGNAL_RESONANCE -d $WSP_PATH  --robustFit 1 --setRobustFitAlgo $MINIMIZERALGOS --parallel $PARALLEL_JOBS -o $JSON_PATH &> impacts_json.log"
+echo $IMPACT_COMMAND
+$IMPACT_COMMAND
 
-plotImpacts.py  \
-  -i $JSON_PATH \
-  -o impacts    \
-  &> "$OUTPUT_DIR_JOB/impacts_plot.log"
 
-IMPACT_PLOT="$OUTPUT_DIR_JOB/impacts_{{ l_array }}.pdf"
+PLOT_IMPACT_COMMAND="plotImpacts.py -i $JSON_PATH  -o impacts"
+echo $PLOT_IMPACT_COMMAND
+$PLOT_IMPACT_COMMAND &> impacts_plot.log
+
+
+IMPACT_PLOT="impacts_final_plot.pdf"
 mv impacts.pdf "$IMPACT_PLOT"
 
 if [ -f "$IMPACT_PLOT" ]; then
-  echo "Created impact plot at $IMPACT_PLOT";
+  echo "Created impact plot at ${IMPACT_PLOT}";
 else
   echo "Failed to create the impact plot";
 fi
 
-cd $OLDPWD
+cd $OUTPUT_DIR

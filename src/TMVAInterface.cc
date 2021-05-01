@@ -1,6 +1,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/TMVAInterface.h"
 
-#include "tthAnalysis/HiggsToTauTau/interface/LocalFileInPath.h" // LocalFileInPath
+#include "tthAnalysis/HiggsToTauTau/interface/generalAuxFunctions.h" // get_fullpath()
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 #include "tthAnalysis/HiggsToTauTau/interface/MVAInputVarTransformer.h" // MVAInputVarTransformer
 
@@ -26,8 +26,7 @@ TMVAInterface::TMVAInterface(const std::string & mvaFileName,
     throw cmsException(this, __func__, __LINE__) << "Using wrong Mode for this constructor";
   }
 
-  const LocalFileInPath mvaFileName_fip(mvaFileName);
-  mvaFileName_ = mvaFileName_fip.fullPath();
+  mvaFileName_ = get_fullpath(mvaFileName);
 
   TMVA::Tools::Instance();
   mva_ = new TMVA::Reader("!V:!Silent");
@@ -64,11 +63,8 @@ TMVAInterface::TMVAInterface(const std::string & mvaFileName_odd,
     throw cmsException(this, __func__, __LINE__) << "Using wrong Mode for this constructor";
   }
 
-  const LocalFileInPath mvaFileName_odd_fip(mvaFileName_odd);
-  mvaFileName_odd_ = mvaFileName_odd_fip.fullPath();
-
-  const LocalFileInPath mvaFileName_even_fip(mvaFileName_even);
-  mvaFileName_even_ = mvaFileName_even_fip.fullPath();
+  mvaFileName_odd_ = get_fullpath(mvaFileName_odd);
+  mvaFileName_even_ = get_fullpath(mvaFileName_even);
 
   TMVA::Tools::Instance();
   mva_odd_ = new TMVA::Reader("!V:!Silent");
@@ -102,7 +98,7 @@ TMVAInterface::TMVAInterface(const std::string & mvaFileName,
   , mva_even_(nullptr)
   , isBDTTransform_(false)
   , mvaInputVariables_(mvaInputVariables)
-  , fitFunctionFileName_(LocalFileInPath(fitFunctionFileName).fullPath())
+  , fitFunctionFileName_(get_fullpath(fitFunctionFileName))
   , Transform_Ptr_(nullptr)
 {
 
@@ -116,8 +112,7 @@ TMVAInterface::TMVAInterface(const std::string & mvaFileName,
     Transform_Ptr_ = new MVAInputVarTransformer(mvaInputVariables, fitFunctionFileName_); // Intializing the new map and extracts the TF1s
   }
 
-  const LocalFileInPath mvaFileName_fip(mvaFileName);
-  mvaFileName_ = mvaFileName_fip.fullPath();
+  mvaFileName_ = get_fullpath(mvaFileName);
 
   TMVA::Tools::Instance();
   mva_ = new TMVA::Reader("!V:!Silent");
@@ -147,7 +142,7 @@ TMVAInterface::TMVAInterface(const std::string & mvaFileName_odd,
   , mva_even_(nullptr)
   , isBDTTransform_(false)
   , mvaInputVariables_(mvaInputVariables)
-  , fitFunctionFileName_(LocalFileInPath(fitFunctionFileName).fullPath())
+  , fitFunctionFileName_(get_fullpath(fitFunctionFileName))
   , Transform_Ptr_(nullptr)
 {
 
@@ -161,11 +156,8 @@ TMVAInterface::TMVAInterface(const std::string & mvaFileName_odd,
     Transform_Ptr_ = new MVAInputVarTransformer(mvaInputVariables, fitFunctionFileName_);
   }
 
-  const LocalFileInPath mvaFileName_odd_fip(mvaFileName_odd);
-  mvaFileName_odd_ = mvaFileName_odd_fip.fullPath();
-
-  const LocalFileInPath mvaFileName_even_fip(mvaFileName_even);
-  mvaFileName_even_ = mvaFileName_even_fip.fullPath();
+  mvaFileName_odd_ = get_fullpath(mvaFileName_odd);
+  mvaFileName_even_ = get_fullpath(mvaFileName_even);
 
   TMVA::Tools::Instance();
   mva_odd_ = new TMVA::Reader("!V:!Silent");
