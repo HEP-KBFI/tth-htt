@@ -965,14 +965,14 @@ DoubleToUInt_Convertor(double BDT_param,
   if ( !isNonRes && !spin_label.empty() )
   { 
     // add spin hypothesis to the output label
-    key += spin_label;
+    key += Form("_%s", spin_label.data());
   }
   return key;
 }
 
 std::map<std::string, std::map<std::string, double>>
 CreateResonantLBNOutputMap(const std::vector<double> & LBN_params,
-                           const std::vector<TensorFlowInterfaceLBN *>& LBN,
+                           const std::map<std::string, TensorFlowInterfaceLBN *> & LBN,
                            const std::map<std::string, const Particle*> & ll_particles,
                            std::map<std::string, double> & hl_mvaInputs,
                            int event_number,
@@ -988,12 +988,26 @@ CreateResonantLBNOutputMap(const std::vector<double> & LBN_params,
     if ( event_number != -1 )
     {
       // use odd-even method
-      LBNOutput_Map.insert(std::make_pair(key, (*LBN[i])(ll_particles, hl_mvaInputs, event_number)));
+      if ( LBN_params[i] <= 450 )
+      {
+        LBNOutput_Map.insert(std::make_pair(key, (*LBN.at(Form("%s_low", label.data())))(ll_particles, hl_mvaInputs, event_number)));
+      }
+      else
+      {
+        LBNOutput_Map.insert(std::make_pair(key, (*LBN.at(Form("%s_high", label.data())))(ll_particles, hl_mvaInputs, event_number)));
+      }
     }
     else
     {
       // use same LBN for all events
-      LBNOutput_Map.insert(std::make_pair(key, (*LBN[i])(ll_particles, hl_mvaInputs)));
+      if ( LBN_params[i] <= 450 )
+      {
+        LBNOutput_Map.insert(std::make_pair(key, (*LBN.at(Form("%s_low", label.data())))(ll_particles, hl_mvaInputs)));
+      }
+      else
+      {
+        LBNOutput_Map.insert(std::make_pair(key, (*LBN.at(Form("%s_high", label.data())))(ll_particles, hl_mvaInputs)));
+      }
     }
   }
   return LBNOutput_Map;

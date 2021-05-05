@@ -1018,7 +1018,7 @@ CreateNonResonantBDTOutputMap(const std::vector<std::string> & MVA_params,
  */
 std::map<std::string, std::map<std::string, double>> // keys = gen_mHH/bmName, event category
 CreateResonantLBNOutputMap(const std::vector<double> & LBN_params,
-                           const std::vector<TensorFlowInterfaceLBN *> & LBN,
+                           const std::map<std::string, TensorFlowInterfaceLBN *> & LBN,
                            const std::map<std::string, const Particle*> & ll_particles,
                            std::map<std::string, double> & hl_mvaInputs,
                            int event_number,
