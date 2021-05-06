@@ -965,7 +965,7 @@ DoubleToUInt_Convertor(double BDT_param,
   if ( !isNonRes && !spin_label.empty() )
   { 
     // add spin hypothesis to the output label
-    key += Form("_%s", spin_label.data());
+    key += spin_label;
   }
   return key;
 }
