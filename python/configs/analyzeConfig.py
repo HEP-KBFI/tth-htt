@@ -1225,6 +1225,7 @@ class analyzeConfig(object):
             'hhWeight_cfg.c2Scan_file',
             'hhWeight_cfg.cgScan_file',
             'hhWeight_cfg.c2gScan_file',
+            'hhWeight_cfg.extraScan_file',
             'hhWeight_cfg.scanMode',
             'hhWeight_cfg.apply_rwgt_lo',
             'hhWeight_cfg.rwgt_nlo_mode',
