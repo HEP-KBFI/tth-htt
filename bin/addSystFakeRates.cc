@@ -632,6 +632,8 @@ int main(int argc, char* argv[])
 
     std::cout << "norm = " << norm << " +/- " << normErr << std::endl;
     std::cout << "slope = " << slope << " +/- " << slopeErr << " (fitResult_isValid = " << fitResult_isValid << ")" << std::endl;
+    assert(norm > 0.); // require both integrals to be greater than 0
+    const double dy_closureNorm = std::fabs(1. - std::min(norm, 2.)); // keep between -1 and +1
 
     TH1* histogram_data_fakes = loadHistogram(inputFile, process);
     std::cout << "histogram_data_fakes:" << std::endl;
@@ -652,12 +654,6 @@ int main(int argc, char* argv[])
     for ( int idxBin = 1; idxBin <= histogram_fakes_mc->GetNbinsX(); ++idxBin ) {
       double binContent_data_fakes = histogram_data_fakes->GetBinContent(idxBin);
       double binError_data_fakes = histogram_data_fakes->GetBinError(idxBin);
-      //double dy_closureNorm;
-      //if ( norm > 1. ) dy_closureNorm = (norm + normErr) - 1.;
-      //else dy_closureNorm = 1. - (norm - normErr);      
-      double dy_closureNorm = TMath::Abs(norm - 1.);
-      if ( dy_closureNorm < -1. ) dy_closureNorm = -1.; // CV: keep integral of histogram_closureNormUp positive
-      if ( dy_closureNorm > +1. ) dy_closureNorm = +1.; // CV: keep integral of histogram_closureNormDown positive
       histogram_closureNormUp->SetBinContent(idxBin, binContent_data_fakes*(1. + dy_closureNorm));
       histogram_closureNormUp->SetBinError(idxBin, binError_data_fakes);
       histogram_closureNormDown->SetBinContent(idxBin, binContent_data_fakes*(1. - dy_closureNorm));
