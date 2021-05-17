@@ -289,7 +289,6 @@ for era in results:
   mkdir_p(era_dir)
   bdir = BASEDIR.format(era = era)
   for channel in CHANNELS:
-    if channel not in [ '0l_2tau', '2lss_1tau', '3l_1tau' ]: continue
     region = CHANNELS[channel]['dir']
     file_suffix = CHANNELS[channel]['file'] if 'file' in CHANNELS[channel] else region
 
