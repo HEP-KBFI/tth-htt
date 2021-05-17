@@ -209,7 +209,9 @@ def rescale(hadd_stage1_fn, output_fn, channel, sample_info, fitvar, mode):
   outputf = ROOT.TFile.Open(output_fn, 'recreate')
   outputf.cd()
   for hist_name in sorted(hists.keys()):
-    hists[hist_name].Write()
+    hist_copy = ROOT.TH1F()
+    hists[hist_name].Copy(hist_copy)
+    hist_copy.Write()
   outputf.Close()
   print("  => {}".format(output_fn))
 
