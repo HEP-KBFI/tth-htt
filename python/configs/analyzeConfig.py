@@ -2116,7 +2116,10 @@ class analyzeConfig(object):
         """Adds the commands to Makefile that are necessary for building the final histogram file.
         """
         if make_dependency is None:
-            make_dependency = self.make_dependency_hadd_stage2
+            if self.make_dependency_hadd_stage2 is not None:
+                make_dependency = self.make_dependency_hadd_stage2
+            else:
+                raise ValueError("Parameter 'self.make_dependency_hadd_stage2' not set. Please pass 'make_dependency' as function argument instead!")
         self.addToMakefile_hadd(lines_makefile, make_target, make_dependency, self.inputFiles_hadd_stage2, self.outputFile_hadd_stage2, 
           max_input_files_per_job, max_mem)
         lines_makefile.append("")
