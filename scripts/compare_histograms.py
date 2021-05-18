@@ -53,12 +53,16 @@ if __name__ == '__main__':
     hist2 = hists2[common_key]
     integral_diff = hist1['integral'] - hist2['integral']
     if abs(integral_diff) > 1e-4:
-      out_str = '  {} INT diff {:.3e}'.format(common_key, integral_diff)
+      out_str = '  {} INT diff {:.3e} ({:.3e} vs {:.3e})'.format(
+        common_key, integral_diff, hist1['integral'], hist2['integral']
+      )
       nof_bins1 = len(hist1['content'])
       nof_bins2 = len(hist2['content'])
       assert(nof_bins1 == nof_bins2)
       content_diff = [ hist1['content'][idx] - hist2['content'][idx] for idx in range(nof_bins1) ]
-      content_diff_str = ', '.join([ 'bin #{} -> {:.3e}'.format(idx, val) for idx, val in enumerate(content_diff) if abs(val) > 1e-4 ])
+      content_diff_str = ', '.join([ 'bin #{} -> {:.3e} ({:.3e} vs {:.3e})'.format(
+          idx, val, hist1['content'][idx], hist2['content'][idx]
+        ) for idx, val in enumerate(content_diff) if abs(val) > 1e-4 ])
       if content_diff_str:
         out_str += ' {} (total # bins: {})'.format(content_diff_str, nof_bins1)
       print(out_str)
