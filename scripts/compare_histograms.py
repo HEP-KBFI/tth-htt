@@ -37,8 +37,8 @@ if __name__ == '__main__':
   hists1_keyset = set(hists1.keys())
   hists2_keyset = set(hists2.keys())
   common_keyset = hists1_keyset & hists2_keyset
-  missing_from2 = hists1_keyset - common_keyset
-  missing_from1 = hists2_keyset - common_keyset
+  missing_from2 = list(sorted(hists1_keyset - common_keyset))
+  missing_from1 = list(sorted(hists2_keyset - common_keyset))
 
   print("Comparing {} to {}".format(input1, input2))
   if missing_from1:
