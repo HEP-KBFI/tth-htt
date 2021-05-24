@@ -61,10 +61,10 @@ struct addSystType
   {
     name_ = cfg.getParameter<std::string>("name");
     edm::ParameterSet cfg_fakes_mc = cfg.getParameter<edm::ParameterSet>("fakes_mc");
-    inputFileName_fakes_mc_ = cfg_fakes_mc.getParameter<std::string>("inputFileName");
+    inputFileName_fakes_mc_ = cfg_fakes_mc.getParameter<std::vector<std::string>>("inputFileName");
     histogramName_fakes_mc_ = cfg_fakes_mc.getParameter<std::string>("histogramName");
     edm::ParameterSet cfg_mcClosure = cfg.getParameter<edm::ParameterSet>("mcClosure");
-    inputFileName_mcClosure_ = cfg_mcClosure.getParameter<std::string>("inputFileName");
+    inputFileName_mcClosure_ = cfg_mcClosure.getParameter<std::vector<std::string>>("inputFileName");
     histogramName_mcClosure_ = cfg_mcClosure.getParameter<std::string>("histogramName");
   }
   ~addSystType() {}
@@ -72,13 +72,13 @@ struct addSystType
   {
     stream << "<addSystType>:" << std::endl;
     stream << " name = " << name_ << std::endl;
-    stream << " fakes_mc: inputFileName = " << inputFileName_fakes_mc_ << ", histogramName = " << histogramName_fakes_mc_ << std::endl;
-    stream << " mcClosure: inputFileName = " << inputFileName_mcClosure_ << ", histogramName = " << histogramName_mcClosure_ << std::endl;
+    stream << " fakes_mc: inputFileName = " << format_vstring(inputFileName_fakes_mc_) << ", histogramName = " << histogramName_fakes_mc_ << std::endl;
+    stream << " mcClosure: inputFileName = " << format_vstring(inputFileName_mcClosure_) << ", histogramName = " << histogramName_mcClosure_ << std::endl;
   }
   std::string name_;
-  std::string inputFileName_fakes_mc_;
+  std::vector<std::string> inputFileName_fakes_mc_;
   std::string histogramName_fakes_mc_;
-  std::string inputFileName_mcClosure_;
+  std::vector<std::string> inputFileName_mcClosure_;
   std::string histogramName_mcClosure_;
 };
 
@@ -503,16 +503,39 @@ int main(int argc, char* argv[])
 	addSystConfig != addSystConfigs.end(); ++addSystConfig ) {
     std::cout << "processing addSystConfig = '" << (*addSystConfig)->name_ << "'" << std::endl;
 
-    TFile* inputFile_fakes_mc = openInputFile((*addSystConfig)->inputFileName_fakes_mc_, inputFiles_syst);
-    TH1* histogram_fakes_mc = loadHistogram(inputFile_fakes_mc, (*addSystConfig)->histogramName_fakes_mc_);
+    TH1* histogram_fakes_mc = nullptr;
+    for(const std::string & inputFileName_fakes_mc: (*addSystConfig)->inputFileName_fakes_mc_)
+    {
+      TFile* inputFile_fakes_mc = openInputFile(inputFileName_fakes_mc, inputFiles_syst);
+      if(! histogram_fakes_mc)
+      {
+        histogram_fakes_mc = loadHistogram(inputFile_fakes_mc, (*addSystConfig)->histogramName_fakes_mc_);
+      }
+      else
+      {
+        histogram_fakes_mc->Add(loadHistogram(inputFile_fakes_mc, (*addSystConfig)->histogramName_fakes_mc_));
+      }
+    }
+    assert(histogram_fakes_mc);
     std::cout << "histogram_fakes_mc:" << std::endl;
     dumpHistogram(histogram_fakes_mc);
     TGraphAsymmErrors* graph_fakes_mc = convert_to_TGraph(histogram_fakes_mc);
     std::cout << "graph_fakes_mc:" << std::endl;
     dumpGraph(graph_fakes_mc);
     
-    TFile* inputFile_mcClosure = openInputFile((*addSystConfig)->inputFileName_mcClosure_, inputFiles_syst);
-    TH1* histogram_mcClosure = loadHistogram(inputFile_mcClosure, (*addSystConfig)->histogramName_mcClosure_);
+    TH1* histogram_mcClosure = nullptr;
+    for(const std::string & inputFileName_mcClosure: (*addSystConfig)->inputFileName_mcClosure_)
+    {
+      TFile* inputFile_mcClosure = openInputFile(inputFileName_mcClosure, inputFiles_syst);
+      if(! histogram_mcClosure)
+      {
+        histogram_mcClosure = loadHistogram(inputFile_mcClosure, (*addSystConfig)->histogramName_mcClosure_);
+      }
+      else
+      {
+        histogram_mcClosure->Add(loadHistogram(inputFile_mcClosure, (*addSystConfig)->histogramName_mcClosure_));
+      }
+    }
     std::cout << "histogram_mcClosure:" << std::endl;
     dumpHistogram(histogram_mcClosure);
     TGraphAsymmErrors* graph_mcClosure = convert_to_TGraph(histogram_mcClosure);
