@@ -536,6 +536,7 @@ int main(int argc, char* argv[])
         histogram_mcClosure->Add(loadHistogram(inputFile_mcClosure, (*addSystConfig)->histogramName_mcClosure_));
       }
     }
+    assert(histogram_mcClosure);
     std::cout << "histogram_mcClosure:" << std::endl;
     dumpHistogram(histogram_mcClosure);
     TGraphAsymmErrors* graph_mcClosure = convert_to_TGraph(histogram_mcClosure);
