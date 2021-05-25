@@ -1226,6 +1226,7 @@ class analyzeConfig(object):
             'hhWeight_cfg.c2Scan_file',
             'hhWeight_cfg.cgScan_file',
             'hhWeight_cfg.c2gScan_file',
+            'hhWeight_cfg.extraScan_file',
             'hhWeight_cfg.scanMode',
             'hhWeight_cfg.apply_rwgt_lo',
             'hhWeight_cfg.rwgt_nlo_mode',
@@ -1732,14 +1733,20 @@ class analyzeConfig(object):
         lines.append("process.addSystFakeRates.addSyst = cms.VPSet(")
         for lepton_and_hadTau_type in [ 'e', 'm', 't' ]:
             if ('add_Clos_%s' % lepton_and_hadTau_type) in jobOptions:
+                inputs_nominal = jobOptions['inputFile_nominal_%s' % lepton_and_hadTau_type]
+                inputs_mcClosure = jobOptions['inputFile_mcClosure_%s' % lepton_and_hadTau_type]
+                if type(inputs_nominal) == str:
+                  inputs_nominal = [ inputs_nominal ]
+                if type(inputs_mcClosure) == str:
+                  inputs_mcClosure = [ inputs_mcClosure ]
                 lines.append("    cms.PSet(")
                 lines.append("        name = cms.string('CMS_ttHl_Clos_%s')," % lepton_and_hadTau_type)
                 lines.append("        fakes_mc = cms.PSet(")
-                lines.append("            inputFileName = cms.string('%s')," % jobOptions['inputFile_nominal_%s' % lepton_and_hadTau_type])
+                lines.append("            inputFileName = cms.vstring(%s)," % inputs_nominal)
                 lines.append("            histogramName = cms.string('%s')," % jobOptions['histogramName_nominal_%s' % lepton_and_hadTau_type])
                 lines.append("        ),")
                 lines.append("        mcClosure = cms.PSet(")
-                lines.append("            inputFileName = cms.string('%s')," % jobOptions['inputFile_mcClosure_%s' % lepton_and_hadTau_type])
+                lines.append("            inputFileName = cms.vstring(%s)," % inputs_mcClosure)
                 lines.append("            histogramName = cms.string('%s')," % jobOptions['histogramName_mcClosure_%s' % lepton_and_hadTau_type])
                 lines.append("        ),")
                 lines.append("    ),")
@@ -2116,7 +2123,10 @@ class analyzeConfig(object):
         """Adds the commands to Makefile that are necessary for building the final histogram file.
         """
         if make_dependency is None:
-            make_dependency = self.make_dependency_hadd_stage2
+            if self.make_dependency_hadd_stage2 is not None:
+                make_dependency = self.make_dependency_hadd_stage2
+            else:
+                raise ValueError("Parameter 'self.make_dependency_hadd_stage2' not set. Please pass 'make_dependency' as function argument instead!")
         self.addToMakefile_hadd(lines_makefile, make_target, make_dependency, self.inputFiles_hadd_stage2, self.outputFile_hadd_stage2, 
           max_input_files_per_job, max_mem)
         lines_makefile.append("")

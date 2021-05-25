@@ -48,10 +48,6 @@ const std::vector<HHCoupling> HHWeightInterfaceCouplings::JHEP03_ = {
   {  5.68, 0.83,  1./3., -0.5*1.5,    1./3.*(-3.), "JHEP03BM6",  "BM3" }, // [*]
   { -0.10, 0.94,  1.,     1./6.*1.5, -1./6.*(-3.), "JHEP03BM7",  "BM9" }, // [*]
 };
-const std::vector<HHCoupling> HHWeightInterfaceCouplings::extra_ = {
-  { 0., 1., 0., 0., 0., "extrabox",           },
-  { 0., 1., 1., 0., 0., "extraForMultiDimC2", },
-};
 // [*] https://github.com/HEP-KBFI/hh-multilepton/issues/38#issuecomment-821278740
 
 TH2 *
@@ -102,6 +98,7 @@ HHWeightInterfaceCouplings::HHWeightInterfaceCouplings(const edm::ParameterSet &
   const std::string applicationLoadFile_c2Scan = cfg.getParameter<std::string>("c2Scan_file");
   const std::string applicationLoadFile_cgScan = cfg.getParameter<std::string>("cgScan_file");
   const std::string applicationLoadFile_c2gScan = cfg.getParameter<std::string>("c2gScan_file");
+  const std::string applicationLoadFile_extraScan = cfg.getParameter<std::string>("extraScan_file");
 
   const std::vector<std::string> scanMode = cfg.getParameter<std::vector<std::string>>("scanMode");
   const bool isDEBUG = cfg.getParameter<bool>("isDEBUG");
@@ -123,14 +120,6 @@ HHWeightInterfaceCouplings::HHWeightInterfaceCouplings(const edm::ParameterSet &
   if(contains(scanMode, "JHEP03"))
   {
     for(const HHCoupling & coupling: JHEP03_)
-    {
-      assert(! couplings_.count(coupling.name()));
-      couplings_[coupling.name()] = coupling;
-    }
-  }
-  if(contains(scanMode, "extra"))
-  {
-    for(const HHCoupling & coupling: extra_)
     {
       assert(! couplings_.count(coupling.name()));
       couplings_[coupling.name()] = coupling;
@@ -163,6 +152,11 @@ HHWeightInterfaceCouplings::HHWeightInterfaceCouplings(const edm::ParameterSet &
     const std::string applicationLoadPath_c2gScan = get_fullpath(applicationLoadFile_c2gScan);
     loadScanFile(applicationLoadPath_c2gScan, "c2g_", 4, isDEBUG);
   }
+  if(contains(scanMode, "extra") && ! applicationLoadFile_extraScan.empty())
+  {
+    const std::string applicationLoadPath_extraScan = get_fullpath(applicationLoadFile_extraScan);
+    loadScanFile(applicationLoadPath_extraScan, "extra_", 5, isDEBUG);
+  }
 
   std::cout
       << get_human_line(this, __func__, __LINE__)
@@ -191,17 +185,31 @@ HHWeightInterfaceCouplings::loadScanFile(const std::string & filePath,
     }
     std::vector<std::string> line_split;
     boost::split(line_split, line, boost::is_any_of(" "), boost::token_compress_on);
-    assert(line_split.size() == 5);
+    const std::size_t nof_cols = line_split.size();
+    assert(nof_cols == 5 || nof_cols == 6);
 
     std::vector<double> values;
     std::transform(
-      line_split.begin(), line_split.end(), std::back_inserter(values),
+      line_split.begin(), line_split.begin() + 5, std::back_inserter(values),
       [](const std::string & value_string) -> double { return std::stod(value_string); }
     );
 
-    std::string bmName = prefix + to_string_with_precision(values.at(idx));
-    boost::replace_all(bmName, "-", "m");
-    boost::replace_all(bmName, ".", "p");
+    std::string bmName = prefix;
+    if(idx < 5)
+    {
+      bmName += to_string_with_precision(values.at(idx));
+      boost::replace_all(bmName, "-", "m");
+      boost::replace_all(bmName, ".", "p");
+    }
+    else if(idx == 5)
+    {
+      assert(nof_cols == 6);
+      bmName += line_split.at(idx);
+    }
+    else
+    {
+      throw cmsException(this, __func__, __LINE__) << "Invalid number of columns in file: " << filePath;
+    }
     if(isDEBUG)
     {
       std::cout << "bmName = " << bmName << '\n';

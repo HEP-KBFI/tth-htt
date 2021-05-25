@@ -69,7 +69,6 @@ private:
 
   static const std::vector<HHCoupling> JHEP04_;
   static const std::vector<HHCoupling> JHEP03_;
-  static const std::vector<HHCoupling> extra_;
 
   HHWeightInterfaceNLOMode nlo_mode_;
   const std::string denominator_file_lo_;
