@@ -1179,6 +1179,7 @@ class analyzeConfig(object):
             'fillGenEvtHistograms',
             'selectBDT',
             'secondBDT',
+            'split_resonant_training',
             'doDataMCPlots',
             'useNonNominal',
             'apply_hlt_filter',
