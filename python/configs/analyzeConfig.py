@@ -428,7 +428,7 @@ class analyzeConfig(object):
         if self.nonResBMs:
           self.nonResBM_points.append('SM')
         for nonResBM in self.nonResBMs:
-          self.nonResBM_points.extend([ '{}{}'.format(nonResBM, nonResPoint) for nonResPoint in NONRESONANT_POINTS[nonResBM] ])
+          self.nonResBM_points.extend(NONRESONANT_POINTS[nonResBM])
 
         samples_to_stitch = []
         if self.era == '2016':
@@ -593,8 +593,7 @@ class analyzeConfig(object):
             [ copy.deepcopy(find_tHweight(tHweights, thIdx)) for thIdx in self.thIdxs ]
           )
         ))
-        self.kt_weights = read_couplings('kt', coupling_as_prefix = True)
-        self.BM_weights = [ 'SM' ] + [ 'BM{}'.format(idx) for idx in range(1, 13) ]
+        self.kt_weights = read_couplings('kt')
 
         self.jobOptions_analyze = {}
         self.inputFiles_hadd_stage1 = {}
@@ -1221,6 +1220,8 @@ class analyzeConfig(object):
             'hhWeight_cfg.denominator_file_lo',
             'hhWeight_cfg.denominator_file_nlo',
             'hhWeight_cfg.histtitle',
+            'hhWeight_cfg.JHEP04Scan_file',
+            'hhWeight_cfg.JHEP03Scan_file',
             'hhWeight_cfg.klScan_file',
             'hhWeight_cfg.ktScan_file',
             'hhWeight_cfg.c2Scan_file',
