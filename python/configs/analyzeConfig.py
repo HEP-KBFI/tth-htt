@@ -423,7 +423,7 @@ class analyzeConfig(object):
         self.nonResBMs = []
         self.nonResBM_points = []
         for nonresPoint in NONRESONANT_POINTS:
-          if any(nonresPoint in histogram_to_fit for histogram_to_fit in self.histograms_to_fit):
+          if all('MVAOutput_{}'.format(bmName) in self.histograms_to_fit for bmName in NONRESONANT_POINTS[nonresPoint]):
             self.nonResBMs.append(nonresPoint)
         if self.nonResBMs:
           self.nonResBM_points.append('SM')
