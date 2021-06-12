@@ -43,12 +43,16 @@ def process_file_explicitly(fn):
   pv_x = array.array('f', [0.])
   pv_y = array.array('f', [0.])
   pv_z = array.array('f', [0.])
+  met_pt = array.array('f', [0.])
+  met_phi = array.array('f', [0.])
   tree.SetBranchAddress('run', run)
   tree.SetBranchAddress('luminosityBlock', lumi)
   tree.SetBranchAddress('event', evt)
   tree.SetBranchAddress('PV_x', pv_x)
   tree.SetBranchAddress('PV_y', pv_y)
   tree.SetBranchAddress('PV_z', pv_z)
+  tree.SetBranchAddress('PuppiMET_pt', met_pt)
+  tree.SetBranchAddress('PuppiMET_phi', met_phi)
   tree.SetBranchStatus('*', 0)
   tree.SetBranchStatus('run', 1)
   tree.SetBranchStatus('luminosityBlock', 1)
@@ -56,18 +60,23 @@ def process_file_explicitly(fn):
   tree.SetBranchStatus('PV_x', 1)
   tree.SetBranchStatus('PV_y', 1)
   tree.SetBranchStatus('PV_z', 1)
+  tree.SetBranchStatus('PuppiMET_pt', 1)
+  tree.SetBranchStatus('PuppiMET_phi', 1)
   nof_events = tree.GetEntries()
 
   rles = []
-  pv_x_prev, pv_y_prev, pv_z_prev = -1e6,  -1e6,  -1e6
+  pv_x_prev, pv_y_prev, pv_z_prev, met_pt_prev, met_phi_prev = -1e6,  -1e6,  -1e6, -1e6, -1e6
   for event_idx in range(nof_events):
     tree.GetEntry(event_idx)
-    if abs(pv_x_prev - pv_x[0]) < 1e-4 and abs(pv_y_prev - pv_y[0]) < 1e-4 and abs(pv_z_prev - pv_z[0]) < 1e-4:
+    if abs(pv_x_prev - pv_x[0]) < 1e-4 and abs(pv_y_prev - pv_y[0]) < 1e-4 and abs(pv_z_prev - pv_z[0]) < 1e-4 and \
+        abs(met_pt_prev - met_pt[0]) < 1e-4 and abs(met_phi_prev - met_phi[0]) < 1e-4:
       rle = ':'.join([ str(x[0]) for x in [run, lumi, evt] ])
       rles.append(rle)
     pv_x_prev = pv_x[0]
     pv_y_prev = pv_y[0]
     pv_z_prev = pv_z[0]
+    met_pt_prev = met_pt[0]
+    met_phi_prev = met_phi[0]
   fptr.Close()
   return rles
 
@@ -112,8 +121,9 @@ def get_blacklist(predecessors, successors, nof_threads, files_to_ignore, condit
 
     if '2021Feb' in sample_path and sample_info['type'] == 'data' and condition == 'pre':
       logging.info("Need to explicitly process {} since the Ntuples were recreated later".format(dbs_key))
+      sample_path_post = successors[dbs_key]['local_paths'][0]['path']
       file_candidates = [
-        os.path.join(sample_path, '{:04d}'.format(file_idx // 1000), 'tree_{}.root'.format(file_idx)) \
+        os.path.join(sample_path_post, '{:04d}'.format(file_idx // 1000), 'tree_{}.root'.format(file_idx)) \
         for file_idx in range(1, nof_files_post + 1)
       ]
       files_to_check = [
