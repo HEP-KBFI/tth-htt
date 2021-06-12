@@ -102,6 +102,9 @@ def get_blacklist(predecessors, successors, nof_threads, files_to_ignore, condit
   for dbs_key, sample_info in predecessors.items():
     if dbs_key == 'sum_events':
       continue
+    if dbs_key not in successors:
+      logging.warning("Cannot find {} in the successor dictionary".format(dbs_key))
+      continue
 
     sample_path = sample_info['local_paths'][0]['path']
     nof_files_post = successors[dbs_key]['nof_files']
@@ -122,9 +125,6 @@ def get_blacklist(predecessors, successors, nof_threads, files_to_ignore, condit
         pool.terminate()
         sys.exit(1)
     else:
-      if dbs_key not in successors:
-        logging.warning("Cannot find {} in the successor dictionary".format(dbs_key))
-        continue
       nof_files_pre = sample_info['nof_files']
       blacklist_pre = sample_info['local_paths'][0]['blacklist']
       nof_files_pre_eff = nof_files_pre - len(blacklist_pre)
