@@ -130,6 +130,7 @@ class analyzeConfig(object):
           apply_pileupJetID               = 'disabled',
           do_stxs                         = False,
           apply_genPhotonFilter           = False,
+          blacklist                       = None,
       ):
 
         self.configDir = configDir
@@ -597,6 +598,14 @@ class analyzeConfig(object):
           )
         ))
         self.kt_weights = read_couplings('kt')
+
+        self.blacklist_files = []
+        if blacklist:
+          blacklist_base = os.path.join('tthAnalysis', 'HiggsToTauTau', 'data')
+          for blacklist_type in blacklist:
+            blacklist_fn = os.path.join(blacklist_base, 'blacklist_{}_{}.txt'.format(blacklist_type, era))
+            assert(os.path.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', blacklist_fn)))
+            self.blacklist_files.append(blacklist_fn)
 
         self.jobOptions_analyze = {}
         self.inputFiles_hadd_stage1 = {}
@@ -1095,6 +1104,12 @@ class analyzeConfig(object):
             jobOptions['lep_mva_cut_mu_forLepton3'] = float(self.lep_mva_cut_mu_forLepton3)            
         if 'lep_mva_cut_e_forLepton3' not in jobOptions and "default" not in self.lep_mva_cut_e_forLepton3:
             jobOptions['lep_mva_cut_e_forLepton3'] = float(self.lep_mva_cut_e_forLepton3)
+
+        jobOptions['enable_blacklist'] = bool(self.blacklist_files)
+        if self.blacklist_files:
+          jobOptions['blacklist.inputFileNames'] = self.blacklist_files
+          jobOptions['blacklist.sampleName'] = sample_info['process_name_specific']
+
         # We employ different types of lepton selection criteria, and we don't clean the had taus in post-production,
         # which means that the object mulitplicities determined in post-production cannot be used when running the analysis
         jobOptions['useObjectMultiplicity'] = False
@@ -1244,6 +1259,9 @@ class analyzeConfig(object):
             'apply_genPhotonFilter',
             'save_dXsec_HHWeightInterfaceNLO',
             'nonRes_BMs',
+            'enable_blacklist',
+            'blacklist.inputFileNames',
+            'blacklist.sampleName',
         ]
         jobOptions_typeMapping = {
             'central_or_shifts_local' : 'cms.vstring(%s)',
