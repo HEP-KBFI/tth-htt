@@ -95,14 +95,11 @@ def process_files(sample_name, files_to_check, process_explicitly):
   return sample_name, rles
 
 def get_blacklist(predecessors, successors, nof_threads, files_to_ignore, condition):
-  blacklist = collections.OrderedDict()
+  blacklist = []
+  results = []
 
-  def update_blacklist(results):
-    sample_name = results[0]
-    rles = results[1]
-    if sample_name not in blacklist:
-      blacklist[sample_name] = []
-    blacklist[sample_name].extend(rles)
+  def update_blacklist(job_result):
+    blacklist.append(job_result)
 
   original_sigint_handler = signal.signal(signal.SIGINT, signal.SIG_IGN)
   pool = multiprocessing.Pool(nof_threads)
@@ -130,7 +127,8 @@ def get_blacklist(predecessors, successors, nof_threads, files_to_ignore, condit
         file_candidate for file_candidate in file_candidates if file_candidate not in files_to_ignore
       ]
       try:
-        pool.apply_async(process_files, args = (sample_name, files_to_check, True), callback = update_blacklist)
+        result = pool.apply_async(process_files, args = (sample_name, files_to_check, True), callback = update_blacklist)
+        results.append(result)
       except KeyboardInterrupt:
         pool.terminate()
         sys.exit(1)
@@ -182,15 +180,18 @@ def get_blacklist(predecessors, successors, nof_threads, files_to_ignore, condit
         files_skipped += len([ file_candidate for file_candidate in file_candidates if file_candidate in files_to_ignore ])
 
       try:
-        pool.apply_async(process_files, args = (sample_name, files_to_check, False), callback = update_blacklist)
+        result = pool.apply_async(process_files, args = (sample_name, files_to_check, False), callback = update_blacklist)
+        results.append(result)
       except KeyboardInterrupt:
         pool.terminate()
         sys.exit(1)
 
+  for result in results:
+    result.wait()
   pool.close()
   pool.join()
 
-  return blacklist
+  return collections.OrderedDict(blacklist)
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(
