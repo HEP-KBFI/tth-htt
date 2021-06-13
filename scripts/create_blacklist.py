@@ -92,9 +92,10 @@ def process_files(sample_name, files_to_check, process_explicitly):
       rles.extend(process_file_explicitly(file_to_check))
     else:
       rles.append(get_1st_rle(file_to_check))
+  assert(len(set(rles)) == len(rles))
   return sample_name, rles
 
-def get_blacklist(predecessors, successors, nof_threads, files_to_ignore, condition):
+def get_blacklist(predecessors, successors, nof_threads, files_to_ignore, samples, condition):
   blacklist = []
   results = []
 
@@ -115,6 +116,9 @@ def get_blacklist(predecessors, successors, nof_threads, files_to_ignore, condit
     sample_path = sample_info['local_paths'][0]['path']
     nof_files_post = successors[dbs_key]['nof_files']
     sample_name = sample_info['process_name_specific']
+
+    if samples and sample_name not in samples:
+      continue
 
     if '2021Feb' in sample_path and sample_info['type'] == 'data' and condition == 'pre':
       logging.info("Need to explicitly process {} since the Ntuples were recreated later".format(dbs_key))
@@ -164,7 +168,10 @@ def get_blacklist(predecessors, successors, nof_threads, files_to_ignore, condit
         )
       file_idxs_flat = [ file_idx for file_idx in range(1, nof_files_pre + 1) if file_idx not in blacklist_pre ]
       assert(len(file_idxs_flat) == nof_files_pre_eff)
-      file_idx_chunks = [ file_idxs_flat[chunk_idx:chunk_idx + splitting_expected] for chunk_idx in range(nof_files_post) ]
+      file_idx_chunks = [
+        file_idxs_flat[chunk_idx * splitting_expected:(chunk_idx + 1) * splitting_expected] \
+        for chunk_idx in range(nof_files_post)
+      ]
       assert(len(file_idx_chunks) == nof_files_post and all(len(chunk) <= splitting_expected for chunk in file_idx_chunks))
 
       files_skipped = 0
@@ -213,12 +220,17 @@ if __name__ == '__main__':
     type = str, dest = 'output', metavar = 'path', required = False, default = '.',
     help = 'R|Output directory',
   )
+  parser.add_argument('-s', '--samples',
+    type = str, dest = 'samples', metavar = 'sample', required = False, nargs = '+', default = [],
+    help = 'R|Determine the blacklist only for a selection of samples',
+  )
   args = parser.parse_args()
 
   files_to_ignore_txt = args.ignore
   era = args.era
   output_dir = os.path.abspath(args.output)
   nof_threads = args.nthreads
+  samples = args.samples
 
   if not os.path.isdir(output_dir):
     raise RuntimeError("No such directory: %s" % output_dir)
@@ -236,10 +248,10 @@ if __name__ == '__main__':
   samples_skimmed_bbww_sl     = load_samples_hh_bbww(era, suffix = "preselected_sl")
 
   blacklist = collections.OrderedDict([
-    ('postproc',            get_blacklist(samples_preprocessed,  samples_postprocessed,       nof_threads, files_to_ignore, 'pre')),
-    ('skimmed_multilepton', get_blacklist(samples_postprocessed, samples_skimmed_multilepton, nof_threads, files_to_ignore, 'post')),
-    ('skimmed_bbww',        get_blacklist(samples_postprocessed, samples_skimmed_bbww,        nof_threads, files_to_ignore, 'post')),
-    ('skimmed_bbww_sl',     get_blacklist(samples_postprocessed, samples_skimmed_bbww_sl,     nof_threads, files_to_ignore, 'post_sl')),
+    ('postproc',            get_blacklist(samples_preprocessed,  samples_postprocessed,       nof_threads, files_to_ignore, samples, 'pre')),
+    ('skimmed_multilepton', get_blacklist(samples_postprocessed, samples_skimmed_multilepton, nof_threads, files_to_ignore, samples, 'post')),
+    ('skimmed_bbww',        get_blacklist(samples_postprocessed, samples_skimmed_bbww,        nof_threads, files_to_ignore, samples, 'post')),
+    ('skimmed_bbww_sl',     get_blacklist(samples_postprocessed, samples_skimmed_bbww_sl,     nof_threads, files_to_ignore, samples, 'post_sl')),
   ])
 
   for blacklist_type in blacklist:
