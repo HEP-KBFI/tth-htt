@@ -1105,8 +1105,8 @@ class analyzeConfig(object):
         if 'lep_mva_cut_e_forLepton3' not in jobOptions and "default" not in self.lep_mva_cut_e_forLepton3:
             jobOptions['lep_mva_cut_e_forLepton3'] = float(self.lep_mva_cut_e_forLepton3)
 
-        jobOptions['enable_blacklist'] = bool(self.blacklist_files)
         if self.blacklist_files:
+          jobOptions['enable_blacklist'] = True
           jobOptions['blacklist.inputFileNames'] = self.blacklist_files
           jobOptions['blacklist.sampleName'] = sample_info['process_name_specific']
 
