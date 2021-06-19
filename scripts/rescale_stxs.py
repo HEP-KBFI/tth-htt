@@ -8,37 +8,48 @@ import collections
 import prettytable
 import copy
 import os
+import sys
 
 MODES = [ 'stxsOnly', 'inclusiveOnly' ]
 BASEDIR = '/hdfs/local/karl/ttHAnalysis/{era}/2020Nov27/histograms'
 OUTPUTDIR = os.path.join(os.getenv('HOME'), 'stxs_rescaled')
+
+assert(len(sys.argv) == 2)
+STXS_DIR_BASE = sys.argv[1]
+assert(os.path.isdir(STXS_DIR_BASE))
+STXS_DIR = os.path.join(STXS_DIR_BASE, '{era}/2020Jun18/datacards')
 
 CHANNELS = collections.OrderedDict([
   ('0l_2tau',   {
     'dir' : 'Tight_OS',
     'title' : 'OS_Tight',
     'fitvar' : 'mvaOutput_Legacy',
+    'stxsvar' : 'stxs_0l_2tau_0l_2tau_mvaOutput_Legacy_OS',
   }),
   ('1l_1tau',   {
     'dir' : 'Tight_disabled',
     'title' : 'Tight',
     'fitvar' : 'mvaOutput_Legacy_6',
+    'stxsvar' : 'stxs_1l_1tau_1l_1tau_mvaOutput_Legacy_6_disabled',
   }),
   ('1l_2tau',   {
     'dir' : 'Tight_OS',
     'title' : 'OS_Tight',
     'fitvar' : 'mvaOutput_legacy',
+    'stxsvar' : 'stxs_1l_2tau_mvaOutput_legacy_OS',
   }),
   ('2l_2tau',   {
     'dir' : 'Tight_sumOS',
     'title' : 'sumOS_Tight',
     'fitvar' : 'mvaOutput_final',
     'file' : 'lepdisabled_taudisabled_Tight_sumOS',
+    'stxsvar' : 'stxs_2l_2tau_lepdisabled_taudisabled_sumOS_mvaOutput_final',
   }),
   ('2los_1tau', {
     'dir' : 'Tight',
     'title' : 'Tight',
     'fitvar' : 'mvaOutput_legacy',
+    'stxsvar': 'stxs_2los_1tau_mvaOutput_legacy',
   }),
   ('2lss_1tau', {
     'dir' : 'Tight_SS_OS',
@@ -49,11 +60,17 @@ CHANNELS = collections.OrderedDict([
       'ttH' : 'output_NN_ttH',
     },
     'file' : 'Tight_lepSS_sumOS',
+    'stxsvar': {
+      'rest' : 'stxs_2lss_1tau_sumOS_output_NN_rest',
+      'tH' : 'stxs_2lss_1tau_sumOS_output_NN_tH',
+      'ttH' : 'stxs_2lss_1tau_sumOS_output_NN_ttH',
+    },
   }),
   ('3l_1tau',   {
     'dir' : 'Tight_OS',
     'title' : 'OS_lepTight_hadTauTight',
     'fitvar' : 'mvaOutput_legacy',
+    'stxsvar': 'stxs_3l_1tau_OS_mvaOutput_legacy',
   }),
 ])
 
@@ -91,6 +108,69 @@ def rename_bin(key):
     key = key.replace('Gt', '')
     key += '_infty'
   return key
+
+def rescale_stxs(stxs_dir, output_fn, channel, sample_info, stxsvar, mode):
+  assert(mode in MODES)
+  input_fn = os.path.join(stxs_dir, channel, 'stxs', '{}.root'.format(stxsvar))
+  print('Rescaling: {}'.format(input_fn))
+  assert(os.path.isfile(input_fn))
+
+  inputf = ROOT.TFile.Open(input_fn, 'read')
+
+  cat = sample_info['cat']
+  assert(cat == 'ttH')
+  xs = sample_info['xs']
+
+  hists = collections.OrderedDict()
+  hkeys = [ hkey.GetName() for hkey in inputf.GetListOfKeys() ]
+  for hkey in hkeys:
+    if not hkey.startswith('ttH'):
+      continue
+    if ('fake' in hkey and 'faketau' not in hkey) or 'Convs' in hkey or 'flip' in hkey:
+      continue
+    if 'faketau' in hkey or 'gentau' in hkey:
+      assert(channel in [ '2lss_1tau', '3l_1tau' ])
+    if ('PTH' in hkey and mode == 'inclusiveOnly') or ('PTH' not in hkey and mode == 'stxsOnly'):
+      continue
+
+    hkey_new = hkey.replace('__', '_')
+    if hkey_new.endswith('_'):
+      hkey_new = hkey_new[:-1]
+    if hkey_new in hists:
+      raise RuntimeError("Found duplicate histogram name (%s -> %s)" % (hkey, hkey_new))
+
+    hist = inputf.Get(hkey)
+    hist.SetDirectory(0)
+    hist.SetName(hkey_new)
+    hist.SetTitle(hkey_new)
+
+    stxs_bin = ''
+    if 'PTH_fwd' in hkey_new:
+      stxs_bin = 'PTH_fwd'
+    elif 'PTH' in hkey_new:
+      hkey_split = hkey.split('_')
+      pth_idx = hkey_split.index('PTH')
+      stxs_bin = '_'.join(hkey_split[pth_idx:pth_idx + 3])
+    if stxs_bin:
+      syst_name = 'central'
+      for syst in sample_info['counts']['inclusive']:
+        syst_cand = 'CMS_ttHl_{}'.format(syst)
+        if syst_cand in hkey_new:
+          syst_name = syst
+          break
+      sf = xs * sample_info['counts'][stxs_bin][syst_name] / sample_info['counts']['inclusive'][syst_name]
+      hist.Scale(sf)
+      #print('Scaled {} by {:.6f} ({})'.format(hkey_new, sf, syst_name))
+    hists[hkey_new] = hist
+
+  outputf = ROOT.TFile.Open(output_fn, 'recreate')
+  outputf.cd()
+  for hist_name in sorted(hists.keys()):
+    hist_copy = ROOT.TH1F()
+    hists[hist_name].Copy(hist_copy)
+    hist_copy.Write()
+  outputf.Close()
+  print("  => {}".format(output_fn))
 
 def rescale(hadd_stage1_fn, output_fn, channel, sample_info, fitvar, mode):
   assert(mode in MODES)
@@ -271,49 +351,63 @@ for era in list(map(str, range(2016, 2019))):
       for proc in common_procs:
         results[era][proc]['counts'] = counts
 
-for era in results:
-  for proc_name in results[era]:
-    nof_events = results[era][proc_name]['counts']
-    xs = results[era][proc_name]['xs']
-    assert('inclusive' in nof_events)
-    systs = list(nof_events['inclusive'].keys())
-    table = prettytable.PrettyTable([ '{} ({})'.format(proc_name, era) ] + systs)
-    for bin_name in nof_events:
-      if bin_name == 'inclusive':
-        continue
-      row = [ bin_name ] + [
-        '{:.3e}'.format(xs * nof_events[bin_name][syst] / nof_events['inclusive'][syst]) for syst in systs
-      ]
-      table.add_row(row)
-    #print(table)
+for extract_tth in [ True, False ]:
+  for era in results:
+    stxs_dir = STXS_DIR.format(era = era)
+    for proc_name in results[era]:
+      nof_events = results[era][proc_name]['counts']
+      xs = results[era][proc_name]['xs']
+      assert('inclusive' in nof_events)
+      systs = list(nof_events['inclusive'].keys())
+      table = prettytable.PrettyTable([ '{} ({})'.format(proc_name, era) ] + systs)
+      for bin_name in nof_events:
+        if bin_name == 'inclusive':
+          continue
+        row = [ bin_name ] + [
+          '{:.3e}'.format(xs * nof_events[bin_name][syst] / nof_events['inclusive'][syst]) for syst in systs
+        ]
+        table.add_row(row)
+      #print(table)
 
-  era_dir = os.path.join(OUTPUTDIR, era)
-  mkdir_p(era_dir)
-  bdir = BASEDIR.format(era = era)
-  for channel in CHANNELS:
-    region = CHANNELS[channel]['dir']
-    file_suffix = CHANNELS[channel]['file'] if 'file' in CHANNELS[channel] else region
+    era_dir = os.path.join(OUTPUTDIR, era)
+    mkdir_p(era_dir)
+    bdir = BASEDIR.format(era = era)
+    for channel in CHANNELS:
+      region = CHANNELS[channel]['dir']
+      file_suffix = CHANNELS[channel]['file'] if 'file' in CHANNELS[channel] else region
 
-    region_dir = os.path.join(bdir, channel, region)
-    if not os.path.isdir(region_dir):
-      raise RuntimeError("No such directory: %s" % region_dir)
-    proc_names = [ dname for dname in os.listdir(region_dir) if dname != 'hadd' ]
-    if not all(proc_name in results[era] for proc_name in proc_names):
-      missing_procs = [ proc_name for proc_name in proc_names if proc_name not in results[era] ]
-      raise RuntimeError("No event counts found for sample %s in era %s" % (proc_name, era))
-    for proc_name in proc_names:
-      hadd_stage1_fn = os.path.join(region_dir, proc_name, 'hadd_stage1_{}_{}.root'.format(proc_name, file_suffix))
-      if not os.path.isfile(hadd_stage1_fn):
-        raise RuntimeError("No such file found: %s" % hadd_stage1_fn)
+      region_dir = os.path.join(bdir, channel, region)
+      if not os.path.isdir(region_dir):
+        raise RuntimeError("No such directory: %s" % region_dir)
+
       subchannels = {}
-      if type(CHANNELS[channel]['fitvar']) == str:
-        subchannels[channel] = CHANNELS[channel]['fitvar']
-      elif type(CHANNELS[channel]['fitvar']) == dict:
-        for fitvar in CHANNELS[channel]['fitvar']:
-          subchannels['{}_{}'.format(channel, fitvar)] = CHANNELS[channel]['fitvar'][fitvar]
+      subch_key = 'stxsvar' if extract_tth else 'fitvar'
+      if type(CHANNELS[channel][subch_key]) == str:
+        subchannels[channel] = CHANNELS[channel][subch_key]
+      elif type(CHANNELS[channel][subch_key]) == dict:
+        for subch_var in CHANNELS[channel][subch_key]:
+          subchannels['{}_{}'.format(channel, subch_var)] = CHANNELS[channel][subch_key][subch_var]
       else:
         assert(False)
-      for subchannel in subchannels:
-        for mode in MODES:
-          output_fn = os.path.join(era_dir, 'hadd_stage1_rescaled_{}_{}_{}.root'.format(subchannel, proc_name, mode))
-          rescale(hadd_stage1_fn, output_fn, channel, results[era][proc_name], subchannels[subchannel], mode)
+
+      if extract_tth:
+        proc_names = [ proc_name for proc_name in results[era] if proc_name.startswith('ttH') ]
+        assert(len(proc_names) == 1)
+        proc_name = proc_names[0]
+        for subchannel in subchannels:
+          for mode in MODES:
+            output_fn = os.path.join(era_dir, 'hadd_stage1_rescaled_{}_{}_{}.root'.format(subchannel, proc_name, mode))
+            rescale_stxs(stxs_dir, output_fn, channel, results[era][proc_name], subchannels[subchannel], mode)
+      else:
+        proc_names = [ dname for dname in os.listdir(region_dir) if dname != 'hadd' ]
+        if not all(proc_name in results[era] for proc_name in proc_names):
+          missing_procs = [ proc_name for proc_name in proc_names if proc_name not in results[era] ]
+          raise RuntimeError("No event counts found for sample %s in era %s" % (proc_name, era))
+        for proc_name in proc_names:
+          hadd_stage1_fn = os.path.join(region_dir, proc_name, 'hadd_stage1_{}_{}.root'.format(proc_name, file_suffix))
+          if not os.path.isfile(hadd_stage1_fn):
+            raise RuntimeError("No such file found: %s" % hadd_stage1_fn)
+          for subchannel in subchannels:
+            for mode in MODES:
+              output_fn = os.path.join(era_dir, 'hadd_stage1_rescaled_{}_{}_{}.root'.format(subchannel, proc_name, mode))
+              rescale(hadd_stage1_fn, output_fn, channel, results[era][proc_name], subchannels[subchannel], mode)

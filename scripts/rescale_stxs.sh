@@ -1,12 +1,16 @@
 #!/bin/bash
 
-rescale_stxs.py
+basetopdir=$PWD/cards
+mkdir -p $basetopdir
+tar -C $basetopdir -I lz4 -xvf /hdfs/local/karl/archives/HIG-19-008/ttHAnalysis_stxs_2020Jun18.tar.lz4
+
+rescale_stxs.py $basetopdir
 
 for f in ~/stxs_rescaled/201*/hadd_stage1_rescaled_*_stxsOnly.root; do resum_stxs.py $f; done
 
 for f in ~/stxs_rescaled/201*/hadd_stage1_rescaled_*_stxsResummed.root; do
   g=$(echo $f | sed 's/stxsResummed/inclusiveOnly/g');
-  compare_histograms.py -i $f -j $g;
+  compare_histograms.py -t 1e-2 -i $f -j $g;
 done &> comparison.log # look for lines that don't start with "Comparing"
 
 for era in 2016 2017 2018; do

@@ -27,12 +27,14 @@ if __name__ == '__main__':
   parser.add_argument('-j', '--in2', type = str, dest = 'input2', metavar = 'path', help = '2nd input', required = True)
   parser.add_argument('-d', '--dname1', type = str, dest = 'dir_name1', metavar = 'str', help = 'Dir name of the 1st input', default = '', required = False)
   parser.add_argument('-D', '--dname2', type = str, dest = 'dir_name2', metavar = 'str', help = 'Dir name of the 2nd input', default = '', required = False)
+  parser.add_argument('-t', '--threshold', type = float, dest = 'threshold', metavar = 'float', help = 'Threshold of reporting', default = 1e-4, required = False)
   args = parser.parse_args()
 
   input1 = args.input1
   input2 = args.input2
   hists1 = read_hists(input1, args.dir_name1)
   hists2 = read_hists(input2, args.dir_name2)
+  th = args.threshold
 
   hists1_keyset = set(hists1.keys())
   hists2_keyset = set(hists2.keys())
@@ -52,7 +54,7 @@ if __name__ == '__main__':
     hist1 = hists1[common_key]
     hist2 = hists2[common_key]
     integral_diff = hist1['integral'] - hist2['integral']
-    if abs(integral_diff) > 1e-4:
+    if abs(integral_diff) > th:
       out_str = '  {} INT diff {:.3e} ({:.3e} vs {:.3e})'.format(
         common_key, integral_diff, hist1['integral'], hist2['integral']
       )
@@ -62,7 +64,7 @@ if __name__ == '__main__':
       content_diff = [ hist1['content'][idx] - hist2['content'][idx] for idx in range(nof_bins1) ]
       content_diff_str = ', '.join([ 'bin #{} -> {:.3e} ({:.3e} vs {:.3e})'.format(
           idx, val, hist1['content'][idx], hist2['content'][idx]
-        ) for idx, val in enumerate(content_diff) if abs(val) > 1e-4 ])
+        ) for idx, val in enumerate(content_diff) if abs(val) > th ])
       if content_diff_str:
         out_str += ' {} (total # bins: {})'.format(content_diff_str, nof_bins1)
       print(out_str)
