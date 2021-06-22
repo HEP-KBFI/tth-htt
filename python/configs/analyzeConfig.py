@@ -130,6 +130,7 @@ class analyzeConfig(object):
           apply_pileupJetID               = 'disabled',
           do_stxs                         = False,
           apply_genPhotonFilter           = False,
+          blacklist                       = None,
       ):
 
         self.configDir = configDir
@@ -423,12 +424,15 @@ class analyzeConfig(object):
         self.nonResBMs = []
         self.nonResBM_points = []
         for nonresPoint in NONRESONANT_POINTS:
-          if any(nonresPoint in histogram_to_fit for histogram_to_fit in self.histograms_to_fit):
+          if all(
+              any(histogram_to_fit.endswith('MVAOutput_{}'.format(bmName)) for histogram_to_fit in self.histograms_to_fit) \
+              for bmName in NONRESONANT_POINTS[nonresPoint]
+          ):
             self.nonResBMs.append(nonresPoint)
         if self.nonResBMs:
           self.nonResBM_points.append('SM')
         for nonResBM in self.nonResBMs:
-          self.nonResBM_points.extend([ '{}{}'.format(nonResBM, nonResPoint) for nonResPoint in NONRESONANT_POINTS[nonResBM] ])
+          self.nonResBM_points.extend(NONRESONANT_POINTS[nonResBM])
 
         samples_to_stitch = []
         if self.era == '2016':
@@ -593,8 +597,15 @@ class analyzeConfig(object):
             [ copy.deepcopy(find_tHweight(tHweights, thIdx)) for thIdx in self.thIdxs ]
           )
         ))
-        self.kt_weights = read_couplings('kt', coupling_as_prefix = True)
-        self.BM_weights = [ 'SM' ] + [ 'BM{}'.format(idx) for idx in range(1, 13) ]
+        self.kt_weights = read_couplings('kt')
+
+        self.blacklist_files = []
+        if blacklist:
+          blacklist_base = os.path.join('tthAnalysis', 'HiggsToTauTau', 'data')
+          for blacklist_type in blacklist:
+            blacklist_fn = os.path.join(blacklist_base, 'blacklist_{}_{}.txt'.format(blacklist_type, era))
+            assert(os.path.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', blacklist_fn)))
+            self.blacklist_files.append(blacklist_fn)
 
         self.jobOptions_analyze = {}
         self.inputFiles_hadd_stage1 = {}
@@ -1093,6 +1104,12 @@ class analyzeConfig(object):
             jobOptions['lep_mva_cut_mu_forLepton3'] = float(self.lep_mva_cut_mu_forLepton3)            
         if 'lep_mva_cut_e_forLepton3' not in jobOptions and "default" not in self.lep_mva_cut_e_forLepton3:
             jobOptions['lep_mva_cut_e_forLepton3'] = float(self.lep_mva_cut_e_forLepton3)
+
+        if self.blacklist_files:
+          jobOptions['enable_blacklist'] = True
+          jobOptions['blacklist.inputFileNames'] = self.blacklist_files
+          jobOptions['blacklist.sampleName'] = sample_info['process_name_specific']
+
         # We employ different types of lepton selection criteria, and we don't clean the had taus in post-production,
         # which means that the object mulitplicities determined in post-production cannot be used when running the analysis
         jobOptions['useObjectMultiplicity'] = False
@@ -1221,6 +1238,8 @@ class analyzeConfig(object):
             'hhWeight_cfg.denominator_file_lo',
             'hhWeight_cfg.denominator_file_nlo',
             'hhWeight_cfg.histtitle',
+            'hhWeight_cfg.JHEP04Scan_file',
+            'hhWeight_cfg.JHEP03Scan_file',
             'hhWeight_cfg.klScan_file',
             'hhWeight_cfg.ktScan_file',
             'hhWeight_cfg.c2Scan_file',
@@ -1240,6 +1259,9 @@ class analyzeConfig(object):
             'apply_genPhotonFilter',
             'save_dXsec_HHWeightInterfaceNLO',
             'nonRes_BMs',
+            'enable_blacklist',
+            'blacklist.inputFileNames',
+            'blacklist.sampleName',
         ]
         jobOptions_typeMapping = {
             'central_or_shifts_local' : 'cms.vstring(%s)',

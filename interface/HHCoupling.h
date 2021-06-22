@@ -3,6 +3,8 @@
 
 #include <string> // std::string
 #include <vector> // std::vector<>
+#include <map> // std::map<,>
+#include <iosfwd> // std::ostream
 
 class HHCoupling
 {
@@ -16,6 +18,10 @@ public:
              const std::string & training = "SM");
 
   HHCoupling(const std::vector<double> & couplings,
+             const std::string & name = "SM",
+             const std::string & training = "SM");
+
+  HHCoupling(const std::map<std::string, double> & couplings,
              const std::string & name = "SM",
              const std::string & training = "SM");
 
@@ -42,6 +48,10 @@ public:
 
   std::string
   training() const;
+
+  friend std::ostream &
+  operator<<(std::ostream & os,
+             const HHCoupling & coupling);
 
 protected:
   double kl_;

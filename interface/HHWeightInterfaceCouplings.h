@@ -61,14 +61,10 @@ public:
 private:
   void
   loadScanFile(const std::string & filePath,
-               const std::string & prefix,
-               int indx,
                bool isDEBUG);
 
   std::map<std::string, HHCoupling> couplings_;
-
-  static const std::vector<HHCoupling> JHEP04_;
-  static const std::vector<HHCoupling> JHEP03_;
+  static const std::map<std::string, double> couplings_sm_;
 
   HHWeightInterfaceNLOMode nlo_mode_;
   const std::string denominator_file_lo_;

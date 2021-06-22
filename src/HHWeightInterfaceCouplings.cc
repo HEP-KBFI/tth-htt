@@ -14,41 +14,24 @@
 #if defined(__OPTIMIZE__)
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 #endif
-#include <boost/algorithm/string.hpp> // boost::split(), boost::is_any_of()
+#include <boost/algorithm/string.hpp> // boost::split(), boost::is_any_of(), boost::trim_copy()
 #pragma GCC diagnostic pop
 
 #include <boost/algorithm/string/replace.hpp> // boost::replace_all()
 #include <boost/range/adaptor/map.hpp> // boost::adaptors::map_keys
 #include <boost/range/algorithm/copy.hpp> // boost::copy()
+#include <boost/algorithm/string/join.hpp> // boost::algorithm::join()
 
 #include <fstream> // std::ifstream
 #include <iostream> // std::cout
 
-const std::vector<HHCoupling> HHWeightInterfaceCouplings::JHEP04_ = {
-  {  7.5, 1.0, -1.0,  0.0,    0.0,  "JHEP04BM1",  "BM1" },
-  {  1.0, 1.0,  0.5, -0.8,    0.6,  "JHEP04BM2",  "BM2" },
-  {  1.0, 1.0, -1.5,  0.0,   -0.8,  "JHEP04BM3",  "BM3" },
-  { -3.5, 1.5, -3.0,  0.0,    0.0,  "JHEP04BM4",  "BM4" },
-  {  1.0, 1.0,  0.0,  0.8,   -1.0,  "JHEP04BM5",  "BM5" },
-  {  2.4, 1.0,  0.0,  0.2,   -0.2,  "JHEP04BM6",  "BM6" },
-  {  5.0, 1.0,  0.0,  0.2,   -0.2,  "JHEP04BM7",  "BM7" },
-  { 15.0, 1.0,  0.0, -1.0,    1.0,  "JHEP04BM8",  "BM8" },
-  {  1.0, 1.0,  1.0, -0.6,    0.6,  "JHEP04BM9",  "BM9" },
-  { 10.0, 1.5, -1.0,  0.0,    0.0, "JHEP04BM10", "BM10" },
-  {  2.4, 1.0,  0.0,  1.0,   -1.0, "JHEP04BM11", "BM11" },
-  { 15.0, 1.0,  1.0,  0.0,    0.0, "JHEP04BM12", "BM12" },
-  {  1.0, 1.0,  0.5,  0.8/3,  0.0, "JHEP04BM8a",  "BM9" }, // [*]
+const std::map<std::string, double> HHWeightInterfaceCouplings::couplings_sm_ = {
+  { "kl",  1 },
+  { "kt",  1 },
+  { "c2",  0 },
+  { "cg",  0 },
+  { "c2g", 0 },
 };
-const std::vector<HHCoupling> HHWeightInterfaceCouplings::JHEP03_ = {
-  {  3.94, 0.94, -1./3.,  0.5*1.5,    1./3.*(-3.), "JHEP03BM1", "BM11" }, // [*]
-  {  6.84, 0.61,  1./3.,  0.0*1.5,   -1./3.*(-3.), "JHEP03BM2", "BM11" }, // [*]
-  {  2.21, 1.05, -1./3.,  0.5*1.5,    0.5 *(-3.),  "JHEP03BM3",  "BM5" }, // [*]
-  {  2.79, 0.61,  1./3., -0.5*1.5,    1./6.*(-3.), "JHEP03BM4",  "BM3" }, // [*]
-  {  3.95, 1.17, -1./3.,  1./6.*1.5, -0.5 *(-3.),  "JHEP03BM5",  "BM9" }, // [*]
-  {  5.68, 0.83,  1./3., -0.5*1.5,    1./3.*(-3.), "JHEP03BM6",  "BM3" }, // [*]
-  { -0.10, 0.94,  1.,     1./6.*1.5, -1./6.*(-3.), "JHEP03BM7",  "BM9" }, // [*]
-};
-// [*] https://github.com/HEP-KBFI/hh-multilepton/issues/38#issuecomment-821278740
 
 TH2 *
 HHWeightInterfaceCouplings::loadDenominatorHist(const std::string & fileName,
@@ -93,6 +76,8 @@ HHWeightInterfaceCouplings::HHWeightInterfaceCouplings(const edm::ParameterSet &
   , denominator_file_nlo_(cfg.getParameter<std::string>("denominator_file_nlo"))
   , histtitle_(cfg.getParameter<std::string>("histtitle"))
 {
+  const std::string applicationLoadFile_jhep04Scan = cfg.getParameter<std::string>("JHEP04Scan_file");
+  const std::string applicationLoadFile_jhep03Scan = cfg.getParameter<std::string>("JHEP03Scan_file");
   const std::string applicationLoadFile_klScan = cfg.getParameter<std::string>("klScan_file");
   const std::string applicationLoadFile_ktScan = cfg.getParameter<std::string>("ktScan_file");
   const std::string applicationLoadFile_c2Scan = cfg.getParameter<std::string>("c2Scan_file");
@@ -109,53 +94,45 @@ HHWeightInterfaceCouplings::HHWeightInterfaceCouplings(const edm::ParameterSet &
   else if(rwgt_nlo_mode == "v3") { nlo_mode_ = HHWeightInterfaceNLOMode::v3; }
 
   couplings_ = { { "SM", HHCoupling() } };
-  if(contains(scanMode, "JHEP04"))
-  {
-    for(const HHCoupling & coupling: JHEP04_)
-    {
-      assert(! couplings_.count(coupling.name()));
-      couplings_[coupling.name()] = coupling;
-    }
-  }
-  if(contains(scanMode, "JHEP03"))
-  {
-    for(const HHCoupling & coupling: JHEP03_)
-    {
-      assert(! couplings_.count(coupling.name()));
-      couplings_[coupling.name()] = coupling;
-    }
-  }
 
   // Load a file with an specific scan, that we can decide at later stage on the analysis
   // save the closest shape BM to use this value on the evaluation of a BDT
+  if(contains(scanMode, "JHEP04") && ! applicationLoadFile_jhep04Scan.empty()){
+    const std::string applicationLoadPath_jhep04Scan = get_fullpath(applicationLoadFile_jhep04Scan);
+    loadScanFile(applicationLoadPath_jhep04Scan, isDEBUG);
+  }
+  if(contains(scanMode, "JHEP03") && ! applicationLoadFile_jhep03Scan.empty()){
+    const std::string applicationLoadPath_jhep03Scan = get_fullpath(applicationLoadFile_jhep03Scan);
+    loadScanFile(applicationLoadPath_jhep03Scan, isDEBUG);
+  }
   if(contains(scanMode, "kl") && ! applicationLoadFile_klScan.empty()){
     const std::string applicationLoadPath_klScan = get_fullpath(applicationLoadFile_klScan);
-    loadScanFile(applicationLoadPath_klScan, "kl_", 0, isDEBUG);
+    loadScanFile(applicationLoadPath_klScan, isDEBUG);
   }
   if(contains(scanMode, "kt") && ! applicationLoadFile_ktScan.empty())
   {
     const std::string applicationLoadPath_ktScan = get_fullpath(applicationLoadFile_ktScan);
-    loadScanFile(applicationLoadPath_ktScan, "kt_", 1, isDEBUG);
+    loadScanFile(applicationLoadPath_ktScan, isDEBUG);
   }
   if(contains(scanMode, "c2") && ! applicationLoadFile_c2Scan.empty())
   {
     const std::string applicationLoadPath_c2Scan = get_fullpath(applicationLoadFile_c2Scan);
-    loadScanFile(applicationLoadPath_c2Scan, "c2_", 2, isDEBUG);
+    loadScanFile(applicationLoadPath_c2Scan, isDEBUG);
   }
   if(contains(scanMode, "cg") && ! applicationLoadFile_cgScan.empty())
   {
     const std::string applicationLoadPath_cgScan = get_fullpath(applicationLoadFile_cgScan);
-    loadScanFile(applicationLoadPath_cgScan, "cg_", 3, isDEBUG);
+    loadScanFile(applicationLoadPath_cgScan, isDEBUG);
   }
   if(contains(scanMode, "c2g") && ! applicationLoadFile_c2gScan.empty())
   {
     const std::string applicationLoadPath_c2gScan = get_fullpath(applicationLoadFile_c2gScan);
-    loadScanFile(applicationLoadPath_c2gScan, "c2g_", 4, isDEBUG);
+    loadScanFile(applicationLoadPath_c2gScan, isDEBUG);
   }
   if(contains(scanMode, "extra") && ! applicationLoadFile_extraScan.empty())
   {
     const std::string applicationLoadPath_extraScan = get_fullpath(applicationLoadFile_extraScan);
-    loadScanFile(applicationLoadPath_extraScan, "extra_", 5, isDEBUG);
+    loadScanFile(applicationLoadPath_extraScan, isDEBUG);
   }
 
   std::cout
@@ -167,8 +144,6 @@ HHWeightInterfaceCouplings::HHWeightInterfaceCouplings(const edm::ParameterSet &
 
 void
 HHWeightInterfaceCouplings::loadScanFile(const std::string & filePath,
-                                         const std::string & prefix,
-                                         int idx,
                                          bool isDEBUG)
 {
   // CV: read coupling scans from text files
@@ -179,44 +154,90 @@ HHWeightInterfaceCouplings::loadScanFile(const std::string & filePath,
   }
   for (std::string line; std::getline(inFile_scan, line); )
   {
-    if(boost::starts_with(line, "#"))
+    const std::size_t comment_pos = line.find_first_of("#");
+    const std::string line_before_comment = boost::trim_copy(comment_pos != std::string::npos ? line.substr(0, comment_pos) : line);
+    if(line_before_comment.empty())
     {
-      continue; // it's a comment
+      continue;
     }
     std::vector<std::string> line_split;
-    boost::split(line_split, line, boost::is_any_of(" "), boost::token_compress_on);
-    const std::size_t nof_cols = line_split.size();
-    assert(nof_cols == 5 || nof_cols == 6);
+    boost::split(line_split, line_before_comment, boost::is_any_of(" "), boost::token_compress_on);
 
-    std::vector<double> values;
-    std::transform(
-      line_split.begin(), line_split.begin() + 5, std::back_inserter(values),
-      [](const std::string & value_string) -> double { return std::stod(value_string); }
-    );
+    std::string name = "";
+    std::string training = "SM"; // use SM training by default
+    std::map<std::string, double> couplings = couplings_sm_;
 
-    std::string bmName = prefix;
-    if(idx < 5)
+    for(const std::string & line_part: line_split)
     {
-      bmName += to_string_with_precision(values.at(idx));
-      boost::replace_all(bmName, "-", "m");
-      boost::replace_all(bmName, ".", "p");
+      std::vector<std::string> part_split;
+      boost::split(part_split, line_part, boost::is_any_of("="));
+      if(part_split.size() != 2)
+      {
+        throw cmsException(this, __func__, __LINE__) << "Invalid number of '=' characters in: " << line_part;
+      }
+      const std::string attr = part_split[0];
+      if(attr == "name")
+      {
+        name = part_split[1];
+      }
+      else if(attr == "training")
+      {
+        training = part_split[1];
+      }
+      else
+      {
+        if(! couplings.count(attr))
+        {
+          throw cmsException(this, __func__, __LINE__) << "Invalid coupling: " << attr;
+        }
+        const std::string coupling_val = part_split[1];
+        const std::size_t nof_div_ops = std::count(coupling_val.cbegin(), coupling_val.cend(), '/');
+        if(nof_div_ops == 0)
+        {
+          // no division operators
+          couplings[attr] = std::stod(coupling_val);
+        }
+        else if(nof_div_ops == 1)
+        {
+          // one division
+          std::vector<std::string> coupling_val_split;
+          boost::split(coupling_val_split, coupling_val, boost::is_any_of("/"));
+          assert(coupling_val_split.size() == 2);
+          const double num = std::stod(coupling_val_split[0]);
+          const double denom = std::stod(coupling_val_split[1]);
+          if(std::fpclassify(denom) == FP_ZERO)
+          {
+            throw cmsException(this, __func__, __LINE__) << "Division by zero in: " << coupling_val;
+          }
+          couplings[attr] = num / denom;
+        }
+        else
+        {
+          throw cmsException(this, __func__, __LINE__) << "Invalid expression for coupling " << attr << ": " << coupling_val;
+        }
+      }
     }
-    else if(idx == 5)
+    if(name.empty())
     {
-      assert(nof_cols == 6);
-      bmName += line_split.at(idx);
-    }
-    else
-    {
-      throw cmsException(this, __func__, __LINE__) << "Invalid number of columns in file: " << filePath;
-    }
-    if(isDEBUG)
-    {
-      std::cout << "bmName = " << bmName << '\n';
+      std::vector<std::string> parts;
+      for(const std::string & coupling: { "kl", "kt", "c2", "cg", "c2g" })
+      {
+        const double & coupling_val = couplings.at(coupling);
+        if(coupling_val == couplings_sm_.at(coupling))
+        {
+          continue; // SM value
+        }
+        std::string name_part = coupling + "_" + to_string_with_precision(coupling_val);
+        boost::replace_all(name_part, "-", "m");
+        boost::replace_all(name_part, ".", "p");
+        parts.push_back(name_part);
+      }
+      name = parts.empty() ? "SM" : boost::algorithm::join(parts, "_");
     }
 
-    assert(! couplings_.count(bmName));
-    couplings_[bmName] = { values, bmName };
+    assert(! couplings_.count(name));
+    couplings_[name] = { couplings, name, training };
+    std::cout << "Loaded coupling: " << couplings_.at(name) << '\n';
   }
 }
 
@@ -225,7 +246,7 @@ HHWeightInterfaceCouplings::add(const HHCoupling & coupling)
 {
   if(couplings_.count(coupling.name()))
   {
-    throw cmsException(this, __func__, __LINE__) << "The coupling name has already been booked: " << coupling.name();
+    throw cmsException(this, __func__, __LINE__) << "The coupling name has already been booked: " << coupling;
   }
   couplings_[coupling.name()] = coupling;
 }

@@ -15554,7 +15554,7 @@ samples_2018["/ttHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/Run
       OD([
         ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Feb29/ttHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/2018_2020Feb29_ttHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/200301_100737"),
         ("selection", "*"),
-        ("blacklist", []),
+        ("blacklist", [138]),
       ]),
     ]
   ),
