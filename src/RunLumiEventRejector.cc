@@ -105,11 +105,11 @@ RunLumiEventRejector::readInputFile()
         std::vector<std::string> rle_split;
         const std::string rle_str = line.substr(space_pos + 1);
         boost::split(rle_split, rle_str, boost::is_any_of(";"));
-
         std::smatch match;
         const std::regex pattern(boost::algorithm::join(std::vector<std::string>(3, "([[:digit:]]+)"), ":"));
         for(const std::string & rle: rle_split)
         {
+          if ( rle == "" ) continue;
           bool parseError = false;
           try
           {
