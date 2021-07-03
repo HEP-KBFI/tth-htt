@@ -483,6 +483,78 @@ class systematics(object):
 
       full = x1_().full + y1_().full + x1y1_().full + env_().full
 
+    class ggH(object):
+      class x1_(object):
+
+        up   = "CMS_ttHl_thu_shape_ggH_x1Up"
+        down = "CMS_ttHl_thu_shape_ggH_x1Down"
+        full = [ up, down ]
+
+      class y1_(object):
+        up   = "CMS_ttHl_thu_shape_ggH_y1Up"
+        down = "CMS_ttHl_thu_shape_ggH_y1Down"
+        full = [ up, down ]
+
+      class x1y1_(object):
+        up   = "CMS_ttHl_thu_shape_ggH_x1y1Up"
+        down = "CMS_ttHl_thu_shape_ggH_x1y1Down"
+        full = [ up, down ]
+
+      class env_(object):
+        up   = "CMS_ttHl_thu_shape_ggHUp"
+        down = "CMS_ttHl_thu_shape_ggHDown"
+        full = [ up, down ]
+
+      full = x1_().full + y1_().full + x1y1_().full + env_().full
+
+    class qqH(object):
+      class x1_(object):
+
+        up   = "CMS_ttHl_thu_shape_qqH_x1Up"
+        down = "CMS_ttHl_thu_shape_qqH_x1Down"
+        full = [ up, down ]
+
+      class y1_(object):
+        up   = "CMS_ttHl_thu_shape_qqH_y1Up"
+        down = "CMS_ttHl_thu_shape_qqH_y1Down"
+        full = [ up, down ]
+
+      class x1y1_(object):
+        up   = "CMS_ttHl_thu_shape_qqH_x1y1Up"
+        down = "CMS_ttHl_thu_shape_qqH_x1y1Down"
+        full = [ up, down ]
+
+      class env_(object):
+        up   = "CMS_ttHl_thu_shape_qqHUp"
+        down = "CMS_ttHl_thu_shape_qqHDown"
+        full = [ up, down ]
+
+      full = x1_().full + y1_().full + x1y1_().full + env_().full
+
+    class VH(object):
+      class x1_(object):
+
+        up   = "CMS_ttHl_thu_shape_VH_x1Up"
+        down = "CMS_ttHl_thu_shape_VH_x1Down"
+        full = [ up, down ]
+
+      class y1_(object):
+        up   = "CMS_ttHl_thu_shape_VH_y1Up"
+        down = "CMS_ttHl_thu_shape_VH_y1Down"
+        full = [ up, down ]
+
+      class x1y1_(object):
+        up   = "CMS_ttHl_thu_shape_VH_x1y1Up"
+        down = "CMS_ttHl_thu_shape_VH_x1y1Down"
+        full = [ up, down ]
+
+      class env_(object):
+        up   = "CMS_ttHl_thu_shape_VHUp"
+        down = "CMS_ttHl_thu_shape_VHDown"
+        full = [ up, down ]
+
+      full = x1_().full + y1_().full + x1y1_().full + env_().full
+
     ttH   = TTH().full
     tHq   = THQ().full
     tHW   = THW().full
@@ -493,8 +565,11 @@ class systematics(object):
     ttbar = TT().full
     wz    = WZ().full
     zz    = ZZ().full
+    ggh   = ggH().full
+    qqh   = qqH().full
+    vh    = VH().full
 
-    procs = [ TTH, THQ, THW, TTW, TTZ, HH, DY, TT, WZ, ZZ ]
+    procs = [ TTH, THQ, THW, TTW, TTZ, HH, DY, TT, WZ, ZZ, ggH, qqH, VH ]
 
     x1_up     = [ proc.x1_().up     for proc in procs ]
     x1_down   = [ proc.x1_().down   for proc in procs ]
@@ -505,7 +580,7 @@ class systematics(object):
     env_up    = [ proc.env_().up    for proc in procs ]
     env_down  = [ proc.env_().down  for proc in procs ]
 
-    full = ttH + tHq + tHW + ttW + ttZ + dy + hh + ttbar + wz + zz
+    full = ttH + tHq + tHW + ttW + ttZ + dy + hh + ttbar + wz + zz + ggh + qqh + vh
 
   class LeptonIDSF(object):
     el_tight = [ "CMS_ttHl_lepEff_eltightUp", "CMS_ttHl_lepEff_eltightDown" ]
