@@ -88,6 +88,7 @@ def mkdir_p(dname):
     os.makedirs(dname)
 
 def get_counts(counts, key, proc_cat):
+  assert(proc_cat not in [ 'WH', 'ZH' ])
   result = collections.OrderedDict()
   result['central'] = counts[key][0]
   result['pileupUp'] = counts[key][1]
@@ -96,10 +97,19 @@ def get_counts(counts, key, proc_cat):
   if key_l1pref in counts:
     result['l1PreFireUp'] = counts[key_l1pref][1]
     result['l1PreFireDown'] = counts[key_l1pref][2]
+  thu_shape_pfx = 'thu_shape_{}'.format(proc_cat)
   key_lhe = key.replace('CountWeighted', 'CountWeightedLHEEnvelope')
   if key_lhe in counts and proc_cat.lower() == 'tth':
-    result['thu_shape_ttHUp'] = counts[key_lhe][0]
-    result['thu_shape_ttHDown'] = counts[key_lhe][1]
+    result['{}Up'.format(thu_shape_pfx)] = counts[key_lhe][0]
+    result['{}Down'.format(thu_shape_pfx)] = counts[key_lhe][1]
+  key_lhe = key.replace('CountWeighted', 'CountWeightedLHEWeightScale')
+  if key_lhe in counts and proc_cat.lower() == 'tth':
+    result['{}_x1y1Up'.format(thu_shape_pfx)] = counts[key_lhe][8]
+    result['{}_x1y1Down'.format(thu_shape_pfx)] = counts[key_lhe][0]
+    result['{}_x1Up'.format(thu_shape_pfx)] = counts[key_lhe][5]
+    result['{}_x1Down'.format(thu_shape_pfx)] = counts[key_lhe][3]
+    result['{}_y1Up'.format(thu_shape_pfx)] = counts[key_lhe][7]
+    result['{}_y1Down'.format(thu_shape_pfx)] = counts[key_lhe][1]
   return result
 
 def rename_bin(key):
