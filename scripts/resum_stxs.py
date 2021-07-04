@@ -7,7 +7,7 @@ import collections
 
 assert(len(sys.argv) == 2)
 fn = sys.argv[1]
-assert(fn.endswith('_stxsOnly.root'))
+assert(fn.endswith(('_stxsOnly.root', '_THUstxsOnly.root')))
 assert(os.path.isfile(fn))
 print("Resumming: %s" % fn)
 
