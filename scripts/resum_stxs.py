@@ -58,7 +58,7 @@ for k in ks:
 
 f.Close()
 
-ofn = fn.replace('_stxsOnly.root', '_stxsResummed.root')
+ofn = fn.replace('stxsOnly.root', 'stxsResummed.root')
 of = ROOT.TFile.Open(ofn, 'recreate')
 of.cd()
 for hname in sorted(list(hists.keys())):

@@ -12,6 +12,7 @@ import sys
 
 MODES = [ 'stxsOnly', 'inclusiveOnly' ]
 BASEDIR = '/hdfs/local/karl/ttHAnalysis/{era}/2020Nov27/histograms'
+BASEDIR_THU = '/hdfs/local/karl/ttHAnalysis/{era}/2021Jul03/histograms'
 OUTPUTDIR = os.path.join(os.getenv('HOME'), 'stxs_rescaled')
 
 assert(len(sys.argv) == 2)
@@ -99,11 +100,11 @@ def get_counts(counts, key, proc_cat):
     result['l1PreFireDown'] = counts[key_l1pref][2]
   thu_shape_pfx = 'thu_shape_{}'.format(proc_cat)
   key_lhe = key.replace('CountWeighted', 'CountWeightedLHEEnvelope')
-  if key_lhe in counts and proc_cat.lower() == 'tth':
+  if key_lhe in counts:
     result['{}Up'.format(thu_shape_pfx)] = counts[key_lhe][0]
     result['{}Down'.format(thu_shape_pfx)] = counts[key_lhe][1]
   key_lhe = key.replace('CountWeighted', 'CountWeightedLHEWeightScale')
-  if key_lhe in counts and proc_cat.lower() == 'tth':
+  if key_lhe in counts:
     result['{}_x1y1Up'.format(thu_shape_pfx)] = counts[key_lhe][8]
     result['{}_x1y1Down'.format(thu_shape_pfx)] = counts[key_lhe][0]
     result['{}_x1Up'.format(thu_shape_pfx)] = counts[key_lhe][5]
@@ -182,7 +183,7 @@ def rescale_stxs(stxs_dir, output_fn, channel, sample_info, stxsvar, mode):
   outputf.Close()
   print("  => {}".format(output_fn))
 
-def rescale(hadd_stage1_fn, output_fn, channel, sample_info, fitvar, mode):
+def rescale(hadd_stage1_fn, output_fn, channel, sample_info, fitvar, mode, skip_central):
   assert(mode in MODES)
   print('Rescaling: {}'.format(hadd_stage1_fn))
   inputf = ROOT.TFile.Open(hadd_stage1_fn, 'read')
@@ -282,13 +283,15 @@ def rescale(hadd_stage1_fn, output_fn, channel, sample_info, fitvar, mode):
       hist.SetTitle(hist_name_new)
       hist.SetName(hist_name_new)
 
+      syst_name = 'central'
+      for syst in sample_info['counts']['inclusive']:
+        syst_cand = 'CMS_ttHl_{}'.format(syst)
+        if syst_cand in hist_name_new:
+          syst_name = syst
+          break
+      if skip_central and syst_name == 'central':
+        continue
       if stxs_bin:
-        syst_name = 'central'
-        for syst in sample_info['counts']['inclusive']:
-          syst_cand = 'CMS_ttHl_{}'.format(syst)
-          if syst_cand in hist_name_new:
-            syst_name = syst
-            break
         sf = xs * sample_info['counts'][stxs_bin][syst_name] / sample_info['counts']['inclusive'][syst_name]
         hist.Scale(sf)
 
@@ -361,7 +364,7 @@ for era in list(map(str, range(2016, 2019))):
       for proc in common_procs:
         results[era][proc]['counts'] = counts
 
-for extract_tth in [ True, False ]:
+for extraction_mode in [ 'ttH', 'other', 'other_theory' ]:
   for era in results:
     stxs_dir = STXS_DIR.format(era = era)
     for proc_name in results[era]:
@@ -381,17 +384,13 @@ for extract_tth in [ True, False ]:
 
     era_dir = os.path.join(OUTPUTDIR, era)
     mkdir_p(era_dir)
-    bdir = BASEDIR.format(era = era)
+
     for channel in CHANNELS:
       region = CHANNELS[channel]['dir']
       file_suffix = CHANNELS[channel]['file'] if 'file' in CHANNELS[channel] else region
 
-      region_dir = os.path.join(bdir, channel, region)
-      if not os.path.isdir(region_dir):
-        raise RuntimeError("No such directory: %s" % region_dir)
-
       subchannels = {}
-      subch_key = 'stxsvar' if extract_tth else 'fitvar'
+      subch_key = 'stxsvar' if extraction_mode == 'ttH' else 'fitvar'
       if type(CHANNELS[channel][subch_key]) == str:
         subchannels[channel] = CHANNELS[channel][subch_key]
       elif type(CHANNELS[channel][subch_key]) == dict:
@@ -400,7 +399,7 @@ for extract_tth in [ True, False ]:
       else:
         assert(False)
 
-      if extract_tth:
+      if extraction_mode == 'ttH':
         proc_names = [ proc_name for proc_name in results[era] if proc_name.startswith('ttH') ]
         assert(len(proc_names) == 1)
         proc_name = proc_names[0]
@@ -409,6 +408,12 @@ for extract_tth in [ True, False ]:
             output_fn = os.path.join(era_dir, 'hadd_stage1_rescaled_{}_{}_{}.root'.format(subchannel, proc_name, mode))
             rescale_stxs(stxs_dir, output_fn, channel, results[era][proc_name], subchannels[subchannel], mode)
       else:
+        bdir_base = BASEDIR if extraction_mode == 'other' else BASEDIR_THU
+        bdir = bdir_base.format(era = era)
+        region_dir = os.path.join(bdir, channel, region)
+        if not os.path.isdir(region_dir):
+          raise RuntimeError("No such directory: %s" % region_dir)
+
         proc_names = [ dname for dname in os.listdir(region_dir) if dname != 'hadd' ]
         if not all(proc_name in results[era] for proc_name in proc_names):
           missing_procs = [ proc_name for proc_name in proc_names if proc_name not in results[era] ]
@@ -419,5 +424,6 @@ for extract_tth in [ True, False ]:
             raise RuntimeError("No such file found: %s" % hadd_stage1_fn)
           for subchannel in subchannels:
             for mode in MODES:
-              output_fn = os.path.join(era_dir, 'hadd_stage1_rescaled_{}_{}_{}.root'.format(subchannel, proc_name, mode))
-              rescale(hadd_stage1_fn, output_fn, channel, results[era][proc_name], subchannels[subchannel], mode)
+              mode_sfx = 'THU{}'.format(mode) if extraction_mode == 'other_theory' else mode
+              output_fn = os.path.join(era_dir, 'hadd_stage1_rescaled_{}_{}_{}.root'.format(subchannel, proc_name, mode_sfx))
+              rescale(hadd_stage1_fn, output_fn, channel, results[era][proc_name], subchannels[subchannel], mode, extraction_mode == 'other_theory')
