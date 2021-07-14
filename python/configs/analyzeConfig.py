@@ -13,6 +13,7 @@ from tthAnalysis.NanoAODTools.tHweights_cfi import tHweights, thIdxsNoCP, find_t
 
 import FWCore.ParameterSet.Config as cms
 
+import re
 import os
 import uuid
 import inspect
@@ -1071,9 +1072,10 @@ class analyzeConfig(object):
             jobOptions['hasLHE'] = sample_info['has_LHE']
         if 'ref_genWeight' not in jobOptions and is_mc:
             self.load_refGenWeights()
-            if process_name not in self.ref_genWeights:
-                raise RuntimeError("Unable to find reference gen weight for process %s from file %s" % (process_name, self.ref_genWeightFile))
-            jobOptions['ref_genWeight'] = self.ref_genWeights[process_name]
+            process_name_wodupl = re.sub('_duplicate$', '', process_name)
+            if process_name_wodupl not in self.ref_genWeights:
+                raise RuntimeError("Unable to find reference gen weight for process %s from file %s" % (process_name_wodupl, self.ref_genWeightFile))
+            jobOptions['ref_genWeight'] = self.ref_genWeights[process_name_wodupl]
         if 'skipEvery' in sample_info:
             assert('skipEvery' not in jobOptions)
             jobOptions['skipEvery'] = sample_info['skipEvery']
@@ -1108,7 +1110,7 @@ class analyzeConfig(object):
         if self.blacklist_files:
           jobOptions['enable_blacklist'] = True
           jobOptions['blacklist.inputFileNames'] = self.blacklist_files
-          jobOptions['blacklist.sampleName'] = sample_info['process_name_specific']
+          jobOptions['blacklist.sampleName'] = re.sub('_duplicate$', '', sample_info['process_name_specific'])
 
         # We employ different types of lepton selection criteria, and we don't clean the had taus in post-production,
         # which means that the object mulitplicities determined in post-production cannot be used when running the analysis
@@ -1118,11 +1120,12 @@ class analyzeConfig(object):
         if jobOptions['applyBtagSFRatio']:
           if not self.btagSFRatios:
             self.load_btagSFRatios()
-          if process_name not in self.btagSFRatios:
+          process_name_wodupl = re.sub('_duplicate$', '', process_name)
+          if process_name_wodupl not in self.btagSFRatios:
             raise RuntimeError(
-              "Unable to find b-tagging SF ratios for the same %s from file %s" % (process_name, self.btagSFRatioFile)
+              "Unable to find b-tagging SF ratios for the same %s from file %s" % (process_name_wodupl, self.btagSFRatioFile)
             )
-          btagSFRatio_process = self.btagSFRatios[process_name]
+          btagSFRatio_process = self.btagSFRatios[process_name_wodupl]
           keep_central_or_shift = []
           if not self.btagSFRatio_useCentralOnly:
             if jobOptions['central_or_shift'] == "central":
