@@ -395,7 +395,7 @@ HHWeightInterfaceNLO::HHWeightInterfaceNLO(const HHWeightInterfaceCouplings * co
   sumEvt_ = HHWeightInterfaceCouplings::loadDenominatorHist(
     couplings_->denominator_file_nlo(), couplings_->histtitle()
   );
-  nof_sumEvt_entries_ = static_cast<int>(sumEvt_->GetEntries());
+  nof_sumEvt_entries_ = static_cast<int>(sumEvt_->Integral());
   assert(nof_sumEvt_entries_ > 0);
 
   const std::vector<std::vector<double>> A_V1_lo = loadCoeffFile(xsecFileName_V1_lo_);
