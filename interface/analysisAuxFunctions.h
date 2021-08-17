@@ -850,7 +850,8 @@ CreateResonantBDTOutputMap(const std::vector<double> & MVA_params,
                            std::vector<T_algo *>& MVA,
                            std::map<std::string, double> & MVAInputs,
                            int event_number,
-                           const std::string & spin_label)
+                           const std::string & spin_label
+                           )
 {
   std::map<std::string, double> MVAOutput_Map;
   for ( size_t i = 0; i < MVA_params.size(); ++i ) // Loop over MVA_params: signal mass (Reso.)/BM index (Non Reso.)
@@ -1025,7 +1026,8 @@ CreateResonantLBNOutputMap(const std::vector<double> & LBN_params,
                            const std::map<std::string, const Particle*> & ll_particles,
                            std::map<std::string, double> & hl_mvaInputs,
                            int event_number,
-                           const std::string & spin_label);
+                           const std::string & spin_label,
+                           bool overlap = false);
 
 std::map<std::string, std::map<std::string, double>> // keys = gen_mHH/bmName, event category
 CreateNonResonantLBNOutputMap(const std::vector<std::string> & LBN_params,

@@ -13,6 +13,7 @@ from tthAnalysis.NanoAODTools.tHweights_cfi import tHweights, thIdxsNoCP, find_t
 
 import FWCore.ParameterSet.Config as cms
 
+import re
 import os
 import uuid
 import inspect
@@ -130,6 +131,7 @@ class analyzeConfig(object):
           apply_pileupJetID               = 'disabled',
           do_stxs                         = False,
           apply_genPhotonFilter           = False,
+          blacklist                       = None,
       ):
 
         self.configDir = configDir
@@ -423,12 +425,15 @@ class analyzeConfig(object):
         self.nonResBMs = []
         self.nonResBM_points = []
         for nonresPoint in NONRESONANT_POINTS:
-          if any(nonresPoint in histogram_to_fit for histogram_to_fit in self.histograms_to_fit):
+          if all(
+              any(histogram_to_fit.endswith('MVAOutput_{}'.format(bmName)) for histogram_to_fit in self.histograms_to_fit) \
+              for bmName in NONRESONANT_POINTS[nonresPoint]
+          ):
             self.nonResBMs.append(nonresPoint)
         if self.nonResBMs:
           self.nonResBM_points.append('SM')
         for nonResBM in self.nonResBMs:
-          self.nonResBM_points.extend([ '{}{}'.format(nonResBM, nonResPoint) for nonResPoint in NONRESONANT_POINTS[nonResBM] ])
+          self.nonResBM_points.extend(NONRESONANT_POINTS[nonResBM])
 
         samples_to_stitch = []
         if self.era == '2016':
@@ -593,8 +598,15 @@ class analyzeConfig(object):
             [ copy.deepcopy(find_tHweight(tHweights, thIdx)) for thIdx in self.thIdxs ]
           )
         ))
-        self.kt_weights = read_couplings('kt', coupling_as_prefix = True)
-        self.BM_weights = [ 'SM' ] + [ 'BM{}'.format(idx) for idx in range(1, 13) ]
+        self.kt_weights = read_couplings('kt')
+
+        self.blacklist_files = []
+        if blacklist:
+          blacklist_base = os.path.join('tthAnalysis', 'HiggsToTauTau', 'data')
+          for blacklist_type in blacklist:
+            blacklist_fn = os.path.join(blacklist_base, 'blacklist_{}_{}.txt'.format(blacklist_type, era))
+            assert(os.path.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', blacklist_fn)))
+            self.blacklist_files.append(blacklist_fn)
 
         self.jobOptions_analyze = {}
         self.inputFiles_hadd_stage1 = {}
@@ -1060,9 +1072,10 @@ class analyzeConfig(object):
             jobOptions['hasLHE'] = sample_info['has_LHE']
         if 'ref_genWeight' not in jobOptions and is_mc:
             self.load_refGenWeights()
-            if process_name not in self.ref_genWeights:
-                raise RuntimeError("Unable to find reference gen weight for process %s from file %s" % (process_name, self.ref_genWeightFile))
-            jobOptions['ref_genWeight'] = self.ref_genWeights[process_name]
+            process_name_wodupl = re.sub('_duplicate$', '', process_name)
+            if process_name_wodupl not in self.ref_genWeights:
+                raise RuntimeError("Unable to find reference gen weight for process %s from file %s" % (process_name_wodupl, self.ref_genWeightFile))
+            jobOptions['ref_genWeight'] = self.ref_genWeights[process_name_wodupl]
         if 'skipEvery' in sample_info:
             assert('skipEvery' not in jobOptions)
             jobOptions['skipEvery'] = sample_info['skipEvery']
@@ -1093,6 +1106,12 @@ class analyzeConfig(object):
             jobOptions['lep_mva_cut_mu_forLepton3'] = float(self.lep_mva_cut_mu_forLepton3)            
         if 'lep_mva_cut_e_forLepton3' not in jobOptions and "default" not in self.lep_mva_cut_e_forLepton3:
             jobOptions['lep_mva_cut_e_forLepton3'] = float(self.lep_mva_cut_e_forLepton3)
+
+        if self.blacklist_files:
+          jobOptions['enable_blacklist'] = True
+          jobOptions['blacklist.inputFileNames'] = self.blacklist_files
+          jobOptions['blacklist.sampleName'] = re.sub('_duplicate$', '', sample_info['process_name_specific'])
+
         # We employ different types of lepton selection criteria, and we don't clean the had taus in post-production,
         # which means that the object mulitplicities determined in post-production cannot be used when running the analysis
         jobOptions['useObjectMultiplicity'] = False
@@ -1101,11 +1120,12 @@ class analyzeConfig(object):
         if jobOptions['applyBtagSFRatio']:
           if not self.btagSFRatios:
             self.load_btagSFRatios()
-          if process_name not in self.btagSFRatios:
+          process_name_wodupl = re.sub('_duplicate$', '', process_name)
+          if process_name_wodupl not in self.btagSFRatios:
             raise RuntimeError(
-              "Unable to find b-tagging SF ratios for the same %s from file %s" % (process_name, self.btagSFRatioFile)
+              "Unable to find b-tagging SF ratios for the same %s from file %s" % (process_name_wodupl, self.btagSFRatioFile)
             )
-          btagSFRatio_process = self.btagSFRatios[process_name]
+          btagSFRatio_process = self.btagSFRatios[process_name_wodupl]
           keep_central_or_shift = []
           if not self.btagSFRatio_useCentralOnly:
             if jobOptions['central_or_shift'] == "central":
@@ -1179,6 +1199,7 @@ class analyzeConfig(object):
             'fillGenEvtHistograms',
             'selectBDT',
             'secondBDT',
+            'split_resonant_training',
             'doDataMCPlots',
             'useNonNominal',
             'apply_hlt_filter',
@@ -1220,6 +1241,8 @@ class analyzeConfig(object):
             'hhWeight_cfg.denominator_file_lo',
             'hhWeight_cfg.denominator_file_nlo',
             'hhWeight_cfg.histtitle',
+            'hhWeight_cfg.JHEP04Scan_file',
+            'hhWeight_cfg.JHEP03Scan_file',
             'hhWeight_cfg.klScan_file',
             'hhWeight_cfg.ktScan_file',
             'hhWeight_cfg.c2Scan_file',
@@ -1239,6 +1262,9 @@ class analyzeConfig(object):
             'apply_genPhotonFilter',
             'save_dXsec_HHWeightInterfaceNLO',
             'nonRes_BMs',
+            'enable_blacklist',
+            'blacklist.inputFileNames',
+            'blacklist.sampleName',
         ]
         jobOptions_typeMapping = {
             'central_or_shifts_local' : 'cms.vstring(%s)',
@@ -1732,14 +1758,20 @@ class analyzeConfig(object):
         lines.append("process.addSystFakeRates.addSyst = cms.VPSet(")
         for lepton_and_hadTau_type in [ 'e', 'm', 't' ]:
             if ('add_Clos_%s' % lepton_and_hadTau_type) in jobOptions:
+                inputs_nominal = jobOptions['inputFile_nominal_%s' % lepton_and_hadTau_type]
+                inputs_mcClosure = jobOptions['inputFile_mcClosure_%s' % lepton_and_hadTau_type]
+                if type(inputs_nominal) == str:
+                  inputs_nominal = [ inputs_nominal ]
+                if type(inputs_mcClosure) == str:
+                  inputs_mcClosure = [ inputs_mcClosure ]
                 lines.append("    cms.PSet(")
                 lines.append("        name = cms.string('CMS_ttHl_Clos_%s')," % lepton_and_hadTau_type)
                 lines.append("        fakes_mc = cms.PSet(")
-                lines.append("            inputFileName = cms.string('%s')," % jobOptions['inputFile_nominal_%s' % lepton_and_hadTau_type])
+                lines.append("            inputFileName = cms.vstring(%s)," % inputs_nominal)
                 lines.append("            histogramName = cms.string('%s')," % jobOptions['histogramName_nominal_%s' % lepton_and_hadTau_type])
                 lines.append("        ),")
                 lines.append("        mcClosure = cms.PSet(")
-                lines.append("            inputFileName = cms.string('%s')," % jobOptions['inputFile_mcClosure_%s' % lepton_and_hadTau_type])
+                lines.append("            inputFileName = cms.vstring(%s)," % inputs_mcClosure)
                 lines.append("            histogramName = cms.string('%s')," % jobOptions['histogramName_mcClosure_%s' % lepton_and_hadTau_type])
                 lines.append("        ),")
                 lines.append("    ),")

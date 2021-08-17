@@ -67,7 +67,7 @@ HHWeightInterfaceLO::HHWeightInterfaceLO(const HHWeightInterfaceCouplings * cons
   sumEvt_ = HHWeightInterfaceCouplings::loadDenominatorHist(
     couplings_->denominator_file_lo(), couplings_->histtitle()
   );
-  nof_sumEvt_entries_ = static_cast<int>(sumEvt_->GetEntries());
+  nof_sumEvt_entries_ = static_cast<int>(sumEvt_->Integral());
   assert(nof_sumEvt_entries_ > 0);
 
   Py_XDECREF(coef_path);

@@ -25,11 +25,11 @@ process.addSystFakeRates = cms.PSet(
         cms.PSet(
             name = cms.string(""),
             fakes_mc = cms.PSet(
-                inputFileName = cms.string(""),
+                inputFileName = cms.vstring(),
                 histogramName = cms.string(""),
             ),
             mcClosure = cms.PSet(
-                inputFileName = cms.string(""),
+                inputFileName = cms.vstring(),
                 histogramName = cms.string(""),
             )
         ),
