@@ -761,7 +761,7 @@ get_pileupJetID(const std::string & pileupJetID_str);
  *
  */
 template<typename T>
-std::pair<const T *, const T *>
+std::vector<const T *>
 findGenJetsFromWBoson(const GenParticle& genWBoson,
                       const std::vector<T> & genJets)
 {
@@ -784,7 +784,10 @@ findGenJetsFromWBoson(const GenParticle& genWBoson,
       }
     }
   }
-  return std::pair<const T*, const T*>(genJet1FromWBoson, genJet2FromWBoson);
+  std::vector<const T *> genJetsFromWBoson;
+  genJetsFromWBoson.push_back(genJet1FromWBoson);
+  genJetsFromWBoson.push_back(genJet2FromWBoson);
+  return genJetsFromWBoson;
 }
 
 /**
