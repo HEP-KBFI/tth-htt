@@ -172,6 +172,24 @@ class analyzeConfig(object):
             logging.info('NOT summing the effective event counts of {} as none of the samples are needed'.format(
               ', '.join(sample_list_to_sum)
             ))
+
+        # reset the event counts that correspond to different choices of LHE scale weight to zero
+        # if the sample doesn't actually support LHE scale variation
+        for sample_key, sample_info in samples.items():
+          if sample_key == 'sum_events':
+            continue
+          if not sample_info['has_LHE']:
+            reset_counts = []
+            for evcount in sample_info['nof_events']:
+              if 'LHE' in evcount:
+                sample_info['nof_events'][evcount][:] = [0.] * len(sample_info['nof_events'][evcount])
+                reset_counts.append(evcount)
+            if reset_counts:
+              logging.info(
+                "Reset the following event counts in sample {} because it does not support LHE scale variation: {}".format(
+                  sample_info['process_name_specific'], ', '.join(reset_counts),
+                )
+              )
         for dbs_list in dbs_list_to_sum:
           dbs_list_human = ', '.join(samples[dbs_key]['process_name_specific'] for dbs_key in dbs_list)
           nof_events = {}
@@ -182,7 +200,7 @@ class analyzeConfig(object):
           for dbs_key in dbs_list:
             excl_count_type = [ 'LHEHT', 'LHENjet', 'PSWeight' ]
             if not samples[dbs_key]['has_LHE']:
-              excl_count_type.append('LHEWeightScale')
+              excl_count_type.extend(['LHEWeightScale', 'LHEEnvelope'])
             sample_nof_events_set = set(
               evt_key for evt_key in samples[dbs_key]['nof_events'] \
               if not any(excl_evt_key in evt_key for excl_evt_key in excl_count_type)
