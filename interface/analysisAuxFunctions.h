@@ -785,8 +785,8 @@ findGenJetsFromWBoson(const GenParticle& genWBoson,
     }
   }
   std::vector<const T *> genJetsFromWBoson;
-  genJetsFromWBoson.push_back(genJet1FromWBoson);
-  genJetsFromWBoson.push_back(genJet2FromWBoson);
+  if ( genJet1FromWBoson ) genJetsFromWBoson.push_back(genJet1FromWBoson);
+  if ( genJet2FromWBoson ) genJetsFromWBoson.push_back(genJet2FromWBoson);
   return genJetsFromWBoson;
 }
 
