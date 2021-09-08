@@ -787,6 +787,7 @@ class analyzeConfig(object):
       ttHProcs = self.ttHProcs + [ "TTH" ]
       is_EWK = sample_category not in [ "WZ", "ZZ", "ggZZ", "qqZZ" ]
       valid_st = not sample_name.startswith('/ST_t-channel')
+      is_ww = sample_name.startswith(('/WpWp', '/WWW'))
 
       if central_or_shift in systematics.LHE().full           and not has_LHE:                                 return False
       if central_or_shift in systematics.LHE().ttH            and sample_category not in ttHProcs:             return False
@@ -803,6 +804,7 @@ class analyzeConfig(object):
       if central_or_shift in systematics.LHE().ww             and sample_category != "WW":                     return False
       if central_or_shift in systematics.LHE().vv             and sample_category != "VV":                     return False
       if central_or_shift in systematics.LHE().wjets          and sample_category != "W":                      return False
+      if central_or_shift in systematics.LHE().other          and sample_category != "Other" and not is_ww:    return False
       if central_or_shift in systematics.DYMCReweighting      and not is_dymc_reweighting(sample_name):        return False
       if central_or_shift in systematics.DYMCNormScaleFactors and not is_dymc_normalization(sample_name):      return False
       if central_or_shift in systematics.tauIDSF              and 'tau' not in self.channel.lower():           return False
