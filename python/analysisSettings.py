@@ -586,6 +586,30 @@ class systematics(object):
 
       full = x1_().full + y1_().full + x1y1_().full + env_().full
 
+    class WJets(object):
+      class x1_(object):
+
+        up   = "CMS_ttHl_thu_shape_WJets_x1Up"
+        down = "CMS_ttHl_thu_shape_WJets_x1Down"
+        full = [ up, down ]
+
+      class y1_(object):
+        up   = "CMS_ttHl_thu_shape_WJets_y1Up"
+        down = "CMS_ttHl_thu_shape_WJets_y1Down"
+        full = [ up, down ]
+
+      class x1y1_(object):
+        up   = "CMS_ttHl_thu_shape_WJets_x1y1Up"
+        down = "CMS_ttHl_thu_shape_WJets_x1y1Down"
+        full = [ up, down ]
+
+      class env_(object):
+        up   = "CMS_ttHl_thu_shape_WJetsUp"
+        down = "CMS_ttHl_thu_shape_WJetsDown"
+        full = [ up, down ]
+
+      full = x1_().full + y1_().full + x1y1_().full + env_().full
+
     ttH   = TTH().full
     tHq   = THQ().full
     tHW   = THW().full
@@ -600,8 +624,9 @@ class systematics(object):
     qq_zz = qqZZ().full
     ww    = WW().full
     vv    = VV().full
+    wjets = WJets().full
 
-    procs = [ TTH, THQ, THW, TTW, TTZ, HH, DY, TT, WZ, ZZ, ggZZ, qqZZ, WW, VV ]
+    procs = [ TTH, THQ, THW, TTW, TTZ, HH, DY, TT, WZ, ZZ, ggZZ, qqZZ, WW, VV, WJets ]
 
     x1_up     = [ proc.x1_().up     for proc in procs ]
     x1_down   = [ proc.x1_().down   for proc in procs ]
