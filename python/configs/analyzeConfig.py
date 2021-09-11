@@ -1773,6 +1773,8 @@ class analyzeConfig(object):
             yAxisTitle = ""
         lines.append("process.addSystFakeRates.xAxisTitle = cms.string('%s')" % xAxisTitle)
         lines.append("process.addSystFakeRates.yAxisTitle = cms.string('%s')" % yAxisTitle)
+        lines.append("process.addSystFakeRates.multiclass = cms.bool(%s)" %jobOptions['multiclass'] \
+          if 'multiclass' in jobOptions.keys() else False)
         lines.append("process.addSystFakeRates.addSyst = cms.VPSet(")
         for lepton_and_hadTau_type in [ 'e', 'm', 't' ]:
             if ('add_Clos_%s' % lepton_and_hadTau_type) in jobOptions:
