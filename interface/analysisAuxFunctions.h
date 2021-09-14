@@ -761,7 +761,7 @@ get_pileupJetID(const std::string & pileupJetID_str);
  *
  */
 template<typename T>
-std::pair<const T *, const T *>
+std::vector<const T *>
 findGenJetsFromWBoson(const GenParticle& genWBoson,
                       const std::vector<T> & genJets)
 {
@@ -784,7 +784,10 @@ findGenJetsFromWBoson(const GenParticle& genWBoson,
       }
     }
   }
-  return std::pair<const T*, const T*>(genJet1FromWBoson, genJet2FromWBoson);
+  std::vector<const T *> genJetsFromWBoson;
+  if ( genJet1FromWBoson ) genJetsFromWBoson.push_back(genJet1FromWBoson);
+  if ( genJet2FromWBoson ) genJetsFromWBoson.push_back(genJet2FromWBoson);
+  return genJetsFromWBoson;
 }
 
 /**
@@ -847,7 +850,8 @@ CreateResonantBDTOutputMap(const std::vector<double> & MVA_params,
                            std::vector<T_algo *>& MVA,
                            std::map<std::string, double> & MVAInputs,
                            int event_number,
-                           const std::string & spin_label)
+                           const std::string & spin_label
+                           )
 {
   std::map<std::string, double> MVAOutput_Map;
   for ( size_t i = 0; i < MVA_params.size(); ++i ) // Loop over MVA_params: signal mass (Reso.)/BM index (Non Reso.)
@@ -1018,11 +1022,12 @@ CreateNonResonantBDTOutputMap(const std::vector<std::string> & MVA_params,
  */
 std::map<std::string, std::map<std::string, double>> // keys = gen_mHH/bmName, event category
 CreateResonantLBNOutputMap(const std::vector<double> & LBN_params,
-                           const std::vector<TensorFlowInterfaceLBN *> & LBN,
+                           const std::map<std::string, TensorFlowInterfaceLBN *> & LBN,
                            const std::map<std::string, const Particle*> & ll_particles,
                            std::map<std::string, double> & hl_mvaInputs,
                            int event_number,
-                           const std::string & spin_label);
+                           const std::string & spin_label,
+                           bool overlap = false);
 
 std::map<std::string, std::map<std::string, double>> // keys = gen_mHH/bmName, event category
 CreateNonResonantLBNOutputMap(const std::vector<std::string> & LBN_params,

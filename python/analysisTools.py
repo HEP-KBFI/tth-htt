@@ -183,9 +183,9 @@ def check_sample_pairs(samples):
                 sample_name_outer.startswith('/WZTo3LNu')    and 'amcatnloFXFX' not in sample_name_outer) or \
                (sample_name_inner.startswith('/WZTo3LNu') and 'Jets_MLL'     in sample_name_inner and # no stitching weights, yet
                 sample_name_outer.startswith('/WZTo3LNu') and 'Jets_MLL' not in sample_name_outer):
-                if sample_info_outer["use_it"] and sample_info_inner["use_it"]:
+                if sample_info_outer["use_it"] and sample_info_inner["use_it"] and sample_info_outer["sample_category"] == sample_info_inner["sample_category"]:
                     retValue = False
-                    logging.error("Samples {} and {} enabled simultaneously".format(sample_name_outer, sample_name_inner))
+                    logging.error("Samples {} and {} enabled simultaneously. If you really want to use these samples simultaneously, you need to give them different 'sample_category' attributes, in order to avoid double-counting the same background contribution twice!".format(sample_name_outer, sample_name_inner))
     return retValue
 
 def split_stitched(samples_to_stitch, startstring):

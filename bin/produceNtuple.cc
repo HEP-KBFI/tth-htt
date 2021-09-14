@@ -665,6 +665,12 @@ main(int argc,
         branch.second->setInputTree(inputTree -> getCurrentTree());
       }
       currentFile = inputTree->getCurrentFileName();
+
+      // re-read the last event after rebinding the branches between input and output
+      // see https://github.com/HEP-KBFI/tth-htt/issues/175
+      const long long currentEventIdx = inputTree->getCurrentEventIdx();
+      assert(currentEventIdx > 0);
+      inputTree->getCurrentTree()->GetEntry(currentEventIdx - 1);
     }
 
     if(inputTree -> canReport(reportEvery))

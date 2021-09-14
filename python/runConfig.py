@@ -341,6 +341,14 @@ class tthAnalyzeParser(argparse.ArgumentParser):
       choices = STITCHING_OPTIONS,
       help = 'R|Load stitched samples (choices: %s)' % tthAnalyzeParser.cat(STITCHING_OPTIONS),
     )
+
+  def add_blacklist(self, default = True):
+    type_lambda = lambda s: s.lower() in [ 'true', 't', 'yes', '1' ]
+    self.add_argument('-k', '--use-blacklist',
+      type = type_lambda, dest = 'use_blacklist', metavar = 'option', default = default, required = False,
+      help = 'R|Apply blacklist', # see https://github.com/HEP-KBFI/tth-htt/issues/175
+    )
+
   @staticmethod
   def cat(choices):
     return ', '.join(map(lambda choice: "'%s'" % str(choice), choices))

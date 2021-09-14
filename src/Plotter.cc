@@ -115,6 +115,23 @@ namespace
   }
 
   std::vector<pdouble>
+  getBlindedRanges(TH1* histogramSignal)
+  {
+    std::vector<pdouble> range;
+    int maxbincontent = histogramSignal->GetMaximumBin();
+    for (int iBin = maxbincontent-1; iBin<=maxbincontent+1; iBin++)
+    {
+      if ( iBin <= 0 || iBin > histogramSignal->GetNbinsX()) continue;
+      const double x = histogramSignal->GetBinCenter(iBin);
+      const double w = histogramSignal->GetBinWidth(iBin);
+      const double xmin = x - 0.5 * w;
+      const double xmax = x + 0.5 * w;
+      range.push_back(pdouble(xmin, xmax));
+    }
+    return range;
+  }
+
+  std::vector<pdouble>
   getBlindedRanges(TH1 * histogramData,
                    std::vector<histogramEntryType *> & histogramsBackground,
                    TH1 * histogramSignal)
@@ -268,6 +285,11 @@ Plotter::makePlots()
         {
           histogramData_blinded = blindHistogram(histogramData, keepBlinded);
         }
+        else if ( applyAutoBlinding_ && histogramSignal)
+        {
+          const std::vector<pdouble> keepBlinded_redefined = getBlindedRanges(histogramSignal);
+          histogramData_blinded = blindHistogram(histogramData, keepBlinded_redefined);
+        }
         else
         {
           const std::string histogramNameData_blinded = Form("%s_blinded", histogramData->GetName());
@@ -299,7 +321,6 @@ Plotter::makePlots()
       }
       bool divideByBinWidth_plot = divideByBinWidth_;
       if ( distribution->divideByBinWidth_ != plotEntryType::kUndefined ) divideByBinWidth_plot = distribution->divideByBinWidth_;
-
       makePlot(
 	800, 900,
 	histogramData, histogramData_blinded,
@@ -451,6 +472,11 @@ Plotter::makePlots()
           if(keepBlinded_rebinned.size() >= 1 && applyAutoBlinding_)
           {
             histogramData_blinded_rebinned = blindHistogram(histogramData_rebinned, keepBlinded_rebinned);
+          }
+          else if ( applyAutoBlinding_ && histogramSignal_rebinned)
+          {
+            const std::vector<pdouble> keepBlinded_rebinned_redefined = getBlindedRanges(histogramSignal_rebinned);
+            histogramData_blinded_rebinned = blindHistogram(histogramData_rebinned, keepBlinded_rebinned_redefined);
           }
           else
           {

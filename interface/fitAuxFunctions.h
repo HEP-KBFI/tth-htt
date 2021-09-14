@@ -59,6 +59,7 @@ makeControlPlot_fit(TGraphAsymmErrors * graph,
                     double yMin,
                     double yMax,
                     const std::string & yAxisTitle,
-                    const std::string & outputFileName);
+                    const std::string & outputFileName,
+                    double hist_xMin=0, double hist_xMax=1);
 
 #endif

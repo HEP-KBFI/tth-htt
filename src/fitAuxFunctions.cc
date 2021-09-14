@@ -246,7 +246,8 @@ makeControlPlot_fit(TGraphAsymmErrors * graph,
                     double yMin,
                     double yMax,
                     const std::string & yAxisTitle,
-                    const std::string & outputFileName)
+                    const std::string & outputFileName,
+                    double hist_xMin, double hist_xMax)
 {
   std::cout << __func__ << ":\n outputFileName = " << outputFileName << '\n';
 
@@ -278,7 +279,7 @@ makeControlPlot_fit(TGraphAsymmErrors * graph,
   topPad->Draw();
   topPad->cd();
 
-  TH1 * const dummyHistogram_top = new TH1D("dummyHistogram_top", "dummyHistogram_top", 10, xMin, xMax);
+  TH1 * const dummyHistogram_top = new TH1D("dummyHistogram_top", "dummyHistogram_top", 10, hist_xMin, hist_xMax);
   dummyHistogram_top->SetTitle("");
   dummyHistogram_top->SetStats(false);
   dummyHistogram_top->SetMaximum(yMax);
@@ -341,7 +342,7 @@ makeControlPlot_fit(TGraphAsymmErrors * graph,
   bottomPad->Draw();
   bottomPad->cd();
 
-  TH1 * const dummyHistogram_bottom = new TH1D("dummyHistogram_bottom", "dummyHistogram_bottom", 10, xMin, xMax);
+  TH1 * const dummyHistogram_bottom = new TH1D("dummyHistogram_bottom", "dummyHistogram_bottom", 10, hist_xMin, hist_xMax);
   
   dummyHistogram_bottom->SetMinimum(-1.50);
   dummyHistogram_bottom->SetMaximum(+1.50);
@@ -384,7 +385,7 @@ makeControlPlot_fit(TGraphAsymmErrors * graph,
 
     for(int iPar = 0; iPar < numPar_fail; ++iPar)
     {
-      fitFunction_formula_fail.ReplaceAll(Form("[%i]", iPar), Form("[%i]", iPar + numPar_pass));      
+      fitFunction_formula_fail.ReplaceAll(Form("[%i]", iPar), Form("[%i]", iPar + numPar_pass));
     }
 
     const std::string fitFunctionName_sysShift_div_central = Form("%s_div_central", fitFunction_pass->GetName());

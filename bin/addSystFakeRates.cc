@@ -61,10 +61,10 @@ struct addSystType
   {
     name_ = cfg.getParameter<std::string>("name");
     edm::ParameterSet cfg_fakes_mc = cfg.getParameter<edm::ParameterSet>("fakes_mc");
-    inputFileName_fakes_mc_ = cfg_fakes_mc.getParameter<std::string>("inputFileName");
+    inputFileName_fakes_mc_ = cfg_fakes_mc.getParameter<std::vector<std::string>>("inputFileName");
     histogramName_fakes_mc_ = cfg_fakes_mc.getParameter<std::string>("histogramName");
     edm::ParameterSet cfg_mcClosure = cfg.getParameter<edm::ParameterSet>("mcClosure");
-    inputFileName_mcClosure_ = cfg_mcClosure.getParameter<std::string>("inputFileName");
+    inputFileName_mcClosure_ = cfg_mcClosure.getParameter<std::vector<std::string>>("inputFileName");
     histogramName_mcClosure_ = cfg_mcClosure.getParameter<std::string>("histogramName");
   }
   ~addSystType() {}
@@ -72,15 +72,56 @@ struct addSystType
   {
     stream << "<addSystType>:" << std::endl;
     stream << " name = " << name_ << std::endl;
-    stream << " fakes_mc: inputFileName = " << inputFileName_fakes_mc_ << ", histogramName = " << histogramName_fakes_mc_ << std::endl;
-    stream << " mcClosure: inputFileName = " << inputFileName_mcClosure_ << ", histogramName = " << histogramName_mcClosure_ << std::endl;
+    stream << " fakes_mc: inputFileName = " << format_vstring(inputFileName_fakes_mc_) << ", histogramName = " << histogramName_fakes_mc_ << std::endl;
+    stream << " mcClosure: inputFileName = " << format_vstring(inputFileName_mcClosure_) << ", histogramName = " << histogramName_mcClosure_ << std::endl;
   }
   std::string name_;
-  std::string inputFileName_fakes_mc_;
+  std::vector<std::string> inputFileName_fakes_mc_;
   std::string histogramName_fakes_mc_;
-  std::string inputFileName_mcClosure_;
+  std::vector<std::string> inputFileName_mcClosure_;
   std::string histogramName_mcClosure_;
 };
+
+std::pair<double, double> findXpos(TH1* h, double lowvalue, double highvalue)
+{
+  TH1* hclone = (TH1*)h->Clone(Form("%s_cloned", h->GetName()));
+  hclone->Scale(1/hclone->Integral());
+  TH1* cdf =  hclone->GetCumulative();
+  double xMin = cdf->GetBinLowEdge(cdf->FindFirstBinAbove(lowvalue));
+  double xMax = cdf->GetBinLowEdge(cdf->FindFirstBinAbove(highvalue));
+  std::cout << "xmin: " << cdf->GetBinContent(cdf->FindFirstBinAbove(lowvalue)) << "\t xmax: " << cdf->GetBinContent(cdf->FindFirstBinAbove(highvalue)-1) << std::endl;
+  delete hclone;
+  return std::pair<double, double>(xMin, xMax);
+}
+
+TH1* rebin(TH1* h1, double xmin, double xmax, TH1* clone=0)
+{
+  bool rebin_(false);
+  Int_t bin1 = h1->FindBin(xmin);
+  Int_t bin2 = h1->FindBin(xmax)-1;
+  TH1* h_clone =0;
+  if(clone==0) h_clone = (TH1*)h1->Clone(Form("%s_rebinned", h1->GetName()));
+  else {
+    h_clone = clone;
+  }
+  if(bin2-bin1 >=3){
+    for (Int_t i=bin1; i<=bin2; i++){
+      if (h_clone->GetBinContent(i) <10) {
+        rebin_ = true;
+        break;
+      }
+    }
+  }
+  if(rebin_) {
+    int nbin = (h1->GetNbinsX()%2 ==0) ? 2 : 1;
+    if(nbin==1) return h_clone;
+    else {
+      h_clone->Rebin(nbin);
+      rebin(h_clone, xmin, xmax, h_clone);
+    }
+  }
+  return h_clone;
+}
 
 TFile* openInputFile(const std::string& inputFileName, std::map<std::string, TFile*>& inputFiles_syst)
 {
@@ -459,6 +500,7 @@ int main(int argc, char* argv[])
   std::string category = cfg_addSystFakeRates.getParameter<std::string>("category");
   std::string xAxisTitle = cfg_addSystFakeRates.getParameter<std::string>("xAxisTitle");
   std::string yAxisTitle = cfg_addSystFakeRates.getParameter<std::string>("yAxisTitle");
+  bool multiclass = cfg_addSystFakeRates.getParameter<bool>("multiclass");
 
   std::string outputFileNamePrefix = category.empty() ? "" : Form("_%s", category.data());
   outputFileNamePrefix += Form("_%s", histogramToFit.data());
@@ -503,16 +545,40 @@ int main(int argc, char* argv[])
 	addSystConfig != addSystConfigs.end(); ++addSystConfig ) {
     std::cout << "processing addSystConfig = '" << (*addSystConfig)->name_ << "'" << std::endl;
 
-    TFile* inputFile_fakes_mc = openInputFile((*addSystConfig)->inputFileName_fakes_mc_, inputFiles_syst);
-    TH1* histogram_fakes_mc = loadHistogram(inputFile_fakes_mc, (*addSystConfig)->histogramName_fakes_mc_);
+    TH1* histogram_fakes_mc = nullptr;
+    for(const std::string & inputFileName_fakes_mc: (*addSystConfig)->inputFileName_fakes_mc_)
+    {
+      TFile* inputFile_fakes_mc = openInputFile(inputFileName_fakes_mc, inputFiles_syst);
+      if(! histogram_fakes_mc)
+      {
+        histogram_fakes_mc = loadHistogram(inputFile_fakes_mc, (*addSystConfig)->histogramName_fakes_mc_);
+      }
+      else
+      {
+        histogram_fakes_mc->Add(loadHistogram(inputFile_fakes_mc, (*addSystConfig)->histogramName_fakes_mc_));
+      }
+    }
+    assert(histogram_fakes_mc);
     std::cout << "histogram_fakes_mc:" << std::endl;
     dumpHistogram(histogram_fakes_mc);
     TGraphAsymmErrors* graph_fakes_mc = convert_to_TGraph(histogram_fakes_mc);
     std::cout << "graph_fakes_mc:" << std::endl;
     dumpGraph(graph_fakes_mc);
     
-    TFile* inputFile_mcClosure = openInputFile((*addSystConfig)->inputFileName_mcClosure_, inputFiles_syst);
-    TH1* histogram_mcClosure = loadHistogram(inputFile_mcClosure, (*addSystConfig)->histogramName_mcClosure_);
+    TH1* histogram_mcClosure = nullptr;
+    for(const std::string & inputFileName_mcClosure: (*addSystConfig)->inputFileName_mcClosure_)
+    {
+      TFile* inputFile_mcClosure = openInputFile(inputFileName_mcClosure, inputFiles_syst);
+      if(! histogram_mcClosure)
+      {
+        histogram_mcClosure = loadHistogram(inputFile_mcClosure, (*addSystConfig)->histogramName_mcClosure_);
+      }
+      else
+      {
+        histogram_mcClosure->Add(loadHistogram(inputFile_mcClosure, (*addSystConfig)->histogramName_mcClosure_));
+      }
+    }
+    assert(histogram_mcClosure);
     std::cout << "histogram_mcClosure:" << std::endl;
     dumpHistogram(histogram_mcClosure);
     TGraphAsymmErrors* graph_mcClosure = convert_to_TGraph(histogram_mcClosure);
@@ -524,8 +590,16 @@ int main(int argc, char* argv[])
     std::cout << "graph_ratio:" << std::endl;
     dumpGraph(graph_ratio);
 
-    double xMin = histogram_fakes_mc->GetXaxis()->GetXmin();
-    double xMax = histogram_fakes_mc->GetXaxis()->GetXmax();
+    double xMin, xMax;
+    if (!multiclass) {
+      xMin = histogram_fakes_mc->GetXaxis()->GetXmin();
+      xMax = histogram_fakes_mc->GetXaxis()->GetXmax();
+    }
+    else {
+      std::pair<double, double> pair = findXpos(histogram_fakes_mc, 0.049999, 0.949999);
+      xMin = pair.first;
+      xMax = pair.second;
+    }
 
     double yMax = 1.4*TMath::Max(histogram_fakes_mc->GetMaximum(), histogram_mcClosure->GetMaximum());
     double yMin = TMath::Min(histogram_fakes_mc->GetMinimum(), histogram_mcClosure->GetMinimum());
@@ -537,7 +611,7 @@ int main(int argc, char* argv[])
       graph_fakes_mc, "fakes_mc",
       graph_mcClosure, "mcClosure",
       graph_ratio, 
-      xMin, xMax, xAxisTitle.data(), 
+      histogram_fakes_mc->GetBinLowEdge(1), histogram_fakes_mc->GetBinLowEdge(histogram_fakes_mc->GetNbinsX())+histogram_fakes_mc->GetBinWidth(histogram_fakes_mc->GetNbinsX()), xAxisTitle.data(),
       false, yMin, yMax, yAxisTitle.data(), -1.50, +2.50, "#frac{fakes_mc - mcClosure}{mcClosure}", 
       outputFileName_graphs);
 
@@ -556,14 +630,18 @@ int main(int argc, char* argv[])
       norm = integral_fakes_mc/integral_mcClosure;
       normErr = norm*TMath::Sqrt(square(integralErr_fakes_mc/integral_fakes_mc) + square(integralErr_mcClosure/integral_mcClosure));
 
-      if ( histogram_fakes_mc->GetNbinsX() >= 3 ) {
+      TH1* histogram_fakes_mc_rebinned = (multiclass) ? rebin(histogram_fakes_mc, xMin, xMax) : histogram_fakes_mc;
+      TGraphAsymmErrors* graph_fakes_mc_rebinned = convert_to_TGraph(histogram_fakes_mc_rebinned);
+      if ( histogram_fakes_mc_rebinned->GetNbinsX() >= 3 ) {
 	std::string histogramName_mcClosure_scaled = Form("%s_scaled", histogram_mcClosure->GetName());
 	TH1* histogram_mcClosure_scaled = cloneHistogram(histogram_mcClosure, histogramName_mcClosure_scaled);
 	histogram_mcClosure_scaled->Scale(integral_fakes_mc/integral_mcClosure);
+    if(multiclass)
+      histogram_mcClosure_scaled->Rebin(histogram_mcClosure_scaled->GetNbinsX()/histogram_fakes_mc_rebinned->GetNbinsX());
 	TGraphAsymmErrors* graph_mcClosure_scaled = convert_to_TGraph(histogram_mcClosure_scaled);
 
 	std::string graphName_ratio_scaled = Form("%s_scaled", graph_ratio->GetName());
-	TGraphAsymmErrors* graph_ratio_scaled = compRatioGraph(graphName_ratio_scaled, graph_fakes_mc, graph_mcClosure_scaled);
+	TGraphAsymmErrors* graph_ratio_scaled = compRatioGraph(graphName_ratio_scaled, graph_fakes_mc_rebinned, graph_mcClosure_scaled);
 
 	std::string fitFunctionName = Form("%s_fit", graph_ratio_scaled->GetName());
 	double x0 = histogram_fakes_mc->GetMean();
@@ -594,7 +672,7 @@ int main(int argc, char* argv[])
 	      fitFunctionParUp->SetParameter(
 		idxComponent, 
 		fitFunction->GetParameter(idxComponent) + TMath::Sqrt(eigenVector_and_Value->eigenValue_)*eigenVector_and_Value->eigenVector_(idxComponent));
-	    }
+        }
 	    fitFunctions_sysShifts.push_back(fitFunction_and_legendEntry(fitFunctionParUp, Form("EigenVec #%i", idxPar)));
 	    std::string fitFunctionParDownName = Form("%s_par%iDown", fitFunctionName.data(), idxPar);
 	    TF1* fitFunctionParDown = new TF1(fitFunctionParDownName.data(), fitFunction_formula_wrt_x0.data(), xMin, xMax);
@@ -605,8 +683,7 @@ int main(int argc, char* argv[])
 	    }
 	    fitFunctions_sysShifts.push_back(fitFunction_and_legendEntry(fitFunctionParDown, Form("EigenVec #%i", idxPar)));
 	    ++idxPar;
-	  }    
-
+      }
 	  std::string outputFileName_fit = std::string(outputFileName, 0, outputFileName.find_last_of('.'));
           outputFileName_fit.append(Form("%s_%s_fit.png", outputFileNamePrefix.data(), (*addSystConfig)->name_.data()));
 	  makeControlPlot_fit(
@@ -614,8 +691,10 @@ int main(int argc, char* argv[])
 	    fitFunction, fitFunctions_sysShifts, 
 	    xMin, xMax, xAxisTitle, 
 	    false, -0.5, +3.5, "fakes_mc/mcClosure", 
-	    outputFileName_fit);
-
+	    outputFileName_fit,
+        histogram_fakes_mc->GetBinLowEdge(1), \
+        histogram_fakes_mc->GetBinLowEdge(histogram_fakes_mc->GetNbinsX())+histogram_fakes_mc->GetBinWidth(histogram_fakes_mc->GetNbinsX())
+        );
 	  slope = fitFunction->GetParameter(1);
 	  slopeErr = fitFunction->GetParError(1);
 	} else {
@@ -625,6 +704,8 @@ int main(int argc, char* argv[])
 
 	delete histogram_mcClosure_scaled;
 	delete graph_mcClosure_scaled;
+    delete histogram_fakes_mc_rebinned;
+    delete graph_fakes_mc_rebinned;
 	delete graph_ratio_scaled;
 	delete fitFunction;
       }
@@ -632,6 +713,8 @@ int main(int argc, char* argv[])
 
     std::cout << "norm = " << norm << " +/- " << normErr << std::endl;
     std::cout << "slope = " << slope << " +/- " << slopeErr << " (fitResult_isValid = " << fitResult_isValid << ")" << std::endl;
+    assert(norm > 0.); // require both integrals to be greater than 0
+    const double dy_closureNorm = std::fabs(1. - std::min(norm, 2.)); // keep between -1 and +1
 
     TH1* histogram_data_fakes = loadHistogram(inputFile, process);
     std::cout << "histogram_data_fakes:" << std::endl;
@@ -652,12 +735,6 @@ int main(int argc, char* argv[])
     for ( int idxBin = 1; idxBin <= histogram_fakes_mc->GetNbinsX(); ++idxBin ) {
       double binContent_data_fakes = histogram_data_fakes->GetBinContent(idxBin);
       double binError_data_fakes = histogram_data_fakes->GetBinError(idxBin);
-      //double dy_closureNorm;
-      //if ( norm > 1. ) dy_closureNorm = (norm + normErr) - 1.;
-      //else dy_closureNorm = 1. - (norm - normErr);      
-      double dy_closureNorm = TMath::Abs(norm - 1.);
-      if ( dy_closureNorm < -1. ) dy_closureNorm = -1.; // CV: keep integral of histogram_closureNormUp positive
-      if ( dy_closureNorm > +1. ) dy_closureNorm = +1.; // CV: keep integral of histogram_closureNormDown positive
       histogram_closureNormUp->SetBinContent(idxBin, binContent_data_fakes*(1. + dy_closureNorm));
       histogram_closureNormUp->SetBinError(idxBin, binError_data_fakes);
       histogram_closureNormDown->SetBinContent(idxBin, binContent_data_fakes*(1. - dy_closureNorm));

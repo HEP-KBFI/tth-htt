@@ -972,13 +972,16 @@ DoubleToUInt_Convertor(double BDT_param,
 
 std::map<std::string, std::map<std::string, double>>
 CreateResonantLBNOutputMap(const std::vector<double> & LBN_params,
-                           const std::vector<TensorFlowInterfaceLBN *>& LBN,
+                           const std::map<std::string, TensorFlowInterfaceLBN *> & LBN,
                            const std::map<std::string, const Particle*> & ll_particles,
                            std::map<std::string, double> & hl_mvaInputs,
                            int event_number,
-                           const std::string & label)
+                           const std::string & label,
+                           bool overlap)
 {
   std::map<std::string, std::map<std::string, double>> LBNOutput_Map;
+  std::string label_copy(label);
+  label_copy = label_copy.replace(0, 1, "");
   for ( size_t i = 0; i < LBN_params.size(); ++i ) // Loop over LBN_params: signal mass (Reso.)/BM index (Non Reso.)
   {
     // resonant case
@@ -987,13 +990,42 @@ CreateResonantLBNOutputMap(const std::vector<double> & LBN_params,
 
     if ( event_number != -1 )
     {
+      if ( overlap )
+      {
       // use odd-even method
-      LBNOutput_Map.insert(std::make_pair(key, (*LBN[i])(ll_particles, hl_mvaInputs, event_number)));
+        if ( LBN_params[i] <= 450 )
+        {
+          LBNOutput_Map.insert(std::make_pair(key, (*LBN.at(Form("low%s", label.data())))(ll_particles, hl_mvaInputs, event_number)));
+        }
+        else
+        {
+          LBNOutput_Map.insert(std::make_pair(key, (*LBN.at(Form("high%s", label.data())))(ll_particles, hl_mvaInputs, event_number)));
+        }
+      }
+      else
+      {
+        LBNOutput_Map.insert(std::make_pair(key, (*LBN.at(Form("%s", label_copy.data())))(ll_particles, hl_mvaInputs, event_number)));
+      }
+
     }
     else
     {
       // use same LBN for all events
-      LBNOutput_Map.insert(std::make_pair(key, (*LBN[i])(ll_particles, hl_mvaInputs)));
+      if ( LBN_params[i] <= 450 )
+      {
+        if ( overlap )
+        {
+          LBNOutput_Map.insert(std::make_pair(key, (*LBN.at(Form("low%s", label.data())))(ll_particles, hl_mvaInputs)));
+        }
+        else
+        {
+          LBNOutput_Map.insert(std::make_pair(key, (*LBN.at(Form("high%s", label.data())))(ll_particles, hl_mvaInputs)));
+        }
+      }
+      else
+      {
+        LBNOutput_Map.insert(std::make_pair(key, (*LBN.at(Form("%s", label_copy.data())))(ll_particles, hl_mvaInputs)));
+      }
     }
   }
   return LBNOutput_Map;
@@ -1020,12 +1052,6 @@ CreateNonResonantLBNOutputMap(const std::vector<std::string> & LBN_params,
       }
       return "SM"; // assume SM training if no couplings are specified
     }();
-    if(! hl_mvaInputs_copy.count(trainingString))
-    {
-      throw cmsException(__func__, __LINE__) << "Unexpected training string for BM " << key << " = " << trainingString;
-    }
-    hl_mvaInputs_copy[trainingString] = 1;
-
     assert(LBN.count(trainingString));
     if ( event_number != -1 )
     {

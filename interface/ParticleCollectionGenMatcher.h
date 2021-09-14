@@ -81,7 +81,7 @@ public:
   addGenPhotonMatch(const std::vector<const Trec *> & recParticles,
                     const std::vector<GenPhoton> & genPhotons,
                     double dRmax = 0.3,
-                    double maxDPtRel = 0.5,
+                    double maxDPtRel = 1.0, // 0 < pt(reco) < 2 * pt(gen)
                     int status = 1) const
   {
     return addGenMatch<GenPhoton, GenPhotonLinker>(recParticles, genPhotons, dRmax, maxDPtRel, genPhotonLinker_, status);
@@ -162,7 +162,7 @@ protected:
         const double dR = deltaR(
           recParticle->eta(), recParticle->phi(), genParticle.eta(), genParticle.phi()
         );
-        const double dPtRel = (recParticle->pt() - genParticle.pt()) / genParticle.pt();
+        const double dPtRel = std::fabs(recParticle->pt() - genParticle.pt()) / genParticle.pt();
         bool passesConstraints = minDPtRel < dPtRel && dPtRel < maxDPtRel;
         if(passesConstraints && typeid(Trec) != typeid(RecoJet) && ! genPartFlavs.empty())
         {
@@ -298,7 +298,7 @@ protected:
           if(isDEBUG_)
           {
             const double dR_bestMatch = deltaR(recParticle->eta(), recParticle->phi(), genMatch->eta(), genMatch->phi());
-            const double dPtRel_bestMatch = (recParticle->pt() - genMatch->pt()) / genMatch->pt();
+            const double dPtRel_bestMatch = std::fabs(recParticle->pt() - genMatch->pt()) / genMatch->pt();
             std::cout
               << "Found gen match with dR = " << dR_bestMatch << " and dPtRel = " << dPtRel_bestMatch << " between "
                  "reconstructed object...\n" << recParticle << "\n... and generator level object...\n" << *genMatch
