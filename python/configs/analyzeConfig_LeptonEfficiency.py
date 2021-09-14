@@ -251,6 +251,7 @@ class analyzeConfig_LeptonEfficiency(analyzeConfig):
         absEtaBins_mu,
         ptBins_e,
         ptBins_mu,
+        ZmassWindow,
         lepton_type_string,       
         lep_mva_wp,
         lep_useTightChargeCut,       
@@ -275,6 +276,7 @@ class analyzeConfig_LeptonEfficiency(analyzeConfig):
         verbose           = False,
         dry_run           = False,
         isDebug           = False,
+        useBothLeptonsInGenMatching = False,       
         use_home          = False,
         submission_cmd    = None,
       ):
@@ -320,6 +322,9 @@ class analyzeConfig_LeptonEfficiency(analyzeConfig):
     self.ptBins_e = ptBins_e
     self.absEtaBins_mu = absEtaBins_mu
     self.ptBins_mu = ptBins_mu
+    self.ZmassWindow = ZmassWindow
+
+    self.useBothLeptonsInGenMatching = useBothLeptonsInGenMatching
 
     self.cfgFile_analyze = os.path.join(self.template_dir, "analyze_LeptonEfficiency_cfg.py")
 
@@ -330,7 +335,12 @@ class analyzeConfig_LeptonEfficiency(analyzeConfig):
     self.cfgFile_comp_LeptonEfficiency = os.path.join(self.template_dir, "comp_LeptonEfficiency_cfg.py")
     self.jobOptions_comp_LeptonEfficiency = {}
 
-    self.prep_dcard_processesToCopy = [ "data_obs", "DY", "DY_signal", "DY_fakes", "WJets", "TTbar", "Singletop", "Diboson" ]
+    self.prep_dcard_processesToCopy = []
+    if(self.lepton_type_string == 'mu'):     
+      self.prep_dcard_processesToCopy = [ "data_obs", "DY", "DY_signal", "DY_fakes", "WJets", "TTbar", "Singletop", "Diboson"]
+    if(self.lepton_type_string == 'e'):
+      self.prep_dcard_processesToCopy = [ "data_obs", "DY", "DY_signal", "DY_fakes", "WJets", "TTbar", "Singletop", "Diboson", "DY_fakesg", "DY_fakesNC"]
+    
     self.sig_proc = "DY_signal"
     self.histogramDir_prep_dcard = "LeptonEfficiency"
     self.prep_dcard = prep_dcard
@@ -370,6 +380,9 @@ class analyzeConfig_LeptonEfficiency(analyzeConfig):
     )
     lines.append("process.analyze_LeptonEfficiency.lepton_type = cms.string('%s')" % self.lepton_type_string)
     lines.append("process.analyze_LeptonEfficiency.leptonSelection = cms.string('%s')" % self.lepton_selection_string)
+    lines.append("process.analyze_LeptonEfficiency.ZmassWindow = cms.vdouble([%.2f, %.2f])" % (self.ZmassWindow[0], self.ZmassWindow[1]))
+    if(self.useBothLeptonsInGenMatching == True):
+      lines.append("process.analyze_LeptonEfficiency.useBothLeptonsInGenMatching = cms.bool(True)")
     if(self.lepton_type_string == 'e'):
           lines.append("process.analyze_LeptonEfficiency.apply_offline_e_trigger_cuts_1e = cms.bool(True)")
     create_cfg(self.cfgFile_analyze, jobOptions['cfgFile_modified'], lines)
@@ -411,7 +424,10 @@ class analyzeConfig_LeptonEfficiency(analyzeConfig):
     lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
     lines.append("process.fwliteOutput.fileName = cms.string('%s')" % jobOptions['datacardFile'])
     lines.append("process.prepareDatacards.histogramToFit = cms.string('%s')" % jobOptions['histogramToFit'])
-    lines.append("process.prepareDatacards.processesToCopy = cms.vstring('data_obs', 'DY', 'DY_signal', 'DY_fakes', 'TTbar', 'Diboson', 'WJets', 'Singletop')")
+    if(self.lepton_type_string == 'mu'):
+      lines.append("process.prepareDatacards.processesToCopy = cms.vstring('data_obs', 'DY', 'DY_signal', 'DY_fakes', 'TTbar', 'Diboson', 'WJets', 'Singletop')")
+    if(self.lepton_type_string == 'e'):
+      lines.append("process.prepareDatacards.processesToCopy = cms.vstring('data_obs', 'DY', 'DY_signal', 'DY_fakes', 'TTbar', 'Diboson', 'WJets', 'Singletop', 'DY_fakesg', 'DY_fakesNC')")
     if jobOptions['histogramToFit'] in ["m_ll"]:
       lines.append("process.prepareDatacards.histogramToFit_xMin = cms.double(0.)")
       lines.append("process.prepareDatacards.histogramToFit_xMax = cms.double(150.)")
@@ -720,7 +736,12 @@ class analyzeConfig_LeptonEfficiency(analyzeConfig):
         systematic_name = systematic.replace('Up', '').replace('Down', '')
         if systematic_name not in systematics_leptonFR:
           systematics_leptonFR.append(systematic_name)
-      setup_dcards_template_file = os.path.join(jinja_template_dir, 'setupDatacards_LeptonEfficiency.py.template')
+
+      if(self.lepton_type_string == 'e'):    
+        setup_dcards_template_file = os.path.join(jinja_template_dir, 'setupDatacards_LeptonEfficiency_e.py.template')
+      if(self.lepton_type_string == 'mu'):
+        setup_dcards_template_file = os.path.join(jinja_template_dir, 'setupDatacards_LeptonEfficiency_mu.py.template')
+
       with open(setup_dcards_template_file, 'r') as setup_dcards_template_file_ptr:
         setup_dcards_template = setup_dcards_template_file_ptr.read()
       setup_dcards_script = jinja2.Template(setup_dcards_template).render(
@@ -737,7 +758,13 @@ class analyzeConfig_LeptonEfficiency(analyzeConfig):
         os.fsync(setup_dcards_script_file.fileno())
       add_chmodX(setup_dcards_script_path)
 
-      postfit_plot_script_path = os.path.join(os.environ['CMSSW_BASE'], 'src/tthAnalysis/HiggsToTauTau/data/leptonIDEff/scripts/postFitPlot_fakes_from_mc.py') 
+
+      postfit_plot_script_path = ""
+      if(self.lepton_type_string == 'mu'):
+        postfit_plot_script_path = os.path.join(os.environ['CMSSW_BASE'], 'src/tthAnalysis/HiggsToTauTau/data/leptonIDEff/scripts/postFitPlot_fakes_from_mc.py')
+      if(self.lepton_type_string == 'e'):
+        postfit_plot_script_path = os.path.join(os.environ['CMSSW_BASE'], 'src/tthAnalysis/HiggsToTauTau/data/leptonIDEff/scripts/postFitPlot_fakes_from_mc_wConvs.py')
+        
       yieldtable_script_path   = os.path.join(os.environ['CMSSW_BASE'], 'src/tthAnalysis/HiggsToTauTau/data/leptonIDEff/scripts/yieldTable_fakes_from_mc.py')
       
       # Create run_postFit.sh script from the template

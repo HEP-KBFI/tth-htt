@@ -52,6 +52,7 @@ process.analyze_LeptonEfficiency = cms.PSet(
     redoGenMatching       = cms.bool(True), # WAS FALSE BEFORE (= !genMatchingByIndex inside analyzeConfig.py)
     genMatchingByIndex    = cms.bool(False), ## overwritten at the bottom
     isDEBUG = cms.bool(False),
+    useBothLeptonsInGenMatching = cms.bool(False), ## Set this to True to use the gen-match status of both Tag and Probe leptons
 
     hadTauSelection = cms.string('Tight|deepVSjMedium'), ## NEW LINE
     #apply_hadTauGenMatching = cms.bool(False), ## NOT NEEDED
@@ -61,6 +62,7 @@ process.analyze_LeptonEfficiency = cms.PSet(
     ptBins_e = cms.vdouble(10., 15., 20., 25., 30., 35., 40., 45., 60., 80., 120.),
     absEtaBins_mu = cms.vdouble(0., 0.9, 1.2, 2.1, 2.5),
     ptBins_mu = cms.vdouble(10., 15., 20., 25., 30., 35., 40., 45., 60., 80., 120.),
+    ZmassWindow = cms.vdouble(60., 120.), 
     useNonNominal = cms.bool(False), ## Added from HH 3l channel 
     # METScaleSyst   = cms.double(0.10), ## MET Syst set to 10% (NOT USED SINCE RUNING ON DI-LEPTON EVENTS WITH 0 MET)  
     ## -------------------------------

@@ -154,6 +154,7 @@ if __name__ == '__main__':
     absEtaBins_mu = [ 0., 0.9, 1.2, 2.1, 2.5 ], 
     ptBins_e = [ 10., 15., 20., 25., 30., 35., 40., 45., 60., 80., 120. ], 
     ptBins_mu = [ 10., 15., 20., 25., 30., 35., 40., 45., 60., 80., 120. ],
+    ZmassWindow = [60., 120.],  
     lepton_type_string          = lepton_type_string, ## Options are e/mu  
     lep_mva_wp                  = lep_mva_wp,
     lep_useTightChargeCut       = lep_useTightChargeCut,
@@ -177,6 +178,7 @@ if __name__ == '__main__':
     select_rle_output           = True,
     dry_run                     = dry_run,
     isDebug                     = debug,
+    useBothLeptonsInGenMatching = True,  ## Set this to True to use the gen-match status of both Tag and Probe leptons
     use_home                    = use_home,
     submission_cmd              = sys.argv,  
   )

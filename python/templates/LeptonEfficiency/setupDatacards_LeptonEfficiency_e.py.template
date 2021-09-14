@@ -20,8 +20,10 @@ SUFFIX_GEN_MATCH = "" ## NO NEED FOR l SINCE ALREADY DONE IN STAGE1 STEP
 sig_procs     = ['{{ signal_process }}']
 
 
-#bkg_procs_arr = ["DY_fakes", "Singletop", "Diboson", "TTbar", "WJets"]
-bkg_procs_arr = ["DY_fakes", "Singletop", "Diboson", "TTbar"] ## Dropped "WJets" since was negligible in charge flip measurement as well
+bkg_procs_arr = ["DY_fakesNC", "Singletop", "Diboson", "TTbar"] ## Dropped "WJets" since was negligible in charge flip measurement as well
+conv_proc_arr = ["DY_fakesg"] ## Was DY_Convs in earlier studies
+
+bkg_plus_convs_procs_arr = bkg_procs_arr + conv_proc_arr 
 
 Era = '{{ era }}' ## NEWLY ADDED (For Lumi Unc.)
 
@@ -30,9 +32,11 @@ Era = '{{ era }}' ## NEWLY ADDED (For Lumi Unc.)
 bkg_procs_arr = list(map(lambda proc: '%s%s' % (proc, SUFFIX_GEN_MATCH), bkg_procs_arr))
 all_procs     = bkg_procs_arr + sig_procs
 
+
 bkg_procs = { {% for lepton in leptons %}
-  '{{ lepton[0] }}' : bkg_procs_arr,{% endfor %}
+  '{{ lepton[0] }}' : bkg_plus_convs_procs_arr,{% endfor %}
 }
+
 
 ### BELOW FIRST ENTRY NUMBER (0) IS $BINID AND SECOND 'STRING LABEL' IS $BIN
 bins = { {% for lepton in leptons %}
@@ -63,9 +67,9 @@ for chn in channels:
     #era = ['13TeV']
     ana = ['LeptonID']
     era = [Era]
-    cb.AddObservations(['*'], ana, era, [chn], bins[chn])                        ### DEF LINES
-    cb.AddProcesses(['*'],    ana, era, [chn], bkg_procs[chn], bins[chn], False) ### DEF LINES
-    cb.AddProcesses(['*'],    ana, era, [chn], sig_procs,      bins[chn], True)  ### DEF LINES
+    cb.AddObservations(['*'], ana, era, [chn], bins[chn])                        
+    cb.AddProcesses(['*'],    ana, era, [chn], bkg_procs[chn], bins[chn], False) 
+    cb.AddProcesses(['*'],    ana, era, [chn], sig_procs,      bins[chn], True)  
 
 ##########################################################################
 # Define systematic uncertainties
@@ -95,10 +99,16 @@ cb.cp().AddSyst( ## Correl. across $CHANNEL and $BIN and all MC derived sig. and
     (channels, ['DY_signal'], lumi_unc) ## DY_signal is already derived from gen_matching no need for SUFFIX_GEN_MATCH
 )
 
+
 cb.cp().AddSyst( ## Correl. across $CHANNEL and $BIN and all MC derived sig. and bkg. processes
     cb, lumi_label, "lnN", ch.SystMap('channel', 'process')
-    (channels, ['DY_fakes'], lumi_unc) ## DY_fakes is already derived from gen_matching no need for SUFFIX_GEN_MATCH
+    (channels, ['DY_fakesNC'], lumi_unc) ## DY_fakesNC is already derived from gen_matching no need for SUFFIX_GEN_MATCH
 )
+cb.cp().AddSyst( ## Correl. across $CHANNEL and $BIN and all MC derived sig. and bkg. processes
+    cb, lumi_label, "lnN", ch.SystMap('channel', 'process')
+    (channels, ['DY_fakesg'], lumi_unc) ## DY_Convs is already derived from gen_matching no need for SUFFIX_GEN_MATCH
+)
+
 
 cb.cp().AddSyst( ## Correl. across $CHANNEL and $BIN and all MC derived sig. and bkg. processes
     cb, lumi_label, "lnN", ch.SystMap('channel', 'process')
@@ -128,10 +138,17 @@ cb.cp().AddSyst( ## Correl. across $CHANNEL and $BIN
         (channels, ['DY_signal'], 1.5) ## 50% (DY_signal is already derived from gen_matching no need for SUFFIX_GEN_MATCH)
 )
  
+
 cb.cp().AddSyst( ## Correl. across $CHANNEL and $BIN
     cb, 'fake_norm', 'lnN', ch.SystMap('channel', 'process')
-        (channels, ['DY_fakes'], 1.5) ## 50% (DY_fakes is already derived from gen_matching no need for SUFFIX_GEN_MATCH)
+        (channels, ['DY_fakesNC'], 1.5) ## 50% (DY_fakes is already derived from gen_matching no need for SUFFIX_GEN_MATCH) [NEW LINE]
 )
+cb.cp().AddSyst( ## Correl. across $CHANNEL and $BIN
+    cb, 'conv_norm', 'lnN', ch.SystMap('channel', 'process')
+        (channels, ['DY_fakesg'], 1.5) ## 50% (Convs is already derived from gen_matching no need for SUFFIX_GEN_MATCH) [NEW LINE]
+)
+
+
 
 cb.cp().AddSyst( ## Correl. across $CHANNEL and $BIN
     cb, 'singletop_norm', 'lnN', ch.SystMap('channel', 'process')
@@ -164,8 +181,20 @@ cb.cp().AddSyst(cb, '{{ central_or_shift }}', 'shape', ch.SystMap('channel', 'pr
 cb.cp().AddSyst(cb, '{{ central_or_shift }}', 'shape', ch.SystMap('channel', 'process')(channels, sig_procs, 1.00)) ## FOR SIG. PROCESS
 {% endfor %}
 
+##----MY LINES-----##
+cb.cp().AddSyst(cb, 'CMS_ttHl_electronER_Conv', 'shape', ch.SystMap('channel', 'process')(channels, conv_proc_arr, 1.00)) ## FOR CONV. BG ONLY
+cb.cp().AddSyst(cb, 'CMS_ttHl_electronESEndcap_Conv', 'shape', ch.SystMap('channel', 'process')(channels, conv_proc_arr, 1.00)) ## FOR CONV. BG ONLY
+cb.cp().AddSyst(cb, 'CMS_ttHl_electronESBarrel_Conv', 'shape', ch.SystMap('channel', 'process')(channels, conv_proc_arr, 1.00)) ## FOR CONV. BG ONLY
+##----------------##
+
+use_binByBin = False
 
 
+##########################################################################
+# Setting AutoMCStats
+########################################################################## 
+if not use_binByBin: ## Threshold taken from HH datacards
+    cb.cp().SetAutoMCStats(cb, 10)
 
 
 ##########################################################################
@@ -174,20 +203,20 @@ cb.cp().AddSyst(cb, '{{ central_or_shift }}', 'shape', ch.SystMap('channel', 'pr
 for chn in channels:
     cb.cp().channel([chn]).ExtractShapes(
         '%s/%s/%s' % (shapes_dir, inputs[chn], files[chn]),
-#        '$BIN/rebinned/$PROCESS', '$BIN/rebinned/$PROCESS_$SYSTEMATIC' ## OLD !
+         #'$BIN/rebinned/$PROCESS', '$BIN/rebinned/$PROCESS_$SYSTEMATIC' ## OLD !
         '$BIN/$PROCESS', '$BIN/$PROCESS_$SYSTEMATIC'
     )
 
 ##########################################################################
 # Create bin-by-bin
 ##########################################################################
-bbb = ch.BinByBinFactory()
-bbb.SetPattern('CMS_$ANALYSIS_$BIN_$ERA_$PROCESS_bin_$#')   #### DEFAULT LINE
-bbb.SetAddThreshold(0.1)
-bbb.SetMergeThreshold(0.5)  # For now we merge, but to be checked
-bbb.SetFixNorm(True)
-bbb.MergeAndAdd(cb.cp().backgrounds(), cb)
-
+if use_binByBin:
+    bbb = ch.BinByBinFactory()
+    bbb.SetPattern('CMS_$ANALYSIS_$BIN_$ERA_$PROCESS_bin_$#')   #### DEFAULT LINE
+    bbb.SetAddThreshold(0.1)
+    bbb.SetMergeThreshold(0.5)  # For now we merge, but to be checked
+    bbb.SetFixNorm(True)
+    bbb.MergeAndAdd(cb.cp().backgrounds(), cb)
 cb.PrintAll()
 
 ##########################################################################

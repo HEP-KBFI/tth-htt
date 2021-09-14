@@ -59,6 +59,7 @@ numerator_and_denominatorHistManagers::numerator_and_denominatorHistManagers(con
   , electronHistManager_genHadTauOrLepton_(nullptr)
   , electronHistManager_genJet_(nullptr)
   , electronHistManager_genPhoton_(nullptr)
+  , electronHistManager_no_genPhoton_(nullptr)
   , muonHistManager_(nullptr)
   , muonHistManager_genHadTau_(nullptr)
   , muonHistManager_genLepton_(nullptr)
@@ -77,6 +78,7 @@ numerator_and_denominatorHistManagers::numerator_and_denominatorHistManagers(con
   , evtHistManager_LeptonEfficiency_genHadTauOrLepton_(nullptr)
   , evtHistManager_LeptonEfficiency_genJet_(nullptr)
   , evtHistManager_LeptonEfficiency_genPhoton_(nullptr)
+  , evtHistManager_LeptonEfficiency_no_genPhoton_(nullptr)
 {
   if(isInclusive_)
   {
@@ -115,6 +117,7 @@ numerator_and_denominatorHistManagers::~numerator_and_denominatorHistManagers()
   delete electronHistManager_genHadTauOrLepton_;
   delete electronHistManager_genJet_;
   delete electronHistManager_genPhoton_;
+  delete electronHistManager_no_genPhoton_;
   delete muonHistManager_;
   delete muonHistManager_genHadTau_;
   delete muonHistManager_genLepton_;
@@ -133,6 +136,7 @@ numerator_and_denominatorHistManagers::~numerator_and_denominatorHistManagers()
   delete evtHistManager_LeptonEfficiency_genHadTauOrLepton_;
   delete evtHistManager_LeptonEfficiency_genJet_;
   delete evtHistManager_LeptonEfficiency_genPhoton_;
+  delete evtHistManager_LeptonEfficiency_no_genPhoton_;
 }
 
 std::string
@@ -149,6 +153,7 @@ numerator_and_denominatorHistManagers::bookHistograms(TFileDirectory & dir, bool
   const std::string process_and_genMatchedHadTauOrLepton = process_ + "l_plus_t";
   const std::string process_and_genMatchedJet            = process_ + "j";
   const std::string process_and_genMatchedPhoton         = process_ + "g";
+  const std::string process_and_no_genMatchedPhoton      = process_ + "NC";
 
   const auto mkCfg = [this](const std::string & process) -> edm::ParameterSet
   {
@@ -175,6 +180,9 @@ numerator_and_denominatorHistManagers::bookHistograms(TFileDirectory & dir, bool
 
       electronHistManager_genPhoton_ = new ElectronHistManager(mkCfg(process_and_genMatchedPhoton));
       electronHistManager_genPhoton_->bookHistograms(dir);
+
+      electronHistManager_no_genPhoton_ = new ElectronHistManager(mkCfg(process_and_no_genMatchedPhoton));
+      electronHistManager_no_genPhoton_->bookHistograms(dir);
     }
   }
   else if(lepton_type_ == kMuon)
@@ -197,6 +205,7 @@ numerator_and_denominatorHistManagers::bookHistograms(TFileDirectory & dir, bool
 
       muonHistManager_genPhoton_ = new MuonHistManager(mkCfg(process_and_genMatchedPhoton));
       muonHistManager_genPhoton_->bookHistograms(dir);
+
     }
   }
   else
@@ -233,6 +242,9 @@ numerator_and_denominatorHistManagers::bookHistograms(TFileDirectory & dir, bool
 
       evtHistManager_LeptonEfficiency_genPhoton_ = new EvtHistManager_LeptonEfficiency(mkCfg(process_and_genMatchedPhoton));
       evtHistManager_LeptonEfficiency_genPhoton_->bookHistograms(dir);
+
+      evtHistManager_LeptonEfficiency_no_genPhoton_ = new EvtHistManager_LeptonEfficiency(mkCfg(process_and_no_genMatchedPhoton));
+      evtHistManager_LeptonEfficiency_no_genPhoton_->bookHistograms(dir);
     }
     else
     {  
@@ -250,9 +262,142 @@ numerator_and_denominatorHistManagers::bookHistograms(TFileDirectory & dir, bool
 
       evtHistManager_LeptonFakeRate_genPhoton_ = new EvtHistManager_LeptonFakeRate(mkCfg(process_and_genMatchedPhoton));
       evtHistManager_LeptonFakeRate_genPhoton_->bookHistograms(dir);
+
     }
   }
 }
+
+void
+numerator_and_denominatorHistManagers::fillHistograms(const RecoLepton & lepton_probe,
+						      const RecoLepton & lepton_tag,
+                                                      double m_ll,
+                                                      double evtWeight,
+                                                      cutFlowTableType * cutFlowTable)
+{
+  const bool performFill = isInclusive_ || (
+    lepton_probe.absEta() >= minAbsEta_ && lepton_probe.absEta() < maxAbsEta_  &&
+    lepton_probe.lepton_pt() >= minPt_    && lepton_probe.lepton_pt() < maxPt_
+  );
+
+  if(performFill)
+  {
+    if(lepton_type_ == kElectron)
+    {
+      const RecoElectron * const electron_probe_ptr = dynamic_cast<const RecoElectron *>(&lepton_probe);
+      const RecoElectron * const electron_tag_ptr = dynamic_cast<const RecoElectron *>(&lepton_tag);
+      assert(electron_probe_ptr);
+      assert(electron_tag_ptr);
+      const RecoElectron & electron_probe = *electron_probe_ptr;
+      const RecoElectron & electron_tag = *electron_tag_ptr;
+
+      electronHistManager_->fillHistograms(electron_probe, evtWeight);
+      if(isMC_)
+      {
+	if(electron_probe.genLepton() && electron_tag.genLepton())
+        {
+          electronHistManager_genLepton_->fillHistograms(electron_probe, evtWeight);
+	  electronHistManager_genHadTauOrLepton_->fillHistograms(electron_probe, evtWeight);
+	  electronHistManager_no_genPhoton_->fillHistograms(electron_probe, evtWeight);
+        }else if(electron_probe.genHadTau() && electron_tag.genHadTau())
+	{ 
+	  electronHistManager_genHadTau_->fillHistograms(electron_probe, evtWeight);
+	  electronHistManager_genHadTauOrLepton_->fillHistograms(electron_probe, evtWeight);
+	  electronHistManager_no_genPhoton_->fillHistograms(electron_probe, evtWeight);
+	}else if((electron_probe.genLepton() && electron_tag.genHadTau()) || 
+	   (electron_probe.genHadTau() && electron_tag.genLepton()))
+	{
+	  electronHistManager_genLepton_->fillHistograms(electron_probe, evtWeight);
+	  electronHistManager_genHadTau_->fillHistograms(electron_probe, evtWeight);
+	  electronHistManager_genHadTauOrLepton_->fillHistograms(electron_probe, evtWeight);
+	  electronHistManager_no_genPhoton_->fillHistograms(electron_probe, evtWeight);
+	}else if( electron_probe.genPhoton() || electron_tag.genPhoton() )
+	{ // Conv.s Bg
+	  electronHistManager_genPhoton_->fillHistograms(electron_probe, evtWeight);
+	}
+	else
+        {  
+	  electronHistManager_genJet_->fillHistograms(electron_probe, evtWeight);
+	  electronHistManager_no_genPhoton_->fillHistograms(electron_probe, evtWeight);
+	}
+
+      }
+    }  
+    else if(lepton_type_ == kMuon)
+    {
+      const RecoMuon * const muon_probe_ptr = dynamic_cast<const RecoMuon *>(&lepton_probe);
+      const RecoMuon * const muon_tag_ptr = dynamic_cast<const RecoMuon *>(&lepton_tag);
+      assert(muon_probe_ptr);
+      assert(muon_tag_ptr);
+      const RecoMuon & muon_probe = *muon_probe_ptr;
+      const RecoMuon & muon_tag = *muon_tag_ptr;
+
+      muonHistManager_->fillHistograms(muon_probe, evtWeight);
+      if(isMC_)
+      {
+	if(muon_probe.genLepton() && muon_tag.genLepton())
+        {
+          muonHistManager_genLepton_->fillHistograms(muon_probe, evtWeight);
+	  muonHistManager_genHadTauOrLepton_->fillHistograms(muon_probe, evtWeight);
+        }else if(muon_probe.genHadTau() && muon_tag.genHadTau())
+	{ 
+	  muonHistManager_genHadTau_->fillHistograms(muon_probe, evtWeight);
+	  muonHistManager_genHadTauOrLepton_->fillHistograms(muon_probe, evtWeight);
+	}else if((muon_probe.genLepton() && muon_tag.genHadTau()) || 
+	   (muon_probe.genHadTau() && muon_tag.genLepton()))
+	{
+	  muonHistManager_genLepton_->fillHistograms(muon_probe, evtWeight);
+	  muonHistManager_genHadTau_->fillHistograms(muon_probe, evtWeight);
+	  muonHistManager_genHadTauOrLepton_->fillHistograms(muon_probe, evtWeight);
+	}else{
+	  muonHistManager_genJet_->fillHistograms(muon_probe, evtWeight);
+	}
+
+      }
+    }  
+    else
+    {
+      assert(0);
+    }
+
+    evtHistManager_LeptonEfficiency_->fillHistograms(m_ll, evtWeight);
+    if(isMC_)
+    {
+      if(lepton_probe.genLepton() && lepton_tag.genLepton())
+      {
+	evtHistManager_LeptonEfficiency_genLepton_        ->fillHistograms(m_ll, evtWeight);
+	evtHistManager_LeptonEfficiency_genHadTauOrLepton_->fillHistograms(m_ll, evtWeight);
+	evtHistManager_LeptonEfficiency_no_genPhoton_->fillHistograms(m_ll, evtWeight);
+      }else if(lepton_probe.genHadTau() && lepton_tag.genHadTau())
+      { 
+	evtHistManager_LeptonEfficiency_genHadTau_        ->fillHistograms(m_ll, evtWeight);
+	evtHistManager_LeptonEfficiency_genHadTauOrLepton_->fillHistograms(m_ll, evtWeight);
+	evtHistManager_LeptonEfficiency_no_genPhoton_->fillHistograms(m_ll, evtWeight);
+      }else if((lepton_probe.genLepton() && lepton_tag.genHadTau()) || 
+	 (lepton_probe.genHadTau() && lepton_tag.genLepton()))
+      {
+	evtHistManager_LeptonEfficiency_genLepton_        ->fillHistograms(m_ll, evtWeight);
+	evtHistManager_LeptonEfficiency_genHadTau_        ->fillHistograms(m_ll, evtWeight);
+	evtHistManager_LeptonEfficiency_genHadTauOrLepton_->fillHistograms(m_ll, evtWeight);
+	evtHistManager_LeptonEfficiency_no_genPhoton_->fillHistograms(m_ll, evtWeight);
+      }else if( lepton_probe.genPhoton() || lepton_tag.genPhoton())
+      { // Conv.s Bg
+	evtHistManager_LeptonEfficiency_genPhoton_->fillHistograms(m_ll, evtWeight);
+      }else{
+	evtHistManager_LeptonEfficiency_genJet_->fillHistograms(m_ll, evtWeight);
+	evtHistManager_LeptonEfficiency_no_genPhoton_->fillHistograms(m_ll, evtWeight);
+      }	
+
+    }
+
+    if(cutFlowTable)
+    {
+      cutFlowTable->update(label_, evtWeight);
+    }
+
+  }
+}
+
+
 
 void
 numerator_and_denominatorHistManagers::fillHistograms(const RecoLepton & lepton,
@@ -276,6 +421,11 @@ numerator_and_denominatorHistManagers::fillHistograms(const RecoLepton & lepton,
       electronHistManager_->fillHistograms(electron, evtWeight);
       if(isMC_)
       {
+        if( !(electron.genPhoton()) )
+	{ // Conv. subtracted [BUT THIS ALLOWS EVENTS FOR WHICH TAG IS GEN MATCHED TO PHOTON: pl/pt]
+	  electronHistManager_no_genPhoton_->fillHistograms(electron, evtWeight);
+        }
+
         if(electron.genLepton())
         {
           electronHistManager_genLepton_->fillHistograms(electron, evtWeight);
@@ -329,6 +479,12 @@ numerator_and_denominatorHistManagers::fillHistograms(const RecoLepton & lepton,
     evtHistManager_LeptonEfficiency_->fillHistograms(m_ll, evtWeight);
     if(isMC_)
     {
+
+      if( !(lepton.genPhoton()) )
+      { // Conv. subtracted
+        evtHistManager_LeptonEfficiency_no_genPhoton_->fillHistograms(m_ll, evtWeight);
+      }
+
       if(lepton.genLepton())
       {
         evtHistManager_LeptonEfficiency_genLepton_        ->fillHistograms(m_ll, evtWeight);
@@ -472,6 +628,21 @@ fillHistograms(std::vector<numerator_and_denominatorHistManagers *> & histograms
   for(numerator_and_denominatorHistManagers * histogram: histograms)
   {
     histogram->fillHistograms(lepton, met_pt, mT, mT_fix, evtWeight_LepJetPair, cutFlowTable);
+  }
+}
+
+
+void
+fillHistograms(std::vector<numerator_and_denominatorHistManagers *> & histograms,
+	       const RecoLepton & lepton_probe,
+	       const RecoLepton & lepton_tag,
+	       double m_ll,
+	       double evtWeight,
+               cutFlowTableType * cutFlowTable)
+{
+  for(numerator_and_denominatorHistManagers * histogram: histograms)
+  {
+    histogram->fillHistograms(lepton_probe, lepton_tag,  m_ll, evtWeight, cutFlowTable);
   }
 }
 
