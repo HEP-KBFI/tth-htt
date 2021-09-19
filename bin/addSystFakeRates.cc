@@ -702,12 +702,15 @@ int main(int argc, char* argv[])
 	    << "Fit for observable = '" << (*addSystConfig)->name_ << "' failed to converge !!\n";
 	}
 
-	delete histogram_mcClosure_scaled;
-	delete graph_mcClosure_scaled;
-    delete histogram_fakes_mc_rebinned;
-    delete graph_fakes_mc_rebinned;
-	delete graph_ratio_scaled;
-	delete fitFunction;
+        delete histogram_mcClosure_scaled;
+        delete graph_mcClosure_scaled;
+        if(multiclass)
+        {
+          delete histogram_fakes_mc_rebinned;
+        }
+        delete graph_fakes_mc_rebinned;
+        delete graph_ratio_scaled;
+        delete fitFunction;
       }
     }
 
