@@ -500,7 +500,7 @@ int main(int argc, char* argv[])
   std::string category = cfg_addSystFakeRates.getParameter<std::string>("category");
   std::string xAxisTitle = cfg_addSystFakeRates.getParameter<std::string>("xAxisTitle");
   std::string yAxisTitle = cfg_addSystFakeRates.getParameter<std::string>("yAxisTitle");
-  bool multiclass = cfg_addSystFakeRates.getParameter<bool>("multiclass");
+  bool multiclass = cfg_addSystFakeRates.exists("multiclass") ? cfg_addSystFakeRates.getParameter<bool>("multiclass") : false;
 
   std::string outputFileNamePrefix = category.empty() ? "" : Form("_%s", category.data());
   outputFileNamePrefix += Form("_%s", histogramToFit.data());
