@@ -259,3 +259,13 @@
 /hdfs/cms/store/user/kaehatah/2016v3_2020Dec20/SingleElectron/2016v3_2020Dec20_SingleElectron__Run2016F-17Jul2018-v1 100.0%
 /hdfs/cms/store/user/kaehatah/2016v3_2020Dec20/SingleMuon/2016v3_2020Dec20_SingleMuon__Run2016B-17Jul2018_ver2-v1 100.0%
 /hdfs/cms/store/user/kaehatah/2016v3_2020Dec20/SingleMuon/2016v3_2020Dec20_SingleMuon__Run2016G-17Jul2018-v1 100.0%
+/hdfs/cms/store/user/kaehatah/2016v3_2021Sep22/DoubleEG/2016v3_2021Sep22_DoubleEG__Run2016C-17Jul2018-v1 100%
+/hdfs/cms/store/user/kaehatah/2016v3_2021Sep22/DoubleEG/2016v3_2021Sep22_DoubleEG__Run2016G-17Jul2018-v1 100%
+/hdfs/cms/store/user/kaehatah/2016v3_2021Sep22/DoubleEG/2016v3_2021Sep22_DoubleEG__Run2016H-17Jul2018-v1 100%
+/hdfs/cms/store/user/kaehatah/2016v3_2021Sep22/DoubleMuon/2016v3_2021Sep22_DoubleMuon__Run2016C-17Jul2018-v1 100%
+/hdfs/cms/store/user/kaehatah/2016v3_2021Sep22/MuonEG/2016v3_2021Sep22_MuonEG__Run2016C-17Jul2018-v1 100%
+/hdfs/cms/store/user/kaehatah/2016v3_2021Sep22/SingleElectron/2016v3_2021Sep22_SingleElectron__Run2016C-17Jul2018-v1 100%
+/hdfs/cms/store/user/kaehatah/2016v3_2021Sep22/SingleElectron/2016v3_2021Sep22_SingleElectron__Run2016G-17Jul2018-v1 100%
+/hdfs/cms/store/user/kaehatah/2016v3_2021Sep22/SingleElectron/2016v3_2021Sep22_SingleElectron__Run2016H-17Jul2018-v1 100%
+/hdfs/cms/store/user/kaehatah/2016v3_2021Sep22/SingleMuon/2016v3_2021Sep22_SingleMuon__Run2016C-17Jul2018-v1 100%
+/hdfs/cms/store/user/kaehatah/2016v3_2021Sep22/Tau/2016v3_2021Sep22_Tau__Run2016C-17Jul2018-v1 100%
