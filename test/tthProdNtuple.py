@@ -62,7 +62,7 @@ pileup       = os.path.join(
 )
 golden_json_2016 = os.path.join(
   os.environ['CMSSW_BASE'], 'src/tthAnalysis/NanoAOD/data',
-  'Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt'
+  'Cert_271036-284044_13TeV_Legacy2016_Collisions16_JSON.txt'
 )
 golden_json_2017 = os.path.join(
   os.environ['CMSSW_BASE'], 'src/tthAnalysis/NanoAOD/data',
