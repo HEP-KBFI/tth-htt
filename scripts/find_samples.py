@@ -437,6 +437,9 @@ def get_integrated_lumi(dataset_name, data_golden, brilcalc_path, normtag, units
     return
 
   results = { lines[0][i] : lines[1][i] for i in range(nof_cols_first) }
+  for result_key, results_val in results.items():
+    if '.' in results_val:
+      results[result_key] = '{:.3f}'.format(float(results_val)) # force precision up to 3 decimal points
 
   # Cleanup
   if data_golden:
