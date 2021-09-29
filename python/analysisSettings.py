@@ -4,11 +4,11 @@ trigger_runs_2016 = Triggers('2016').runs
 trigger_runs_2017 = Triggers('2017').runs
 trigger_runs_2018 = Triggers('2018').runs
 
-# Integrated luminosity
+# Integrated luminosity -- pre-legacy lumi mask, the latest normtag
 
 # Reproduced https://github.com/HEP-KBFI/tth-nanoAOD/blob/dde7a1e5640f7a66ad635cb6f618dd1119bc1244/test/datasets/txt/datasets_data_2016_17Jul18.txt#L50
-# Official figures: https://hypernews.cern.ch/HyperNews/CMS/get/luminosity/688.html & PAS LUM-17-001
-lumi_2016 = 35.922e+3 # 1/pb (uncertainty: 2.5%)
+# Official figures: https://hypernews.cern.ch/HyperNews/CMS/get/physics-announcements/6191.html & PAS LUM-17-003
+lumi_2016 = 36.326e+3 # 1/pb (uncertainty: 1.2%)
 
 # Reproduced https://github.com/HEP-KBFI/tth-nanoAOD/blob/dde7a1e5640f7a66ad635cb6f618dd1119bc1244/test/datasets/txt/datasets_data_2017_31Mar18.txt#L38
 # Official figures: https://hypernews.cern.ch/HyperNews/CMS/get/luminosity/761/1.html & PAS LUM-17-004
