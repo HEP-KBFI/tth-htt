@@ -80,6 +80,14 @@ enum pileupJetID {
 //--- declare selection criteria for leptons and hadronic taus
 enum { kLoose, kFakeable, kTight };
 
+//--- AK8 jet corrections
+enum {
+  kFatJetNone  = 0,
+  kFatJetJMS   = 1 << 0,
+  kFatJetJMR   = 1 << 1,
+  kFatJetPUPPI = 1 << 2,
+};
+
 //--- declare tau ID discriminators
 
 enum class TauID {
@@ -1061,5 +1069,17 @@ filterByStatus(const std::vector<T> & genParticles,
   }
   return genParticles;
 }
+
+double
+updateWithCorrections(double input,
+                      int flag,
+                      const std::map<int, double> & corrections,
+                      bool undo);
+
+int
+getCorrectionCode(const std::vector<std::string> & corrections);
+
+std::string
+getCorrectionString(int code);
 
 #endif

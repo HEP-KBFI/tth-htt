@@ -31,7 +31,8 @@ public:
               Double_t tau4,
               Int_t jetId,
               Int_t idx,
-              Int_t central_or_shift);
+              Int_t central_or_shift,
+              Int_t ignored_corrections);
 
   virtual ~RecoJetAK8();
 
@@ -48,6 +49,7 @@ public:
   Double_t tau4() const;
   Int_t jetId() const;
   Int_t get_default_systematics() const;
+  Int_t get_ignored_corrections() const;
 
   friend class RecoJetReaderAK8;
   friend class RecoJetWriterAK8;
@@ -68,6 +70,10 @@ protected:
   std::map<int, Double_t> mass_systematics_;
   std::map<int, Double_t> msoftdrop_systematics_;
   int default_systematics_;
+
+  std::map<int, Double_t> mass_corrections_;
+  std::map<int, Double_t> sd_corrections_;
+  int ignored_corrections_;
 //---------------------------------------------------------
 };
 

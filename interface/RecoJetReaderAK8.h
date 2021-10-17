@@ -29,6 +29,9 @@ public:
   void
   read_sys(bool flag);
 
+  void
+  ignoreSys(int flag);
+
   /**
    * @brief Call tree->SetBranchAddress for all RecoJetAK8 branches
    */
@@ -60,6 +63,7 @@ protected:
   int sysOption_central_;
   int sysOption_;
   bool readSys_;
+  int ignoreSys_;
 
   std::string branchName_eta_;
   std::string branchName_phi_;
@@ -70,6 +74,9 @@ protected:
   std::string branchName_tau3_;
   std::string branchName_tau4_;
   std::string branchName_jetId_;
+
+  std::map<int, std::string> branchNames_mass_corr_;
+  std::map<int, std::string> branchNames_sd_corr_;
 
   std::map<int, std::string> branchNames_pt_systematics_;
   std::map<int, std::string> branchNames_mass_systematics_;
@@ -89,6 +96,9 @@ protected:
   Float_t * jet_tau3_;
   Float_t * jet_tau4_;
   Int_t * jet_jetId_;
+
+  std::map<int, Float_t *> jet_mass_corr_;
+  std::map<int, Float_t *> jet_sd_corr_;
 
   std::map<int, Float_t *> jet_pt_systematics_;
   std::map<int, Float_t *> jet_mass_systematics_;

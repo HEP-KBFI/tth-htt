@@ -34,6 +34,9 @@ public:
   void
   set_central_or_shift(int central_or_shift);
 
+  void
+  ignoreSys(int flag);
+
   /**
    * @brief Call tree->Branch for all RecoJetAK8 branches
    */
@@ -63,6 +66,8 @@ protected:
   bool isMC_;
   int sysOption_central_;
   int sysOption_;
+  int ignoreSys_;
+
   const unsigned int max_nJets_;
   std::string branchName_num_;
   std::string branchName_obj_;
@@ -78,6 +83,8 @@ protected:
   std::string branchName_tau3_;
   std::string branchName_tau4_;
   std::string branchName_jetId_;
+  std::map<int, std::string> branchNames_mass_corr_;
+  std::map<int, std::string> branchNames_sd_corr_;
   std::map<int, std::string> branchNames_pt_systematics_;
   std::map<int, std::string> branchNames_mass_systematics_;
   std::map<int, std::string> branchNames_msoftdrop_systematics_;
@@ -96,6 +103,8 @@ protected:
   Float_t * jet_tau3_;
   Float_t * jet_tau4_;
   Int_t * jet_jetId_;
+  std::map<int, Float_t *> jet_mass_corr_;
+  std::map<int, Float_t *> jet_sd_corr_;
   std::map<int, Float_t *> jet_pt_systematics_;
   std::map<int, Float_t *> jet_mass_systematics_;
   std::map<int, Float_t *> jet_msoftdrop_systematics_;

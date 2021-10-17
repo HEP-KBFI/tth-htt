@@ -1091,3 +1091,63 @@ CapLeptonFakeRate(double LeptonFakeRate,
 
   return LeptonFakeRate_final;
 }
+
+double
+updateWithCorrections(double input,
+                      int flag,
+                      const std::map<int, double> & corrections,
+                      bool undo)
+{
+  double factor = 1.;
+  for(const auto & kv: corrections)
+  {
+    if(flag & kv.first)
+    {
+      factor *= kv.second;
+    }
+  }
+  if(undo)
+  {
+    factor = std::fpclassify(factor) != FP_ZERO ? 1. / factor : 0.;
+  }
+  return input * factor;
+}
+
+int
+getCorrectionCode(const std::vector<std::string> & corrections)
+{
+  int code = 0;
+  for(const std::string & correction: corrections)
+  {
+    if(correction == "JMS")
+    {
+      code |= kFatJetJMS;
+    }
+    else if(correction == "JMR")
+    {
+      code |= kFatJetJMR;
+    }
+    else if(correction == "PUPPI")
+    {
+      code |= kFatJetPUPPI;
+    }
+    else
+    {
+      throw cmsException(__func__, __LINE__) << "Invalid correction name: " << correction;
+    }
+  }
+  return code;
+}
+
+std::string
+getCorrectionString(int code)
+{
+  switch(code)
+  {
+    case kFatJetJMS:   return "JMS";
+    case kFatJetJMR:   return "JMR";
+    case kFatJetPUPPI: return "PUPPI";
+    default:           assert(false);
+  }
+  assert(false);
+}

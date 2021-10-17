@@ -44,6 +44,8 @@ DIRLIST = [
     DKEY_HADD_RT, DKEY_SYNC
 ]
 
+DEFAULT_AK8_CORR = [ "JMS", "JMR", "PUPPI" ]
+
 def convert_lep_wp(float_str):
   return float_str.replace('.', '')
 
@@ -132,6 +134,7 @@ class analyzeConfig(object):
           do_stxs                         = False,
           apply_genPhotonFilter           = False,
           blacklist                       = None,
+          disable_ak8_corr                = None,
       ):
 
         self.configDir = configDir
@@ -295,6 +298,11 @@ class analyzeConfig(object):
         self.apply_pileupJetID = apply_pileupJetID
         assert(self.apply_pileupJetID in [ 'disabled', 'loose', 'medium', 'tight' ])
 
+        self.disable_ak8_corr = disable_ak8_corr
+        if self.disable_ak8_corr is None:
+          self.disable_ak8_corr = DEFAULT_AK8_CORR
+        assert(all(corr in  DEFAULT_AK8_CORR for corr in self.disable_ak8_corr))
+
         self.central_or_shifts = central_or_shifts
         if not 'central' in self.central_or_shifts:
             logging.warning('Running with systematic uncertainties, but without central value, is not supported --> adding central value.')
@@ -345,6 +353,21 @@ class analyzeConfig(object):
         self.central_or_shifts_internal = []
         self.central_or_shifts_external = []
         #------------------------------------------------------------------------
+        if self.disable_ak8_corr:
+          central_or_shifts_to_remove = []
+          for ak8_corr in self.disable_ak8_corr:
+            for central_or_shift in self.central_or_shifts:
+              if (ak8_corr == "JMS" and central_or_shift in systematics.AK8_JMS) or \
+                 (ak8_corr == "JMR" and central_or_shift in systematics.AK8_JMR):
+                central_or_shifts_to_remove.append(central_or_shift)
+          if central_or_shifts_to_remove:
+            logging.warning("Ignoring systematics {} because corrections due to {} disabled".format(
+              ', '.join(central_or_shifts_to_remove),
+              ', '.join(self.disable_ak8_corr),
+            ))
+            for central_or_shift in central_or_shifts_to_remove:
+              self.central_or_shifts.remove(central_or_shift)
+        # ------------------------------------------------------------------------
         self.era = era
         self.do_l1prefiring = self.era != "2018"
         if (set(systematics.L1PreFiring) & set(self.central_or_shifts)) == set(systematics.L1PreFiring) and not self.do_l1prefiring:
@@ -1127,6 +1150,8 @@ class analyzeConfig(object):
             jobOptions['lep_mva_cut_mu_forLepton3'] = float(self.lep_mva_cut_mu_forLepton3)            
         if 'lep_mva_cut_e_forLepton3' not in jobOptions and "default" not in self.lep_mva_cut_e_forLepton3:
             jobOptions['lep_mva_cut_e_forLepton3'] = float(self.lep_mva_cut_e_forLepton3)
+        if 'disable_ak8_corr' not in jobOptions and self.disable_ak8_corr:
+            jobOptions['disable_ak8_corr'] = self.disable_ak8_corr
 
         if self.blacklist_files:
           jobOptions['enable_blacklist'] = True
@@ -1286,6 +1311,7 @@ class analyzeConfig(object):
             'enable_blacklist',
             'blacklist.inputFileNames',
             'blacklist.sampleName',
+            'disable_ak8_corr',
         ]
         jobOptions_typeMapping = {
             'central_or_shifts_local' : 'cms.vstring(%s)',

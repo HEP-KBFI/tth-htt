@@ -27,6 +27,7 @@ RecoJetWriterAK8::RecoJetWriterAK8(Era era,
   , isMC_(isMC)
   , sysOption_central_(isMC_ ? kJetMET_central : kJetMET_central_nonNominal)
   , sysOption_(sysOption_central_)
+  , ignoreSys_(isMC_ ? kFatJetJMS + kFatJetJMR + kFatJetPUPPI : kFatJetNone)
   , max_nJets_(32)
   , branchName_num_(branchName_num_jets)
   , branchName_obj_(branchName_jet)
@@ -73,6 +74,14 @@ RecoJetWriterAK8::~RecoJetWriterAK8()
   {
     delete[] kv.second;
   }
+  for(auto & kv: jet_mass_corr_)
+  {
+    delete[] kv.second;
+  }
+  for(auto & kv: jet_sd_corr_)
+  {
+    delete[] kv.second;
+  }
 }
 
 void
@@ -86,7 +95,27 @@ RecoJetWriterAK8::set_central_or_shift(int central_or_shift)
   {
     throw cmsException(this, __func__, __LINE__) << "Invalid option for the era = " << static_cast<int>(era_) << ": " << central_or_shift;
   }
+  if(((ignoreSys_ & kFatJetJMS) && (central_or_shift == kFatJet_jmsUp || central_or_shift == kFatJet_jmsDown)) ||
+     ((ignoreSys_ & kFatJetJMR) && (central_or_shift == kFatJet_jmrUp || central_or_shift == kFatJet_jmrDown))  )
+  {
+    throw cmsException(this, __func__, __LINE__)
+      << "Requested systematics " << central_or_shift << " while at the same time ignoring its corrections: " << ignoreSys_
+    ;
+  }
   sysOption_ = central_or_shift;
+}
+
+void
+RecoJetWriterAK8::ignoreSys(int flag)
+{
+  if(((flag & kFatJetJMS) && (sysOption_ == kFatJet_jmsUp || sysOption_ == kFatJet_jmsDown)) ||
+     ((flag & kFatJetJMR) && (sysOption_ == kFatJet_jmrUp || sysOption_ == kFatJet_jmrDown))  )
+  {
+    throw cmsException(this, __func__, __LINE__)
+      << "Requested to ignore corrections (" << flag << ") while at the same time enabling its systematics: " << sysOption_
+    ;
+  }
+  ignoreSys_ = flag;
 }
 
 void
@@ -119,6 +148,18 @@ RecoJetWriterAK8::setBranchNames()
     if(isValidFatJetAttribute(idxShift, msoftdrop_str_))
     {
       branchNames_msoftdrop_systematics_[idxShift] = getBranchName_fatJet(branchName_obj_, era_, msoftdrop_str_, idxShift);
+    }
+  }
+
+  for(int idxShift = 0; idxShift < 3; ++idxShift)
+  {
+    const int idxShift_pow = 1 << idxShift;
+    const std::string suffix = getCorrectionString(idxShift_pow);
+    branchNames_sd_corr_[idxShift_pow] = Form("%s_%s_corr_%s", branchName_obj_.data(), msoftdrop_str_.data(), suffix.data());
+
+    if(! (idxShift_pow & kFatJetPUPPI))
+    {
+      branchNames_mass_corr_[idxShift_pow] = Form("%s_corr_%s", branchName_obj_.data(), suffix.data());
     }
   }
 }
@@ -165,6 +206,19 @@ RecoJetWriterAK8::setBranches(TTree * tree)
         bai.setBranch(jet_msoftdrop_systematics_[idxShift], branchNames_msoftdrop_systematics_.at(idxShift));
       }
     }
+
+    for(int idxShift = 0; idxShift < 3; ++idxShift)
+    {
+      const int idxShift_pow = 1 << idxShift;
+      if(branchNames_sd_corr_.count(idxShift_pow))
+      {
+        bai.setBranchAddress(jet_sd_corr_[idxShift_pow], branchNames_sd_corr_.at(idxShift_pow));
+      }
+      if(branchNames_mass_corr_.count(idxShift_pow))
+      {
+        bai.setBranchAddress(jet_mass_corr_[idxShift_pow], branchNames_mass_corr_.at(idxShift_pow));
+      }
+    }
   }
 
   bai.setBranch(jet_eta_, branchName_eta_);
@@ -208,8 +262,12 @@ RecoJetWriterAK8::write(const std::vector<const RecoJetAK8 *> & jets)
     const int jet_mass_sys = jet->mass_systematics_.count(sysOption_) ? sysOption_ : sysOption_central_;
     const int jet_msoftdrop_sys = jet->msoftdrop_systematics_.count(sysOption_) ? sysOption_ : sysOption_central_;
     jet_pt_systematics_[sysOption_][idxJet]   = jet->pt_systematics_.at(jet_pt_sys);
-    jet_mass_systematics_[sysOption_][idxJet] = jet->mass_systematics_.at(jet_mass_sys);
-    jet_msoftdrop_systematics_[sysOption_][idxJet] = jet->msoftdrop_systematics_.at(jet_msoftdrop_sys);
+    jet_mass_systematics_[sysOption_][idxJet] = updateWithCorrections(
+      jet->mass_systematics_.at(jet_mass_sys), ignoreSys_, jet->mass_corrections_, false
+    );
+    jet_msoftdrop_systematics_[sysOption_][idxJet] = updateWithCorrections(
+      jet->msoftdrop_systematics_.at(jet_msoftdrop_sys), ignoreSys_, jet->sd_corrections_, false
+    );
 
     if(isMC_)
     {
@@ -221,7 +279,7 @@ RecoJetWriterAK8::write(const std::vector<const RecoJetAK8 *> & jets)
         }
         if(idxShift == sysOption_)
         {
-          continue; // do not overwrite the value (it doesn't do any harm, but still)
+          continue; // do not overwrite the value
         }
         if(jet_pt_systematics_.count(idxShift))
         {
@@ -261,6 +319,18 @@ RecoJetWriterAK8::write(const std::vector<const RecoJetAK8 *> & jets)
               << "Jet #" << idxJet << " is missing msoftdrop #" << idxShift
             ;
           }
+        }
+      }
+      for(int idxShift = 0; idxShift < 3; ++idxShift)
+      {
+        const int idxShift_pow = 1 << idxShift;
+        if(jet_mass_corr_.count(idxShift_pow))
+        {
+          jet_mass_corr_[idxShift_pow][idxJet] = jet->mass_corrections_.at(idxShift_pow);
+        }
+        if(jet_sd_corr_.count(idxShift_pow))
+        {
+          jet_sd_corr_[idxShift_pow][idxJet] = jet->sd_corrections_.at(idxShift_pow);
         }
       }
     }
