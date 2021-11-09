@@ -111,9 +111,8 @@ def get_graph(input_file_name, rles, mtable, delphes):
   luminosityBlock_branch = array.array('I', [0])
   event_branch = array.array('L', [0])
 
-  if not delphes:
-    input_tree.SetBranchAddress('run', run_branch)
-    input_tree.SetBranchAddress('luminosityBlock', luminosityBlock_branch)
+  input_tree.SetBranchAddress('run', run_branch)
+  input_tree.SetBranchAddress('luminosityBlock', luminosityBlock_branch)
   input_tree.SetBranchAddress('event', event_branch)
   genPartCollection = GenPartCollection(input_tree, mtable, delphes)
 
@@ -207,8 +206,6 @@ if __name__ == '__main__':
     if not hdfs.isfile(input_file_name):
       raise ValueError("No such file: %s" % input_file_name)
 
-  if delphes:
-    rles = [ '0:0:{}'.format(rle) for rle in rles ]
   for rle in rles:
     assert(re.match('^\d+:\d+:\d+$', rle))
 
