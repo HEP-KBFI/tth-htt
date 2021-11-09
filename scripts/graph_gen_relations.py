@@ -79,15 +79,11 @@ class GenPartCollection(object):
     input_tree.SetBranchAddress('{}_mass'.format(GENPART_NAME), self.genPart_mass_branch)
     input_tree.SetBranchAddress('{}_phi'.format(GENPART_NAME), self.genPart_phi_branch)
     input_tree.SetBranchAddress('{}_pt'.format(GENPART_NAME), self.genPart_pt_branch)
-    input_tree.SetBranchAddress(
-      '{}_{}'.format(GENPART_NAME, 'm1' if delphes else 'genPartIdxMother'), self.genPart_genPartIdxMother_branch
-    )
+    input_tree.SetBranchAddress('{}_genPartIdxMother'.format(GENPART_NAME), self.genPart_genPartIdxMother_branch)
     if delphes:
       input_tree.SetBranchAddress('{}_d1'.format(GENPART_NAME), self.genPart_genPartIdxDaugher1_branch)
       input_tree.SetBranchAddress('{}_d2'.format(GENPART_NAME), self.genPart_genPartIdxDaugher2_branch)
-    input_tree.SetBranchAddress(
-      '{}_{}'.format(GENPART_NAME, 'pid' if delphes else 'pdgId'), self.genPart_pdgId_branch
-    )
+    input_tree.SetBranchAddress('{}_pdgId'.format(GENPART_NAME), self.genPart_pdgId_branch)
     input_tree.SetBranchAddress('{}_status'.format(GENPART_NAME), self.genPart_status_branch)
     if not delphes:
       input_tree.SetBranchAddress('{}_statusFlags'.format(GENPART_NAME), self.genPart_statusFlags_branch)
