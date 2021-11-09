@@ -11,7 +11,7 @@ import array
 import subprocess
 import jinja2
 
-MAX_OBJS = 512
+MAX_OBJS = 9999
 GENPART_NAME = 'GenPart'
 GRAPH_TEMPLATE = """
 digraph G {
@@ -57,7 +57,7 @@ class GenPart(object):
       (self.idx, self.pt, self.eta, self.phi, self.mass, self.pdgId, self.momIdx, self.status, self.statusFlag)
 
 class GenPartCollection(object):
-  def __init__(self, input_tree, mtable):
+  def __init__(self, input_tree, mtable, delphes):
     self.nGenPart_branch = array.array('I', [0])
     self.genPart_eta_branch = array.array('f', [0.] * MAX_OBJS)
     self.genPart_mass_branch = array.array('f', [0.] * MAX_OBJS)
@@ -75,10 +75,15 @@ class GenPartCollection(object):
     input_tree.SetBranchAddress('{}_mass'.format(GENPART_NAME), self.genPart_mass_branch)
     input_tree.SetBranchAddress('{}_phi'.format(GENPART_NAME), self.genPart_phi_branch)
     input_tree.SetBranchAddress('{}_pt'.format(GENPART_NAME), self.genPart_pt_branch)
-    input_tree.SetBranchAddress('{}_genPartIdxMother'.format(GENPART_NAME), self.genPart_genPartIdxMother_branch)
-    input_tree.SetBranchAddress('{}_pdgId'.format(GENPART_NAME), self.genPart_pdgId_branch)
+    input_tree.SetBranchAddress(
+      '{}_{}'.format(GENPART_NAME, 'm1' if delphes else 'genPartIdxMother'), self.genPart_genPartIdxMother_branch
+    )
+    input_tree.SetBranchAddress(
+      '{}_{}'.format(GENPART_NAME, 'pid' if delphes else 'pdgId'), self.genPart_pdgId_branch
+    )
     input_tree.SetBranchAddress('{}_status'.format(GENPART_NAME), self.genPart_status_branch)
-    input_tree.SetBranchAddress('{}_statusFlags'.format(GENPART_NAME), self.genPart_statusFlags_branch)
+    if not delphes:
+      input_tree.SetBranchAddress('{}_statusFlags'.format(GENPART_NAME), self.genPart_statusFlags_branch)
 
   def read(self):
     genParts = []
@@ -91,7 +96,7 @@ class GenPartCollection(object):
       ))
     return genParts
 
-def get_graph(input_file_name, rles, mtable):
+def get_graph(input_file_name, rles, mtable, delphes):
   logging.debug('Opening file {}'.format(input_file_name))
   input_file = ROOT.TFile.Open(input_file_name, 'read')
   assert(input_file)
@@ -102,10 +107,11 @@ def get_graph(input_file_name, rles, mtable):
   luminosityBlock_branch = array.array('I', [0])
   event_branch = array.array('L', [0])
 
-  input_tree.SetBranchAddress('run', run_branch)
-  input_tree.SetBranchAddress('luminosityBlock', luminosityBlock_branch)
+  if not delphes:
+    input_tree.SetBranchAddress('run', run_branch)
+    input_tree.SetBranchAddress('luminosityBlock', luminosityBlock_branch)
   input_tree.SetBranchAddress('event', event_branch)
-  genPartCollection = GenPartCollection(input_tree, mtable)
+  genPartCollection = GenPartCollection(input_tree, mtable, delphes)
 
   graph_map = {}
   nof_events = input_tree.GetEntries()
@@ -166,6 +172,10 @@ if __name__ == '__main__':
     type = str, dest = 'rle', metavar = 'number', required = True, nargs = '+',
     help = 'R|Run:lumi:event number',
   )
+  parser.add_argument('-d', '--delphes',
+    dest = 'delphes', action = 'store_true', default = False,
+    help = 'R|Assume Delphes flat tree as input',
+  )
   parser.add_argument('-k', '--keep',
     dest = 'keep', action = 'store_true', default = False,
     help = 'R|Keep temporary files',
@@ -179,18 +189,21 @@ if __name__ == '__main__':
   output_dir = os.path.abspath(args.output)
   rles = args.rle
   logging.getLogger().setLevel(logging.DEBUG if args.verbose else logging.INFO)
+  delphes = args.delphes
 
   for input_file_name in input_file_names:
     if not hdfs.isfile(input_file_name):
       raise ValueError("No such file: %s" % input_file_name)
 
+  if delphes:
+    rles = [ '0:0:{}'.format(rle) for rle in rles ]
   for rle in rles:
     assert(re.match('^\d+:\d+:\d+$', rle))
 
   mtable = MassTable()
 
   for input_file_name in input_file_names:
-    graph_map = get_graph(input_file_name, rles, mtable)
+    graph_map = get_graph(input_file_name, rles, mtable, delphes)
     for rle in graph_map:
       output_file_filename = '{}-{}.png'.format(
         os.path.splitext(os.path.basename(input_file_name))[0], rle.replace(':', '-')
