@@ -16,6 +16,8 @@ DYMCReweighting::DYMCReweighting(Era era,
   //     in order to use the lutWrapperTH2 class, we need to declare the dilepton mass as "eta"
   switch(era_)
   {
+    case Era::kUndefined: 
+      throw cmsException(this) << "Undefined era!";
     case Era::k2016:
       weights_ = new lutWrapperTH2(
         inputFiles_,

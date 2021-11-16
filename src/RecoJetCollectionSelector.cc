@@ -15,6 +15,7 @@ RecoJetSelector::RecoJetSelector(Era era,
 {
   switch(era)
   {
+    case Era::kUndefined: throw cmsException(this) << "Undefined era!";
     case Era::k2016: min_jetId_ = 1; break; // 1 means loose
     case Era::k2017:
     case Era::k2018: min_jetId_ = 2; break; // 2 means tight (loose jet ID deprecated since 94x)

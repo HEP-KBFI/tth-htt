@@ -89,6 +89,7 @@ TauESTool::get_era_str() const
 {
   switch(era_)
   {
+    case Era::kUndefined: throw cmsException(this, __func__, __LINE__) << "Undefined era!";
     case Era::k2016: return "2016Legacy";
     case Era::k2017: return "2017ReReco";
     case Era::k2018: return "2018ReReco";
