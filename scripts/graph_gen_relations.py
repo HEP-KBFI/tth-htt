@@ -11,7 +11,7 @@ import array
 import subprocess
 import jinja2
 
-MAX_OBJS = 512
+MAX_OBJS = 9999
 GENPART_NAME = 'GenPart'
 GRAPH_TEMPLATE = """
 digraph G {
@@ -41,7 +41,7 @@ class MassTable:
       return genParticleInstance.Mass()
 
 class GenPart(object):
-  def __init__(self, idx, pt, eta, phi, mass, pdgId, momIdx, status, statusFlag):
+  def __init__(self, idx, pt, eta, phi, mass, pdgId, momIdx, daughterIdx1, daughterIdx2, status, statusFlag):
     self.idx = idx
     self.pt = pt
     self.eta = eta
@@ -49,21 +49,25 @@ class GenPart(object):
     self.mass = mass
     self.pdgId = pdgId
     self.momIdx = momIdx
+    self.dauIdx1 = daughterIdx1
+    self.dauIdx2 = daughterIdx2
     self.status = status
     self.statusFlag = statusFlag
 
   def __str__(self):
-    return "idx = %d pt = %.3f eta = %+.3f phi = %+.3f mass = %.3f pdgId = %+d momIdx = %d status = %d statusFlags = %d" % \
-      (self.idx, self.pt, self.eta, self.phi, self.mass, self.pdgId, self.momIdx, self.status, self.statusFlag)
+    return "idx = %d pt = %.3f eta = %+.3f phi = %+.3f mass = %.3f pdgId = %+d momIdx = %d (daughters %d, %d) status = %d statusFlags = %d" % \
+      (self.idx, self.pt, self.eta, self.phi, self.mass, self.pdgId, self.momIdx, self.dauIdx1, self.dauIdx2, self.status, self.statusFlag)
 
 class GenPartCollection(object):
-  def __init__(self, input_tree, mtable):
+  def __init__(self, input_tree, mtable, delphes):
     self.nGenPart_branch = array.array('I', [0])
     self.genPart_eta_branch = array.array('f', [0.] * MAX_OBJS)
     self.genPart_mass_branch = array.array('f', [0.] * MAX_OBJS)
     self.genPart_phi_branch = array.array('f', [0.] * MAX_OBJS)
     self.genPart_pt_branch = array.array('f', [0.] * MAX_OBJS)
-    self.genPart_genPartIdxMother_branch = array.array('i', [0] * MAX_OBJS)
+    self.genPart_genPartIdxMother_branch = array.array('i', [-1] * MAX_OBJS)
+    self.genPart_genPartIdxDaugher1_branch = array.array('i', [-1] * MAX_OBJS)
+    self.genPart_genPartIdxDaugher2_branch = array.array('i', [-1] * MAX_OBJS)
     self.genPart_pdgId_branch = array.array('i', [0] * MAX_OBJS)
     self.genPart_status_branch = array.array('I', [0] * MAX_OBJS)
     self.genPart_statusFlags_branch = array.array('I', [0] * MAX_OBJS)
@@ -76,9 +80,13 @@ class GenPartCollection(object):
     input_tree.SetBranchAddress('{}_phi'.format(GENPART_NAME), self.genPart_phi_branch)
     input_tree.SetBranchAddress('{}_pt'.format(GENPART_NAME), self.genPart_pt_branch)
     input_tree.SetBranchAddress('{}_genPartIdxMother'.format(GENPART_NAME), self.genPart_genPartIdxMother_branch)
+    if delphes:
+      input_tree.SetBranchAddress('{}_d1'.format(GENPART_NAME), self.genPart_genPartIdxDaugher1_branch)
+      input_tree.SetBranchAddress('{}_d2'.format(GENPART_NAME), self.genPart_genPartIdxDaugher2_branch)
     input_tree.SetBranchAddress('{}_pdgId'.format(GENPART_NAME), self.genPart_pdgId_branch)
     input_tree.SetBranchAddress('{}_status'.format(GENPART_NAME), self.genPart_status_branch)
-    input_tree.SetBranchAddress('{}_statusFlags'.format(GENPART_NAME), self.genPart_statusFlags_branch)
+    if not delphes:
+      input_tree.SetBranchAddress('{}_statusFlags'.format(GENPART_NAME), self.genPart_statusFlags_branch)
 
   def read(self):
     genParts = []
@@ -87,11 +95,12 @@ class GenPartCollection(object):
       genParts.append(GenPart(
         idx, self.genPart_pt_branch[idx], self.genPart_eta_branch[idx], self.genPart_phi_branch[idx], mass,
         self.genPart_pdgId_branch[idx], self.genPart_genPartIdxMother_branch[idx],
-        self.genPart_status_branch[idx], self.genPart_statusFlags_branch[idx]
+        self.genPart_genPartIdxDaugher1_branch[idx], self.genPart_genPartIdxDaugher2_branch[idx],
+        self.genPart_status_branch[idx], self.genPart_statusFlags_branch[idx],
       ))
     return genParts
 
-def get_graph(input_file_name, rles, mtable):
+def get_graph(input_file_name, rles, mtable, delphes):
   logging.debug('Opening file {}'.format(input_file_name))
   input_file = ROOT.TFile.Open(input_file_name, 'read')
   assert(input_file)
@@ -105,7 +114,7 @@ def get_graph(input_file_name, rles, mtable):
   input_tree.SetBranchAddress('run', run_branch)
   input_tree.SetBranchAddress('luminosityBlock', luminosityBlock_branch)
   input_tree.SetBranchAddress('event', event_branch)
-  genPartCollection = GenPartCollection(input_tree, mtable)
+  genPartCollection = GenPartCollection(input_tree, mtable, delphes)
 
   graph_map = {}
   nof_events = input_tree.GetEntries()
@@ -137,8 +146,16 @@ def save_graph(gen_parts, output_file_name, keep_tmp = False):
     graph_nodes.append([
       gen_part.idx, gen_part.pdgId, gen_part.status, gen_part.pt, gen_part.eta, gen_part.phi, gen_part.mass
     ])
+    pairs = []
     if gen_part.momIdx >= 0:
-      graph_edges.append([ gen_part.momIdx, gen_part.idx])
+      pairs.append([ gen_part.momIdx, gen_part.idx ])
+    if gen_part.dauIdx1 >= 0:
+      pairs.append([ gen_part.idx, gen_part.dauIdx1 ])
+    if gen_part.dauIdx2 >= 0:
+      pairs.append([ gen_part.idx, gen_part.dauIdx2 ])
+    for pair in pairs:
+      if pair not in graph_edges:
+        graph_edges.append(pair)
   output_file_name_dot = output_file_name.replace('.png', '.dot')
   with open(output_file_name_dot, "w") as dot_file:
     dot_file.write(jinja2.Template(GRAPH_TEMPLATE).render(nodes = graph_nodes, edges = graph_edges))
@@ -166,6 +183,10 @@ if __name__ == '__main__':
     type = str, dest = 'rle', metavar = 'number', required = True, nargs = '+',
     help = 'R|Run:lumi:event number',
   )
+  parser.add_argument('-d', '--delphes',
+    dest = 'delphes', action = 'store_true', default = False,
+    help = 'R|Assume Delphes flat tree as input',
+  )
   parser.add_argument('-k', '--keep',
     dest = 'keep', action = 'store_true', default = False,
     help = 'R|Keep temporary files',
@@ -179,6 +200,7 @@ if __name__ == '__main__':
   output_dir = os.path.abspath(args.output)
   rles = args.rle
   logging.getLogger().setLevel(logging.DEBUG if args.verbose else logging.INFO)
+  delphes = args.delphes
 
   for input_file_name in input_file_names:
     if not hdfs.isfile(input_file_name):
@@ -190,7 +212,7 @@ if __name__ == '__main__':
   mtable = MassTable()
 
   for input_file_name in input_file_names:
-    graph_map = get_graph(input_file_name, rles, mtable)
+    graph_map = get_graph(input_file_name, rles, mtable, delphes)
     for rle in graph_map:
       output_file_filename = '{}-{}.png'.format(
         os.path.splitext(os.path.basename(input_file_name))[0], rle.replace(':', '-')
