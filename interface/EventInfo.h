@@ -42,6 +42,12 @@ public:
   bool
   isMC() const;
 
+  bool
+  isMC_H() const;
+
+  bool
+  isMC_HH() const;
+
   double
   genWeight_tH() const;
 
