@@ -129,7 +129,7 @@ namespace
           if ( !((*central_or_shift) == "" || (*central_or_shift) == "central") ) histogramName_output.append(*central_or_shift);
           if ( histogramName_output.length() > 0 ) histogramName_output.append("_");
           histogramName_output.append(*histogram);
-          addHistograms(histogramName_output, histograms_input);
+          addHistograms_temp<TH1>(histogramName_output, histograms_input);
         }
       }
     }

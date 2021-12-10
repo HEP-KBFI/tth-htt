@@ -208,7 +208,7 @@ int main(int argc, char* argv[])
               histogramName_output.append("_");
             }
             histogramName_output.append(histogram);
-            TH1 * tmp = addHistograms(histogramName_output, histograms_input);
+            TH1 * tmp = addHistograms_temp<TH1>(histogramName_output, histograms_input);
             tmp->Write();
 
             for(auto & histogram_input: histograms_input)
