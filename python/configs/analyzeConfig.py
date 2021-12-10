@@ -1256,6 +1256,7 @@ class analyzeConfig(object):
             'fillHistograms_nonresonant',
             'fillHistograms_resonant_spin0',
             'fillHistograms_resonant_spin2',
+            'use2d',
             'leptonFakeRateWeight.inputFileName',
             'leptonFakeRateWeight.histogramName_e',
             'leptonFakeRateWeight.histogramName_mu',
@@ -1722,7 +1723,8 @@ class analyzeConfig(object):
         lines.append(")")
         lines.append("process.prepareDatacards.histogramToFit = cms.string('%s')" % histogramToFit)
         lines.append("process.prepareDatacards.sysShifts = cms.vstring(%s)" % central_or_shifts_modified)
-
+        lines.append("process.prepareDatacards.is2d_histogram = cms.bool(%s)" % jobOptions['is2d_histogram']\
+                     if 'is2d_histogram' in jobOptions.keys() else False)
         # If the user has specified the binning options for a particular histogram, we expect to see
         # a dictionary instead of a list of histogram names that's been passed to this class as histograms_to_fit
         assert(histogramToFit in self.histograms_to_fit)
@@ -1804,6 +1806,8 @@ class analyzeConfig(object):
         lines.append("process.addSystFakeRates.yAxisTitle = cms.string('%s')" % yAxisTitle)
         lines.append("process.addSystFakeRates.multiclass = cms.bool(%s)" %jobOptions['multiclass'] \
           if 'multiclass' in jobOptions.keys() else False)
+        lines.append("process.addSystFakeRates.is2d_histogram = cms.bool(%s)" % jobOptions['is2d_histogram']\
+                     if 'is2d_histogram' in jobOptions.keys() else False)
         lines.append("process.addSystFakeRates.addSyst = cms.VPSet(")
         for lepton_and_hadTau_type in [ 'e', 'm', 't' ]:
             if ('add_Clos_%s' % lepton_and_hadTau_type) in jobOptions:

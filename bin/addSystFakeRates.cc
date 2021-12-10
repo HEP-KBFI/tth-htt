@@ -141,20 +141,48 @@ TH1* loadHistogram(TFile* inputFile, const std::string& histogramName)
   return histogram;
 }
 
-TH1* copyHistogram(const TH1* histogram_input, const std::string& histogramName_output)
+template<typename T>
+T* copyHistogram(const T* histogram_input, const std::string& histogramName_output)
 {
-  TH1* histogram_output = 0;
+  bool isHistogram2d = ( histogram_input->GetDimension() == 2 ) ? true : false;
+  T* histogram_output = 0;
   const TAxis* xAxis = histogram_input->GetXaxis();
-  if ( xAxis->GetXbins() ) histogram_output = new TH1F(histogramName_output.data(), histogram_input->GetTitle(), xAxis->GetNbins(), xAxis->GetXbins()->GetArray());
-  else histogram_output = new TH1F(histogramName_output.data(), histogram_input->GetTitle(), xAxis->GetNbins(), xAxis->GetXmin(), xAxis->GetXmax());
-  int numBins = xAxis->GetNbins();
-  for ( int idxBin = 0; idxBin <= (numBins + 1); ++idxBin ) {
-    double binContent = histogram_input->GetBinContent(idxBin);
-    histogram_output->SetBinContent(idxBin, binContent);
-    double binError = histogram_input->GetBinError(idxBin);
-    histogram_output->SetBinError(idxBin, binError);
+  const TAxis* yAxis(NULL);
+  if ( !isHistogram2d )
+  {
+    if ( xAxis->GetXbins() ) histogram_output = dynamic_cast<T*>(new TH1F(histogramName_output.data(), histogram_input->GetTitle(), xAxis->GetNbins(), xAxis->GetXbins()->GetArray()));
+    else histogram_output = dynamic_cast<T*>(new TH1F(histogramName_output.data(), histogram_input->GetTitle(), xAxis->GetNbins(), xAxis->GetXmin(), xAxis->GetXmax()));
   }
-  return histogram_output;
+  else
+  {
+    yAxis = histogram_input->GetYaxis();
+    TArrayD yaxis_array = getBinning_axis(yAxis);
+    histogram_output = new TH2F(histogramName_output.data(), histogram_input->GetTitle(), xAxis->GetNbins(), xAxis->GetXbins()->GetArray(), yAxis->GetNbins(), yaxis_array.GetArray());
+  }
+  int numBins = xAxis->GetNbins();
+  int numYBins(-1);
+  if (isHistogram2d)
+    numYBins = yAxis->GetNbins();
+  for ( int idxBin = 0; idxBin <= (numBins + 1); ++idxBin ) {
+    for ( int idxYBin = 0; idxYBin <= (numYBins + 1); ++idxYBin ) {
+      if ( !isHistogram2d )
+      {
+        assert(idxYBin==0);
+        double binContent = histogram_input->GetBinContent(idxBin);
+        histogram_output->SetBinContent(idxBin, binContent);
+        double binError = histogram_input->GetBinError(idxBin);
+        histogram_output->SetBinError(idxBin, binError);
+      }
+      else
+      {
+        double binContent = histogram_input->GetBinContent(idxBin, idxYBin);
+        histogram_output->SetBinContent(idxBin, idxYBin, binContent);
+        double binError = histogram_input->GetBinError(idxBin, idxYBin);
+        histogram_output->SetBinError(idxBin, idxYBin, binError);
+        }
+    }
+  }
+  return dynamic_cast<T*>(histogram_output);
 }
 
 TH1* cloneHistogram(const TH1* histogram, const std::string& histogramName_clone)
@@ -501,7 +529,7 @@ int main(int argc, char* argv[])
   std::string xAxisTitle = cfg_addSystFakeRates.getParameter<std::string>("xAxisTitle");
   std::string yAxisTitle = cfg_addSystFakeRates.getParameter<std::string>("yAxisTitle");
   bool multiclass = cfg_addSystFakeRates.exists("multiclass") ? cfg_addSystFakeRates.getParameter<bool>("multiclass") : false;
-
+  bool is2d_histogram = cfg_addSystFakeRates.getParameter<bool>("is2d_histogram");
   std::string outputFileNamePrefix = category.empty() ? "" : Form("_%s", category.data());
   outputFileNamePrefix += Form("_%s", histogramToFit.data());
 
@@ -534,12 +562,18 @@ int main(int argc, char* argv[])
     TObject* object = key1->ReadObj();
     TH1* histogram_input = dynamic_cast<TH1*>(object);
 
+    TH2* histogram_2d(NULL);
+    if (!histogram_input)
+      histogram_2d = dynamic_cast<TH2*>(object);
     TFileDirectory* subdir_output = &fs;
     subdir_output->cd();
-    
-    copyHistogram(histogram_input, histogram_input->GetName());
+    if ( histogram_input )
+      copyHistogram(histogram_input, histogram_input->GetName());
+    else {
+      copyHistogram(histogram_2d, histogram_input->GetName());
+    }
   }
-
+  if ( is2d_histogram ) return 0;
   // add histograms for "closure" uncertainties of electron, muon, and tau_h fake-rates
   for ( std::vector<addSystType*>::iterator addSystConfig = addSystConfigs.begin();
 	addSystConfig != addSystConfigs.end(); ++addSystConfig ) {

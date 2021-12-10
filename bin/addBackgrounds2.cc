@@ -1,4 +1,3 @@
-
 /** \executable addBackgrounds
  *
  * Add "background" contributions of different MC samples.
@@ -25,6 +24,7 @@
 
 #include <TFile.h>
 #include <TH1.h>
+#include <TH2.h>
 #include <TBenchmark.h>
 #include <TMath.h>
 #include <TError.h> // gErrorAbortLevel, kError
@@ -88,25 +88,28 @@ namespace
       while ( (key = dynamic_cast<TKey*>(next())) ) {
         TObject* object = key->ReadObj();
         TH1* histogram = dynamic_cast<TH1*>(object);
-        if ( !histogram ) continue;
-        TString histogramName = TString(histogram->GetName()).ReplaceAll(Form("%s_", the_process_input.data()), "");
+        if ( !histogram ) {
+          TH2* histogram_2d = dynamic_cast<TH2*>(object);
+          if ( !histogram_2d ) continue;
+        }
+        TString histogramName = TString(object->GetName()).ReplaceAll(Form("%s_", the_process_input.data()), "");
         for ( auto central_or_shift: central_or_shifts )
         {
-	  if ( !(central_or_shift == "" || central_or_shift == "central") ) 
+          if ( !(central_or_shift == "" || central_or_shift == "central") )
           {
-	    histogramName = histogramName.ReplaceAll(Form("%s_", central_or_shift.data()), "");
-	  }
-	}
-	if ( histogramName.Contains("CMS_") ) continue;
-	if ( histogramName.Contains("cutFlow") ) continue;
-	if ( histogramNames.find(histogramName.Data()) == histogramNames.end() ) 
+            histogramName = histogramName.ReplaceAll(Form("%s_", central_or_shift.data()), "");
+          }
+        }
+        if ( histogramName.Contains("CMS_") ) continue;
+        if ( histogramName.Contains("cutFlow") ) continue;
+        if ( histogramNames.find(histogramName.Data()) == histogramNames.end() )
         {
           if ( isDEBUG )
           {
-	    std::cout << "adding histogram = " << histogramName.Data() << std::endl;
+            std::cout << "adding histogram = " << histogramName.Data() << std::endl;
           }
-	  histogramNames.insert(histogramName.Data());
-	}
+          histogramNames.insert(histogramName.Data());
+        }
       }
       
       // add histograms
@@ -114,21 +117,34 @@ namespace
       {
         for ( auto central_or_shift: central_or_shifts )
         {
-          std::vector<TH1*> histograms_input;
+          std::vector<TH1*> histograms_1dinput;
+          std::vector<TH2 *> histograms_2dinput;
+          bool is_TH1(true);
           for ( auto process_input: processes_input ) 
           {
+            TH1* histogram_1d;
+            TH2* histogram_2d;
             bool enableException = ( central_or_shift == "" || central_or_shift == "central" ) ? true : false;
-            TH1* histogram_input = getHistogram(dir, process_input, histogramName, central_or_shift, enableException);
-            if ( !histogram_input ) 
+            TObject* histogram_1d2d = getHistogram1d2d(dir, process_input, histogramName, central_or_shift, enableException);
+            if ( !(histogram_1d2d ) )
             {
-              histogram_input = getHistogram(dir, process_input, histogramName, "", true);
+              histogram_1d2d = getHistogram1d2d(dir, process_input, histogramName, "", true);
             }
-            if ( std::find(histograms_input.begin(), histograms_input.end(), histogram_input) != histograms_input.end() )
+            histogram_1d = dynamic_cast<TH1*>(histogram_1d2d);
+            histogram_2d = dynamic_cast<TH2*>(histogram_1d2d);
+            if ( histogram_1d && std::find(histograms_1dinput.begin(), histograms_1dinput.end(), histogram_1d) != histograms_1dinput.end() )
             {
               throw cmsException(__func__, __LINE__)
-                << "Attempting to add the same histogram twice: " << histogram_input->GetName() << " from " << process_input << " !!\n";
+                << "Attempting to add the same histogram twice: " << histogram_1d->GetName() << " from " << process_input << " !!\n";
             }
-            histograms_input.push_back(histogram_input);
+            if ( histogram_2d && std::find(histograms_2dinput.begin(), histograms_2dinput.end(), histogram_2d) != histograms_2dinput.end() )
+            {
+              throw cmsException(__func__, __LINE__)
+                << "Attempting to add the same histogram twice: " << histogram_2d->GetName() << " from " << process_input << " !!\n";
+            }
+            if(histogram_2d) is_TH1 = false;
+            if(is_TH1) histograms_1dinput.push_back(histogram_1d);
+            else{ histograms_2dinput.push_back(histogram_2d);}
           }
 
           std::string subdirName_output = Form("%s/%s", dirName.data(), process_output.data());
@@ -153,7 +169,11 @@ namespace
           {
             std::cout << "creating histogram = '" << histogramName_output << "'" << std::endl;
           }
-          addHistograms(histogramName_output, histograms_input);
+          if(is_TH1)
+            addHistograms_temp<TH1>(histogramName_output, histograms_1dinput);
+          else{
+            addHistograms_temp<TH2>(histogramName_output,histograms_2dinput);
+          }
         }
       }
     }
@@ -201,7 +221,6 @@ int main(int argc, char* argv[])
   }
 
   std::cout << "<addBackgrounds2>:\n";
-
 //--- keep track of time it takes the macro to execute
   TBenchmark clock;
   clock.Start("addBackgrounds2");
@@ -224,7 +243,7 @@ int main(int argc, char* argv[])
   bool contains_central = false;
   for ( auto central_or_shift: central_or_shifts )
   {
-    if ( central_or_shift == "" || central_or_shift == "central" ) 
+    if ( central_or_shift == "" || central_or_shift == "central" )
     {
       contains_central = true;
       break;

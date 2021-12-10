@@ -29,6 +29,7 @@
 
 #include <TFile.h>
 #include <TH1.h>
+#include <TH2.h>
 #include <TBenchmark.h>
 #include <TMath.h>
 #include <TError.h> // gErrorAbortLevel, kError
@@ -67,12 +68,24 @@ namespace
     while ( (key = dynamic_cast<TKey*>(next())) ) {
       TObject* object = key->ReadObj();
       TH1* histogram_input = dynamic_cast<TH1*>(object);
+      std::string histogramName_output;
       if ( histogram_input ) {
-	std::string histogramName_output = histogram_input->GetName();
+        histogramName_output = histogram_input->GetName();
         TH1* histogram_output = static_cast<TH1*>(histogram_input->Clone(histogramName_output.data()));
         if(! histogram_output->GetSumw2N())
         {
           histogram_output->Sumw2();
+        }
+      }
+      else {
+        TH2* histogram_2dinput = dynamic_cast<TH2*>(object);
+        if ( histogram_2dinput ) {
+          histogramName_output = histogram_2dinput->GetName();
+          TH2* histogram_2doutput = static_cast<TH2*>(histogram_2dinput->Clone(histogramName_output.data()));
+          if(! histogram_2doutput->GetSumw2N())
+            {
+              histogram_2doutput->Sumw2();
+            }
         }
       }
     }

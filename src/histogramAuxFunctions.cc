@@ -4,7 +4,7 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/generalAuxFunctions.h" // format_vdouble
 
-#include <TH2.h> // TH2
+//#include <TH2.h> // TH2
 
 #include <iostream> // std::cout
 #include <cmath> // std::sqrt(), std::log()
@@ -168,80 +168,6 @@ getLogWeight(double weight)
 //-------------------------------------------------------------------------------
 //
 
-void
-checkCompatibleBinning(const TH1 * histogram1,
-                       const TH1 * histogram2)
-{
-  if(histogram1 && histogram2)
-  {
-    int dimension1 = histogram1->GetDimension();
-    int dimension2 = histogram2->GetDimension();
-    if(dimension1 != dimension2)
-    {
-      throw cmsException(__func__, __LINE__)
-        << "Histograms " << histogram1->GetName() << " and " << histogram2->GetName()
-        << " have incompatible dimension (dimension: histogram1 = "
-        << dimension1 << ", histogram2 = " << dimension2 << ')';
-    }
-    if(histogram1->GetNbinsX() != histogram2->GetNbinsX())
-    {
-      throw cmsException(__func__, __LINE__)
-        << "Histograms " << histogram1->GetName() << " and " << histogram2->GetName()
-        << " have incompatible x-axis binning !!\n (NbinsX: histogram1 = "
-        << histogram1->GetNbinsX() << ", histogram2 = " << histogram2->GetNbinsX() << ')';
-    }
-    const TAxis * const xAxis1 = histogram1->GetXaxis();
-    const TAxis * const xAxis2 = histogram2->GetXaxis();
-    const int numBinsX = xAxis1->GetNbins();
-    
-    for(int idxBinX = 1; idxBinX <= numBinsX; ++idxBinX)
-    {
-      const double binWidthX = 0.5 * (xAxis1->GetBinWidth(idxBinX) + xAxis2->GetBinWidth(idxBinX));
-      const double dBinLowEdgeX = xAxis1->GetBinLowEdge(idxBinX) - xAxis2->GetBinLowEdge(idxBinX);
-      const double dBinUpEdgeX  = xAxis1->GetBinUpEdge(idxBinX)  - xAxis2->GetBinUpEdge(idxBinX);
-
-      if(! (dBinLowEdgeX < 1.e-3 * binWidthX && dBinUpEdgeX < 1.e-3 * binWidthX))
-      {
-        throw cmsException(__func__, __LINE__)
-          << "Histograms " << histogram1->GetName() << " and " << histogram2->GetName()
-          << " have incompatible x-axis binning !!\n (bin #" << idxBinX << ": histogram1 = "
-          << xAxis1->GetBinLowEdge(idxBinX) << ".." << xAxis1->GetBinUpEdge(idxBinX) << ","
-             " histogram2 = " << xAxis2->GetBinLowEdge(idxBinX) << ".." << xAxis2->GetBinUpEdge(idxBinX) << ')';
-      }
-    }
-
-    if(dimension1 >= 2 && dimension2 >= 2)
-    {
-      if(histogram1->GetNbinsY() != histogram2->GetNbinsY())
-      {
-        throw cmsException(__func__, __LINE__)
-          << "Histograms " << histogram1->GetName() << " and " << histogram2->GetName()
-          << " have incompatible y-axis binning !!\n (NbinsY: histogram1 = "
-          << histogram1->GetNbinsY() << ", histogram2 = " << histogram2->GetNbinsY() << ')';
-      }
-      const TAxis * const yAxis1 = histogram1->GetYaxis();
-      const TAxis * const yAxis2 = histogram2->GetYaxis();
-      const int numBinsY = yAxis1->GetNbins();
-
-      for(int idxBinY = 1; idxBinY <= numBinsY; ++idxBinY)
-      {
-        const double binWidthY = 0.5 * (yAxis1->GetBinWidth(idxBinY) + yAxis2->GetBinWidth(idxBinY));
-        const double dBinLowEdgeY = yAxis1->GetBinLowEdge(idxBinY) - yAxis2->GetBinLowEdge(idxBinY);
-        const double dBinUpEdgeY  = yAxis1->GetBinUpEdge(idxBinY)  - yAxis2->GetBinUpEdge(idxBinY);
-
-        if(! (dBinLowEdgeY < 1.e-3 * binWidthY && dBinUpEdgeY < 1.e-3 * binWidthY))
-        {
-          throw cmsException(__func__, __LINE__)
-            << "Histograms " << histogram1->GetName() << " and " << histogram2->GetName()
-            << " have incompatible y-axis binning !!\n (bin #" << idxBinY << ": histogram1 = "
-            << yAxis1->GetBinLowEdge(idxBinY) << ".." << yAxis1->GetBinUpEdge(idxBinY) << ","
-               " histogram2 = " << yAxis2->GetBinLowEdge(idxBinY) << ".." << yAxis2->GetBinUpEdge(idxBinY) << ')';
-        }
-      }
-    }
-  }
-}
-
 bool
 checkIfLabeledAxis(const TAxis * axis)
 {
@@ -259,33 +185,7 @@ checkIfLabeledAxis(const TAxis * axis)
   return isLabelled;
 }
 
-bool
-checkIfLabeledHistogram(const TH1 * histogram)
-{
-  bool isLabelled = checkIfLabeledAxis(histogram->GetXaxis());
-  if(histogram->GetDimension() == 2)
-  {
-    if(checkIfLabeledAxis(histogram->GetYaxis())) isLabelled = true;
-  }
-  return isLabelled;
-}
-
-bool
-checkIfLabeledHistograms(const std::vector<TH1 *> & histograms)
-{
-  bool isLabelled = false;
-  for(const TH1 * histogram: histograms)
-  {
-    isLabelled = checkIfLabeledHistogram(histogram);
-    if(isLabelled)
-    {
-      break;
-    }
-  }
-  return isLabelled;
-}
-
-TH1 *
+TH1*
 addHistograms(const std::string & newHistogramName,
               const TH1 * histogram1,
               const TH1 * histogram2,
@@ -295,274 +195,7 @@ addHistograms(const std::string & newHistogramName,
     const_cast<TH1 *>(histogram1),
     const_cast<TH1 *>(histogram2)
   };
-  return addHistograms(newHistogramName, histogramsToAdd, verbosity);
-}
-
-TH1 *
-addHistograms(const std::string & newHistogramName,
-              const std::vector<TH1 *> & histogramsToAdd,
-              int verbosity)
-{
-  if(verbosity)
-  {
-    std::cout << "<addHistograms>:\n"
-                 " newHistogramName = " << newHistogramName << '\n';
-  }
-  if(histogramsToAdd.empty())
-  {
-    throw cmsException(__func__, __LINE__) << "No histograms given to add";
-  }
-
-  const TH1 * const histogramRef = histogramsToAdd.front();
-  if(verbosity)
-  {
-    std::cout << "histogramRef = "     << histogramRef->GetName() << "\n"
-                 "#histogramsToAdd = " << histogramsToAdd.size() << '\n';
-  }
-
-  for(const TH1 * const histogramToAdd: histogramsToAdd)
-  {
-    if(histogramToAdd == histogramRef)
-    {
-      continue;
-    }
-    if(verbosity)
-    {
-      std::cout << "histogramToAdd = " << histogramToAdd->GetName() << ", "
-                   "integral = "       << histogramToAdd->Integral() << '\n';
-    }
-    checkCompatibleBinning(histogramToAdd, histogramRef);
-  }
-
-  TH1 * const newHistogram = static_cast<TH1 *>(histogramRef->Clone(newHistogramName.data()));
-  newHistogram->Reset();
-  if(! newHistogram->GetSumw2N())
-  {
-    newHistogram->Sumw2();
-  }
-
-  const bool isLabelledX = checkIfLabeledAxis(newHistogram->GetXaxis());
-  const int firstBinX = isLabelledX ? 1 : 0;
-  const int lastBinX = newHistogram->GetNbinsX() + (isLabelledX ? 0 : 1);
-  const TAxis * const xAxis = newHistogram->GetXaxis();
-
-  bool isLabelledY = false;
-  int firstBinY = 1;
-  int lastBinY = 1;
-  const TAxis * yAxis = nullptr;
-  bool isHistogram2d = ( newHistogram->GetDimension() == 2 ) ? true : false;
-  if ( isHistogram2d ) 
-  {
-    isLabelledY = checkIfLabeledAxis(newHistogram->GetYaxis());
-    firstBinY = isLabelledY ? 1 : 0;
-    lastBinY = newHistogram->GetNbinsY() + (isLabelledY ? 0 : 1);
-    yAxis = newHistogram->GetYaxis();
-  }
-
-  for(int idxBinX = firstBinX; idxBinX <= lastBinX; ++idxBinX)
-  {
-    for(int idxBinY = firstBinY; idxBinY <= lastBinY; ++idxBinY)
-    {
-      double sumBinContent = 0.;
-      double sumBinError2  = 0.;
-      for(const TH1 * const histogramToAdd: histogramsToAdd)
-      {
-        double binContent = 0.;
-        double binError = 0.;
-        if(isHistogram2d)
-        {
-          binContent = histogramToAdd->GetBinContent(idxBinX, idxBinY);
-          binError = histogramToAdd->GetBinError(idxBinX, idxBinY);
-        }
-        else
-        {
-          assert(idxBinY == firstBinY);
-          binContent = histogramToAdd->GetBinContent(idxBinX);
-          binError = histogramToAdd->GetBinError(idxBinX);
-        }
-        if(verbosity)
-        {
-          std::cout << "histogramToAdd = " << histogramToAdd->GetName() << ", "
-                       "binContent = "     << binContent << ", "
-                       "binError = "       << binError << '\n';
-        }
-        sumBinContent += binContent;
-        sumBinError2  += square(binError);
-      }
-
-      if(verbosity)
-      {
-        std::cout << "binX #" << idxBinX << " (x =  " << xAxis->GetBinCenter(idxBinX) << ")";
-        if(isHistogram2d)
-        {
-          std::cout << ", binY #" << idxBinY << " (y =  " << yAxis->GetBinCenter(idxBinY) << ")";
-        }
-        std::cout << ": " 
-                     "sumBinContent = "           << sumBinContent << ", "
-                     "sumBinError2 = "            << sumBinError2 << '\n';
-      }
-      if (!(sumBinError2 >= 0.))
-      {
-        std::cout << "Infinite: binX #" << idxBinX << " (x =  " << xAxis->GetBinCenter(idxBinX) << ")";
-        if(isHistogram2d)
-        {
-          std::cout << ", binY #" << idxBinY << " (y =  " << yAxis->GetBinCenter(idxBinY) << ")";
-        }
-        std::cout << ": " 
-                     "sumBinContent = "           << sumBinContent << ", "
-                     "sumBinError2 = "            << sumBinError2 << '\n';
-        sumBinError2 = 0.;
-        sumBinContent = 0.;
-      }
-      if(isHistogram2d)
-      {
-        newHistogram->SetBinContent(idxBinX, idxBinY, sumBinContent);
-        newHistogram->SetBinError(idxBinX, idxBinY, std::sqrt(sumBinError2));
-      }
-      else
-      {
-        newHistogram->SetBinContent(idxBinX, sumBinContent);
-        newHistogram->SetBinError(idxBinX, std::sqrt(sumBinError2));
-      }
-    }
-  }
-  return newHistogram;
-}
-
-TH1 *
-subtractHistograms(const std::string & newHistogramName,
-                   const TH1 * histogramMinuend,
-                   const TH1 * histogramSubtrahend,
-                   int verbosity)
-{
-  if(verbosity)
-  {
-    std::cout << "<subtractHistograms>:\n"
-                 " newHistogramName = " << newHistogramName << '\n';
-  }
-  checkCompatibleBinning(histogramMinuend, histogramSubtrahend);
-
-  TH1 * const newHistogram = static_cast<TH1 *>(histogramMinuend->Clone(newHistogramName.data()));
-  newHistogram->Reset();
-  if(! newHistogram->GetSumw2N())
-  {
-    newHistogram->Sumw2();
-  }
-
-  const bool isLabelledX = checkIfLabeledAxis(histogramMinuend->GetXaxis()) && checkIfLabeledAxis(histogramSubtrahend->GetXaxis());
-  const int firstBinX = isLabelledX ? 1 : 0;
-  const int lastBinX = newHistogram->GetNbinsX() + (isLabelledX ? 0 : 1);
-  const TAxis * const xAxis = newHistogram->GetXaxis();
-
-  bool isLabelledY = false;
-  int firstBinY = 1;
-  int lastBinY = 1;
-  const TAxis * yAxis = nullptr;
-  bool isHistogram2d = ( newHistogram->GetDimension() == 2 ) ? true : false;
-  if ( isHistogram2d ) 
-  {
-    isLabelledY = checkIfLabeledAxis(histogramMinuend->GetYaxis()) && checkIfLabeledAxis(histogramSubtrahend->GetYaxis());
-    firstBinY = isLabelledY ? 1 : 0;
-    lastBinY = newHistogram->GetNbinsY() + (isLabelledY ? 0 : 1);
-    yAxis = newHistogram->GetYaxis();
-  }
-
-  for(int idxBinX = firstBinX; idxBinX <= lastBinX; ++idxBinX)
-  {
-    for(int idxBinY = firstBinY; idxBinY <= lastBinY; ++idxBinY)
-    {
-      double binContentMinuend = 0.;
-      double binErrorMinuend = 0.;
-      double binContentSubtrahend = 0.;
-      double binErrorSubtrahend = 0.;
-      if(isHistogram2d)
-      {
-        binContentMinuend = histogramMinuend->GetBinContent(idxBinX, idxBinY);
-        binErrorMinuend = histogramMinuend->GetBinError(idxBinX, idxBinY);
-        binContentSubtrahend = histogramSubtrahend->GetBinContent(idxBinX, idxBinY);
-        binErrorSubtrahend = histogramSubtrahend->GetBinError(idxBinX, idxBinY);
-      }
-      else
-      {
-        assert(idxBinY == firstBinY);
-        binContentMinuend = histogramMinuend->GetBinContent(idxBinX);
-        binErrorMinuend = histogramMinuend->GetBinError(idxBinX);
-        binContentSubtrahend = histogramSubtrahend->GetBinContent(idxBinX);
-        binErrorSubtrahend = histogramSubtrahend->GetBinError(idxBinX);
-      }
-      if(verbosity)
-      {
-        std::cout << "binX #" << idxBinX << " (x =  " << xAxis->GetBinCenter(idxBinX) << ")";
-        if(isHistogram2d)
-        {
-          std::cout << ", binY #" << idxBinY << " (y =  " << yAxis->GetBinCenter(idxBinY) << ")";
-        }
-        std::cout << ": " 
-                     "minuend = "    << binContentMinuend         << " +/- "
-                                     << binErrorMinuend           << ", "
-                     "subtrahend = " << binContentSubtrahend      << " +/- "
-                                     << binErrorSubtrahend        << '\n';
-      }
-      double newBinContent = binContentMinuend - binContentSubtrahend;
-      double newBinError2  = square(binErrorMinuend) + square(binErrorSubtrahend);
-      if (!(newBinError2 >= 0.))
-      {
-        std::cout << "Infinite: binX #" << idxBinX << " (x =  " << xAxis->GetBinCenter(idxBinX) << ")";
-        if(isHistogram2d)
-        {
-          std::cout << ", binY #" << idxBinY << " (y =  " << yAxis->GetBinCenter(idxBinY) << ")";
-        }
-        std::cout << ": " 
-                     "newBinContent = "           << newBinContent << ", "
-                     "newBinError2 = "            << newBinError2 << '\n';
-        newBinError2 = 0.;
-        newBinContent = 0.;
-      }
-      if(isHistogram2d)
-      {
-        newHistogram->SetBinContent(idxBinX, idxBinY, newBinContent);
-        newHistogram->SetBinError(idxBinX, idxBinY, std::sqrt(newBinError2));
-      }
-      else
-      {
-        newHistogram->SetBinContent(idxBinX, newBinContent);
-        newHistogram->SetBinError(idxBinX, std::sqrt(newBinError2));
-      }
-    }
-  }
-  return newHistogram;
-}
-
-TH1 *
-subtractHistograms(const std::string & newHistogramName,
-                   const TH1 * histogram,
-                   const std::vector<TH1 *> & histogramsToSubtract,
-                   int verbosity)
-{
-  if(verbosity)
-  {
-    std::cout << "<subtractHistograms>:\n"
-                 " newHistogramName = "      << newHistogramName            << "\n"
-                 " histogram = "             << histogram->GetName()        << "\n"
-                 " #histogramsToSubtract = " << histogramsToSubtract.size() << '\n';
-  }
-  if(! histogram)
-  {
-    throw cmsException(__func__, __LINE__) << "No histograms given to subtract !!";
-  }
-
-  TH1 * newHistogram = nullptr;
-  if(histogramsToSubtract.empty())
-  {
-    newHistogram = static_cast<TH1 *>(histogram->Clone(newHistogramName.data()));
-  }
-  else
-  {
-    const TH1 * histogramSubtrahend = addHistograms("subtractHistogramsTMP", histogramsToSubtract);
-    newHistogram = subtractHistograms(newHistogramName, histogram, histogramSubtrahend, verbosity);
-    delete histogramSubtrahend;
-  }
-  return newHistogram;
+  return addHistograms_temp<TH1>(newHistogramName, histogramsToAdd, verbosity);
 }
 
 double
@@ -887,6 +520,37 @@ getSubdirectory(const TDirectory * dir,
   return subdir;
 }
 
+TObject*
+getHistogram1d2d(const TDirectory * dir,
+             const std::string & process,
+             const std::string & histogramName,
+             const std::string & central_or_shift,
+             bool enableException,
+             bool verbose)
+{
+  std::string histogramName_full = Form("%s/", process.data());
+  if(! central_or_shift.empty() && central_or_shift != "central")
+    {
+      histogramName_full.append(Form("%s_%s", central_or_shift.data(), histogramName.data()));
+    }
+  else
+    {
+      histogramName_full.append(histogramName);
+    }
+  
+  TObject * histogram = const_cast<TDirectory *>(dir)->Get(histogramName_full.data());
+  if(histogram) return histogram;
+
+  else if(enableException)                                                                                                                   
+  {
+    dir->ls();
+    throw cmsException(__func__, __LINE__)
+      << "Failed to find histogram = '" << histogramName_full << "' in directory = " << dir << ": "
+      "name = '" << dir->GetName() << "' !!\n";
+  }
+  return histogram;
+}
+
 TH1 *
 getHistogram(const TDirectory * dir,
              const std::string & process,
@@ -988,6 +652,38 @@ createSubdirectory_recursively(TFileDirectory & dir,
 //
 //-------------------------------------------------------------------------------
 //
+
+TArrayD
+getBinning_axis(const TAxis* axis,
+             double Min,
+             double Max
+             )
+{
+  const int numBins = axis->GetNbins();
+  std::vector<double> binning;
+  for(int idxBin = 1; idxBin <= numBins; ++idxBin)
+  {
+    const double binCenter = axis->GetBinCenter(idxBin);
+    if ((Min == -1. || binCenter > Min) && (Max == -1. || binCenter < Max))
+    {
+      if(binning.empty())
+      {
+        binning.push_back(axis->GetBinLowEdge(idxBin));
+      }
+      binning.push_back(axis->GetBinUpEdge(idxBin));
+    }
+  }
+
+  const int binning_size = binning.size();
+  assert(binning_size >= 2);
+
+  TArrayD binning_tarray(binning_size);
+  for(int idxBin = 0; idxBin < binning_size; ++idxBin)
+  {
+    binning_tarray[idxBin] = binning[idxBin];
+  }
+  return binning_tarray;
+}
 
 TArrayD
 getBinning(const TH1 * histogram,

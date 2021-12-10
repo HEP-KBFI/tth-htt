@@ -101,26 +101,25 @@ namespace
       TKey* key = 0;
       while ( (key = dynamic_cast<TKey*>(next())) ) {
         TObject* object = key->ReadObj();
-        TH1* histogram = dynamic_cast<TH1*>(object);
-        if ( !histogram ) continue;
-        TString histogramName = TString(histogram->GetName()).ReplaceAll(Form("%s_", processData.data()), "");
+        if ( !object ) continue;
+        TString histogramName = TString(object->GetName()).ReplaceAll(Form("%s_", processData.data()), "");
         for ( auto central_or_shift: central_or_shifts )
         {
-	  if ( !(central_or_shift == "" || central_or_shift == "central") ) 
+          if ( !(central_or_shift == "" || central_or_shift == "central") )
           {
-	    histogramName = histogramName.ReplaceAll(Form("%s_", central_or_shift.data()), "");
-	  }
-	}
-	if ( histogramName.Contains("CMS_") ) continue;
-	if ( histogramName.Contains("cutFlow") ) continue;
-	if ( histogramNames.find(histogramName.Data()) == histogramNames.end() ) 
+            histogramName = histogramName.ReplaceAll(Form("%s_", central_or_shift.data()), "");
+          }
+        }
+        if ( histogramName.Contains("CMS_") ) continue;
+        if ( histogramName.Contains("cutFlow") ) continue;
+        if ( histogramNames.find(histogramName.Data()) == histogramNames.end() )
         {
           if ( isDEBUG )
           {
-	    std::cout << "adding histogram = " << histogramName.Data() << std::endl;
+            std::cout << "adding histogram = " << histogramName.Data() << std::endl;
           }
-	  histogramNames.insert(histogramName.Data());
-	}
+          histogramNames.insert(histogramName.Data());
+        }
       }
       
       // add histograms
@@ -129,38 +128,50 @@ namespace
         for ( auto central_or_shift: central_or_shifts )
         {
           int verbosity = ( histogramName.find("EventCounter") != std::string::npos && (central_or_shift == "" || central_or_shift == "central") ) ? 1 : 0;
-	  //int verbosity = ( histogramName.find("EventCounter") != std::string::npos ) ? 1 : 0;
+          //int verbosity = ( histogramName.find("EventCounter") != std::string::npos ) ? 1 : 0;
           //if ( histogramName.find("sumXY") != std::string::npos ) verbosity = 1;
-
-	  TH1* histogramData = getHistogram(dir, processData, histogramName, central_or_shift, false);
-	  if ( !histogramData ) 
+          TObject* histogramData = getHistogram1d2d(dir, processData, histogramName, central_or_shift, false);
+          if ( !histogramData )
           {
-	    histogramData = getHistogram(dir, processData, histogramName, "central", true);
-	  }
-	  if ( verbosity )
-          {
-            double integral = compIntegral(histogramData, false, false);
-            double integralErr = compIntegralErr(histogramData, false, false);
-	    std::cout << " integral(data_obs) = " << integral << " +/- " << integralErr << std::endl;
-	  }
-	    
-	  std::vector<TH1*> histogramsToSubtract;
-	  for ( auto processToSubtract: processesToSubtract )
-          {
-	    TH1* histogramToSubtract = getHistogram(dir, processToSubtract, histogramName, central_or_shift, false);
-	    if ( !histogramToSubtract ) 
-            {
-              histogramToSubtract = getHistogram(dir, processToSubtract, histogramName, "central", true);
-            }
-	    if ( verbosity )
-            {
-              double integral = compIntegral(histogramToSubtract, false, false);
-              double integralErr = compIntegralErr(histogramToSubtract, false, false);
-              std::cout << " integral(" << processToSubtract << ") = " << integral << " +/- " << integralErr << std::endl;
-	    }
-            histogramsToSubtract.push_back(histogramToSubtract);
+            histogramData = getHistogram1d2d(dir, processData, histogramName, "central", true);
           }
-	    
+          TH1* histogramData_1d = dynamic_cast<TH1*>(histogramData);
+          TH2* histogramData_2d = dynamic_cast<TH2*>(histogramData);
+          if ( verbosity )
+          {
+            if(histogramData_1d)
+            {
+              delete histogramData_2d;
+              double integral = compIntegral(histogramData_1d, false, false);
+              double integralErr = compIntegralErr(histogramData_1d, false, false);
+              std::cout << " integral(data_obs) = " << integral << " +/- " << integralErr << std::endl;
+            }
+            else {
+              delete histogramData_1d;
+            }
+          }
+          std::vector<TH1*> histogramsToSubtract_1d;
+          std::vector<TH2*> histogramsToSubtract_2d;
+          for ( auto processToSubtract: processesToSubtract )
+          {
+            TObject* histogramToSubtract = getHistogram1d2d(dir, processToSubtract, histogramName, central_or_shift, false);
+            if ( !histogramToSubtract )
+            {
+              histogramToSubtract = getHistogram1d2d(dir, processToSubtract, histogramName, "central", true);
+            }
+            if (dynamic_cast<TH1*>(histogramToSubtract)) {
+              histogramsToSubtract_1d.push_back(dynamic_cast<TH1*>(histogramToSubtract));
+              if ( verbosity )
+              {
+                double integral = compIntegral(dynamic_cast<TH1*>(histogramToSubtract), false, false);
+                double integralErr = compIntegralErr(dynamic_cast<TH1*>(histogramToSubtract), false, false);
+                std::cout << " integral(" << processToSubtract << ") = " << integral << " +/- " << integralErr << std::endl;
+              }
+            }
+            else {
+              histogramsToSubtract_2d.push_back(dynamic_cast<TH2*>(histogramToSubtract));
+            }
+          }
           std::string subdirName_output = Form("%s/%s", dirName.data(), processLeptonFakes.data());
           if ( isDEBUG )
           {
@@ -168,27 +179,42 @@ namespace
           }
           TDirectory* subdir_output = createSubdirectory_recursively(fs, subdirName_output);
           subdir_output->cd();
-
           std::string histogramNameLeptonFakes;
           if ( !(central_or_shift == "" || central_or_shift == "central") ) histogramNameLeptonFakes.append(central_or_shift);
           if ( histogramNameLeptonFakes.length() > 0 ) histogramNameLeptonFakes.append("_");
           histogramNameLeptonFakes.append(histogramName);
-          TH1* histogramLeptonFakes = subtractHistograms(histogramNameLeptonFakes, histogramData, histogramsToSubtract, verbosity);
+          TH1* histogramLeptonFakes_1d(NULL);
+          TH2* histogramLeptonFakes_2d(NULL);
+          if (histogramData_1d)
+          {
+            delete histogramLeptonFakes_2d;
+            histogramLeptonFakes_1d = subtractHistograms<TH1>(histogramNameLeptonFakes, histogramData_1d, histogramsToSubtract_1d, verbosity);
+          }
+          
+          else {
+            delete histogramLeptonFakes_1d;
+            histogramLeptonFakes_2d = subtractHistograms<TH2>(histogramNameLeptonFakes, histogramData_2d, histogramsToSubtract_2d, verbosity);
+          }
           if ( verbosity )
           {
-            double integral = compIntegral(histogramLeptonFakes, false, false);
-            double integralErr = compIntegralErr(histogramLeptonFakes, false, false);
-	    std::cout << " integral(Fakes) = " << integral << " +/- " << integralErr << std::endl;
+            if (histogramData_1d)
+            {
+              double integral = compIntegral(histogramLeptonFakes_1d, false, false);
+              double integralErr = compIntegralErr(histogramLeptonFakes_1d, false, false);
+              std::cout << " integral(Fakes) = " << integral << " +/- " << integralErr << std::endl;
+            }
           }
-
           if( makeBinContentsPositive_dir )
           {
-            makeBinContentsPositive(histogramLeptonFakes, false, verbosity); // Treating histogramLeptonFakes as MC background
+            if (histogramLeptonFakes_1d)
+              makeBinContentsPositive(histogramLeptonFakes_1d, false, verbosity); // Treating histogramLeptonFakes as MC background
+            else {
+              makeBinContentsPositive(histogramLeptonFakes_2d, false, verbosity);
+            }
           }
         }
       }
     }
-
     // recursively process all subdirectories
     std::vector<const TDirectory*> subdirs = getSubdirectories(dir);
     bool stopRecursion = ( max_depth_recursion != -1 && depth_recursion >= max_depth_recursion ) ? true : false;
@@ -197,7 +223,7 @@ namespace
       for ( std::vector<const TDirectory*>::iterator subdir = subdirs.begin();
             subdir != subdirs.end(); ++subdir ) {
         bool makeBinContentsPositive_subdir = makeBinContentsPositive_dir;
-        if ( std::string((*subdir)->GetName()).find("mvaInputVarCorrelation") != std::string::npos ) 
+        if ( std::string((*subdir)->GetName()).find("mvaInputVarCorrelation") != std::string::npos )
         {
           makeBinContentsPositive_subdir = false;
         }
