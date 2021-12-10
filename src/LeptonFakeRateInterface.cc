@@ -38,6 +38,7 @@ LeptonFakeRateInterface::LeptonFakeRateInterface(const edm::ParameterSet & cfg)
     switch(era)
     {
       // Slide 16 in https://indico.cern.ch/event/885279/contributions/3789360/attachments/2004535/3347458/mar15.pdf
+      case Era::kUndefined: throw cmsException(this) << "Undefined era!";
       case Era::k2016: jetToEleFakeRateCorr_ = 1.376; jetToMuFakeRateCorr_ = 1.050; break;
       case Era::k2017: jetToEleFakeRateCorr_ = 1.252; jetToMuFakeRateCorr_ = 1.157; break;
       case Era::k2018: jetToEleFakeRateCorr_ = 1.325; jetToMuFakeRateCorr_ = 1.067; break;

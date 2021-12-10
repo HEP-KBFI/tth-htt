@@ -57,7 +57,7 @@ const double w_window = 10.;
 //--- declare data-taking periods
 enum class Era
 {
-  k2016, k2017, k2018
+  kUndefined, k2016, k2017, k2018
 };
 
 //--- declare b-tagging algorithms

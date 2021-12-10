@@ -118,6 +118,7 @@ get_era(Era era)
 {
   switch(era)
   {
+    case Era::kUndefined: throw cmsException(__func__, __LINE__) << "Undefined era!";
     case Era::k2016: return "2016";
     case Era::k2017: return "2017";
     case Era::k2018: return "2018";

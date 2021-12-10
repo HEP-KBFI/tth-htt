@@ -160,6 +160,18 @@ EventInfo::isMC() const
   return isMC_;
 }
 
+bool
+EventInfo::isMC_H() const
+{
+  return isMC_H_;
+}
+
+bool
+EventInfo::isMC_HH() const
+{
+  return isMC_HH_;
+}
+
 double
 EventInfo::genWeight_tH() const
 {
