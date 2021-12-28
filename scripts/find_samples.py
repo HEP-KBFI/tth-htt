@@ -771,20 +771,22 @@ if __name__ == '__main__':
         if dataset_q.split('/')[-1].startswith('part'):
           dataset_q = '/'.join(dataset.split('/')[:-1])
 
-        mc_query = Command(DASGOCLIENT_QUERY % (dataset_q, '*'))
+        mc_query_str = DASGOCLIENT_QUERY % (dataset_q, '*')
+        mc_query = Command(mc_query_str)
         mc_query.run()
         if not mc_query.out or mc_query.err:
           raise ValueError(
-            "Query to DAS resulted in an empty output or an error:\nstdout = '%s'\nstderr = '%s'" % \
-            (mc_query.out, mc_query.err)
+            "Query '%s' to DAS resulted in an empty output or an error:\nstdout = '%s'\nstderr = '%s'" % \
+            (mc_query_str, mc_query.out, mc_query.err)
           )
 
-        mc_release = Command(DASGOCLIENT_QUERY_RELEASE % dataset_q)
+        mc_release_str = DASGOCLIENT_QUERY_RELEASE % dataset_q
+        mc_release = Command(mc_release_str)
         mc_release.run()
         if not mc_release.out or mc_release.err:
           raise ValueError(
-            "Query to DAS resulted in an empty output or an error:\nstdout = '%s'\nstderr = '%s'" % \
-            (mc_release.out, mc_release.err)
+            "Query '%s' to DAS resulted in an empty output or an error:\nstdout = '%s'\nstderr = '%s'" % \
+            (mc_release_str, mc_release.out, mc_release.err)
           )
 
         mc_query_json = json.loads(mc_query.out)
@@ -967,20 +969,22 @@ if __name__ == '__main__':
         for dataset in datasets:
           das_query_results[dataset] = {}
 
-          dasgoclient_query = Command(DASGOCLIENT_QUERY % (dataset, 'VALID'))
+          dasgoclient_str = DASGOCLIENT_QUERY % (dataset, 'VALID')
+          dasgoclient_query = Command(dasgoclient_str)
           dasgoclient_query.run()
           if not dasgoclient_query.out or dasgoclient_query.err:
             raise ValueError(
-              "Query to DAS resulted in an empty output or an error:\nstdout = '%s'\nstderr = '%s'" % \
-              (dasgoclient_query.out, dasgoclient_query.err)
+              "Query '%s' to DAS resulted in an empty output or an error:\nstdout = '%s'\nstderr = '%s'" % \
+              (dasgoclient_str, dasgoclient_query.out, dasgoclient_query.err)
             )
 
-          dasgoclient_release = Command(DASGOCLIENT_QUERY_RELEASE % dataset)
+          dasgoclient_release_str = DASGOCLIENT_QUERY_RELEASE % dataset
+          dasgoclient_release = Command(dasgoclient_release_str)
           dasgoclient_release.run()
           if not dasgoclient_release.out or dasgoclient_release.err:
             raise ValueError(
-              "Query to DAS resulted in an empty output or an error:\nstdout = '%s'\nstderr = '%s'" % \
-              (dasgoclient_release.out, dasgoclient_release.err)
+              "Query '%s' to DAS resulted in an empty output or an error:\nstdout = '%s'\nstderr = '%s'" % \
+              (dasgoclient_release_str, dasgoclient_release.out, dasgoclient_release.err)
             )
 
           dasgoclient_query_json = json.loads(dasgoclient_query.out)
