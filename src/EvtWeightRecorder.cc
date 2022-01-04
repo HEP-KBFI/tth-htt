@@ -229,21 +229,10 @@ EvtWeightRecorder::get_pdfWeight(const std::string & central_or_shift) const
 double
 EvtWeightRecorder::get_pdfMemberWeight(const std::string & central_or_shift) const
 {
-  if(isMC_ && ! weights_pdf_members_.empty())
+  if(isMC_ && ! weights_pdf_members_.empty() && isPDFsys_member(central_or_shift))
   {
-    if(isPDFsys_member(central_or_shift))
-    {
-      assert(weights_pdf_members_.count(central_or_shift));
-      return weights_pdf_members_.at(central_or_shift);
-    }
-    else if(central_or_shift == "central")
-    {
-      return 1.;
-    }
-    else
-    {
-      throw cmsException(this, __func__, __LINE__) << "Unexpected systematic: " << central_or_shift;
-    }
+    assert(weights_pdf_members_.count(central_or_shift));
+    return weights_pdf_members_.at(central_or_shift);
   }
   return 1.;
 }

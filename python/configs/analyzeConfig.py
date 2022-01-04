@@ -1127,7 +1127,8 @@ class analyzeConfig(object):
             if central_or_shift not in systematics.pdf_mem and central_or_shift != 'central'
           ]
           if central_or_shifts_pruned:
-            raise RuntimeError("Too many systematics requested: %s" % ', '.join(jobOptions['central_or_shifts_local']))
+            pass # it's likely possible to enable them without exceeding the memory limit
+            #raise RuntimeError("Too many systematics requested: %s" % ', '.join(jobOptions['central_or_shifts_local']))
         if 'hasPDF' not in jobOptions:
           jobOptions['hasPDF'] = sample_info['LHE_set'] and 'central_or_shifts_local' in jobOptions and any(
             central_or_shift in systematics.PDF().full  or central_or_shift in systematics.PDF().mem \
