@@ -516,7 +516,8 @@ PDFSys
 getPDFSys_option(const std::string & central_or_shift)
 {
   PDFSys central_or_shift_int = PDFSys::central;
-  if(boost::starts_with(central_or_shift, "CMS_ttHl_PDF_shape"))
+  if(boost::starts_with(central_or_shift, "CMS_ttHl_PDF_shape") &&
+     ! isPDFsys_member(central_or_shift))
   {
     if     (boost::ends_with(central_or_shift, "Up")  ) central_or_shift_int = PDFSys::up;
     else if(boost::ends_with(central_or_shift, "Down")) central_or_shift_int = PDFSys::down;
@@ -524,6 +525,15 @@ getPDFSys_option(const std::string & central_or_shift)
            << "Invalid option to PDF systematics: " << central_or_shift;
   }
   return central_or_shift_int;
+}
+
+bool
+isPDFsys_member(const std::string & central_or_shift)
+{
+  return
+    boost::starts_with(central_or_shift, "CMS_ttHl_PDF_shape") &&
+    central_or_shift.find("Member") != std::string::npos
+  ;
 }
 
 void
@@ -536,9 +546,11 @@ checkOptionValidity(const std::string & central_or_shift,
     {
       throw cmsException(__func__, __LINE__) << "Non-empty or non-central systematics option passed to data";
     }
-    if(isMC && ! (boost::ends_with(central_or_shift, "Up") || boost::ends_with(central_or_shift, "Down")) && ! isTTbarSys(central_or_shift))
+    if(isMC && ! (boost::ends_with(central_or_shift, "Up") || boost::ends_with(central_or_shift, "Down")) &&
+       ! isTTbarSys(central_or_shift) &&
+       ! isPDFsys_member(central_or_shift))
     {
-      throw cmsException(__func__, __LINE__) << "Non-central MC systematics option not ending with Up or Down";
+      throw cmsException(__func__, __LINE__) << "Non-central MC systematics option not ending with Up or Down: " << central_or_shift;
     }
   }
 }

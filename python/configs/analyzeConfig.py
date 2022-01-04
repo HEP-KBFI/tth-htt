@@ -832,8 +832,10 @@ class analyzeConfig(object):
       if central_or_shift in systematics.LHE().vv             and sample_category != "VV":                     return False
       if central_or_shift in systematics.LHE().wjets          and sample_category != "W":                      return False
       if central_or_shift in systematics.LHE().other          and sample_category != "Other" and not is_ww:    return False
-      if central_or_shift in systematics.PDF().full           and not has_PDF:                                 return False
-      if central_or_shift in systematics.PDF().ttbar          and (sample_category != "TT" or is_st):          return False
+      if central_or_shift in (systematics.PDF().full +
+                              systematics.PDF().mem)          and not has_PDF:                                 return False
+      if central_or_shift in (systematics.PDF().ttbar +
+                              systematics.PDF().TT().mem)     and sample_category != "TT" or is_st:            return False
       if central_or_shift in systematics.DYMCReweighting      and not is_dymc_reweighting(sample_name):        return False
       if central_or_shift in systematics.DYMCNormScaleFactors and not is_dymc_normalization(sample_name):      return False
       if central_or_shift in systematics.tauIDSF              and 'tau' not in self.channel.lower():           return False
@@ -1118,9 +1120,18 @@ class analyzeConfig(object):
               tH_weights.extend(tH_weights_map[central_or_shift])
             jobOptions['tHweights'] = tH_weights
 
+        if 'central_or_shifts_local' in jobOptions and \
+            any(central_or_shift in systematics.pdf_mem for central_or_shift in jobOptions['central_or_shifts_local']):
+          central_or_shifts_pruned = [
+            central_or_shift for central_or_shift in jobOptions['central_or_shifts_local'] \
+            if central_or_shift not in systematics.pdf_mem and central_or_shift != 'central'
+          ]
+          if central_or_shifts_pruned:
+            raise RuntimeError("Too many systematics requested: %s" % ', '.join(jobOptions['central_or_shifts_local']))
         if 'hasPDF' not in jobOptions:
           jobOptions['hasPDF'] = sample_info['LHE_set'] and 'central_or_shifts_local' in jobOptions and any(
-            central_or_shift in systematics.PDF().full for central_or_shift in jobOptions['central_or_shifts_local']
+            central_or_shift in systematics.PDF().full  or central_or_shift in systematics.PDF().mem \
+            for central_or_shift in jobOptions['central_or_shifts_local']
           )
           if jobOptions['hasPDF']:
             lhaid_str = sample_info['LHE_set'].split()[2]

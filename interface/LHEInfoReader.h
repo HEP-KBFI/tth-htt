@@ -49,7 +49,9 @@ public:
   double getWeight_scale(int central_or_shift) const;
 
   int getNumWeights_pdf() const;
+  int getPdfSize() const;
   double getWeight_pdf(unsigned int idx) const;
+  double getWeightNorm_pdf(unsigned int idx) const;
   double getWeight_pdf(PDFSys option) const;
 
 protected:

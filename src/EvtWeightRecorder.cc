@@ -68,7 +68,8 @@ EvtWeightRecorder::get_inclusive(const std::string & central_or_shift,
   double retVal = isMC_ ? get_genWeight() * get_auxWeight(central_or_shift) * get_lumiScale(central_or_shift, bin) *
                  get_nom_tH_weight(central_or_shift) * get_puWeight(central_or_shift) *
                  get_l1PreFiringWeight(central_or_shift) * get_lheScaleWeight(central_or_shift) * get_pdfWeight(central_or_shift) *
-                 get_dy_rwgt(central_or_shift) * get_rescaling() * get_psWeight(central_or_shift) * get_hhWeight()
+                 get_dy_rwgt(central_or_shift) * get_rescaling() * get_psWeight(central_or_shift) * get_hhWeight() *
+                 get_pdfMemberWeight(central_or_shift)
                : 1.
   ;
   return retVal;
@@ -220,6 +221,28 @@ EvtWeightRecorder::get_pdfWeight(const std::string & central_or_shift) const
     if(weights_pdf_.count(pdf_option))
     {
       return weights_pdf_.at(pdf_option);
+    }
+  }
+  return 1.;
+}
+
+double
+EvtWeightRecorder::get_pdfMemberWeight(const std::string & central_or_shift) const
+{
+  if(isMC_ && ! weights_pdf_members_.empty())
+  {
+    if(isPDFsys_member(central_or_shift))
+    {
+      assert(weights_pdf_members_.count(central_or_shift));
+      return weights_pdf_members_.at(central_or_shift);
+    }
+    else if(central_or_shift == "central")
+    {
+      return 1.;
+    }
+    else
+    {
+      throw cmsException(this, __func__, __LINE__) << "Unexpected systematic: " << central_or_shift;
     }
   }
   return 1.;
@@ -737,7 +760,7 @@ EvtWeightRecorder::record_lheScaleWeight(const LHEInfoReader * const lheInfoRead
 }
 
 void
-EvtWeightRecorder::record_pdfeWeight(const LHEInfoReader * const lheInfoReader)
+EvtWeightRecorder::record_pdfWeight(const LHEInfoReader * const lheInfoReader)
 {
   assert(isMC_);
   weights_pdf_.clear();
@@ -749,6 +772,20 @@ EvtWeightRecorder::record_pdfeWeight(const LHEInfoReader * const lheInfoReader)
       continue;
     }
     weights_pdf_[pdf_option] = lheInfoReader->getWeight_pdf(pdf_option);
+  }
+}
+
+void
+EvtWeightRecorder::record_pdfMembers(const LHEInfoReader * const lheInfoReader,
+                                     const std::map<std::string, int> pdf_map)
+{
+  assert(isMC_);
+  weights_pdf_members_.clear();
+  for(const auto & kv: pdf_map)
+  {
+    const std::string & pdf_key = kv.first;
+    const int pdf_idx = kv.second;
+    weights_pdf_members_[kv.first] = lheInfoReader->getWeightNorm_pdf(pdf_idx);
   }
 }
 
@@ -1513,6 +1550,8 @@ operator<<(std::ostream & os,
           "  rescaling             = " << evtWeightRecorder.get_rescaling()                               << "\n"
           "  charge mis-ID prob    = " << evtWeightRecorder.get_chargeMisIdProb()                         << "\n"
           "  DY bgr weight         = " << evtWeightRecorder.get_dyBgrWeight()                             << "\n"
+          "  PDF evnelope weight   = " << evtWeightRecorder.get_pdfWeight(central_or_shift)               << "\n"
+          "  PDF member weight     = " << evtWeightRecorder.get_pdfMemberWeight(central_or_shift)         << "\n"
           "  final weight          = " << evtWeightRecorder.get(central_or_shift)                         << '\n'
    ;
   }

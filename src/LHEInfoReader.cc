@@ -345,6 +345,12 @@ LHEInfoReader::getNumWeights_pdf() const
   return has_pdf_weights_ ? pdf_nWeights_ : 0;
 }
 
+int
+LHEInfoReader::getPdfSize() const
+{
+  return pdfNorms_.size();
+}
+
 double
 LHEInfoReader::getWeight_pdf(unsigned int idx) const
 {
@@ -359,6 +365,12 @@ LHEInfoReader::getWeight_pdf(unsigned int idx) const
       << pdf_nWeights_ << " !!\n";
   }
   return clip(correctiveFactor_ * pdf_weights_[idx]);
+}
+
+double
+LHEInfoReader::getWeightNorm_pdf(unsigned int idx) const
+{
+  return pdfNorms_.at(idx) * getWeight_pdf(idx);
 }
 
 double
@@ -380,7 +392,7 @@ LHEInfoReader::comp_pdf_unc() const
   assert(has_pdf_weights_);
   double pdf_unc_stat = 0.;
   const int first_member = pdfNorms_.size() == nof_pdf_members_ ? 1 : 0; // skip the 1st member if possible
-  const int last_member = pdfNorms_.size() - nof_alphaS_members_;
+  const int last_member = getPdfSize() - nof_alphaS_members_;
   const double nominal_weight = pdfNorms_.size() == nof_pdf_members_ ? getWeight_pdf(0) : 1.;
 
   // Estimate the hessian/replica component of the uncertainty, where we exclude:
@@ -399,12 +411,12 @@ LHEInfoReader::comp_pdf_unc() const
   // Note that Nmem(alphaS) is squared because the equationnn (27) is in linear form.
   for(int member_idx = first_member; member_idx < last_member; ++member_idx)
   {
-    pdf_unc_stat += ::square(pdfNorms_.at(member_idx) * getWeight_pdf(member_idx) - nominal_weight);
+    pdf_unc_stat += ::square(getWeightNorm_pdf(member_idx) - nominal_weight);
   }
   double pdf_unc_alphaS = 0.;
-  for(int member_idx = last_member; member_idx < static_cast<int>(pdfNorms_.size()); ++member_idx)
+  for(int member_idx = last_member; member_idx < getPdfSize(); ++member_idx)
   {
-    pdf_unc_alphaS += ::square(pdfNorms_.at(member_idx) * getWeight_pdf(member_idx) - nominal_weight);
+    pdf_unc_alphaS += ::square(getWeightNorm_pdf(member_idx) - nominal_weight);
   }
   // Subtracting 2 because nof_pdf_members_ also includes the average PDF set
   const int denom = pdf_is_replicas_ ? nof_pdf_members_ - nof_alphaS_members_ - 2 : 1;

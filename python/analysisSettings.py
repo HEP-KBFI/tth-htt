@@ -671,15 +671,18 @@ class systematics(object):
       class env_(object):
         up   = "CMS_ttHl_PDF_shape_TTUp"
         down = "CMS_ttHl_PDF_shape_TTDown"
+        mem  = "CMS_ttHl_PDF_shape_TTMember"
         full = [ up, down ]
       full = env_().full
+      mem = [ env_().mem ]
 
     ttbar = TT().full
 
     procs = [ TT ]
 
-    env_up    = [ proc.env_().up    for proc in procs ]
-    env_down  = [ proc.env_().down  for proc in procs ]
+    env_up    = [ proc.env_().up   for proc in procs ]
+    env_down  = [ proc.env_().down for proc in procs ]
+    mem       = [ proc.env_().mem  for proc in procs ]
 
     full = env_up + env_down
 
@@ -756,6 +759,7 @@ class systematics(object):
 
   lhe          = LHE().full
   pdf          = PDF().full
+  pdf_mem      = PDF().mem
   btag         = Btag().full
   leptonIDSF   = LeptonIDSF().full
   FRe_shape    = FakeRate_e_shape().full
@@ -801,5 +805,5 @@ class systematics(object):
 
   an_internal_no_mem = central + leptonIDSF + tauIDSF + btag + FR_t + lhe + triggerSF + PU + L1PreFiring + \
                        FRe_shape + FRm_shape + DYMCReweighting + DYMCNormScaleFactors + topPtReweighting + \
-                       EWK_jet + EWK_bjet + partonShower + leptonIDSF_hh_recomp + pileupJetID + pdf
+                       EWK_jet + EWK_bjet + partonShower + leptonIDSF_hh_recomp + pileupJetID + pdf + pdf_mem
   an_internal = an_internal_no_mem + MEM + triggerSF_split

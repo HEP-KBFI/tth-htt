@@ -385,6 +385,9 @@ getEWKBJetSys_option(const std::string & central_or_shift);
 PDFSys
 getPDFSys_option(const std::string & central_or_shift);
 
+bool
+isPDFsys_member(const std::string & central_or_shift);
+
 void
 checkOptionValidity(const std::string & central_or_shift,
                     bool isMC);
