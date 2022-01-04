@@ -3,11 +3,15 @@
 
 #include "tthAnalysis/HiggsToTauTau/interface/ReaderBase.h" // ReaderBase
 
+#include <FWCore/ParameterSet/interface/ParameterSet.h> // edm::ParameterSet
+
 #include <Rtypes.h> // Int_t, Double_t
 
 #include <string> // std::string
 #include <vector> // std::vector<>
 #include <map> // std::map<,>
+
+enum class PDFSys;
 
 class LHEInfoReader
   : public ReaderBase
@@ -29,6 +33,9 @@ public:
   void
   read() const;
 
+  void
+  set_pdfNorm(const edm::ParameterSet & cfg);
+
   double getWeight_scale_nominal() const;
   double getWeight_scale_xUp() const;
   double getWeight_scale_xDown() const;
@@ -43,6 +50,7 @@ public:
 
   int getNumWeights_pdf() const;
   double getWeight_pdf(unsigned int idx) const;
+  double getWeight_pdf(PDFSys option) const;
 
 protected:
  /**
@@ -54,6 +62,9 @@ protected:
   double
   getWeight(double weight,
             bool correct = true) const;
+
+  double
+  comp_pdf_unc() const;
 
   const unsigned int max_scale_nWeights_;
   std::string branchName_scale_nWeights_;
@@ -81,6 +92,12 @@ protected:
 
   bool has_LHE_weights_;
   mutable double correctiveFactor_;
+
+  bool has_pdf_weights_;
+  std::vector<double> pdfNorms_;
+  unsigned int nof_pdf_members_;
+  unsigned int nof_alphaS_members_;
+  bool pdf_is_replicas_;
 
   // CV: make sure that only one LHEInfoReader instance exists for a given branchName,
   //     as ROOT cannot handle multiple TTree::SetBranchAddress calls for the same branch.

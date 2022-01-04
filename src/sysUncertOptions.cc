@@ -512,6 +512,20 @@ getEWKBJetSys_option(const std::string & central_or_shift)
   return central_or_shift_int;
 }
 
+PDFSys
+getPDFSys_option(const std::string & central_or_shift)
+{
+  PDFSys central_or_shift_int = PDFSys::central;
+  if(boost::starts_with(central_or_shift, "CMS_ttHl_PDF_shape"))
+  {
+    if     (boost::ends_with(central_or_shift, "Up")  ) central_or_shift_int = PDFSys::up;
+    else if(boost::ends_with(central_or_shift, "Down")) central_or_shift_int = PDFSys::down;
+    else throw cmsException(__func__, __LINE__)
+           << "Invalid option to PDF systematics: " << central_or_shift;
+  }
+  return central_or_shift_int;
+}
+
 void
 checkOptionValidity(const std::string & central_or_shift,
                     bool isMC)

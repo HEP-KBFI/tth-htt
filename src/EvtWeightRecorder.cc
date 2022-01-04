@@ -67,7 +67,7 @@ EvtWeightRecorder::get_inclusive(const std::string & central_or_shift,
 {
   double retVal = isMC_ ? get_genWeight() * get_auxWeight(central_or_shift) * get_lumiScale(central_or_shift, bin) *
                  get_nom_tH_weight(central_or_shift) * get_puWeight(central_or_shift) *
-                 get_l1PreFiringWeight(central_or_shift) * get_lheScaleWeight(central_or_shift) *
+                 get_l1PreFiringWeight(central_or_shift) * get_lheScaleWeight(central_or_shift) * get_pdfWeight(central_or_shift) *
                  get_dy_rwgt(central_or_shift) * get_rescaling() * get_psWeight(central_or_shift) * get_hhWeight()
                : 1.
   ;
@@ -206,6 +206,20 @@ EvtWeightRecorder::get_lheScaleWeight(const std::string & central_or_shift) cons
     if(weights_lheScale_.count(lheScale_option))
     {
       return weights_lheScale_.at(lheScale_option);
+    }
+  }
+  return 1.;
+}
+
+double
+EvtWeightRecorder::get_pdfWeight(const std::string & central_or_shift) const
+{
+  if(isMC_ && ! weights_pdf_.empty())
+  {
+    const PDFSys pdf_option = getPDFSys_option(central_or_shift);
+    if(weights_pdf_.count(pdf_option))
+    {
+      return weights_pdf_.at(pdf_option);
     }
   }
   return 1.;
@@ -719,6 +733,22 @@ EvtWeightRecorder::record_lheScaleWeight(const LHEInfoReader * const lheInfoRead
       continue;
     }
     weights_lheScale_[lheScale_option] = lheInfoReader->getWeight_scale(lheScale_option);
+  }
+}
+
+void
+EvtWeightRecorder::record_pdfeWeight(const LHEInfoReader * const lheInfoReader)
+{
+  assert(isMC_);
+  weights_pdf_.clear();
+  for(const std::string & central_or_shift: central_or_shifts_)
+  {
+    const PDFSys pdf_option = getPDFSys_option(central_or_shift);
+    if(weights_pdf_.count(pdf_option))
+    {
+      continue;
+    }
+    weights_pdf_[pdf_option] = lheInfoReader->getWeight_pdf(pdf_option);
   }
 }
 

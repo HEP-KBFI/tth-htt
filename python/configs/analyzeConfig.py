@@ -750,6 +750,8 @@ class analyzeConfig(object):
 
         self.ref_genWeightFile = os.path.join(os.environ['CMSSW_BASE'], 'src/tthAnalysis/HiggsToTauTau/data/refGenWeight_{}.txt'.format(self.era))
         self.ref_genWeights = {}
+        self.event_count_filename = '/hdfs/local/karl/count_final/2020Dec18/count_{}.root'.format(self.era)
+        self.pdf_norms = {}
         self.isBDTtraining = False
         self.mcClosure_dir = {}
         self.cfgFile_make_plots_mcClosure = ''
@@ -803,6 +805,7 @@ class analyzeConfig(object):
       sample_name = sample_info["dbs_name"]
       sample_category = sample_info["sample_category"]
       has_LHE = sample_info["has_LHE"]
+      has_PDF = bool(sample_info["LHE_set"])
       enable_toppt_rwgt = sample_info["apply_toppt_rwgt"] if "apply_toppt_rwgt" in sample_info else False
       run_ps = sample_info["nof_PSweights"] == 4
       is_HHmc = sample_category.startswith("signal") or sample_category == "HH"
@@ -810,6 +813,7 @@ class analyzeConfig(object):
       ttHProcs = self.ttHProcs + [ "TTH" ]
       is_EWK = sample_category not in [ "WZ", "ZZ", "ggZZ", "qqZZ" ]
       valid_st = not sample_name.startswith('/ST_t-channel')
+      is_st = sample_name.startswith('/ST')
       is_ww = sample_name.startswith(('/WpWp', '/WWW'))
 
       if central_or_shift in systematics.LHE().full           and not has_LHE:                                 return False
@@ -828,6 +832,8 @@ class analyzeConfig(object):
       if central_or_shift in systematics.LHE().vv             and sample_category != "VV":                     return False
       if central_or_shift in systematics.LHE().wjets          and sample_category != "W":                      return False
       if central_or_shift in systematics.LHE().other          and sample_category != "Other" and not is_ww:    return False
+      if central_or_shift in systematics.PDF().full           and not has_PDF:                                 return False
+      if central_or_shift in systematics.PDF().ttbar          and (sample_category != "TT" or is_st):          return False
       if central_or_shift in systematics.DYMCReweighting      and not is_dymc_reweighting(sample_name):        return False
       if central_or_shift in systematics.DYMCNormScaleFactors and not is_dymc_normalization(sample_name):      return False
       if central_or_shift in systematics.tauIDSF              and 'tau' not in self.channel.lower():           return False
@@ -1112,6 +1118,20 @@ class analyzeConfig(object):
               tH_weights.extend(tH_weights_map[central_or_shift])
             jobOptions['tHweights'] = tH_weights
 
+        if 'hasPDF' not in jobOptions:
+          jobOptions['hasPDF'] = sample_info['LHE_set'] and 'central_or_shifts_local' in jobOptions and any(
+            central_or_shift in systematics.PDF().full for central_or_shift in jobOptions['central_or_shifts_local']
+          )
+          if jobOptions['hasPDF']:
+            lhaid_str = sample_info['LHE_set'].split()[2]
+            lhaid = int(lhaid_str)
+            event_count_0 = 0
+            if lhaid_str.endswith('1'):
+              lhaid -= 1
+              nof_events_label = '{}{}'.format(self.weight_prefix, "L1PrefireNom" if self.do_l1prefiring else "")
+              event_count_0 = sample_info["nof_events"][nof_events_label][0]
+            jobOptions['pdfSettings.lhaid'] = lhaid
+            jobOptions['pdfSettings.norm'] = self.read_pdf_norms(process_name, event_count_0)
         if 'hasLHE' not in jobOptions:
             jobOptions['hasLHE'] = sample_info['has_LHE']
         if 'ref_genWeight' not in jobOptions and is_mc:
@@ -1313,6 +1333,8 @@ class analyzeConfig(object):
             'blacklist.inputFileNames',
             'blacklist.sampleName',
             'disable_ak8_corr',
+            'pdfSettings.lhaid',
+            'pdfSettings.norm',
         ]
         jobOptions_typeMapping = {
             'central_or_shifts_local' : 'cms.vstring(%s)',
@@ -1572,6 +1594,25 @@ class analyzeConfig(object):
                 assert(sys_key not in self.btagSFRatios[sample_name])
                 self.btagSFRatios[sample_name][sys_key] = btagSFRatio_values
         btagSFRatio_fptr.Close()
+
+    def read_pdf_norms(self, process_name, event_count_0):
+      if not self.pdf_norms:
+        if not os.path.isfile(self.event_count_filename):
+          raise RuntimeError("No such file: %s" % self.event_count_filename)
+        event_counts = ROOT.TFile.Open(self.event_count_filename)
+        for key in event_counts.GetListOfKeys():
+          key_name = key.GetName()
+          proc_dir = event_counts.Get(key_name)
+          nof_events_label = '{}LHEWeightPdf{}'.format(self.weight_prefix, "L1PrefireNom" if self.do_l1prefiring else "")
+          hist = proc_dir.Get(nof_events_label)
+          nof_bins = hist.GetXaxis().GetNbins()
+          self.pdf_norms[key_name] = [ hist.GetBinContent(idx + 1) for idx in range(nof_bins) ]
+        event_counts.Close()
+      if process_name not in self.pdf_norms:
+        raise RuntimeError("No event counts found for the PDF set, for sample %s" % process_name)
+      first_count = event_count_0 if event_count_0 > 0 else self.pdf_norms[process_name][0]
+      norms = [ self.pdf_norms[process_name][idx] / first_count for idx in range(self.pdf_norms[process_name]) ]
+      return norms
 
     def createCfg_copyHistograms(self, jobOptions):
         """Create python configuration file for the copyHistograms executable (split the ROOT files produced by hadd_stage1 into separate ROOT files, one for each event category)

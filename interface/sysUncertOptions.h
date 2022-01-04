@@ -276,6 +276,12 @@ enum class EWKBJetSys
   up, down,
 };
 
+enum class PDFSys
+{
+  central,
+  up, down,
+};
+
 bool
 isTTbarSys(const std::string & central_or_shift);
 
@@ -375,6 +381,9 @@ getEWKJetSys_option(const std::string & central_or_shift);
 
 EWKBJetSys
 getEWKBJetSys_option(const std::string & central_or_shift);
+
+PDFSys
+getPDFSys_option(const std::string & central_or_shift);
 
 void
 checkOptionValidity(const std::string & central_or_shift,
