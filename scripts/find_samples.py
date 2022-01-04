@@ -49,7 +49,7 @@ import ast
 import getpass
 import multiprocessing
 import signal
-import shutil
+import glob
 import psutil
 import subprocess
 import shlex
@@ -472,17 +472,19 @@ def scan_private(dataset_private_path):
     'nevents'                : 0,
     'last_modification_date' : 0,
   }
-  for dataset_private_file in hdfs.listdir(dataset_private_path):
-    nof_events = get_nof_events(dataset_private_file)
-    if nof_events < 0:
-      # Not a valid ROOT file
-      continue
-    fs_results['size'] += hdfs.getsize(dataset_private_file)
-    fs_results['nevents'] += nof_events
-    fs_results['nfiles'] += 1
-    current_mtime = int(hdfs.getmtime(dataset_private_file).strftime('%s'))
-    if current_mtime > fs_results['last_modification_date']:
-      fs_results['last_modification_date'] = current_mtime
+  dataset_private_paths_globbed = glob.glob(dataset_private_path)
+  for dataset_private_path_globbed in dataset_private_paths_globbed:
+    for dataset_private_file in hdfs.listdir(dataset_private_path_globbed):
+      nof_events = get_nof_events(dataset_private_file)
+      if nof_events < 0:
+        # Not a valid ROOT file
+        continue
+      fs_results['size'] += hdfs.getsize(dataset_private_file)
+      fs_results['nevents'] += nof_events
+      fs_results['nfiles'] += 1
+      current_mtime = int(hdfs.getmtime(dataset_private_file).strftime('%s'))
+      if current_mtime > fs_results['last_modification_date']:
+        fs_results['last_modification_date'] = current_mtime
   # Convert the results to strings
   for fs_key in fs_results:
     fs_results[fs_key] = str(fs_results[fs_key])
@@ -771,20 +773,22 @@ if __name__ == '__main__':
         if dataset_q.split('/')[-1].startswith('part'):
           dataset_q = '/'.join(dataset.split('/')[:-1])
 
-        mc_query = Command(DASGOCLIENT_QUERY % (dataset_q, '*'))
+        mc_query_str = DASGOCLIENT_QUERY % (dataset_q, '*')
+        mc_query = Command(mc_query_str)
         mc_query.run()
         if not mc_query.out or mc_query.err:
           raise ValueError(
-            "Query to DAS resulted in an empty output or an error:\nstdout = '%s'\nstderr = '%s'" % \
-            (mc_query.out, mc_query.err)
+            "Query '%s' to DAS resulted in an empty output or an error:\nstdout = '%s'\nstderr = '%s'" % \
+            (mc_query_str, mc_query.out, mc_query.err)
           )
 
-        mc_release = Command(DASGOCLIENT_QUERY_RELEASE % dataset_q)
+        mc_release_str = DASGOCLIENT_QUERY_RELEASE % dataset_q
+        mc_release = Command(mc_release_str)
         mc_release.run()
         if not mc_release.out or mc_release.err:
           raise ValueError(
-            "Query to DAS resulted in an empty output or an error:\nstdout = '%s'\nstderr = '%s'" % \
-            (mc_release.out, mc_release.err)
+            "Query '%s' to DAS resulted in an empty output or an error:\nstdout = '%s'\nstderr = '%s'" % \
+            (mc_release_str, mc_release.out, mc_release.err)
           )
 
         mc_query_json = json.loads(mc_query.out)
@@ -967,20 +971,22 @@ if __name__ == '__main__':
         for dataset in datasets:
           das_query_results[dataset] = {}
 
-          dasgoclient_query = Command(DASGOCLIENT_QUERY % (dataset, 'VALID'))
+          dasgoclient_str = DASGOCLIENT_QUERY % (dataset, 'VALID')
+          dasgoclient_query = Command(dasgoclient_str)
           dasgoclient_query.run()
           if not dasgoclient_query.out or dasgoclient_query.err:
             raise ValueError(
-              "Query to DAS resulted in an empty output or an error:\nstdout = '%s'\nstderr = '%s'" % \
-              (dasgoclient_query.out, dasgoclient_query.err)
+              "Query '%s' to DAS resulted in an empty output or an error:\nstdout = '%s'\nstderr = '%s'" % \
+              (dasgoclient_str, dasgoclient_query.out, dasgoclient_query.err)
             )
 
-          dasgoclient_release = Command(DASGOCLIENT_QUERY_RELEASE % dataset)
+          dasgoclient_release_str = DASGOCLIENT_QUERY_RELEASE % dataset
+          dasgoclient_release = Command(dasgoclient_release_str)
           dasgoclient_release.run()
           if not dasgoclient_release.out or dasgoclient_release.err:
             raise ValueError(
-              "Query to DAS resulted in an empty output or an error:\nstdout = '%s'\nstderr = '%s'" % \
-              (dasgoclient_release.out, dasgoclient_release.err)
+              "Query '%s' to DAS resulted in an empty output or an error:\nstdout = '%s'\nstderr = '%s'" % \
+              (dasgoclient_release_str, dasgoclient_release.out, dasgoclient_release.err)
             )
 
           dasgoclient_query_json = json.loads(dasgoclient_query.out)
