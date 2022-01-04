@@ -772,9 +772,7 @@ EvtWeightRecorder::record_pdfMembers(const LHEInfoReader * const lheInfoReader,
   weights_pdf_members_.clear();
   for(const auto & kv: pdf_map)
   {
-    const std::string & pdf_key = kv.first;
-    const int pdf_idx = kv.second;
-    weights_pdf_members_[kv.first] = lheInfoReader->getWeightNorm_pdf(pdf_idx);
+    weights_pdf_members_[kv.first] = lheInfoReader->getWeightNorm_pdf(kv.second);
   }
 }
 
