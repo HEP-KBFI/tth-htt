@@ -1611,7 +1611,7 @@ class analyzeConfig(object):
       if process_name not in self.pdf_norms:
         raise RuntimeError("No event counts found for the PDF set, for sample %s" % process_name)
       first_count = event_count_0 if event_count_0 > 0 else self.pdf_norms[process_name][0]
-      norms = [ self.pdf_norms[process_name][idx] / first_count for idx in range(self.pdf_norms[process_name]) ]
+      norms = [ first_count / self.pdf_norms[process_name][idx] for idx in range(self.pdf_norms[process_name]) ]
       return norms
 
     def createCfg_copyHistograms(self, jobOptions):
