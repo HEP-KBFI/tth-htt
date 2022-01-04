@@ -382,6 +382,21 @@ LHEInfoReader::comp_pdf_unc() const
   const int first_member = pdfNorms_.size() == nof_pdf_members_ ? 1 : 0; // skip the 1st member if possible
   const int last_member = pdfNorms_.size() - nof_alphaS_members_;
   const double nominal_weight = pdfNorms_.size() == nof_pdf_members_ ? getWeight_pdf(0) : 1.;
+
+  // Estimate the hessian/replica component of the uncertainty, where we exclude:
+  // 1) the nominal PDF member that represents the average over hessian/replica members
+  // 2) the members that correspond to different values of alpha_S
+  //
+  // The dispersion formulas are given in https://arxiv.org/pdf/1510.03865.pdf
+  // In particular:
+  // - hessian uncertainty by equation (20)
+  // - replica uncertainty by equation (21)
+  // - alpha_S uncertainty by equation (27)
+  // The normalization coefficients in each of the above case are different:
+  // - 1 for hessian
+  // - 1 / sqrt(Nrep - 1) for replicas (given Nrep replicas)
+  // - 1 / Nmem(alphaS)^2 for alpha_S uncertainty (given Nmem(alphaS) variations)
+  // Note that Nmem(alphaS) is squared because the equationnn (27) is in linear form.
   for(int member_idx = first_member; member_idx < last_member; ++member_idx)
   {
     pdf_unc_stat += ::square(pdfNorms_.at(member_idx) * getWeight_pdf(member_idx) - nominal_weight);
@@ -391,12 +406,13 @@ LHEInfoReader::comp_pdf_unc() const
   {
     pdf_unc_alphaS += ::square(pdfNorms_.at(member_idx) * getWeight_pdf(member_idx) - nominal_weight);
   }
+  // Subtracting 2 because nof_pdf_members_ also includes the average PDF set
   const int denom = pdf_is_replicas_ ? nof_pdf_members_ - nof_alphaS_members_ - 2 : 1;
   assert(denom > 0);
   double pdf_unc2 = pdf_unc_stat / denom;
   if(nof_alphaS_members_ > 0)
   {
-    pdf_unc2 += pdf_unc_alphaS / nof_alphaS_members_;
+    pdf_unc2 += pdf_unc_alphaS / ::square(nof_alphaS_members_);
   }
   return std::sqrt(pdf_unc2);
 }
