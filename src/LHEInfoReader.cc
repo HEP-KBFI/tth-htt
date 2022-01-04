@@ -208,7 +208,7 @@ LHEInfoReader::set_pdfNorm(const edm::ParameterSet & cfg)
     return;
   }
   has_pdf_weights_ = true;
-  const int pdf_lhaid = cfg.getParameter<double>("lhaid");
+  const int pdf_lhaid = cfg.getParameter<int>("lhaid");
   switch(pdf_lhaid)
   {
     case 91400:  nof_pdf_members_ = 33;                           nof_alphaS_members_ = 2; break; // https://lhapdfsets.web.cern.ch/current/PDF4LHC15_nnlo_30_pdfas/PDF4LHC15_nnlo_30_pdfas.info
@@ -342,7 +342,7 @@ LHEInfoReader::getNumWeights_pdf() const
   //        alphas(MZ)=0.130. mem=0 => average on replicas; mem=1-100 => PDF replicas
   //
   // In order to find out which PDF error set the sample has, open the Ntuple, read the LHEPDFweight array branch and look for LHEID in the title of the branch.
-  return has_pdf_weights_ ? pdf_nWeights_ : 1;
+  return has_pdf_weights_ ? pdf_nWeights_ : 0;
 }
 
 double

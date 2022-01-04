@@ -1333,6 +1333,7 @@ class analyzeConfig(object):
             'blacklist.inputFileNames',
             'blacklist.sampleName',
             'disable_ak8_corr',
+            'hasPDF',
             'pdfSettings.lhaid',
             'pdfSettings.norm',
         ]
@@ -1605,13 +1606,16 @@ class analyzeConfig(object):
           proc_dir = event_counts.Get(key_name)
           nof_events_label = '{}LHEWeightPdf{}'.format(self.weight_prefix, "L1PrefireNom" if self.do_l1prefiring else "")
           hist = proc_dir.Get(nof_events_label)
+          if not hist:
+            continue
+          hist.SetDirectory(0)
           nof_bins = hist.GetXaxis().GetNbins()
           self.pdf_norms[key_name] = [ hist.GetBinContent(idx + 1) for idx in range(nof_bins) ]
         event_counts.Close()
       if process_name not in self.pdf_norms:
         raise RuntimeError("No event counts found for the PDF set, for sample %s" % process_name)
       first_count = event_count_0 if event_count_0 > 0 else self.pdf_norms[process_name][0]
-      norms = [ first_count / self.pdf_norms[process_name][idx] for idx in range(self.pdf_norms[process_name]) ]
+      norms = [ first_count / self.pdf_norms[process_name][idx] for idx in range(len(self.pdf_norms[process_name])) ]
       return norms
 
     def createCfg_copyHistograms(self, jobOptions):
