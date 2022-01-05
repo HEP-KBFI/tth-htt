@@ -27,6 +27,7 @@ class HHWeightInterfaceLO;
 class HHWeightInterfaceNLO;
 
 enum class L1PreFiringWeightSys;
+enum class PDFSys;
 enum class PUsys;
 enum class TriggerSFsys;
 enum class LeptonIDSFsys;
@@ -96,6 +97,12 @@ public:
 
   double
   get_lheScaleWeight(const std::string & central_or_shift) const;
+
+  double
+  get_pdfWeight(const std::string & central_or_shift) const;
+
+  double
+  get_pdfMemberWeight(const std::string & central_or_shift) const;
 
   double
   get_psWeight(const std::string & central_or_shift) const;
@@ -225,6 +232,13 @@ public:
 
   void
   record_lheScaleWeight(const LHEInfoReader * const lheInfoReader);
+
+  void
+  record_pdfWeight(const LHEInfoReader * const lheInfoReader);
+
+  void
+  record_pdfMembers(const LHEInfoReader * const lheInfoReader,
+                    const std::map<std::string, int> pdf_map);
 
   void
   record_psWeight(const PSWeightReader * const psWeightReader);
@@ -394,6 +408,8 @@ protected:
 
   std::map<L1PreFiringWeightSys, double> weights_l1PreFiring_;
   std::map<int, double> weights_lheScale_;
+  std::map<PDFSys, double> weights_pdf_;
+  std::map<std::string, double> weights_pdf_members_;
   std::map<int, double> weights_partonShower_;
   std::map<PUsys, double> weights_pu_;
   std::map<int, double> weights_dy_norm_;
