@@ -835,7 +835,7 @@ class analyzeConfig(object):
       if central_or_shift in (systematics.PDF().full +
                               systematics.PDF().mem)          and not has_PDF:                                 return False
       if central_or_shift in (systematics.PDF().ttbar +
-                              systematics.PDF().TT().mem)     and sample_category != "TT" or is_st:            return False
+                              systematics.PDF().TT().mem)     and (sample_category != "TT" or is_st):            return False
       if central_or_shift in systematics.DYMCReweighting      and not is_dymc_reweighting(sample_name):        return False
       if central_or_shift in systematics.DYMCNormScaleFactors and not is_dymc_normalization(sample_name):      return False
       if central_or_shift in systematics.tauIDSF              and 'tau' not in self.channel.lower():           return False
