@@ -766,7 +766,7 @@ EvtWeightRecorder::record_pdfWeight(const LHEInfoReader * const lheInfoReader)
 
 void
 EvtWeightRecorder::record_pdfMembers(const LHEInfoReader * const lheInfoReader,
-                                     const std::map<std::string, int> pdf_map)
+                                     const std::map<std::string, int> & pdf_map)
 {
   assert(isMC_);
   weights_pdf_members_.clear();

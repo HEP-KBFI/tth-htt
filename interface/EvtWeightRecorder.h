@@ -238,7 +238,7 @@ public:
 
   void
   record_pdfMembers(const LHEInfoReader * const lheInfoReader,
-                    const std::map<std::string, int> pdf_map);
+                    const std::map<std::string, int> & pdf_map);
 
   void
   record_psWeight(const PSWeightReader * const psWeightReader);
