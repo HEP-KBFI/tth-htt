@@ -131,8 +131,9 @@ if __name__ == '__main__':
     del samples['sum_events']
 
   projection_dir = 'ttH{}Projection'.format(projection.capitalize())
-  configDir = os.path.join("/home",       getpass.getuser(), projection_dir, era, version)
-  outputDir = os.path.join("/hdfs/local", getpass.getuser(), projection_dir, era, version)
+  configDir = os.path.join("/scratch-persistent", getpass.getuser(), projection_dir, era, version)
+  localDir  = os.path.join("/home",               getpass.getuser(), projection_dir, era, version)
+  outputDir = os.path.join("/hdfs/local",         getpass.getuser(), projection_dir, era, version)
 
   if validate and projection == 'pileup':
     validation_result = validate_pu(os.path.join(outputDir, output_file), samples)
@@ -140,6 +141,7 @@ if __name__ == '__main__':
 
   projectionJobs = projectionConfig(
     configDir          = configDir,
+    localDir           = localDir,
     outputDir          = outputDir,
     output_file        = output_file,
     executable         = "projectHistogram.sh",

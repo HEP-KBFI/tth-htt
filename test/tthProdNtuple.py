@@ -199,8 +199,9 @@ if __name__ == '__main__':
     samples = filter_samples(samples, sample_filter)
 
   ntupleProduction = prodNtupleConfig(
-    configDir = os.path.join("/home",       getpass.getuser(), "ttHNtupleProduction", era, version),
-    outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHNtupleProduction", era, version),
+    configDir = os.path.join("/scratch-persistent", getpass.getuser(), "ttHNtupleProduction", era, version),
+    localDir  = os.path.join("/home",               getpass.getuser(), "ttHNtupleProduction", era, version),
+    outputDir = os.path.join("/hdfs/local",         getpass.getuser(), "ttHNtupleProduction", era, version),
     cfgFile_prodNtuple    = "produceNtuple_cfg.py",
     samples               = samples,
     max_files_per_job     = files_per_job,

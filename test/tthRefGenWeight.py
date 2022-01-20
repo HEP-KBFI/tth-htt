@@ -84,8 +84,9 @@ if __name__ == '__main__':
   if 'sum_events' in samples:
     del samples['sum_events']
 
-  configDir = os.path.join("/home",       getpass.getuser(), 'ttHRefGenWeight', era, version)
-  outputDir = os.path.join("/hdfs/local", getpass.getuser(), 'ttHRefGenWeight', era, version)
+  configDir = os.path.join("/scratch-persistent", getpass.getuser(), 'ttHRefGenWeight', era, version)
+  localDir  = os.path.join("/home",               getpass.getuser(), 'ttHRefGenWeight', era, version)
+  outputDir = os.path.join("/hdfs/local",         getpass.getuser(), 'ttHRefGenWeight', era, version)
 
   if validate:
     validation_result = validate_refGenWeight(os.path.join(outputDir, output_file), samples)
@@ -93,6 +94,7 @@ if __name__ == '__main__':
 
   refGenWeightJobs = refGenWeightConfig(
     configDir          = configDir,
+    localDir           = localDir,
     outputDir          = outputDir,
     output_file        = output_file,
     executable         = "getRefGenWeight.py",

@@ -125,8 +125,9 @@ if __name__ == '__main__':
 
   addMEMProduction = addMEMConfig_3l(
     treeName                 = 'Events',
-    outputDir                = os.path.join("/hdfs/local", getpass.getuser(), "addMEM", era, version),
-    cfgDir                   = os.path.join("/home",       getpass.getuser(), "addMEM", era, version),
+    outputDir                = os.path.join("/hdfs/local",         getpass.getuser(), "addMEM", era, version),
+    localDir                 = os.path.join("/home",               getpass.getuser(), "addMEM", era, version),
+    cfgDir                   = os.path.join("/scratch-persistent", getpass.getuser(), "addMEM", era, version),
     executable_addMEM        = "addMEM_3l",
     samples                  = samples,
     era                      = era,

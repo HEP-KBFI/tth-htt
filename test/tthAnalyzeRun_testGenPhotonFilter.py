@@ -93,11 +93,13 @@ for sample_name, sample_info in samples.items():
 
 if __name__ == '__main__':
 
-  configDir = os.path.join("/home",       getpass.getuser(), "testGenPhotonFilter", era, version)
-  outputDir = os.path.join("/hdfs/local", getpass.getuser(), "testGenPhotonFilter", era, version)
+  configDir = os.path.join("/scratch-persistent", getpass.getuser(), "testGenPhotonFilter", era, version),
+  localDir  = os.path.join("/home",               getpass.getuser(), "testGenPhotonFilter", era, version)
+  outputDir = os.path.join("/hdfs/local",         getpass.getuser(), "testGenPhotonFilter", era, version)
 
   analysis = testGenPhotonFilterConfig(
     configDir               = configDir,
+    localDir                = localDir,
     outputDir               = outputDir,
     executable_analyze      = "testGenPhotonFilter",
     cfgFile_analyze         = "testGenPhotonFilter_cfg.py",

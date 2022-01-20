@@ -166,6 +166,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
   """
   def __init__(self,
         configDir,
+        localDir,
         outputDir,
         cmssw_base_dir_combine,
         executable_analyze,
@@ -208,6 +209,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
       ):
     analyzeConfig.__init__(self,
       configDir             = configDir,
+      localDir              = localDir,
       outputDir             = outputDir,
       executable_analyze    = executable_analyze,
       channel               = "LeptonFakeRate",
@@ -465,7 +467,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
           for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_RLES ]:
             initDict(self.dirs, [ key_dir, dir_type ])
             if dir_type in [ DKEY_CFGS, DKEY_LOGS ]:
-              self.dirs[key_dir][dir_type] = os.path.join(self.configDir, dir_type, self.channel, process_name_or_dummy, central_or_shift_or_dummy)
+              self.dirs[key_dir][dir_type] = os.path.join(self.get_dir_type(dir_type), dir_type, self.channel, process_name_or_dummy, central_or_shift_or_dummy)
             else:
               self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel, process_name_or_dummy)
     for subdirectory in [ "addBackgrounds", "prepareDatacards" ]:
@@ -473,13 +475,13 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
       for dir_type in [ DKEY_CFGS, DKEY_HIST, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT ]:
         initDict(self.dirs, [ key_dir, dir_type ])
         if dir_type in [ DKEY_CFGS, DKEY_LOGS, DKEY_DCRD, DKEY_PLOT ]:
-          self.dirs[key_dir][dir_type] = os.path.join(self.configDir, dir_type, self.channel, subdirectory)
+          self.dirs[key_dir][dir_type] = os.path.join(self.get_dir_type(dir_type), dir_type, self.channel, subdirectory)
         else:
           self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel, subdirectory)
     for dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS, DKEY_HIST, DKEY_DCRD, DKEY_PLOT, DKEY_HADD_RT, DKEY_COMBINE_OUTPUT ]:
       initDict(self.dirs, [ dir_type ])
       if dir_type in [ DKEY_CFGS, DKEY_SCRIPTS, DKEY_LOGS, DKEY_DCRD, DKEY_HADD_RT, DKEY_PLOT, DKEY_COMBINE_OUTPUT ]:
-        self.dirs[dir_type] = os.path.join(self.configDir, dir_type, self.channel)
+        self.dirs[dir_type] = os.path.join(self.get_dir_type(dir_type), dir_type, self.channel)
       else:
         self.dirs[dir_type] = os.path.join(self.outputDir, dir_type, self.channel)
 

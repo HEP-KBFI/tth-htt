@@ -12,6 +12,7 @@ class analyzeConfig_charge_flip_mu(analyzeConfig_charge_flip):
   """
   def __init__(self,
         configDir,
+        localDir,
         outputDir,
         cmssw_base_dir_combine,
         executable_analyze,
@@ -38,6 +39,7 @@ class analyzeConfig_charge_flip_mu(analyzeConfig_charge_flip):
       ):
     analyzeConfig.__init__(self,
       configDir             = configDir,
+      localDir              = localDir,
       outputDir             = outputDir,
       executable_analyze    = executable_analyze,
       channel               = "charge_flip_mu",

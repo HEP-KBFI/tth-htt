@@ -34,6 +34,7 @@ class addMEMConfig:
     def __init__(self,
             treeName,
             outputDir,
+            localDir,
             cfgDir,
             executable_addMEM,
             samples,
@@ -61,6 +62,7 @@ class addMEMConfig:
 
         self.treeName = treeName
         self.outputDir = outputDir
+        self.localDir = localDir
         self.cfgDir = cfgDir
         self.executable_addMEM = executable_addMEM
         self.mem_integrations_per_job = mem_integrations_per_job
@@ -112,14 +114,14 @@ class addMEMConfig:
         self.workingDir = os.getcwd()
         logging.info("Working directory is: {workingDir}".format(workingDir = self.workingDir))
 
-        for dirPath in [self.outputDir, self.cfgDir]:
+        for dirPath in [self.outputDir, self.localDir, self.cfgDir]:
           create_if_not_exists(dirPath)
 
-        self.stdout_file_path = os.path.join(self.cfgDir, "stdout_%s.log" % self.channel)
-        self.stderr_file_path = os.path.join(self.cfgDir, "stderr_%s.log" % self.channel)
-        self.sw_ver_file_cfg  = os.path.join(self.cfgDir, "VERSION_%s.log" % self.channel)
+        self.stdout_file_path = os.path.join(self.localDir, "stdout_%s.log" % self.channel)
+        self.stderr_file_path = os.path.join(self.localDir, "stderr_%s.log" % self.channel)
+        self.sw_ver_file_cfg  = os.path.join(self.localDir, "VERSION_%s.log" % self.channel)
         self.sw_ver_file_out  = os.path.join(self.outputDir, "VERSION_%s.log" % self.channel)
-        self.submission_out   = os.path.join(self.cfgDir, "SUBMISSION_%s.log" % self.channel)
+        self.submission_out   = os.path.join(self.localDir, "SUBMISSION_%s.log" % self.channel)
         self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out, self.submission_out = get_log_version((
             self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out, self.submission_out
         ))
@@ -130,7 +132,7 @@ class addMEMConfig:
         self.cfgFiles_addMEM_modified = {}
         self.shFiles_addMEM_modified = {}
         self.logFiles_addMEM = {}
-        self.sbatchFile_addMEM = os.path.join(self.cfgDir, "sbatch_addMEM_%s.py" % self.channel)
+        self.sbatchFile_addMEM = os.path.join(self.localDir, "sbatch_addMEM_%s.py" % self.channel)
         self.inputFiles = {}
         self.outputFiles = {}
         self.hadd_records = {}
@@ -147,7 +149,8 @@ class addMEMConfig:
                 self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, self.channel, process_name)
             for dir_type in [DKEY_CFGS, DKEY_LOGS, DKEY_HADD, DKEY_HADD_RT]:
                 initDict(self.dirs, [key_dir, dir_type])
-                self.dirs[key_dir][dir_type] = os.path.join(self.cfgDir, dir_type, self.channel, process_name)
+                dir_choice = self.cfgDir if dir_type == DKEY_CFGS else self.localDir
+                self.dirs[key_dir][dir_type] = os.path.join(dir_choice, dir_type, self.channel, process_name)
 
         self.cvmfs_error_log = {}
 
@@ -204,19 +207,19 @@ class addMEMConfig:
             hadd_fileset_id = hadd_in['fileset_id']
             process_name = hadd_in['process_name']
             sbatch_hadd_file = os.path.join(
-                self.cfgDir, DKEY_HADD, self.channel, process_name,
+                self.localDir, DKEY_HADD, self.channel, process_name,
                 "sbatch_hadd_cat_%s_%d.py" % (process_name, hadd_fileset_id)
             )
             sbatch_hadd_shFile = os.path.join(
-                self.cfgDir, DKEY_HADD, self.channel, process_name,
+                self.localDir, DKEY_HADD, self.channel, process_name,
                 "sbatch_hadd_cat_%s_%d.sh" % (process_name, hadd_fileset_id)
             )
             sbatch_hadd_logFile = os.path.join(
-                self.cfgDir, DKEY_HADD, self.channel, process_name,
+                self.localDir, DKEY_HADD, self.channel, process_name,
                 "sbatch_hadd_cat_%s_%d.log" % (process_name, hadd_fileset_id)
             )
             sbatch_hadd_dir = os.path.join(
-                self.cfgDir, DKEY_HADD_RT, self.channel, process_name,
+                self.localDir, DKEY_HADD_RT, self.channel, process_name,
             )
             sbatch_hadd_logFile = get_log_version((sbatch_hadd_logFile,))
             tools_createScript_sbatch_hadd(

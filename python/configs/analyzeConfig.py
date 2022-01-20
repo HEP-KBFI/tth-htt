@@ -61,6 +61,7 @@ class analyzeConfig(object):
 
        Args:
          configDir: The root config dir -- all configuration files are stored in its subdirectories
+         localDir: Local dir -- for storing log files, final analysis results, plots
          outputDir: The root output dir -- all log and output files are stored in its subdirectories
          executable_analyze: Name of the executable that runs the analysis; possible values are `analyze_2lss_1tau`, `analyze_2los_1tau`, `analyze_1l_2tau`,...
          max_files_per_job: maximum number of input ROOT files (Ntuples) are allowed to chain together per job
@@ -91,6 +92,7 @@ class analyzeConfig(object):
 
     def __init__(self,
           configDir,
+          localDir,
           outputDir,
           executable_analyze,
           channel,
@@ -138,6 +140,7 @@ class analyzeConfig(object):
       ):
 
         self.configDir = configDir
+        self.localDir = localDir
         self.outputDir = outputDir
         self.executable_analyze = executable_analyze
         self.channel = channel
@@ -441,8 +444,7 @@ class analyzeConfig(object):
             self.is_sbatch = True
         else:
             self.is_makefile = True
-        self.makefile = os.path.join(
-            self.configDir, "Makefile_%s" % self.channel)
+        self.makefile = os.path.join(self.localDir, "Makefile_%s" % self.channel)
         self.num_parallel_jobs = num_parallel_jobs
         self.histograms_to_fit = histograms_to_fit
         self.executable_prep_dcard = executable_prep_dcard
@@ -609,14 +611,15 @@ class analyzeConfig(object):
         logging.info("Templates directory is: %s" % self.template_dir)
 
         create_if_not_exists(self.configDir)
+        create_if_not_exists(self.localDir)
         create_if_not_exists(self.outputDir)
 
-        self.stdout_file_path = os.path.join(self.configDir, "stdout_%s.log" % self.channel)
-        self.stderr_file_path = os.path.join(self.configDir, "stderr_%s.log" % self.channel)
-        self.sw_ver_file_cfg  = os.path.join(self.configDir, "VERSION_%s.log" % self.channel)
+        self.stdout_file_path = os.path.join(self.localDir, "stdout_%s.log" % self.channel)
+        self.stderr_file_path = os.path.join(self.localDir, "stderr_%s.log" % self.channel)
+        self.sw_ver_file_cfg  = os.path.join(self.localDir, "VERSION_%s.log" % self.channel)
         self.sw_ver_file_out  = os.path.join(self.outputDir, "VERSION_%s.log" % self.channel)
-        self.validation_out   = os.path.join(self.configDir, "VALIDATION_%s.log" % self.channel)
-        self.submission_out   = os.path.join(self.configDir, "SUBMISSION_%s.log" % self.channel)
+        self.validation_out   = os.path.join(self.localDir, "VALIDATION_%s.log" % self.channel)
+        self.submission_out   = os.path.join(self.localDir, "SUBMISSION_%s.log" % self.channel)
         self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out, \
         self.validation_out, self.submission_out = get_log_version((
             self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out,
@@ -1529,6 +1532,14 @@ class analyzeConfig(object):
 
     def runTHweights(self, sample_info):
         return False
+
+    def get_dir_type(self,  dir_type):
+      if dir_type in [ DKEY_CFGS ]:
+        return self.configDir
+      elif dir_type in [ DKEY_LOGS, DKEY_DCRD, DKEY_PLOT, DKEY_SCRIPTS, DKEY_HIST, DKEY_HADD_RT, DKEY_SYNC ]:
+        return self.localDir
+      else:
+        raise RuntimeError("Unexpected directory name requested: %s" % dir_type)
 
     def get_samples_categories_MC(self, nonfake_backgrounds):
         samples_categories_MC = []

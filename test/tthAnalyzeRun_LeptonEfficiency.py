@@ -144,9 +144,10 @@ if __name__ == '__main__':
       raise ValueError('Invalid Lepton Type provided: %s' % lepton_type_string)       
 
 
-  analysis = analyzeConfig_LeptonEfficiency(  
-    configDir = os.path.join("/home",       getpass.getuser(), "ttHAnalysis", era, version),
-    outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis", era, version),
+  analysis = analyzeConfig_LeptonEfficiency(
+    configDir = os.path.join("/scratch-persistent", getpass.getuser(), "ttHAnalysis", era, version),
+    localDir  = os.path.join("/home",               getpass.getuser(), "ttHAnalysis", era, version),
+    outputDir = os.path.join("/hdfs/local",         getpass.getuser(), "ttHAnalysis", era, version),
     cmssw_base_dir_combine      = cmssw_base_dir_combine,
     executable_analyze          = "analyze_LeptonEfficiency",
     samples                     = samples,

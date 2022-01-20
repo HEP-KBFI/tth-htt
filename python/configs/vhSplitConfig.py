@@ -19,6 +19,7 @@ class vhSplitConfig:
     """
     def __init__(self,
              configDir,
+             localDir,
              outputDir,
              samples,
              era,
@@ -35,6 +36,7 @@ class vhSplitConfig:
           ):
 
         self.configDir             = configDir
+        self.localDir              = localDir
         self.outputDir             = outputDir
         self.max_num_jobs          = 200000
         self.samples               = samples
@@ -51,7 +53,7 @@ class vhSplitConfig:
         self.running_method    = running_method
         self.is_sbatch         = self.running_method.lower() == "sbatch"
         self.is_makefile       = not self.is_sbatch
-        self.makefile          = os.path.join(self.configDir, "Makefile_vhSplitter")
+        self.makefile          = os.path.join(self.localDir, "Makefile_vhSplitter")
         self.num_parallel_jobs = num_parallel_jobs
         self.pool_id           = pool_id if pool_id else uuid.uuid4()
 
@@ -66,18 +68,19 @@ class vhSplitConfig:
         self.samples = samples
 
         create_if_not_exists(self.configDir)
+        create_if_not_exists(self.localDir)
         create_if_not_exists(self.outputDir)
-        self.stdout_file_path = os.path.join(self.configDir, "stdout.log")
-        self.stderr_file_path = os.path.join(self.configDir, "stderr.log")
-        self.sw_ver_file_cfg  = os.path.join(self.configDir, "VERSION.log")
+        self.stdout_file_path = os.path.join(self.localDir, "stdout.log")
+        self.stderr_file_path = os.path.join(self.localDir, "stderr.log")
+        self.sw_ver_file_cfg  = os.path.join(self.localDir, "VERSION.log")
         self.sw_ver_file_out  = os.path.join(self.outputDir, "VERSION.log")
-        self.submission_out   = os.path.join(self.configDir, "SUBMISSION.log")
+        self.submission_out   = os.path.join(self.localDir, "SUBMISSION.log")
         self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out, self.submission_out = get_log_version((
             self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out, self.submission_out
         ))
         check_submission_cmd(self.submission_out, submission_cmd)
 
-        self.sbatchFile = os.path.join(self.configDir, "sbatch.py")
+        self.sbatchFile = os.path.join(self.localDir, "sbatch.py")
         self.jobParams = {}
         self.logFiles = {}
         self.scriptFiles = {}
@@ -97,13 +100,15 @@ class vhSplitConfig:
                 for dir_type in [ DKEY_CFGS, DKEY_NTUPLES, DKEY_LOGS ]:
                     initDict(self.dirs, [ key_dir, dir_type ])
                     if dir_type in [ DKEY_CFGS, DKEY_LOGS ]:
-                        self.dirs[key_dir][dir_type] = os.path.join(self.configDir, dir_type, key_dir)
+                        dir_choice = self.configDir if dir_type == DKEY_CFGS else self.localDir
+                        self.dirs[key_dir][dir_type] = os.path.join(dir_choice, dir_type, key_dir)
                     else:
                         self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, key_dir)
         for dir_type in [ DKEY_CFGS, DKEY_LOGS ]:
             initDict(self.dirs, [ dir_type ])
             if dir_type in [ DKEY_CFGS, DKEY_LOGS ]:
-                self.dirs[dir_type] = os.path.join(self.configDir, dir_type)
+                dir_choice = self.configDir if dir_type == DKEY_CFGS else self.localDir
+                self.dirs[dir_type] = os.path.join(dir_choice, dir_type)
             else:
                 self.dirs[dir_type] = os.path.join(self.outputDir, dir_type)
 

@@ -107,8 +107,9 @@ if __name__ == '__main__':
     samples = filter_samples(samples, sample_filter)
 
   analysis = analyzeConfig_charge_flip(
-    configDir = os.path.join("/home",       getpass.getuser(), "ttHAnalysis", era, version),
-    outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis", era, version),
+    configDir = os.path.join("/scratch-persistent", getpass.getuser(), "ttHAnalysis", era, version),
+    localDir  = os.path.join("/home",               getpass.getuser(), "ttHAnalysis", era, version),
+    outputDir = os.path.join("/hdfs/local",         getpass.getuser(), "ttHAnalysis", era, version),
     cmssw_base_dir_combine = cmssw_base_dir_combine,
     executable_analyze     = "analyze_charge_flip",
     samples                = samples,

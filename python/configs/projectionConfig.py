@@ -71,6 +71,7 @@ class projectionConfig:
     """
     def __init__(self,
             configDir,
+            localDir,
             outputDir,
             output_file,
             executable,
@@ -90,6 +91,7 @@ class projectionConfig:
           ):
 
         self.configDir             = configDir
+        self.localDir              = localDir
         self.outputDir             = outputDir
         self.executable            = executable
         self.projection_module     = projection_module
@@ -108,7 +110,7 @@ class projectionConfig:
         self.running_method    = running_method
         self.is_sbatch         = self.running_method.lower() == "sbatch"
         self.is_makefile       = not self.is_sbatch
-        self.makefile          = os.path.join(self.configDir, "Makefile_{}".format(self.projection_module))
+        self.makefile          = os.path.join(self.localDir, "Makefile_{}".format(self.projection_module))
         self.num_parallel_jobs = num_parallel_jobs
         self.pool_id           = pool_id if pool_id else uuid.uuid4()
 
@@ -120,19 +122,20 @@ class projectionConfig:
         logging.info("Templates directory is: %s" % self.template_dir)
 
         create_if_not_exists(self.configDir)
+        create_if_not_exists(self.localDir)
         create_if_not_exists(self.outputDir)
         self.output_file      = os.path.join(self.outputDir, output_file)
-        self.stdout_file_path = os.path.join(self.configDir, "stdout_{}.log".format(self.projection_module))
-        self.stderr_file_path = os.path.join(self.configDir, "stderr_{}.log".format(self.projection_module))
-        self.sw_ver_file_cfg  = os.path.join(self.configDir, "VERSION_{}.log".format(self.projection_module))
+        self.stdout_file_path = os.path.join(self.localDir, "stdout_{}.log".format(self.projection_module))
+        self.stderr_file_path = os.path.join(self.localDir, "stderr_{}.log".format(self.projection_module))
+        self.sw_ver_file_cfg  = os.path.join(self.localDir, "VERSION_{}.log".format(self.projection_module))
         self.sw_ver_file_out  = os.path.join(self.outputDir, "VERSION_{}.log".format(self.projection_module))
-        self.submission_out   = os.path.join(self.configDir, "SUBMISSION.log")
+        self.submission_out   = os.path.join(self.localDir, "SUBMISSION.log")
         self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out, self.submission_out = get_log_version((
             self.stdout_file_path, self.stderr_file_path, self.sw_ver_file_cfg, self.sw_ver_file_out, self.submission_out
         ))
         check_submission_cmd(self.submission_out, submission_cmd)
 
-        self.sbatchFile_projection = os.path.join(self.configDir, "sbatch_{}.py".format(self.projection_module))
+        self.sbatchFile_projection = os.path.join(self.localDir, "sbatch_{}.py".format(self.projection_module))
         self.cfgFiles_projection    = {}
         self.logFiles_projection    = {}
         self.scriptFiles_projection = {}
@@ -167,12 +170,14 @@ class projectionConfig:
                     continue
                 initDict(self.dirs, [ key_dir, dir_type ])
                 if dir_type in cfg_dirs:
-                    self.dirs[key_dir][dir_type] = os.path.join(self.configDir, dir_type, process_name)
+                    dir_choice = self.configDir if dir_type == DKEY_CFGS else self.localDir
+                    self.dirs[key_dir][dir_type] = os.path.join(dir_choice, dir_type, process_name)
                 else:
                     self.dirs[key_dir][dir_type] = os.path.join(self.outputDir, dir_type, process_name)
         for dir_type in cfg_dirs:
             initDict(self.dirs, [ dir_type ])
-            self.dirs[dir_type] = os.path.join(self.configDir, dir_type)
+            dir_choice = self.configDir if dir_type == DKEY_CFGS else self.localDir
+            self.dirs[dir_type] = os.path.join(dir_choice, dir_type)
 
         self.cvmfs_error_log = {}
         self.num_jobs = {

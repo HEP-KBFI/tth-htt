@@ -189,11 +189,13 @@ if __name__ == '__main__':
     if MEMbranch:
       MEMbranch = 'memObjects_2lss_1tau_lepFakeable_tauTight_{}'.format(hadTau_selection)
 
-  configDir = os.path.join("/home",       getpass.getuser(), "ttHAnalysis", era, version)
-  outputDir = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis", era, version)
+  configDir = os.path.join("/scratch-persistent", getpass.getuser(), "ttHAnalysis", era, version),
+  localDir  = os.path.join("/home",               getpass.getuser(), "ttHAnalysis", era, version)
+  outputDir = os.path.join("/hdfs/local",         getpass.getuser(), "ttHAnalysis", era, version)
 
   analysis = analyzeConfig_2lss_1tau(
     configDir                 = configDir,
+    localDir                  = localDir,
     outputDir                 = outputDir,
     executable_analyze        = "analyze_2lss_1tau",
     cfgFile_analyze           = "analyze_2lss_1tau_cfg.py",
