@@ -127,6 +127,7 @@ class analyzeConfig(object):
           verbose                         = False,
           dry_run                         = False,
           use_home                        = False,
+          keep_logs                       = False,
           isDebug                         = False,
           template_dir                    = None,
           submission_cmd                  = None,
@@ -464,6 +465,8 @@ class analyzeConfig(object):
         self.run_mcClosure = systematics.mcClosure_str in self.central_or_shifts
         if self.run_mcClosure:
           self.central_or_shifts.remove(systematics.mcClosure_str)
+        self.keep_logs = keep_logs
+        self.keep_logs_key = 'keep_logs'
 
         self.nonResBMs = []
         self.nonResBM_points = []
@@ -1234,6 +1237,7 @@ class analyzeConfig(object):
           jobOptions['central_or_shift'] = sample_category_ttbar
           jobOptions['central_or_shifts_local'] = []
 
+        jobOptions[self.keep_logs_key] = self.keep_logs and jobOptions['central_or_shift'] == 'central'
         jobOptions_local = [
             'process',
             'process_hh',
@@ -1992,6 +1996,7 @@ class analyzeConfig(object):
             output_file_names = { key: value[key_output_file] for key, value in jobOptions.items() },
             script_file_names = { key: value[key_cfg_file].replace(".py", ".sh").replace("_cfg", "") for key, value in jobOptions.items() },
             log_file_names = { key: value[key_log_file] for key, value in jobOptions.items() },
+            keep_logs = { key: value[self.keep_logs_key] for key, value in jobOptions.items() },
             working_dir = self.workingDir,
             max_num_jobs = self.max_num_jobs,
             cvmfs_error_log = self.cvmfs_error_log,

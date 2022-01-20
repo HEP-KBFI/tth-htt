@@ -30,6 +30,7 @@ class vhSplitConfig:
              dry_run,
              isDebug,
              use_home,
+             keep_logs,
              verbose = False,
              pool_id        = '',
              submission_cmd = None,
@@ -47,6 +48,7 @@ class vhSplitConfig:
         self.dry_run               = dry_run
         self.isDebug               = isDebug
         self.use_home              = use_home
+        self.keep_logs             = keep_logs
         if running_method.lower() not in ["sbatch", "makefile"]:
           raise ValueError("Invalid running method: %s" % running_method)
 
@@ -126,6 +128,7 @@ class vhSplitConfig:
             output_file_names       = self.outputFiles,
             script_file_names       = self.scriptFiles,
             log_file_names          = self.logFiles,
+            keep_logs               = self.keep_logs,
             working_dir             = self.workingDir,
             max_num_jobs            = self.max_num_jobs,
             cvmfs_error_log         = self.cvmfs_error_log,

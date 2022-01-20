@@ -64,6 +64,7 @@ class analyzeConfig_ttWctrl(analyzeConfig):
         dry_run                   = False,
         isDebug                   = False,
         use_home                  = False,
+        keep_logs                 = False,
         do_sync                   = False,
         use_nonnominal            = False,
         rle_select                = '',
@@ -94,6 +95,7 @@ class analyzeConfig_ttWctrl(analyzeConfig):
       dry_run                   = dry_run,
       isDebug                   = isDebug,
       use_home                  = use_home,
+      keep_logs                 = keep_logs,
       do_sync                   = do_sync,
       submission_cmd            = submission_cmd,
     )

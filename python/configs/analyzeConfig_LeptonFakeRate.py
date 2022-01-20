@@ -205,6 +205,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
         dry_run           = False,
         isDebug           = False,
         use_home          = False,
+        keep_logs         = False,
         submission_cmd    = None,
       ):
     analyzeConfig.__init__(self,
@@ -231,6 +232,7 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
       dry_run               = dry_run,
       isDebug               = isDebug,
       use_home              = use_home,
+      keep_logs             = keep_logs,
       lep_mva_wp            = lep_mva_wp,
       lep_useTightChargeCut = lep_useTightChargeCut,
       enable_LeptonFakeRate_bbwSL = enable_LeptonFakeRate_bbwSL,

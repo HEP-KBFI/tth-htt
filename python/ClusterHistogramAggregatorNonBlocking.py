@@ -119,6 +119,7 @@ class ClusterHistogramAggregatorNonBlocking(object):
             'scriptFile'             : script_file,
             'logFile'                : log_file,
             'skipIfOutputFileExists' : False,
+            'keep_logs'              : False,
             'job_template_file'      : 'sbatch-node.hadd.sh.template',
             'validate_output'        : self.validate_output,
             'skip_copy'              : int(skip_copy),

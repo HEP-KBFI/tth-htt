@@ -25,6 +25,7 @@ class analyzeConfig_inclusive(analyzeConfig):
         central_or_shifts,
         use_nonnominal = False,
         use_home       = False,
+        keep_logs      = False,
         submission_cmd = None,
       ):
     analyzeConfig.__init__(self,
@@ -54,6 +55,7 @@ class analyzeConfig_inclusive(analyzeConfig):
       isDebug               = isDebug,
       do_sync               = True,
       use_home              = use_home,
+      keep_logs             = keep_logs,
       submission_cmd        = submission_cmd,
       apply_nc_correction   = None,
     )

@@ -62,6 +62,7 @@ debug              = args.debug
 sample_filter      = args.filter
 num_parallel_jobs  = args.num_parallel_jobs
 running_method     = args.running_method
+keep_logs          = args.keep_logs
 
 # Additional arguments
 systematics_label = args.systematics
@@ -181,6 +182,7 @@ if __name__ == '__main__':
     isDebug                     = debug,
     useBothLeptonsInGenMatching = True,  ## Set this to True to use the gen-match status of both Tag and Probe leptons
     use_home                    = use_home,
+    keep_logs                   = keep_logs,
     submission_cmd              = sys.argv,  
   )
 

@@ -78,6 +78,7 @@ class analyzeConfig_2l_2tau(analyzeConfig):
         use_nonnominal            = False,
         hlt_filter                = False,
         use_home                  = False,
+        keep_logs                 = False,
         submission_cmd            = None,
       ):
     analyzeConfig.__init__(self,
@@ -106,6 +107,7 @@ class analyzeConfig_2l_2tau(analyzeConfig):
       do_sync                   = do_sync,
       isDebug                   = isDebug,
       use_home                  = use_home,
+      keep_logs                 = keep_logs,
       submission_cmd            = submission_cmd,
       do_stxs                   = True,
     )

@@ -61,6 +61,7 @@ class syncNtupleConfig:
         tau_id_wp,
         tau_id,
         use_home,
+        keep_logs,
         systematics_label,
         use_preselected,
         jet_cleaning,
@@ -126,6 +127,8 @@ class syncNtupleConfig:
       additional_args += " -R %s" % self.running_method
     if regroup_jerc:
       additional_args += " -G"
+    if keep_logs:
+      additional_args += " -K"
 
     mem_channels = [ '2lss_1tau', '3l', 'hh_bb2l' ]
     cr_channels = [ '3l', '4l' ]

@@ -112,6 +112,7 @@ auto_exec          = args.auto_exec
 check_output_files = not args.not_check_input_files
 debug              = args.debug
 running_method     = args.running_method
+keep_logs          = args.keep_logs
 
 # Additional arguments
 rle_select        = os.path.expanduser(args.rle_select)
@@ -156,6 +157,7 @@ if __name__ == '__main__':
     tau_id_wp          = tau_id_wp,
     tau_id             = tau_id,
     use_home           = use_home,
+    keep_logs          = keep_logs,
     systematics_label  = systematics_label,
     use_preselected    = use_preselected,
     jet_cleaning       = jet_cleaning,

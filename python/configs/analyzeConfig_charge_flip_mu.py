@@ -35,6 +35,7 @@ class analyzeConfig_charge_flip_mu(analyzeConfig_charge_flip):
         dry_run           = False,
         isDebug           = False,
         use_home          = False,
+        keep_logs         = False,
         submission_cmd    = None,
       ):
     analyzeConfig.__init__(self,
@@ -61,6 +62,7 @@ class analyzeConfig_charge_flip_mu(analyzeConfig_charge_flip):
       dry_run               = dry_run,
       isDebug               = isDebug,
       use_home              = use_home,
+      keep_logs             = keep_logs,
       submission_cmd        = submission_cmd,
     )
 

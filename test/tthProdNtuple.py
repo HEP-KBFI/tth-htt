@@ -45,6 +45,7 @@ sample_filter      = args.filter
 num_parallel_jobs  = args.num_parallel_jobs
 running_method     = args.running_method
 gen_matching       = args.gen_matching
+keep_logs          = args.keep_logs
 
 # Additional arguments
 mode           = args.mode
@@ -220,6 +221,7 @@ if __name__ == '__main__':
     gen_matching_by_index = gen_matching_by_index,
     use_nonnominal        = use_nonnominal,
     use_home              = use_home,
+    keep_logs             = keep_logs,
     skip_tools_step       = preselection,
     lep_mva_wp            = lep_mva_wp,
     skip_count            = skip_count,

@@ -63,6 +63,7 @@ class prodNtupleConfig:
              gen_matching_by_index,
              use_nonnominal,
              use_home,
+             keep_logs,
              skip_tools_step,
              do_sync,
              lep_mva_wp,
@@ -89,6 +90,7 @@ class prodNtupleConfig:
         self.gen_matching_by_index = gen_matching_by_index
         self.use_nonnominal        = use_nonnominal
         self.use_home              = use_home
+        self.keep_logs             = keep_logs
         self.pileup                = pileup
         self.golden_json           = golden_json
         if running_method.lower() not in ["sbatch", "makefile"]:
@@ -263,6 +265,7 @@ class prodNtupleConfig:
                 key : value.replace(".py", ".sh").replace("_cfg", "") for key, value in self.cfgFiles_prodNtuple_modified.items()
             },
             log_file_names          = self.logFiles_prodNtuple,
+            keep_logs               = self.keep_logs,
             working_dir             = self.workingDir,
             max_num_jobs            = self.max_num_jobs,
             cvmfs_error_log         = self.cvmfs_error_log,

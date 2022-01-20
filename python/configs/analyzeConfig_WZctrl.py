@@ -63,6 +63,7 @@ class analyzeConfig_WZctrl(analyzeConfig):
         dry_run                   = False,
         isDebug                   = False,
         use_home                  = False,
+        keep_logs                 = False,
         do_sync                   = False,
         rle_select                = '',
         use_nonnominal            = False,
@@ -93,6 +94,7 @@ class analyzeConfig_WZctrl(analyzeConfig):
       dry_run                   = dry_run,
       isDebug                   = isDebug,
       use_home                  = use_home,
+      keep_logs                 = keep_logs,
       do_sync                   = do_sync,
       submission_cmd            = submission_cmd,
     )

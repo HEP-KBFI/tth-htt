@@ -169,6 +169,7 @@ class addMEMConfig:
             output_file_names       = self.outputFiles,
             script_file_names       = self.shFiles_addMEM_modified,
             log_file_names          = self.logFiles_addMEM,
+            keep_logs               = False,
             working_dir             = self.workingDir,
             max_num_jobs            = 100000000, # it's really silly to limit the number of jobs; use an enormous number as the ,,fix''
             cvmfs_error_log         = self.cvmfs_error_log,

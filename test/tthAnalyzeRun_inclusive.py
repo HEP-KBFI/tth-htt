@@ -45,6 +45,7 @@ check_output_files = not args.not_check_input_files
 debug              = args.debug
 sample_filter      = args.filter
 running_method     = args.running_method
+keep_logs          = args.keep_logs
 
 # Additional arguments
 rle_select        = os.path.expanduser(args.rle_select)
@@ -136,6 +137,7 @@ if __name__ == '__main__':
     central_or_shifts       = central_or_shifts,
     use_nonnominal          = use_nonnominal,
     use_home                = use_home,
+    keep_logs               = keep_logs,
     submission_cmd          = sys.argv,
   )
 

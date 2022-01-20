@@ -80,6 +80,7 @@ class refGenWeightConfig:
             verbose  = False,
             dry_run  = False,
             use_home = False,
+            keep_logs = False,
             submission_cmd = None,
           ):
 
@@ -93,6 +94,7 @@ class refGenWeightConfig:
         self.verbose               = verbose
         self.dry_run               = dry_run
         self.use_home              = use_home
+        self.keep_logs             = keep_logs
         if running_method.lower() not in ["sbatch", "makefile"]:
           raise ValueError("Invalid running method: %s" % running_method)
 
@@ -197,6 +199,7 @@ class refGenWeightConfig:
             output_file_names       = { key: value[key_output_file] for key, value in jobOptions.items() },
             script_file_names       = { key: value[key_script_file] for key, value in jobOptions.items() },
             log_file_names          = { key: value[key_log_file]    for key, value in jobOptions.items() },
+            keep_logs               = self.keep_logs,
             working_dir             = self.workingDir,
             cvmfs_error_log         = self.cvmfs_error_log,
             pool_id                 = uuid.uuid4(),

@@ -402,6 +402,7 @@ class sbatchManager:
             scriptFile,
             logFile                = None,
             skipIfOutputFileExists = False,
+            keep_logs              = False,
             job_template_file      = 'sbatch-node.sh.template',
             copy_output_file       = True,
             nof_submissions        = 0,
@@ -485,6 +486,7 @@ class sbatchManager:
             random_sleep           = random_delay,
             copy_output_file       = copy_output_file,
             skip_copy              = skip_copy,
+            keep_logs              = keep_logs,
         )
         logging.debug("writing sbatch script file = '%s'" % scriptFile)
         with codecs.open(scriptFile, "w", "utf-8") as f:

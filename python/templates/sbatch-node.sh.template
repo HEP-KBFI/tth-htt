@@ -40,7 +40,9 @@ run_wrapped_executable() {
         return 8
     fi
 
+    KEEP_LOGS={{ keep_logs }}
     EXECUTABLE_LOG_FILE="{{ executable_log_file }}"
+    EXECUTABLE_LOG_FILE_NAME="`basename $EXECUTABLE_LOG_FILE`"
     EXECUTABLE_LOG_DIR="`dirname $EXECUTABLE_LOG_FILE`"
     RANDOM_SLEEP={{ random_sleep }}
 
@@ -109,9 +111,6 @@ run_wrapped_executable() {
     echo "Create job directory: mkdir -p $JOB_DIR"
     mkdir -p $JOB_DIR
 
-    echo "Create final log directory: mkdir -p $EXECUTABLE_LOG_DIR"
-    mkdir -p $EXECUTABLE_LOG_DIR
-
     cd $JOB_DIR
     echo "Current directory: $PWD"
     echo "Contents of current directory:"
@@ -124,13 +123,13 @@ run_wrapped_executable() {
 
     CMSSW_SEARCH_PATH="$JOB_DIR:{{ cmssw_base_dir }}/src"
 
-    echo "Execute command: /usr/bin/time --verbose {{ exec_name }} {{ command_line_parameter }} &>> $EXECUTABLE_LOG_FILE"
-    /usr/bin/time --verbose {{ exec_name }} {{ command_line_parameter }} &>> $EXECUTABLE_LOG_FILE
+    echo "Execute command: /usr/bin/time --verbose {{ exec_name }} {{ command_line_parameter }} &>> $EXECUTABLE_LOG_FILE_NAME"
+    /usr/bin/time --verbose {{ exec_name }} {{ command_line_parameter }} &>> $EXECUTABLE_LOG_FILE_NAME
     EXIT_CODE=$?
     echo "Command /usr/bin/time --verbose {{ exec_name }} exited with code $EXIT_CODE"
 
-    IO_GREP=$(grep "SysError in <TFile::ReadBuffer>" $EXECUTABLE_LOG_FILE | grep "(Input/output error)" | wc -l)
-    MISSING_FILE_GREP=$(grep "Error in <TFile::TFile>" $EXECUTABLE_LOG_FILE | grep "does not exist" | wc -l)
+    IO_GREP=$(grep "SysError in <TFile::ReadBuffer>" $EXECUTABLE_LOG_FILE_NAME | grep "(Input/output error)" | wc -l)
+    MISSING_FILE_GREP=$(grep "Error in <TFile::TFile>" $EXECUTABLE_LOG_FILE_NAME | grep "does not exist" | wc -l)
     if [[ $IO_GREP -ne 0 ]]; then
       echo "Encountered I/O error; setting the exit code accordingly";
       EXIT_CODE=3;
@@ -138,6 +137,16 @@ run_wrapped_executable() {
     if [[ $MISSING_FILE_GREP -ne 0 ]]; then
       echo "Encountered missing file error; setting the exit code accordingly";
       EXIT_CODE=4;
+    fi
+
+    if [[ $KEEP_LOGS = true ]] || [[ $EXIT_CODE -ne 0 ]]; then
+      if [ ! -d $EXECUTABLE_LOG_DIR ]; then
+        echo "Create final log directory: mkdir -p $EXECUTABLE_LOG_DIR"
+        mkdir -p $EXECUTABLE_LOG_DIR
+      fi
+
+      cp -v $EXECUTABLE_LOG_FILE_NAME $EXECUTABLE_LOG_FILE
+      sleep 5 # sleep before cleaning up cwd in case of an error
     fi
 
     # Fail early

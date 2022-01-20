@@ -21,6 +21,7 @@ class testGenPhotonFilterConfig(analyzeConfig):
         dry_run,
         isDebug,
         use_home,
+        keep_logs,
         submission_cmd,
       ):
     analyzeConfig.__init__(self,
@@ -45,6 +46,7 @@ class testGenPhotonFilterConfig(analyzeConfig):
       dry_run               = dry_run,
       isDebug               = isDebug,
       use_home              = use_home,
+      keep_logs             = keep_logs,
       submission_cmd        = submission_cmd,
     )
 

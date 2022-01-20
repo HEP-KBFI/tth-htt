@@ -144,6 +144,10 @@ class tthAnalyzeParser(argparse.ArgumentParser):
       dest = 'debug', action = 'store_true', default = False,
       help = 'R|Enable debugging flag in the analysis',
     )
+    self.add_argument('-K', '--keep-logs',
+      dest = 'keep_logs', action ='store_true', default = False,
+      help = 'R|Keep all logs',
+    )
 
 
   def add_files_per_job(self, files_per_job = 20):

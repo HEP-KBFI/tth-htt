@@ -32,6 +32,7 @@ def createScript_sbatch(
     output_file_names,
     script_file_names,
     log_file_names        = None,
+    keep_logs             = False,
     working_dir           = None,
     max_num_jobs          = -1,
     cvmfs_error_log       = None,
@@ -63,6 +64,7 @@ def createScript_sbatch(
         output_file_names       = output_file_names,
         script_file_names       = script_file_names,
         log_file_names          = log_file_names,
+        keep_logs               = keep_logs,
         working_dir             = working_dir,
         max_num_jobs            = max_num_jobs,
         cvmfs_error_log         = cvmfs_error_log,
@@ -87,6 +89,7 @@ def generate_sbatch_lines(
     output_file_names,
     script_file_names,
     log_file_names,
+    keep_logs,
     working_dir,
     max_num_jobs,
     cvmfs_error_log       = None,
@@ -119,6 +122,12 @@ def generate_sbatch_lines(
         if log_file_names:
             log_file_name = log_file_names[key_file]
         if num_jobs <= max_num_jobs or max_num_jobs <= 0:
+            keep_logs_arg = False
+            if keep_logs:
+              if type(keep_logs) == dict and keep_logs[key_file]:
+                keep_logs_arg = True
+              elif type(keep_logs) == bool:
+                keep_logs_arg = keep_logs
             sbatch_line = generate_sbatch_line(
                 executable = executable,
                 command_line_parameter = command_line_parameter,
@@ -126,6 +135,7 @@ def generate_sbatch_lines(
                 output_file_name       = output_file_names[key_file],
                 script_file_name       = script_file_names[key_file],
                 log_file_name          = log_file_name,
+                keep_logs              = keep_logs_arg,
                 cvmfs_error_log        = cvmfs_error_log,
                 job_template_file      = job_template_file,
                 validate_outputs       = validate_outputs,
@@ -198,6 +208,7 @@ def generate_sbatch_line(
     output_file_name,
     script_file_name,
     log_file_name     = None,
+    keep_logs         = False,
     cvmfs_error_log   = None,
     min_file_size     = MIN_FILE_SIZE_DEFAULT,
     job_template_file = 'sbatch-node.sh.template',
@@ -252,6 +263,7 @@ def generate_sbatch_line(
       "  outputFiles            = {output_file_basename},\n"          \
       "  scriptFile             = '{script_file_name}',\n"            \
       "  logFile                = '{log_file_name}',\n"               \
+      "  keep_logs              = {keep_logs},\n"                     \
       "  skipIfOutputFileExists = {skipIfOutputFileExists},\n"        \
       "  job_template_file      = '{job_template_file}',\n"           \
       "  copy_output_file       = {copy_output_file},\n"              \
@@ -264,10 +276,11 @@ def generate_sbatch_line(
         output_file_basename   = [ os.path.basename(output_file_name) ] if output_file_name else [],
         script_file_name       = script_file_name,
         log_file_name          = log_file_name,
+        keep_logs              = keep_logs,
         skipIfOutputFileExists = False,
         job_template_file      = job_template_file,
         copy_output_file       = copy_output_file,
-        validate_outputs        = validate_outputs,
+        validate_outputs       = validate_outputs,
     )
     return submissionStatement
 
