@@ -109,6 +109,11 @@ run_wrapped_executable() {
       fi
     fi
 
+    echo "Create job directory: mkdir -p $JOB_DIR"
+    mkdir -p $JOB_DIR
+
+    cd $JOB_DIR
+
     # Check that input histograms are ok
     check_that_histograms_are_valid.py $INPUT_FILES &>> $EXECUTABLE_LOG_FILE_NAME
     EXIT_CODE=$?
@@ -119,15 +124,20 @@ run_wrapped_executable() {
       EXIT_CODE=3;
     fi
 
-    if [[ $EXIT_CODE -ne 0 ]]; then
-	  echo "ERROR: Some of the input histograms are not valid. Will stop execution.";
-	  return $EXIT_CODE;
+    if [[ $KEEP_LOGS = True ]] || [[ $EXIT_CODE -ne 0 ]]; then
+      if [ ! -d $EXECUTABLE_LOG_DIR ]; then
+        echo "Create final log directory: mkdir -p $EXECUTABLE_LOG_DIR"
+        mkdir -p $EXECUTABLE_LOG_DIR
+      fi
+
+      cp -v $EXECUTABLE_LOG_FILE_NAME $EXECUTABLE_LOG_FILE
+      sleep 5 # sleep before cleaning up cwd in case of an error
     fi
 
-    echo "Create job directory: mkdir -p $JOB_DIR"
-    mkdir -p $JOB_DIR
-
-    cd $JOB_DIR
+    if [[ $EXIT_CODE -ne 0 ]]; then
+      echo "ERROR: Some of the input histograms are not valid. Will stop execution.";
+      return $EXIT_CODE;
+    fi
 
     echo "Sleeping for $RANDOM_SLEEP seconds"
     sleep $RANDOM_SLEEP
