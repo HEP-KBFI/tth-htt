@@ -148,7 +148,7 @@ class projectionConfig:
         self.outputFiles     = {}
 
         self.phoniesToAdd = []
-        self.filesToClean = []
+        self.filesToClean = [ self.configDir ]
         self.targets = []
 
         self.makefile_target = "sbatch_{}".format(self.projection_module)
@@ -180,7 +180,8 @@ class projectionConfig:
             initDict(self.dirs, [ dir_type ])
             dir_choice = self.configDir if dir_type == DKEY_CFGS else self.localDir
             self.dirs[dir_type] = os.path.join(dir_choice, dir_type)
-            self.filesToClean.append(self.dirs[dir_type])
+            if dir_choice != self.configDir:
+                self.filesToClean.append(self.dirs[dir_type])
 
         self.cvmfs_error_log = {}
         self.num_jobs = {

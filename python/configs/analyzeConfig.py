@@ -685,10 +685,9 @@ class analyzeConfig(object):
         self.cfgFile_make_plots = os.path.join(self.template_dir, "makePlots_cfg.py")
         self.jobOptions_make_plots = {}
         self.jobOptions_mergeHTXS = {}
-        self.filesToClean = []
-        for basedir in [ self.localDir, self.configDir ]:
-          for subdir in [ DKEY_CFGS, DKEY_LOGS, DKEY_SCRIPTS, DKEY_HADD_RT ]:
-            self.filesToClean.append(os.path.join(basedir, subdir))
+        self.filesToClean = [ self.configDir ]
+        for subdir in [ DKEY_CFGS, DKEY_LOGS, DKEY_SCRIPTS, DKEY_HADD_RT ]:
+          self.filesToClean.append(os.path.join(self.localDir, subdir))
         self.phoniesToAdd = []
         self.rleOutputFiles = {}
 

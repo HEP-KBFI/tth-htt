@@ -136,7 +136,7 @@ class addMEMConfig:
         self.inputFiles = {}
         self.outputFiles = {}
         self.hadd_records = {}
-        self.filesToClean = []
+        self.filesToClean = [ self.cfgDir ]
 
         del self.samples['sum_events']
         for sample_name, sample_info in self.samples.items():
@@ -151,7 +151,8 @@ class addMEMConfig:
                 initDict(self.dirs, [key_dir, dir_type])
                 dir_choice = self.cfgDir if dir_type == DKEY_CFGS else self.localDir
                 self.dirs[key_dir][dir_type] = os.path.join(dir_choice, dir_type, self.channel, process_name)
-                self.filesToClean.append(self.dirs[dir_type])
+                if dir_choice != self.cfgDir:
+                    self.filesToClean.append(self.dirs[dir_type])
 
         self.cvmfs_error_log = {}
 
