@@ -1996,7 +1996,7 @@ class analyzeConfig(object):
             output_file_names = { key: value[key_output_file] for key, value in jobOptions.items() },
             script_file_names = { key: value[key_cfg_file].replace(".py", ".sh").replace("_cfg", "") for key, value in jobOptions.items() },
             log_file_names = { key: value[key_log_file] for key, value in jobOptions.items() },
-            keep_logs = { key: value[self.keep_logs_key] for key, value in jobOptions.items() },
+            keep_logs = { key: (value[self.keep_logs_key] if self.keep_logs_key in value else False) for key, value in jobOptions.items() },
             working_dir = self.workingDir,
             max_num_jobs = self.max_num_jobs,
             cvmfs_error_log = self.cvmfs_error_log,
