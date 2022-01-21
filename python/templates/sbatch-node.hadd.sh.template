@@ -152,7 +152,7 @@ run_wrapped_executable() {
       EXIT_CODE=3;
     fi
 
-    if [[ $KEEP_LOGS = true ]] || [[ $EXIT_CODE -ne 0 ]]; then
+    if [[ $KEEP_LOGS = True ]] || [[ $EXIT_CODE -ne 0 ]]; then
       if [ ! -d $EXECUTABLE_LOG_DIR ]; then
         echo "Create final log directory: mkdir -p $EXECUTABLE_LOG_DIR"
         mkdir -p $EXECUTABLE_LOG_DIR
