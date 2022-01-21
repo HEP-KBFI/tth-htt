@@ -422,21 +422,18 @@ class analyzeConfig_LeptonFakeRate(analyzeConfig):
     lines_makefile.append("\tmake -f %s clean" % jobOptions['makefile_path'])
     lines_makefile.append("\tmake -f %s -j16 &> %s" % (jobOptions['makefile_path'], jobOptions['logFile']))
     lines_makefile.append("")
-    self.filesToClean.append(jobOptions['outputFile'])
 
   def addToMakefile_comp_LeptonFakeRate(self, lines_makefile):
     for jobOptions in self.jobOptions_comp_LeptonFakeRate.values():
       lines_makefile.append("%s: %s" % (jobOptions['outputFile'], " ".join(jobOptions['inputFile'])))
       lines_makefile.append("\t%s %s" % (self.executable_comp_LeptonFakeRate, jobOptions['cfgFile_modified']))
       lines_makefile.append("")
-      self.filesToClean.append(jobOptions['outputFile'])
 
   def addToMakefile_add_CERNSysts_LeptonFakeRate(self, lines_makefile): 
      for jobOptions in self.jobOptions_add_CERNSysts.values():
        lines_makefile.append("%s: %s" % (jobOptions['outputFile'], jobOptions['inputFile']))
        lines_makefile.append("\tpython %s -i %s -o %s -a %s -n %s" % (jobOptions['script'], jobOptions['inputFile'], jobOptions['outputFile'], jobOptions['mode'], jobOptions['useNorm']))
        lines_makefile.append("")
-       self.filesToClean.append(jobOptions['outputFile'])
 
   def create(self):
     """Creates all necessary config files and runs the complete analysis workfow -- either locally or on the batch system

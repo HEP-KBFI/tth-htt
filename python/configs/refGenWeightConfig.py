@@ -162,6 +162,7 @@ class refGenWeightConfig:
             initDict(self.dirs, [ dir_type ])
             dir_choice = self.configDir if dir_type == DKEY_CFGS else self.localDir
             self.dirs[dir_type] = os.path.join(dir_choice, dir_type)
+            self.filesToClean.append(self.dirs[dir_type])
 
         self.cvmfs_error_log = {}
         self.num_jobs = {
@@ -241,7 +242,6 @@ class refGenWeightConfig:
                     "\t%s" % ":",
                     "",
                 ])
-            self.filesToClean.append(output_file)
             self.targets.append(output_file)
         self.phoniesToAdd.append(self.makefile_target)
 
@@ -253,7 +253,6 @@ class refGenWeightConfig:
         ])
         for key_file in sorted(self.outputFiles.keys()):
             lines_makefile.append("\techo %s $(shell cat %s) >> %s" % (key_file, self.outputFiles[key_file], self.output_file))
-            self.filesToClean.append(self.outputFiles[key_file])
 
     def createMakefile(self, lines_makefile):
         """Creates Makefile that runs the PU profile production.

@@ -214,7 +214,6 @@ class analyzeConfig_jetToTauFakeRate(analyzeConfig):
         lines_makefile.append("%s: %s" % (jobOptions['outputFile'], "sbatch_comp_jetToTauFakeRate"))
         lines_makefile.append("\t%s" % ":") # CV: null command
         lines_makefile.append("")
-      self.filesToClean.append(jobOptions['outputFile'])
 
   def addToMakefile_comp_hadd(self, lines_makefile):
     make_target = "sbatch_comp_hadd"

@@ -169,6 +169,7 @@ class prodNtupleConfig:
             if dir_type in [ DKEY_CFGS, DKEY_LOGS ]:
                 dir_choice = self.configDir if dir_type == DKEY_CFGS else self.localDir
                 self.dirs[dir_type] = os.path.join(dir_choice, dir_type)
+                self.filesToClean.append(self.dirs[dir_type])
             else:
                 self.dirs[dir_type] = os.path.join(self.outputDir, dir_type)
 
@@ -304,7 +305,6 @@ class prodNtupleConfig:
                     "\t%s" % ":",
                     "",
                 ])
-            self.filesToClean.append(output_file)
 
     def createMakefile(self, lines_makefile):
         """Creates Makefile that runs the Ntuple production.

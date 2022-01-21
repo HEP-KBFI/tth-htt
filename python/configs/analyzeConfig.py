@@ -686,6 +686,9 @@ class analyzeConfig(object):
         self.jobOptions_make_plots = {}
         self.jobOptions_mergeHTXS = {}
         self.filesToClean = []
+        for basedir in [ self.localDir, self.configDir ]:
+          for subdir in [ DKEY_CFGS, DKEY_LOGS, DKEY_SCRIPTS, DKEY_HADD_RT ]:
+            self.filesToClean.append(os.path.join(basedir, subdir))
         self.phoniesToAdd = []
         self.rleOutputFiles = {}
 
@@ -2087,8 +2090,6 @@ class analyzeConfig(object):
         lines_makefile.append("")
         if make_target not in self.phoniesToAdd:
             self.phoniesToAdd.append(make_target)
-        for job in self.jobOptions_analyze.values():
-            self.filesToClean.append(job['histogramFile'])
 
     def addToMakefile_syncNtuple(self, lines_makefile, make_target = "phony_analyze", make_dependency = ""):
         """Adds the commands to Makefile that are necessary for running the analysis code on the Ntuple and filling the histograms
@@ -2104,8 +2105,6 @@ class analyzeConfig(object):
                 lines_makefile.append("\tmv %s %s" % (os.path.basename(job['syncOutput']), job['syncOutput']))
                 lines_makefile.append("\tsleep 60")  # sleep 60 seconds for hadoop to catch up
         lines_makefile.append("")
-        for job in self.jobOptions_analyze.values():
-            self.filesToClean.append(job['syncOutput'])
 
     def addToMakefile_hadd(self, lines_makefile, make_target, make_dependency, inputFiles, outputFiles, 
                            max_input_files_per_job = 10, max_mem = ''):
@@ -2142,8 +2141,6 @@ class analyzeConfig(object):
             lines_makefile.append("")
             lines_makefile.append("%s: %s" % (make_target, " ".join(make_target_batches)))
         lines_makefile.append("")
-        for outputFile in outputFiles.values():
-            self.filesToClean.append(outputFile)
 
     def addToMakefile_hadd_stage1(self, lines_makefile, make_target = "phony_hadd_stage1", make_dependency = "phony_analyze", 
                                   max_input_files_per_job = 10, max_mem = ''):
@@ -2163,8 +2160,6 @@ class analyzeConfig(object):
             for job in self.jobOptions_copyHistograms.values():
                 lines_makefile.append("\t%s %s &> %s" % (self.executable_copyHistograms, job['cfgFile_modified'], job['logFile']))
         lines_makefile.append("")
-        for job in self.jobOptions_copyHistograms.values():
-            self.filesToClean.append(job['outputFile'])
 
     def addToMakefile_addBackgrounds(self, lines_makefile, make_target, make_dependency, sbatchFile, jobOptions):
         if make_target not in self.phoniesToAdd:
@@ -2178,8 +2173,6 @@ class analyzeConfig(object):
         if 'makeBinContentsPositive_forTailFits' in jobOptions.keys():
             lines.append("process.addBackgroundLeptonFakes.makeBinContentsPositive_forTailFits = cms.bool(%s)" % jobOptions['makeBinContentsPositive_forTailFits'])
         lines_makefile.append("")
-        for job in jobOptions.values():
-            self.filesToClean.append(job['outputFile'])
 
     def addToMakefile_hadd_stage1_5(self, lines_makefile, make_target, make_dependency, max_input_files_per_job = 2, max_mem = ''):
         """Adds the commands to Makefile that are necessary for building the intermediate histogram file
@@ -2205,8 +2198,6 @@ class analyzeConfig(object):
             for job in self.jobOptions_addFakes.values():
                 lines_makefile.append("\t%s %s &> %s" % (self.executable_addFakes, job['cfgFile_modified'], job['logFile']))
         lines_makefile.append("")
-        for job in self.jobOptions_addFakes.values():
-            self.filesToClean.append(job['outputFile'])
 
     def addToMakefile_addFlips(self, lines_makefile, make_target, make_dependency):
         if make_target not in self.phoniesToAdd:
@@ -2218,8 +2209,6 @@ class analyzeConfig(object):
             for job in self.jobOptions_addFlips.values():
                 lines_makefile.append("\t%s %s &> %s" % (self.executable_addFlips, job['cfgFile_modified'], job['logFile']))
         lines_makefile.append("")
-        for job in self.jobOptions_addFlips.values():
-            self.filesToClean.append(job['outputFile'])
 
     def addToMakefile_backgrounds_from_data(self, lines_makefile, make_target = "phony_addFakes", make_dependency = "phony_hadd_stage1", 
                                             hadd_max_input_files_per_job = 2, hadd_max_mem = ''):
@@ -2266,8 +2255,6 @@ class analyzeConfig(object):
         for job in self.jobOptions_addSysTT.values():
           lines_makefile.append("\t%s %s &> %s" % (self.executable_addSysTT, job['cfgFile_modified'], job['logFile']))
       lines_makefile.append("")
-      for job in self.jobOptions_addSysTT.values():
-        self.filesToClean.append(job['outputFile'])
 
     def addToMakefile_hadd_stage2(self, lines_makefile, make_target = "phony_hadd_stage2", make_dependency = None, 
                                   max_input_files_per_job = 2, max_mem = ''):
@@ -2291,7 +2278,6 @@ class analyzeConfig(object):
         for job in self.jobOptions_prep_dcard.values():
             lines_makefile.append("%s: %s" % (job['datacardFile'], job['inputFile']))
             lines_makefile.append("\t%s %s" % (self.executable_prep_dcard, job['cfgFile_modified']))
-            self.filesToClean.append(job['datacardFile'])
             lines_makefile.append("")
 
     def addToMakefile_add_syst_dcard(self, lines_makefile):
@@ -2300,7 +2286,6 @@ class analyzeConfig(object):
         for job in self.jobOptions_add_syst_dcard.values():
             lines_makefile.append("%s: %s" % (job['outputFile'], job['inputFile']))
             lines_makefile.append("\t%s %s" % (self.executable_add_syst_dcard, job['cfgFile_modified']))
-            self.filesToClean.append(job['outputFile'])
             lines_makefile.append("")
 
     def addToMakefile_add_syst_fakerate(self, lines_makefile):
@@ -2310,7 +2295,6 @@ class analyzeConfig(object):
         for job in self.jobOptions_add_syst_fakerate.values():
             lines_makefile.append("%s: %s" % (job['outputFile'], job['inputFile']))
             lines_makefile.append("\t%s %s" % (self.executable_add_syst_fakerate, job['cfgFile_modified']))
-            self.filesToClean.append(job['outputFile'])
             lines_makefile.append("")
 
     def addToMakefile_make_plots(self, lines_makefile):

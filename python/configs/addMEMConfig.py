@@ -151,6 +151,7 @@ class addMEMConfig:
                 initDict(self.dirs, [key_dir, dir_type])
                 dir_choice = self.cfgDir if dir_type == DKEY_CFGS else self.localDir
                 self.dirs[key_dir][dir_type] = os.path.join(dir_choice, dir_type, self.channel, process_name)
+                self.filesToClean.append(self.dirs[dir_type])
 
         self.cvmfs_error_log = {}
 
@@ -198,7 +199,6 @@ class addMEMConfig:
                 lines_makefile.append("%s: %s" % (output_file, "sbatch_addMEM"))
                 lines_makefile.append("\t%s" % ":")  # CV: null command
                 lines_makefile.append("")
-            #self.filesToClean.append(output_file)
 
     def addToMakefile_hadd(self, lines_makefile):
         """Add hadd targets to the Makefile
@@ -240,7 +240,6 @@ class addMEMConfig:
             lines_makefile.append("\t%s %s" % ("rm -f", hadd_out))
             lines_makefile.append("\t%s %s" % ("python", sbatch_hadd_file))
             lines_makefile.append("")
-            #self.filesToClean.append(hadd_out)
 
     def createMakefile(self, lines_makefile):
         """Creates Makefile that runs the MEM
@@ -539,7 +538,6 @@ class addMEMConfig:
                 self.hadd_records[hadd_output]['fileset_id'] = fileset_id
                 self.hadd_records[hadd_output]['output_files'].append(self.outputFiles[key_file])
                 self.hadd_records[hadd_output]['process_name'] = process_name
-                #self.filesToClean.append(self.outputFiles[key_file])
 
             # let's sum the number of integration per sample
             nofEntriesMap = {}

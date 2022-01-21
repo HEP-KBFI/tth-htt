@@ -147,7 +147,7 @@ def createMakefile(makefileName, targets, lines_makefile, filesToClean = None, i
     if filesToClean:
         lines_makefile_with_header.append("clean:")
         for fileToClean in filesToClean:
-            lines_makefile_with_header.append("\trm -f %s" % fileToClean)
+            lines_makefile_with_header.append("\trm -rf %s" % fileToClean)
         lines_makefile_with_header.append("")
     lines_makefile_with_header.extend(lines_makefile)
     createFile(makefileName, lines_makefile_with_header)
