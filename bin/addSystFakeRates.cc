@@ -529,7 +529,8 @@ int main(int argc, char* argv[])
   std::string xAxisTitle = cfg_addSystFakeRates.getParameter<std::string>("xAxisTitle");
   std::string yAxisTitle = cfg_addSystFakeRates.getParameter<std::string>("yAxisTitle");
   bool multiclass = cfg_addSystFakeRates.exists("multiclass") ? cfg_addSystFakeRates.getParameter<bool>("multiclass") : false;
-  bool is2d_histogram = cfg_addSystFakeRates.getParameter<bool>("is2d_histogram");
+  //bool is2d_histogram = cfg_addSystFakeRates.getParameter<bool>("is2d_histogram");
+  bool is2d_histogram = ( cfg_addSystFakeRates.exists("is2d_histogram") ) ? cfg_addSystFakeRates.getParameter<bool>("is2d_histogram") : false; // Edited by Siddhesh
   std::string outputFileNamePrefix = category.empty() ? "" : Form("_%s", category.data());
   outputFileNamePrefix += Form("_%s", histogramToFit.data());
 
