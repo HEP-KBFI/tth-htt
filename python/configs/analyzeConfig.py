@@ -888,15 +888,15 @@ class analyzeConfig(object):
           jobOptions['hhWeight_cfg.denominator_file_nlo'] = 'hhAnalysis/{}/data/denom_{}_nlo.root'.format(hhWeight_base, self.era)
           jobOptions['hhWeight_cfg.histtitle'] = sample_info[sample_category_to_check]
           jobOptions['hhWeight_cfg.rwgt_nlo_mode'] = 'v2'
-          if not ('hh' in self.channel or 'ctrl' in self.channel or 'study' in self.channel.lower()):
+          if not (is_hh_channel or 'ctrl' in self.channel or 'study' in self.channel.lower()):
             # enable kt-scan in ttH analysis
             jobOptions['hhWeight_cfg.scanMode'] = self.nonResBMs
-          elif 'hh' in self.channel and 'ctrl' not in self.channel and 'study' not in self.channel.lower():
+          elif is_hh_channel and 'ctrl' not in self.channel and 'study' not in self.channel.lower():
             jobOptions['hhWeight_cfg.rwgt_nlo_mode'] = 'v3'
             jobOptions['hhWeight_cfg.apply_rwgt_lo'] = False
           load_scanFiles = True
 
-        if is_hh_channel and 'ctrl' not in self.channel and 'study' not in self.channel.lower():
+        if is_hh_channel and 'ctrl' not in self.channel and 'study' not in self.channel.lower() and 'inclusive' not in self.channel:
           jobOptions['nonRes_BMs'] = self.nonResBM_points
           jobOptions['hhWeight_cfg.scanMode'] = self.nonResBMs
           load_scanFiles = True
