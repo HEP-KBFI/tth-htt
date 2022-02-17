@@ -415,6 +415,10 @@ class analyzeConfig(object):
         ]
         self.convs_backgrounds = [ "XGamma" ]
         # ------------------------------------------------------------------------
+        self.run_mcClosure = systematics.mcClosure_str in self.central_or_shifts
+        if self.run_mcClosure:
+          self.central_or_shifts.remove(systematics.mcClosure_str)
+        # ------------------------------------------------------------------------
         central_or_shifts_remove = []
         for central_or_shift in self.central_or_shifts:
           is_central_or_shift_selected = False
@@ -462,9 +466,6 @@ class analyzeConfig(object):
         self.do_sync = do_sync
         self.topPtRwgtChoice = "Quadratic" # alternatives: "TOP16011", "Linear", "Quadratic", "HighPt"
         self.do_stxs = do_stxs
-        self.run_mcClosure = systematics.mcClosure_str in self.central_or_shifts
-        if self.run_mcClosure:
-          self.central_or_shifts.remove(systematics.mcClosure_str)
         self.keep_logs = keep_logs
         self.keep_logs_key = 'keep_logs'
 
