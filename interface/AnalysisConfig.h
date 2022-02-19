@@ -27,6 +27,8 @@ class AnalysisConfig
   virtual bool isData() const;
 
   virtual bool isMC() const;
+  virtual bool isMC_DY() const;
+  virtual bool isMC_WJets() const;
   virtual bool isMC_WZ() const;
   virtual bool isMC_ZZ() const;
   virtual bool isMC_EWK() const;
@@ -60,7 +62,9 @@ class AnalysisConfig
 
   bool isData_;
 
-  bool isMC_;  
+  bool isMC_;
+  bool isMC_DY_;
+  bool isMC_WJets_;
   bool isMC_WZ_;
   bool isMC_ZZ_;
   bool isMC_EWK_;

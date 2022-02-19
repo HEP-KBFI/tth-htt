@@ -163,6 +163,9 @@ def is_dymc_normalization(dbs_name):
          'M-50' in dbs_name               and \
          'amcatnloFXFX' in dbs_name
 
+def is_LHEVpt_candidate(sample_category, sample_name):
+  return sample_category in [ "DY", "W" ] and "amcatnloFXFX" not in sample_name
+
 def check_sample_pairs(samples):
     retValue = True
     for sample_name_outer, sample_info_outer in samples.items():
