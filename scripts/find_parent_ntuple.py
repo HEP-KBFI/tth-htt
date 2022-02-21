@@ -102,7 +102,10 @@ def find_parents(input_file, input_rles):
           sample_suffix = 'preselected_{}'.format(sample_suffix)
         elif mode != 'all':
           sample_suffix = '{}_preselected'.format(sample_suffix)
-      samples = load_samples(era, True, base = sample_base, suffix = sample_suffix)
+      try:
+        samples = load_samples(era, True, base = sample_base, suffix = sample_suffix)
+      except ImportError:
+        continue
       for sample_key, sample_info in samples.items():
         if sample_key == 'sum_events':
           continue
