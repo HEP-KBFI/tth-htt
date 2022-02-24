@@ -16,7 +16,7 @@ import itertools
 #       ./test/tthProjection.py -v 2018May09 -e 2017 -m all -p count  j "4,cat:ttH:1,cat:TT:1,cat:EWK:1"
 
 mode_choices = [ 'all', 'tth', 'tth_sync', 'hh', 'hh_bbww', 'hh_bbww_sync', 'hh_bbww_ttbar', 'hh_bbww_sync_ttbar' ]
-projections = [ 'pileup', 'btagSF', 'count' ]
+projections = [ 'pileup', 'btagSF', 'count', 'subjetCount' ]
 default_output = '{projection}_{era}.root'
 
 parser = tthAnalyzeParser(default_num_parallel_jobs = 100)
@@ -91,11 +91,13 @@ if projection == 'pileup':
     samples = load_samples(era, False, base = 'hh_bbww', suffix = 'sync_ttbar')
   else:
     raise ValueError('Invalid mode: %s' % mode)
-elif projection in [ 'btagSF', 'count' ]:
+elif projection in [ 'btagSF', 'count', 'subjetCount' ]:
   if projection == 'btagSF':
     projection_module = "btagSFRatio"
   elif projection == 'count':
     projection_module = 'count'
+  elif projection == 'subjetCount':
+    projection_module = 'subJetBtagCounter'
   else:
     assert(False)
 
