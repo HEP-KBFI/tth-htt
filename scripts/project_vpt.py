@@ -7,14 +7,16 @@ from tthAnalysis.HiggsToTauTau.common import SmartFormatter, logging
 from tthAnalysis.HiggsToTauTau.safe_root import ROOT
 
 import numpy as np
+import collections
 import argparse
 import array
 import os.path
 
+MAX_LHE_NB = 2
 LUMI = 1.e+3 # effective luminosity
 HISTO_NAME_WGT = 'LHEVpt_wgt'
-HISTO_NAME_UNWGT = 'LHEVpt_unwgt'
 LHEVPT_BRANCH_NAME = 'LHE_Vpt'
+LHE_NB_BRANCH_NAME = 'LHE_Nb'
 GENWEIGHT_BRANCH_NAME = 'genWeight'
 
 if __name__ == '__main__':
@@ -57,11 +59,14 @@ if __name__ == '__main__':
   # create the output file, set up histograms
   binning = array.array('f', list(np.arange(1, 1001, 1)))
 
-  histogram_unweighted = ROOT.TH1D(HISTO_NAME_UNWGT, HISTO_NAME_UNWGT, len(binning) - 1, binning)
-  histogram_unweighted.Sumw2()
-
-  histogram_weighted = ROOT.TH1D(HISTO_NAME_WGT, HISTO_NAME_WGT, len(binning) - 1, binning)
-  histogram_weighted.Sumw2()
+  histograms = collections.OrderedDict()
+  for nb_int in range(MAX_LHE_NB + 1):
+    nb = str(nb_int)
+    histName = '{}_LHENb{}'.format(HISTO_NAME_WGT, nb)
+    histograms[nb] = ROOT.TH1D(histName, histName, len(binning) - 1, binning)
+    histograms[nb].Sumw2()
+  histograms['incl'] = ROOT.TH1D(HISTO_NAME_WGT, HISTO_NAME_WGT, len(binning) - 1, binning)
+  histograms['incl'].Sumw2()
 
   for input_fn in input_fns:
     input_fptr = ROOT.TFile.Open(input_fn, 'read')
@@ -70,18 +75,21 @@ if __name__ == '__main__':
     logging.info('Processing {} ({} events)'.format(input_fn, nof_events))
 
     lhe_vpt = array.array('f', [0.])
+    lhe_nb = array.array('B', [0])
     genWeight = array.array('f', [0.])
     tree.SetBranchAddress(LHEVPT_BRANCH_NAME, lhe_vpt)
+    tree.SetBranchAddress(LHE_NB_BRANCH_NAME, lhe_nb)
     tree.SetBranchAddress(GENWEIGHT_BRANCH_NAME, genWeight)
 
     tree.SetBranchStatus('*', 0)
     tree.SetBranchStatus(LHEVPT_BRANCH_NAME, 1)
+    tree.SetBranchStatus(LHE_NB_BRANCH_NAME, 1)
     tree.SetBranchStatus(GENWEIGHT_BRANCH_NAME, 1)
 
     for event_idx in range(nof_events):
       tree.GetEntry(event_idx)
-      histogram_unweighted.Fill(lhe_vpt[0], 1.)
-      histogram_weighted.Fill(lhe_vpt[0], genWeight[0])
+      histograms['incl'].Fill(lhe_vpt[0], genWeight[0])
+      histograms[str(min(lhe_nb[0], MAX_LHE_NB))].Fill(lhe_vpt[0], genWeight[0])
 
     input_fptr.Close()
 
@@ -91,9 +99,9 @@ if __name__ == '__main__':
     raise RuntimeError("Unable to create file: %s" % output_fn)
   output_fptr.cd()
 
-  histogram_unweighted.Scale(LUMI * xsec / histogram_unweighted.Integral())
-  histogram_unweighted.Write()
-  histogram_weighted.Scale(LUMI * xsec / histogram_weighted.Integral())
-  histogram_weighted.Write()
+  for histogram_name, histogram in histograms.items():
+    sf = histogram.Integral() / histograms['incl'].Integral()
+    histogram.Scale(sf * LUMI * xsec / histogram.Integral())
+    histogram.Write()
   output_fptr.Close()
   logging.info('Wrote file: {}'.format(output_fn))
