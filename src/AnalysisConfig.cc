@@ -13,21 +13,23 @@ AnalysisConfig::AnalysisConfig(const std::string & analysis, const edm::Paramete
   , mass_HH_resonant_(-1.)
 {
   assert(boost::starts_with(process_string_hh_, process_string_) || process_string_.find("signal") != std::string::npos || process_string_ == "HH");
-  isMC_     = cfg.getParameter<bool>("isMC");
-  isData_   = !isMC_;
-  isMC_WZ_  = process_string_ == "WZ";
-  isMC_ZZ_  = process_string_ == "ZZ" || process_string_ == "ggZZ" || process_string_ == "qqZZ";
-  isMC_EWK_ = isMC_WZ_ || isMC_ZZ_;
-  isMC_QCD_ = process_string_ == "QCD";
-  isMC_tH_  = process_string_ == "tHq" || process_string_ == "tHW" || process_string_ == "TH";
-  isMC_ttH_ = process_string_ == "ttH" || process_string_ == "ttH_ctcvcp" || process_string_ == "TTH";
-  isMC_ggH_ = process_string_ == "ggH";
-  isMC_qqH_ = process_string_ == "qqH";
-  isMC_VH_  = process_string_ == "VH";
-  isMC_WH_  = process_string_ == "WH";
-  isMC_ZH_  = process_string_ == "ZH";
-  isMC_H_   = isMC_tH_ || isMC_ttH_ || isMC_ggH_ || isMC_qqH_ || isMC_VH_ || isMC_WH_ || isMC_ZH_ ||
-              process_string_ == "TTWH" || process_string_ == "TTZH";
+  isMC_       = cfg.getParameter<bool>("isMC");
+  isData_     = !isMC_;
+  isMC_DY_    = process_string_ == "DY";
+  isMC_WJets_ = process_string_ == "W";
+  isMC_WZ_    = process_string_ == "WZ";
+  isMC_ZZ_    = process_string_ == "ZZ" || process_string_ == "ggZZ" || process_string_ == "qqZZ";
+  isMC_EWK_   = isMC_WZ_ || isMC_ZZ_;
+  isMC_QCD_   = process_string_ == "QCD";
+  isMC_tH_    = process_string_ == "tHq" || process_string_ == "tHW" || process_string_ == "TH";
+  isMC_ttH_   = process_string_ == "ttH" || process_string_ == "ttH_ctcvcp" || process_string_ == "TTH";
+  isMC_ggH_   = process_string_ == "ggH";
+  isMC_qqH_   = process_string_ == "qqH";
+  isMC_VH_    = process_string_ == "VH";
+  isMC_WH_    = process_string_ == "WH";
+  isMC_ZH_    = process_string_ == "ZH";
+  isMC_H_     = isMC_tH_ || isMC_ttH_ || isMC_ggH_ || isMC_qqH_ || isMC_VH_ || isMC_WH_ || isMC_ZH_ ||
+                process_string_ == "TTWH" || process_string_ == "TTZH";
 
   decayModes_H_ = { "hww", "hzz", "htt", "hzg", "hmm", "hbb" };
 
@@ -89,6 +91,18 @@ bool
 AnalysisConfig::isMC() const
 {
   return isMC_;
+}
+
+bool
+AnalysisConfig::isMC_DY() const
+{
+  return isMC_DY_;
+}
+
+bool
+AnalysisConfig::isMC_WJets() const
+{
+  return isMC_WJets_;
 }
  
 bool

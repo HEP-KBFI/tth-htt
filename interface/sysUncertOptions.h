@@ -282,6 +282,12 @@ enum class PDFSys
   up, down,
 };
 
+enum class LHEVptSys
+{
+  central,
+  up, down,
+};
+
 bool
 isTTbarSys(const std::string & central_or_shift);
 
@@ -387,6 +393,9 @@ getPDFSys_option(const std::string & central_or_shift);
 
 bool
 isPDFsys_member(const std::string & central_or_shift);
+
+LHEVptSys
+getLHEVptSys_option(const std::string & central_or_shift);
 
 void
 checkOptionValidity(const std::string & central_or_shift,

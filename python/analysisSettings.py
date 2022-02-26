@@ -136,6 +136,8 @@ class systematics(object):
   MEM_bb2l      = [ "CMS_ttHl_MEM_bb2l_LRUp",      "CMS_ttHl_MEM_bb2l_LRDown"      ]
   MEM = MEM_3l + MEM_2lss_1tau + MEM_3l_1tau + MEM_bb2l
 
+  LHEVpt = [ "Vpt_nloUp", "Vpt_nloDown" ]
+
   class TTbar(object):
     hdamp = [ "hdampUp", "hdampDown" ]
     ue    = [ "ueUp",    "ueDown"    ]
@@ -805,5 +807,6 @@ class systematics(object):
 
   an_internal_no_mem = central + leptonIDSF + tauIDSF + btag + FR_t + lhe + triggerSF + PU + L1PreFiring + \
                        FRe_shape + FRm_shape + DYMCReweighting + DYMCNormScaleFactors + topPtReweighting + \
-                       EWK_jet + EWK_bjet + partonShower + leptonIDSF_hh_recomp + pileupJetID + pdf + pdf_mem
+                       EWK_jet + EWK_bjet + partonShower + leptonIDSF_hh_recomp + pileupJetID + pdf + pdf_mem + \
+                       LHEVpt
   an_internal = an_internal_no_mem + MEM + triggerSF_split

@@ -353,7 +353,8 @@ int main(int argc, char* argv[])
   bool quantile_rebinning_in_fakes = cfg_prepareDatacards.getParameter<bool>("quantile_rebinning_in_fakes");
   int nbin_quantile_rebinning = cfg_prepareDatacards.getParameter<int>("nbin_quantile_rebinning");
   bool apply_quantile_rebinning = nbin_quantile_rebinning > 0;
-  bool is2d_histogram = cfg_prepareDatacards.getParameter<bool>("is2d_histogram");
+  //bool is2d_histogram = cfg_prepareDatacards.getParameter<bool>("is2d_histogram");
+  bool is2d_histogram = ( cfg_prepareDatacards.exists("is2d_histogram") ) ? cfg_prepareDatacards.getParameter<bool>("is2d_histogram") : false; // Edit by Siddhesh
   if(quantile_rebinning_in_fakes && ! apply_quantile_rebinning)
   {
     throw cmsException(__func__, __LINE__)

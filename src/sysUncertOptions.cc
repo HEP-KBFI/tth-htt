@@ -536,6 +536,15 @@ isPDFsys_member(const std::string & central_or_shift)
   ;
 }
 
+LHEVptSys
+getLHEVptSys_option(const std::string & central_or_shift)
+{
+  LHEVptSys central_or_shift_int = LHEVptSys::central;
+  if     (central_or_shift == "Vpt_nloUp"  ) central_or_shift_int = LHEVptSys::up;
+  else if(central_or_shift == "Vpt_nloDown") central_or_shift_int = LHEVptSys::down;
+  return central_or_shift_int;
+}
+
 void
 checkOptionValidity(const std::string & central_or_shift,
                     bool isMC)

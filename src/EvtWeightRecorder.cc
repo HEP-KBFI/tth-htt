@@ -19,6 +19,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/fakeBackgroundAuxFunctions.h"
 #include "tthAnalysis/HiggsToTauTau/interface/HHWeightInterfaceLO.h"
 #include "tthAnalysis/HiggsToTauTau/interface/HHWeightInterfaceNLO.h"
+#include "tthAnalysis/HiggsToTauTau/interface/LHEVpt_LOtoNLO.h"
 
 #include <boost/math/special_functions/sign.hpp> // boost::math::sign()
 
@@ -69,7 +70,7 @@ EvtWeightRecorder::get_inclusive(const std::string & central_or_shift,
                  get_nom_tH_weight(central_or_shift) * get_puWeight(central_or_shift) *
                  get_l1PreFiringWeight(central_or_shift) * get_lheScaleWeight(central_or_shift) * get_pdfWeight(central_or_shift) *
                  get_dy_rwgt(central_or_shift) * get_rescaling() * get_psWeight(central_or_shift) * get_hhWeight() *
-                 get_pdfMemberWeight(central_or_shift)
+                 get_pdfMemberWeight(central_or_shift) * get_LHEVpt(central_or_shift)
                : 1.
   ;
   return retVal;
@@ -330,6 +331,20 @@ EvtWeightRecorder::get_toppt_rwgt(const std::string & central_or_shift) const
     if(weights_toppt_rwgt_.count(topPtReweighting_option))
     {
       return weights_toppt_rwgt_.at(topPtReweighting_option);
+    }
+  }
+  return 1.;
+}
+
+double
+EvtWeightRecorder::get_LHEVpt(const std::string & central_or_shift) const
+{
+  if(isMC_ && ! weights_lhe_vpt_.empty())
+  {
+    const LHEVptSys lhe_vpt_option = getLHEVptSys_option(central_or_shift);
+    if(weights_lhe_vpt_.count(lhe_vpt_option))
+    {
+      return weights_lhe_vpt_.at(lhe_vpt_option);
     }
   }
   return 1.;
@@ -859,6 +874,22 @@ EvtWeightRecorder::record_ewk_bjet(const std::vector<const RecoJet *> & bjets)
       continue;
     }
     weights_ewk_bjet_[ewk_bjet_option] = get_EWK_bjet_weight(bjets, ewk_bjet_option);
+  }
+}
+
+void
+EvtWeightRecorder::record_LHEVpt(const LHEVpt_LOtoNLO * const lhe_vpt)
+{
+  assert(isMC_);
+  weights_lhe_vpt_.clear();
+  for(const std::string & central_or_shift: central_or_shifts_)
+  {
+    const LHEVptSys lhe_vpt_option = getLHEVptSys_option(central_or_shift);
+    if(weights_lhe_vpt_.count(lhe_vpt_option))
+    {
+      continue;
+    }
+    weights_lhe_vpt_[lhe_vpt_option] = lhe_vpt->getWeight(lhe_vpt_option);
   }
 }
 
@@ -1539,6 +1570,7 @@ operator<<(std::ostream & os,
           "  DY bgr weight         = " << evtWeightRecorder.get_dyBgrWeight()                             << "\n"
           "  PDF evnelope weight   = " << evtWeightRecorder.get_pdfWeight(central_or_shift)               << "\n"
           "  PDF member weight     = " << evtWeightRecorder.get_pdfMemberWeight(central_or_shift)         << "\n"
+          "  LHE Vpt weight        = " << evtWeightRecorder.get_LHEVpt(central_or_shift)                  << "\n"
           "  final weight          = " << evtWeightRecorder.get(central_or_shift)                         << '\n'
    ;
   }

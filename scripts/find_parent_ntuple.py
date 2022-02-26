@@ -16,13 +16,17 @@ import tarfile
 RLE_REGEX = re.compile(r'\d+:\d+:\d+')
 TREE_REGEX = re.compile(r'tree_(?P<idx>\d+)\.root')
 ALLOWED_MODES = {
-  'all'                : { 'base' : 'tth',            'suffix' : 'base'       },
-  'sync'               : { 'base' : 'tth',            'suffix' : 'sync'       },
-  'hh'                 : { 'base' : 'hh_multilepton', 'suffix' : 'hh'         },
-  'hh_bbww'            : { 'base' : 'hh_bbww',        'suffix' : 'hh'         },
-  'hh_bbww_sync'       : { 'base' : 'hh_bbww',        'suffix' : 'sync'       },
-  'hh_bbww_ttbar'      : { 'base' : 'hh_bbww',        'suffix' : 'ttbar'      },
-  'hh_bbww_sync_ttbar' : { 'base' : 'hh_bbww',        'suffix' : 'sync_ttbar' },
+  'all'                : [
+                          { 'base' : 'tth',            'suffix' : 'base'       },
+                          { 'base' : 'hh_multilepton', 'suffix' : ''           },
+                          { 'base' : 'hh_bbww',        'suffix' : 'base'       },
+                         ],
+  'sync'               : [{ 'base' : 'tth',            'suffix' : 'sync'       }],
+  'hh'                 : [{ 'base' : 'hh_multilepton', 'suffix' : 'hh'         }],
+  'hh_bbww'            : [{ 'base' : 'hh_bbww',        'suffix' : 'hh'         }],
+  'hh_bbww_sync'       : [{ 'base' : 'hh_bbww',        'suffix' : 'sync'       }],
+  'hh_bbww_ttbar'      : [{ 'base' : 'hh_bbww',        'suffix' : 'ttbar'      }],
+  'hh_bbww_sync_ttbar' : [{ 'base' : 'hh_bbww',        'suffix' : 'sync_ttbar' }],
 }
 
 def has_rles(input_filename, rles):
@@ -75,6 +79,11 @@ def find_parents(input_file, input_rles):
     version = input_file_split[-5]
     era = input_file_split[-6]
 
+    for lepton_wp in [ 'hh_multilepton', 'default', 'ttZctrl' ]:
+      if version.endswith(lepton_wp):
+        version = version[:-len(lepton_wp) - 1]
+        break
+
     modes = [ mode for mode in ALLOWED_MODES.keys() if version.endswith(mode) ]
     if len(modes) != 1:
       raise RuntimeError("Unable to deduce mode from input path: %s" % input_file)
@@ -83,18 +92,29 @@ def find_parents(input_file, input_rles):
     nom_signifier = version_no_mode.split('_')[-1]
     version_no_mode_nom = version_no_mode[:-len(nom_signifier) - 1]
     presel_signifier = version_no_mode_nom.split('_')[-1]
-    sample_base = ALLOWED_MODES[mode]['base']
-    sample_suffix = ALLOWED_MODES[mode]['suffix']
-    if presel_signifier == 'wPresel':
-      sample_suffix = 'preselected_{}'.format(sample_suffix) if mode == 'all' else '{}_preselected'.format(sample_suffix)
-    samples = load_samples(era, True, base = sample_base, suffix = sample_suffix)
+
     dbs_key = ''
-    for sample_key, sample_info in samples.items():
-      if sample_key == 'sum_events':
+    for mode_val in ALLOWED_MODES[mode]:
+      sample_base = mode_val['base']
+      sample_suffix = mode_val['suffix']
+      if presel_signifier == 'wPresel':
+        if mode == 'all' and sample_suffix:
+          sample_suffix = 'preselected_{}'.format(sample_suffix)
+        elif mode != 'all':
+          sample_suffix = '{}_preselected'.format(sample_suffix)
+      try:
+        samples = load_samples(era, True, base = sample_base, suffix = sample_suffix)
+      except ImportError:
         continue
-      if sample_info['process_name_specific'] == process_name:
-        dbs_key = sample_key
+      for sample_key, sample_info in samples.items():
+        if sample_key == 'sum_events':
+          continue
+        if sample_info['process_name_specific'] == process_name:
+          dbs_key = sample_key
+          break
+      if dbs_key:
         break
+
     if not dbs_key:
       raise RuntimeError("Unable to find an entry from sample dictionary that corresponds to file: %s" % input_file)
     sample_nfiles = samples[dbs_key]['nof_files']
