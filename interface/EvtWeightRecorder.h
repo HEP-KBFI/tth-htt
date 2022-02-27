@@ -26,6 +26,7 @@ class BtagSFRatioFacility;
 class HHWeightInterfaceLO;
 class HHWeightInterfaceNLO;
 class LHEVpt_LOtoNLO;
+class SubjetBtagSF;
 
 enum class L1PreFiringWeightSys;
 enum class PDFSys;
@@ -39,6 +40,7 @@ enum class EWKJetSys;
 enum class EWKBJetSys;
 enum class pileupJetIDSFsys;
 enum class LHEVptSys;
+enum class SubjetBtagSys;
 
 class EvtWeightRecorder
 {
@@ -150,6 +152,9 @@ public:
 
   double
   get_LHEVpt(const std::string & central_or_shift) const;
+
+  double
+  get_subjetBtagSF(const std::string & central_or_shift) const;
   
   double
   get_sf_triggerEff(const std::string & central_or_shift) const;
@@ -265,6 +270,9 @@ public:
 
   void
   record_LHEVpt(const LHEVpt_LOtoNLO * const lhe_vpt);
+
+  void
+  record_subjetBtagSF(SubjetBtagSF * const subjetBtagSF);
 
   void
   record_leptonTriggerEff(const Data_to_MC_CorrectionInterface_Base * const dataToMCcorrectionInterface);
@@ -424,6 +432,7 @@ protected:
   std::map<int, double> weights_dy_rwgt_;
   std::map<int, double> weights_toppt_rwgt_;
   std::map<LHEVptSys, double> weights_lhe_vpt_;
+  std::map<SubjetBtagSys, double> weights_subjet_btag_;
   std::map<int, double> weights_btag_;
   std::map<pileupJetIDSFsys, double> weights_puJetIDSF_;
   std::map<TriggerSFsys, double> weights_leptonTriggerEff_;

@@ -20,6 +20,7 @@
 #include "tthAnalysis/HiggsToTauTau/interface/HHWeightInterfaceLO.h"
 #include "tthAnalysis/HiggsToTauTau/interface/HHWeightInterfaceNLO.h"
 #include "tthAnalysis/HiggsToTauTau/interface/LHEVpt_LOtoNLO.h"
+#include "tthAnalysis/HiggsToTauTau/interface/SubjetBtagSF.h"
 
 #include <boost/math/special_functions/sign.hpp> // boost::math::sign()
 
@@ -351,6 +352,20 @@ EvtWeightRecorder::get_LHEVpt(const std::string & central_or_shift) const
 }
 
 double
+EvtWeightRecorder::get_subjetBtagSF(const std::string & central_or_shift) const
+{
+  if(isMC_ && ! weights_subjet_btag_.empty())
+  {
+    const SubjetBtagSys subjet_btag_option = getSubjetBtagSys_option(central_or_shift);
+    if(weights_subjet_btag_.count(subjet_btag_option))
+    {
+      return weights_subjet_btag_.at(subjet_btag_option);
+    }
+  }
+  return 1.;
+}
+
+double
 EvtWeightRecorder::get_sf_triggerEff(const std::string & central_or_shift) const
 {
   double sf_triggerEff = 1.;
@@ -394,7 +409,7 @@ EvtWeightRecorder::get_data_to_MC_correction(const std::string & central_or_shif
   return isMC_ ? get_sf_triggerEff(central_or_shift) * get_leptonSF() * get_leptonIDSF(central_or_shift) *
                  get_tauSF(central_or_shift) * get_btag(central_or_shift) * get_dy_norm(central_or_shift) *
                  get_toppt_rwgt(central_or_shift) * get_ewk_jet(central_or_shift) * get_ewk_bjet(central_or_shift) *
-                 get_btagSFRatio(central_or_shift) * get_pileupJetIDSF(central_or_shift)
+                 get_btagSFRatio(central_or_shift) * get_pileupJetIDSF(central_or_shift) * get_subjetBtagSF(central_or_shift)
                : 1.
   ;
 }
@@ -890,6 +905,22 @@ EvtWeightRecorder::record_LHEVpt(const LHEVpt_LOtoNLO * const lhe_vpt)
       continue;
     }
     weights_lhe_vpt_[lhe_vpt_option] = lhe_vpt->getWeight(lhe_vpt_option);
+  }
+}
+
+void
+EvtWeightRecorder::record_subjetBtagSF(SubjetBtagSF * const subjetBtagSF)
+{
+  assert(isMC_);
+  weights_subjet_btag_.clear();
+  for(const std::string & central_or_shift: central_or_shifts_)
+  {
+    const SubjetBtagSys subjet_btag_option = getSubjetBtagSys_option(central_or_shift);
+    if(weights_subjet_btag_.count(subjet_btag_option))
+    {
+      continue;
+    }
+    weights_subjet_btag_[subjet_btag_option] = subjetBtagSF->get_sf(subjet_btag_option);
   }
 }
 
@@ -1571,6 +1602,7 @@ operator<<(std::ostream & os,
           "  PDF evnelope weight   = " << evtWeightRecorder.get_pdfWeight(central_or_shift)               << "\n"
           "  PDF member weight     = " << evtWeightRecorder.get_pdfMemberWeight(central_or_shift)         << "\n"
           "  LHE Vpt weight        = " << evtWeightRecorder.get_LHEVpt(central_or_shift)                  << "\n"
+          "  subjet b-tagging SF   = " << evtWeightRecorder.get_subjetBtagSF(central_or_shift)            << "\n"
           "  final weight          = " << evtWeightRecorder.get(central_or_shift)                         << '\n'
    ;
   }

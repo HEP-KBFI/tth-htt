@@ -1,7 +1,7 @@
 from tthAnalysis.HiggsToTauTau.safe_root import ROOT
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists, run_cmd, generate_file_ids, get_log_version, check_submission_cmd, record_software_state
 from tthAnalysis.HiggsToTauTau.analysisTools import initDict, getKey, create_cfg, createFile, is_dymc_reweighting, is_dymc_normalization, check_sample_pairs
-from tthAnalysis.HiggsToTauTau.analysisTools import createMakefile as tools_createMakefile, get_tH_weight_str, get_tH_SM_str, load_refGenWeightsFromFile, is_LHEVpt_candidate
+from tthAnalysis.HiggsToTauTau.analysisTools import createMakefile as tools_createMakefile, get_tH_weight_str, get_tH_SM_str, load_refGenWeightsFromFile, is_LHEVpt_candidate, is_subjetBtag_candidate
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch as tools_createScript_sbatch
 from tthAnalysis.HiggsToTauTau.sbatchManagerTools import createScript_sbatch_hadd_nonBlocking as tools_createScript_sbatch_hadd_nonBlocking
 from tthAnalysis.HiggsToTauTau.analysisSettings import Triggers, systematics, HTXS_BINS
@@ -139,6 +139,7 @@ class analyzeConfig(object):
           blacklist                       = None,
           disable_ak8_corr                = None,
           apply_LHEVpt_rwgt               = False,
+          apply_subjet_btag               = False,
       ):
 
         self.configDir = configDir
@@ -309,6 +310,7 @@ class analyzeConfig(object):
         assert(all(corr in  DEFAULT_AK8_CORR for corr in self.disable_ak8_corr))
 
         self.apply_LHEVpt_rwgt = apply_LHEVpt_rwgt
+        self.apply_subjet_btag = apply_subjet_btag
 
         self.central_or_shifts = central_or_shifts
         if not 'central' in self.central_or_shifts:
@@ -349,6 +351,28 @@ class analyzeConfig(object):
             ))
           self.central_or_shifts = [
             central_or_shift for central_or_shift in self.central_or_shifts if central_or_shift not in central_or_shift_puJetId
+          ]
+        if not self.apply_LHEVpt_rwgt:
+          central_or_shift_lheVpt = [
+            central_or_shift for central_or_shift in self.central_or_shifts if central_or_shift in systematics.LHEVpt
+          ]
+          if central_or_shift_lheVpt:
+            logging.warning("Removing the following systematics because not reweighting in Vpt: {}".format(
+              ", ".join(central_or_shift_lheVpt)
+            ))
+          self.central_or_shifts = [
+            central_or_shift for central_or_shift in self.central_or_shifts if central_or_shift not in central_or_shift_lheVpt
+          ]
+        if not self.apply_subjet_btag:
+          central_or_shift_subjetBtag = [
+            central_or_shift for central_or_shift in self.central_or_shifts if central_or_shift in systematics.subjetBtag
+          ]
+          if central_or_shift_subjetBtag:
+            logging.warning("Removing the following systematics because not applying subjet b-tagging SF: {}".format(
+              ", ".join(central_or_shift_subjetBtag)
+            ))
+          self.central_or_shifts = [
+            central_or_shift for central_or_shift in self.central_or_shifts if central_or_shift not in central_or_shift_subjetBtag
           ]
         #------------------------------------------------------------------------
         # CV: make sure that 'central' is always first entry in self.central_or_shifts
@@ -861,6 +885,7 @@ class analyzeConfig(object):
       if central_or_shift != "central"                        and is_ttbar_sys:                                return False
       if central_or_shift in systematics.LHEVpt               and not is_LHEVpt_candidate(sample_category,
                                                                                           sample_name):        return False
+      if central_or_shift in systematics.subjetBtag           and not is_subjetBtag_candidate(sample_info):    return False
       return True
 
     def createCfg_analyze(self, jobOptions, sample_info, additionalJobOptions = [], isLeptonFR = False, isHTT = False, dropCtrl = False):
@@ -1200,6 +1225,9 @@ class analyzeConfig(object):
             jobOptions['disable_ak8_corr'] = self.disable_ak8_corr
         if 'apply_LHEVpt_rwgt' not in jobOptions and self.apply_LHEVpt_rwgt:
           jobOptions['apply_LHEVpt_rwgt'] = is_LHEVpt_candidate(sample_info["sample_category"], sample_info["dbs_name"])
+        if 'apply_subjet_btag' not in jobOptions and self.apply_subjet_btag:
+          jobOptions['apply_subjet_btag'] = is_subjetBtag_candidate(sample_info)
+          jobOptions['subjet_btag_procName'] = sample_info['process_name_specific']
 
         if self.blacklist_files:
           jobOptions['enable_blacklist'] = True
@@ -1367,6 +1395,8 @@ class analyzeConfig(object):
             'pdfSettings.lhaid',
             'pdfSettings.norm',
             'apply_LHEVpt_rwgt',
+            'apply_subjet_btag',
+            'subjet_btag_procName',
         ]
         jobOptions_typeMapping = {
             'central_or_shifts_local' : 'cms.vstring(%s)',

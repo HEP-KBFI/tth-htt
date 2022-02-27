@@ -8,6 +8,8 @@
 <use   name="TauAnalysisTools/TauTriggerSFs"/>
 <use   name="TauPOG/TauIDSFs"/>
 <use   name="PhysicsTools/TensorFlow"/>
+<use   name="CondFormats/BTauObjects"/>
+<use   name="CondTools/BTau"/>
 <use   name="root"/>
 <use   name="roottmva"/>
 <use   name="boost" />

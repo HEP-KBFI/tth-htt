@@ -29,6 +29,8 @@ public:
    */
   Double_t BtagCSV() const;
 
+  bool is_Btaggable() const;
+
 protected:
   Double_t BtagCSV_; ///< CSV b-tagging discriminator value
 };

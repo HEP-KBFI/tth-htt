@@ -166,6 +166,10 @@ def is_dymc_normalization(dbs_name):
 def is_LHEVpt_candidate(sample_category, sample_name):
   return sample_category in [ "DY", "W" ] and "amcatnloFXFX" not in sample_name
 
+def is_subjetBtag_candidate(sample_info):
+  sample_category = sample_info["sample_category"]
+  return sample_category.startswith("signal") or sample_category == "HH" or sample_info['dbs_name'].startswith('/TTTo')
+
 def check_sample_pairs(samples):
     retValue = True
     for sample_name_outer, sample_info_outer in samples.items():

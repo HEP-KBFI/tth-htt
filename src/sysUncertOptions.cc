@@ -545,6 +545,15 @@ getLHEVptSys_option(const std::string & central_or_shift)
   return central_or_shift_int;
 }
 
+SubjetBtagSys
+getSubjetBtagSys_option(const std::string & central_or_shift)
+{
+  SubjetBtagSys central_or_shift_int = SubjetBtagSys::central;
+  if     (central_or_shift == "CMS_btag_subjetUp"  ) central_or_shift_int = SubjetBtagSys::up;
+  else if(central_or_shift == "CMS_btag_subjetDown") central_or_shift_int = SubjetBtagSys::down;
+  return central_or_shift_int;
+}
+
 void
 checkOptionValidity(const std::string & central_or_shift,
                     bool isMC)
