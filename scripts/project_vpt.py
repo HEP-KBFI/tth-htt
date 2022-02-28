@@ -101,7 +101,9 @@ if __name__ == '__main__':
 
   for histogram_name, histogram in histograms.items():
     sf = histogram.Integral() / histograms['incl'].Integral()
-    histogram.Scale(sf * LUMI * xsec / histogram.Integral())
+    hint = histogram.Integral()
+    if hint != 0:
+      histogram.Scale(sf * LUMI * xsec / hint)
     histogram.Write()
   output_fptr.Close()
   logging.info('Wrote file: {}'.format(output_fn))
