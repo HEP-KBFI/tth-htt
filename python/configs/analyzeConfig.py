@@ -1732,6 +1732,7 @@ class analyzeConfig(object):
         lines = []
         lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
         lines.append("process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(jobOptions['outputFile']))
+        lines.append("process.addSysTT.era = cms.string('%s')" % self.era)
         lines.append("process.addSysTT.categories = cms.vstring(%s)" % jobOptions['categories'])
         lines.append("process.addSysTT.process_output = cms.string('%s')" % jobOptions['process_output'])
         if 'histogramsToCopy' in jobOptions.keys():
