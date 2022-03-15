@@ -147,9 +147,11 @@ class systematics(object):
     mtop  = [
       # Keep only those mass points that are closest to the nominal,
       # see: https://hypernews.cern.ch/HyperNews/CMS/get/TOP-17-023/97.html
-      #"mtop166p5", "mtop169p5",
+      #"mtop166p5",
+      "mtop169p5",
       "mtop171p5", "mtop173p5",
-      #"mtop175p5", "mtop178p5",
+      "mtop175p5",
+      #"mtop178p5",
     ]
     width = [
       "widthx0p7", "widthx0p85", "widthx1p15", "widthx1p3",
