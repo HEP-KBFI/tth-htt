@@ -151,20 +151,37 @@ class analyzeConfig(object):
         self.useFullGenWeight = True
         self.weight_prefix = "CountWeighted{}".format("Full" if self.useFullGenWeight else "")
 
-        # sum the event counts for samples which cover the same phase space only if
-        # there are multiple such samples
         event_sums = copy.deepcopy(samples['sum_events'])
         del samples['sum_events']
+
+        self.central_or_shifts = central_or_shifts
+        self.samples = copy.deepcopy(samples)
+        # ------------------------------------------------------------------------
+        self.ttbar_syst_enabled = False
+        for central_or_shift in self.central_or_shifts:
+          if central_or_shift in systematics.ttbar:
+            central_or_shift_ttbar = "TT_{}".format(central_or_shift)
+            for sample_key, sample_info in self.samples.items():
+              if sample_info["sample_category"] == central_or_shift_ttbar:
+                logging.info("Enabling sample {} because systematics {} was requested".format(
+                  sample_info["process_name_specific"], central_or_shift,
+                ))
+                sample_info["use_it"] = True
+                if not self.ttbar_syst_enabled:
+                  self.ttbar_syst_enabled = True
+
+        # sum the event counts for samples which cover the same phase space only if
+        # there are multiple such samples
         dbs_list_to_sum = []
         for sample_list_to_sum in event_sums:
           dbs_list = []
           for sample_to_sum in sample_list_to_sum:
-            for dbs_key, sample_entry in samples.items():
+            for dbs_key, sample_entry in self.samples.items():
               if sample_entry['process_name_specific'] == sample_to_sum and sample_entry['use_it']:
                 dbs_list.append(dbs_key)
           if len(dbs_list) > 1:
             dbs_list_to_sum.append(dbs_list)
-            dbs_names = [ samples[dbs_key]['process_name_specific'] for dbs_key in dbs_list ]
+            dbs_names = [ self.samples[dbs_key]['process_name_specific'] for dbs_key in dbs_list ]
             missing_dbs_names = list(sorted(list(set(sample_list_to_sum) - set(dbs_names)), key = lambda k: k.lower()))
             if missing_dbs_names:
               logging.info(
@@ -175,7 +192,7 @@ class analyzeConfig(object):
               logging.info('Summing the effective counts of {}'.format(', '.join(dbs_names)))
           elif len(dbs_list) == 1:
             logging.info('NOT summing the effective event counts of {} as only {} is processed'.format(
-              ', '.join(sample_list_to_sum), samples[dbs_list[0]]['process_name_specific']
+              ', '.join(sample_list_to_sum), self.samples[dbs_list[0]]['process_name_specific']
             ))
           else:
             logging.info('NOT summing the effective event counts of {} as none of the samples are needed'.format(
@@ -184,7 +201,7 @@ class analyzeConfig(object):
 
         # reset the event counts that correspond to different choices of LHE scale weight to zero
         # if the sample doesn't actually support LHE scale variation
-        for sample_key, sample_info in samples.items():
+        for sample_key, sample_info in self.samples.items():
           if sample_key == 'sum_events':
             continue
           if not sample_info['has_LHE']:
@@ -200,18 +217,18 @@ class analyzeConfig(object):
                 )
               )
         for dbs_list in dbs_list_to_sum:
-          dbs_list_human = ', '.join(samples[dbs_key]['process_name_specific'] for dbs_key in dbs_list)
+          dbs_list_human = ', '.join(self.samples[dbs_key]['process_name_specific'] for dbs_key in dbs_list)
           nof_events = {}
           for dbs_key in dbs_list:
-            for evt_key in samples[dbs_key]['nof_events']:
+            for evt_key in self.samples[dbs_key]['nof_events']:
               if evt_key not in nof_events:
-                nof_events[evt_key] = [0.] * len(samples[dbs_key]['nof_events'][evt_key])
+                nof_events[evt_key] = [0.] * len(self.samples[dbs_key]['nof_events'][evt_key])
           for dbs_key in dbs_list:
             excl_count_type = [ 'LHEHT', 'LHENjet', 'PSWeight' ]
-            if not samples[dbs_key]['has_LHE']:
+            if not self.samples[dbs_key]['has_LHE']:
               excl_count_type.extend(['LHEWeightScale', 'LHEEnvelope'])
             sample_nof_events_set = set(
-              evt_key for evt_key in samples[dbs_key]['nof_events'] \
+              evt_key for evt_key in self.samples[dbs_key]['nof_events'] \
               if not any(excl_evt_key in evt_key for excl_evt_key in excl_count_type)
             )
             nof_events_set = set(
@@ -223,7 +240,7 @@ class analyzeConfig(object):
                 'Mismatching event counts for samples: %s: %s vs %s' % \
                 (dbs_list_human, str(sample_nof_events_set), str(nof_events_set))
               )
-            for count_type, count_array in samples[dbs_key]['nof_events'].items():
+            for count_type, count_array in self.samples[dbs_key]['nof_events'].items():
               if count_type not in nof_events and \
                  any(excl_evt_key in count_type for excl_evt_key in excl_count_type):
                 # initialize event counts with 0s that don't necessarily exist in the samples covering the same phase space
@@ -235,10 +252,9 @@ class analyzeConfig(object):
               for count_idx, count_val in enumerate(count_array):
                 nof_events[count_type][count_idx] += count_val
           for dbs_key in dbs_list:
-            samples[dbs_key]['nof_events'] = copy.deepcopy(nof_events)
+            self.samples[dbs_key]['nof_events'] = copy.deepcopy(nof_events)
 
         use_vh_split, use_vh_unsplit = False, False
-        self.samples = copy.deepcopy(samples)
 
         self.apply_genPhotonFilter = apply_genPhotonFilter
         if self.apply_genPhotonFilter:
@@ -312,7 +328,6 @@ class analyzeConfig(object):
         self.apply_LHEVpt_rwgt = apply_LHEVpt_rwgt
         self.apply_subjet_btag = apply_subjet_btag
 
-        self.central_or_shifts = central_or_shifts
         if not 'central' in self.central_or_shifts:
             logging.warning('Running with systematic uncertainties, but without central value, is not supported --> adding central value.')
             self.central_or_shifts.append('central')
@@ -416,19 +431,6 @@ class analyzeConfig(object):
           for central_or_shift in jes_hem_to_remove:
             logging.warning('Removing systematics {} from {} era'.format(central_or_shift, self.era))
             self.central_or_shifts.remove(central_or_shift)
-        # ------------------------------------------------------------------------
-        self.ttbar_syst_enabled = False
-        for central_or_shift in self.central_or_shifts:
-          if central_or_shift in systematics.ttbar:
-            central_or_shift_ttbar = "TT_{}".format(central_or_shift)
-            for sample_key, sample_info in self.samples.items():
-              if sample_info["sample_category"] == central_or_shift_ttbar:
-                logging.info("Enabling sample {} because systematics {} was requested".format(
-                  sample_info["process_name_specific"], central_or_shift,
-                ))
-                sample_info["use_it"] = True
-                if not self.ttbar_syst_enabled:
-                  self.ttbar_syst_enabled = True
         # ------------------------------------------------------------------------
         self.ttHProcs = [ "ttH" ]# , "ttH_ctcvcp" ]
         self.prep_dcard_processesToCopy = [  ]
@@ -630,7 +632,7 @@ class analyzeConfig(object):
                     'branch_type_yaxis' : get_branch_type(branch_name_yaxis),
                   }
 
-        assert(check_sample_pairs(samples))
+        assert(check_sample_pairs(self.samples))
         self.workingDir = os.getcwd()
         logging.info("Working directory is: %s" % self.workingDir)
         if template_dir:
