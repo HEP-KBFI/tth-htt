@@ -231,7 +231,7 @@ class sbatchManager:
         self.max_resubmissions = max_resubmissions
         self.min_file_size     = min_file_size
 
-        self.sbatch_exclude_nodes = [ "comp-d-058" ]
+        self.sbatch_exclude_nodes = [ "comp-d-058", "comp-u-091" ]
         if sbatch_exclude:
             self.sbatch_exclude_nodes += sbatch_exclude.split(",")
             self.sbatch_exclude_nodes = list(set(self.sbatch_exclude_nodes))
