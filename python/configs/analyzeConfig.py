@@ -13,6 +13,8 @@ from tthAnalysis.NanoAODTools.tHweights_cfi import tHweights, thIdxsNoCP, find_t
 
 import FWCore.ParameterSet.Config as cms
 
+import numpy as np
+
 import re
 import os
 import uuid
@@ -151,7 +153,7 @@ class analyzeConfig(object):
         self.useFullGenWeight = True
         self.weight_prefix = "CountWeighted{}".format("Full" if self.useFullGenWeight else "")
 
-        event_sums = copy.deepcopy(samples['sum_events'])
+        self.event_sums = copy.deepcopy(samples['sum_events'])
         del samples['sum_events']
 
         self.central_or_shifts = central_or_shifts
@@ -170,10 +172,17 @@ class analyzeConfig(object):
                 if not self.ttbar_syst_enabled:
                   self.ttbar_syst_enabled = True
 
+        self.era = era
+        self.ref_genWeightFile = os.path.join(os.environ['CMSSW_BASE'], 'src/tthAnalysis/HiggsToTauTau/data/refGenWeight_{}.txt'.format(self.era))
+        self.ref_genWeights = {}
+        self.load_refGenWeights()
+        breaking_tolerance = []
+
         # sum the event counts for samples which cover the same phase space only if
         # there are multiple such samples
         dbs_list_to_sum = []
-        for sample_list_to_sum in event_sums:
+        ref_genWeight_tol = 2e-2 # 2% tolerance
+        for sample_list_to_sum in self.event_sums:
           dbs_list = []
           for sample_to_sum in sample_list_to_sum:
             for dbs_key, sample_entry in self.samples.items():
@@ -190,6 +199,19 @@ class analyzeConfig(object):
               )
             else:
               logging.info('Summing the effective counts of {}'.format(', '.join(dbs_names)))
+              nominal_weights = [
+                float(self.ref_genWeights[sample_name]) for sample_name in dbs_names if not sample_name.endswith('_duplicate')
+              ]
+              nsamples = len(nominal_weights)
+              if not all([
+                np.isclose(nominal_weights[i], nominal_weights[j], rtol = ref_genWeight_tol) \
+                  for i in range(nsamples) for j in range(nsamples)
+              ]):
+                breaking_tolerance.append(
+                  ', '.join([
+                    '{} ({:.6e})'.format(sample_name, self.ref_genWeights[sample_name]) for sample_name in dbs_names
+                  ])
+                )
           elif len(dbs_list) == 1:
             logging.info('NOT summing the effective event counts of {} as only {} is processed'.format(
               ', '.join(sample_list_to_sum), self.samples[dbs_list[0]]['process_name_specific']
@@ -198,6 +220,15 @@ class analyzeConfig(object):
             logging.info('NOT summing the effective event counts of {} as none of the samples are needed'.format(
               ', '.join(sample_list_to_sum)
             ))
+        if breaking_tolerance:
+          logging.error(
+            "Found {} set of samples covering the same phase space and have relative differences in nominal gen weight greater than {:.2f}%:\n{}".format(
+              len(breaking_tolerance),
+              ref_genWeight_tol * 100,
+              '\n'.join([ '  {}'.format(line) for line in breaking_tolerance ])
+            )
+          )
+          assert(False)
 
         # reset the event counts that correspond to different choices of LHE scale weight to zero
         # if the sample doesn't actually support LHE scale variation
@@ -414,7 +445,6 @@ class analyzeConfig(object):
             for central_or_shift in central_or_shifts_to_remove:
               self.central_or_shifts.remove(central_or_shift)
         # ------------------------------------------------------------------------
-        self.era = era
         self.do_l1prefiring = self.era != "2018"
         if (set(systematics.L1PreFiring) & set(self.central_or_shifts)) == set(systematics.L1PreFiring) and not self.do_l1prefiring:
           logging.warning('Removing systematics from {} era: {}'.format(self.era, ', '.join(systematics.L1PreFiring)))
@@ -786,8 +816,6 @@ class analyzeConfig(object):
             raise ValueError('Invalid era: %s' % self.era)
         assert(os.path.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', self.hadTauFakeRateWeight_inputFile)))
 
-        self.ref_genWeightFile = os.path.join(os.environ['CMSSW_BASE'], 'src/tthAnalysis/HiggsToTauTau/data/refGenWeight_{}.txt'.format(self.era))
-        self.ref_genWeights = {}
         self.event_count_filename = '/hdfs/local/karl/count_final/2020Dec18/count_{}.root'.format(self.era)
         self.pdf_norms = {}
         self.isBDTtraining = False
@@ -1188,7 +1216,6 @@ class analyzeConfig(object):
         if 'hasLHE' not in jobOptions:
             jobOptions['hasLHE'] = sample_info['has_LHE']
         if 'ref_genWeight' not in jobOptions and is_mc:
-            self.load_refGenWeights()
             process_name_wodupl = re.sub('_duplicate$', '', process_name)
             if process_name_wodupl not in self.ref_genWeights:
                 raise RuntimeError("Unable to find reference gen weight for process %s from file %s" % (process_name_wodupl, self.ref_genWeightFile))
@@ -1812,7 +1839,7 @@ class analyzeConfig(object):
         central_or_shifts_modified = self.central_or_shifts
         if len(self.central_or_shifts) > 1 and self.ttbar_syst_enabled:
           central_or_shift_remove = systematics.ttbar
-          central_or_shifts_added = [ "colorUp", 'colorDown', 'hdampmodUp', 'hdampmodDown', 'uemodUp', 'uemodDown', 'mtopUp', 'mtopDown' ]
+          central_or_shifts_added = [ "colorUp", 'colorDown', 'hdampmodUp', 'hdampmodDown', 'uemodUp', 'uemodDown', 'mtopmodUp', 'mtopmodDown' ]
           central_or_shifts_modified = [ central_or_shift for central_or_shift in self.central_or_shifts if central_or_shift not in central_or_shift_remove ]
           central_or_shifts_modified += central_or_shifts_added
         ##if 'label' in jobOptions.keys() and jobOptions['label']:
