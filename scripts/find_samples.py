@@ -310,6 +310,8 @@ def convert_date(date):
   return datetime.datetime.fromtimestamp(int(date)).strftime('%Y-%m-%d %H:%M:%S')
 
 def convert_cmssw_versions(cmssw_list):
+  if type(cmssw_list) == str:
+    cmssw_list = [cmssw_list]
   return ','.join(set( cmssw_ver[len('CMSSW') + 1:] for cmssw_ver in cmssw_list ))
 
 def id_(x): # identity function
@@ -776,7 +778,7 @@ if __name__ == '__main__':
         mc_query_str = DASGOCLIENT_QUERY % (dataset_q, '*')
         mc_query = Command(mc_query_str)
         mc_query.run()
-        if not mc_query.out or mc_query.err:
+        if not mc_query.out or 'error' in mc_query.err or 'ERROR' in mc_query.err:
           raise ValueError(
             "Query '%s' to DAS resulted in an empty output or an error:\nstdout = '%s'\nstderr = '%s'" % \
             (mc_query_str, mc_query.out, mc_query.err)
@@ -785,7 +787,7 @@ if __name__ == '__main__':
         mc_release_str = DASGOCLIENT_QUERY_RELEASE % dataset_q
         mc_release = Command(mc_release_str)
         mc_release.run()
-        if not mc_release.out or mc_release.err:
+        if not mc_release.out or 'error' in mc_release.err or 'ERROR' in mc_release.err:
           raise ValueError(
             "Query '%s' to DAS resulted in an empty output or an error:\nstdout = '%s'\nstderr = '%s'" % \
             (mc_release_str, mc_release.out, mc_release.err)
@@ -800,7 +802,7 @@ if __name__ == '__main__':
             das_key_idx = find_das_idx(mc_query_json, das_key)
             das_query_results[dataset][das_key] = das_parser(mc_query_json[das_key_idx]['dataset'][0][das_key])
           else:
-            das_query_results[dataset][das_key] = das_parser(mc_release_json[0][das_key][0]['name'])
+            das_query_results[dataset][das_key] = das_parser(mc_release_json[0][das_key][0]['name'].encode('utf-8'))
 
     col_widths = {
       das_key:
@@ -999,7 +1001,7 @@ if __name__ == '__main__':
                 dasgoclient_query_json[das_key_idx]['dataset'][0][das_key]
               )
             else:
-              das_query_results[dataset][das_key] = das_parser(dasgoclient_release_json[0][das_key][0]['name'])
+              das_query_results[dataset][das_key] = das_parser(dasgoclient_release_json[0][das_key][0]['name'].encode('UTF-8'))
 
         col_widths = {
           das_key :
