@@ -536,8 +536,8 @@ class analyzeConfig(object):
               for bmName in NONRESONANT_POINTS[nonresPoint]
           ):
             self.nonResBMs.append(nonresPoint)
-        if self.nonResBMs:
-          self.nonResBM_points.append('SM')
+        #if self.nonResBMs:
+        self.nonResBM_points.append('SM')
         for nonResBM in self.nonResBMs:
           self.nonResBM_points.extend(NONRESONANT_POINTS[nonResBM])
 

@@ -204,7 +204,7 @@ TMVAInterface::disableBDTTransform()
 
 double
 TMVAInterface::operator()(const std::map<std::string, double> & mvaInputs,
-                          int event_number, const bool multiclass) const
+                          int event_number, const bool multiclass, bool regression) const
 {
     std::map<std::string, double> mvaInputs_final;
     if(fitFunctionFileName_ != "")
@@ -218,11 +218,11 @@ TMVAInterface::operator()(const std::map<std::string, double> & mvaInputs,
 
     if(event_number % 2)
     {
-      return this->operator()(mvaInputs_final, mva_odd_, multiclass);
+      return this->operator()(mvaInputs_final, mva_odd_, multiclass, regression);
     }
     else
     {
-      return this->operator()(mvaInputs_final, mva_even_, multiclass);
+      return this->operator()(mvaInputs_final, mva_even_, multiclass, regression);
     }
 }
 
@@ -244,7 +244,7 @@ TMVAInterface::operator()(const std::map<std::string, double> & mvaInputs) const
 
 double
 TMVAInterface::operator()(const std::map<std::string, double> & mvaInputs,
-                          const TMVA::Reader * mva, const bool multiclass) const
+                          const TMVA::Reader * mva, const bool multiclass, const bool regression) const
 {
   for(auto & mvaInputVariable: mvaInputVariableMap_)
   {
@@ -270,7 +270,8 @@ TMVAInterface::operator()(const std::map<std::string, double> & mvaInputs,
   }
 
   // Casting mva from "const TMVA::Reader*" to "TMVA::Reader*" (since EvaluateMVA() doesn't accept const input)
-  double mvaOutput = (const_cast<TMVA::Reader*>(mva))->EvaluateMVA("BDTG");
+  double mvaOutput = ( !regression ) ? (const_cast<TMVA::Reader*>(mva))->EvaluateMVA("BDTG") : (const_cast<TMVA::Reader*>(mva))->EvaluateRegression("BDTG")[0];
+
   //std::cout << "TMVA: mvaOutput (bef. transform.) " << mvaOutput << '\n';
   if(isBDTTransform_)
   {
