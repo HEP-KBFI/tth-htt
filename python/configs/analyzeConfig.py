@@ -1256,7 +1256,7 @@ class analyzeConfig(object):
           jobOptions['apply_LHEVpt_rwgt'] = is_LHEVpt_candidate(sample_info["sample_category"], sample_info["dbs_name"])
         if 'apply_subjet_btag' not in jobOptions and self.apply_subjet_btag:
           jobOptions['apply_subjet_btag'] = is_subjetBtag_candidate(sample_info)
-          jobOptions['subjet_btag_procName'] = sample_info['process_name_specific']
+          jobOptions['subjet_btag_procName'] = re.sub('_duplicate$', '', sample_info['process_name_specific'])
 
         if self.blacklist_files:
           jobOptions['enable_blacklist'] = True
