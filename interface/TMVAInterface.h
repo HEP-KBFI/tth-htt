@@ -51,11 +51,11 @@ public:
 
   double
   operator()(const std::map<std::string, double> & mvaInputs,
-             int event_number, const bool multiclass = false) const;
+             int event_number, const bool multiclass = false, const bool regresssion = false ) const;
 
   double 
   operator()(const std::map<std::string, double> & mvaInputs,
-             const TMVA::Reader * mva, const bool multiclass = false) const;
+             const TMVA::Reader * mva, const bool multiclass = false, const bool regression = false) const;
 
   /**
    * @brief Return list of MVA input variables
