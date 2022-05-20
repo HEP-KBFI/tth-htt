@@ -207,7 +207,7 @@ run_wrapped_executable() {
             # add a small delay before stat'ing the file
             sleep 5s
 
-            REMOTE_SIZE=$($st_cmd $OUTPUT_DIR/$OUTPUT_FILE)
+            REMOTE_SIZE=$(stat -c '%s' $OUTPUT_DIR/$OUTPUT_FILE)
             if [ "$REMOTE_SIZE" == "$OUTPUT_FILE_SIZE" ]; then
               COPIED=true
               break;
