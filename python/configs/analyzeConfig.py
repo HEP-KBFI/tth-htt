@@ -534,7 +534,7 @@ class analyzeConfig(object):
           if all(
               any(histogram_to_fit.endswith('MVAOutput_{}'.format(bmName)) for histogram_to_fit in self.histograms_to_fit) \
               for bmName in NONRESONANT_POINTS[nonresPoint]
-          ):
+          ) or self.channel == 'hh_HHatLOvsNLO':
             self.nonResBMs.append(nonresPoint)
         if self.nonResBMs:
           self.nonResBM_points.append('SM')

@@ -12,18 +12,21 @@ main(int argc,
   const std::string line(120, '-');
 
   edm::ParameterSet hhWeight;
-  hhWeight.addParameter<std::string>("denominator_file_lo", "hhAnalysis/multilepton/data/denom_2017.root");
-  hhWeight.addParameter<std::string>("denominator_file_nlo", "hhAnalysis/multilepton/data/denom_2017_nlo.root");
-  hhWeight.addParameter<std::string>("klScan_file", "");
+  hhWeight.addParameter<std::string>("denominator_file_lo", "hhAnalysis/multilepton/data/denom_2018.root");
+  hhWeight.addParameter<std::string>("denominator_file_nlo", "hhAnalysis/multilepton/data/denom_2018_nlo.root");
+  hhWeight.addParameter<std::string>("JHEP04Scan_file", "hhAnalysis/multilepton/data/jhep04_scan.dat");
+  hhWeight.addParameter<std::string>("JHEP03Scan_file", "hhAnalysis/multilepton/data/jhep03_scan.dat");
+  hhWeight.addParameter<std::string>("klScan_file", "hhAnalysis/multilepton/data/kl_scan.dat");
   hhWeight.addParameter<std::string>("ktScan_file", "");
-  hhWeight.addParameter<std::string>("c2Scan_file", "");
+  hhWeight.addParameter<std::string>("c2Scan_file", "hhAnalysis/multilepton/data/c2_scan.dat");
   hhWeight.addParameter<std::string>("cgScan_file", "");
   hhWeight.addParameter<std::string>("c2gScan_file", "");
+  hhWeight.addParameter<std::string>("extraScan_file", "hhAnalysis/multilepton/data/extra_scan.dat");
   hhWeight.addParameter<std::string>("coefFile", "HHStatAnalysis/AnalyticalModels/data/coefficientsByBin_extended_3M_costHHSim_19-4.txt");
-  hhWeight.addParameter<std::string>("histtitle", "signal_ggf_nonresonant_hh_wwww");
+  hhWeight.addParameter<std::string>("histtitle", "signal_ggf_nonresonant_cHHH1_hh_4v_duplicate");
   hhWeight.addParameter<bool>("isDEBUG", false);
   hhWeight.addParameter<bool>("apply_rwgt_lo", false);
-  hhWeight.addParameter<std::vector<std::string>>("scanMode", { "JHEP03" });
+  hhWeight.addParameter<std::vector<std::string>>("scanMode", { "JHEP03", "JHEP04", "kl", "c2", "extra" });
   hhWeight.addParameter<bool>("apply_rwgt_nlo", true);
   hhWeight.addParameter<std::string>("rwgt_nlo_mode", "v3");
 
@@ -84,6 +87,18 @@ main(int argc,
       }
     }
     std::cout << '\n';
+  }
+  std::cout << line << '\n';
+  const double mHH_choice = 514;
+  const double cosTheta_choice = 0.5;
+  std::cout << "For mHH = " << mHH_choice << ", cosTheta = " << cosTheta_choice << ":\n";
+  for(const std::string & bm_name: couplings.get_bm_names())
+  {
+    const double weight = HHWeightNLO_calc.getWeight_LOtoNLO(bm_name, mHH_choice, cosTheta_choice);
+    const double reWeight = HHWeightNLO_calc.getRelativeWeight_LOtoNLO(bm_name, mHH_choice, cosTheta_choice);
+    const double totXsec = HHWeightNLO_calc.get_totalXsec_nlo(bm_name) / 1e3;
+    const double dXsec_nlo = HHWeightInterfaceCouplings::getBinContent(HHWeightNLO_calc.get_dXsec_V2_nlo(bm_name), mHH_choice, cosTheta_choice);
+    std::cout << "  " << bm_name << " -> weight = " << weight << ", reweighting weight = " << reWeight << ", diffXsec = " << dXsec_nlo << ", total XSec = " << totXsec  << '\n';
   }
   std::cout << line << '\n';
 
