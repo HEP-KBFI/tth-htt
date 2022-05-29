@@ -85,8 +85,9 @@ if projection == 'pileup':
     samples = load_samples(era, False, base = 'hh_bbww')
   elif mode == 'hh_bbww_ttbar':
     samples = load_samples(era, False, base = 'hh_bbww', suffix = 'ttbar')
-  elif mode == 'hh_bbww_sync':
-    samples = load_samples(era, False, base = 'hh_bbww', suffix = 'sync')
+  elif mode in ['hh_bbww_sync', 'hh_bbww_nonres_sync']:
+    sync = 'sync' if mode == 'hh_bbww_sync' else 'nonres_sync'
+    samples = load_samples(era, False, base = 'hh_bbww', suffix = sync)
   elif mode == 'hh_bbww_sync_ttbar':
     samples = load_samples(era, False, base = 'hh_bbww', suffix = 'sync_ttbar')
   else:

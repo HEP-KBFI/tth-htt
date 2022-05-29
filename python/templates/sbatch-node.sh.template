@@ -1,4 +1,5 @@
 #!/bin/bash
+#set -x
 # File: sbatch-node.sh.template
 # Version: 0.2
 
@@ -53,7 +54,7 @@ run_wrapped_executable() {
     OUTPUT_DIR="{{ outputDir }}"
     cp_cmd=cp;
     st_cmd="stat --printf='%s'"
-    ls_cmd="ls -l"
+    ls_cmd="ls -lh"
     ls_cmd_mult="ls -d -1"
     ls_cmd_sfx="*"
     cp_cmd="$cp_cmd -f"
@@ -173,9 +174,10 @@ run_wrapped_executable() {
           $cp_cmd $OUTPUT_FILE $OUTPUT_DIR/$OUTPUT_FILE
 
           # add a small delay before stat'ing the file
-          sleep 5s
+          sleep 10s
 
           REMOTE_SIZE=$(stat -c '%s' $OUTPUT_DIR/$OUTPUT_FILE)
+          echo "Remote size: $REMOTE_SIZE"
           if [ "$REMOTE_SIZE" == "$OUTPUT_FILE_SIZE" ]; then
             COPIED=true
             break;
@@ -200,7 +202,7 @@ run_wrapped_executable() {
     echo "End time is: `date`"
 
     echo "Waiting for 10 seconds before returning"
-    sleep 10
+    sleep 120
 
     return $EXIT_CODE
 }
