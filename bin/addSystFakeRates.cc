@@ -755,7 +755,7 @@ int main(int argc, char* argv[])
     const double dy_closureNorm = std::fabs(1. - std::min(norm, 2.)); // keep between -1 and +1
 
     TH1* histogram_data_fakes = loadHistogram(inputFile, process);
-    std::cout << "histogram_data_fakes:" << std::endl;
+    std::cout << "histogram_data: " << process << std::endl;
     dumpHistogram(histogram_data_fakes);
    
     // convert results of fit to histogram format and write histograms to output file
@@ -826,7 +826,10 @@ int main(int argc, char* argv[])
     histogram_closureNormDown->Write();
     histogram_closureShapeUp->Write();
     histogram_closureShapeDown->Write();
-    
+    delete histogram_closureNormUp;
+    delete histogram_closureNormDown;
+    delete histogram_closureShapeUp;
+    delete histogram_closureShapeDown;
     // delete temporary objects
     delete graph_fakes_mc;
     delete graph_mcClosure;
