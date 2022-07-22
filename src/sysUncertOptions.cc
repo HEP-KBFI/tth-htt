@@ -438,7 +438,7 @@ getJetToLeptonFR_option(const std::string & central_or_shift)
   else if     (central_or_shift == "CMS_ttHl_FRm_shape_ee_low_ptUp" ) central_or_shift_int = kFRm_shape_ee_low_ptUp;
   else if     (central_or_shift == "CMS_ttHl_FRm_shape_ee_low_ptDown" ) central_or_shift_int = kFRm_shape_ee_low_ptDown;
   else if     (central_or_shift == "CMS_ttHl_FRm_shape_ee_mid_ptUp" ) central_or_shift_int = kFRm_shape_ee_mid_ptUp;
-  else if     (central_or_shift == "CMS_ttHl_FRm_shape_ee_mid_ptDown" ) central_or_shift_int = kFRm_shape_ee_low_ptDown;
+  else if     (central_or_shift == "CMS_ttHl_FRm_shape_ee_mid_ptDown" ) central_or_shift_int = kFRm_shape_ee_mid_ptDown;
   else if     (central_or_shift == "CMS_ttHl_FRm_shape_ee_high_ptUp" ) central_or_shift_int = kFRm_shape_ee_high_ptUp;
   else if     (central_or_shift == "CMS_ttHl_FRm_shape_ee_high_ptDown" ) central_or_shift_int = kFRm_shape_ee_high_ptDown;
   if     (central_or_shift == "CMS_ttHl_FRe_shape_ptUp"          ) central_or_shift_int = kFRe_shape_ptUp;
