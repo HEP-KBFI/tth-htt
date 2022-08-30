@@ -1257,6 +1257,12 @@ class analyzeConfig(object):
         if 'apply_subjet_btag' not in jobOptions and self.apply_subjet_btag:
           jobOptions['apply_subjet_btag'] = is_subjetBtag_candidate(sample_info)
           jobOptions['subjet_btag_procName'] = re.sub('_duplicate$', '', sample_info['process_name_specific'])
+        if self.era == '2016' and "spin" in sample_info["process_name_specific"]:
+          # For more context, see https://github.com/HEP-KBFI/hh-bbww/issues/41
+          if sample_info["process_name_specific"].endswith("2b2v"):
+            jobOptions['hhSignalScaleFactor'] = 0.622253
+          elif sample_info["process_name_specific"].endswith("2b2v_sl"):
+            jobOptions['hhSignalScaleFactor'] = 0.78403
 
         if self.blacklist_files:
           jobOptions['enable_blacklist'] = True
@@ -1426,6 +1432,7 @@ class analyzeConfig(object):
             'apply_LHEVpt_rwgt',
             'apply_subjet_btag',
             'subjet_btag_procName',
+            'hhSignalScaleFactor',
         ]
         jobOptions_typeMapping = {
             'central_or_shifts_local' : 'cms.vstring(%s)',
