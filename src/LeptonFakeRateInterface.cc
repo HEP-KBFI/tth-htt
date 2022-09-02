@@ -46,7 +46,7 @@ LeptonFakeRateInterface::LeptonFakeRateInterface(const edm::ParameterSet & cfg)
   }
   std::cout << "Non-closure corr to FR of muons = " << jetToMuFakeRateCorr_ << ", electrons = " << jetToEleFakeRateCorr_ << '\n';
 
-  for(int FR_option = kFRl_central; FR_option <= kFRm_shape_ee_high_ptDown; ++FR_option)
+  for(int FR_option = kFRl_central; FR_option <= kFRm_shape_eta_barrelDown; ++FR_option)
   {
     if(! central_or_shift_enums.empty() &&
        std::find(central_or_shift_enums.cbegin(), central_or_shift_enums.cend(), FR_option) == central_or_shift_enums.cend())
