@@ -308,7 +308,7 @@ LeptonFakeRateInterface::getWeight_e(double electronPt,
   }else{
     jetToEleFakeRate_tmp = (jetToEleFakeRate * jetToEleFakeRateCorr_);
   }
-  const double jetToEleFakeRate_final = CapLeptonFakeRate(jetToEleFakeRate_tmp, 0.80, isDEBUG_);  
+  const double jetToEleFakeRate_final = CapLeptonFakeRate(jetToEleFakeRate_tmp, 0.99, isDEBUG_);
   if(isDEBUG_)
   {
     std::cout
@@ -350,7 +350,7 @@ LeptonFakeRateInterface::getWeight_mu(double muonPt,
   }else{
     jetToMuFakeRate_tmp = (jetToMuFakeRate * jetToMuFakeRateCorr_);
   }
-  const double jetToMuFakeRate_final = CapLeptonFakeRate(jetToMuFakeRate_tmp, 0.80, isDEBUG_);  
+  const double jetToMuFakeRate_final = CapLeptonFakeRate(jetToMuFakeRate_tmp, 0.99, isDEBUG_);
   if(isDEBUG_)
   {
     std::cout
