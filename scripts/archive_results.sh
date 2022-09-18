@@ -11,7 +11,7 @@ check_if_exists() {
   fi
 }
 
-TMP_DIR=/scratch/$USER;
+TMP_DIR=/scratch-persistent/$USER;
 OUTPUT_DIR=/hdfs/local/$USER/archives;
 DRYRUN=false;
 OVERWRITE_OUTPUT_FILE=false;
