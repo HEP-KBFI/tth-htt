@@ -60,84 +60,84 @@ LeptonFakeRateInterface::LeptonFakeRateInterface(const edm::ParameterSet & cfg)
       switch(FR_option)
       {
         case kFRl_central:              suffix = "";      break;
-        case kFRe_shape_br_low_ptUp:      suffix = "comb_up";
+        case kFRe_shape_br_low_ptUp:      suffix = "_up";
           histogramName = histogramName_e + suffix;
           lutFakeRate_e_[FR_option]  = new lutWrapperTH2(
              inputFiles_, inputFileName, histogramName,
              lut::kXptYabsEta, -1., 45., lut::kLimit_and_Cut, -1, 1.5, lut::kLimit_and_Cut
              );
           break;
-        case kFRe_shape_br_low_ptDown:    suffix = "comb_down";
+        case kFRe_shape_br_low_ptDown:    suffix = "_down";
           histogramName = histogramName_e + suffix;
           lutFakeRate_e_[FR_option]  = new lutWrapperTH2(
              inputFiles_, inputFileName, histogramName,
              lut::kXptYabsEta, -1., 45., lut::kLimit_and_Cut, -1, 1.5, lut::kLimit_and_Cut
              );
           break;
-        case kFRe_shape_br_mid_ptUp:      suffix = "comb_up";
+        case kFRe_shape_br_mid_ptUp:      suffix = "_up";
           histogramName = histogramName_e + suffix;
           lutFakeRate_e_[FR_option]  = new lutWrapperTH2(
              inputFiles_, inputFileName, histogramName,
              lut::kXptYabsEta, 45., 65., lut::kLimit_and_Cut, -1, 1.5, lut::kLimit_and_Cut
             );
           break;
-        case kFRe_shape_br_mid_ptDown:    suffix = "comb_down";
+        case kFRe_shape_br_mid_ptDown:    suffix = "_down";
           histogramName = histogramName_e + suffix;
           lutFakeRate_e_[FR_option]  = new lutWrapperTH2(
              inputFiles_, inputFileName, histogramName,
              lut::kXptYabsEta, 45., 65., lut::kLimit_and_Cut, -1, 1.5, lut::kLimit_and_Cut
           );
           break;
-        case kFRe_shape_br_high_ptUp:      suffix = "comb_up";
+        case kFRe_shape_br_high_ptUp:      suffix = "_up";
           histogramName = histogramName_e + suffix;
           lutFakeRate_e_[FR_option]  = new lutWrapperTH2(
              inputFiles_, inputFileName, histogramName,
              lut::kXptYabsEta, 65., 100., lut::kLimit_and_Cut, -1, 1.5, lut::kLimit_and_Cut
           );
           break;
-        case kFRe_shape_br_high_ptDown:    suffix = "comb_down";
+        case kFRe_shape_br_high_ptDown:    suffix = "_down";
           histogramName = histogramName_e + suffix;
           lutFakeRate_e_[FR_option]  = new lutWrapperTH2(
              inputFiles_, inputFileName, histogramName,
              lut::kXptYabsEta, 65., 100., lut::kLimit_and_Cut, -1, 1.5, lut::kLimit_and_Cut
           );
           break;
-        case kFRe_shape_ee_low_ptUp:      suffix = "comb_up";
+        case kFRe_shape_ee_low_ptUp:      suffix = "_up";
           histogramName = histogramName_e + suffix;
           lutFakeRate_e_[FR_option]  = new lutWrapperTH2(
              inputFiles_, inputFileName, histogramName,
              lut::kXptYabsEta, -1., 45., lut::kLimit_and_Cut, 1.5, -1, lut::kLimit_and_Cut
           );
           break;
-        case kFRe_shape_ee_low_ptDown:    suffix = "comb_down";
+        case kFRe_shape_ee_low_ptDown:    suffix = "_down";
           histogramName = histogramName_e + suffix;
           lutFakeRate_e_[FR_option]  = new lutWrapperTH2(
              inputFiles_, inputFileName, histogramName,
              lut::kXptYabsEta, -1., 45., lut::kLimit_and_Cut, 1.5, -1, lut::kLimit_and_Cut
           );
           break;
-        case kFRe_shape_ee_mid_ptUp:      suffix = "comb_up";
+        case kFRe_shape_ee_mid_ptUp:      suffix = "_up";
           histogramName = histogramName_e + suffix;
           lutFakeRate_e_[FR_option]  = new lutWrapperTH2(
              inputFiles_, inputFileName, histogramName,
              lut::kXptYabsEta, 45., 65., lut::kLimit_and_Cut, 1.5, -1, lut::kLimit_and_Cut
           );
           break;
-        case kFRe_shape_ee_mid_ptDown:    suffix = "comb_down";
+        case kFRe_shape_ee_mid_ptDown:    suffix = "_down";
           histogramName = histogramName_e + suffix;
           lutFakeRate_e_[FR_option]  = new lutWrapperTH2(
              inputFiles_, inputFileName, histogramName,
              lut::kXptYabsEta, 45., 65., lut::kLimit_and_Cut, 1.5, -1, lut::kLimit_and_Cut
           );
           break;
-        case kFRe_shape_ee_high_ptUp:      suffix = "comb_up";
+        case kFRe_shape_ee_high_ptUp:      suffix = "_up";
           histogramName = histogramName_e + suffix;
           lutFakeRate_e_[FR_option]  = new lutWrapperTH2(
              inputFiles_, inputFileName, histogramName,
              lut::kXptYabsEta, 65., 100., lut::kLimit_and_Cut, 1.5, -1, lut::kLimit_and_Cut
           );
           break;
-        case kFRe_shape_ee_high_ptDown:    suffix = "comb_down";
+        case kFRe_shape_ee_high_ptDown:    suffix = "_down";
           histogramName = histogramName_e + suffix;
           lutFakeRate_e_[FR_option]  = new lutWrapperTH2(
              inputFiles_, inputFileName, histogramName,
@@ -166,84 +166,84 @@ LeptonFakeRateInterface::LeptonFakeRateInterface(const edm::ParameterSet & cfg)
       switch(FR_option)
       {
         case kFRl_central:              suffix = "";      break;
-        case kFRm_shape_br_low_ptUp:    suffix = "comb_up"; break;
+        case kFRm_shape_br_low_ptUp:    suffix = "_up"; break;
           histogramName = histogramName_mu + suffix;
           lutFakeRate_mu_[FR_option]  = new lutWrapperTH2(
              inputFiles_, inputFileName, histogramName,
              lut::kXptYabsEta, -1., 45., lut::kLimit_and_Cut, -1, 1.2, lut::kLimit_and_Cut
           );
           break;
-        case kFRm_shape_br_low_ptDown:    suffix = "comb_down";
+        case kFRm_shape_br_low_ptDown:    suffix = "_down";
           histogramName = histogramName_mu + suffix;
           lutFakeRate_mu_[FR_option]  = new lutWrapperTH2(
              inputFiles_, inputFileName, histogramName,
              lut::kXptYabsEta, -1., 45., lut::kLimit_and_Cut, -1, 1.2, lut::kLimit_and_Cut
           );
           break;
-        case kFRm_shape_br_mid_ptUp:      suffix = "comb_up";
+        case kFRm_shape_br_mid_ptUp:      suffix = "_up";
           histogramName = histogramName_mu + suffix;
           lutFakeRate_mu_[FR_option]  = new lutWrapperTH2(
              inputFiles_, inputFileName, histogramName,
              lut::kXptYabsEta, 45., 65., lut::kLimit_and_Cut, -1, 1.2, lut::kLimit_and_Cut
           );
           break;
-        case kFRm_shape_br_mid_ptDown:    suffix = "comb_down";
+        case kFRm_shape_br_mid_ptDown:    suffix = "_down";
           histogramName = histogramName_mu + suffix;
           lutFakeRate_mu_[FR_option]  = new lutWrapperTH2(
              inputFiles_, inputFileName, histogramName,
              lut::kXptYabsEta, 45., 65., lut::kLimit_and_Cut, -1, 1.2, lut::kLimit_and_Cut
           );
           break;
-        case kFRm_shape_br_high_ptUp:      suffix = "comb_up";
+        case kFRm_shape_br_high_ptUp:      suffix = "_up";
           histogramName = histogramName_mu + suffix;
           lutFakeRate_mu_[FR_option]  = new lutWrapperTH2(
              inputFiles_, inputFileName, histogramName,
              lut::kXptYabsEta, 65., 100., lut::kLimit_and_Cut, -1, 1.2, lut::kLimit_and_Cut
           );
           break;
-        case kFRm_shape_br_high_ptDown:    suffix = "comb_down";
+        case kFRm_shape_br_high_ptDown:    suffix = "_down";
           histogramName = histogramName_mu + suffix;
           lutFakeRate_mu_[FR_option]  = new lutWrapperTH2(
              inputFiles_, inputFileName, histogramName,
              lut::kXptYabsEta, 65., 100., lut::kLimit_and_Cut, -1, 1.2, lut::kLimit_and_Cut
           );
           break;
-        case kFRm_shape_ee_low_ptUp:      suffix = "comb_up";
+        case kFRm_shape_ee_low_ptUp:      suffix = "_up";
           histogramName = histogramName_mu + suffix;
           lutFakeRate_mu_[FR_option]  = new lutWrapperTH2(
              inputFiles_, inputFileName, histogramName,
              lut::kXptYabsEta, -1., 45., lut::kLimit_and_Cut, 1.2, -1, lut::kLimit_and_Cut
            );
           break;
-        case kFRm_shape_ee_low_ptDown:    suffix = "comb_down";
+        case kFRm_shape_ee_low_ptDown:    suffix = "_down";
           histogramName = histogramName_mu + suffix;
           lutFakeRate_mu_[FR_option]  = new lutWrapperTH2(
              inputFiles_, inputFileName, histogramName,
              lut::kXptYabsEta, -1., 45., lut::kLimit_and_Cut, 1.2, -1, lut::kLimit_and_Cut
           );
           break;
-        case kFRm_shape_ee_mid_ptUp:      suffix = "comb_up";
+        case kFRm_shape_ee_mid_ptUp:      suffix = "_up";
           histogramName = histogramName_mu + suffix;
           lutFakeRate_mu_[FR_option]  = new lutWrapperTH2(
              inputFiles_, inputFileName, histogramName,
              lut::kXptYabsEta, 45., 65., lut::kLimit_and_Cut, 1.2, -1, lut::kLimit_and_Cut
           );
           break;
-        case kFRm_shape_ee_mid_ptDown:    suffix = "comb_down";
+        case kFRm_shape_ee_mid_ptDown:    suffix = "_down";
           histogramName = histogramName_mu + suffix;
           lutFakeRate_mu_[FR_option]  = new lutWrapperTH2(
              inputFiles_, inputFileName, histogramName,
              lut::kXptYabsEta, 45., 65., lut::kLimit_and_Cut, 1.2, -1, lut::kLimit_and_Cut
           );
           break;
-        case kFRm_shape_ee_high_ptUp:      suffix = "comb_up";
+        case kFRm_shape_ee_high_ptUp:      suffix = "_up";
           histogramName = histogramName_mu + suffix;
           lutFakeRate_mu_[FR_option]  = new lutWrapperTH2(
              inputFiles_, inputFileName, histogramName,
              lut::kXptYabsEta, 65., 100., lut::kLimit_and_Cut, 1.2, -1, lut::kLimit_and_Cut
           );
           break;
-        case kFRm_shape_ee_high_ptDown:      suffix = "comb_down";
+        case kFRm_shape_ee_high_ptDown:      suffix = "_down";
           histogramName = histogramName_mu + suffix;
           lutFakeRate_mu_[FR_option]  = new lutWrapperTH2(
              inputFiles_, inputFileName, histogramName,

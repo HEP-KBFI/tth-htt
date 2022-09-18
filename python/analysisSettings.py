@@ -738,6 +738,29 @@ class systematics(object):
 
   FakeRate_l_shape_corr = FakeRate_e_shape().corr + FakeRate_m_shape().corr
 
+  class FakeRate_bbww_e_shape(object):
+    br_low_pt  = [ "CMS_ttHl_FRe_shape_br_low_ptUp", "CMS_ttHl_FRe_shape_br_low_ptDown"   ]
+    br_mid_pt  = [ "CMS_ttHl_FRe_shape_br_mid_ptUp", "CMS_ttHl_FRe_shape_br_mid_ptDown"   ]
+    br_high_pt = [ "CMS_ttHl_FRe_shape_br_high_ptUp", "CMS_ttHl_FRe_shape_br_high_ptDown" ]
+    ee_low_pt  = [ "CMS_ttHl_FRe_shape_ee_low_ptUp", "CMS_ttHl_FRe_shape_ee_low_ptDown"   ]
+    ee_mid_pt  = [ "CMS_ttHl_FRe_shape_ee_mid_ptUp", "CMS_ttHl_FRe_shape_ee_mid_ptDown"   ]
+    ee_high_pt = [ "CMS_ttHl_FRe_shape_ee_high_ptUp", "CMS_ttHl_FRe_shape_ee_high_ptDown" ]
+
+    full = br_low_pt + br_mid_pt + br_high_pt + ee_low_pt + ee_mid_pt + ee_high_pt
+
+  class FakeRate_bbww_m_shape(object):
+    br_low_pt  = [ "CMS_ttHl_FRm_shape_br_low_ptUp", "CMS_ttHl_FRm_shape_br_low_ptDown"   ]
+    br_mid_pt  = [ "CMS_ttHl_FRm_shape_br_mid_ptUp", "CMS_ttHl_FRm_shape_br_mid_ptDown"   ]
+    br_high_pt = [ "CMS_ttHl_FRm_shape_br_high_ptUp", "CMS_ttHl_FRm_shape_br_high_ptDown" ]
+    ee_low_pt  = [ "CMS_ttHl_FRm_shape_ee_low_ptUp", "CMS_ttHl_FRm_shape_ee_low_ptDown"   ]
+    ee_mid_pt  = [ "CMS_ttHl_FRm_shape_ee_mid_ptUp", "CMS_ttHl_FRm_shape_ee_mid_ptDown"   ]
+    ee_high_pt = [ "CMS_ttHl_FRm_shape_ee_high_ptUp", "CMS_ttHl_FRm_shape_ee_high_ptDown" ]
+
+    full = br_low_pt + br_mid_pt + br_high_pt + ee_low_pt + ee_mid_pt + ee_high_pt
+
+  bbww_FR_e_shape = FakeRate_bbww_e_shape.full
+  bbww_FR_m_shape = FakeRate_bbww_m_shape.full
+
   class FakeRate_t(object):
     jt_norm  = [ "CMS_ttHl_FRjt_normUp",  "CMS_ttHl_FRjt_normDown"  ]
     jt_shape = [ "CMS_ttHl_FRjt_shapeUp", "CMS_ttHl_FRjt_shapeDown" ]
@@ -768,8 +791,8 @@ class systematics(object):
   pdf_mem      = PDF().mem
   btag         = Btag().full
   leptonIDSF   = LeptonIDSF().full
-  FRe_shape    = FakeRate_e_shape().full
-  FRm_shape    = FakeRate_m_shape().full
+  FRe_shape    = FakeRate_bbww_e_shape().full#FakeRate_e_shape().full
+  FRm_shape    = FakeRate_bbww_m_shape().full
   FRl_shape    = FRe_shape + FRm_shape
   FR_t         = FakeRate_t().full
   electron_E   = Electron_energy().full
