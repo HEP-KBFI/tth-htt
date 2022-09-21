@@ -1786,6 +1786,8 @@ class analyzeConfig(object):
              inputFiles: input file (the ROOT file produced by hadd_stage1)
              outputFile: output file of the job
         """
+        systematics = [systematic for systematic in self.central_or_shifts if systematic not in ['hdampUp', 'hdampDown', 'GluonMove', 'QCDbased', 'erdON', 'ueUp', 'ueDown']]
+        systematics.extend(['hdampmodUp', 'hdampmodDown', 'uemodUp', 'uemodDown', 'QCDbasedUp', 'QCDbasedDown', 'erdONUp', 'erdONDown', 'GluonMoveUp', 'GluonMoveDown'])
         lines = []
         lines.append("process.fwliteInput.fileNames = cms.vstring('%s')" % jobOptions['inputFile'])
         lines.append("process.fwliteOutput.fileName = cms.string('%s')" % os.path.basename(jobOptions['outputFile']))
@@ -1802,7 +1804,7 @@ class analyzeConfig(object):
         if '0l' not in self.channel:
             processesToSubtract.extend([ "%s_Convs" % conv_background for conv_background in self.convs_backgrounds])
         lines.append("process.addBackgroundLeptonFakes.processesToSubtract = cms.vstring(%s)" % processesToSubtract)
-        lines.append("process.addBackgroundLeptonFakes.sysShifts = cms.vstring(%s)" % self.central_or_shifts)
+        lines.append("process.addBackgroundLeptonFakes.sysShifts = cms.vstring(%s)" % systematics)
         if 'max_depth_recursion' in jobOptions.keys():
             lines.append("process.addBackgroundLeptonFakes.max_depth_recursion = cms.int32(%i)" % jobOptions['max_depth_recursion'])
         if 'makeBinContentsPositive_forTailFits' in jobOptions.keys():
