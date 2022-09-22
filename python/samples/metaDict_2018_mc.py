@@ -1306,6 +1306,58 @@ meta_dictionary["/DYBBJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutum
   ("comment",               "100.0%; status: VALID; size: 256.53GB; nevents: 5.16M; release: 10_2_5; last modified: 2019-03-17 15:51:17"),
 ])
 
+meta_dictionary["/WJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM"] =  OD([
+  ("crab_string",           "2018_2022Aug29_WJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1"),
+  ("sample_category",       "EWK"),
+  ("process_name_specific", "WJetsToLNu"),
+  ("nof_db_events",         29235243),
+  ("nof_db_files",          431),
+  ("fsize_db",              1165203251619),
+  ("xsection",              61526.7),
+  ("use_it",                False),
+  ("genWeight",             True),
+  ("comment",               "100.0%; status: VALID; size: 1.17TB; nevents: 29.24M; release: 10_2_5; last modified: 2020-12-30 03:40:35"),
+])
+
+meta_dictionary["/WJetsToLNu_0J_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM"] =  OD([
+  ("crab_string",           "2018_2022Aug29_WJetsToLNu_0J_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1"),
+  ("sample_category",       "EWK"),
+  ("process_name_specific", "WJetsToLNu_0J"),
+  ("nof_db_events",         192288265),
+  ("nof_db_files",          2732),
+  ("fsize_db",              7342799838453),
+  ("xsection",              50062.0),
+  ("use_it",                False),
+  ("genWeight",             True),
+  ("comment",               "98.5%; status: VALID; size: 7.34TB; nevents: 192.29M; release: 10_2_6; last modified: 2019-03-16 13:48:29"),
+])
+
+meta_dictionary["/WJetsToLNu_1J_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM"] =  OD([
+  ("crab_string",           "2018_2022Aug29_WJetsToLNu_1J_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1"),
+  ("sample_category",       "EWK"),
+  ("process_name_specific", "WJetsToLNu_1J"),
+  ("nof_db_events",         171715343),
+  ("nof_db_files",          2499),
+  ("fsize_db",              7108800444044),
+  ("xsection",              8331.0),
+  ("use_it",                False),
+  ("genWeight",             True),
+  ("comment",               "99.9%; status: VALID; size: 7.11TB; nevents: 171.72M; release: 10_2_6; last modified: 2019-03-04 19:10:35"),
+])
+
+meta_dictionary["/WJetsToLNu_2J_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/MINIAODSIM"] =  OD([
+  ("crab_string",           "2018_2022Aug29_WJetsToLNu_2J_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1"),
+  ("sample_category",       "EWK"),
+  ("process_name_specific", "WJetsToLNu_2J"),
+  ("nof_db_events",         98362049),
+  ("nof_db_files",          1478),
+  ("fsize_db",              4086775772796),
+  ("xsection",              3133.0),
+  ("use_it",                False),
+  ("genWeight",             True),
+  ("comment",               "96.4%; status: VALID; size: 4.09TB; nevents: 98.36M; release: 10_2_6; last modified: 2019-03-04 15:06:30"),
+])
+
 meta_dictionary["/WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/MINIAODSIM"] =  OD([
   ("crab_string",           "2018_2020Mar03_WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2"),
   ("sample_category",       "EWK"),
@@ -2284,7 +2336,7 @@ meta_dictionary["/QCD_Pt-1000toInf_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutu
 # TTZH:       200.00k
 # Rares:      80.32M
 # VH:         21.15M
-# EWK:        1.05G
+# EWK:        1.54G
 # WW:         35.45M
 # WZ:         170.10M
 # ZZ:         195.41M

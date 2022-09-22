@@ -192,3 +192,7 @@
 /hdfs/cms/store/user/kaehatah/2018prompt_2020Dec20/DoubleMuon/2018prompt_2020Dec20_DoubleMuon__Run2018D-PromptReco-v2 100.0%
 /hdfs/cms/store/user/kaehatah/2018prompt_2020Dec20/SingleMuon/2018prompt_2020Dec20_SingleMuon__Run2018D-22Jan2019-v2 100.0%
 /hdfs/cms/store/user/kaehatah/2018prompt_2020Dec20/Tau/2018prompt_2020Dec20_Tau__Run2018D-PromptReco-v2 100.0%
+/hdfs/cms/store/user/kaehatah/2018_2022Aug29/WJetsToLNu_0J_TuneCP5_13TeV-amcatnloFXFX-pythia8/2018_2022Aug29_WJetsToLNu_0J_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1 98.5%
+/hdfs/cms/store/user/kaehatah/2018_2022Aug29/WJetsToLNu_1J_TuneCP5_13TeV-amcatnloFXFX-pythia8/2018_2022Aug29_WJetsToLNu_1J_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1 99.9%
+/hdfs/cms/store/user/kaehatah/2018_2022Aug29/WJetsToLNu_2J_TuneCP5_13TeV-amcatnloFXFX-pythia8/2018_2022Aug29_WJetsToLNu_2J_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1 96.4%
+/hdfs/cms/store/user/kaehatah/2018_2022Aug29/WJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-pythia8/2018_2022Aug29_WJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1 100.0%
