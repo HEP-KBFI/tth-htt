@@ -177,6 +177,10 @@ W4JetsToLNu 1.000000e+00
 WGToLNuG 1.000000e+00
 WGToLNuG_01J 5.933862e+02
 WHToNonbb_M125 1.189627e+01
+WJetsToLNu 2.512203e+05
+WJetsToLNu_0J 7.596884e+04
+WJetsToLNu_1J 9.871772e+04
+WJetsToLNu_2J 8.118128e+04
 WJetsToLNu_HT100To200 1.000000e+00
 WJetsToLNu_HT1200To2500 1.000000e+00
 WJetsToLNu_HT200To400 1.000000e+00
@@ -425,6 +429,7 @@ signal_ggf_spin0_400_hh_2v2t 1.000000e+00
 signal_ggf_spin0_400_hh_4t 1.000000e+00
 signal_ggf_spin0_400_hh_4v 1.000000e+00
 signal_ggf_spin0_450_hh_2b2t 1.000000e+00
+signal_ggf_spin0_450_hh_2b2v_private 1.000000e+00
 signal_ggf_spin0_450_hh_2b2v_sl 1.000000e+00
 signal_ggf_spin0_450_hh_2v2t 1.000000e+00
 signal_ggf_spin0_450_hh_4t 1.000000e+00
@@ -837,4 +842,3 @@ tZq_ll_4f_ext1 2.856042e-01
 ttHJetToNonbb_M125_amcatnlo 2.873835e+00
 ttHJetTobb_M125 2.873835e+00
 ttHToNonbb_M125_powheg 5.382260e-01
-signal_ggf_spin0_450_hh_2b2v_private 1.000000e+00
