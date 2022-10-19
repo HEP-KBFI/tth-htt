@@ -60,90 +60,18 @@ LeptonFakeRateInterface::LeptonFakeRateInterface(const edm::ParameterSet & cfg)
       switch(FR_option)
       {
         case kFRl_central:              suffix = "";      break;
-        case kFRe_shape_br_low_ptUp:      suffix = "_up";
-          histogramName = histogramName_e + suffix;
-          lutFakeRate_e_[FR_option]  = new lutWrapperTH2(
-             inputFiles_, inputFileName, histogramName,
-             lut::kXptYabsEta, -1., 45., lut::kLimit_and_Cut, -1, 1.5, lut::kLimit_and_Cut
-             );
-          break;
-        case kFRe_shape_br_low_ptDown:    suffix = "_down";
-          histogramName = histogramName_e + suffix;
-          lutFakeRate_e_[FR_option]  = new lutWrapperTH2(
-             inputFiles_, inputFileName, histogramName,
-             lut::kXptYabsEta, -1., 45., lut::kLimit_and_Cut, -1, 1.5, lut::kLimit_and_Cut
-             );
-          break;
-        case kFRe_shape_br_mid_ptUp:      suffix = "_up";
-          histogramName = histogramName_e + suffix;
-          lutFakeRate_e_[FR_option]  = new lutWrapperTH2(
-             inputFiles_, inputFileName, histogramName,
-             lut::kXptYabsEta, 45., 65., lut::kLimit_and_Cut, -1, 1.5, lut::kLimit_and_Cut
-            );
-          break;
-        case kFRe_shape_br_mid_ptDown:    suffix = "_down";
-          histogramName = histogramName_e + suffix;
-          lutFakeRate_e_[FR_option]  = new lutWrapperTH2(
-             inputFiles_, inputFileName, histogramName,
-             lut::kXptYabsEta, 45., 65., lut::kLimit_and_Cut, -1, 1.5, lut::kLimit_and_Cut
-          );
-          break;
-        case kFRe_shape_br_high_ptUp:      suffix = "_up";
-          histogramName = histogramName_e + suffix;
-          lutFakeRate_e_[FR_option]  = new lutWrapperTH2(
-             inputFiles_, inputFileName, histogramName,
-             lut::kXptYabsEta, 65., 100., lut::kLimit_and_Cut, -1, 1.5, lut::kLimit_and_Cut
-          );
-          break;
-        case kFRe_shape_br_high_ptDown:    suffix = "_down";
-          histogramName = histogramName_e + suffix;
-          lutFakeRate_e_[FR_option]  = new lutWrapperTH2(
-             inputFiles_, inputFileName, histogramName,
-             lut::kXptYabsEta, 65., 100., lut::kLimit_and_Cut, -1, 1.5, lut::kLimit_and_Cut
-          );
-          break;
-        case kFRe_shape_ee_low_ptUp:      suffix = "_up";
-          histogramName = histogramName_e + suffix;
-          lutFakeRate_e_[FR_option]  = new lutWrapperTH2(
-             inputFiles_, inputFileName, histogramName,
-             lut::kXptYabsEta, -1., 45., lut::kLimit_and_Cut, 1.5, -1, lut::kLimit_and_Cut
-          );
-          break;
-        case kFRe_shape_ee_low_ptDown:    suffix = "_down";
-          histogramName = histogramName_e + suffix;
-          lutFakeRate_e_[FR_option]  = new lutWrapperTH2(
-             inputFiles_, inputFileName, histogramName,
-             lut::kXptYabsEta, -1., 45., lut::kLimit_and_Cut, 1.5, -1, lut::kLimit_and_Cut
-          );
-          break;
-        case kFRe_shape_ee_mid_ptUp:      suffix = "_up";
-          histogramName = histogramName_e + suffix;
-          lutFakeRate_e_[FR_option]  = new lutWrapperTH2(
-             inputFiles_, inputFileName, histogramName,
-             lut::kXptYabsEta, 45., 65., lut::kLimit_and_Cut, 1.5, -1, lut::kLimit_and_Cut
-          );
-          break;
-        case kFRe_shape_ee_mid_ptDown:    suffix = "_down";
-          histogramName = histogramName_e + suffix;
-          lutFakeRate_e_[FR_option]  = new lutWrapperTH2(
-             inputFiles_, inputFileName, histogramName,
-             lut::kXptYabsEta, 45., 65., lut::kLimit_and_Cut, 1.5, -1, lut::kLimit_and_Cut
-          );
-          break;
-        case kFRe_shape_ee_high_ptUp:      suffix = "_up";
-          histogramName = histogramName_e + suffix;
-          lutFakeRate_e_[FR_option]  = new lutWrapperTH2(
-             inputFiles_, inputFileName, histogramName,
-             lut::kXptYabsEta, 65., 100., lut::kLimit_and_Cut, 1.5, -1, lut::kLimit_and_Cut
-          );
-          break;
-        case kFRe_shape_ee_high_ptDown:    suffix = "_down";
-          histogramName = histogramName_e + suffix;
-          lutFakeRate_e_[FR_option]  = new lutWrapperTH2(
-             inputFiles_, inputFileName, histogramName,
-             lut::kXptYabsEta, 65., 100., lut::kLimit_and_Cut, 1.5, -1, lut::kLimit_and_Cut
-          );
-          break;
+        case kFRe_shape_br_low_ptUp:      suffix = "_br_low_ptup"; break;
+        case kFRe_shape_br_low_ptDown:    suffix = "_br_low_ptdown"; break;
+        case kFRe_shape_br_mid_ptUp:      suffix = "_br_mid_ptup"; break;
+        case kFRe_shape_br_mid_ptDown:    suffix = "_br_mid_ptdown"; break;
+        case kFRe_shape_br_high_ptUp:      suffix = "_br_high_ptup"; break;
+        case kFRe_shape_br_high_ptDown:    suffix = "_br_high_ptdown"; break;
+        case kFRe_shape_ee_low_ptUp:      suffix = "_ee_low_ptup"; break;
+        case kFRe_shape_ee_low_ptDown:    suffix = "_ee_low_ptdown"; break;
+        case kFRe_shape_ee_mid_ptUp:      suffix = "_ee_mid_ptup"; break;
+        case kFRe_shape_ee_mid_ptDown:    suffix = "_ee_mid_ptdown"; break;
+        case kFRe_shape_ee_high_ptUp:      suffix = "_ee_high_ptup"; break;
+        case kFRe_shape_ee_high_ptDown:    suffix = "_ee_high_ptdown"; break;
         case kFRe_shape_ptUp:           suffix = "_pt1";  break;
         case kFRe_shape_ptDown:         suffix = "_pt2";  break;
         case kFRe_shape_normUp:         suffix = "_up";   break;
@@ -152,13 +80,10 @@ LeptonFakeRateInterface::LeptonFakeRateInterface(const edm::ParameterSet & cfg)
         case kFRe_shape_eta_barrelDown: suffix = "_be2";  break;
         default: throw cmsException(this, __func__, __LINE__) << "Invalid option: " << FR_option;
       }
-      if ( ! lutFakeRate_e_.count(FR_option) )
-      {
-        histogramName = histogramName_e + suffix;
-        lutFakeRate_e_[FR_option]  = new lutWrapperTH2(
-           inputFiles_, inputFileName, histogramName,  lut::kXptYabsEta, -1., 100.
+      histogramName = histogramName_e + suffix;
+      lutFakeRate_e_[FR_option]  = new lutWrapperTH2(
+          inputFiles_, inputFileName, histogramName,  lut::kXptYabsEta, -1., 100.
       );
-      }
       std::cout << "Loaded histogram '" << histogramName << "' from file " << inputFileName << '\n';
     }
     if(FR_option == kFRl_central || (FR_option >= kFRm_shape_ptUp && FR_option <= kFRm_shape_eta_barrelDown))
@@ -166,90 +91,18 @@ LeptonFakeRateInterface::LeptonFakeRateInterface(const edm::ParameterSet & cfg)
       switch(FR_option)
       {
         case kFRl_central:              suffix = "";      break;
-        case kFRm_shape_br_low_ptUp:    suffix = "_up"; break;
-          histogramName = histogramName_mu + suffix;
-          lutFakeRate_mu_[FR_option]  = new lutWrapperTH2(
-             inputFiles_, inputFileName, histogramName,
-             lut::kXptYabsEta, -1., 45., lut::kLimit_and_Cut, -1, 1.2, lut::kLimit_and_Cut
-          );
-          break;
-        case kFRm_shape_br_low_ptDown:    suffix = "_down";
-          histogramName = histogramName_mu + suffix;
-          lutFakeRate_mu_[FR_option]  = new lutWrapperTH2(
-             inputFiles_, inputFileName, histogramName,
-             lut::kXptYabsEta, -1., 45., lut::kLimit_and_Cut, -1, 1.2, lut::kLimit_and_Cut
-          );
-          break;
-        case kFRm_shape_br_mid_ptUp:      suffix = "_up";
-          histogramName = histogramName_mu + suffix;
-          lutFakeRate_mu_[FR_option]  = new lutWrapperTH2(
-             inputFiles_, inputFileName, histogramName,
-             lut::kXptYabsEta, 45., 65., lut::kLimit_and_Cut, -1, 1.2, lut::kLimit_and_Cut
-          );
-          break;
-        case kFRm_shape_br_mid_ptDown:    suffix = "_down";
-          histogramName = histogramName_mu + suffix;
-          lutFakeRate_mu_[FR_option]  = new lutWrapperTH2(
-             inputFiles_, inputFileName, histogramName,
-             lut::kXptYabsEta, 45., 65., lut::kLimit_and_Cut, -1, 1.2, lut::kLimit_and_Cut
-          );
-          break;
-        case kFRm_shape_br_high_ptUp:      suffix = "_up";
-          histogramName = histogramName_mu + suffix;
-          lutFakeRate_mu_[FR_option]  = new lutWrapperTH2(
-             inputFiles_, inputFileName, histogramName,
-             lut::kXptYabsEta, 65., 100., lut::kLimit_and_Cut, -1, 1.2, lut::kLimit_and_Cut
-          );
-          break;
-        case kFRm_shape_br_high_ptDown:    suffix = "_down";
-          histogramName = histogramName_mu + suffix;
-          lutFakeRate_mu_[FR_option]  = new lutWrapperTH2(
-             inputFiles_, inputFileName, histogramName,
-             lut::kXptYabsEta, 65., 100., lut::kLimit_and_Cut, -1, 1.2, lut::kLimit_and_Cut
-          );
-          break;
-        case kFRm_shape_ee_low_ptUp:      suffix = "_up";
-          histogramName = histogramName_mu + suffix;
-          lutFakeRate_mu_[FR_option]  = new lutWrapperTH2(
-             inputFiles_, inputFileName, histogramName,
-             lut::kXptYabsEta, -1., 45., lut::kLimit_and_Cut, 1.2, -1, lut::kLimit_and_Cut
-           );
-          break;
-        case kFRm_shape_ee_low_ptDown:    suffix = "_down";
-          histogramName = histogramName_mu + suffix;
-          lutFakeRate_mu_[FR_option]  = new lutWrapperTH2(
-             inputFiles_, inputFileName, histogramName,
-             lut::kXptYabsEta, -1., 45., lut::kLimit_and_Cut, 1.2, -1, lut::kLimit_and_Cut
-          );
-          break;
-        case kFRm_shape_ee_mid_ptUp:      suffix = "_up";
-          histogramName = histogramName_mu + suffix;
-          lutFakeRate_mu_[FR_option]  = new lutWrapperTH2(
-             inputFiles_, inputFileName, histogramName,
-             lut::kXptYabsEta, 45., 65., lut::kLimit_and_Cut, 1.2, -1, lut::kLimit_and_Cut
-          );
-          break;
-        case kFRm_shape_ee_mid_ptDown:    suffix = "_down";
-          histogramName = histogramName_mu + suffix;
-          lutFakeRate_mu_[FR_option]  = new lutWrapperTH2(
-             inputFiles_, inputFileName, histogramName,
-             lut::kXptYabsEta, 45., 65., lut::kLimit_and_Cut, 1.2, -1, lut::kLimit_and_Cut
-          );
-          break;
-        case kFRm_shape_ee_high_ptUp:      suffix = "_up";
-          histogramName = histogramName_mu + suffix;
-          lutFakeRate_mu_[FR_option]  = new lutWrapperTH2(
-             inputFiles_, inputFileName, histogramName,
-             lut::kXptYabsEta, 65., 100., lut::kLimit_and_Cut, 1.2, -1, lut::kLimit_and_Cut
-          );
-          break;
-        case kFRm_shape_ee_high_ptDown:      suffix = "_down";
-          histogramName = histogramName_mu + suffix;
-          lutFakeRate_mu_[FR_option]  = new lutWrapperTH2(
-             inputFiles_, inputFileName, histogramName,
-             lut::kXptYabsEta, 65., 100., lut::kLimit_and_Cut, 1.2, -1, lut::kLimit_and_Cut
-          );
-          break;
+        case kFRm_shape_br_low_ptUp:    suffix = "_br_low_ptup"; break;
+        case kFRm_shape_br_low_ptDown:    suffix = "_br_low_ptdown"; break;
+        case kFRm_shape_br_mid_ptUp:      suffix = "_br_mid_ptup"; break;
+        case kFRm_shape_br_mid_ptDown:    suffix = "_br_mid_ptdown"; break;
+        case kFRm_shape_br_high_ptUp:      suffix = "_br_high_ptup"; break;
+        case kFRm_shape_br_high_ptDown:    suffix = "_br_high_ptdown"; break;
+        case kFRm_shape_ee_low_ptUp:      suffix = "_ee_low_ptup"; break;
+        case kFRm_shape_ee_low_ptDown:    suffix = "_ee_low_ptdown"; break;
+        case kFRm_shape_ee_mid_ptUp:      suffix = "_ee_mid_ptup"; break;
+        case kFRm_shape_ee_mid_ptDown:    suffix = "_ee_mid_ptdown"; break;
+        case kFRm_shape_ee_high_ptUp:      suffix = "_ee_high_ptup";break;
+        case kFRm_shape_ee_high_ptDown:      suffix = "_ee_high_ptdown"; break;
         case kFRm_shape_ptUp:           suffix = "_pt1";  break;
         case kFRm_shape_ptDown:         suffix = "_pt2";  break;
         case kFRm_shape_normUp:         suffix = "_up";   break;
@@ -258,13 +111,10 @@ LeptonFakeRateInterface::LeptonFakeRateInterface(const edm::ParameterSet & cfg)
         case kFRm_shape_eta_barrelDown: suffix = "_be2";  break;
         default: throw cmsException(this, __func__, __LINE__) << "Invalid option: " << FR_option;
       }
-      if ( ! lutFakeRate_mu_.count(FR_option) )
-      {
-        histogramName = histogramName_mu + suffix;
-        lutFakeRate_mu_[FR_option] = new lutWrapperTH2(
+      histogramName = histogramName_mu + suffix;
+      lutFakeRate_mu_[FR_option] = new lutWrapperTH2(
            inputFiles_, inputFileName, histogramName, lut::kXptYabsEta, -1., 100.
        );
-      }
       std::cout << "Loaded histogram '" << histogramName << "' from file " << inputFileName << '\n';
     }
   }
