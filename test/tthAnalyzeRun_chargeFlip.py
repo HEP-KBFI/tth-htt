@@ -110,7 +110,7 @@ if __name__ == '__main__':
   analysis = analyzeConfig_charge_flip(
     configDir = os.path.join("/scratch-persistent", getpass.getuser(), "ttHAnalysis", era, version),
     localDir  = os.path.join("/home",               getpass.getuser(), "ttHAnalysis", era, version),
-    outputDir = os.path.join("/local",         getpass.getuser(), "ttHAnalysis", era, version),
+    outputDir = os.path.join("/local",              getpass.getuser(), "ttHAnalysis", era, version),
     cmssw_base_dir_combine = cmssw_base_dir_combine,
     executable_analyze     = "analyze_charge_flip",
     samples                = samples,

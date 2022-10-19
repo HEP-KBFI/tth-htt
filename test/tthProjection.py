@@ -139,7 +139,7 @@ if __name__ == '__main__':
   projection_dir = 'ttH{}Projection'.format(projection.capitalize())
   configDir = os.path.join("/scratch-persistent", getpass.getuser(), projection_dir, era, version)
   localDir  = os.path.join("/home",               getpass.getuser(), projection_dir, era, version)
-  outputDir = os.path.join("/local",         getpass.getuser(), projection_dir, era, version)
+  outputDir = os.path.join("/local",              getpass.getuser(), projection_dir, era, version)
 
   if validate and projection == 'pileup':
     validation_result = validate_pu(os.path.join(outputDir, output_file), samples)

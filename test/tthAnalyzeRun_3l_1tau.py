@@ -173,7 +173,7 @@ if __name__ == '__main__':
   analysis = analyzeConfig_3l_1tau(
     configDir = os.path.join("/scratch-persistent", getpass.getuser(), "ttHAnalysis", era, version),
     localDir  = os.path.join("/home",               getpass.getuser(), "ttHAnalysis", era, version),
-    outputDir = os.path.join("/local",         getpass.getuser(), "ttHAnalysis", era, version),
+    outputDir = os.path.join("/local",              getpass.getuser(), "ttHAnalysis", era, version),
     executable_analyze                    = "analyze_3l_1tau",
     cfgFile_analyze                       = "analyze_3l_1tau_cfg.py",
     samples                               = samples,
