@@ -31,8 +31,7 @@
 #TODO: add support for eos and XRD protocols
 #TODO: disentangle the computation of era-based integrated luminosity and DAS queries on data samples
 
-from tthAnalysis.HiggsToTauTau.jobTools import run_cmd, human_size, create_if_not_exists
-from tthAnalysis.HiggsToTauTau.hdfs import hdfs
+from tthAnalysis.HiggsToTauTau.jobTools import run_cmd, human_size, create_if_not_exists, getmtime
 from tthAnalysis.HiggsToTauTau.safe_root import ROOT
 from tthAnalysis.HiggsToTauTau.common import SmartFormatter
 
@@ -249,7 +248,7 @@ def get_requestname(request_name, path):
   # Depends on the CERN user name: the overall limit on the request name is 160 characters
 
   username_len = 0
-  if '/hdfs/cms/store/user' in path:
+  if '/store/user' in path:
     path_split = path.split(os.path.sep)
     assert (len(path_split) > 5)
     username_len = len(path_split[5])
@@ -265,7 +264,7 @@ def get_crab_string(dataset_name, paths):
     if type(entry) == tuple:
       path = entry[0]
       comment = entry[1]
-      if len(entry) == 3 and entry[2] == dataset_name and hdfs.isdir(path):
+      if len(entry) == 3 and entry[2] == dataset_name and os.path.isdir(path):
         task_id = os.path.basename(path)
         requestName = os.path.basename(os.path.dirname(path))
         return (os.path.join(requestName, task_id), comment)
@@ -291,7 +290,7 @@ def get_crab_string(dataset_name, paths):
     requestName = '%s_%s__%s' % (version, dataset_match.group(1), dataset_match.group(2))
     requestName = get_requestname(requestName, path)
     full_path = os.path.join(path, requestName)
-    if hdfs.isdir(full_path):
+    if os.path.isdir(full_path):
       return (requestName, comment)
 
     version = os.path.basename(path)
@@ -301,7 +300,7 @@ def get_crab_string(dataset_name, paths):
     requestName = '%s_%s__%s' % (version, dataset_match.group(1), dataset_match.group(2))
     requestName = get_requestname(requestName, path)
     full_path = os.path.join(path, primary_name, requestName)
-    if hdfs.isdir(full_path):
+    if os.path.isdir(full_path):
       return (requestName, comment)
 
   return ('', '')
@@ -476,15 +475,16 @@ def scan_private(dataset_private_path):
   }
   dataset_private_paths_globbed = glob.glob(dataset_private_path)
   for dataset_private_path_globbed in dataset_private_paths_globbed:
-    for dataset_private_file in hdfs.listdir(dataset_private_path_globbed):
+    for dataset_private_file_ in os.listdir(dataset_private_path_globbed):
+      dataset_private_file = os.path.join(dataset_private_path_globbed, dataset_private_file_)
       nof_events = get_nof_events(dataset_private_file)
       if nof_events < 0:
         # Not a valid ROOT file
         continue
-      fs_results['size'] += hdfs.getsize(dataset_private_file)
+      fs_results['size'] += os.path.getsize(dataset_private_file)
       fs_results['nevents'] += nof_events
       fs_results['nfiles'] += 1
-      current_mtime = int(hdfs.getmtime(dataset_private_file).strftime('%s'))
+      current_mtime = int(getmtime(dataset_private_file).strftime('%s'))
       if current_mtime > fs_results['last_modification_date']:
         fs_results['last_modification_date'] = current_mtime
   # Convert the results to strings
@@ -613,19 +613,19 @@ if __name__ == '__main__':
   verbose = args.verbose
 
   crab_string = []
-  if len(args.crab_string) and hdfs.isfile(args.crab_string[0]):
+  if len(args.crab_string) and os.path.isfile(args.crab_string[0]):
     with open(args.crab_string[0], 'r') as crab_file:
       for line in crab_file:
         line_stripped = line.rstrip('\n').split()
         if not line_stripped:
           continue
         crab_string_path = line_stripped[0]
-        if not hdfs.isdir(crab_string_path):
+        if not os.path.isdir(crab_string_path):
           raise ValueError("No such directory: %s" % crab_string_path)
         crab_string.append(tuple(line_stripped))
   else:
     for crab_line in args.crab_string:
-      if not hdfs.isdir(crab_line):
+      if not os.path.isdir(crab_line):
         raise ValueError("No such directory: %s" % crab_line)
     crab_string = args.crab_string
 
@@ -693,7 +693,7 @@ if __name__ == '__main__':
   execution_command  = ' '.join([os.path.basename(__file__)] + sys.argv[1:])
 
   if mc_input:
-    if not hdfs.isfile(mc_input):
+    if not os.path.isfile(mc_input):
       raise ValueError("No such file: %s" % mc_input)
 
     das_keys = collections.OrderedDict([
@@ -755,8 +755,6 @@ if __name__ == '__main__':
         dataset_private_path = das_query_results[dataset]['private_path']
         if not dataset_private_path:
           raise ValueError('No path provided for sample %s' % dataset)
-        if dataset_private_path.startswith('/store'):
-          dataset_private_path = '/hdfs/cms{}'.format(dataset_private_path)
         fs_results = scan_private(dataset_private_path)
 
         das_query_results[dataset]['name'] = dataset

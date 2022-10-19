@@ -25,7 +25,7 @@ samples_2018["/SingleMuon/Run2018A-17Sep2018-v2/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Dec20/SingleMuon/2018_2020Dec20_SingleMuon__Run2018A-17Sep2018-v2/201219_205711"),
+        ("path",      "/store/user/kaehatah/2018_2020Dec20/SingleMuon/2018_2020Dec20_SingleMuon__Run2018A-17Sep2018-v2/201219_205711"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -866,7 +866,7 @@ samples_2018["/SingleMuon/Run2018B-17Sep2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2021Feb02/SingleMuon/2018_2021Feb02_SingleMuon__Run2018B-17Sep2018-v1/210202_143112"),
+        ("path",      "/store/user/kaehatah/2018_2021Feb02/SingleMuon/2018_2021Feb02_SingleMuon__Run2018B-17Sep2018-v1/210202_143112"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -1727,7 +1727,7 @@ samples_2018["/SingleMuon/Run2018C-17Sep2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Dec20/SingleMuon/2018_2020Dec20_SingleMuon__Run2018C-17Sep2018-v1/201219_205844"),
+        ("path",      "/store/user/kaehatah/2018_2020Dec20/SingleMuon/2018_2020Dec20_SingleMuon__Run2018C-17Sep2018-v1/201219_205844"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -2421,7 +2421,7 @@ samples_2018["/SingleMuon/Run2018D-22Jan2019-v2/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018prompt_2020Dec20/SingleMuon/2018prompt_2020Dec20_SingleMuon__Run2018D-22Jan2019-v2/201219_211518"),
+        ("path",      "/store/user/kaehatah/2018prompt_2020Dec20/SingleMuon/2018prompt_2020Dec20_SingleMuon__Run2018D-22Jan2019-v2/201219_211518"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -3130,7 +3130,7 @@ samples_2018["/EGamma/Run2018A-17Sep2018-v2/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Dec20/EGamma/2018_2020Dec20_EGamma__Run2018A-17Sep2018-v2/201219_205950"),
+        ("path",      "/store/user/kaehatah/2018_2020Dec20/EGamma/2018_2020Dec20_EGamma__Run2018A-17Sep2018-v2/201219_205950"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -3971,7 +3971,7 @@ samples_2018["/EGamma/Run2018B-17Sep2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2021Feb02/EGamma/2018_2021Feb02_EGamma__Run2018B-17Sep2018-v1/210202_143221"),
+        ("path",      "/store/user/kaehatah/2018_2021Feb02/EGamma/2018_2021Feb02_EGamma__Run2018B-17Sep2018-v1/210202_143221"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -4832,7 +4832,7 @@ samples_2018["/EGamma/Run2018C-17Sep2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Dec20/EGamma/2018_2020Dec20_EGamma__Run2018C-17Sep2018-v1/201219_210058"),
+        ("path",      "/store/user/kaehatah/2018_2020Dec20/EGamma/2018_2020Dec20_EGamma__Run2018C-17Sep2018-v1/201219_210058"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -5526,7 +5526,7 @@ samples_2018["/EGamma/Run2018D-22Jan2019-v2/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018prompt_2021Feb02/EGamma/2018prompt_2021Feb02_EGamma__Run2018D-22Jan2019-v2/210202_132215"),
+        ("path",      "/store/user/kaehatah/2018prompt_2021Feb02/EGamma/2018prompt_2021Feb02_EGamma__Run2018D-22Jan2019-v2/210202_132215"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -6235,7 +6235,7 @@ samples_2018["/DoubleMuon/Run2018A-17Sep2018-v2/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2021Feb02/DoubleMuon/2018_2021Feb02_DoubleMuon__Run2018A-17Sep2018-v2/210202_143359"),
+        ("path",      "/store/user/kaehatah/2018_2021Feb02/DoubleMuon/2018_2021Feb02_DoubleMuon__Run2018A-17Sep2018-v2/210202_143359"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -7076,7 +7076,7 @@ samples_2018["/DoubleMuon/Run2018B-17Sep2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2021Feb02/DoubleMuon/2018_2021Feb02_DoubleMuon__Run2018B-17Sep2018-v1/210202_143509"),
+        ("path",      "/store/user/kaehatah/2018_2021Feb02/DoubleMuon/2018_2021Feb02_DoubleMuon__Run2018B-17Sep2018-v1/210202_143509"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -7937,7 +7937,7 @@ samples_2018["/DoubleMuon/Run2018C-17Sep2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2021Feb02/DoubleMuon/2018_2021Feb02_DoubleMuon__Run2018C-17Sep2018-v1/210202_143617"),
+        ("path",      "/store/user/kaehatah/2018_2021Feb02/DoubleMuon/2018_2021Feb02_DoubleMuon__Run2018C-17Sep2018-v1/210202_143617"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -8631,7 +8631,7 @@ samples_2018["/DoubleMuon/Run2018D-PromptReco-v2/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018prompt_2020Dec20/DoubleMuon/2018prompt_2020Dec20_DoubleMuon__Run2018D-PromptReco-v2/201219_211307"),
+        ("path",      "/store/user/kaehatah/2018prompt_2020Dec20/DoubleMuon/2018prompt_2020Dec20_DoubleMuon__Run2018D-PromptReco-v2/201219_211307"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -9340,7 +9340,7 @@ samples_2018["/MuonEG/Run2018A-17Sep2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2021Feb02/MuonEG/2018_2021Feb02_MuonEG__Run2018A-17Sep2018-v1/210202_143725"),
+        ("path",      "/store/user/kaehatah/2018_2021Feb02/MuonEG/2018_2021Feb02_MuonEG__Run2018A-17Sep2018-v1/210202_143725"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -10181,7 +10181,7 @@ samples_2018["/MuonEG/Run2018B-17Sep2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Dec20/MuonEG/2018_2020Dec20_MuonEG__Run2018B-17Sep2018-v1/201219_205432"),
+        ("path",      "/store/user/kaehatah/2018_2020Dec20/MuonEG/2018_2020Dec20_MuonEG__Run2018B-17Sep2018-v1/201219_205432"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -11042,7 +11042,7 @@ samples_2018["/MuonEG/Run2018C-17Sep2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Dec20/MuonEG/2018_2020Dec20_MuonEG__Run2018C-17Sep2018-v1/201219_205607"),
+        ("path",      "/store/user/kaehatah/2018_2020Dec20/MuonEG/2018_2020Dec20_MuonEG__Run2018C-17Sep2018-v1/201219_205607"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -11736,7 +11736,7 @@ samples_2018["/MuonEG/Run2018D-PromptReco-v2/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018prompt_2021Feb02/MuonEG/2018prompt_2021Feb02_MuonEG__Run2018D-PromptReco-v2/210202_132324"),
+        ("path",      "/store/user/kaehatah/2018prompt_2021Feb02/MuonEG/2018prompt_2021Feb02_MuonEG__Run2018D-PromptReco-v2/210202_132324"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -12445,7 +12445,7 @@ samples_2018["/Tau/Run2018A-17Sep2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2021Feb02/Tau/2018_2021Feb02_Tau__Run2018A-17Sep2018-v1/210202_143904"),
+        ("path",      "/store/user/kaehatah/2018_2021Feb02/Tau/2018_2021Feb02_Tau__Run2018A-17Sep2018-v1/210202_143904"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -13286,7 +13286,7 @@ samples_2018["/Tau/Run2018B-17Sep2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2021Feb02/Tau/2018_2021Feb02_Tau__Run2018B-17Sep2018-v1/210202_144013"),
+        ("path",      "/store/user/kaehatah/2018_2021Feb02/Tau/2018_2021Feb02_Tau__Run2018B-17Sep2018-v1/210202_144013"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -14147,7 +14147,7 @@ samples_2018["/Tau/Run2018C-17Sep2018-v1/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2021Feb02/Tau/2018_2021Feb02_Tau__Run2018C-17Sep2018-v1/210202_144119"),
+        ("path",      "/store/user/kaehatah/2018_2021Feb02/Tau/2018_2021Feb02_Tau__Run2018C-17Sep2018-v1/210202_144119"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -14841,7 +14841,7 @@ samples_2018["/Tau/Run2018D-PromptReco-v2/MINIAOD"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018prompt_2020Dec20/Tau/2018prompt_2020Dec20_Tau__Run2018D-PromptReco-v2/201219_211413"),
+        ("path",      "/store/user/kaehatah/2018prompt_2020Dec20/Tau/2018prompt_2020Dec20_Tau__Run2018D-PromptReco-v2/201219_211413"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -15552,7 +15552,7 @@ samples_2018["/ttHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/Run
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Feb29/ttHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/2018_2020Feb29_ttHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/200301_100737"),
+        ("path",      "/store/user/kaehatah/2018_2020Feb29/ttHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/2018_2020Feb29_ttHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/200301_100737"),
         ("selection", "*"),
         ("blacklist", [138]),
       ]),
@@ -15599,7 +15599,7 @@ samples_2018["/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Feb29/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/2018_2020Feb29_ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/200229_131542"),
+        ("path",      "/store/user/kaehatah/2018_2020Feb29/ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8/2018_2020Feb29_ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/200229_131542"),
         ("selection", "*"),
         ("blacklist", [41]),
       ]),
@@ -15646,7 +15646,7 @@ samples_2018["/ttHJetTobb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/RunIIA
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Jul24/ttHJetTobb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/2018_2020Jul24_ttHJetTobb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/200724_181938"),
+        ("path",      "/store/user/kaehatah/2018_2020Jul24/ttHJetTobb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8/2018_2020Jul24_ttHJetTobb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/200724_181938"),
         ("selection", "*"),
         ("blacklist", [1, 10, 13, 15, 24, 27, 34, 39, 40, 42, 51, 54, 55, 65, 68, 69, 74, 77, 81, 94]),
       ]),
@@ -15693,7 +15693,7 @@ samples_2018["/TTH_4f_ctcvcp_TuneCP5_13TeV_madgraph_pythia8/RunIIAutumn18MiniAOD
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Feb29/TTH_4f_ctcvcp_TuneCP5_13TeV_madgraph_pythia8/2018_2020Feb29_TTH_4f_ctcvcp_TuneCP5_13TeV_madgraph_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/200229_131718"),
+        ("path",      "/store/user/kaehatah/2018_2020Feb29/TTH_4f_ctcvcp_TuneCP5_13TeV_madgraph_pythia8/2018_2020Feb29_TTH_4f_ctcvcp_TuneCP5_13TeV_madgraph_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/200229_131718"),
         ("selection", "*"),
         ("blacklist", [42]),
       ]),
@@ -15740,7 +15740,7 @@ samples_2018["/THQ_ctcvcp_4f_Hincl_13TeV_madgraph_pythia8/RunIIAutumn18MiniAOD-1
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2021Jan29/THQ_ctcvcp_4f_Hincl_13TeV_madgraph_pythia8/2018_2021Jan29_THQ_ctcvcp_4f_Hincl_13TeV_madgraph_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/210129_180952"),
+        ("path",      "/store/user/kaehatah/2018_2021Jan29/THQ_ctcvcp_4f_Hincl_13TeV_madgraph_pythia8/2018_2021Jan29_THQ_ctcvcp_4f_Hincl_13TeV_madgraph_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/210129_180952"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -15787,7 +15787,7 @@ samples_2018["/THW_ctcvcp_5f_Hincl_13TeV_madgraph_pythia8/RunIIAutumn18MiniAOD-1
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/THW_ctcvcp_5f_Hincl_13TeV_madgraph_pythia8/2018_2019Sep29_THW_ctcvcp_5f_Hincl_13TeV_madgraph_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_122218"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/THW_ctcvcp_5f_Hincl_13TeV_madgraph_pythia8/2018_2019Sep29_THW_ctcvcp_5f_Hincl_13TeV_madgraph_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_122218"),
         ("selection", "*"),
         ("blacklist", [11, 32, 39, 42, 51, 52, 62, 81]),
       ]),
@@ -15834,7 +15834,7 @@ samples_2018["/GluGluHToTauTau_M125_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-10
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/GluGluHToTauTau_M125_13TeV_powheg_pythia8/2018_2019Sep29_GluGluHToTauTau_M125_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/190929_140611"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/GluGluHToTauTau_M125_13TeV_powheg_pythia8/2018_2019Sep29_GluGluHToTauTau_M125_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/190929_140611"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -15881,7 +15881,7 @@ samples_2018["/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8/RunIIAutum
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8/2018_2019Sep29_GluGluHToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/190929_122655"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/GluGluHToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8/2018_2019Sep29_GluGluHToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/190929_122655"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -15928,7 +15928,7 @@ samples_2018["/GluGluHToZZTo2L2Q_M125_13TeV_powheg2_JHUGenV7011_pythia8/RunIIAut
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Nov24/GluGluHToZZTo2L2Q_M125_13TeV_powheg2_JHUGenV7011_pythia8/2018_2019Nov24_GluGluHToZZTo2L2Q_M125_13TeV_powheg2_JHUGenV7011_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/191124_212039"),
+        ("path",      "/store/user/kaehatah/2018_2019Nov24/GluGluHToZZTo2L2Q_M125_13TeV_powheg2_JHUGenV7011_pythia8/2018_2019Nov24_GluGluHToZZTo2L2Q_M125_13TeV_powheg2_JHUGenV7011_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/191124_212039"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -15975,7 +15975,7 @@ samples_2018["/GluGluHToWWToLNuQQ_M125_13TeV_powheg2_JHUGenV714_pythia8/RunIIAut
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/GluGluHToWWToLNuQQ_M125_13TeV_powheg2_JHUGenV714_pythia8/2018_2019Sep29_GluGluHToWWToLNuQQ_M125_13TeV_powheg2_JHUGenV714_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_210514"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/GluGluHToWWToLNuQQ_M125_13TeV_powheg2_JHUGenV714_pythia8/2018_2019Sep29_GluGluHToWWToLNuQQ_M125_13TeV_powheg2_JHUGenV714_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_210514"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -16022,7 +16022,7 @@ samples_2018["/GluGluHToWWTo2L2Nu_M125_13TeV_powheg2_JHUGenV714_pythia8/RunIIAut
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2021Jan29/GluGluHToWWTo2L2Nu_M125_13TeV_powheg2_JHUGenV714_pythia8/2018_2021Jan29_GluGluHToWWTo2L2Nu_M125_13TeV_powheg2_JHUGenV714_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/210129_181110"),
+        ("path",      "/store/user/kaehatah/2018_2021Jan29/GluGluHToWWTo2L2Nu_M125_13TeV_powheg2_JHUGenV714_pythia8/2018_2021Jan29_GluGluHToWWTo2L2Nu_M125_13TeV_powheg2_JHUGenV714_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/210129_181110"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -16069,7 +16069,7 @@ samples_2018["/GluGluHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8/RunIIA
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/GluGluHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8/2018_2019Sep29_GluGluHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/190929_210128"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/GluGluHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8/2018_2019Sep29_GluGluHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/190929_210128"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -16116,7 +16116,7 @@ samples_2018["/GluGluHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8/RunIIA
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2021Jan29/GluGluHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8/2018_2021Jan29_GluGluHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1/210129_181235"),
+        ("path",      "/store/user/kaehatah/2018_2021Jan29/GluGluHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8/2018_2021Jan29_GluGluHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1/210129_181235"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -16163,7 +16163,7 @@ samples_2018["/GluGluHToBB_M125_13TeV_amcatnloFXFX_pythia8/RunIIAutumn18MiniAOD-
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/GluGluHToBB_M125_13TeV_amcatnloFXFX_pythia8/2018_2019Sep29_GluGluHToBB_M125_13TeV_amcatnloFXFX_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_205508"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/GluGluHToBB_M125_13TeV_amcatnloFXFX_pythia8/2018_2019Sep29_GluGluHToBB_M125_13TeV_amcatnloFXFX_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_205508"),
         ("selection", "*"),
         ("blacklist", [75]),
       ]),
@@ -16210,7 +16210,7 @@ samples_2018["/GluGluHToGG_M125_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/GluGluHToGG_M125_TuneCP5_13TeV-amcatnloFXFX-pythia8/2018_2019Sep29_GluGluHToGG_M125_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_205748"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/GluGluHToGG_M125_TuneCP5_13TeV-amcatnloFXFX-pythia8/2018_2019Sep29_GluGluHToGG_M125_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_205748"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -16257,7 +16257,7 @@ samples_2018["/VBFHToTauTau_M125_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102X_
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/VBFHToTauTau_M125_13TeV_powheg_pythia8/2018_2019Sep29_VBFHToTauTau_M125_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1/190929_140846"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/VBFHToTauTau_M125_13TeV_powheg_pythia8/2018_2019Sep29_VBFHToTauTau_M125_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1/190929_140846"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -16304,7 +16304,7 @@ samples_2018["/VBF_HToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8/RunIIAutumn1
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2021Jan29/VBF_HToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8/2018_2021Jan29_VBF_HToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/210129_181354"),
+        ("path",      "/store/user/kaehatah/2018_2021Jan29/VBF_HToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8/2018_2021Jan29_VBF_HToZZTo4L_M125_13TeV_powheg2_JHUGenV7011_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/210129_181354"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -16351,7 +16351,7 @@ samples_2018["/VBFHToWWToLNuQQ_M125_13TeV_powheg_JHUGen_pythia8/RunIIAutumn18Min
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Nov24/VBFHToWWToLNuQQ_M125_13TeV_powheg_JHUGen_pythia8/2018_2019Nov24_VBFHToWWToLNuQQ_M125_13TeV_powheg_JHUGen_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/191124_212238"),
+        ("path",      "/store/user/kaehatah/2018_2019Nov24/VBFHToWWToLNuQQ_M125_13TeV_powheg_JHUGen_pythia8/2018_2019Nov24_VBFHToWWToLNuQQ_M125_13TeV_powheg_JHUGen_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/191124_212238"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -16398,7 +16398,7 @@ samples_2018["/VBFHToWWTo2L2Nu_M125_13TeV_powheg2_JHUGenV714_pythia8/RunIIAutumn
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/VBFHToWWTo2L2Nu_M125_13TeV_powheg2_JHUGenV714_pythia8/2018_2019Sep29_VBFHToWWTo2L2Nu_M125_13TeV_powheg2_JHUGenV714_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_211912"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/VBFHToWWTo2L2Nu_M125_13TeV_powheg2_JHUGenV714_pythia8/2018_2019Sep29_VBFHToWWTo2L2Nu_M125_13TeV_powheg2_JHUGenV714_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_211912"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -16445,7 +16445,7 @@ samples_2018["/VBFHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8/RunIIAutu
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/VBFHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8/2018_2019Sep29_VBFHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_211708"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/VBFHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8/2018_2019Sep29_VBFHToMuMu_M-125_TuneCP5_PSweights_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_211708"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -16492,7 +16492,7 @@ samples_2018["/VBFHToBB_M-125_13TeV_powheg_pythia8_weightfix/RunIIAutumn18MiniAO
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/VBFHToBB_M-125_13TeV_powheg_pythia8_weightfix/2018_2019Sep29_VBFHToBB_M-125_13TeV_powheg_pythia8_weightfix__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_211255"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/VBFHToBB_M-125_13TeV_powheg_pythia8_weightfix/2018_2019Sep29_VBFHToBB_M-125_13TeV_powheg_pythia8_weightfix__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_211255"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -16539,7 +16539,7 @@ samples_2018["/VBFHToGG_M125_13TeV_amcatnlo_pythia8/RunIIAutumn18MiniAOD-102X_up
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2021Jan29/VBFHToGG_M125_13TeV_amcatnlo_pythia8/2018_2021Jan29_VBFHToGG_M125_13TeV_amcatnlo_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/210129_181516"),
+        ("path",      "/store/user/kaehatah/2018_2021Jan29/VBFHToGG_M125_13TeV_amcatnlo_pythia8/2018_2021Jan29_VBFHToGG_M125_13TeV_amcatnlo_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/210129_181516"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -16586,7 +16586,7 @@ samples_2018["/TTZToLLNuNu_M-10_TuneCP5_13TeV-amcatnlo-pythia8/RunIIAutumn18Mini
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2021Jan29/TTZToLLNuNu_M-10_TuneCP5_13TeV-amcatnlo-pythia8/2018_2021Jan29_TTZToLLNuNu_M-10_TuneCP5_13TeV-amcatnlo-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/210129_181704"),
+        ("path",      "/store/user/kaehatah/2018_2021Jan29/TTZToLLNuNu_M-10_TuneCP5_13TeV-amcatnlo-pythia8/2018_2021Jan29_TTZToLLNuNu_M-10_TuneCP5_13TeV-amcatnlo-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/210129_181704"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -16633,7 +16633,7 @@ samples_2018["/TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8/RunIIAutumn18MiniAOD-102X_
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Jun15/TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8/2018_2020Jun15_TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/200615_110709"),
+        ("path",      "/store/user/kaehatah/2018_2020Jun15/TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8/2018_2020Jun15_TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/200615_110709"),
         ("selection", "*"),
         ("blacklist", [4]),
       ]),
@@ -16680,7 +16680,7 @@ samples_2018["/TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8/RunIIAutumn18MiniAOD-102X_
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Jun15/TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8/2018_2020Jun15_TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1/200615_110844"),
+        ("path",      "/store/user/kaehatah/2018_2020Jun15/TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8/2018_2020Jun15_TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1/200615_110844"),
         ("selection", "*"),
         ("blacklist", [1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 16, 18, 19, 20, 24, 25, 32, 33, 34, 37, 39, 40, 42, 45, 48, 54, 55, 56, 61, 62, 63, 65, 67, 72, 78, 79, 80, 85, 86]),
       ]),
@@ -16727,7 +16727,7 @@ samples_2018["/TTZToLL_M-1to10_TuneCP5_13TeV-amcatnlo-pythia8/RunIIAutumn18MiniA
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/TTZToLL_M-1to10_TuneCP5_13TeV-amcatnlo-pythia8/2018_2019Sep29_TTZToLL_M-1to10_TuneCP5_13TeV-amcatnlo-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_123248"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/TTZToLL_M-1to10_TuneCP5_13TeV-amcatnlo-pythia8/2018_2019Sep29_TTZToLL_M-1to10_TuneCP5_13TeV-amcatnlo-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_123248"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -16774,7 +16774,7 @@ samples_2018["/ttZJets_TuneCP5_13TeV_madgraphMLM_pythia8/RunIIAutumn18MiniAOD-10
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Nov24/ttZJets_TuneCP5_13TeV_madgraphMLM_pythia8/2018_2019Nov24_ttZJets_TuneCP5_13TeV_madgraphMLM_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/191124_211501"),
+        ("path",      "/store/user/kaehatah/2018_2019Nov24/ttZJets_TuneCP5_13TeV_madgraphMLM_pythia8/2018_2019Nov24_ttZJets_TuneCP5_13TeV_madgraphMLM_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/191124_211501"),
         ("selection", "*"),
         ("blacklist", [34, 176]),
       ]),
@@ -16821,7 +16821,7 @@ samples_2018["/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIIAutu
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2021Jan29/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/2018_2021Jan29_TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/210129_181831"),
+        ("path",      "/store/user/kaehatah/2018_2021Jan29/TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/2018_2021Jan29_TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/210129_181831"),
         ("selection", "*"),
         ("blacklist", [12, 17, 26]),
       ]),
@@ -16868,7 +16868,7 @@ samples_2018["/TTWJetsToQQ_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIIAutum
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Jun15/TTWJetsToQQ_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/2018_2020Jun15_TTWJetsToQQ_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/200615_110535"),
+        ("path",      "/store/user/kaehatah/2018_2020Jun15/TTWJetsToQQ_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/2018_2020Jun15_TTWJetsToQQ_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/200615_110535"),
         ("selection", "*"),
         ("blacklist", [1]),
       ]),
@@ -16915,7 +16915,7 @@ samples_2018["/ttWJets_TuneCP5_13TeV_madgraphMLM_pythia8/RunIIAutumn18MiniAOD-10
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2021Jan29/ttWJets_TuneCP5_13TeV_madgraphMLM_pythia8/2018_2021Jan29_ttWJets_TuneCP5_13TeV_madgraphMLM_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/210129_182027"),
+        ("path",      "/store/user/kaehatah/2018_2021Jan29/ttWJets_TuneCP5_13TeV_madgraphMLM_pythia8/2018_2021Jan29_ttWJets_TuneCP5_13TeV_madgraphMLM_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/210129_182027"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -16962,7 +16962,7 @@ samples_2018["/TTWW_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18MiniAOD-102X_upg
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/TTWW_TuneCP5_13TeV-madgraph-pythia8/2018_2019Sep29_TTWW_TuneCP5_13TeV-madgraph-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/190929_124451"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/TTWW_TuneCP5_13TeV-madgraph-pythia8/2018_2019Sep29_TTWW_TuneCP5_13TeV-madgraph-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/190929_124451"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -17009,7 +17009,7 @@ samples_2018["/TTWW_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18MiniAOD-102X_upg
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Nov24/TTWW_TuneCP5_13TeV-madgraph-pythia8/2018_2019Nov24_TTWW_TuneCP5_13TeV-madgraph-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext2-v1/191124_210759"),
+        ("path",      "/store/user/kaehatah/2018_2019Nov24/TTWW_TuneCP5_13TeV-madgraph-pythia8/2018_2019Nov24_TTWW_TuneCP5_13TeV-madgraph-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext2-v1/191124_210759"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -17056,7 +17056,7 @@ samples_2018["/ST_s-channel_4f_leptonDecays_TuneCP5_13TeV-madgraph-pythia8/RunII
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/ST_s-channel_4f_leptonDecays_TuneCP5_13TeV-madgraph-pythia8/2018_2019Sep29_ST_s-channel_4f_leptonDecays_TuneCP5_13TeV-madgraph-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v4/190929_124934"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/ST_s-channel_4f_leptonDecays_TuneCP5_13TeV-madgraph-pythia8/2018_2019Sep29_ST_s-channel_4f_leptonDecays_TuneCP5_13TeV-madgraph-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v4/190929_124934"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -17103,7 +17103,7 @@ samples_2018["/ST_t-channel_antitop_4f_InclusiveDecays_TuneCP5_13TeV-powheg-mads
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/ST_t-channel_antitop_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8/2018_2019Sep29_ST_t-channel_antitop_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_125209"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/ST_t-channel_antitop_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8/2018_2019Sep29_ST_t-channel_antitop_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_125209"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -17150,7 +17150,7 @@ samples_2018["/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8/2018_2019Sep29_ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_125647"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8/2018_2019Sep29_ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_125647"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -17197,7 +17197,7 @@ samples_2018["/ST_tW_antitop_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8/Run
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/ST_tW_antitop_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8/2018_2019Sep29_ST_tW_antitop_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1/190929_125857"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/ST_tW_antitop_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8/2018_2019Sep29_ST_tW_antitop_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1/190929_125857"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -17244,7 +17244,7 @@ samples_2018["/ST_tW_top_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8/RunIIAu
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/ST_tW_top_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8/2018_2019Sep29_ST_tW_top_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1/190929_130135"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/ST_tW_top_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8/2018_2019Sep29_ST_tW_top_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1/190929_130135"),
         ("selection", "*"),
         ("blacklist", [1, 2, 3, 4, 5, 11, 48, 52, 71]),
       ]),
@@ -17291,7 +17291,7 @@ samples_2018["/ST_tWll_5f_LO_TuneCP5_PSweights_13TeV-madgraph-pythia8/RunIIAutum
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Nov24/ST_tWll_5f_LO_TuneCP5_PSweights_13TeV-madgraph-pythia8/2018_2019Nov24_ST_tWll_5f_LO_TuneCP5_PSweights_13TeV-madgraph-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1/191124_210529"),
+        ("path",      "/store/user/kaehatah/2018_2019Nov24/ST_tWll_5f_LO_TuneCP5_PSweights_13TeV-madgraph-pythia8/2018_2019Nov24_ST_tWll_5f_LO_TuneCP5_PSweights_13TeV-madgraph-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1/191124_210529"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -17338,7 +17338,7 @@ samples_2018["/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Mar03/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/2018_2020Mar03_TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/200303_194214"),
+        ("path",      "/store/user/kaehatah/2018_2020Mar03/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/2018_2020Mar03_TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/200303_194214"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -17385,7 +17385,7 @@ samples_2018["/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAO
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Mar03/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/2018_2020Mar03_TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/200303_194320"),
+        ("path",      "/store/user/kaehatah/2018_2020Mar03/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/2018_2020Mar03_TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/200303_194320"),
         ("selection", "*"),
         ("blacklist", [491]),
       ]),
@@ -17432,7 +17432,7 @@ samples_2018["/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAO
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Oct13/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/2018_2020Oct13_TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext3-v2/201013_102750"),
+        ("path",      "/store/user/kaehatah/2018_2020Oct13/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/2018_2020Oct13_TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext3-v2/201013_102750"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -17479,7 +17479,7 @@ samples_2018["/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-10
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Mar03/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/2018_2020Mar03_TTToHadronic_TuneCP5_13TeV-powheg-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/200303_194456"),
+        ("path",      "/store/user/kaehatah/2018_2020Mar03/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/2018_2020Mar03_TTToHadronic_TuneCP5_13TeV-powheg-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/200303_194456"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -17526,7 +17526,7 @@ samples_2018["/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-10
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Oct13/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/2018_2020Oct13_TTToHadronic_TuneCP5_13TeV-powheg-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext2-v2/201013_102856"),
+        ("path",      "/store/user/kaehatah/2018_2020Oct13/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/2018_2020Oct13_TTToHadronic_TuneCP5_13TeV-powheg-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext2-v2/201013_102856"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -17573,7 +17573,7 @@ samples_2018["/TTJets_DiLept_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18Mini
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/TTJets_DiLept_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Sep29_TTJets_DiLept_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_131852"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/TTJets_DiLept_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Sep29_TTJets_DiLept_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_131852"),
         ("selection", "*"),
         ("blacklist", [61, 195]),
       ]),
@@ -17620,7 +17620,7 @@ samples_2018["/TTJets_SingleLeptFromT_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAut
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/TTJets_SingleLeptFromT_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Sep29_TTJets_SingleLeptFromT_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_132158"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/TTJets_SingleLeptFromT_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Sep29_TTJets_SingleLeptFromT_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_132158"),
         ("selection", "*"),
         ("blacklist", [4, 278, 539, 552]),
       ]),
@@ -17667,7 +17667,7 @@ samples_2018["/TTJets_SingleLeptFromTbar_TuneCP5_13TeV-madgraphMLM-pythia8/RunII
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/TTJets_SingleLeptFromTbar_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Sep29_TTJets_SingleLeptFromTbar_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_132806"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/TTJets_SingleLeptFromTbar_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Sep29_TTJets_SingleLeptFromTbar_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_132806"),
         ("selection", "*"),
         ("blacklist", [4, 78, 166, 353, 475, 496, 535, 557, 568, 599]),
       ]),
@@ -17714,7 +17714,7 @@ samples_2018["/TTJets_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18MiniAOD-10
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/TTJets_TuneCP5_13TeV-amcatnloFXFX-pythia8/2018_2019Sep29_TTJets_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/190929_133416"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/TTJets_TuneCP5_13TeV-amcatnloFXFX-pythia8/2018_2019Sep29_TTJets_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/190929_133416"),
         ("selection", "*"),
         ("blacklist", [98, 230, 289, 394, 431, 492, 540, 799, 1244, 1283, 1307, 1309, 1319]),
       ]),
@@ -17761,7 +17761,7 @@ samples_2018["/TTJets_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAOD-102
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/TTJets_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Sep29_TTJets_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_134139"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/TTJets_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Sep29_TTJets_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_134139"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -17808,7 +17808,7 @@ samples_2018["/TTWH_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18MiniAOD-102X_upg
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Nov24/TTWH_TuneCP5_13TeV-madgraph-pythia8/2018_2019Nov24_TTWH_TuneCP5_13TeV-madgraph-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/191124_205431"),
+        ("path",      "/store/user/kaehatah/2018_2019Nov24/TTWH_TuneCP5_13TeV-madgraph-pythia8/2018_2019Nov24_TTWH_TuneCP5_13TeV-madgraph-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/191124_205431"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -17855,7 +17855,7 @@ samples_2018["/TTZH_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18MiniAOD-102X_upg
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/TTZH_TuneCP5_13TeV-madgraph-pythia8/2018_2019Sep29_TTZH_TuneCP5_13TeV-madgraph-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/190929_142511"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/TTZH_TuneCP5_13TeV-madgraph-pythia8/2018_2019Sep29_TTZH_TuneCP5_13TeV-madgraph-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/190929_142511"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -17902,7 +17902,7 @@ samples_2018["/WWW_4F_TuneCP5_13TeV-amcatnlo-pythia8/RunIIAutumn18MiniAOD-102X_u
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/WWW_4F_TuneCP5_13TeV-amcatnlo-pythia8/2018_2019Sep29_WWW_4F_TuneCP5_13TeV-amcatnlo-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/190929_134343"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/WWW_4F_TuneCP5_13TeV-amcatnlo-pythia8/2018_2019Sep29_WWW_4F_TuneCP5_13TeV-amcatnlo-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/190929_134343"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -17949,7 +17949,7 @@ samples_2018["/WWZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIIAutumn18MiniAOD-102X_upgr
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/WWZ_TuneCP5_13TeV-amcatnlo-pythia8/2018_2019Sep29_WWZ_TuneCP5_13TeV-amcatnlo-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/190929_134521"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/WWZ_TuneCP5_13TeV-amcatnlo-pythia8/2018_2019Sep29_WWZ_TuneCP5_13TeV-amcatnlo-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/190929_134521"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -17996,7 +17996,7 @@ samples_2018["/WZZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIIAutumn18MiniAOD-102X_upgr
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/WZZ_TuneCP5_13TeV-amcatnlo-pythia8/2018_2019Sep29_WZZ_TuneCP5_13TeV-amcatnlo-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/190929_134800"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/WZZ_TuneCP5_13TeV-amcatnlo-pythia8/2018_2019Sep29_WZZ_TuneCP5_13TeV-amcatnlo-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/190929_134800"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -18043,7 +18043,7 @@ samples_2018["/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIIAutumn18MiniAOD-102X_upgr
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/2018_2019Sep29_ZZZ_TuneCP5_13TeV-amcatnlo-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/190929_135244"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/2018_2019Sep29_ZZZ_TuneCP5_13TeV-amcatnlo-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/190929_135244"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -18090,7 +18090,7 @@ samples_2018["/WZG_TuneCP5_13TeV-amcatnlo-pythia8/RunIIAutumn18MiniAOD-102X_upgr
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/WZG_TuneCP5_13TeV-amcatnlo-pythia8/2018_2019Sep29_WZG_TuneCP5_13TeV-amcatnlo-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_135422"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/WZG_TuneCP5_13TeV-amcatnlo-pythia8/2018_2019Sep29_WZG_TuneCP5_13TeV-amcatnlo-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_135422"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -18137,7 +18137,7 @@ samples_2018["/WGToLNuG_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAOD-1
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/WGToLNuG_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Sep29_WGToLNuG_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_135600"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/WGToLNuG_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Sep29_WGToLNuG_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_135600"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -18184,7 +18184,7 @@ samples_2018["/WGToLNuG_01J_5f_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18M
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Jan10/WGToLNuG_01J_5f_TuneCP5_13TeV-amcatnloFXFX-pythia8/2018_2020Jan10_WGToLNuG_01J_5f_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1/200110_151233"),
+        ("path",      "/store/user/kaehatah/2018_2020Jan10/WGToLNuG_01J_5f_TuneCP5_13TeV-amcatnloFXFX-pythia8/2018_2020Jan10_WGToLNuG_01J_5f_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1/200110_151233"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -18231,7 +18231,7 @@ samples_2018["/ZGToLLG_01J_5f_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18Mi
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/ZGToLLG_01J_5f_TuneCP5_13TeV-amcatnloFXFX-pythia8/2018_2019Sep29_ZGToLLG_01J_5f_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/190929_135810"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/ZGToLLG_01J_5f_TuneCP5_13TeV-amcatnloFXFX-pythia8/2018_2019Sep29_ZGToLLG_01J_5f_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/190929_135810"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -18278,7 +18278,7 @@ samples_2018["/TGJets_leptonDecays_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18M
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/TGJets_leptonDecays_TuneCP5_13TeV-madgraph-pythia8/2018_2019Sep29_TGJets_leptonDecays_TuneCP5_13TeV-madgraph-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/190929_140118"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/TGJets_leptonDecays_TuneCP5_13TeV-madgraph-pythia8/2018_2019Sep29_TGJets_leptonDecays_TuneCP5_13TeV-madgraph-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/190929_140118"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -18325,7 +18325,7 @@ samples_2018["/TTGJets_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/RunIIAutumn18M
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2021Jan29/TTGJets_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/2018_2021Jan29_TTGJets_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/210129_182219"),
+        ("path",      "/store/user/kaehatah/2018_2021Jan29/TTGJets_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8/2018_2021Jan29_TTGJets_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/210129_182219"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -18372,7 +18372,7 @@ samples_2018["/tZq_ll_4f_ckm_NLO_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18Min
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2021Jan29/tZq_ll_4f_ckm_NLO_TuneCP5_13TeV-madgraph-pythia8/2018_2021Jan29_tZq_ll_4f_ckm_NLO_TuneCP5_13TeV-madgraph-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/210129_182412"),
+        ("path",      "/store/user/kaehatah/2018_2021Jan29/tZq_ll_4f_ckm_NLO_TuneCP5_13TeV-madgraph-pythia8/2018_2021Jan29_tZq_ll_4f_ckm_NLO_TuneCP5_13TeV-madgraph-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/210129_182412"),
         ("selection", "*"),
         ("blacklist", [133, 148, 195]),
       ]),
@@ -18419,7 +18419,7 @@ samples_2018["/WpWpJJ_EWK-QCD_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18MiniAO
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/WpWpJJ_EWK-QCD_TuneCP5_13TeV-madgraph-pythia8/2018_2019Sep29_WpWpJJ_EWK-QCD_TuneCP5_13TeV-madgraph-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_141409"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/WpWpJJ_EWK-QCD_TuneCP5_13TeV-madgraph-pythia8/2018_2019Sep29_WpWpJJ_EWK-QCD_TuneCP5_13TeV-madgraph-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_141409"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -18466,7 +18466,7 @@ samples_2018["/WWTo2L2Nu_DoubleScattering_13TeV-pythia8/RunIIAutumn18MiniAOD-102
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/WWTo2L2Nu_DoubleScattering_13TeV-pythia8/2018_2019Sep29_WWTo2L2Nu_DoubleScattering_13TeV-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_141551"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/WWTo2L2Nu_DoubleScattering_13TeV-pythia8/2018_2019Sep29_WWTo2L2Nu_DoubleScattering_13TeV-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_141551"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -18513,7 +18513,7 @@ samples_2018["/TTTT_TuneCP5_13TeV-amcatnlo-pythia8/RunIIAutumn18MiniAOD-102X_upg
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Nov24/TTTT_TuneCP5_13TeV-amcatnlo-pythia8/2018_2019Nov24_TTTT_TuneCP5_13TeV-amcatnlo-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/191124_204932"),
+        ("path",      "/store/user/kaehatah/2018_2019Nov24/TTTT_TuneCP5_13TeV-amcatnlo-pythia8/2018_2019Nov24_TTTT_TuneCP5_13TeV-amcatnlo-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/191124_204932"),
         ("selection", "*"),
         ("blacklist", [1, 2, 4, 7, 9, 10, 13, 14, 17, 18, 20, 21, 23, 25, 26, 27, 28, 32, 33, 36, 37, 39, 40, 41]),
       ]),
@@ -18560,7 +18560,7 @@ samples_2018["/TTTW_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18MiniAOD-102X_upg
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Nov24/TTTW_TuneCP5_13TeV-madgraph-pythia8/2018_2019Nov24_TTTW_TuneCP5_13TeV-madgraph-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/191124_205201"),
+        ("path",      "/store/user/kaehatah/2018_2019Nov24/TTTW_TuneCP5_13TeV-madgraph-pythia8/2018_2019Nov24_TTTW_TuneCP5_13TeV-madgraph-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/191124_205201"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -18607,7 +18607,7 @@ samples_2018["/TTTJ_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18MiniAOD-102X_upg
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/TTTJ_TuneCP5_13TeV-madgraph-pythia8/2018_2019Sep29_TTTJ_TuneCP5_13TeV-madgraph-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/190929_142921"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/TTTJ_TuneCP5_13TeV-madgraph-pythia8/2018_2019Sep29_TTTJ_TuneCP5_13TeV-madgraph-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/190929_142921"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -18654,7 +18654,7 @@ samples_2018["/TTWZ_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18MiniAOD-102X_upg
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Nov24/TTWZ_TuneCP5_13TeV-madgraph-pythia8/2018_2019Nov24_TTWZ_TuneCP5_13TeV-madgraph-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/191124_205629"),
+        ("path",      "/store/user/kaehatah/2018_2019Nov24/TTWZ_TuneCP5_13TeV-madgraph-pythia8/2018_2019Nov24_TTWZ_TuneCP5_13TeV-madgraph-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/191124_205629"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -18701,7 +18701,7 @@ samples_2018["/TTZZ_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18MiniAOD-102X_upg
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Nov24/TTZZ_TuneCP5_13TeV-madgraph-pythia8/2018_2019Nov24_TTZZ_TuneCP5_13TeV-madgraph-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/191124_205859"),
+        ("path",      "/store/user/kaehatah/2018_2019Nov24/TTZZ_TuneCP5_13TeV-madgraph-pythia8/2018_2019Nov24_TTZZ_TuneCP5_13TeV-madgraph-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/191124_205859"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -18748,7 +18748,7 @@ samples_2018["/VHToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8/RunIIAutumn18Mi
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Nov24/VHToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8/2018_2019Nov24_VHToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/191124_210957"),
+        ("path",      "/store/user/kaehatah/2018_2019Nov24/VHToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8/2018_2019Nov24_VHToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/191124_210957"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -18795,7 +18795,7 @@ samples_2018["/ZH_HToBB_ZToLL_M125_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/ZH_HToBB_ZToLL_M125_13TeV_powheg_pythia8/2018_2019Sep29_ZH_HToBB_ZToLL_M125_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/190929_144219"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/ZH_HToBB_ZToLL_M125_13TeV_powheg_pythia8/2018_2019Sep29_ZH_HToBB_ZToLL_M125_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/190929_144219"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -18842,7 +18842,7 @@ samples_2018["/ZH_HToBB_ZToLL_M125_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2021Jan29/ZH_HToBB_ZToLL_M125_13TeV_powheg_pythia8/2018_2021Jan29_ZH_HToBB_ZToLL_M125_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1/210129_182607"),
+        ("path",      "/store/user/kaehatah/2018_2021Jan29/ZH_HToBB_ZToLL_M125_13TeV_powheg_pythia8/2018_2021Jan29_ZH_HToBB_ZToLL_M125_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1/210129_182607"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -18889,7 +18889,7 @@ samples_2018["/ZHToTauTau_M125_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102X_up
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/ZHToTauTau_M125_13TeV_powheg_pythia8/2018_2019Sep29_ZHToTauTau_M125_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/190929_144631"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/ZHToTauTau_M125_13TeV_powheg_pythia8/2018_2019Sep29_ZHToTauTau_M125_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/190929_144631"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -18936,7 +18936,7 @@ samples_2018["/HZJ_HToWW_M125_13TeV_powheg_jhugen714_pythia8_TuneCP5/RunIIAutumn
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Jun15/HZJ_HToWW_M125_13TeV_powheg_jhugen714_pythia8_TuneCP5/2018_2020Jun15_HZJ_HToWW_M125_13TeV_powheg_jhugen714_pythia8_TuneCP5__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/200615_110432"),
+        ("path",      "/store/user/kaehatah/2018_2020Jun15/HZJ_HToWW_M125_13TeV_powheg_jhugen714_pythia8_TuneCP5/2018_2020Jun15_HZJ_HToWW_M125_13TeV_powheg_jhugen714_pythia8_TuneCP5__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/200615_110432"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -18983,7 +18983,7 @@ samples_2018["/WminusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8/RunIIAutumn18MiniA
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Jun15/WminusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8/2018_2020Jun15_WminusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/200615_110949"),
+        ("path",      "/store/user/kaehatah/2018_2020Jun15/WminusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8/2018_2020Jun15_WminusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/200615_110949"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -19030,7 +19030,7 @@ samples_2018["/WminusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8/RunIIAutumn18MiniA
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Jun15/WminusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8/2018_2020Jun15_WminusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1/200615_111123"),
+        ("path",      "/store/user/kaehatah/2018_2020Jun15/WminusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8/2018_2020Jun15_WminusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1/200615_111123"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -19077,7 +19077,7 @@ samples_2018["/WplusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8/RunIIAutumn18MiniAO
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Jun15/WplusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8/2018_2020Jun15_WplusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/200615_111255"),
+        ("path",      "/store/user/kaehatah/2018_2020Jun15/WplusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8/2018_2020Jun15_WplusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/200615_111255"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -19124,7 +19124,7 @@ samples_2018["/WplusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8/RunIIAutumn18MiniAO
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Jun15/WplusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8/2018_2020Jun15_WplusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1/200615_111358"),
+        ("path",      "/store/user/kaehatah/2018_2020Jun15/WplusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8/2018_2020Jun15_WplusH_HToBB_WToLNu_M125_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1/200615_111358"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -19171,7 +19171,7 @@ samples_2018["/DYJetsToLL_0J_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18Min
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Jun15/DYJetsToLL_0J_TuneCP5_13TeV-amcatnloFXFX-pythia8/2018_2020Jun15_DYJetsToLL_0J_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/200615_110019"),
+        ("path",      "/store/user/kaehatah/2018_2020Jun15/DYJetsToLL_0J_TuneCP5_13TeV-amcatnloFXFX-pythia8/2018_2020Jun15_DYJetsToLL_0J_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/200615_110019"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -19218,7 +19218,7 @@ samples_2018["/DYJetsToLL_1J_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18Min
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Jun15/DYJetsToLL_1J_TuneCP5_13TeV-amcatnloFXFX-pythia8/2018_2020Jun15_DYJetsToLL_1J_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/200615_110153"),
+        ("path",      "/store/user/kaehatah/2018_2020Jun15/DYJetsToLL_1J_TuneCP5_13TeV-amcatnloFXFX-pythia8/2018_2020Jun15_DYJetsToLL_1J_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/200615_110153"),
         ("selection", "*"),
         ("blacklist", [27, 28, 792, 793]),
       ]),
@@ -19265,7 +19265,7 @@ samples_2018["/DYJetsToLL_2J_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18Min
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Jun15/DYJetsToLL_2J_TuneCP5_13TeV-amcatnloFXFX-pythia8/2018_2020Jun15_DYJetsToLL_2J_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/200615_110257"),
+        ("path",      "/store/user/kaehatah/2018_2020Jun15/DYJetsToLL_2J_TuneCP5_13TeV-amcatnloFXFX-pythia8/2018_2020Jun15_DYJetsToLL_2J_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/200615_110257"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -19312,7 +19312,7 @@ samples_2018["/DYJetsToLL_M-10to50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Mar03/DYJetsToLL_M-10to50_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2020Mar03_DYJetsToLL_M-10to50_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/200303_194633"),
+        ("path",      "/store/user/kaehatah/2018_2020Mar03/DYJetsToLL_M-10to50_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2020Mar03_DYJetsToLL_M-10to50_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/200303_194633"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -19359,7 +19359,7 @@ samples_2018["/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18Mi
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Sep29_DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_150631"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Sep29_DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_150631"),
         ("selection", "*"),
         ("blacklist", [1, 2, 3, 4, 5, 102, 183, 262, 343, 881, 993]),
       ]),
@@ -19406,7 +19406,7 @@ samples_2018["/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18M
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Mar03/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/2018_2020Mar03_DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/200303_194740"),
+        ("path",      "/store/user/kaehatah/2018_2020Mar03/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/2018_2020Mar03_DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/200303_194740"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -19453,7 +19453,7 @@ samples_2018["/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18M
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Mar03/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/2018_2020Mar03_DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext2-v1/200303_194922"),
+        ("path",      "/store/user/kaehatah/2018_2020Mar03/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/2018_2020Mar03_DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext2-v1/200303_194922"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -19500,7 +19500,7 @@ samples_2018["/DY1JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18M
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/DY1JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Sep29_DY1JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/190929_151759"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/DY1JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Sep29_DY1JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/190929_151759"),
         ("selection", "*"),
         ("blacklist", [1, 425, 443, 483, 531, 678, 713, 714]),
       ]),
@@ -19547,7 +19547,7 @@ samples_2018["/DY2JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18M
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/DY2JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Sep29_DY2JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/190929_152110"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/DY2JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Sep29_DY2JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/190929_152110"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -19594,7 +19594,7 @@ samples_2018["/DY3JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18M
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/DY3JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Sep29_DY3JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/190929_152620"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/DY3JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Sep29_DY3JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/190929_152620"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -19641,7 +19641,7 @@ samples_2018["/DY4JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18M
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/DY4JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Sep29_DY4JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_152926"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/DY4JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Sep29_DY4JetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_152926"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -19688,7 +19688,7 @@ samples_2018["/DYJetsToLL_M-50_HT-70to100_TuneCP5_PSweights_13TeV-madgraphMLM-py
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/DYJetsToLL_M-50_HT-70to100_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/2018_2019Sep29_DYJetsToLL_M-50_HT-70to100_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_153232"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/DYJetsToLL_M-50_HT-70to100_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/2018_2019Sep29_DYJetsToLL_M-50_HT-70to100_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_153232"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -19735,7 +19735,7 @@ samples_2018["/DYJetsToLL_M-50_HT-100to200_TuneCP5_PSweights_13TeV-madgraphMLM-p
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/DYJetsToLL_M-50_HT-100to200_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/2018_2019Sep29_DYJetsToLL_M-50_HT-100to200_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/190929_153440"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/DYJetsToLL_M-50_HT-100to200_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/2018_2019Sep29_DYJetsToLL_M-50_HT-100to200_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/190929_153440"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -19782,7 +19782,7 @@ samples_2018["/DYJetsToLL_M-50_HT-200to400_TuneCP5_PSweights_13TeV-madgraphMLM-p
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/DYJetsToLL_M-50_HT-200to400_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/2018_2019Sep29_DYJetsToLL_M-50_HT-200to400_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/190929_153917"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/DYJetsToLL_M-50_HT-200to400_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/2018_2019Sep29_DYJetsToLL_M-50_HT-200to400_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/190929_153917"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -19829,7 +19829,7 @@ samples_2018["/DYJetsToLL_M-50_HT-400to600_TuneCP5_PSweights_13TeV-madgraphMLM-p
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/DYJetsToLL_M-50_HT-400to600_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/2018_2019Sep29_DYJetsToLL_M-50_HT-400to600_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v7/190929_154227"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/DYJetsToLL_M-50_HT-400to600_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/2018_2019Sep29_DYJetsToLL_M-50_HT-400to600_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v7/190929_154227"),
         ("selection", "*"),
         ("blacklist", [3, 5]),
       ]),
@@ -19876,7 +19876,7 @@ samples_2018["/DYJetsToLL_M-50_HT-400to600_TuneCP5_PSweights_13TeV-madgraphMLM-p
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/DYJetsToLL_M-50_HT-400to600_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/2018_2019Sep29_DYJetsToLL_M-50_HT-400to600_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext2-v3/190929_154511"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/DYJetsToLL_M-50_HT-400to600_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/2018_2019Sep29_DYJetsToLL_M-50_HT-400to600_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext2-v3/190929_154511"),
         ("selection", "*"),
         ("blacklist", [4, 53, 56]),
       ]),
@@ -19923,7 +19923,7 @@ samples_2018["/DYJetsToLL_M-50_HT-600to800_TuneCP5_PSweights_13TeV-madgraphMLM-p
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/DYJetsToLL_M-50_HT-600to800_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/2018_2019Sep29_DYJetsToLL_M-50_HT-600to800_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/190929_154849"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/DYJetsToLL_M-50_HT-600to800_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/2018_2019Sep29_DYJetsToLL_M-50_HT-600to800_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/190929_154849"),
         ("selection", "*"),
         ("blacklist", [2, 71]),
       ]),
@@ -19970,7 +19970,7 @@ samples_2018["/DYJetsToLL_M-50_HT-800to1200_TuneCP5_PSweights_13TeV-madgraphMLM-
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/DYJetsToLL_M-50_HT-800to1200_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/2018_2019Sep29_DYJetsToLL_M-50_HT-800to1200_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/190929_155230"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/DYJetsToLL_M-50_HT-800to1200_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/2018_2019Sep29_DYJetsToLL_M-50_HT-800to1200_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/190929_155230"),
         ("selection", "*"),
         ("blacklist", [3, 13]),
       ]),
@@ -20017,7 +20017,7 @@ samples_2018["/DYJetsToLL_M-50_HT-1200to2500_TuneCP5_PSweights_13TeV-madgraphMLM
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Nov24/DYJetsToLL_M-50_HT-1200to2500_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/2018_2019Nov24_DYJetsToLL_M-50_HT-1200to2500_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/191124_210330"),
+        ("path",      "/store/user/kaehatah/2018_2019Nov24/DYJetsToLL_M-50_HT-1200to2500_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/2018_2019Nov24_DYJetsToLL_M-50_HT-1200to2500_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/191124_210330"),
         ("selection", "*"),
         ("blacklist", [10]),
       ]),
@@ -20064,7 +20064,7 @@ samples_2018["/DYJetsToLL_M-50_HT-2500toInf_TuneCP5_PSweights_13TeV-madgraphMLM-
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Nov24/DYJetsToLL_M-50_HT-2500toInf_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/2018_2019Nov24_DYJetsToLL_M-50_HT-2500toInf_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/191124_211808"),
+        ("path",      "/store/user/kaehatah/2018_2019Nov24/DYJetsToLL_M-50_HT-2500toInf_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8/2018_2019Nov24_DYJetsToLL_M-50_HT-2500toInf_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/191124_211808"),
         ("selection", "*"),
         ("blacklist", [2]),
       ]),
@@ -20111,7 +20111,7 @@ samples_2018["/DYBBJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/DYBBJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Sep29_DYBBJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_155855"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/DYBBJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Sep29_DYBBJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_155855"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -20158,7 +20158,7 @@ samples_2018["/WJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18MiniAO
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2022Aug29/WJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-pythia8/2018_2022Aug29_WJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/220829_194536"),
+        ("path",      "/store/user/kaehatah/2018_2022Aug29/WJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-pythia8/2018_2022Aug29_WJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/220829_194536"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -20205,7 +20205,7 @@ samples_2018["/WJetsToLNu_0J_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18Min
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2022Aug29/WJetsToLNu_0J_TuneCP5_13TeV-amcatnloFXFX-pythia8/2018_2022Aug29_WJetsToLNu_0J_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/220829_193817"),
+        ("path",      "/store/user/kaehatah/2018_2022Aug29/WJetsToLNu_0J_TuneCP5_13TeV-amcatnloFXFX-pythia8/2018_2022Aug29_WJetsToLNu_0J_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/220829_193817"),
         ("selection", "*"),
         ("blacklist", [1782, 1788, 2130, 2172, 2247, 2308, 2319, 2693, 2939, 3046, 3104, 3119, 3146, 3161, 3224, 3240, 3246, 3304, 3311, 3313, 3317, 3318, 3325, 3342, 3350, 3383, 3385, 3399, 3401, 3408, 3410, 3422, 3424, 3428, 3433, 3436, 3437, 3440, 3443, 3450, 3451, 3459, 3460, 3471, 3477, 3484, 3494, 3502, 3548, 3555, 3565, 3569, 3576]),
       ]),
@@ -20252,7 +20252,7 @@ samples_2018["/WJetsToLNu_1J_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18Min
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2022Aug29/WJetsToLNu_1J_TuneCP5_13TeV-amcatnloFXFX-pythia8/2018_2022Aug29_WJetsToLNu_1J_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/220829_194042"),
+        ("path",      "/store/user/kaehatah/2018_2022Aug29/WJetsToLNu_1J_TuneCP5_13TeV-amcatnloFXFX-pythia8/2018_2022Aug29_WJetsToLNu_1J_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/220829_194042"),
         ("selection", "*"),
         ("blacklist", [2486, 2773, 3063, 3177]),
       ]),
@@ -20299,7 +20299,7 @@ samples_2018["/WJetsToLNu_2J_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18Min
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2022Aug29/WJetsToLNu_2J_TuneCP5_13TeV-amcatnloFXFX-pythia8/2018_2022Aug29_WJetsToLNu_2J_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/220829_194309"),
+        ("path",      "/store/user/kaehatah/2018_2022Aug29/WJetsToLNu_2J_TuneCP5_13TeV-amcatnloFXFX-pythia8/2018_2022Aug29_WJetsToLNu_2J_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/220829_194309"),
         ("selection", "*"),
         ("blacklist", [1179, 1190, 1196, 1224, 1225, 1232, 1235, 1241, 1261, 1264, 1268, 1294, 1297, 1325, 1326, 1328, 1352, 1392, 1397, 1412, 1429, 1433, 1434, 1438, 1510, 1558, 1565, 1574, 1578, 1592, 1596, 1625, 1691, 1696, 1717, 1719, 1726, 1747, 1782, 1796, 1798, 1803, 1856, 1870, 1902, 1910, 1911, 1914, 1916, 1918, 1919, 1920, 1923, 1925, 1926, 1927, 1929, 1932, 1934, 1949, 1954, 1956, 1957, 1958, 1964, 1965, 1966, 1967, 1968, 1972]),
       ]),
@@ -20346,7 +20346,7 @@ samples_2018["/WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAOD
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Mar03/WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2020Mar03_WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/200303_195057"),
+        ("path",      "/store/user/kaehatah/2018_2020Mar03/WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2020Mar03_WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/200303_195057"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -20393,7 +20393,7 @@ samples_2018["/W1JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAO
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2021Jan29/W1JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2021Jan29_W1JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/210129_182800"),
+        ("path",      "/store/user/kaehatah/2018_2021Jan29/W1JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2021Jan29_W1JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/210129_182800"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -20440,7 +20440,7 @@ samples_2018["/W2JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAO
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/W2JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Sep29_W2JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/190929_161524"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/W2JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Sep29_W2JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/190929_161524"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -20487,7 +20487,7 @@ samples_2018["/W3JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAO
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/W3JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Sep29_W3JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/190929_161703"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/W3JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Sep29_W3JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/190929_161703"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -20534,7 +20534,7 @@ samples_2018["/W4JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18MiniAO
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/W4JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Sep29_W4JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/190929_162039"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/W4JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Sep29_W4JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/190929_162039"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -20581,7 +20581,7 @@ samples_2018["/WJetsToLNu_HT-70To100_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutu
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/WJetsToLNu_HT-70To100_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Sep29_WJetsToLNu_HT-70To100_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_162317"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/WJetsToLNu_HT-70To100_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Sep29_WJetsToLNu_HT-70To100_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_162317"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -20628,7 +20628,7 @@ samples_2018["/WJetsToLNu_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAut
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/WJetsToLNu_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Sep29_WJetsToLNu_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_162553"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/WJetsToLNu_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Sep29_WJetsToLNu_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_162553"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -20675,7 +20675,7 @@ samples_2018["/WJetsToLNu_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAut
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/WJetsToLNu_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Sep29_WJetsToLNu_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_162901"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/WJetsToLNu_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Sep29_WJetsToLNu_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_162901"),
         ("selection", "*"),
         ("blacklist", [226]),
       ]),
@@ -20722,7 +20722,7 @@ samples_2018["/WJetsToLNu_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAut
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/WJetsToLNu_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Sep29_WJetsToLNu_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_163105"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/WJetsToLNu_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Sep29_WJetsToLNu_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_163105"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -20769,7 +20769,7 @@ samples_2018["/WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAut
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2021Jan29/WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2021Jan29_WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/210129_182959"),
+        ("path",      "/store/user/kaehatah/2018_2021Jan29/WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2021Jan29_WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/210129_182959"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -20816,7 +20816,7 @@ samples_2018["/WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAu
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2021Jan29/WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2021Jan29_WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/210129_183153"),
+        ("path",      "/store/user/kaehatah/2018_2021Jan29/WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2021Jan29_WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/210129_183153"),
         ("selection", "*"),
         ("blacklist", [26, 36, 83]),
       ]),
@@ -20863,7 +20863,7 @@ samples_2018["/WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIA
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2021Jan29/WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2021Jan29_WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/210129_183351"),
+        ("path",      "/store/user/kaehatah/2018_2021Jan29/WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2021Jan29_WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/210129_183351"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -20910,7 +20910,7 @@ samples_2018["/WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAu
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Nov24/WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Nov24_WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/191124_210058"),
+        ("path",      "/store/user/kaehatah/2018_2019Nov24/WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Nov24_WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/191124_210058"),
         ("selection", "*"),
         ("blacklist", [53]),
       ]),
@@ -20957,7 +20957,7 @@ samples_2018["/WWTo2L2Nu_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniA
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/WWTo2L2Nu_NNPDF31_TuneCP5_13TeV-powheg-pythia8/2018_2019Sep29_WWTo2L2Nu_NNPDF31_TuneCP5_13TeV-powheg-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_164246"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/WWTo2L2Nu_NNPDF31_TuneCP5_13TeV-powheg-pythia8/2018_2019Sep29_WWTo2L2Nu_NNPDF31_TuneCP5_13TeV-powheg-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_164246"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -21004,7 +21004,7 @@ samples_2018["/WWToLNuQQ_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniA
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/WWToLNuQQ_NNPDF31_TuneCP5_13TeV-powheg-pythia8/2018_2019Sep29_WWToLNuQQ_NNPDF31_TuneCP5_13TeV-powheg-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_164453"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/WWToLNuQQ_NNPDF31_TuneCP5_13TeV-powheg-pythia8/2018_2019Sep29_WWToLNuQQ_NNPDF31_TuneCP5_13TeV-powheg-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_164453"),
         ("selection", "*"),
         ("blacklist", [1, 2, 3, 4, 5, 17, 25]),
       ]),
@@ -21051,7 +21051,7 @@ samples_2018["/WWTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIIAutumn18MiniA
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/WWTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8/2018_2019Sep29_WWTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_164700"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/WWTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8/2018_2019Sep29_WWTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_164700"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -21098,7 +21098,7 @@ samples_2018["/WWTo4Q_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/WWTo4Q_NNPDF31_TuneCP5_13TeV-powheg-pythia8/2018_2019Sep29_WWTo4Q_NNPDF31_TuneCP5_13TeV-powheg-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_164908"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/WWTo4Q_NNPDF31_TuneCP5_13TeV-powheg-pythia8/2018_2019Sep29_WWTo4Q_NNPDF31_TuneCP5_13TeV-powheg-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_164908"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -21145,7 +21145,7 @@ samples_2018["/WZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18MiniAOD-
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/WZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8/2018_2019Sep29_WZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_165118"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/WZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8/2018_2019Sep29_WZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_165118"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -21192,7 +21192,7 @@ samples_2018["/WZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18MiniAOD-
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/WZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8/2018_2019Sep29_WZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/190929_165525"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/WZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8/2018_2019Sep29_WZTo3LNu_TuneCP5_13TeV-amcatnloFXFX-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/190929_165525"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -21239,7 +21239,7 @@ samples_2018["/WZTo3LNu_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18MiniAOD-102X_u
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/WZTo3LNu_TuneCP5_13TeV-powheg-pythia8/2018_2019Sep29_WZTo3LNu_TuneCP5_13TeV-powheg-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/190929_165839"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/WZTo3LNu_TuneCP5_13TeV-powheg-pythia8/2018_2019Sep29_WZTo3LNu_TuneCP5_13TeV-powheg-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/190929_165839"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -21286,7 +21286,7 @@ samples_2018["/WZTo3LNu_mllmin01_NNPDF31_TuneCP5_13TeV_powheg_pythia8/RunIIAutum
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Jul11/WZTo3LNu_mllmin01_NNPDF31_TuneCP5_13TeV_powheg_pythia8/2018_2020Jul11_WZTo3LNu_mllmin01_NNPDF31_TuneCP5_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/200711_163212"),
+        ("path",      "/store/user/kaehatah/2018_2020Jul11/WZTo3LNu_mllmin01_NNPDF31_TuneCP5_13TeV_powheg_pythia8/2018_2020Jul11_WZTo3LNu_mllmin01_NNPDF31_TuneCP5_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/200711_163212"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -21333,7 +21333,7 @@ samples_2018["/WZTo3LNu_0Jets_MLL-4to50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIA
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/WZTo3LNu_0Jets_MLL-4to50_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Sep29_WZTo3LNu_0Jets_MLL-4to50_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/190929_170029"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/WZTo3LNu_0Jets_MLL-4to50_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Sep29_WZTo3LNu_0Jets_MLL-4to50_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/190929_170029"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -21380,7 +21380,7 @@ samples_2018["/WZTo3LNu_0Jets_MLL-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutu
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/WZTo3LNu_0Jets_MLL-50_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Sep29_WZTo3LNu_0Jets_MLL-50_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/190929_170207"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/WZTo3LNu_0Jets_MLL-50_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Sep29_WZTo3LNu_0Jets_MLL-50_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/190929_170207"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -21427,7 +21427,7 @@ samples_2018["/WZTo3LNu_1Jets_MLL-4to50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIA
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/WZTo3LNu_1Jets_MLL-4to50_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Sep29_WZTo3LNu_1Jets_MLL-4to50_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/190929_170749"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/WZTo3LNu_1Jets_MLL-4to50_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Sep29_WZTo3LNu_1Jets_MLL-4to50_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/190929_170749"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -21474,7 +21474,7 @@ samples_2018["/WZTo3LNu_1Jets_MLL-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutu
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Nov24/WZTo3LNu_1Jets_MLL-50_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Nov24_WZTo3LNu_1Jets_MLL-50_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/191124_212437"),
+        ("path",      "/store/user/kaehatah/2018_2019Nov24/WZTo3LNu_1Jets_MLL-50_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Nov24_WZTo3LNu_1Jets_MLL-50_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/191124_212437"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -21521,7 +21521,7 @@ samples_2018["/WZTo3LNu_2Jets_MLL-4to50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIA
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/WZTo3LNu_2Jets_MLL-4to50_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Sep29_WZTo3LNu_2Jets_MLL-4to50_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/190929_171205"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/WZTo3LNu_2Jets_MLL-4to50_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Sep29_WZTo3LNu_2Jets_MLL-4to50_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/190929_171205"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -21568,7 +21568,7 @@ samples_2018["/WZTo3LNu_2Jets_MLL-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutu
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/WZTo3LNu_2Jets_MLL-50_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Sep29_WZTo3LNu_2Jets_MLL-50_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/190929_171409"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/WZTo3LNu_2Jets_MLL-50_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Sep29_WZTo3LNu_2Jets_MLL-50_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/190929_171409"),
         ("selection", "*"),
         ("blacklist", [5, 6]),
       ]),
@@ -21615,7 +21615,7 @@ samples_2018["/WZTo3LNu_3Jets_MLL-4to50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIA
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/WZTo3LNu_3Jets_MLL-4to50_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Sep29_WZTo3LNu_3Jets_MLL-4to50_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/190929_171627"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/WZTo3LNu_3Jets_MLL-4to50_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Sep29_WZTo3LNu_3Jets_MLL-4to50_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/190929_171627"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -21662,7 +21662,7 @@ samples_2018["/WZTo3LNu_3Jets_MLL-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutu
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/WZTo3LNu_3Jets_MLL-50_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Sep29_WZTo3LNu_3Jets_MLL-50_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/190929_171939"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/WZTo3LNu_3Jets_MLL-50_TuneCP5_13TeV-madgraphMLM-pythia8/2018_2019Sep29_WZTo3LNu_3Jets_MLL-50_TuneCP5_13TeV-madgraphMLM-pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/190929_171939"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -21709,7 +21709,7 @@ samples_2018["/WZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIIAutumn18MiniAOD-
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2021Jan29/WZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/2018_2021Jan29_WZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/210129_183548"),
+        ("path",      "/store/user/kaehatah/2018_2021Jan29/WZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/2018_2021Jan29_WZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/210129_183548"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -21756,7 +21756,7 @@ samples_2018["/WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIIAutumn18MiniA
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2021Jan29/WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8/2018_2021Jan29_WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/210129_183741"),
+        ("path",      "/store/user/kaehatah/2018_2021Jan29/WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8/2018_2021Jan29_WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/210129_183741"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -21803,7 +21803,7 @@ samples_2018["/ZZTo4L_TuneCP5_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102X_upg
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/ZZTo4L_TuneCP5_13TeV_powheg_pythia8/2018_2019Sep29_ZZTo4L_TuneCP5_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/190929_172837"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/ZZTo4L_TuneCP5_13TeV_powheg_pythia8/2018_2019Sep29_ZZTo4L_TuneCP5_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/190929_172837"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -21850,7 +21850,7 @@ samples_2018["/ZZTo4L_TuneCP5_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102X_upg
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2021Jan29/ZZTo4L_TuneCP5_13TeV_powheg_pythia8/2018_2021Jan29_ZZTo4L_TuneCP5_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext2-v2/210129_183934"),
+        ("path",      "/store/user/kaehatah/2018_2021Jan29/ZZTo4L_TuneCP5_13TeV_powheg_pythia8/2018_2021Jan29_ZZTo4L_TuneCP5_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext2-v2/210129_183934"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -21897,7 +21897,7 @@ samples_2018["/ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102X_
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8/2018_2019Sep29_ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/190929_173502"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8/2018_2019Sep29_ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/190929_173502"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -21944,7 +21944,7 @@ samples_2018["/ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8/RunIIAutumn18MiniAOD-102X_
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2021Jan29/ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8/2018_2021Jan29_ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext2-v2/210129_184128"),
+        ("path",      "/store/user/kaehatah/2018_2021Jan29/ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8/2018_2021Jan29_ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext2-v2/210129_184128"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -21991,7 +21991,7 @@ samples_2018["/ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/RunIIAutumn18MiniAOD-
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/2018_2019Sep29_ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_174146"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8/2018_2019Sep29_ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_174146"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -22038,7 +22038,7 @@ samples_2018["/GluGluToContinToZZTo4tau_13TeV_MCFM701_pythia8/RunIIAutumn18MiniA
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Apr01/GluGluToContinToZZTo4tau_13TeV_MCFM701_pythia8/2018_2020Apr01_GluGluToContinToZZTo4tau_13TeV_MCFM701_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/200331_220849"),
+        ("path",      "/store/user/kaehatah/2018_2020Apr01/GluGluToContinToZZTo4tau_13TeV_MCFM701_pythia8/2018_2020Apr01_GluGluToContinToZZTo4tau_13TeV_MCFM701_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/200331_220849"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -22085,7 +22085,7 @@ samples_2018["/GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8/RunIIAutumn18MiniAO
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Apr01/GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8/2018_2020Apr01_GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/200331_222033"),
+        ("path",      "/store/user/kaehatah/2018_2020Apr01/GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8/2018_2020Apr01_GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/200331_222033"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -22132,7 +22132,7 @@ samples_2018["/GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8/RunIIAutumn18MiniAO
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Apr01/GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8/2018_2020Apr01_GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1/200331_222311"),
+        ("path",      "/store/user/kaehatah/2018_2020Apr01/GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8/2018_2020Apr01_GluGluToContinToZZTo4mu_13TeV_MCFM701_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1/200331_222311"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -22179,7 +22179,7 @@ samples_2018["/GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8/RunIIAutumn18MiniAOD
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Apr01/GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8/2018_2020Apr01_GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/200331_222548"),
+        ("path",      "/store/user/kaehatah/2018_2020Apr01/GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8/2018_2020Apr01_GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/200331_222548"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -22226,7 +22226,7 @@ samples_2018["/GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8/RunIIAutumn18MiniAOD
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Apr01/GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8/2018_2020Apr01_GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1/200331_222724"),
+        ("path",      "/store/user/kaehatah/2018_2020Apr01/GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8/2018_2020Apr01_GluGluToContinToZZTo4e_13TeV_MCFM701_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v1/200331_222724"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -22273,7 +22273,7 @@ samples_2018["/GluGluToContinToZZTo2e2tau_13TeV_MCFM701_pythia8/RunIIAutumn18Min
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Apr01/GluGluToContinToZZTo2e2tau_13TeV_MCFM701_pythia8/2018_2020Apr01_GluGluToContinToZZTo2e2tau_13TeV_MCFM701_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v3/200331_222929"),
+        ("path",      "/store/user/kaehatah/2018_2020Apr01/GluGluToContinToZZTo2e2tau_13TeV_MCFM701_pythia8/2018_2020Apr01_GluGluToContinToZZTo2e2tau_13TeV_MCFM701_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v3/200331_222929"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -22320,7 +22320,7 @@ samples_2018["/GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8/RunIIAutumn18Mini
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Apr22/GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8/2018_2020Apr22_GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v3/200422_133803"),
+        ("path",      "/store/user/kaehatah/2018_2020Apr22/GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8/2018_2020Apr22_GluGluToContinToZZTo2e2mu_13TeV_MCFM701_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v3/200422_133803"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -22367,7 +22367,7 @@ samples_2018["/GluGluToContinToZZTo2mu2tau_13TeV_MCFM701_pythia8/RunIIAutumn18Mi
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Apr01/GluGluToContinToZZTo2mu2tau_13TeV_MCFM701_pythia8/2018_2020Apr01_GluGluToContinToZZTo2mu2tau_13TeV_MCFM701_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v4/200331_223243"),
+        ("path",      "/store/user/kaehatah/2018_2020Apr01/GluGluToContinToZZTo2mu2tau_13TeV_MCFM701_pythia8/2018_2020Apr01_GluGluToContinToZZTo2mu2tau_13TeV_MCFM701_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v4/200331_223243"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -22414,7 +22414,7 @@ samples_2018["/QCD_Pt_15to20_bcToE_TuneCP5_13TeV_pythia8/RunIIAutumn18MiniAOD-10
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/QCD_Pt_15to20_bcToE_TuneCP5_13TeV_pythia8/2018_2019Sep29_QCD_Pt_15to20_bcToE_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/191001_015551"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/QCD_Pt_15to20_bcToE_TuneCP5_13TeV_pythia8/2018_2019Sep29_QCD_Pt_15to20_bcToE_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/191001_015551"),
         ("selection", "*"),
         ("blacklist", [2, 5, 32, 34]),
       ]),
@@ -22461,7 +22461,7 @@ samples_2018["/QCD_Pt_20to30_bcToE_TuneCP5_13TeV_pythia8/RunIIAutumn18MiniAOD-10
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/QCD_Pt_20to30_bcToE_TuneCP5_13TeV_pythia8/2018_2019Sep29_QCD_Pt_20to30_bcToE_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/191001_015804"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/QCD_Pt_20to30_bcToE_TuneCP5_13TeV_pythia8/2018_2019Sep29_QCD_Pt_20to30_bcToE_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2/191001_015804"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -22508,7 +22508,7 @@ samples_2018["/QCD_Pt_30to80_bcToE_TuneCP5_13TeV_pythia8/RunIIAutumn18MiniAOD-10
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/QCD_Pt_30to80_bcToE_TuneCP5_13TeV_pythia8/2018_2019Sep29_QCD_Pt_30to80_bcToE_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_174737"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/QCD_Pt_30to80_bcToE_TuneCP5_13TeV_pythia8/2018_2019Sep29_QCD_Pt_30to80_bcToE_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_174737"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -22555,7 +22555,7 @@ samples_2018["/QCD_Pt_80to170_bcToE_TuneCP5_13TeV_pythia8/RunIIAutumn18MiniAOD-1
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/QCD_Pt_80to170_bcToE_TuneCP5_13TeV_pythia8/2018_2019Sep29_QCD_Pt_80to170_bcToE_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_175150"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/QCD_Pt_80to170_bcToE_TuneCP5_13TeV_pythia8/2018_2019Sep29_QCD_Pt_80to170_bcToE_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_175150"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -22602,7 +22602,7 @@ samples_2018["/QCD_Pt_170to250_bcToE_TuneCP5_13TeV_pythia8/RunIIAutumn18MiniAOD-
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/QCD_Pt_170to250_bcToE_TuneCP5_13TeV_pythia8/2018_2019Sep29_QCD_Pt_170to250_bcToE_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_175525"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/QCD_Pt_170to250_bcToE_TuneCP5_13TeV_pythia8/2018_2019Sep29_QCD_Pt_170to250_bcToE_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_175525"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -22649,7 +22649,7 @@ samples_2018["/QCD_Pt_250toInf_bcToE_TuneCP5_13TeV_pythia8/RunIIAutumn18MiniAOD-
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/QCD_Pt_250toInf_bcToE_TuneCP5_13TeV_pythia8/2018_2019Sep29_QCD_Pt_250toInf_bcToE_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_175734"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/QCD_Pt_250toInf_bcToE_TuneCP5_13TeV_pythia8/2018_2019Sep29_QCD_Pt_250toInf_bcToE_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_175734"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -22696,7 +22696,7 @@ samples_2018["/QCD_Pt-15to20_EMEnriched_TuneCP5_13TeV_pythia8/RunIIAutumn18MiniA
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/QCD_Pt-15to20_EMEnriched_TuneCP5_13TeV_pythia8/2018_2019Sep29_QCD_Pt-15to20_EMEnriched_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/190929_175945"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/QCD_Pt-15to20_EMEnriched_TuneCP5_13TeV_pythia8/2018_2019Sep29_QCD_Pt-15to20_EMEnriched_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/190929_175945"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -22743,7 +22743,7 @@ samples_2018["/QCD_Pt-20to30_EMEnriched_TuneCP5_13TeV_pythia8/RunIIAutumn18MiniA
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/QCD_Pt-20to30_EMEnriched_TuneCP5_13TeV_pythia8/2018_2019Sep29_QCD_Pt-20to30_EMEnriched_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_180305"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/QCD_Pt-20to30_EMEnriched_TuneCP5_13TeV_pythia8/2018_2019Sep29_QCD_Pt-20to30_EMEnriched_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_180305"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -22790,7 +22790,7 @@ samples_2018["/QCD_Pt-30to50_EMEnriched_TuneCP5_13TeV_pythia8/RunIIAutumn18MiniA
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/QCD_Pt-30to50_EMEnriched_TuneCP5_13TeV_pythia8/2018_2019Sep29_QCD_Pt-30to50_EMEnriched_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/190929_180521"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/QCD_Pt-30to50_EMEnriched_TuneCP5_13TeV_pythia8/2018_2019Sep29_QCD_Pt-30to50_EMEnriched_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/190929_180521"),
         ("selection", "*"),
         ("blacklist", [1, 2, 3, 4, 5]),
       ]),
@@ -22837,7 +22837,7 @@ samples_2018["/QCD_Pt-50to80_EMEnriched_TuneCP5_13TeV_pythia8/RunIIAutumn18MiniA
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2021Feb02/QCD_Pt-50to80_EMEnriched_TuneCP5_13TeV_pythia8/2018_2021Feb02_QCD_Pt-50to80_EMEnriched_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/210202_123227"),
+        ("path",      "/store/user/kaehatah/2018_2021Feb02/QCD_Pt-50to80_EMEnriched_TuneCP5_13TeV_pythia8/2018_2021Feb02_QCD_Pt-50to80_EMEnriched_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/210202_123227"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -22884,7 +22884,7 @@ samples_2018["/QCD_Pt-80to120_EMEnriched_TuneCP5_13TeV_pythia8/RunIIAutumn18Mini
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2021Feb02/QCD_Pt-80to120_EMEnriched_TuneCP5_13TeV_pythia8/2018_2021Feb02_QCD_Pt-80to120_EMEnriched_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/210202_123332"),
+        ("path",      "/store/user/kaehatah/2018_2021Feb02/QCD_Pt-80to120_EMEnriched_TuneCP5_13TeV_pythia8/2018_2021Feb02_QCD_Pt-80to120_EMEnriched_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/210202_123332"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -22931,7 +22931,7 @@ samples_2018["/QCD_Pt-120to170_EMEnriched_TuneCP5_13TeV_pythia8/RunIIAutumn18Min
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/QCD_Pt-120to170_EMEnriched_TuneCP5_13TeV_pythia8/2018_2019Sep29_QCD_Pt-120to170_EMEnriched_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_181214"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/QCD_Pt-120to170_EMEnriched_TuneCP5_13TeV_pythia8/2018_2019Sep29_QCD_Pt-120to170_EMEnriched_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_181214"),
         ("selection", "*"),
         ("blacklist", [2]),
       ]),
@@ -22978,7 +22978,7 @@ samples_2018["/QCD_Pt-170to300_EMEnriched_TuneCP5_13TeV_pythia8/RunIIAutumn18Min
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/QCD_Pt-170to300_EMEnriched_TuneCP5_13TeV_pythia8/2018_2019Sep29_QCD_Pt-170to300_EMEnriched_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_181349"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/QCD_Pt-170to300_EMEnriched_TuneCP5_13TeV_pythia8/2018_2019Sep29_QCD_Pt-170to300_EMEnriched_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_181349"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -23025,7 +23025,7 @@ samples_2018["/QCD_Pt-300toInf_EMEnriched_TuneCP5_13TeV_pythia8/RunIIAutumn18Min
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/QCD_Pt-300toInf_EMEnriched_TuneCP5_13TeV_pythia8/2018_2019Sep29_QCD_Pt-300toInf_EMEnriched_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_181528"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/QCD_Pt-300toInf_EMEnriched_TuneCP5_13TeV_pythia8/2018_2019Sep29_QCD_Pt-300toInf_EMEnriched_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_181528"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -23072,7 +23072,7 @@ samples_2018["/QCD_Pt-15to20_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn18Mi
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/QCD_Pt-15to20_MuEnrichedPt5_TuneCP5_13TeV_pythia8/2018_2019Sep29_QCD_Pt-15to20_MuEnrichedPt5_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v3/190929_181734"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/QCD_Pt-15to20_MuEnrichedPt5_TuneCP5_13TeV_pythia8/2018_2019Sep29_QCD_Pt-15to20_MuEnrichedPt5_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v3/190929_181734"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -23119,7 +23119,7 @@ samples_2018["/QCD_Pt-20to30_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn18Mi
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/QCD_Pt-20to30_MuEnrichedPt5_TuneCP5_13TeV_pythia8/2018_2019Sep29_QCD_Pt-20to30_MuEnrichedPt5_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v4/190929_181946"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/QCD_Pt-20to30_MuEnrichedPt5_TuneCP5_13TeV_pythia8/2018_2019Sep29_QCD_Pt-20to30_MuEnrichedPt5_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v4/190929_181946"),
         ("selection", "*"),
         ("blacklist", [1, 2, 3, 4, 5, 302]),
       ]),
@@ -23166,7 +23166,7 @@ samples_2018["/QCD_Pt-30to50_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn18Mi
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/QCD_Pt-30to50_MuEnrichedPt5_TuneCP5_13TeV_pythia8/2018_2019Sep29_QCD_Pt-30to50_MuEnrichedPt5_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v3/190929_182231"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/QCD_Pt-30to50_MuEnrichedPt5_TuneCP5_13TeV_pythia8/2018_2019Sep29_QCD_Pt-30to50_MuEnrichedPt5_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v3/190929_182231"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -23213,7 +23213,7 @@ samples_2018["/QCD_Pt-50to80_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn18Mi
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2021Feb02/QCD_Pt-50to80_MuEnrichedPt5_TuneCP5_13TeV_pythia8/2018_2021Feb02_QCD_Pt-50to80_MuEnrichedPt5_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v3/210202_123507"),
+        ("path",      "/store/user/kaehatah/2018_2021Feb02/QCD_Pt-50to80_MuEnrichedPt5_TuneCP5_13TeV_pythia8/2018_2021Feb02_QCD_Pt-50to80_MuEnrichedPt5_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v3/210202_123507"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -23260,7 +23260,7 @@ samples_2018["/QCD_Pt-80to120_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn18M
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/QCD_Pt-80to120_MuEnrichedPt5_TuneCP5_13TeV_pythia8/2018_2019Sep29_QCD_Pt-80to120_MuEnrichedPt5_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_182749"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/QCD_Pt-80to120_MuEnrichedPt5_TuneCP5_13TeV_pythia8/2018_2019Sep29_QCD_Pt-80to120_MuEnrichedPt5_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_182749"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -23307,7 +23307,7 @@ samples_2018["/QCD_Pt-80to120_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn18M
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Nov24/QCD_Pt-80to120_MuEnrichedPt5_TuneCP5_13TeV_pythia8/2018_2019Nov24_QCD_Pt-80to120_MuEnrichedPt5_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/191124_204601"),
+        ("path",      "/store/user/kaehatah/2018_2019Nov24/QCD_Pt-80to120_MuEnrichedPt5_TuneCP5_13TeV_pythia8/2018_2019Nov24_QCD_Pt-80to120_MuEnrichedPt5_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/191124_204601"),
         ("selection", "*"),
         ("blacklist", [281]),
       ]),
@@ -23354,7 +23354,7 @@ samples_2018["/QCD_Pt-120to170_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn18
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Nov24/QCD_Pt-120to170_MuEnrichedPt5_TuneCP5_13TeV_pythia8/2018_2019Nov24_QCD_Pt-120to170_MuEnrichedPt5_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/191124_212706"),
+        ("path",      "/store/user/kaehatah/2018_2019Nov24/QCD_Pt-120to170_MuEnrichedPt5_TuneCP5_13TeV_pythia8/2018_2019Nov24_QCD_Pt-120to170_MuEnrichedPt5_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/191124_212706"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -23401,7 +23401,7 @@ samples_2018["/QCD_Pt-120to170_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn18
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/QCD_Pt-120to170_MuEnrichedPt5_TuneCP5_13TeV_pythia8/2018_2019Sep29_QCD_Pt-120to170_MuEnrichedPt5_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/190929_183509"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/QCD_Pt-120to170_MuEnrichedPt5_TuneCP5_13TeV_pythia8/2018_2019Sep29_QCD_Pt-120to170_MuEnrichedPt5_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/190929_183509"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -23448,7 +23448,7 @@ samples_2018["/QCD_Pt-170to300_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn18
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2021Feb02/QCD_Pt-170to300_MuEnrichedPt5_TuneCP5_13TeV_pythia8/2018_2021Feb02_QCD_Pt-170to300_MuEnrichedPt5_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v3/210202_123611"),
+        ("path",      "/store/user/kaehatah/2018_2021Feb02/QCD_Pt-170to300_MuEnrichedPt5_TuneCP5_13TeV_pythia8/2018_2021Feb02_QCD_Pt-170to300_MuEnrichedPt5_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v3/210202_123611"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -23495,7 +23495,7 @@ samples_2018["/QCD_Pt-300to470_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn18
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/QCD_Pt-300to470_MuEnrichedPt5_TuneCP5_13TeV_pythia8/2018_2019Sep29_QCD_Pt-300to470_MuEnrichedPt5_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v3/190929_183941"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/QCD_Pt-300to470_MuEnrichedPt5_TuneCP5_13TeV_pythia8/2018_2019Sep29_QCD_Pt-300to470_MuEnrichedPt5_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v3/190929_183941"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -23542,7 +23542,7 @@ samples_2018["/QCD_Pt-300to470_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn18
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2021Feb02/QCD_Pt-300to470_MuEnrichedPt5_TuneCP5_13TeV_pythia8/2018_2021Feb02_QCD_Pt-300to470_MuEnrichedPt5_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext3-v1/210202_123749"),
+        ("path",      "/store/user/kaehatah/2018_2021Feb02/QCD_Pt-300to470_MuEnrichedPt5_TuneCP5_13TeV_pythia8/2018_2021Feb02_QCD_Pt-300to470_MuEnrichedPt5_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext3-v1/210202_123749"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -23589,7 +23589,7 @@ samples_2018["/QCD_Pt-470to600_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn18
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/QCD_Pt-470to600_MuEnrichedPt5_TuneCP5_13TeV_pythia8/2018_2019Sep29_QCD_Pt-470to600_MuEnrichedPt5_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_184400"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/QCD_Pt-470to600_MuEnrichedPt5_TuneCP5_13TeV_pythia8/2018_2019Sep29_QCD_Pt-470to600_MuEnrichedPt5_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_184400"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -23636,7 +23636,7 @@ samples_2018["/QCD_Pt-470to600_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn18
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2021Feb02/QCD_Pt-470to600_MuEnrichedPt5_TuneCP5_13TeV_pythia8/2018_2021Feb02_QCD_Pt-470to600_MuEnrichedPt5_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/210202_123854"),
+        ("path",      "/store/user/kaehatah/2018_2021Feb02/QCD_Pt-470to600_MuEnrichedPt5_TuneCP5_13TeV_pythia8/2018_2021Feb02_QCD_Pt-470to600_MuEnrichedPt5_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2/210202_123854"),
         ("selection", "*"),
         ("blacklist", [104]),
       ]),
@@ -23683,7 +23683,7 @@ samples_2018["/QCD_Pt-600to800_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn18
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/QCD_Pt-600to800_MuEnrichedPt5_TuneCP5_13TeV_pythia8/2018_2019Sep29_QCD_Pt-600to800_MuEnrichedPt5_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_184709"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/QCD_Pt-600to800_MuEnrichedPt5_TuneCP5_13TeV_pythia8/2018_2019Sep29_QCD_Pt-600to800_MuEnrichedPt5_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_184709"),
         ("selection", "*"),
         ("blacklist", [1, 3, 5, 119, 132]),
       ]),
@@ -23730,7 +23730,7 @@ samples_2018["/QCD_Pt-800to1000_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn1
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/QCD_Pt-800to1000_MuEnrichedPt5_TuneCP5_13TeV_pythia8/2018_2019Sep29_QCD_Pt-800to1000_MuEnrichedPt5_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext3-v2/190929_184919"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/QCD_Pt-800to1000_MuEnrichedPt5_TuneCP5_13TeV_pythia8/2018_2019Sep29_QCD_Pt-800to1000_MuEnrichedPt5_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext3-v2/190929_184919"),
         ("selection", "*"),
         ("blacklist", [1, 2, 4, 5, 9, 45, 56, 57, 60, 115, 124, 147, 153, 154, 168]),
       ]),
@@ -23777,7 +23777,7 @@ samples_2018["/QCD_Pt-1000toInf_MuEnrichedPt5_TuneCP5_13TeV_pythia8/RunIIAutumn1
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2019Sep29/QCD_Pt-1000toInf_MuEnrichedPt5_TuneCP5_13TeV_pythia8/2018_2019Sep29_QCD_Pt-1000toInf_MuEnrichedPt5_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_185123"),
+        ("path",      "/store/user/kaehatah/2018_2019Sep29/QCD_Pt-1000toInf_MuEnrichedPt5_TuneCP5_13TeV_pythia8/2018_2019Sep29_QCD_Pt-1000toInf_MuEnrichedPt5_TuneCP5_13TeV_pythia8__RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1/190929_185123"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -23824,7 +23824,7 @@ samples_2018["/TTWJetsToLNu_EWK_5f_NLO/RunIIAutumn18MiniAOD/USER"] = OD([
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/cms/store/user/kaehatah/2018_2020Jun16/TTWJetsToLNu_EWK_5f_NLO/2018_2020Jun16_TTWJetsToLNu_EWK_5f_NLO__RunIIAutumn18MiniAOD/000000_000000"),
+        ("path",      "/store/user/kaehatah/2018_2020Jun16/TTWJetsToLNu_EWK_5f_NLO/2018_2020Jun16_TTWJetsToLNu_EWK_5f_NLO__RunIIAutumn18MiniAOD/000000_000000"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -23871,7 +23871,7 @@ samples_2018["/ZHToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8/RunIIAutumn18Mi
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHVHSplitter/2018/2020Dec17/ntuples/ZHToNonbb_M125"),
+        ("path",      "/local/karl/ttHVHSplitter/2018/2020Dec17/ntuples/ZHToNonbb_M125"),
         ("selection", "*"),
         ("blacklist", []),
       ]),
@@ -23918,7 +23918,7 @@ samples_2018["/WHToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8/RunIIAutumn18Mi
   ("local_paths",
     [
       OD([
-        ("path",      "/hdfs/local/karl/ttHVHSplitter/2018/2020Dec17/ntuples/WHToNonbb_M125"),
+        ("path",      "/local/karl/ttHVHSplitter/2018/2020Dec17/ntuples/WHToNonbb_M125"),
         ("selection", "*"),
         ("blacklist", []),
       ]),

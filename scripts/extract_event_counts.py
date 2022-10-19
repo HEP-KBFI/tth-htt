@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 from tthAnalysis.HiggsToTauTau.safe_root import ROOT
-from tthAnalysis.HiggsToTauTau.hdfs import hdfs
 from tthAnalysis.HiggsToTauTau.common import SmartFormatter, logging
 
 import collections
@@ -37,7 +36,7 @@ if not os.path.isdir(output_dir):
 histograms = collections.OrderedDict()
 for input_fn in inputs:
   logging.info("Reading file: {}".format(input_fn))
-  if not hdfs.isfile(input_fn):
+  if not os.path.isfile(input_fn):
     raise RuntimeError("No such directory: %s" % input_fn)
   input_fptr = ROOT.TFile.Open(input_fn, 'read')
   keys = [ key.GetName() for key in input_fptr.GetListOfKeys() ]

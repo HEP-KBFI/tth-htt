@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from tthAnalysis.HiggsToTauTau.sbatchManager import sbatchManager, sbatchManagerRuntimeError
-from tthAnalysis.HiggsToTauTau.hdfs import hdfs
+from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists
+
 import os
 import unittest
 import shutil
@@ -116,12 +117,11 @@ def suite():
   testSuite.addTest(unittest.makeSuite(SbatchBulkTestCase))
   return testSuite
 
-if not hdfs.isdir(testDir):
-  hdfs.mkdirs(testDir)
+create_if_not_exists(testDir)
 
 suite_instance = suite()
 runner = unittest.TextTestRunner()
 runner.run(suite_instance)
 
-if hdfs.isdir(testDir):
+if os.path.isdir(testDir):
   shutil.rmtree(testDir)

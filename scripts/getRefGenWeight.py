@@ -2,7 +2,6 @@
 
 from tthAnalysis.HiggsToTauTau.common import logging, SmartFormatter
 from tthAnalysis.HiggsToTauTau.safe_root import ROOT
-from tthAnalysis.HiggsToTauTau.hdfs import hdfs
 
 ROOT.gROOT.SetBatch(True)
 
@@ -21,7 +20,7 @@ MAX_CUTOFF = 3
 def create_output_dir(file_name):
   output_dir = os.path.dirname(file_name)
   if not os.path.isdir(output_dir):
-    if not hdfs.mkdirs(output_dir):
+    if not os.makedirs(output_dir):
       raise RuntimeError("Unable to create directory for the output file: %s" % file_name)
 
 parser = argparse.ArgumentParser(
@@ -69,7 +68,7 @@ input_files = []
 with open(input_txt_file, 'r') as input_file_ptr:
   for line in input_file_ptr:
     input_file_cand = line.rstrip()
-    if not hdfs.isfile(input_file_cand):
+    if not os.path.isfile(input_file_cand):
       raise RuntimeError("No such file: %s" % input_file_cand)
     input_files.append(input_file_cand)
 logging.info("Found {} input files".format(len(input_files)))

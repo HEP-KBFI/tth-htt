@@ -2,7 +2,6 @@
 
 from tthAnalysis.HiggsToTauTau.safe_root import ROOT
 from tthAnalysis.HiggsToTauTau.common import logging, SmartFormatter
-from tthAnalysis.HiggsToTauTau.hdfs import hdfs
 
 import collections
 import re
@@ -23,9 +22,10 @@ def get_paths(input_paths, whitelist, blacklist):
     nof_levels = len(input_path_split)
     if nof_levels == 6:
       input_path_subdir = os.path.join(input_path, OUTPUT_RLE)
-      if not hdfs.isdir(input_path_subdir):
+      if not os.path.isdir(input_path_subdir):
         raise ValueError("No such directory: %s" % input_path_subdir)
-      for channel_dir in sorted(hdfs.listdir(input_path_subdir)):
+      for channel_dir_ in sorted(os.listdir(input_path_subdir)):
+        channel_dir = os.path.join(input_path_subdir, channel_dir_)
         channel_name = os.path.basename(channel_dir)
         if whitelist and channel_name not in whitelist:
           logging.info("Excluding channel: {}".format(channel_name))
@@ -64,17 +64,20 @@ def get_rles(input_paths, whitelist, blacklist, read_all_systematics):
   valid_paths = get_paths(input_paths, whitelist, blacklist)
   for channel_name, channel_dir in valid_paths.items():
     rles[channel_name] = collections.OrderedDict()
-    for region_dir in sorted(hdfs.listdir(channel_dir)):
+    for region_dir_ in sorted(os.listdir(channel_dir)):
+      region_dir = os.path.join(channel_dir, region_dir_)
       region_name = os.path.basename(region_dir)
       logging.debug('Found region {} in channel {}'.format(channel_name, region_name))
       rles[channel_name][region_name] = collections.OrderedDict()
-      for sample_dir in sorted(hdfs.listdir(region_dir)):
+      for sample_dir_ in sorted(os.listdir(region_dir)):
+        sample_dir = os.path.join(region_dir, sample_dir_)
         sample_name = os.path.basename(sample_dir)
         if sample_name in SAMPLES_EXCLUDE:
           continue
         logging.debug('Found sample {} in region {} and channel {}'.format(sample_name, region_name, channel_name))
         rles[channel_name][region_name][sample_name] = collections.OrderedDict()
-        for rle_dir in sorted(hdfs.listdir(sample_dir)):
+        for rle_dir_ in sorted(os.listdir(sample_dir)):
+          rle_dir = os.path.join(sample_dir, rle_dir_)
           central_or_shift = os.path.basename(rle_dir)
           if central_or_shift in SYSTEMATICS_EXCLUDE:
             continue
@@ -86,7 +89,7 @@ def get_rles(input_paths, whitelist, blacklist, read_all_systematics):
             )
           )
           rles[channel_name][region_name][sample_name][central_or_shift] = []
-          rle_filenames = sorted(hdfs.listdir(rle_dir))
+          rle_filenames = [ os.path.join(rle_dir, p) for p in sorted(os.listdir(rle_dir)) ]
           if not rle_filenames:
             logging.warning('Directory {} is empty'.format(rle_dir))
             continue

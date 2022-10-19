@@ -774,7 +774,7 @@ class analyzeConfig(object):
             os.environ['CMSSW_BASE'], "src/tthAnalysis/HiggsToTauTau/data/btagSFRatio_{}.root".format(self.era)
           )
         else:
-          self.btagSFRatioFile = "/hdfs/local/karl/btagSFratios_final/2022Sep29/btagSF_{era}_fullSys.root".format(
+          self.btagSFRatioFile = "/local/karl/btagSFratios_final/2022Sep29/btagSF_{era}_fullSys.root".format(
             era = self.era,
           )
 
@@ -816,7 +816,7 @@ class analyzeConfig(object):
             raise ValueError('Invalid era: %s' % self.era)
         assert(os.path.isfile(os.path.join(os.environ['CMSSW_BASE'], 'src', self.hadTauFakeRateWeight_inputFile)))
 
-        self.event_count_filename = '/hdfs/local/karl/count_final/2020Dec18/count_{}.root'.format(self.era)
+        self.event_count_filename = '/local/karl/count_final/2020Dec18/count_{}.root'.format(self.era)
         self.pdf_norms = {}
         self.isBDTtraining = False
         self.mcClosure_dir = {}

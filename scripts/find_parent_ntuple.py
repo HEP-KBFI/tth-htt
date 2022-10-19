@@ -3,7 +3,6 @@
 
 from tthAnalysis.HiggsToTauTau.safe_root import ROOT
 from tthAnalysis.HiggsToTauTau.common import SmartFormatter, load_samples
-from tthAnalysis.HiggsToTauTau.hdfs import hdfs
 
 import xml.etree.ElementTree as ET
 import argparse
@@ -30,7 +29,7 @@ ALLOWED_MODES = {
 }
 
 def has_rles(input_filename, rles):
-  if not hdfs.isfile(input_filename):
+  if not os.path.isfile(input_filename):
     raise RuntimeError("No such file: %s" % input_filename)
   input_file = ROOT.TFile.Open(input_filename, 'read')
   assert(input_file)
@@ -58,7 +57,7 @@ def has_rles(input_filename, rles):
 def find_parents(input_file, input_rles):
   if input_file.startswith('/store'):
     return []
-  if not hdfs.isfile(input_file):
+  if not os.path.isfile(input_file):
     raise RuntimeError("No such file: %s" % input_file)
   if not all(RLE_REGEX.match(rle) for rle in input_rles):
     raise RuntimeError("Not all input run:lumi:event numbers conform to the expected format")
@@ -72,7 +71,7 @@ def find_parents(input_file, input_rles):
   assert(tree_idx > 0)
 
   parent_candidates = []
-  if input_file.startswith('/hdfs/local'):
+  if input_file.startswith('/local'):
     input_file_split = input_file.split(os.path.sep)
     assert(len(input_file_split) == 11)
     process_name = input_file_split[-3]
@@ -160,10 +159,10 @@ def find_parents(input_file, input_rles):
           parent_candidates.append((parent_candidate, rle_matches))
     else:
       raise RuntimeError("Fewer parent Ntuples than sibling Ntuples for the Ntuple: %s" % input_file)
-  elif input_file.startswith('/hdfs/cms/store/user'):
+  elif input_file.startswith('/store/user'):
     input_file_dirname = os.path.dirname(input_file)
     log_file = os.path.join(input_file_dirname, 'log', 'cmsRun_{}.log.tar.gz'.format(tree_idx))
-    if hdfs.isfile(log_file):
+    if os.path.isfile(log_file):
       tar = tarfile.open(log_file, 'r:gz')
       tar_contents = tar.getnames()
       xml_filename = 'FrameworkJobReport-{}.xml'.format(tree_idx)

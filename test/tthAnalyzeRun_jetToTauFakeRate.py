@@ -114,7 +114,7 @@ if __name__ == '__main__':
   analysis = analyzeConfig_jetToTauFakeRate(
     configDir = os.path.join("/scratch-persistent", getpass.getuser(), "ttHAnalysis", era, version),
     localDir  = os.path.join("/home",               getpass.getuser(), "ttHAnalysis", era, version),
-    outputDir = os.path.join("/hdfs/local",         getpass.getuser(), "ttHAnalysis", era, version),
+    outputDir = os.path.join("/local",         getpass.getuser(), "ttHAnalysis", era, version),
     executable_analyze               = "analyze_jetToTauFakeRate%s" % mode,
     event_selection                  = mode,
     samples                          = samples,

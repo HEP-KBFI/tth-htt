@@ -5,6 +5,8 @@ import subprocess
 import sys
 import math
 import stat
+import shutil
+import datetime
 
 def query_yes_no(question, default = "yes"):
   """Prompts user yes/no
@@ -44,10 +46,8 @@ def create_if_not_exists(dir_fullpath):
   Args:
     dir_fullpath: full path to the directory
   """
-  from tthAnalysis.HiggsToTauTau.hdfs import hdfs
-
-  if hdfs.mkdirs(dir_fullpath) != 0:
-    raise RuntimeError("Unable to create directory %s" % dir_fullpath)
+  if not os.path.isdir(dir_fullpath):
+    os.makedirs(dir_fullpath)
 
 def generate_file_ids(nof_files, max_files_per_job, blacklist = []):
   """Subsets file ids
@@ -89,13 +89,11 @@ def generate_input_list(job_ids, secondary_files, primary_store, secondary_store
     secondary_store: full path to the second subdirectory
     debug: if True, checks whether each file is present in the file system
   """
-  from tthAnalysis.HiggsToTauTau.hdfs import hdfs
-
   input_list = []
   for job in job_ids:
     actual_storedir = secondary_store if job in secondary_files else primary_store
     input_file = os.path.join(actual_storedir, "000" + str(job / 1000), "tree_" + str(job) + ".root")
-    if not hdfs.exists(input_file):
+    if not os.path.isfile(input_file):
       raise RuntimeError("File %s doesn't exists!" % input_file)
     input_list.append(input_file)
   return input_list
@@ -209,8 +207,6 @@ def human_size(fsize, use_si = True, byte_suffix = 'B'):
     return '%d%s' % (fsize_int, units[unit_idx])
 
 def record_software_state(txtfile_cfg, txtfile_out, dependencies):
-  from tthAnalysis.HiggsToTauTau.hdfs import hdfs
-
   git_cmds = [
     'log -n1 --format="%D"',
     'log -n3 --format="%H | %cd | %cn | %s"',
@@ -242,4 +238,10 @@ def record_software_state(txtfile_cfg, txtfile_out, dependencies):
     txtfileptr.write('\n'.join(results))
     txtfileptr.write('\n')
   if txtfile_cfg != txtfile_out:
-    hdfs.copy(txtfile_cfg, txtfile_out)
+    shutil.copy2(txtfile_cfg, txtfile_out)
+
+def getmtime(path):
+  unix_tm = os.path.getmtime(path)
+  tz = dateutil.tz.tzlocal()
+  mtime = datetime.datetime.fromtimestamp(unix_tm, tz)
+  return mtime

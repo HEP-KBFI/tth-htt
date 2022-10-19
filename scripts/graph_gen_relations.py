@@ -2,7 +2,6 @@
 
 from tthAnalysis.HiggsToTauTau.safe_root import ROOT
 from tthAnalysis.HiggsToTauTau.common import SmartFormatter, logging
-from tthAnalysis.HiggsToTauTau.hdfs import hdfs
 
 import argparse
 import os.path
@@ -203,7 +202,7 @@ if __name__ == '__main__':
   delphes = args.delphes
 
   for input_file_name in input_file_names:
-    if not hdfs.isfile(input_file_name):
+    if not os.path.isfile(input_file_name):
       raise ValueError("No such file: %s" % input_file_name)
 
   for rle in rles:

@@ -6,7 +6,7 @@
   -s DoubleEG_Run2016[A,B,C,D,E,F]_v\\d{1} \
   -f ~/test_RLE.txt                        \
   -o ~/sandbox/test_RLE_result.txt         \
-  -d /hdfs/local/karl/RLE_DS16_v2          \
+  -d /local/karl/RLE_DS16_v2          \
   -v
 
 Explanation:
@@ -37,7 +37,6 @@ NB! The input file you provide can work only for a single MC sample or multiple 
 from tthAnalysis.HiggsToTauTau.samples.tthAnalyzeSamples_2017_preselected import samples_2017 as samples
 from tthAnalysis.HiggsToTauTau.safe_root import ROOT
 from tthAnalysis.HiggsToTauTau.common import logging, SmartFormatter
-from tthAnalysis.HiggsToTauTau.hdfs import hdfs
 
 import argparse
 import os
@@ -89,19 +88,19 @@ if __name__ == '__main__':
   if grep_individually and not grep_directory:
     logging.warning('Option -a/--all has no effect unless you specify -d/--directory')
 
-  if not hdfs.isfile(rle_file):
+  if not os.path.isfile(rle_file):
     logging.error("No such file: '{rle_filename}'".format(
       rle_filename = rle_file,
     ))
     sys.exit(1)
 
-  if output_file and not hdfs.isdir(os.path.dirname(output_file)):
+  if output_file and not os.path.isdir(os.path.dirname(output_file)):
     logging.error("Parent directory of '{output_file}' doesn't exist".format(
       output_file = output_file,
     ))
     sys.exit(1)
 
-  if grep_directory and not hdfs.isdir(grep_directory):
+  if grep_directory and not os.path.isdir(grep_directory):
     logging.error("Grep directory '{grep_directory}' doesn't exist".format(
       grep_directory = grep_directory,
     ))
@@ -145,7 +144,7 @@ if __name__ == '__main__':
     if grep_directory:
 
       grep_subdir = os.path.join(grep_directory, sample_keys[sample_key])
-      if not hdfs.isdir(grep_subdir):
+      if not os.path.isdir(grep_subdir):
         logging.error("No such directory: '{grep_subdir}'".format(grep_subdir=grep_subdir))
         sys.exit(1)
       logging.debug('Grepping from {grep_dir}'.format(grep_dir=grep_subdir))
@@ -212,9 +211,11 @@ if __name__ == '__main__':
     else:
       # instead of forming a list of files let's loop over the subfolders and the files therein instead
       logging.debug('Looping over the files in {sample_path}'.format(sample_path = sample_path))
-      for subdir in hdfs.listdir(sample_path):
+      for subdir_ in os.listdir(sample_path):
+        subdir = os.path.join(sample_path, subdir_)
         logging.debug('Found subdirectory {subdir}'.format(subdir = subdir))
-        for rootfile in hdfs.listdir(subdir):
+        for rootfile_ in os.listdir(subdir):
+          rootfile = os.path.join(subdir, rootfile_)
           logging.debug("Processing file '{rootfile}'".format(
             rootfile = rootfile,
           ))

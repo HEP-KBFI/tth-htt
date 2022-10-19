@@ -2,7 +2,6 @@
 
 from tthAnalysis.HiggsToTauTau.safe_root import ROOT
 from tthAnalysis.HiggsToTauTau.common import SmartFormatter
-from tthAnalysis.HiggsToTauTau.hdfs import hdfs
 
 import os.path
 import array
@@ -22,7 +21,7 @@ input_fn = args.input
 select_wh = args.select_wh
 select_zh = args.select_zh
 
-assert(hdfs.isfile(input_fn))
+assert(os.path.isfile(input_fn))
 
 input_f = ROOT.TFile.Open(input_fn, 'read')
 tree = input_f.Get('Events')

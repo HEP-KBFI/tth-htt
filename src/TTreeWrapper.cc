@@ -1,6 +1,5 @@
 #include "tthAnalysis/HiggsToTauTau/interface/TTreeWrapper.h"
 
-#include "tthAnalysis/HiggsToTauTau/interface/TFileOpenWrapper.h" // TFileOpenWrapper::
 #include "tthAnalysis/HiggsToTauTau/interface/ReaderBase.h" // ReaderBase
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 
@@ -123,11 +122,7 @@ TTreeWrapper::hasNextEvent(bool getEntry)
     if(currentFileIdx_ < fileCount_)
     {
       std::cout << "Opening #" << currentFileIdx_ << " file " << fileNames_[currentFileIdx_] << '\n';
-#if 0
-      currentFilePtr_ = TFileOpenWrapper::Open(fileNames_[currentFileIdx_].c_str(), "READ");
-#else
       currentFilePtr_ = TFile::Open(fileNames_[currentFileIdx_].c_str(), "READ");
-#endif
     }
     else
     {
@@ -246,16 +241,12 @@ TTreeWrapper::close()
   if(currentFilePtr_)
   {
     std::cout << "Closing " << fileNames_[currentFileIdx_] << '\n';
-#if 0
-    TFileOpenWrapper::Close(currentFilePtr_);
-#else
     if(currentFilePtr_)
     {
       currentFilePtr_ -> Close();
       delete currentFilePtr_;
       currentFilePtr_ = nullptr;
     }
-#endif
     currentTreePtr_ = nullptr;
     currentMaxEvents_ = -1;
     currentEventIdx_  =  0;
@@ -272,11 +263,7 @@ TTreeWrapper::getEventCount() const
     long long totalNofEvents = 0;
     for(const std::string & fileName: fileNames_)
     {
-#if 0
-      TFile * filePtr = TFileOpenWrapper::Open(fileName.c_str(), "READ");
-#else
       TFile * filePtr = TFile::Open(fileNames_[currentFileIdx_].c_str(), "READ");
-#endif
       if(! filePtr)
       {
         throw cmsException(this, __func__) << "Could not open file " << fileName;
@@ -294,12 +281,8 @@ TTreeWrapper::getEventCount() const
       }
       totalNofEvents += treePtr -> GetEntries();
 
-#if 0
-      TFileOpenWrapper::Close(filePtr);
-#else
       filePtr -> Close();
       delete filePtr;
-#endif
     }
     eventCount_ = totalNofEvents;
   }

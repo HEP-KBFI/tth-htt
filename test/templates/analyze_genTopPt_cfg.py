@@ -56,11 +56,11 @@ era = "2016"
 
 inputFilePath = None
 if   era == "2016":
-    inputFilePath = "/hdfs/local/karl/ttHNtupleProduction/2016/2020Jan29_woPresel_nom_all/ntuples/TTTo2L2Nu/0000/"
+    inputFilePath = "/local/karl/ttHNtupleProduction/2016/2020Jan29_woPresel_nom_all/ntuples/TTTo2L2Nu/0000/"
 elif era == "2017":
-    inputFilePath = "/hdfs/local/karl/ttHNtupleProduction/2017/2020Jan29_woPresel_nom_all/ntuples/TTTo2L2Nu/0000/"
+    inputFilePath = "/local/karl/ttHNtupleProduction/2017/2020Jan29_woPresel_nom_all/ntuples/TTTo2L2Nu/0000/"
 elif era == "2018":
-    inputFilePath = "/hdfs/local/karl/ttHNtupleProduction/2018/2020Jan29_woPresel_nom_all/ntuples/TTTo2L2Nu/0000/"
+    inputFilePath = "/local/karl/ttHNtupleProduction/2018/2020Jan29_woPresel_nom_all/ntuples/TTTo2L2Nu/0000/"
 else:
     raise ValueError("Invalid Configuration parameter 'era' = '%s' !!" % era)
 maxInputFiles = -1

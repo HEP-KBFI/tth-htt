@@ -3,7 +3,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 #include "tthAnalysis/HiggsToTauTau/interface/generalAuxFunctions.h" // format_vstring(), get_fullpath(), to_string_with_precision<>()
 #include "tthAnalysis/HiggsToTauTau/interface/analysisAuxFunctions.h" // contains()
-#include "tthAnalysis/HiggsToTauTau/interface/TFileOpenWrapper.h" // TFileOpenWrapper
 #include "tthAnalysis/HiggsToTauTau/interface/HHWeightInterfaceLO.h" // HHWeightInterfaceLO
 
 #include <TFile.h> // TFile
@@ -38,7 +37,7 @@ HHWeightInterfaceCouplings::loadDenominatorHist(const std::string & fileName,
                                                 const std::string & histTitle)
 {
   const std::string fileNameFullPath = get_fullpath(fileName);
-  TFile * denomFile = TFileOpenWrapper::Open(fileNameFullPath.c_str(), "READ");
+  TFile * denomFile = TFile::Open(fileNameFullPath.c_str(), "READ");
   if(! denomFile)
   {
     throw cmsException(__func__, __LINE__)

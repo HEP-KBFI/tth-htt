@@ -55,9 +55,6 @@ if __name__ == '__main__':
   if not os.path.isfile(input_hadd2_fn):
     raise ValueError("No such file: %s" % input_hadd2_fn)
 
-  if output_fn.startswith('/hdfs'):
-    raise ValueError("Cannot accept path as it is not possible to open files in append mode there: %s" % output_fn)
-
   if not os.path.isdir(output_dir):
     if not use_force:
       raise ValueError("Cannot write file %s as its directory does not exist" % output_dir)

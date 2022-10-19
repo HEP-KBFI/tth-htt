@@ -15,7 +15,6 @@
 
 from tthAnalysis.HiggsToTauTau.safe_root import ROOT
 from tthAnalysis.HiggsToTauTau.common import logging, SmartFormatter
-from tthAnalysis.HiggsToTauTau.hdfs import hdfs
 from tthAnalysis.HiggsToTauTau.jobTools import create_if_not_exists
 
 import argparse
@@ -76,7 +75,7 @@ samples_to_sum_2017 = [
 def plot(input_files, output_files, title, expected_neff, mode):
   histogram_dict = {}
   for sample_name, sample_entry in input_files.items():
-    if not hdfs.isfile(sample_entry['input']):
+    if not os.path.isfile(sample_entry['input']):
       logging.error('Could not find file {}'.format(sample_entry['input']))
       continue
     root_file = ROOT.TFile.Open(sample_entry['input'], 'read')
@@ -310,7 +309,7 @@ if '{sample_name}' not in pattern:
   raise ValueError('No {sample_name} found in pattern %s' % pattern)
 
 input_dir = os.path.dirname(pattern)
-if not hdfs.isdir(input_dir):
+if not os.path.isdir(input_dir):
   raise ValueError('No such input directory: %s' % input_dir)
 
 if args.era == '2017':

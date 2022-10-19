@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 
 from tthAnalysis.HiggsToTauTau.common import logging, SmartFormatter
-from tthAnalysis.HiggsToTauTau.hdfs import hdfs
 
 import collections
 import argparse
 import os
 import re
+import shutil
 
 TREE_RE = re.compile('tree_(?P<idx>\d+).root')
 
@@ -15,17 +15,17 @@ def get_file_idx(path):
 
 def get_file_list(chunk):
   files_to_copy_chunk = []
-  taskdirs = hdfs.listdir(chunk)
+  taskdirs = [ os.path.join(chunk, p) for p in os.listdir(chunk) ]
   if len(taskdirs) != 1:
     raise RuntimeError("Found multiple tasks in %s" % chunk)
 
   taskdir = taskdirs[0]
-  subdirs = hdfs.listdir(taskdir)
+  subdirs = [ os.path.join(taskdir, p) for p in os.listdir(taskdir) ]
   if not subdirs:
     raise RuntimeError("Unable to find any subdirs in %s" % taskdir)
 
   for subdir in subdirs:
-    files_to_copy_chunk.extend(filter(lambda path: path.endswith('.root'), hdfs.listdir(subdir)))
+    files_to_copy_chunk.extend(filter(lambda path: path.endswith('.root'), [ os.path.join(subdir, p) for p in os.listdir(subdir) ]))
 
   files_to_copy_chunk = list(sorted(files_to_copy_chunk, key = get_file_idx))
   return files_to_copy_chunk
@@ -127,15 +127,19 @@ if __name__ == '__main__':
 
     if args.copy:
       for missing_subdir in missing_subdirs:
-        if not hdfs.isdir(missing_subdir):
+        if not os.path.isdir(missing_subdir):
           logging.info('Created subdirectory {}'.format(missing_subdir))
-          if hdfs.mkdirs(missing_subdir) != 0:
+          try:
+            os.makedirs(missing_subdir)
+          except:
             raise RuntimeError("Unable to create directory: %s" % missing_subdir)
 
     for src_file, dst_file in copy_relations.items():
       logging.debug('Copying file {} to {}'.format(src_file, dst_file))
-      if args.copy:
-        if hdfs.copy(src_file, dst_file, overwrite = False) != 0:
+      if args.copy and not os.path.isfile(dst_file):
+        try:
+          shutil.copy2(src_file, dst_file)
+        except:
           raise RuntimeError("Unable to copy file from %s to %s" % (src_file, dst_file))
 
     logging.info('Copying done')

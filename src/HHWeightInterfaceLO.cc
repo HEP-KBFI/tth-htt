@@ -1,7 +1,6 @@
 #include "tthAnalysis/HiggsToTauTau/interface/HHWeightInterfaceLO.h"
 
 #include "tthAnalysis/HiggsToTauTau/interface/HHWeightInterfaceCouplings.h" // HHWeightInterfaceCouplings
-#include "tthAnalysis/HiggsToTauTau/interface/TFileOpenWrapper.h" // TFileOpenWrapper
 #include "tthAnalysis/HiggsToTauTau/interface/cmsException.h" // cmsException()
 #include "tthAnalysis/HiggsToTauTau/interface/generalAuxFunctions.h" // format_vstring()
 

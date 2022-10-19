@@ -96,7 +96,7 @@ if __name__ == '__main__':
 
   configDir = os.path.join("/scratch-persistent", getpass.getuser(), "testGenPhotonFilter", era, version),
   localDir  = os.path.join("/home",               getpass.getuser(), "testGenPhotonFilter", era, version)
-  outputDir = os.path.join("/hdfs/local",         getpass.getuser(), "testGenPhotonFilter", era, version)
+  outputDir = os.path.join("/local",         getpass.getuser(), "testGenPhotonFilter", era, version)
 
   analysis = testGenPhotonFilterConfig(
     configDir               = configDir,

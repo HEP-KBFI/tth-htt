@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 from tthAnalysis.HiggsToTauTau.safe_root import ROOT
-from tthAnalysis.HiggsToTauTau.hdfs import hdfs
 from tthAnalysis.HiggsToTauTau.common import SmartFormatter, logging
 
 import os.path
@@ -11,7 +10,7 @@ import re
 HADD_STAGE2_RE = re.compile('.+\d+-\d+$')
 
 def get_evt_subdir_names(fn):
-  assert(hdfs.isfile(fn))
+  assert(os.path.isfile(fn))
   fptr = ROOT.TFile.Open(fn, 'read')
   assert(fptr)
   logging.info('Opened file {}'.format(fptr.GetName()))
@@ -64,19 +63,19 @@ def get_hadd_stage2(input_paths):
     if nof_levels == 6:
       assert(len(current_paths) == 1)
       current_path = os.path.join(current_paths.pop(), 'histograms')
-      if not hdfs.isdir(current_path):
+      if not os.path.isdir(current_path):
         return []
       current_paths = [ current_path ]
       nof_levels += 1
     if nof_levels == 7:
       assert(len(current_paths) == 1)
       current_path = current_paths.pop()
-      current_paths = hdfs.listdir(current_path)
+      current_paths = [ os.path.join(current_path, p) for p in os.listdir(current_path) ]
       nof_levels += 1
     if nof_levels == 8:
       next_paths = []
       for current_path in current_paths:
-        region_paths = hdfs.listdir(current_path)
+        region_paths = [ os.path.join(current_path, p) for p in os.listdir(current_path) ]
         for region_path in region_paths:
           next_paths.append(region_path)
       current_paths = next_paths
@@ -84,7 +83,8 @@ def get_hadd_stage2(input_paths):
     if nof_levels == 9:
       next_paths = []
       for current_path in current_paths:
-        for next_path in hdfs.listdir(current_path):
+        for next_path_ in os.listdir(current_path):
+          next_path = os.path.join(current_path, next_path_)
           next_path_basename = os.path.basename(next_path)
           if next_path_basename == 'hadd':
             next_paths.append(next_path)
@@ -94,8 +94,9 @@ def get_hadd_stage2(input_paths):
       next_paths = []
       for current_path in current_paths:
         candidate_files = []
-        for candidate_file in hdfs.listdir(current_path):
-          if not hdfs.isfile(candidate_file):
+        for candidate_file_ in os.listdir(current_path):
+          candidate_file = os.path.join(current_path, candidate_file_)
+          if not os.path.isfile(candidate_file):
             continue
           candidate_file_basename = os.path.basename(candidate_file)
           if candidate_file_basename.startswith('hadd_stage2') and \
@@ -142,7 +143,7 @@ if __name__ == '__main__':
   logging.getLogger().setLevel(logging.DEBUG if args.verbose else logging.INFO)
 
   output_dir = os.path.dirname(os.path.abspath(args.output))
-  if not hdfs.isdir(output_dir):
+  if not os.path.isdir(output_dir):
     raise RuntimeError("No such directory: %s" % output_dir)
 
   fns = get_hadd_stage2(args.input)

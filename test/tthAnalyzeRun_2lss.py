@@ -146,7 +146,7 @@ if __name__ == '__main__':
 
   configDir = os.path.join("/scratch-persistent", getpass.getuser(), "ttHAnalysis", era, version),
   localDir  = os.path.join("/home",               getpass.getuser(), "ttHAnalysis", era, version)
-  outputDir = os.path.join("/hdfs/local",         getpass.getuser(), "ttHAnalysis", era, version)
+  outputDir = os.path.join("/local",         getpass.getuser(), "ttHAnalysis", era, version)
 
   analysis = analyzeConfig_2lss(
     configDir                 = configDir,

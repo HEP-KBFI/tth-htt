@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from tthAnalysis.HiggsToTauTau.hdfs import hdfs, logging
+from tthAnalysis.HiggsToTauTau.common import logging
 from tthAnalysis.HiggsToTauTau.common import SmartFormatter
 
 import argparse
@@ -120,10 +120,10 @@ if __name__ == '__main__':
       max_requestname_len = 160 - len(userName)
       if len(requestName) > max_requestname_len:
         requestName = requestName[:max_requestname_len]
-      crab_path = os.path.join('/hdfs', 'cms', output_dir[1:], dataset_match.group(1), requestName)
-      if hdfs.isdir(crab_path):
+      crab_path = os.path.join(output_dir[1:], dataset_match.group(1), requestName)
+      if os.path.isdir(crab_path):
         logging.debug("Found directory: {}".format(crab_path))
-        subdirs = hdfs.listdir(crab_path)
+        subdirs = [ os.path.join(crab_path, p) for p in os.listdir(crab_path) ]
         if len(subdirs) != 1:
           logging.error("Expected exactly one subdir in {} but found {}: {}".format(
             crab_path, len(subdirs), ', '.join(subdirs)
@@ -131,7 +131,10 @@ if __name__ == '__main__':
           continue
         subdir = subdirs[0]
         root_files = [
-          root_file for subsubdir in hdfs.listdir(subdir) for root_file in hdfs.listdir(subsubdir) if root_file.endswith('.root')
+          os.path.join(subsubdir, root_file) \
+          for subsubdir in os.listdir(subdir) \
+          for root_file in os.listdir(os.path.join(subdir, subsubdir)) \
+          if root_file.endswith('.root')
         ]
         root_idxs = set(map(lambda fn: int(TREE_REGEX.match(os.path.basename(fn)).group('idx')), root_files))
         assert(not (root_idxs & expected_fails))

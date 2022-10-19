@@ -4,7 +4,7 @@
 #
 # 1) Copy the MINIAODSIM via xrootd (requires VOMS proxy to be open):
 #
-# xrdcp root://cms-xrd-global.cern.ch/$LFN /hdfs/local/$USER/$LFN
+# xrdcp root://cms-xrd-global.cern.ch/$LFN /local/$USER/$LFN
 #
 # where $LFN is the full logical file name that the analysis groups have agreed upon. In the first
 # (source) path of the above command you must keep the leading slash whereas in the second
@@ -12,8 +12,8 @@
 #
 # 2) generate the ,,bare'' nanoAOD Ntuple by running:
 # $CMSSW_BASE/src/tthAnalysis/NanoAOD/test/runLocally.py       \
-# -i /hdfs/local/$USER/$LFN                                    \
-# -o /hdfs/local/$USER/sync_ntuples/nanoAODproduction/$VERSION \
+# -i /local/$USER/$LFN                                    \
+# -o /local/$USER/sync_ntuples/nanoAODproduction/$VERSION \
 # -n ttHJetToNonbb_M125_amcatnlo                               \
 # -t mc                                                        \
 # -s /home/$USER/sync_ntuples/nanoAODproduction/$VERSION       \
@@ -27,7 +27,7 @@
 #
 # 3) Update the value of samples_$ERA[sync_key]['local_paths'][0]['path'] in file
 # $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/python/samples/tthAnalyzeSamples_$ERA_nanoAOD_sync.py
-# to /hdfs/local/$USER/sync_ntuples/nanoAODproduction/$VERSION/ttHJetToNonbb_M125_amcatnlo
+# to /local/$USER/sync_ntuples/nanoAODproduction/$VERSION/ttHJetToNonbb_M125_amcatnlo
 #
 # 4) Rebuild (i.e. clean and then build) this project with SYNC_NTUPLE definition enabled:
 #
@@ -45,7 +45,7 @@
 #
 # 6) Update the value of samples_$ERA[sync_key]['local_paths'][0]['path'] in file
 # $CMSSW_BASE/src/tthAnalysis/HiggsToTauTau/python/samples/tthAnalyzeSamples_$ERA_sync.py to
-# /hdfs/local/$USER/ttHNtupleProduction/$ERA/$VERSION_wNanoPrep_woPresel_sync/ntuples/ttHJetToNonbb_M125_amcatnlo
+# /local/$USER/ttHNtupleProduction/$ERA/$VERSION_wNanoPrep_woPresel_sync/ntuples/ttHJetToNonbb_M125_amcatnlo
 #
 # 7) Now you're ready to run this script
 #
@@ -141,7 +141,7 @@ for systematic_label in systematics_label:
 if __name__ == '__main__':
   analysis = syncNtupleConfig(
     config_dir = os.path.join("/home",       getpass.getuser(), "ttHAnalysis", args.era, args.version),
-    output_dir = os.path.join("/hdfs/local", getpass.getuser(), "ttHAnalysis", args.era, args.version),
+    output_dir = os.path.join("/local", getpass.getuser(), "ttHAnalysis", args.era, args.version),
     output_filename    = output,
     version            = version,
     era                = era,

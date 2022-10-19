@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Example usage:
-# archive_results.sh -i ~/ttHAnalysis/2017/2020Mar22 -o /hdfs/local/$USER/archives -f
-# for d in ~/ttHAnalysis/201*/*; do archive_results.sh -i $d -o /hdfs/local/$USER/archives -f; done
+# archive_results.sh -i ~/ttHAnalysis/2017/2020Mar22 -o /local/$USER/archives -f
+# for d in ~/ttHAnalysis/201*/*; do archive_results.sh -i $d -o /local/$USER/archives -f; done
 
 check_if_exists() {
   if [ ! -z "$1" ] && [ ! -d "$1" ]; then
@@ -12,7 +12,7 @@ check_if_exists() {
 }
 
 TMP_DIR=/scratch-persistent/$USER;
-OUTPUT_DIR=/hdfs/local/$USER/archives;
+OUTPUT_DIR=/local/$USER/archives;
 DRYRUN=false;
 OVERWRITE_OUTPUT_FILE=false;
 VERBOSE=false;
@@ -59,9 +59,9 @@ if [ $INPUT_SPLIT_LV0 != "home" ]; then
   echo "Directory '$INPUT_DIR' is not in \$HOME";
 fi
 
-INPUT_DIR_HDFS=$(echo $INPUT_DIR | sed 's/^\/home\//\/local\//g');
-if [ $(hdfs dfs -ls $INPUT_DIR_HDFS 2>/dev/null | wc -l) = 0 ]; then
-  echo "Unable to find complementary directory on /hdfs: $INPUT_DIR_HDFS";
+INPUT_DIR_SP=$(echo $INPUT_DIR | sed 's/^\/home\//\/scratch-persistent\//g');
+if [ ! -d $INPUT_DIR_SP ]; then
+  echo "Unable to find complementary directory on /scratch-persistent: $INPUT_DIR_SP";
   exit 1;
 fi
 
@@ -86,10 +86,10 @@ for CHANNEL in $CHANNELS; do
     exit 1;
   fi
 
-  HDFS_SUBDIRS=$(hdfs dfs -ls $INPUT_DIR_HDFS 2>/dev/null | grep ^d | awk '{print $NF}' | tr '/' ' ' | awk '{print $NF}');
-  for HDFS_SUBDIR in $HDFS_SUBDIRS; do
-    SYMLINK_SRC=/hdfs${INPUT_DIR_HDFS}/${HDFS_SUBDIR}/${CHANNEL};
-    SYMLINK_DST_DIR=${INPUT_DIR_TMP}/${HDFS_SUBDIR}_hdfs;
+  SP_SUBDIRS=$(ls -l $INPUT_DIR_SP 2>/dev/null | grep ^d | awk '{print $NF}' | tr '/' ' ' | awk '{print $NF}');
+  for SP_SUBDIR in $SP_SUBDIRS; do
+    SYMLINK_SRC=${INPUT_DIR_SP}/${SP_SUBDIR}/${CHANNEL};
+    SYMLINK_DST_DIR=${INPUT_DIR_TMP}/${SP_SUBDIR}_scratch-persistent;
     mkdir -p $SYMLINK_DST_DIR;
     SYMLINK_DST=${SYMLINK_DST_DIR}/${CHANNEL};
     echo "Creating symlink: $SYMLINK_DST -> $SYMLINK_SRC";
@@ -122,19 +122,15 @@ for CHANNEL in $CHANNELS; do
   echo "Finished at: `date`";
 
   if [ $DRYRUN = false ]; then
-    if [[ $OUTPUT_FILE_PATH =~ ^/hdfs/ ]]; then
-      OUTPUT_FILE_PATH_NOHDFS=$(echo $OUTPUT_DIR | sed 's/^\/hdfs\//\//g');
-      hdfs dfs -copyFromLocal -f $OUTPUT_FILE_TMP $OUTPUT_FILE_PATH_NOHDFS 2>/dev/null;
-      rm -f $OUTPUT_FILE_TMP;
-    else
-      mv $OUTPUT_FILE_TMP $OUTPUT_FILE_PATH;
-    fi
+    mv -v $OUTPUT_FILE_TMP $OUTPUT_FILE_PATH;
   fi
   echo "Created archive: $OUTPUT_FILE_PATH";
 done
 
 echo "If you want to delete the archived files, run:";
-echo "hdfs -rm -r $INPUT_DIR_HDFS";
+echo "mkdir -p /scratch-persistent/$USER/empty_dir && rm -rf /scratch-persistent/$USER/empty_dir/*";
+echo "rsync -a --delete /scratch-persistent/$USER/empty_dir/ $INPUT_DIR_SP/";
+echo "rmdir $INPUT_DIR_SP";
 echo "mkdir -p ~/empty_dir && rm -rf ~/empty_dir/*";
 echo "rsync -a --delete ~/empty_dir/ $INPUT_DIR/";
 echo "rmdir $INPUT_DIR";

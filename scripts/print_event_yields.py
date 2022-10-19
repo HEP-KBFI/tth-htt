@@ -2,7 +2,6 @@
 
 from tthAnalysis.HiggsToTauTau.safe_root import ROOT
 from tthAnalysis.HiggsToTauTau.common import SmartFormatter
-from tthAnalysis.HiggsToTauTau.hdfs import hdfs
 
 import os
 import collections
@@ -143,7 +142,7 @@ def get_evt_yields(input_file_name, results = None):
   assert('sample' in metadata)
   sample = metadata['sample']
 
-  assert(hdfs.isfile(input_file_name))
+  assert(os.path.isfile(input_file_name))
   input_file = ROOT.TFile.Open(input_file_name, 'read')
 
   subdirectories = get_keys(
@@ -470,19 +469,19 @@ def find_hadd_stage_files(input_path, regions, find_hadd_stage1):
   if nof_levels == 6:
     assert (len(current_paths) == 1)
     current_path = os.path.join(current_paths.pop(), 'histograms')
-    if not hdfs.isdir(current_path):
+    if not os.path.isdir(current_path):
       return []
     current_paths = [ current_path ]
     nof_levels += 1
   if nof_levels == 7:
     assert(len(current_paths) == 1)
     current_path = current_paths.pop()
-    current_paths = hdfs.listdir(current_path)
+    current_paths = [ os.path.join(current_path, p) for p in os.listdir(current_path) ]
     nof_levels += 1
   if nof_levels == 8:
     next_paths = []
     for current_path in current_paths:
-      region_paths = hdfs.listdir(current_path)
+      region_paths = [ os.path.join(current_path, p) for p in os.listdir(current_path) ]
       for region_path in region_paths:
         if os.path.basename(region_path).startswith(tuple(ANALYSIS_REGIONS[region] for region in regions)):
           next_paths.append(region_path)
@@ -491,7 +490,8 @@ def find_hadd_stage_files(input_path, regions, find_hadd_stage1):
   if nof_levels == 9:
     next_paths = []
     for current_path in current_paths:
-      for next_path in hdfs.listdir(current_path):
+      for next_path_ in os.listdir(current_path):
+        next_path = os.path.join(current_path, next_path_)
         next_path_basename = os.path.basename(next_path)
         if not (find_hadd_stage1 != (next_path_basename != 'hadd')):
           next_paths.append(next_path)
@@ -504,8 +504,9 @@ def find_hadd_stage_files(input_path, regions, find_hadd_stage1):
       metadata = extract_metadata(current_path)
       if metadata['region_key'] not in regions:
         continue
-      for candidate_file in hdfs.listdir(current_path):
-        if not hdfs.isfile(candidate_file):
+      for candidate_file_ in os.listdir(current_path):
+        candidate_file = os.path.join(current_path, candidate_file_)
+        if not os.path.isfile(candidate_file):
           continue
         if is_hadd_stage_file(candidate_file, find_hadd_stage1, metadata):
           candidate_files.append(candidate_file)
@@ -587,10 +588,10 @@ if __name__ == '__main__':
   input_file_names_hadd_stage1 = []
   input_file_names_hadd_stage2 = []
   for input_file_path in input_file_paths:
-    if not input_file_path.startswith('/hdfs/local'):
+    if not input_file_path.startswith('/local'):
       raise ValueError("Invalid path: %s" % input_file_path)
 
-    if hdfs.isfile(input_file_path):
+    if os.path.isfile(input_file_path):
       input_file_abs_path = os.path.abspath(input_file_path)
       if is_hadd_stage_file(input_file_abs_path, True):
         input_file_names_hadd_stage1.append(input_file_abs_path)

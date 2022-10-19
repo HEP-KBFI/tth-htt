@@ -1,10 +1,9 @@
 #!/usr/bin/env python
 
-from tthAnalysis.HiggsToTauTau.jobTools import run_cmd, human_size
+from tthAnalysis.HiggsToTauTau.jobTools import run_cmd, human_size, getmtime
 from tthAnalysis.HiggsToTauTau.analysisSettings import Triggers, HTXS_BINS
 from tthAnalysis.HiggsToTauTau.safe_root import ROOT
 from tthAnalysis.HiggsToTauTau.common import logging, SmartFormatter
-from tthAnalysis.HiggsToTauTau.hdfs import hdfs
 
 from tthAnalysis.NanoAODTools.tHweights_cfi import tHweights
 
@@ -99,23 +98,7 @@ try:
 except ImportError:
      from urlparse import urlparse
 
-class hdfsException(Exception):
-  pass
-
-def normalize_path(path):
-  if not path.startswith('/hdfs') and not path.startswith("hdfs://"):
-    raise hdfsException("Invalid path: %s" % path)
-  path_t = re.sub('^/hdfs', 'hdfs://', path) if path.startswith('/hdfs') else path
-  path_url = urlparse(path_t)
-  path_f = path_url.scheme + '://' + path_url.path
-  return path_f
-
-def fuse_path(path):
-  if not path.startswith("hdfs://"):
-    raise hdfsException("Invalid path: %s" % path)
-  return re.sub('^hdfs://', '/hdfs', path)
-
-class nohdfs_info:
+class path_info:
   def __init__(self, name):
     self.name          = name
     self.kind          = 'F' if os.path.isfile(self.name) else 'D'
@@ -361,7 +344,7 @@ def process_paths(meta_dict, key, count_histograms):
     # if there are multiple paths with the same coverage, pick the later one
     local_paths_sorted_by_date = sorted(
       local_path_cand_idxs,
-      key = lambda local_path_cand_idx: hdfs.getmtime(local_paths_sorted[local_path_cand_idx].path),
+      key = lambda local_path_cand_idx: getmtime(local_paths_sorted[local_path_cand_idx].path),
       reverse = True
     )
     local_paths_sorted = [ local_paths_sorted[local_paths_sorted_by_date[0]] ]
@@ -504,11 +487,8 @@ def get_missing_hlt_paths(required_triggers, indices, all_paths):
   missing_paths = list(sorted(list(required_paths - branch_names_intersection)))
   return missing_paths
 
-def get_dir_entries(use_fuse, path):
-  if path.name.startswith('/hdfs') and not use_fuse:
-    return hdfs.listdir(path.name, return_objs = True)
-  else:
-    return list(map(lambda dir_entry: nohdfs_info(dir_entry), hdfs.listdir(path.name, return_objs = False)))
+def get_dir_entries(path):
+  return list(map(lambda dir_entry: path_info(os.path.join(path.name, dir_entry)), os.listdir(path.name)))
 
 def get_is_njet(process_name):
   return process_name.startswith(
@@ -516,14 +496,13 @@ def get_is_njet(process_name):
     ('DYJetsToLL_M-50_amcatnloFXFX', 'WJetsToLNu_HT', 'DYJetsToLL_M50_HT', 'DYJetsToLL_M-10to50')
   )
 
-def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missing_branches,
+def traverse_single(meta_dict, path_obj, key, check_every_event, missing_branches,
                     filetracker, file_idx, era, triggerTable, count_histograms, lost_ntuples):
   ''' Assume that the following subdirectories are of the form: 0000, 0001, 0002, ...
       In these directories we expect root files of the form: tree_1.root, tree_2.root, ...
       If either of those assumptions doesn't hold, we bail out; no clever event count needed
-  :param use_fuse:          If True, uses FUSE instead of libhdfs
   :param meta_dict:         Meta-dictionary
-  :param path_obj:          Contains meta-information about a path (instance of hdfs.info)
+  :param path_obj:          Contains meta-information about a path
   :param key:               Key to the meta-dictionary the entry of which will be updated
   :param check_every_event: Loop over all events for error checking purposes
   :param missing_branches:  Find missing branches from the superset of branches in a sample
@@ -540,7 +519,7 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
     return
 
   logging.info("Single-traversing {path}".format(path = path_obj.name))
-  entries = get_dir_entries(use_fuse, path_obj)
+  entries = get_dir_entries(path_obj)
   entries_valid = []
   for entry in entries:
     if not entry.isdir():
@@ -635,7 +614,7 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
   blacklist = []
   for entry in entries_valid:
 
-    subentries = get_dir_entries(use_fuse, entry)
+    subentries = get_dir_entries(entry)
     subentry_files = filter(lambda path: path.isfile(), subentries)
     for subentry_file in subentry_files:
       index_entry = {
@@ -850,15 +829,14 @@ def traverse_single(use_fuse, meta_dict, path_obj, key, check_every_event, missi
 
   return
 
-def traverse_double(use_fuse, meta_dict, path_obj, key, check_every_event, missing_branches,
+def traverse_double(meta_dict, path_obj, key, check_every_event, missing_branches,
                     filetracker, file_idx, era, triggerTable, count_histograms, lost_ntuples):
   ''' Assume that the name of the following subdirectories are the CRAB job IDs
       The tree structure inside those directories should be the same as described in
       traverse_single()
       Therefore, we loop over the CRAB job IDs and pass each subfolder to traverse_single()
-  :param use_fuse:          If True, uses FUSE instead of libhdfs
   :param meta_dict:         Meta-dictionary
-  :param path_obj:          Contains meta-information about a path (instance of hdfs.info)
+  :param path_obj:          Contains meta-information about a path
   :param key:               Key to the meta-dictionary the entry of which will be updated
   :param check_every_event: Loop over all events for error checking purposes
   :param missing_branches:  Find missing branches from the superset of branches in a sample
@@ -869,42 +847,30 @@ def traverse_double(use_fuse, meta_dict, path_obj, key, check_every_event, missi
   :return: None
   '''
   logging.info("Double-traversing {path}".format(path = path_obj.name))
-  entries = get_dir_entries(use_fuse, path_obj)
+  entries = get_dir_entries(path_obj)
   for entry in entries:
     traverse_single(
-      use_fuse, meta_dict, entry, key, check_every_event, missing_branches,
+      meta_dict, entry, key, check_every_event, missing_branches,
       filetracker, file_idx, era, triggerTable, count_histograms, lost_ntuples
     )
   return
 
-def get_path_info(use_fuse, path):
-  if path.startswith('/hdfs') and not use_fuse:
-    return hdfs.get_path_info(path, fail = True)
-  else:
-    return nohdfs_info(path)
+def get_path_info(path):
+  return path_info(path)
 
-def obtain_paths(use_fuse, input_path):
+def obtain_paths(input_path):
   paths = []
   if input_path:
     # check if the input path is a path or a file
     path = input_path[0]
-    if path.startswith('/hdfs') and not use_fuse:
-      path_obj = hdfs.get_path_info(path)
-      if path_obj.isfile():
-        raise ValueError("Expected directory, got file instead: %s" % path)
-      else:
-        paths = input_path
+    if os.path.isfile(path):
+      with open(path, 'r') as f:
+        for line in f:
+          line_stripped = line.rstrip('\n').rstrip(os.path.sep)
+          if line_stripped:
+            paths.append(line_stripped.split()[0])
     else:
-      if not os.path.exists(path):
-        raise ValueError("No such file: {path}".format(path = path))
-      if os.path.isfile(path):
-        with open(path, 'r') as f:
-          for line in f:
-            line_stripped = line.rstrip('\n').rstrip(os.path.sep)
-            if line_stripped:
-              paths.append(line_stripped.split()[0])
-      else:
-        paths = input_path
+      paths = input_path
   else:
     paths = input_path
   return paths
@@ -953,8 +919,6 @@ if __name__ == '__main__':
   parser.add_argument('-j', '--file-idx', dest = 'file_idx', metavar = 'number', type = int,
                       default = -1,
                       help = 'R|Check files at specified index (default: all files)')
-  parser.add_argument('-u', '--use-fuse', dest = 'use_fuse', action = 'store_true', default = False,
-                      help = 'R|Use FUSE instead of libhdfs')
   parser.add_argument('-s', '--skip-header', dest = 'skip_header', action = 'store_true',
                       default = False,
                       help = 'R|Skip dictionary definitions in the output')
@@ -1043,14 +1007,13 @@ if __name__ == '__main__':
       count_histograms[count_process_name] = process_content
     count_histogram_file.Close()
 
-  use_fuse = args.use_fuse
   filetracker = FileTracker()
 
-  paths_unchecked = obtain_paths(use_fuse, args.path)
-  excluded_paths  = obtain_paths(use_fuse, args.exclude_path)
+  paths_unchecked = obtain_paths(args.path)
+  excluded_paths  = obtain_paths(args.exclude_path)
 
   # check if the given paths actually exist
-  paths = [get_path_info(use_fuse, path) for path in paths_unchecked]
+  paths = [get_path_info(path) for path in paths_unchecked]
   invalid_paths = filter(lambda path: not path.isdir(), paths)
   if invalid_paths:
     raise parser.error('The following paths do not exist: %s' % ', '.join(invalid_paths))
@@ -1094,7 +1057,7 @@ if __name__ == '__main__':
           paths_to_traverse[expected_key].append(path.name)
         else:
           traverse_single(
-            use_fuse, meta_dict, path, process_names[path.basename],
+            meta_dict, path, process_names[path.basename],
             args.check_every_event, args.missing_branches, filetracker, args.file_idx, args.era,
             triggerTable, count_histograms, lost_ntuples
           )
@@ -1109,23 +1072,23 @@ if __name__ == '__main__':
         else:
           if path.basename in crab_strings_single:
             traverse_double(
-              use_fuse, meta_dict, path, crab_strings[path.basename],
+              meta_dict, path, crab_strings[path.basename],
               args.check_every_event, args.missing_branches, filetracker, args.file_idx, args.era,
               triggerTable, count_histograms, lost_ntuples
             )
             traverse_single(
-              use_fuse, meta_dict, path, crab_strings[path.basename],
+              meta_dict, path, crab_strings[path.basename],
               args.check_every_event, args.missing_branches, filetracker, args.file_idx, args.era,
               triggerTable, count_histograms, lost_ntuples
             )
           else:
             traverse_double(
-              use_fuse, meta_dict, path, crab_strings[path.basename],
+              meta_dict, path, crab_strings[path.basename],
               args.check_every_event, args.missing_branches, filetracker, args.file_idx, args.era,
               triggerTable, count_histograms, lost_ntuples
             )
     else:
-      entries = get_dir_entries(use_fuse, path)
+      entries = get_dir_entries(path)
       entries_dirs = filter(
         lambda entry: entry.isdir() and os.path.basename(entry.name) not in ["failed", "log"] and \
                       not any(map(
