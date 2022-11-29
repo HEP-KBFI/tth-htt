@@ -20,7 +20,7 @@ def get_paths(input_paths, whitelist, blacklist):
   for input_path in input_paths:
     input_path_split = [ subpath for subpath in input_path.split(os.path.sep) if subpath != '' ]
     nof_levels = len(input_path_split)
-    if nof_levels == 6:
+    if nof_levels == 5:
       input_path_subdir = os.path.join(input_path, OUTPUT_RLE)
       if not os.path.isdir(input_path_subdir):
         raise ValueError("No such directory: %s" % input_path_subdir)
@@ -39,7 +39,7 @@ def get_paths(input_paths, whitelist, blacklist):
           )
         logging.debug('Found channel {} at path {}'.format(channel_name, channel_dir))
         valid_paths[channel_name] = channel_dir
-    elif nof_levels == 8:
+    elif nof_levels == 7:
       if input_path_split[-2] != OUTPUT_RLE:
         raise ValueError("Invalid path: %s" % input_path)
       channel_name = input_path_split[-1]
