@@ -1370,6 +1370,8 @@ class analyzeConfig(object):
             'fillHistograms_resonant_spin2',
             'use2d',
             'evtvar_with_fullsys',
+            'use_ee',
+            'tsf',
             'leptonFakeRateWeight.inputFileName',
             'leptonFakeRateWeight.histogramName_e',
             'leptonFakeRateWeight.histogramName_mu',
