@@ -39,7 +39,7 @@ for sample_name, sample_info in samples.items():
 if __name__ == '__main__':
 
   vhSplitter = vhSplitConfig(
-    configDir = os.path.join("/scratch-persistent", getpass.getuser(), 'ttHVHSplitter', era, version),
+    configDir = os.path.join("/scratch/persistent", getpass.getuser(), 'ttHVHSplitter', era, version),
     localDir  = os.path.join("/home",               getpass.getuser(), "ttHVHSplitter", era, version),
     outputDir = os.path.join("/local",              getpass.getuser(), "ttHVHSplitter", era, version),
     samples               = samples,

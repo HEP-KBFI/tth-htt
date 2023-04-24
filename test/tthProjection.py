@@ -137,7 +137,7 @@ if __name__ == '__main__':
     del samples['sum_events']
 
   projection_dir = 'ttH{}Projection'.format(projection.capitalize())
-  configDir = os.path.join("/scratch-persistent", getpass.getuser(), projection_dir, era, version)
+  configDir = os.path.join("/scratch/persistent", getpass.getuser(), projection_dir, era, version)
   localDir  = os.path.join("/home",               getpass.getuser(), projection_dir, era, version)
   outputDir = os.path.join("/local",              getpass.getuser(), projection_dir, era, version)
 

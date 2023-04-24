@@ -112,7 +112,7 @@ if __name__ == '__main__':
     ', '.join(central_or_shifts)
   )
 
-  configDir = os.path.join("/scratch-persistent", getpass.getuser(), "ttHAnalysis", era, version),
+  configDir = os.path.join("/scratch/persistent", getpass.getuser(), "ttHAnalysis", era, version),
   localDir  = os.path.join("/home",               getpass.getuser(), "ttHAnalysis", era, version)
   outputDir = os.path.join("/local",              getpass.getuser(), "ttHAnalysis", era, version)
 

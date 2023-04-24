@@ -144,7 +144,7 @@ if __name__ == '__main__':
   if sample_filter:
     samples = filter_samples(samples, sample_filter)
 
-  configDir = os.path.join("/scratch-persistent", getpass.getuser(), "ttHAnalysis", era, version),
+  configDir = os.path.join("/scratch/persistent", getpass.getuser(), "ttHAnalysis", era, version),
   localDir  = os.path.join("/home",               getpass.getuser(), "ttHAnalysis", era, version)
   outputDir = os.path.join("/local",              getpass.getuser(), "ttHAnalysis", era, version)
 

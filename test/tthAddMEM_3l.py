@@ -127,7 +127,7 @@ if __name__ == '__main__':
     treeName                 = 'Events',
     outputDir                = os.path.join("/local",              getpass.getuser(), "addMEM", era, version),
     localDir                 = os.path.join("/home",               getpass.getuser(), "addMEM", era, version),
-    cfgDir                   = os.path.join("/scratch-persistent", getpass.getuser(), "addMEM", era, version),
+    cfgDir                   = os.path.join("/scratch/persistent", getpass.getuser(), "addMEM", era, version),
     executable_addMEM        = "addMEM_3l",
     samples                  = samples,
     era                      = era,

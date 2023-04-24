@@ -138,7 +138,7 @@ if __name__ == '__main__':
   ptBins_mu = ([ 10., 15., 20., 32., 45., 65., 100. ] if not enable_LeptonFakeRate_bbwSL else [ 25., 45., 65., 100. ]) ## CERN (Reduced) bins for ttH/HH (bbWW)
 
   analysis = analyzeConfig_LeptonFakeRate(
-    configDir = os.path.join("/scratch-persistent", getpass.getuser(), "ttHAnalysis", era, version),
+    configDir = os.path.join("/scratch/persistent", getpass.getuser(), "ttHAnalysis", era, version),
     localDir  = os.path.join("/home",               getpass.getuser(), "ttHAnalysis", era, version),
     outputDir = os.path.join("/local",              getpass.getuser(), "ttHAnalysis", era, version),
     cmssw_base_dir_combine                   = cmssw_base_dir_combine,

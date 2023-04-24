@@ -11,7 +11,7 @@ check_if_exists() {
   fi
 }
 
-TMP_DIR=/scratch-persistent/$USER;
+TMP_DIR=/scratch/persistent/$USER;
 OUTPUT_DIR=/local/$USER/archives;
 DRYRUN=false;
 OVERWRITE_OUTPUT_FILE=false;
@@ -59,9 +59,9 @@ if [ $INPUT_SPLIT_LV0 != "home" ]; then
   echo "Directory '$INPUT_DIR' is not in \$HOME";
 fi
 
-INPUT_DIR_SP=$(echo $INPUT_DIR | sed 's/^\/home\//\/scratch-persistent\//g');
+INPUT_DIR_SP=$(echo $INPUT_DIR | sed 's/^\/home\//\/scratch/persistent\//g');
 if [ ! -d $INPUT_DIR_SP ]; then
-  echo "Unable to find complementary directory on /scratch-persistent: $INPUT_DIR_SP";
+  echo "Unable to find complementary directory on /scratch/persistent: $INPUT_DIR_SP";
   exit 1;
 fi
 
@@ -128,8 +128,8 @@ for CHANNEL in $CHANNELS; do
 done
 
 echo "If you want to delete the archived files, run:";
-echo "mkdir -p /scratch-persistent/$USER/empty_dir && rm -rf /scratch-persistent/$USER/empty_dir/*";
-echo "rsync -a --delete /scratch-persistent/$USER/empty_dir/ $INPUT_DIR_SP/";
+echo "mkdir -p /scratch/persistent/$USER/empty_dir && rm -rf /scratch/persistent/$USER/empty_dir/*";
+echo "rsync -a --delete /scratch/persistent/$USER/empty_dir/ $INPUT_DIR_SP/";
 echo "rmdir $INPUT_DIR_SP";
 echo "mkdir -p ~/empty_dir && rm -rf ~/empty_dir/*";
 echo "rsync -a --delete ~/empty_dir/ $INPUT_DIR/";

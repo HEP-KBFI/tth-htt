@@ -190,7 +190,7 @@ if __name__ == '__main__':
     if MEMbranch:
       MEMbranch = 'memObjects_2lss_1tau_lepFakeable_tauTight_{}'.format(hadTau_selection)
 
-  configDir = os.path.join("/scratch-persistent", getpass.getuser(), "ttHAnalysis", era, version),
+  configDir = os.path.join("/scratch/persistent", getpass.getuser(), "ttHAnalysis", era, version),
   localDir  = os.path.join("/home",               getpass.getuser(), "ttHAnalysis", era, version)
   outputDir = os.path.join("/local",              getpass.getuser(), "ttHAnalysis", era, version)
 

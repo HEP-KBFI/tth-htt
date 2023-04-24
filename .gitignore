@@ -18,3 +18,4 @@ __init__.py
 *.cflags
 *.cxxflags
 .qtc_clangd
+.directory
